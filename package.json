@@ -14,6 +14,7 @@
     "fisica-palla": "node tests/fisica-palla.mjs",
     "dati-tesi": "node tests/dati-tesi.mjs",
     "bilancio": "node tests/bilancio.mjs",
+    "statistiche": "node tests/statistiche.mjs",
     "converti-modello": "node strumenti/converti-modello.mjs",
     "costruisci-atleta": "node strumenti/costruisci-atleta.mjs",
     "verifica:aggiorna": "node tests/verifica.mjs --no-legacy --aggiorna"

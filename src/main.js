@@ -1,4 +1,7 @@
 // Punto d'ingresso: carica i moduli nell'ordine giusto e fa girare il ciclo di gioco
+import { movePlayer } from './fisica.js';
+import { doShoot } from './tiri.js';
+import { valoriMotore } from './dati/rose.js';
 import { squadreStat } from './statistiche.js';
 import './stile.css';
 import './grafica/scena.js';
@@ -45,7 +48,7 @@ function loop(now){
 // accesso per le verifiche automatiche (tests/verifica.mjs) e per il debug dalla console
 // "vista" permette alla verifica di mettere la telecamera dove vuole (primi piani): { pos:[x,y,z], look:[x,y,z], fov };
 // "senzaCorpi" ferma l'animazione degli scheletri (serve solo ad accelerare le partite simulate)
-window.__pallanuoto = { game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, palla:{ passoPalla, velocitaDiLancio }, regole:{ setupPenalty }, scegliSquadre, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get modelloPronto(){ return modelloPronto; } };
+window.__pallanuoto = { game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, palla:{ passoPalla, velocitaDiLancio }, regole:{ setupPenalty }, scegliSquadre, prova:{ movePlayer, doShoot, valoriMotore }, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get modelloPronto(){ return modelloPronto; } };
 // scena iniziale dietro al menu
 kickoff(); game.state='menu';
 requestAnimationFrame(loop);

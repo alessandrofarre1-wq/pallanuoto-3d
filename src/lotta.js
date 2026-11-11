@@ -39,7 +39,7 @@ export function boaHold(b,d,dt){
   const v=fight.v, gx=goalX(b.team);
   // aggressività del marcatore: il giocatore la alza premendo CONTRASTO
   let ag = d===ctrl ? (d.aggrT>game.time?1.6:0.35) : (d.team.defPlay===2?1.3:1)*(0.85+0.3*DIFF());
-  const rE=Math.max(0.12,0.42+0.5*v)*ag, rF=0.5*ag, rO=0.14+0.3*Math.max(0,-v), rS=(0.08+0.25*Math.max(0,-v))*(d===ctrl&&d.aggrT>game.time?1.5:1);
+  const rE=Math.max(0.12,0.42+0.5*v)*ag*(1.5-(d.s.dis-40)/59), rF=0.5*ag, rO=0.14+0.3*Math.max(0,-v), rS=(0.08+0.25*Math.max(0,-v))*(d===ctrl&&d.aggrT>game.time?1.5:1);
   if(fight.holdT>0.35){
     const r=rnd();
     if(r<rE*dt){ showMsg('<span style="font-size:26px">Espulsione guadagnata dal centroboa!</span>',1.2); exclude(d); return; }

@@ -178,8 +178,10 @@ export function tackle(d,c,o){
   const dG=Math.hypot(ownGoalX(d.team)-c.x,c.z), lineD=Math.abs(ownGoalX(d.team)-c.x);
   const skill = d.st.def*(d.team.human?1:DIFF());
   const pSteal = clamp((0.1+0.2*skill-0.06*c.st.pas)*(press?1.3:1)*(o.stealMul||1),0.05,0.6);
-  const pPen = (lineD<5&&Math.abs(c.z)<4)?0.07:0;
-  const pExcl = (lineD<6?0.2:0.05)*(press?1.5:1);
+  // Disciplina: chi ne ha poca commette più falli gravi (espulsione o rigore)
+  const fDis=1.5-(d.s.dis-40)/59;
+  const pPen = ((lineD<5&&Math.abs(c.z)<4)?0.07:0)*fDis;
+  const pExcl = (lineD<6?0.2:0.05)*(press?1.5:1)*fDis;
   const pFoul = 0.42;
   const r=rnd();
   if(r<pSteal){ registraPallaRubata(d.team); giveBall(d); showMsg(`Palla rubata! ${d.team.short} #${d.num}`,1); return true; }

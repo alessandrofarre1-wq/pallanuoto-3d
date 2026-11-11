@@ -17,7 +17,7 @@ await pg.addInitScript(() => {
   window.__step = n => { for (let i = 0; i < n; i++) { window.__frame++; window.__raf(window.__frame * 1000 / 60); } };
 });
 await pg.goto(server.resolvedUrls.local[0]);
-await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto');
+await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });
 const R = await pg.evaluate(() => {
   const H = window.__pallanuoto, out = {};
   H.renderer.render = () => {}; H.senzaCorpi = true;

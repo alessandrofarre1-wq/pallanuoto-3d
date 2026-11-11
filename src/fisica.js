@@ -1,4 +1,5 @@
 // ================= FISICA GIOCATORI =================
+import { scala } from './dati/rose.js';
 import { registraParata } from './statistiche.js';
 import { whistle } from './audio.js';
 import { BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
@@ -11,7 +12,8 @@ import { diSchiena, shotKind } from './tiri.js';
 export function movePlayer(p,dx,dz,sprint,dt){
   const mag=Math.hypot(dx,dz), moving=mag>0.05, swimming=mag>0.5;
   const hold=ball.holder===p, sp=Math.hypot(p.vx,p.vz);
-  let base=1.45*(0.85+0.3*p.st.spd);                 // andatura normale ~1.6 m/s
+  // Velocità: tra 60 e 90 di Velocità ci sono circa il 19% di differenza
+  let base=1.45*1.08*(0.82+(p.s.vel-40)/59*0.36);    // andatura normale ~1.6 m/s
   const canSprint=sprint&&p.stamina>0.05&&swimming;
   if(canSprint) base*=1.65;                          // sprint ~2.6 m/s da fresco
   p.sprinting=canSprint;
@@ -34,7 +36,10 @@ export function movePlayer(p,dx,dz,sprint,dt){
   // l'acqua frena subito ma fa partire piano
   const a=Math.min(1,dt*(Math.hypot(tvx,tvz)>sp?1.9:3.2));
   p.vx+=(tvx-p.vx)*a; p.vz+=(tvz-p.vz)*a;
-  if(canSprint) p.stamina-=dt*0.085; else p.stamina+=dt*(moving?0.02:0.06);
+  // Resistenza: un giocatore medio è visibilmente stanco dopo 6-7 vasche di sprint di fila (docs/tecnica.md);
+  // chi ha più Resistenza si stanca meno e recupera prima
+  const fRes=(p.s.res-40)/59;
+  if(canSprint) p.stamina-=dt*0.0092*(1.6-fRes); else p.stamina+=dt*(moving?0.006:0.02)*(0.6+0.8*fRes);
   if(p.contactT>0) p.stamina-=dt*0.02;
   p.stamina=clamp(p.stamina,0,1);
   p.x+=p.vx*dt; p.z+=p.vz*dt;
@@ -116,7 +121,7 @@ export function updateBall(dt){
       // parata
       if(!ball.saveChecked && (px-gk.x)*(ball.x-gk.x)<=0){
         ball.saveChecked=true;
-        const reach=0.58+0.42*gk.st.def, dz=Math.abs(ball.z-gk.z);
+        const reach=0.58+0.42*scala(gk.s.rif), dz=Math.abs(ball.z-gk.z);
         if(dz<reach && ball.y<1.9){
           let prob=(1.0-0.36*ball.shotPower-dz*0.35-(ball.lob?0.2:0)-(gk.fakedUntil>game.time?0.25:0)-(ball.skipped?0.12:0))*(def.human?1:DIFF_GK())
             *(ball.rigore?0.45:1);      // sul rigore il portiere para molto meno: negli studi citati dalla tesi ne entra l'80%
