@@ -9,12 +9,15 @@ import { SPEED } from './costanti.js';
 import { render } from './grafica/render.js';
 import { dpr, livelloAcqua, renderer, ridimensionaAcqua, setDpr, setLivelloAcqua } from './grafica/scena.js';
 import { acquaAuto } from './menu.js';
+import { modelloPronto } from './grafica/corpo.js';
 import { tickFps, tickMsg, updateHUD } from './hud.js';
 import { update } from './partita.js';
 import { kickoff } from './regole.js';
 import { allPlayers, ball, ctrl, fight, game, teams } from './stato.js';
 
-let last=performance.now(), frameMs=16, qT=0, hudT=1;
+let last=performance.now(), frameMs=16, qT=0, hudT=1, lenti=0;
+// tornando da un'altra app i primi fotogrammi sono lunghi: non devono contare come "dispositivo lento"
+document.addEventListener('visibilitychange',()=>{ frameMs=16; qT=0; lenti=0; });
 function loop(now){
   const raw=Math.min(0.1,(now-last)/1000); last=now;
   const dt=raw*SPEED;
@@ -24,7 +27,8 @@ function loop(now){
   // qualità adattiva: se il dispositivo fatica si abbassa la risoluzione di disegno
   frameMs+=(raw*1000-frameMs)*0.05; qT+=raw;
   // ordine dei tagli: prima il riflesso dell'acqua, poi la risoluzione, per ultima l'acqua semplice
-  if(qT>2){ qT=0; if(frameMs>21){
+  // si taglia solo dopo due controlli lenti di fila (4 secondi), non per un singolo scatto
+  if(qT>2){ qT=0; if(frameMs<=21) lenti=0; else if(++lenti>=2){ lenti=0;
     if(acquaAuto&&livelloAcqua===2) setLivelloAcqua(1);
     else if(dpr>1){ setDpr(Math.max(1,dpr-0.25)); renderer.setPixelRatio(dpr); ridimensionaAcqua(); }
     else if(acquaAuto&&livelloAcqua===1) setLivelloAcqua(0);
@@ -37,7 +41,9 @@ function loop(now){
   requestAnimationFrame(loop);
 }
 // accesso per le verifiche automatiche (tests/verifica.mjs) e per il debug dalla console
-window.__pallanuoto = { game, teams, ball, allPlayers, fight, renderer, get ctrl(){ return ctrl; } };
+// "vista" permette alla verifica di mettere la telecamera dove vuole (primi piani): { pos:[x,y,z], look:[x,y,z], fov };
+// "senzaCorpi" ferma l'animazione degli scheletri (serve solo ad accelerare le partite simulate)
+window.__pallanuoto = { game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, get ctrl(){ return ctrl; }, get modelloPronto(){ return modelloPronto; } };
 // scena iniziale dietro al menu
 kickoff(); game.state='menu';
 requestAnimationFrame(loop);

@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<!-- aggiunto alla schermata Home dell'iPhone, il gioco si apre a tutto schermo senza le barre del browser -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pallanuoto 3D">
+<meta name="theme-color" content="#0b1d33">
 <title>Pallanuoto 3D — Prototipo</title>
 <link rel="stylesheet" href="./src/stile.css">
 </head>
@@ -40,7 +46,7 @@
 <div id="menu">
   <div class="panel">
     <h1>🤽 Pallanuoto 3D</h1>
-    <div class="sub" id="sub">Prototipo v0.10 · Italia vs Ungheria</div>
+    <div class="sub" id="sub">Prototipo v0.11 · Italia vs Ungheria</div>
     <div id="final" style="display:none"></div>
     <div class="row"><label>Durata tempo</label>
       <button class="opt" data-len="120">2 min</button><button class="opt on" data-len="180">3 min</button><button class="opt" data-len="300">5 min</button><button class="opt" data-len="480">8 min</button></div>
