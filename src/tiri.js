@@ -5,17 +5,23 @@ import { velocitaDiLancio } from './palla.js';
 import { allPlayers, ball, fight, game, goalX, other, setCtrl, teams } from './stato.js';
 export function startAct(p,kind,wind,fn,aim){
   const gx=goalX(p.team);
-  if(!aim) aim = kind==='beduina' ? [2*p.x-gx,2*p.z] : [gx,0];
+  if(!aim) aim = diSchiena(kind) ? [2*p.x-gx,2*p.z] : [gx,0];
   // chi sta ancora nuotando disteso deve prima raddrizzarsi: piccolo ritardo (non per il colonnello, che si tira in nuotata)
   if(kind!=='colonnello') wind+=(kind==='pass'?0.12:0.3)*(p.oriz||0);
-  p.act={t:0,kind,wind,fn,aim,done:false}; p.charging=false; p.chargeT=0;
+  // "frusta" = tempo dal braccio caricato al rilascio. Dati riportati nella tesi Patumi (Melchiorri 2015): 166 ms per i
+  // professionisti, 189 ms per i semi-professionisti: chi tira meglio rilascia prima. Passaggio e finta sono gesti più corti.
+  const frusta = kind==='pass'||kind==='fake' ? 0.09 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
+  p.act={t:0,kind,wind,frusta,fn,aim,done:false}; p.charging=false; p.chargeT=0;
+  if(diSchiena(kind)) p.tiriDiSchiena=(p.tiriDiSchiena||0)+1;
 }
+// tiri del centroboa spalle alla porta
+export const diSchiena = kind => kind==='beduina'||kind==='sciarpa';
 export function updateActs(dt){
   for(const p of allPlayers){
     const a=p.act; if(!a) continue;
     a.t+=dt;
-    if(!a.done && a.t>=a.wind+0.09){ a.done=true; if(ball.holder===p && game.state==='play') a.fn(); }
-    if(a.t>a.wind+0.45) p.act=null;
+    if(!a.done && a.t>=a.wind+a.frusta){ a.done=true; if(ball.holder===p && game.state==='play') a.fn(); }
+    if(a.t>a.wind+a.frusta+0.36) p.act=null;
   }
 }
 export function launch(p,tx,ty,tz,t,kind){
@@ -43,7 +49,9 @@ export function openness(m){ let best=99; for(const o of other(m.team).players){
 // che tipo di tiro parte in questa situazione
 export function shotKind(p){
   if(game.penalty===p) return 'shot';
-  if(p.i===1 && !(p.turnedUntil>game.time) && Math.hypot(goalX(p.team)-p.x,p.z)<4.5) return 'beduina';
+  // centroboa spalle alla porta: beduina (braccio che gira all'esterno) oppure sciarpa (braccio che attraversa il corpo,
+  // come per mettersi una sciarpa); il centroboa alterna i due gesti
+  if(p.i===1 && !(p.turnedUntil>game.time) && Math.hypot(goalX(p.team)-p.x,p.z)<4.5) return (p.tiriDiSchiena||0)%2 ? 'sciarpa' : 'beduina';
   if(Math.hypot(p.vx,p.vz)>1.3) return 'colonnello';
   return 'shot';
 }
@@ -93,15 +101,21 @@ export function doShoot(p,power,lob,aimZ){
   const d=Math.hypot(gx-p.x,az-p.z);
   let press=99; for(const o of other(t).players){ if(!o.excluded&&!o.isGK&&game.time>=o.stunUntil&&!(p.turnedUntil>game.time&&o===fight.def)) press=Math.min(press,dist(o,p)); }
   // un tiro marcato stretto è molto meno preciso: gli schemi servono a liberare il tiratore
-  const errBase=1.25*(0.12+(1-p.stamina)*0.35+power*0.22)*(1.25-p.st.sht)*(1+clamp(1.4-press,0,1)*0.9)*(p.fakeUntil>game.time?0.65:1)*(p.turnedUntil>game.time?0.6:1);
+  // Dalla tesi: la precisione NON dipende dalla velocità del tiro (nessuna correlazione), quindi tirare forte non costa mira;
+  // il tiro classico è più preciso di beduina, sciarpa e colonnello.
+  const tipo=p.act?p.act.kind:'shot', classico=tipo==='shot'||tipo==='lob';
+  const errBase=1.25*0.27*(1+(1-p.stamina)*1.3)*(classico?1:1.3)*(1.25-p.st.sht)*(1+clamp(1.4-press,0,1)*0.9)*(p.fakeUntil>game.time?0.65:1)*(p.turnedUntil>game.time?0.6:1);
   az+=gauss()*errBase*(0.45+d*0.09); ay+=gauss()*errBase*0.35;
-  const spd = lob ? 4.5+d*0.15 : (13+10*power)*(0.85+0.15*p.st.sht)*(0.75+0.25*p.stamina);
+  // Velocità al rilascio (dati riportati nella tesi): professionisti 22,8 ± 2,4 m/s a tutta forza. La bravura al tiro sposta
+  // il massimo tra circa 20 e 25 m/s; il tiro classico è il più veloce.
+  const vMax=(22.8+16*(p.st.sht-0.85))*(classico?1:tipo==='colonnello'?0.9:0.85);
+  const spd = lob ? 4.5+d*0.15 : vMax*(0.5+0.5*power)*(0.75+0.25*p.stamina);
   // tiro a schizzo: la palla rimbalza sull'acqua poco prima della porta (più difficile da leggere per il portiere)
   const dxg=Math.abs(gx-p.x);
   if(!lob && power>0.55 && dxg>4 && game.penalty!==p && rnd()<0.28){
     const k=1.4/dxg;
     launch(p,gx-t.dir*1.4,BRV,az+(p.z-az)*k,d*(1-k)/spd,'shot'); ball.skip=true;
   } else launch(p,gx,ay,az,d/spd,'shot');
-  ball.shotPower=lob?0.3:power; ball.lob=lob; ball.crossZ=az;
+  ball.shotPower=lob?0.3:power; ball.lob=lob; ball.crossZ=az; ball.rigore=game.penalty===p;
   p.stamina=Math.max(0,p.stamina-0.04);
 }

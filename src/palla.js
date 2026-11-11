@@ -8,7 +8,9 @@ await RAPIER.init();
 
 export const RAGGIO=0.12;            // raggio della palla per gli urti (una palla vera misura circa 11 cm)
 export const QUOTA_GALLEGGIA=0.05;   // altezza del centro quando la palla galleggia ferma (un terzo sott'acqua)
-const ARIA=0.024;                    // resistenza dell'aria: a 20 m/s frena di circa 10 m/s ogni secondo
+// resistenza dell'aria, tarata sulle misure della tesi Patumi (PoliTo 2018): la palla lascia la mano a 13,3 m/s
+// e arriva in porta, 5 metri dopo, a 12,2 m/s (perde circa l'8%)
+const ARIA=0.0245;
 const EFFETTO=0.0045;                // spinta laterale/verticale di una palla che gira (effetto Magnus)
 
 const mondo=new RAPIER.World({x:0,y:-G,z:0});

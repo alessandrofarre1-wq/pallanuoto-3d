@@ -2,7 +2,7 @@
 
 Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Proprietario: Ale, ex nuotatore agonista, non programmatore: spiega le scelte in italiano semplice, senza gergo tecnico, e chiedi conferma prima di cambiamenti grossi di direzione.
 
-## Stato attuale (v0.14, novembre 2026)
+## Stato attuale (v0.15, novembre 2026)
 - Progetto Vite a moduli in `src/` (stesso identico gioco della v0.9, solo riorganizzato): `costanti`, `stato`, `giocatori`, `regole`, `partita` (ciclo di gioco), `lotta`, `fisica`, `palla` (fisica della palla con Rapier), `tiri`, `ia`, `controllo` (comandi umani), `input`, `hud`, `menu`, `audio`, `grafica/` (`scena`, `acqua`, `modello`, `corpo`, `pose`, `render`). Three.js 0.187 da npm (aggiornato dalla r128 nella fase 1 del piano; richiede WebGL2, cioè iPhone con iOS 15 o successivo).
 - Le variabili condivise che cambiano si modificano con funzioni apposite: `setCtrl`, `resetTap`, `setPeriodLen`, `setDiff`, `setSpeed`, `setDpr`.
 - Colori: gestione moderna di Three.js (immagini marcate sRGB, luci ritarate: `LUCE_CIELO`, `LUCE_SOLE` in `grafica/scena.js`) per restare uguali alla v0.9.
@@ -20,6 +20,15 @@ Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Propr
 - Palla (v0.14): fisica vera in `src/palla.js` con il motore Rapier (`@dimforge/rapier3d-compat`, circa 1,6 MB in più da scaricare, compressi). Rapier muove la palla e calcola gli urti con pali, traversa, rete e corpi dei giocatori (solo palla vagante); noi aggiungiamo resistenza dell'aria, effetto della rotazione (Magnus), schizzo sull'acqua dei tiri tesi e veloci, tonfo, galleggiamento e attrito dell'acqua. `velocitaDiLancio` calcola la partenza tenendo conto di aria ed effetto, così tiri e passaggi arrivano dove si mira. Le regole restano in `fisica.js` (`updateBall`): parata, muro e intercetto sono ancora decisi con le probabilità di prima, ma la palla respinta ora rimbalza davvero; gol e fuori si decidono dal passaggio vero della linea (vale anche il palo-gol); dopo il gol la palla finisce in fondo alla rete (`ball.inRete`).
 - Aspetto della palla: gialla, 18 spicchi a gruppi di tre con solchi scuri e buccia ruvida, calcolata punto per punto sulla sfera (`ball3d` in `scena.js`); gira secondo la rotazione vera e galleggia per un terzo sott'acqua.
 - `npm run fisica-palla`: 10 prove della palla fuori dalla partita (mira, palo, palo interno, traversa, rete, schizzo, palombella, effetto, corpi) e disegno delle traiettorie in `tests/screenshot/fisica-palla.png`. Da rifare a ogni modifica di `palla.js`.
+- Dati della tesi Patumi applicati (v0.15; la tesi misura il tiro in atlete semi-professioniste e riporta gli studi su professionisti):
+  - aria tarata sulla misura della tesi: da 13,3 m/s al rilascio a 12,2 m/s dopo 5 m (`ARIA` in `palla.js`);
+  - velocità al rilascio: professionisti 22,8 ± 2,4 m/s a tutta forza, spostata dalla bravura al tiro tra circa 20 e 25 (`doShoot`); il tiro classico è il più veloce;
+  - tempo dal braccio caricato al rilascio: 166 ms (bravi) – 189 ms (meno bravi), campo `frusta` dell'azione (`startAct`); il busto ruota in 125 ms e il braccio segue (`pose.js`);
+  - gomito al rilascio 147°–157° secondo la bravura; chi è stanco esce meno dall'acqua;
+  - la precisione non dipende dalla forza del tiro (nella tesi non c'è correlazione); il tiro classico è più preciso di beduina, sciarpa e colonnello;
+  - rigori: il portiere para molto meno (negli studi citati entra l'80,1%);
+  - nuovo tiro "a sciarpa" del centroboa, alternato alla beduina.
+- `npm run dati-tesi` misura il gioco contro questi numeri (velocità dopo 5 m, rigori segnati su 240, velocità e tempo di rilascio). Da rifare se si toccano tiri, palla o portiere.
 - Mirino sulla porta mentre il giocatore controllato carica o esegue un tiro (`mirino` in `scena.js`, aggiornato in `render.js`).
 - Contatore FPS: si accende dal menu (o con `?fps` nell'indirizzo); mostra fotogrammi al secondo, qualità di disegno, livello dell'acqua, oggetti disegnati e triangoli.
 - `legacy/index.html` è la v0.9 in un solo file e `legacy/three-r128.min.js` la sua libreria: termine di paragone, non modificarli.
@@ -93,7 +102,7 @@ Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili
 - Storico: finché regole, fisica e IA non cambiavano, le partite simulate dovevano risultare "identiche alla v0.9" (la verifica tiene fuori dal conto i numeri casuali usati da Three.js). Attenzione: anche la grafica del gioco consuma numeri casuali (schiuma, pose) e la posizione della mano decide da dove parte la palla, quindi cambiando la grafica le partite smetteranno di coincidere: da quel momento usare `--no-legacy` e guardare statistiche ed errori.
 - Cambiamento d'aspetto voluto: `npm run verifica:aggiorna` (i nuovi screenshot diventano il riferimento).
 - Nell'ambiente cloud cdnjs è bloccato, npm funziona; Chromium gira senza scheda grafica (opzioni swiftshader già nello script).
-- Dati dell'ultima verifica (6 partite, v0.14): conversione dei tiri 35% (obiettivo 40%); pali e traverse sull'11% dei tiri (33 su 310; per questo ora si mira un po' più dentro i pali); senza comandi l'Italia non segna mai.
+- Dati dell'ultima verifica (6 partite, v0.15): conversione dei tiri 35% (obiettivo 40%; 39% in un giro precedente con lo stesso codice salvo ritocchi: oscilla di qualche punto); pali e traverse sul 9% dei tiri; rigori segnati 77% su 240; senza comandi l'Italia non segna mai. Altri dati della tesi utili in futuro: l'81% dei tiri in partita è classico; 27,8 ± 2,6 tiri per squadra a partita (Europei 2012); testa a 66–71 cm dall'acqua al rilascio; zone di precisione (fascia di 0,5 m dai pali e 0,3 m dalla traversa).
 - Ale gioca da telefono e manda screenshot: usali come verità.
 - Risposte brevi, in italiano, con cosa è cambiato e cosa provare.
 

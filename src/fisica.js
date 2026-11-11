@@ -6,7 +6,7 @@ import { QUOTA_GALLEGGIA, passoPalla } from './palla.js';
 import { blockR } from './ia.js';
 import { cornerThrow, giveBall, goalScored, goalThrow, sideOut } from './regole.js';
 import { active, allPlayers, ball, game, goalX, other, ownGoalX, teams } from './stato.js';
-import { shotKind } from './tiri.js';
+import { diSchiena, shotKind } from './tiri.js';
 export function movePlayer(p,dx,dz,sprint,dt){
   const mag=Math.hypot(dx,dz), moving=mag>0.05, swimming=mag>0.5;
   const hold=ball.holder===p, sp=Math.hypot(p.vx,p.vz);
@@ -42,7 +42,7 @@ export function movePlayer(p,dx,dz,sprint,dt){
   let tfx=p.fx, tfz=p.fz;
   if(p.act&&p.act.aim){ tfx=p.act.aim[0]-p.x; tfz=p.act.aim[1]-p.z; }
   else if(p.turnedUntil>game.time){ tfx=goalX(p.team)-p.x; tfz=-p.z; }
-  else if(p.charging){ tfx=goalX(p.team)-p.x; tfz=-p.z; if(shotKind(p)==='beduina'){ tfx=-tfx; tfz=-tfz; } }
+  else if(p.charging){ tfx=goalX(p.team)-p.x; tfz=-p.z; if(diSchiena(shotKind(p))){ tfx=-tfx; tfz=-tfz; } }
   else if(swimming && !(p.isGK&&ball.state!=='held'&&!sprint)){ tfx=dx; tfz=dz; }
   else if(hold){
     tfx=goalX(p.team)-p.x; tfz=-p.z;
@@ -117,7 +117,8 @@ export function updateBall(dt){
         ball.saveChecked=true;
         const reach=0.58+0.42*gk.st.def, dz=Math.abs(ball.z-gk.z);
         if(dz<reach && ball.y<1.9){
-          let prob=(1.0-0.36*ball.shotPower-dz*0.35-(ball.lob?0.2:0)-(gk.fakedUntil>game.time?0.25:0)-(ball.skipped?0.12:0))*(def.human?1:DIFF_GK());
+          let prob=(1.0-0.36*ball.shotPower-dz*0.35-(ball.lob?0.2:0)-(gk.fakedUntil>game.time?0.25:0)-(ball.skipped?0.12:0))*(def.human?1:DIFF_GK())
+            *(ball.rigore?0.45:1);      // sul rigore il portiere para molto meno: negli studi citati dalla tesi ne entra l'80%
           if(rnd()<prob){
             whistle(0.12); const r=rnd(); ball.afterShot=true;
             if(ball.shotPower>0.55&&r<0.25){ cornerThrow(att); }
