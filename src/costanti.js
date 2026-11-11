@@ -25,7 +25,8 @@ export let PERIOD_LEN = 180, DIFF_I = 1, SPEED = 1;
 export const DIFF = () => [0.7,1,1.3][DIFF_I];
 export const DIFF_GK = () => [0.8,1,1.12][DIFF_I];
 
-export const rnd = Math.random;
+// il caso del gioco; la verifica automatica può sostituirlo con uno ripetibile (window.__rnd)
+export const rnd = window.__rnd || Math.random;
 export const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
 export const dist = (a,b) => Math.hypot(a.x-b.x, a.z-b.z);
 export function gauss(){ let u=0,v=0; while(!u)u=rnd(); while(!v)v=rnd(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }

@@ -19,16 +19,22 @@ const opt = k => args.includes('--' + k);
 const N_PARTITE = +(args.find(a => a.startsWith('--partite=')) || '--partite=3').split('=')[1];
 const DIR = path.join(ROOT, 'tests/screenshot');
 const LEGACY = path.join(ROOT, 'legacy/index.html');
-const THREE_MIN = path.join(ROOT, 'node_modules/three/build/three.min.js');
+// la v0.9 caricava Three.js r128 da internet: qui le si dà la copia locale, con il generatore di codici degli oggetti
+// (funzione interna "ct") sostituito da un contatore, così non consuma il caso del gioco
+const UUID_R128 = 'function ct(){';
+let THREE_R128 = fs.readFileSync(path.join(ROOT, 'legacy/three-r128.min.js'), 'utf8');
+if (THREE_R128.split(UUID_R128).length !== 2) throw new Error('three-r128.min.js: generatore di codici non trovato');
+THREE_R128 = THREE_R128.replace(UUID_R128, UUID_R128 + 'return "u"+(window.__u=(window.__u||0)+1);') + ';window.__riparti();';
 
 // ---------- codice eseguito dentro la pagina ----------
-function initPagina(seed) {
+function initPagina({ seed, legacy }) {
   let a = seed >>> 0;
-  Math.random = () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
-  // il caso riparte da capo nel momento in cui il gioco crea la sua area di disegno: così non conta quanti
-  // numeri casuali ha già consumato la libreria Three.js caricandosi (cambia tra la versione CDN e quella impacchettata)
-  const seme = a, creaNS = document.createElementNS; let primo = true;
-  document.createElementNS = function () { if (primo) { primo = false; a = seme; } return creaNS.apply(this, arguments); };
+  const caso = () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  // Il caso ripetibile deve servire SOLO al gioco, non a Three.js (che pesca numeri casuali per dare un codice a ogni
+  // oggetto, in quantità diversa da versione a versione). Versione nuova: il gioco usa window.__rnd. v0.9: gioco e
+  // Three.js usano entrambi Math.random, quindi lì il generatore di codici di Three.js viene sostituito (vedi apri()).
+  if (legacy) { Math.random = caso; window.__riparti = () => { a = seed >>> 0; }; }
+  else window.__rnd = caso;
   performance.now = () => 0;
   window.__raf = null; window.__frame = 0;
   window.requestAnimationFrame = cb => { window.__raf = cb; return 1; };
@@ -98,9 +104,9 @@ async function apri(versione, vista, seed) {
   const pg = await ctx.newPage();
   pg.on('pageerror', e => errori.push(`[${versione}] ${e.message}`));
   pg.on('console', m => { if (m.type() === 'error') errori.push(`[${versione}] console: ${m.text()}`); });
-  await pg.addInitScript(initPagina, seed);
+  await pg.addInitScript(initPagina, { seed, legacy: versione === 'legacy' });
   if (versione === 'legacy') {
-    await pg.route('**/three.min.js', r => r.fulfill({ body: fs.readFileSync(THREE_MIN), contentType: 'application/javascript' }));
+    await pg.route('**/three.min.js', r => r.fulfill({ body: THREE_R128, contentType: 'application/javascript' }));
     await pg.goto('file://' + LEGACY);
     await pg.evaluate('window.__H = { game, teams, ball, allPlayers, fight, renderer, get ctrl(){ return ctrl; } }');
   } else {

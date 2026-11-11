@@ -1,6 +1,6 @@
 // Scena 3D: piscina, acqua, schiuma, corde, porte, palla, telecamera
 import * as THREE from 'three';
-import { BRV, GH, GW, HL, HW } from '../costanti.js';
+import { BRV, GH, GW, HL, HW, rnd } from '../costanti.js';
 import { game } from '../stato.js';
 // ================= SCENA =================
 export const renderer = new THREE.WebGLRenderer({antialias:true});
@@ -51,8 +51,8 @@ box(0.4,0.08,PZ*2,0xffffff,-PX-0.2,0.32,0); box(0.4,0.08,PZ*2,0xffffff,PX+0.2,0.
   const crowd=canvasTex(1024,256,(x,w,h)=>{ x.fillStyle='#22324d'; x.fillRect(0,0,w,h);
     const cc=['#e11d48','#2563eb','#f8fafc','#facc15','#16a34a','#f97316','#94a3b8','#0ea5e9'];
     for(let r=0;r<9;r++){ x.fillStyle='rgba(0,0,0,.25)'; x.fillRect(0,r*28+22,w,6);
-      for(let i=0;i<120;i++){ if(Math.random()<0.2) continue; const px=i*8.6+Math.random()*3, py=r*28+12;
-        x.fillStyle=cc[Math.floor(Math.random()*cc.length)]; x.fillRect(px-3,py,6,10);
+      for(let i=0;i<120;i++){ if(rnd()<0.2) continue; const px=i*8.6+rnd()*3, py=r*28+12;
+        x.fillStyle=cc[Math.floor(rnd()*cc.length)]; x.fillRect(px-3,py,6,10);
         x.fillStyle='#e0b090'; x.beginPath(); x.arc(px,py-2,2.6,0,7); x.fill(); } } });
   const st=new THREE.Mesh(new THREE.PlaneGeometry(PX*2+14,7),new THREE.MeshLambertMaterial({map:crowd}));
   st.position.set(0,3.6,-PZ-8.5); st.rotation.x=-0.55; scene.add(st);
@@ -61,9 +61,9 @@ box(0.4,0.08,PZ*2,0xffffff,-PX-0.2,0.32,0); box(0.4,0.08,PZ*2,0xffffff,PX+0.2,0.
 }
 // acqua: superficie ondulata con riflessi
 export const waterTex = canvasTex(256,256,(x,w,h)=>{ x.fillStyle='#1f86d2'; x.fillRect(0,0,w,h);
-  for(let i=0;i<70;i++){ x.strokeStyle=i%3?'rgba(170,225,255,.35)':'rgba(10,80,150,.28)'; x.lineWidth=1+Math.random()*2.5;
-    const px=Math.random()*w, py=Math.random()*h, l=20+Math.random()*50; x.beginPath();
-    x.moveTo(px,py); x.quadraticCurveTo(px+l/2,py+(Math.random()-0.5)*18,px+l,py+(Math.random()-0.5)*8); x.stroke(); } },7,6);
+  for(let i=0;i<70;i++){ x.strokeStyle=i%3?'rgba(170,225,255,.35)':'rgba(10,80,150,.28)'; x.lineWidth=1+rnd()*2.5;
+    const px=rnd()*w, py=rnd()*h, l=20+rnd()*50; x.beginPath();
+    x.moveTo(px,py); x.quadraticCurveTo(px+l/2,py+(rnd()-0.5)*18,px+l,py+(rnd()-0.5)*8); x.stroke(); } },7,6);
 export const waterGeo = new THREE.PlaneGeometry(PX*2,PZ*2,28,22); waterGeo.rotateX(-Math.PI/2);
 export const water = new THREE.Mesh(waterGeo,new THREE.MeshPhongMaterial({map:waterTex,transparent:true,opacity:0.76,shininess:150,specular:0xffffff}));
 scene.add(water);
