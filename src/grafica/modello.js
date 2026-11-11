@@ -41,7 +41,7 @@ export function makePlayerMesh(capColor,num,team){
   // corpo con scheletro: quando il modello è caricato prende il posto di cilindri e sfere (che restano come riserva)
   R.vecchi=g.children.filter(c=>c!==spr);
   const portiere=capColor===0xd62828;
-  attaccaCorpo(R,{ pelle:skin.color.getHex(), costume:suit.color.getHex(), calottina:capColor, paraorecchie:portiere?0xd62828:suit.color.getHex(),
+  attaccaCorpo(R,{ costume:suit.color.getHex(), calottina:capColor, paraorecchie:portiere||team.idx===0?0xf2f2ee:suit.color.getHex(),
     testo:team.idx===0||portiere?'#fff':'#111' },num,num+team.idx*7);
   g.scale.setScalar(VIS); scene.add(g);
   return R;
