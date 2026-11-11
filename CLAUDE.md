@@ -2,8 +2,11 @@
 
 Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Proprietario: Ale, ex nuotatore agonista, non programmatore: spiega le scelte in italiano semplice, senza gergo tecnico, e chiedi conferma prima di cambiamenti grossi di direzione.
 
-## Stato attuale (v0.9, novembre 2026)
-- Tutto il gioco è in `index.html` (HTML + CSS + JS, ~1500 righe), Three.js r128 da cdnjs.
+## Stato attuale (v0.9.1, novembre 2026)
+- Progetto Vite a moduli in `src/` (stesso identico gioco della v0.9, solo riorganizzato): `costanti`, `stato`, `giocatori`, `regole`, `partita` (ciclo di gioco), `lotta`, `fisica`, `tiri`, `ia`, `controllo` (comandi umani), `input`, `hud`, `menu`, `audio`, `grafica/` (`scena`, `modello`, `pose`, `render`). Three.js r128 da npm (non più da CDN).
+- Le variabili condivise che cambiano si modificano con funzioni apposite: `setCtrl`, `resetTap`, `setPeriodLen`, `setDiff`, `setSpeed`, `setDpr`.
+- `legacy/index.html` è la v0.9 in un solo file: termine di paragone, non modificarla.
+- Pubblicazione: GitHub Actions (`.github/workflows/pages.yml`) verifica e pubblica su GitHub Pages a ogni modifica di `main`.
 - Pubblicato anche come artifact su claude.ai (versioni v0.1 → v0.9).
 - Giocato soprattutto da iPhone, sia in orizzontale sia in verticale, con comandi touch. Supporta anche tastiera e controller (Gamepad API).
 
@@ -53,7 +56,7 @@ Cosa si vede e cosa prendere (osservato su 5 fotogrammi):
 Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili e con una sola squadra in campo.
 
 ## Roadmap concordata
-1. Migrazione a progetto vero: Vite, moduli (regole, fisica, IA, grafica, input, HUD), GitHub Pages.
+1. FATTO (v0.9.1): migrazione a progetto vero: Vite, moduli, verifica automatica, GitHub Pages.
 2. Grafica (punto 1 sopra) con verifica a screenshot.
 3. IA più ricca con steering behaviors (Reynolds) e macchine a stati.
 4. Squadre, statistiche, modalità torneo/carriera.
@@ -68,6 +71,10 @@ Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili
 - Three.js docs, Rapier.js, Mixamo, Gamepad API (MDN), Reynolds Steering Behaviors, Game Programming Patterns, GitHub Pages, best practice Claude Code.
 
 ## Come lavorare
-- Dopo ogni modifica gioca partite simulate (headless) e controlla che non ci siano errori; per la grafica guarda gli screenshot.
+- Dopo ogni modifica: `npm run lint` e `npm run verifica` (partite simulate col caso bloccato + 5 screenshot confrontati con `tests/screenshot/riferimento/`; immagini affiancate prima/dopo in `tests/screenshot/confronto/`). Guarda sempre gli screenshot.
+- Finché regole, fisica e IA non cambiano, le partite simulate devono risultare "identiche alla v0.9". Attenzione: anche la grafica consuma numeri casuali (schiuma, pose) e la posizione della mano decide da dove parte la palla, quindi cambiando la grafica le partite smetteranno di coincidere: da quel momento usare `--no-legacy` e guardare statistiche ed errori.
+- Cambiamento d'aspetto voluto: `npm run verifica:aggiorna` (i nuovi screenshot diventano il riferimento).
+- Nell'ambiente cloud cdnjs è bloccato, npm funziona; Chromium gira senza scheda grafica (opzioni swiftshader già nello script).
+- Dati dell'ultima verifica (6 partite): conversione dei tiri 31% (obiettivo 40%); senza comandi l'Italia non segna mai.
 - Ale gioca da telefono e manda screenshot: usali come verità.
 - Risposte brevi, in italiano, con cosa è cambiato e cosa provare.

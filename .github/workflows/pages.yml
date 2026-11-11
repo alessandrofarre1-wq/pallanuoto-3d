@@ -1,0 +1,53 @@
+# A ogni modifica: costruisce il gioco, lo verifica (partite simulate + screenshot) e,
+# se la modifica è sul ramo principale, lo pubblica su GitHub Pages.
+name: Verifica e pubblica
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verifica:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npx playwright install --with-deps chromium
+      # sul server i caratteri dei testi sono diversi da quelli usati per gli screenshot di riferimento:
+      # lì gli screenshot si guardano soltanto, mentre le partite simulate devono passare
+      - run: npm run verifica -- --screenshot-non-bloccanti
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshot
+          path: tests/screenshot
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: dist
+
+  pubblica:
+    needs: verifica
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
