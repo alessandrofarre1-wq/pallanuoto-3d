@@ -47,7 +47,8 @@ Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Propr
 - Espulsione 18 s, rientro anticipato su gol o palla riconquistata; terzo fallo grave = cambio.
 - Rigore dai 5 m; tiro d'angolo; rimessa del portiere; palla fuori lateralmente = tiro libero agli avversari di chi l'ha toccata per ultimo (muro su tiro: resta a chi ha murato).
 - Tiro libero: dentro i 6 m si deve passare o uscire oltre i 6; fuori dai 6 il tiro diretto immediato è ammesso (art. 7.5.1.2). Ale pensava che si dovesse sempre passare: gli è stata spiegata la regola, si è tenuta quella ufficiale.
-- Area di porta (art. 8.2.8): attaccante davanti alla linea della palla = fallo. Misure usate: 2 m × (porta + 2 m per lato), DA VERIFICARE (l'estratto 2026 non riportava l'appendice delle definizioni).
+- Area di porta (art. 8.2.8): attaccante davanti alla linea della palla = fallo. Misure: dalla linea di porta ai 2 metri, fino a 2 m oltre ciascun palo (CONFERMATE, vedi `docs/tecnica.md`). La regola vale solo dentro l'area: un attaccante laterale fuori dall'area ma dentro i 2 metri può ricevere.
+- DA CORREGGERE: al rigore tutti gli altri giocatori (tranne tiratore e portiere) stanno sulla linea dei 6 metri, ad almeno 3 m dal tiratore.
 - Time-out: 2 a squadra, solo in possesso, ripresa da metà campo.
 - Non implementati: rigori finali in caso di parità, VAR, cambi volanti.
 
@@ -233,4 +234,8 @@ Come è realizzato oggi: `pose.js` calcola una posa verticale (con tutti i gesti
 ## Tattica (fonte: wpdworld.com, raccolta l'11 novembre 2026)
 - Tutto in `docs/tattica.md`: numerazione delle posizioni 1-6, come si gioca con le regole attuali, numeri per il bilanciamento (espulsioni, superiorità, rigori), difese (pressing, zona, zona a M), attacco (ali, centroboa, 7 contro 6), tecnica di tiro, portiere, time-out. Ogni sezione finisce con "Proposte" per il gioco.
 - Usalo quando si lavora su IA, schemi, regole o bilanciamento (fase 3 della roadmap). Non è un lavoro da fare tutto insieme: una proposta o un gruppo di proposte per sessione.
+
+## Tecnica (fonte: wpdworld.com, raccolta l'11 novembre 2026)
+- Tutto in `docs/tecnica.md`: regole confermate (area di porta) e da correggere (posizioni al rigore), come si muove un pallanuotista (tempo in verticale/orizzontale, metri a partita, sprint ripetuti), varianti di tiro (polso, finte, torsione, elevazione), difensore e muro, portiere (posizione prima del tuffo, si muove con il passaggio, coppia con il difensore). Ogni sezione ha le "Proposte" per il gioco.
+- Da usare per animazioni (fase 3-4), statistiche (Resistenza, Posizionamento del portiere) e IA.
 
