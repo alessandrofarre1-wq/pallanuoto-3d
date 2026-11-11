@@ -2,7 +2,8 @@
 
 Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Proprietario: Ale, ex nuotatore agonista, non programmatore: spiega le scelte in italiano semplice, senza gergo tecnico, e chiedi conferma prima di cambiamenti grossi di direzione.
 
-## Stato attuale (v0.15, novembre 2026)
+## Stato attuale (v0.16, novembre 2026)
+- v0.16 = passi 1-7 di `docs/sessioni.md` fatti in un'unica sessione (regole, squadre, statistiche, portiere, tiri, difesa e allenatore, arbitro e bilanciamento). Dettagli nella sezione "Passi 1-7 (v0.16)" più sotto.
 - Progetto Vite a moduli in `src/` (stesso identico gioco della v0.9, solo riorganizzato): `costanti`, `stato`, `giocatori`, `regole`, `partita` (ciclo di gioco), `lotta`, `fisica`, `palla` (fisica della palla con Rapier), `tiri`, `ia`, `controllo` (comandi umani), `input`, `hud`, `menu`, `audio`, `grafica/` (`scena`, `acqua`, `modello`, `corpo`, `pose`, `render`). Three.js 0.187 da npm (aggiornato dalla r128 nella fase 1 del piano; richiede WebGL2, cioè iPhone con iOS 15 o successivo).
 - Le variabili condivise che cambiano si modificano con funzioni apposite: `setCtrl`, `resetTap`, `setPeriodLen`, `setDiff`, `setSpeed`, `setDpr`.
 - Colori: gestione moderna di Three.js (immagini marcate sRGB, luci ritarate: `LUCE_CIELO`, `LUCE_SOLE` in `grafica/scena.js`) per restare uguali alla v0.9.
@@ -48,7 +49,7 @@ Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Propr
 - Rigore dai 5 m; tiro d'angolo; rimessa del portiere; palla fuori lateralmente = tiro libero agli avversari di chi l'ha toccata per ultimo (muro su tiro: resta a chi ha murato).
 - Tiro libero: dentro i 6 m si deve passare o uscire oltre i 6; fuori dai 6 il tiro diretto immediato è ammesso (art. 7.5.1.2). Ale pensava che si dovesse sempre passare: gli è stata spiegata la regola, si è tenuta quella ufficiale.
 - Area di porta (art. 8.2.8): attaccante davanti alla linea della palla = fallo. Misure: dalla linea di porta ai 2 metri, fino a 2 m oltre ciascun palo (CONFERMATE, vedi `docs/tecnica.md`). La regola vale solo dentro l'area: un attaccante laterale fuori dall'area ma dentro i 2 metri può ricevere.
-- DA CORREGGERE: al rigore tutti gli altri giocatori (tranne tiratore e portiere) stanno sulla linea dei 6 metri, ad almeno 3 m dal tiratore.
+- Rigore (corretto nella v0.16): tutti gli altri giocatori (tranne tiratore e portiere) stanno sulla linea dei 6 metri, ad almeno 3 m dal tiratore (`setupPenalty` in `regole.js`).
 - Time-out: 2 a squadra, solo in possesso, ripresa da metà campo.
 - Non implementati: rigori finali in caso di parità, VAR, cambi volanti.
 
@@ -179,16 +180,33 @@ Limiti di fluidità da rispettare in tutte le fasi (iPhone): 60 fotogrammi al se
 - Pubblico 3D animato, replay in stile televisivo con molte telecamere e qualità da FIFA: fuori portata per un progetto di questo tipo.
 - Nota: il riferimento è un pre-alpha del 2019 per computer; acqua, telecamera e corpi immersi sono raggiungibili, e su quelli si concentra il piano.
 
+## Passi 1-7 (v0.16) — cosa c'è e dove
+- Squadre: 16 nazionali scelte dal menu (`#sqA`, `#sqB`), rose da 13 in `src/dati/rose.js` (generate sempre uguali a partire dalla sigla). Calottine: la squadra del giocatore in BIANCO, quella del computer in BLU, portieri in rosso (deciso da Ale: finché non ci sono le piscine non c'è "casa/ospite"). Costumi dal file delle squadre. `applicaSquadre` in `giocatori.js`.
+- Nomi: Ale ha AUTORIZZATO i nomi veri delle nazionali (progetto gratuito). Oggi sono cognomi scritti a memoria, NON verificati: da controllare quando si collegheranno statistiche vere. Niente loghi o stemmi.
+- Statistiche 40-99 in `p.s` (vel, res, pot, pre, pas, vis, dif, dis, frz, rif, pos, usc, rig), valutazione `p.ovr`, mano `p.mano`. Il motore usa ancora i vecchi valori `p.st`, ricavati con `valoriMotore`. Pannello del giocatore con OVR e 3 statistiche chiave; rosa a figurine nel menu.
+- Numerazione: 1 = ala destra, 5 = ala sinistra (confermato da Ale).
+- Portiere (`gkTarget` in `ia.js`, parata in `fisica.js`): si sposta seguendo il passaggio con un ritardo che dipende da Posizionamento; la parata dipende da dov'era al momento del tiro, dai Riflessi, dalla stanchezza, dalla sorpresa e dal muro del difensore (coppia primo palo / secondo palo).
+- Tiri nuovi: polso (un tocco), finta e polso, torsione (si carica verso un palo e si rilascia verso l'altro), tiro al volo (TIRO tenuto mentre arriva il passaggio). Il difensore alza il braccio e può abboccare alla finta.
+- Difesa e allenatore: Zona a M (quarto schema di difesa), il computer sceglie la difesa da solo, time-out dell'allenatore (3 gol subiti di fila o 3 espulsioni in 2 minuti), 7 contro 6 a fine partita per chi perde (solo il computer; il giocatore umano non può ancora chiamarlo).
+- Arbitro: Permissivo / Normale / Fiscale nel menu (`ARBITRO`, `setArbitro` in `costanti.js`); cambia espulsioni e rigori.
+- Pazienza in attacco: il computer non tira subito se ha difensori davanti (`PAZIENZA` in `ia.js`).
+- Computer contro computer per le prove: `game.autoplay = true` e `teams[i].human = false`.
+- Strumenti: `npm run bilancio` (20 partite 4×8 min; opzioni `--partite= --squadre=ITA,USA --arbitro= --salva=`), `npm run statistiche` (effetti minimi delle statistiche), `npm run vetrina` (screenshot iPhone orizzontale e verticale di menu, rosa, partita, rigore, zona a M, 7 contro 6, sequenza del portiere). Contatori di partita in `src/statistiche.js`.
+- Nei test `requestAnimationFrame` è finto: ogni `page.waitForFunction` deve avere `{ timeout: 60000, polling: 100 }`, altrimenti il caricamento va in errore a caso.
+- Numeri misurati (20 partite 4×8 min, per squadra a partita). Prima (ITA–HUN, v0.15): gol 25,9; tiri 60,1; tiri in gol 43,1%; parate 25,7; espulsioni 12,2; superiorità trasformate 44,7%; rigori 0,4; gol: perimetro 45%, superiorità 21%, controfuga 29%, entrata 0%, centroboa 3%, rigore 1%. Dopo (ITA–USA, forza simile): gol 21,6; tiri 51,7; tiri in gol 41,7%; parate 20,0; espulsioni 12,2; superiorità trasformate 36,7%; rigori 1,6; gol: perimetro 52%, superiorità 21%, controfuga 18%, entrata 0%, centroboa 4%, rigore 6%.
+- Statistiche verificate: Velocità 90 contro 60 = +19%; Precisione 90 contro 60 = 94% contro 53% di tiri nello specchio (1,8 volte, obiettivo "circa il doppio"); Potenza 26,6 contro 21,4 m/s; Resistenza 90 contro 60 = barra al 53% contro 13% dopo 7 vasche.
+- NON riuscito (da riprendere): tiri (circa 52) e gol (circa 21) per squadra restano quasi il doppio di una partita vera (28 tiri, 10-12 gol); i gol "da entrata" sono a zero; 10 punti di forza decidono quasi sempre (ITA–HUN 0 vittorie su 20, ESP–RSA 20 su 20): il divario va addolcito; i mancini non hanno il gesto specchiato; fluidità su iPhone non misurata.
+
 ## Squadre nazionali (richiesta di Ale)
 - Dati pronti in `src/dati/squadre.json`: 16 nazionali maschili (classifica Mondiali 2025), forza, colori della bandiera, calottine (bianca, scura, portiere rossa).
 - Regole per le calottine: una squadra in bianco e l'altra in scuro; portieri sempre in rosso; numeri 1-13 (1 = portiere).
 - Le calottine scure con `calottinaScuraVerificata: false` sono proposte: chiedi conferma ad Ale prima di considerarle definitive.
 - Nomi dei giocatori: inventati ma coerenti con la nazionalità. NON usare nomi di atleti reali (nei giochi richiedono licenza; il gioco è pubblico su GitHub Pages). Niente loghi o stemmi delle federazioni.
-- Da implementare: scelta delle due squadre nel menu, calottine e costumi presi dal file, forza della squadra che influenza le statistiche dei giocatori e la difficoltà dell'IA.
+- FATTO nella v0.16: scelta delle due squadre nel menu, calottine e costumi presi dal file, forza della squadra che influenza le statistiche dei giocatori. Sui nomi vale la decisione più recente di Ale (nomi veri ammessi, vedi "Passi 1-7").
 
 ## Statistiche dei giocatori (specifica, richiesta di Ale)
 Obiettivo: come in FIFA, le statistiche devono differenziare DAVVERO le prestazioni e il giocatore deve accorgersene.
-Oggi esistono 5 valori casuali (`spd`, `sht`, `pas`, `def`, `frz`, scala 0,6-1) usati in fisica, tiri, regole e lotta: vanno sostituiti da questo sistema.
+FATTO nella v0.16 (vedi "Passi 1-7"); questa resta la specifica di riferimento.
 
 Scala 40-99 come FIFA. Statistiche:
 - Velocità (nuoto e sprint), Resistenza (quanto cala la barra e quanto si recupera)
