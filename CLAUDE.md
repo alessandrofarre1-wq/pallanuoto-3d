@@ -60,7 +60,7 @@ Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili
 
 ## Roadmap concordata
 1. FATTO (v0.9.1): migrazione a progetto vero: Vite, moduli, verifica automatica, GitHub Pages.
-2. Grafica e fisica realistiche: vedi "Piano grafica e fisica realistiche" in fondo (6 fasi, da approvare).
+2. Grafica e fisica realistiche: vedi "Piano grafica e fisica realistiche" in fondo (6 fasi, approvato).
 3. IA più ricca con steering behaviors (Reynolds) e macchine a stati.
 4. Squadre, statistiche, modalità torneo/carriera.
 
@@ -82,7 +82,7 @@ Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili
 - Ale gioca da telefono e manda screenshot: usali come verità.
 - Risposte brevi, in italiano, con cosa è cambiato e cosa provare.
 
-## Piano grafica e fisica realistiche (proposto l'11 novembre 2026, DA APPROVARE da Ale)
+## Piano grafica e fisica realistiche (approvato da Ale l'11 novembre 2026)
 Obiettivo: avvicinarsi al riferimento Water Polo Revolution con librerie open source. Una fase per sessione, in quest'ordine. Ogni fase finisce con `npm run verifica`, screenshot prima/dopo mostrati ad Ale e prova di Ale su iPhone; non si passa alla fase dopo senza il suo ok.
 
 Limiti di fluidità da rispettare in tutte le fasi (iPhone): 60 fotogrammi al secondo sui modelli recenti e mai sotto 30 sui vecchi; meno di 100 oggetti disegnati per fotogramma; meno di 150.000 triangoli a schermo; immagini di superficie al massimo 1024 punti; tre livelli di qualità (alta, media, bassa) scelti in automatico. Da qui non si può misurare un iPhone vero: la fase 1 aggiunge un contatore di fotogrammi a schermo, e il numero che Ale legge sul telefono è la verità.
@@ -136,3 +136,39 @@ Limiti di fluidità da rispettare in tutte le fasi (iPhone): 60 fotogrammi al se
 - Tutti gli effetti insieme a 60 fotogrammi al secondo e piena risoluzione su iPhone vecchi: lì si gioca a qualità media o bassa.
 - Pubblico 3D animato, replay in stile televisivo con molte telecamere e qualità da FIFA: fuori portata per un progetto di questo tipo.
 - Nota: il riferimento è un pre-alpha del 2019 per computer; acqua, telecamera e corpi immersi sono raggiungibili, e su quelli si concentra il piano.
+
+## Squadre nazionali (richiesta di Ale)
+- Dati pronti in `src/dati/squadre.json`: 16 nazionali maschili (classifica Mondiali 2025), forza, colori della bandiera, calottine (bianca, scura, portiere rossa).
+- Regole per le calottine: una squadra in bianco e l'altra in scuro; portieri sempre in rosso; numeri 1-13 (1 = portiere).
+- Le calottine scure con `calottinaScuraVerificata: false` sono proposte: chiedi conferma ad Ale prima di considerarle definitive.
+- Nomi dei giocatori: inventati ma coerenti con la nazionalità. NON usare nomi di atleti reali (nei giochi richiedono licenza; il gioco è pubblico su GitHub Pages). Niente loghi o stemmi delle federazioni.
+- Da implementare: scelta delle due squadre nel menu, calottine e costumi presi dal file, forza della squadra che influenza le statistiche dei giocatori e la difficoltà dell'IA.
+
+## Statistiche dei giocatori (specifica, richiesta di Ale)
+Obiettivo: come in FIFA, le statistiche devono differenziare DAVVERO le prestazioni e il giocatore deve accorgersene.
+Oggi esistono 5 valori casuali (`spd`, `sht`, `pas`, `def`, `frz`, scala 0,6-1) usati in fisica, tiri, regole e lotta: vanno sostituiti da questo sistema.
+
+Scala 40-99 come FIFA. Statistiche:
+- Velocità (nuoto e sprint), Resistenza (quanto cala la barra e quanto si recupera)
+- Potenza di tiro (velocità della palla, 13-23 m/s) e Precisione di tiro (errore sul bersaglio), separate
+- Passaggio (velocità e precisione), Visione (qualità delle scelte dell'IA: a chi passare, quando tirare)
+- Difesa (anticipo, contrasti, muri, ritardo di reazione) e Disciplina (probabilità di fare fallo grave o rigore)
+- Forza (lotta al centro, corpo a corpo)
+- Portieri: Riflessi, Posizionamento, Uscita (palle vaganti), Rigori
+- Mano: destra o sinistra. I mancini giocano sul lato destro (ala destra, mezzo destro) e lì tirano meglio; un destro sul lato destro ha un angolo peggiore.
+
+Generazione:
+- Media della squadra dalla `forza` in `src/dati/squadre.json`; ogni rosa ha 1-2 campioni (+8/+12) e qualche punto debole.
+- Profili per ruolo: centroboa forte e lento, ali veloci e precise, punto con visione e passaggio, mezzi tiratori potenti.
+- Valutazione complessiva (OVR) per ruolo, mostrata come in FIFA.
+
+Effetti minimi da rispettare (verificali con partite simulate):
+- Tra un 90 e un 60 di Velocità: circa il 15-20% di differenza di velocità in sprint.
+- Tra un 90 e un 60 di Precisione: dal tiro dallo stesso punto, circa il doppio dei tiri nello specchio.
+- Squadra forte contro debole: la forte vince la grande maggioranza delle partite simulate, ma non tutte.
+- Ogni statistica deve avere almeno un effetto misurabile; niente numeri decorativi.
+
+Interfaccia:
+- Pannello del giocatore controllato: nome, ruolo, OVR, 3 statistiche chiave del ruolo, mano.
+- Nel menu: rosa della squadra con OVR e statistiche (schede tipo figurine).
+

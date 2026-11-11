@@ -1,0 +1,289 @@
+{
+  "_nota": "Squadre nazionali maschili. Ordine e forza dalla classifica finale dei Mondiali World Aquatics di Singapore 2025. Calottine: ogni squadra ha un set bianco e uno scuro, il portiere sempre rosso (regolamento). Il colore della calottina scura è una proposta basata sui colori nazionali, tranne dove calottinaScuraVerificata è true: Ale (esperto) conferma o corregge. Nomi dei giocatori: inventati, coerenti con la nazionalità (niente nomi di atleti reali, che nei giochi richiedono licenza).",
+  "fonti": [
+    "https://en.wikipedia.org/wiki/Water_polo_at_the_2025_World_Aquatics_Championships_%E2%80%93_Men%27s_tournament",
+    "https://en.wikipedia.org/wiki/Rules_of_water_polo"
+  ],
+  "squadre": [
+    {
+      "codice": "ESP",
+      "nome": "Spagna",
+      "posizioneMondiali2025": 1,
+      "forza": 92,
+      "coloriBandiera": [
+        "#C60B1E",
+        "#FFC400"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#C60B1E",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#C60B1E"
+    },
+    {
+      "codice": "HUN",
+      "nome": "Ungheria",
+      "posizioneMondiali2025": 2,
+      "forza": 90,
+      "coloriBandiera": [
+        "#CE2939",
+        "#FFFFFF",
+        "#477050"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#CE2939",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#CE2939"
+    },
+    {
+      "codice": "GRE",
+      "nome": "Grecia",
+      "posizioneMondiali2025": 3,
+      "forza": 88,
+      "coloriBandiera": [
+        "#0D5EAF",
+        "#FFFFFF"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#0D5EAF",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#0D5EAF"
+    },
+    {
+      "codice": "SRB",
+      "nome": "Serbia",
+      "posizioneMondiali2025": 4,
+      "forza": 86,
+      "coloriBandiera": [
+        "#C6363C",
+        "#0C4076",
+        "#FFFFFF"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#0C4076",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#C6363C"
+    },
+    {
+      "codice": "CRO",
+      "nome": "Croazia",
+      "posizioneMondiali2025": 5,
+      "forza": 84,
+      "coloriBandiera": [
+        "#FF0000",
+        "#FFFFFF",
+        "#171796"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#171796",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#FF0000"
+    },
+    {
+      "codice": "MNE",
+      "nome": "Montenegro",
+      "posizioneMondiali2025": 6,
+      "forza": 82,
+      "coloriBandiera": [
+        "#C40308",
+        "#D4AF3A"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#C40308",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#C40308"
+    },
+    {
+      "codice": "ITA",
+      "nome": "Italia",
+      "posizioneMondiali2025": 7,
+      "forza": 79,
+      "coloriBandiera": [
+        "#009246",
+        "#FFFFFF",
+        "#CE2B37"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#1D4FD6",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": true,
+      "costume": "#009246"
+    },
+    {
+      "codice": "USA",
+      "nome": "Stati Uniti",
+      "posizioneMondiali2025": 8,
+      "forza": 77,
+      "coloriBandiera": [
+        "#0A3161",
+        "#FFFFFF",
+        "#B31942"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#0A3161",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#0A3161"
+    },
+    {
+      "codice": "JPN",
+      "nome": "Giappone",
+      "posizioneMondiali2025": 9,
+      "forza": 75,
+      "coloriBandiera": [
+        "#FFFFFF",
+        "#BC002D"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#1B3A8C",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#1B3A8C"
+    },
+    {
+      "codice": "ROU",
+      "nome": "Romania",
+      "posizioneMondiali2025": 10,
+      "forza": 73,
+      "coloriBandiera": [
+        "#002B7F",
+        "#FCD116",
+        "#CE1126"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#002B7F",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#002B7F"
+    },
+    {
+      "codice": "CAN",
+      "nome": "Canada",
+      "posizioneMondiali2025": 11,
+      "forza": 71,
+      "coloriBandiera": [
+        "#FF0000",
+        "#FFFFFF"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#D52B1E",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#FF0000"
+    },
+    {
+      "codice": "BRA",
+      "nome": "Brasile",
+      "posizioneMondiali2025": 12,
+      "forza": 69,
+      "coloriBandiera": [
+        "#009C3B",
+        "#FFDF00",
+        "#002776"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#009C3B",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#009C3B"
+    },
+    {
+      "codice": "AUS",
+      "nome": "Australia",
+      "posizioneMondiali2025": 13,
+      "forza": 67,
+      "coloriBandiera": [
+        "#00843D",
+        "#FFCD00"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#00843D",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#00843D"
+    },
+    {
+      "codice": "CHN",
+      "nome": "Cina",
+      "posizioneMondiali2025": 14,
+      "forza": 65,
+      "coloriBandiera": [
+        "#EE1C25",
+        "#FFFF00"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#EE1C25",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#EE1C25"
+    },
+    {
+      "codice": "SGP",
+      "nome": "Singapore",
+      "posizioneMondiali2025": 15,
+      "forza": 63,
+      "coloriBandiera": [
+        "#EF3340",
+        "#FFFFFF"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#EF3340",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#EF3340"
+    },
+    {
+      "codice": "RSA",
+      "nome": "Sudafrica",
+      "posizioneMondiali2025": 16,
+      "forza": 60,
+      "coloriBandiera": [
+        "#007749",
+        "#FFB81C",
+        "#000000"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#007749",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#007749"
+    }
+  ]
+}
