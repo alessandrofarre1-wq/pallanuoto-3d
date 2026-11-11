@@ -113,7 +113,8 @@ export function update(dt){
   separate();
   updateFight(dt);
   if(game.state!=='play') return;
-  // area di porta (art. 8.2.8): 2 m dalla linea di porta, fino a 2 m oltre i pali (ipotesi: definizione non riportata nell'estratto)
+  // area di porta (art. 8.2.8): dalla linea di porta ai 2 metri, fino a 2 m oltre ciascun palo. La regola vale SOLO qui dentro:
+  // un'ala fuori dall'area ma dentro i 2 metri può ricevere e tirare.
   for(const t of teams){
     if(game.possTeam!==t) continue;
     const gx=goalX(t), bd=Math.abs(gx-ball.x);

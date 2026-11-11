@@ -81,16 +81,22 @@ export function penalty(d,c){       // art. 10.2
   const t=c.team;
   deadBall(1.8,()=>{ if(d.pf>=3) substitute(d); setupPenalty(t); });
 }
-export function setupPenalty(t){    // art. 15: tiro dai 5 metri, tutti fuori dai 6
+export function setupPenalty(t){    // tiro dai 5 metri; tutti gli altri sulla linea dei 6 metri, ad almeno 3 metri da chi tira
   const gx=goalX(t), ot=other(t);
   let s=null; for(const q of t.players){ if(q.excluded||q.isGK) continue; if(!s||q.st.sht>s.st.sht) s=q; }
+  // posti sulla linea dei 6 metri: a 3 metri di lato da chi tira (cioè a più di 3 metri di distanza) e poi ogni 95 cm,
+  // alternando difensori e attaccanti; ognuno va sul lato in cui si trova già
+  const fila=[], dif=ot.players.filter(q=>!q.excluded&&!q.isGK), att=t.players.filter(q=>!q.excluded&&!q.isGK&&q!==s);
+  for(let i=0;i<Math.max(dif.length,att.length);i++){ if(dif[i]) fila.push(dif[i]); if(att[i]) fila.push(att[i]); }
+  const lati={ 1:fila.filter(q=>q.z>=0), [-1]:fila.filter(q=>q.z<0) };
+  while(Math.abs(lati[1].length-lati[-1].length)>1){ const piu=lati[1].length>lati[-1].length?1:-1; lati[-piu].push(lati[piu].pop()); }
   for(const q of allPlayers){
     if(q.excluded) continue;
     q.vx=q.vz=0; q.cut=null; q.act=null; q.charging=false; q.chargeT=0;
     if(q===s){ q.x=gx-t.dir*5; q.z=0; q.fx=t.dir; q.fz=0; }
     else if(q===ot.players[0]){ q.x=gx-t.dir*0.4; q.z=0; }
-    else if(Math.abs(gx-q.x)<6.8){ q.x=gx-t.dir*(7+rnd()*0.6); if(Math.abs(q.z)<1.5) q.z=(q.z>=0?1:-1)*(1.5+rnd()*2); }
   }
+  for(const lato of [1,-1]) lati[lato].forEach((q,k)=>{ q.x=gx-t.dir*6; q.z=lato*(3+0.95*k); q.fx=t.dir; q.fz=0; q.lagX=q.x; q.lagZ=q.z; });
   giveBall(s); game.possTeam=t; game.penalty=s; game.penT=0;
   if(t.human){ setCtrl(s); showMsg('<span style="font-size:24px">Rigore: tieni premuto TIRO e rilascia</span>',1.6); }
 }
