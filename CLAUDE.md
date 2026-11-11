@@ -229,3 +229,8 @@ REGOLA GENERALE: tutti i movimenti si costruiscono DA ZERO muovendo le ossa dell
    - Parata: il portiere si alza con la bicicletta, braccia larghe e alte, si allunga di lato verso la palla; presa con una o due mani sopra la testa.
    - Muro: braccio alzato verso il tiratore. Beduina, palombella, finta e lotta al centro: stessi principi, fluidi.
 Come è realizzato oggi: `pose.js` calcola una posa verticale (con tutti i gesti: tabella `THROW`) e una orizzontale (stile libero) e le mescola in modo continuo secondo `p.oriz`; `corpo.js` orienta busto, braccia e testa sulle giunture e mescola nello stesso modo bicicletta e battuta di gambe. Le giunture sono anche smussate nel tempo (`updateRig`), quindi ogni cambio di gesto è graduale.
+
+## Tattica (fonte: wpdworld.com, raccolta l'11 novembre 2026)
+- Tutto in `docs/tattica.md`: numerazione delle posizioni 1-6, come si gioca con le regole attuali, numeri per il bilanciamento (espulsioni, superiorità, rigori), difese (pressing, zona, zona a M), attacco (ali, centroboa, 7 contro 6), tecnica di tiro, portiere, time-out. Ogni sezione finisce con "Proposte" per il gioco.
+- Usalo quando si lavora su IA, schemi, regole o bilanciamento (fase 3 della roadmap). Non è un lavoro da fare tutto insieme: una proposta o un gruppo di proposte per sessione.
+
