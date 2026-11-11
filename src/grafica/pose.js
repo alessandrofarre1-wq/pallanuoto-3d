@@ -52,6 +52,8 @@ export function computePose(p,dt,t){
   // ================= POSA VERTICALE: bicicletta, acqua alle spalle =================
   let lift=bob, tw=0, lean=0;
   const h=ball.holder;
+  // quanto la palla è vicina alla porta di questo portiere: 0 oltre metà campo, 1 dentro i 7 metri
+  const vicinaGK = p.isGK ? ease(clamp((13-Math.abs(ball.x-(-12.5*p.team.dir)))/6,0,1)) : 0;
   const gkSave = p.isGK && ball.state==='flight' && ball.kind==='shot' && ball.shooter && ball.shooter.team!==p.team;
   const defUp = !hold && !p.isGK && h && h.team!==p.team && dist(p,h)<1.7;
   const muro = defUp && (h.charging || (h.act && !h.act.done && h.act.kind!=='pass'));      // l'avversario sta tirando: braccio alto a murare
@@ -62,7 +64,7 @@ export function computePose(p,dt,t){
     lz=clamp((ball.crossZ-p.z)*Math.sign(p.fx||1),-1.25,1.25)/VIS; ly=clamp(ball.y,0.25,1.25)/VIS;      // dove passerà la palla, nel sistema del portiere
     arrivo=ease(clamp(ball.flightT/0.22,0,1)); lean=clamp(lz/0.7,-1,1); lift+=0.34;
   }
-  else if(p.isGK) lift+=0.08;
+  else if(p.isGK) lift+=0.10*vicinaGK-0.03*(1-vicinaGK);      // palla lontana: basso, rema e guarda; palla vicina: alto, pronto
   else if(muro) lift+=0.2;
   else if(hold||defUp) lift+=0.06;
   if(abbocca) lift+=0.28;      // ha abboccato alla finta: salta a murare a vuoto
@@ -80,7 +82,7 @@ export function computePose(p,dt,t){
     hL = lz<0||due ? mix3(lL,[0.24,ly,lz-(due?0.09:0)],arrivo) : lL;
     hintR=[0,-0.3,1]; hintL=[0,-0.3,-1];
   }
-  else if(p.isGK&&!hold){ hR=add3(vSR,[0.15,0.05,0.42]); hL=add3(vSL,[0.15,0.05,-0.42]); }      // portiere pronto: braccia larghe a pelo d'acqua
+  else if(p.isGK&&!hold&&vicinaGK>0.02){ hR=mix3(hR,add3(vSR,[0.15,0.05,0.42]),vicinaGK); hL=mix3(hL,add3(vSL,[0.15,0.05,-0.42]),vicinaGK); }      // palla vicina: braccia larghe a pelo d'acqua, pronte a uscire
   else if(muro||abbocca){ hR=add3(vSR,[0.20,0.56,-0.04]); hintR=[0,-0.2,1]; }
   else if(defUp){ hR=add3(vSR,[0.28,0.30,-0.02]); hintR=[0,-0.4,1]; }
   else if(hold&&!th){ hR=add3(vSR,HOLD); hintR=[-0.3,-0.6,1]; J.ballHand=true; }

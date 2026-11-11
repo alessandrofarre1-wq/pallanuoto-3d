@@ -4,7 +4,7 @@ import { humanControl, updateCtrl } from './controllo.js';
 import { DIFF, GW, MARK, PERIOD_LEN, clamp, dist, rnd } from './costanti.js';
 import { movePlayer, separate, updateBall } from './fisica.js';
 import { showMsg } from './hud.js';
-import { aiCarrier, aiTarget, closestTo, manUp, startCut, steer } from './ia.js';
+import { pos01, rif01, aiCarrier, aiTarget, closestTo, manUp, startCut, steer } from './ia.js';
 import { inp, pollInput, pressed, released } from './input.js';
 import { fightOn, updateFight } from './lotta.js';
 import { endMatch } from './menu.js';
@@ -97,8 +97,8 @@ export function update(dt){
     let mx=0,mz=0; if(d>0.12){ const s=Math.min(1,d/0.8); mx=dx/d*s; mz=dz/d*s; }
     if(d>1.0 && !tg.gk){ const st=steer(p,dx/d,dz/d,d); mx=st[0]; mz=st[1]; }
     const sprint = tg.gk ? false : ((tg.sprint && d>0.6) || (d>4 && p.stamina>0.35));
-    if(tg.gk){ // il portiere si sposta più rapidamente in orizzontale
-      const sp=2.6; p.z+=clamp(tg.z-p.z,-sp*dt,sp*dt); mz=0;
+    if(tg.gk){ // spostamento laterale del portiere: di posizione (lento o svelto secondo Posizione) oppure in tuffo (Riflessi); stanco è più lento
+      const fresco=0.75+0.25*p.stamina, sp=(tg.tuffo ? 1.6+2.2*rif01(p) : 1.1+1.3*pos01(p))*fresco; p.z+=clamp(tg.z-p.z,-sp*dt,sp*dt); mz=0;
     }
     movePlayer(p,mx,mz,sprint,dt);
     if(p.team.defPlay===2 && game.possTeam===other(p.team) && !p.isGK) p.stamina=Math.max(0,p.stamina-dt*0.012);  // il pressing stanca

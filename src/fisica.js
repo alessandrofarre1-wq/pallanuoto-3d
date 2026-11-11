@@ -1,5 +1,5 @@
 // ================= FISICA GIOCATORI =================
-import { scala } from './dati/rose.js';
+import { rif01 } from './ia.js';
 import { registraParata } from './statistiche.js';
 import { whistle } from './audio.js';
 import { BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
@@ -121,9 +121,13 @@ export function updateBall(dt){
       // parata
       if(!ball.saveChecked && (px-gk.x)*(ball.x-gk.x)<=0){
         ball.saveChecked=true;
-        const reach=0.58+0.42*scala(gk.s.rif), dz=Math.abs(ball.z-gk.z);
-        if(dz<reach && ball.y<1.9){
-          let prob=(1.0-0.36*ball.shotPower-dz*0.35-(ball.lob?0.2:0)-(gk.fakedUntil>game.time?0.25:0)-(ball.skipped?0.12:0))*(def.human?1:DIFF_GK())
+        // Parata. Conta soprattutto la POSIZIONE al momento del tiro: quanto la palla passa lontano da dove stava il portiere,
+        // tolto il pezzo che copre senza tuffarsi (braccia). Il tuffo (Riflessi) recupera solo una parte del resto; la stanchezza pesa.
+        const R=rif01(gk), fresco=0.8+0.2*gk.stamina, braccia=0.7;
+        const lontano=Math.max(0,Math.abs(ball.z-ball.gkZ0)-braccia), reach=(0.5+0.8*R)*fresco;
+        gk.stamina=Math.max(0,gk.stamina-0.035*(1.5-(gk.s.res-40)/59));          // ogni salto costa
+        if(lontano<reach && ball.y<1.9){
+          let prob=(0.98-0.30*ball.shotPower*(1.25-0.5*R)-lontano*(0.7-0.3*R)-(ball.lob?0.2:0)-(gk.fakedUntil>game.time?0.25:0)-(ball.skipped?0.12:0))*fresco*(def.human?1:DIFF_GK())
             *(ball.rigore?0.45:1);      // sul rigore il portiere para molto meno: negli studi citati dalla tesi ne entra l'80%
           if(rnd()<prob){
             whistle(0.12); const r=rnd(); ball.afterShot=true; registraParata(att,def);
@@ -153,7 +157,9 @@ export function updateBall(dt){
         const hd=Math.hypot(p.x-ball.x,p.z-ball.z);
         if(p.team!==ball.lastTeam && !p.isGK && game.time>=p.stunUntil && hd<blockR(p) && (ball.kind!=='pass'||!ball.target||hd<Math.hypot(ball.target.x-ball.x,ball.target.z-ball.z)) && ball.flightT>0.12 && !ball.intercept.has(p)){
           ball.intercept.add(p);
-          const pr=(ball.kind==='shot'?0.3:0.35)*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
+          // il muro copre il primo palo (quello dalla parte del tiratore) e lascia al portiere l'angolo lungo
+          const primoPalo=ball.kind==='shot'&&ball.shooter&&Math.sign(ball.crossZ||0)===Math.sign(ball.shooter.z||0);
+          const pr=(ball.kind==='shot'?(primoPalo?0.42:0.2):0.35)*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
           if(rnd()<pr){
             if(ball.kind==='shot'){
               // muro: la palla rimbalza sul braccio alzato e resta in gioco

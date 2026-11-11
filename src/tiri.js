@@ -1,7 +1,7 @@
 // ================= PASSAGGI E TIRI =================
 import { registraTiro, tipoDiTiro } from './statistiche.js';
 import { BRV, clamp, dist, gauss, rnd } from './costanti.js';
-import { manUp, startCut } from './ia.js';
+import { manUp, postoPortiere, startCut } from './ia.js';
 import { velocitaDiLancio } from './palla.js';
 import { allPlayers, ball, fight, game, goalX, other, setCtrl, teams } from './stato.js';
 export function startAct(p,kind,wind,fn,aim){
@@ -127,5 +127,7 @@ export function doShoot(p,power,lob,aimZ){
   } else launch(p,gx,ay,az,d/spd,'shot');
   ball.shotPower=lob?0.3:power; ball.lob=lob; ball.crossZ=az; ball.rigore=game.penalty===p;
   ball.tipoTiro=tipoAzione; registraTiro(p,tipoAzione);
+  // dove si trova il portiere nel momento in cui parte il tiro: è da qui che dipende soprattutto la parata
+  ball.gkZ0=gk.z; ball.gkFuoriPosto=Math.abs(gk.z-postoPortiere(gk.team,p.x,p.z));
   p.stamina=Math.max(0,p.stamina-0.04);
 }

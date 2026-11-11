@@ -57,11 +57,36 @@ export function markTarget(p){
   return { x:ax+dx/l*gap, z:az+dz/l*gap };
 }
 export function blockR(p){ return ball.kind==='shot' && (p.team.defPlay===1 || p.team.players.some(q=>q.excluded)) ? 0.85 : 0.6; }
+// Portiere. L'80% del lavoro è la posizione (docs/tecnica.md): sta sulla linea tra la palla e il centro della porta e la segue
+// spostandosi DURANTE i passaggi, non quando sono già arrivati. Quanto in fretta lo capisce e quanto velocemente si sposta
+// dipendono dalla statistica Posizione: sulle diagonali lunghe (da 2 a 5, da 4 a 1) un portiere scarso resta indietro.
+export const pos01 = gk => (gk.s.pos-40)/59, rif01 = gk => (gk.s.rif-40)/59;
+// dove dovrebbe stare il portiere se la palla fosse in (bx,bz): sulla linea palla–centro porta, a 70 cm dalla linea di porta
+export function postoPortiere(t,bx,bz){
+  const ogx=ownGoalX(t), d=Math.max(1.2,Math.abs(bx-ogx));
+  return clamp(bz*0.7/d*1.6,-GW*0.8,GW*0.8);
+}
+// c'è un difensore a fare muro davanti a chi ha la palla? (allora lui copre il primo palo e il portiere l'angolo lungo)
+export function muroSu(h){
+  const t=other(h.team), ogx=ownGoalX(t);
+  for(const q of t.players){ if(q.isGK||q.excluded) continue;
+    if(dist(q,h)<1.7 && Math.abs(q.x-ogx)<Math.abs(h.x-ogx)+0.3) return q; }
+  return null;
+}
 export function gkTarget(p){
   const t=p.team, ogx=ownGoalX(t);
-  let z=clamp(ball.z*0.3,-GW*0.75,GW*0.75);
-  if(ball.state==='flight'&&ball.kind==='shot'&&ball.shooter.team!==t&&ball.flightT>0.15) z=clamp(ball.crossZ,-GW-0.2,GW+0.2);
-  return { x:ogx+t.dir*0.7, z, gk:true };
+  // tiro in arrivo: ormai conta il tuffo (lo gestisce partita.js con la statistica Riflessi)
+  if(ball.state==='flight'&&ball.kind==='shot'&&ball.shooter.team!==t&&ball.flightT>0.08) return { x:ogx+t.dir*0.7, z:clamp(ball.crossZ,-GW-0.2,GW+0.2), gk:true, tuffo:true };
+  // la palla "vista" dal portiere: durante un passaggio guarda già dove arriverà, ma lo capisce con un ritardo
+  let bx=ball.x, bz=ball.z;
+  if(ball.state==='flight'&&ball.kind==='pass'&&ball.target){
+    const ritardo=0.42-0.34*pos01(p);                         // da 0,42 s (Posizione 40) a 0,08 s (99)
+    if(ball.flightT>ritardo){ bx=ball.tx; bz=ball.tz; }
+  }
+  let z=postoPortiere(t,bx,bz);
+  const h=ball.holder;
+  if(h&&h.team!==t&&Math.abs(h.x-ogx)<9){ const m=muroSu(h); if(m) z+=(h.z>=0?-1:1)*0.28; }      // con il muro sul primo palo, mezzo passo verso l'angolo lungo
+  return { x:ogx+t.dir*0.7, z:clamp(z,-GW*0.85,GW*0.85), gk:true };
 }
 // steering behaviors: arrive + separation dai compagni + aggiramento degli avversari sulla traiettoria
 export function steer(p,ux,uz,d){
