@@ -86,3 +86,31 @@ Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili
 - Nomi dei giocatori: inventati ma coerenti con la nazionalità. NON usare nomi di atleti reali (nei giochi richiedono licenza; il gioco è pubblico su GitHub Pages). Niente loghi o stemmi delle federazioni.
 - Da implementare: scelta delle due squadre nel menu, calottine e costumi presi dal file, forza della squadra che influenza le statistiche dei giocatori e la difficoltà dell'IA.
 
+## Statistiche dei giocatori (specifica, richiesta di Ale)
+Obiettivo: come in FIFA, le statistiche devono differenziare DAVVERO le prestazioni e il giocatore deve accorgersene.
+Oggi esistono 5 valori casuali (`spd`, `sht`, `pas`, `def`, `frz`, scala 0,6-1) usati in fisica, tiri, regole e lotta: vanno sostituiti da questo sistema.
+
+Scala 40-99 come FIFA. Statistiche:
+- Velocità (nuoto e sprint), Resistenza (quanto cala la barra e quanto si recupera)
+- Potenza di tiro (velocità della palla, 13-23 m/s) e Precisione di tiro (errore sul bersaglio), separate
+- Passaggio (velocità e precisione), Visione (qualità delle scelte dell'IA: a chi passare, quando tirare)
+- Difesa (anticipo, contrasti, muri, ritardo di reazione) e Disciplina (probabilità di fare fallo grave o rigore)
+- Forza (lotta al centro, corpo a corpo)
+- Portieri: Riflessi, Posizionamento, Uscita (palle vaganti), Rigori
+- Mano: destra o sinistra. I mancini giocano sul lato destro (ala destra, mezzo destro) e lì tirano meglio; un destro sul lato destro ha un angolo peggiore.
+
+Generazione:
+- Media della squadra dalla `forza` in `src/dati/squadre.json`; ogni rosa ha 1-2 campioni (+8/+12) e qualche punto debole.
+- Profili per ruolo: centroboa forte e lento, ali veloci e precise, punto con visione e passaggio, mezzi tiratori potenti.
+- Valutazione complessiva (OVR) per ruolo, mostrata come in FIFA.
+
+Effetti minimi da rispettare (verificali con partite simulate):
+- Tra un 90 e un 60 di Velocità: circa il 15-20% di differenza di velocità in sprint.
+- Tra un 90 e un 60 di Precisione: dal tiro dallo stesso punto, circa il doppio dei tiri nello specchio.
+- Squadra forte contro debole: la forte vince la grande maggioranza delle partite simulate, ma non tutte.
+- Ogni statistica deve avere almeno un effetto misurabile; niente numeri decorativi.
+
+Interfaccia:
+- Pannello del giocatore controllato: nome, ruolo, OVR, 3 statistiche chiave del ruolo, mano.
+- Nel menu: rosa della squadra con OVR e statistiche (schede tipo figurine).
+
