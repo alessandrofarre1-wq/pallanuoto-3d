@@ -2,11 +2,21 @@
 import { initAudio } from './audio.js';
 import { PERIOD_LEN, setDiff, setPeriodLen, setSpeed } from './costanti.js';
 import { $, fpsIniziale, setFps } from './hud.js';
+import { setLivelloAcqua } from './grafica/scena.js';
 import { kickoff } from './regole.js';
 import { allPlayers, game, teams } from './stato.js';
 document.querySelectorAll('[data-len]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-len]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setPeriodLen(+b.dataset.len); });
 document.querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-diff]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setDiff(+b.dataset.diff); });
 document.querySelectorAll('[data-spd]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-spd]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setSpeed(+b.dataset.spd); });
+// qualità dell'acqua: "auto" parte dal livello alto e scende da sola se il dispositivo fatica (vedi main.js)
+export let acquaAuto=true;
+const scegliAcqua=v=>{
+  document.querySelectorAll('[data-acqua]').forEach(x=>x.classList.toggle('on',x.dataset.acqua===v));
+  acquaAuto=v==='auto'; setLivelloAcqua(acquaAuto?2:+v);
+  try{ localStorage.setItem('pallanuoto-acqua',v); }catch(e){}
+};
+document.querySelectorAll('[data-acqua]').forEach(b=>b.onclick=()=>scegliAcqua(b.dataset.acqua));
+try{ const v=localStorage.getItem('pallanuoto-acqua'); if(v&&v!=='auto') scegliAcqua(v); }catch(e){}
 const scegliFps=on=>{ document.querySelectorAll('[data-fps]').forEach(x=>x.classList.toggle('on',(x.dataset.fps==='1')===on)); setFps(on); };
 document.querySelectorAll('[data-fps]').forEach(b=>b.onclick=()=>scegliFps(b.dataset.fps==='1'));
 if(fpsIniziale()) scegliFps(true);

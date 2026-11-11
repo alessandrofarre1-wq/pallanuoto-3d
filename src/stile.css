@@ -66,5 +66,13 @@ body.touch #player{bottom:auto;top:8px;left:8px;min-width:140px;font-size:11px;p
   #msg{font-size:28px;top:24%}
 }
 /* contatore di fotogrammi al secondo (si attiva dal menu) */
-#fps{position:fixed;left:6px;top:25%;background:rgba(5,15,30,.82);border-radius:6px;padding:3px 7px;font-size:11px;font-variant-numeric:tabular-nums;line-height:1.35;z-index:7;pointer-events:none;display:none}
+#fps{position:fixed;left:6px;top:27%;background:rgba(5,15,30,.82);border-radius:6px;padding:3px 7px;font-size:11px;font-variant-numeric:tabular-nums;line-height:1.35;z-index:7;pointer-events:none;display:none}
 #fps b{font-size:15px}
+.et{opacity:.7;font-size:11px;margin-top:3px}
+/* su telefono il riquadro del giocatore è compatto (solo nome e barre) per non coprire gli schemi */
+body.touch .et{display:none}
+body.touch #player{max-width:170px}
+/* joystick quasi trasparente finché non lo si tocca, così non nasconde il gioco */
+#joy{opacity:.5;transition:opacity .15s}
+#joy.on{opacity:1}
+@media (orientation:portrait){ #fps{top:13%} }

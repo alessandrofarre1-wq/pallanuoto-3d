@@ -2,8 +2,10 @@
 import * as THREE from 'three';
 import { BRV, GH, GW, HL, HW, rnd } from '../costanti.js';
 import { game } from '../stato.js';
+import { Acqua, STRATO_CORPI, STRATO_SOLO_VISTA, STRATO_SOPRA, STRATO_VASCA } from './acqua.js';
 // ================= SCENA =================
 export const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.info.autoReset=false;   // il conteggio degli oggetti disegnati si azzera a mano una volta per fotogramma (render.js)
 export let dpr=Math.min(window.devicePixelRatio||1,('ontouchstart' in window)?1.5:2);
 renderer.setPixelRatio(dpr);
 renderer.setSize(innerWidth,innerHeight);
@@ -18,7 +20,8 @@ export function canvasTex(w,h,draw,rx,ry){
 scene.background = canvasTex(16,256,(x,w,h)=>{ const g=x.createLinearGradient(0,0,0,h); g.addColorStop(0,'#2f7fd0'); g.addColorStop(0.6,'#a6d4f4'); g.addColorStop(1,'#e9f5fc'); x.fillStyle=g; x.fillRect(0,0,w,h); });
 scene.fog = new THREE.Fog(0xcfe6f5,70,170);
 export const camera = new THREE.PerspectiveCamera(innerWidth<innerHeight?62:40,innerWidth/innerHeight,0.1,300);
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight; camera.fov=camera.aspect<1?62:40;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+camera.layers.enableAll();
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight; camera.fov=camera.aspect<1?62:40;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight); ridimensionaAcqua();});
 // intensità ritarate per Three.js moderno (colori calcolati in spazio lineare) in modo da restare come nella v0.9
 export const LUCE_CIELO=2.44, LUCE_SOLE=2.86;
 scene.add(new THREE.HemisphereLight(0xffffff,0x27385d,LUCE_CIELO));
@@ -32,8 +35,27 @@ export const PX=15, PZ=12.5, DEPTH=2.2;
 // fondo piastrellato
 export const tileDraw=(base,line)=>(x,w,h)=>{ x.fillStyle=base; x.fillRect(0,0,w,h); x.strokeStyle=line; x.lineWidth=2;
   for(let i=0;i<=w;i+=32){ x.beginPath(); x.moveTo(i,0); x.lineTo(i,h); x.stroke(); x.beginPath(); x.moveTo(0,i); x.lineTo(w,i); x.stroke(); } };
-box(PX*2,0.1,PZ*2,new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#3aaee4','rgba(255,255,255,.45)'),PX,PZ)}),0,-DEPTH,0);
-for(let i=-4;i<=4;i++) box(PX*2-4,0.02,0.28,0x0d3566,0,-DEPTH+0.06,i*2.5);
+// sul fondo e sulle righe delle corsie si muovono i giochi di luce (caustiche): disegno animato calcolato dalla scheda grafica
+export const caustiche={ tempo:{value:0}, forza:{value:1} };
+function conCaustiche(mat){
+  mat.onBeforeCompile=sh=>{
+    sh.uniforms.uTempo=caustiche.tempo; sh.uniforms.uForza=caustiche.forza;
+    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vPosMondo;')
+      .replace('#include <begin_vertex>','#include <begin_vertex>\nvPosMondo=(modelMatrix*vec4(transformed,1.0)).xyz;');
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>',`#include <common>
+      varying vec3 vPosMondo; uniform float uTempo, uForza;
+      float caustica(vec2 q,float t){
+        vec2 p=mod(q*1.7,6.2831853)-250.0, i=p; float c=1.0;
+        for(int n=0;n<3;n++){ float tt=t*(1.0-3.5/float(n+1));
+          i=p+vec2(cos(tt-i.x)+sin(tt+i.y),sin(tt-i.y)+cos(tt+i.x));
+          c+=1.0/length(vec2(p.x/(sin(i.x+tt)/0.005),p.y/(cos(i.y+tt)/0.005))); }
+        c=1.17-pow(c/3.0,1.4); return pow(abs(c),8.0);
+      }`).replace('#include <opaque_fragment>','outgoingLight+=vec3(0.75,0.9,1.0)*caustica(vPosMondo.xz,uTempo*0.55)*uForza;\n#include <opaque_fragment>');
+  };
+  return mat;
+}
+box(PX*2,0.1,PZ*2,conCaustiche(new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#3aaee4','rgba(255,255,255,.45)'),PX,PZ)})),0,-DEPTH,0);
+{ const riga=conCaustiche(new THREE.MeshLambertMaterial({color:0x0d3566})); for(let i=-4;i<=4;i++) box(PX*2-4,0.02,0.28,riga,0,-DEPTH+0.06,i*2.5); }
 export const wallMat=new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#8fe0f7','rgba(255,255,255,.55)'),12,1)});
 box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,-PZ-0.15); box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,PZ+0.15);
 box(0.3,DEPTH+0.3,PZ*2,wallMat,-PX-0.15,-DEPTH/2+0.15,0); box(0.3,DEPTH+0.3,PZ*2,wallMat,PX+0.15,-DEPTH/2+0.15,0);
@@ -69,20 +91,53 @@ export const waterTex = canvasTex(256,256,(x,w,h)=>{ x.fillStyle='#1f86d2'; x.fi
 export const waterGeo = new THREE.PlaneGeometry(PX*2,PZ*2,28,22); waterGeo.rotateX(-Math.PI/2);
 export const water = new THREE.Mesh(waterGeo,new THREE.MeshPhongMaterial({map:waterTex,transparent:true,opacity:0.76,shininess:150,specular:0xffffff}));
 scene.add(water);
+// acqua realistica (livelli alta e media); quella qui sopra resta come livello basso
+export const acqua=new Acqua(PX*2,PZ*2,{ colore:0xc4e8ff, cielo:0xa6d4f4, sole:sun.position, metriPerOnda:5.5 });
+scene.add(acqua);
+export let livelloAcqua=2;
+export function ridimensionaAcqua(){ const v=renderer.getDrawingBufferSize(new THREE.Vector2()); acqua.ridimensiona(v.x,v.y); }
+export function setLivelloAcqua(l){
+  livelloAcqua=l; acqua.visible=l>0; water.visible=l===0; acqua.setLivello(l); caustiche.forza.value=l>0?1:0; ridimensionaAcqua();
+}
 export let waterN=0;
 export function animateWater(t){
+  caustiche.tempo.value=t;
+  if(livelloAcqua>0){ acqua.setTempo(t); return; }
   const pos=waterGeo.attributes.position, n=pos.count;
   for(let i=0;i<n;i++){ const x=pos.getX(i), z=pos.getZ(i);
     pos.setY(i,0.03*Math.sin(x*1.3+t*1.7)+0.028*Math.sin(z*1.7-t*1.4)+0.016*Math.sin((x+z)*2.4+t*2.3)); }
   pos.needsUpdate=true; if((waterN=(waterN+1)%3)===0) waterGeo.computeVertexNormals();
   waterTex.offset.x=t*0.012; waterTex.offset.y=t*0.007;
 }
-// schiuma
+// schiuma: macchie morbide disegnate tutte insieme (un solo oggetto per la scheda grafica)
+const N_SCHIUMA=160;
 export const foams=[]; let foamI=0;
-{ const g=new THREE.CircleGeometry(1,10); g.rotateX(-Math.PI/2);
-  for(let i=0;i<140;i++){ const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false})); m.visible=false; scene.add(m); foams.push({m,life:0,max:1,size:0}); } }
-export function spawnFoam(x,z,size,life){ const f=foams[foamI=(foamI+1)%foams.length]; f.life=f.max=life||0.9; f.size=size; f.m.position.set(x,0.08,z); f.m.visible=true; }
-export function updateFoam(dt){ for(const f of foams){ if(f.life<=0) continue; f.life-=dt; const k=1-Math.max(0,f.life)/f.max; f.m.scale.setScalar(f.size*(0.5+1.4*k)); f.m.material.opacity=0.8*(1-k); if(f.life<=0) f.m.visible=false; } }
+const schiumaAlfa=new THREE.InstancedBufferAttribute(new Float32Array(N_SCHIUMA),1);
+export const schiuma=(()=>{
+  const g=new THREE.PlaneGeometry(2,2); g.rotateX(-Math.PI/2); g.setAttribute('aAlfa',schiumaAlfa);
+  const tex=canvasTex(64,64,(x,w,h)=>{ const gr=x.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);
+    gr.addColorStop(0,'rgba(255,255,255,1)'); gr.addColorStop(0.55,'rgba(255,255,255,.75)'); gr.addColorStop(1,'rgba(255,255,255,0)'); x.fillStyle=gr; x.fillRect(0,0,w,h); });
+  const m=new THREE.ShaderMaterial({ transparent:true, depthWrite:false, uniforms:{map:{value:tex}},
+    vertexShader:`attribute float aAlfa; varying float vA; varying vec2 vUv;
+      void main(){ vA=aAlfa; vUv=uv; vec3 transformed=position;
+        #include <project_vertex>
+      }`,
+    fragmentShader:`uniform sampler2D map; varying float vA; varying vec2 vUv;
+      void main(){ gl_FragColor=vec4(1.0,1.0,1.0,texture2D(map,vUv).a*vA);
+        #include <colorspace_fragment>
+      }` });
+  const im=new THREE.InstancedMesh(g,m,N_SCHIUMA); im.frustumCulled=false; scene.add(im);
+  for(let i=0;i<N_SCHIUMA;i++) foams.push({life:0,max:1,size:0,x:0,z:0});
+  return im;
+})();
+const _ms=new THREE.Matrix4();
+export function spawnFoam(x,z,size,life){ const f=foams[foamI=(foamI+1)%foams.length]; f.max=(life||0.9)*1.5; f.life=f.max; f.size=size; f.x=x; f.z=z; }
+export function updateFoam(dt){
+  for(let i=0;i<N_SCHIUMA;i++){ const f=foams[i]; let sc=0, al=0;
+    if(f.life>0){ f.life-=dt; const k=1-Math.max(0,f.life)/f.max; sc=f.size*(0.7+1.9*k); al=0.85*(1-k)*(1-k); }
+    _ms.makeScale(sc,1,sc).setPosition(f.x,0.06+i*0.0002,f.z); schiuma.setMatrixAt(i,_ms); schiumaAlfa.array[i]=al; }
+  schiuma.instanceMatrix.needsUpdate=true; schiumaAlfa.needsUpdate=true;
+}
 // corde di delimitazione con i colori delle zone
 {
   const geo=new THREE.SphereGeometry(0.09,6,5);
@@ -122,7 +177,25 @@ export const shadow = new THREE.Mesh(new THREE.CircleGeometry(BRV*1.1,16),new TH
 shadow.rotation.x=-Math.PI/2; scene.add(shadow);
 export const ring = new THREE.Mesh(new THREE.TorusGeometry(0.55,0.05,8,32),new THREE.MeshBasicMaterial({color:0xfacc15}));
 ring.rotation.x=Math.PI/2; scene.add(ring);
+// freccia bianca sopra la testa del giocatore controllato (come nel riferimento)
+export const freccia = new THREE.Sprite(new THREE.SpriteMaterial({depthTest:false,transparent:true,map:canvasTex(64,64,(x,w,h)=>{
+  x.beginPath(); x.moveTo(8,10); x.lineTo(w-8,10); x.lineTo(w/2,h-8); x.closePath();
+  x.lineJoin='round'; x.lineWidth=9; x.strokeStyle='#0b1d33'; x.stroke(); x.fillStyle='#fff'; x.fill(); })}));
+freccia.scale.set(0.5,0.5,1); freccia.renderOrder=5; scene.add(freccia);
 export const passMark = new THREE.Mesh(new THREE.TorusGeometry(0.4,0.035,6,24),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.6}));
 passMark.rotation.x=Math.PI/2; scene.add(passMark);
 export const camMode = () => camera.aspect<1 ? 1 : game.camMode;   // in verticale si usa sempre la vista dalla porta
 export function setDpr(v){ dpr=v; }
+// strati di disegno (vedi acqua.js): cosa compare nel riflesso e cosa nella vista sott'acqua
+{
+  const bb=new THREE.Box3(), soloVista=new Set([schiuma,shadow,ring,passMark,freccia,water,acqua]);
+  for(const o of scene.children){
+    if(o.isLight){ o.layers.enableAll(); continue; }
+    let st;
+    if(soloVista.has(o)) st=STRATO_SOLO_VISTA;
+    else if(o===ball3d) st=STRATO_CORPI;
+    else { bb.setFromObject(o); st = bb.min.y<-0.5 ? STRATO_VASCA : STRATO_SOPRA; }
+    o.traverse(c=>c.layers.set(st));
+  }
+  setLivelloAcqua(2);
+}

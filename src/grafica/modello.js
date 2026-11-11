@@ -1,5 +1,6 @@
 // Modello 3D del giocatore (cilindri e sfere) e numero di calottina
 import * as THREE from 'three';
+import { STRATO_CORPI, STRATO_SOLO_VISTA } from './acqua.js';
 import { VIS, rnd } from '../costanti.js';
 import { scene } from './scena.js';
 export function numberTexture(n,bg,fg){
@@ -35,6 +36,7 @@ export function makePlayerMesh(capColor,num,team){
   const bg = team.idx===0 ? '#1d4fd6' : '#f2f2f2', fg = team.idx===0 ? '#fff' : '#111';
   const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:numberTexture(num,bg,fg),depthTest:false,transparent:true}));
   spr.scale.set(0.2,0.2,1); g.add(spr); R.spr=spr;
+  g.traverse(c=>c.layers.set(STRATO_CORPI)); spr.layers.set(STRATO_SOLO_VISTA);
   g.scale.setScalar(VIS); scene.add(g);
   return R;
 }

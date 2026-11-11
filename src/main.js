@@ -7,7 +7,8 @@ import './input.js';
 import './menu.js';
 import { SPEED } from './costanti.js';
 import { render } from './grafica/render.js';
-import { dpr, renderer, setDpr } from './grafica/scena.js';
+import { dpr, livelloAcqua, renderer, ridimensionaAcqua, setDpr, setLivelloAcqua } from './grafica/scena.js';
+import { acquaAuto } from './menu.js';
 import { tickFps, tickMsg, updateHUD } from './hud.js';
 import { update } from './partita.js';
 import { kickoff } from './regole.js';
@@ -22,7 +23,13 @@ function loop(now){
   try{ for(let i=0;i<n;i++) update(dt/n); }catch(e){ console.error(e); }
   // qualità adattiva: se il dispositivo fatica si abbassa la risoluzione di disegno
   frameMs+=(raw*1000-frameMs)*0.05; qT+=raw;
-  if(qT>2){ qT=0; if(frameMs>21&&dpr>1){ setDpr(Math.max(1,dpr-0.25)); renderer.setPixelRatio(dpr); } }
+  // ordine dei tagli: prima il riflesso dell'acqua, poi la risoluzione, per ultima l'acqua semplice
+  if(qT>2){ qT=0; if(frameMs>21){
+    if(acquaAuto&&livelloAcqua===2) setLivelloAcqua(1);
+    else if(dpr>1){ setDpr(Math.max(1,dpr-0.25)); renderer.setPixelRatio(dpr); ridimensionaAcqua(); }
+    else if(acquaAuto&&livelloAcqua===1) setLivelloAcqua(0);
+    frameMs=16;
+  } }
   tickMsg(dt);
   hudT+=raw; if(hudT>0.05){ hudT=0; updateHUD(); }
   render(dt,now);
