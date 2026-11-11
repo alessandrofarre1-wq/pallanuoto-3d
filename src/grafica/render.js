@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { BRV, HL, clamp, rnd } from '../costanti.js';
 import { updateRig } from './pose.js';
-import { animateWater, ball3d, camMode, camera, passMark, renderer, ring, scene, shadow, spawnFoam, updateFoam } from './scena.js';
+import { animateWater, ball3d, camMode, camera, freccia, passMark, renderer, ring, scene, shadow, spawnFoam, updateFoam } from './scena.js';
 import { inp } from '../input.js';
 import { allPlayers, ball, ctrl, game, teams } from '../stato.js';
 import { humanPassTarget } from '../tiri.js';
@@ -23,8 +23,9 @@ export function render(dt,now){
   shadow.position.set(ball3d.position.x,0.015,ball3d.position.z);
   shadow.visible=ball3d.position.y>BRV+0.15;
   // anello del giocatore controllato
-  ring.visible=!!ctrl&&!ctrl.excluded&&game.state!=='menu';
-  if(ctrl){ ring.position.set(ctrl.x,0.03,ctrl.z); ring.scale.setScalar(1+Math.sin(now*0.008)*0.06); }
+  ring.visible=false;
+  freccia.visible=!!ctrl&&!ctrl.excluded&&game.state!=='menu';
+  if(ctrl){ ctrl.mesh.spr.getWorldPosition(_cv); freccia.position.set(_cv.x,_cv.y+0.48+Math.sin(now*0.006)*0.05,_cv.z); }
   // indicatore del compagno a cui passeresti
   passMark.visible=false;
   if(ctrl&&ball.holder===ctrl&&game.state==='play'){
@@ -35,14 +36,21 @@ export function render(dt,now){
   const portrait=camera.aspect<1;
   const fx=clamp(ball.x*0.85,-HL+4,HL-4);
   if(camMode()===0){
-    const far=portrait?1.9:1;
-    camPos.lerp(_cv.set(fx, 9.5*far, 14.5*far+ball.z*0.25), Math.min(1,dt*2.5));
-    camLook.lerp(_cv.set(fx, 0, ball.z*0.3-0.5), Math.min(1,dt*3));
+    // laterale, alta e vicina: l'acqua riempie lo schermo e il bordo lontano della vasca sta in cima all'inquadratura
+    const far=portrait?1.9:1, sz=ball.z*0.45;
+    camPos.lerp(_cv.set(fx, 10*far, 11.7*far+sz), Math.min(1,dt*2.5));
+    camLook.lerp(_cv.set(fx, 0, 1.9*far+sz), Math.min(1,dt*3));
+  } else if(portrait){
+    // verticale: da dietro e dall'alto, guardando in giù quanto basta per non inquadrare cielo e tribune
+    const d=teams[0].dir, bx=clamp(ball.x,-HL+3,HL-3), sz=ball.z*0.75;
+    camPos.lerp(_cv.set(bx-d*7.5, 16, sz), Math.min(1,dt*2.5));
+    camLook.lerp(_cv.set(bx-d*0.4, 0, sz), Math.min(1,dt*3));
   } else {
     const d=teams[0].dir;
-    camPos.lerp(_cv.set(clamp(ball.x,-HL+3,HL-3)-d*(portrait?9:9), portrait?15:5.5, ball.z*(portrait?0.35:0.6)), Math.min(1,dt*2.5));
-    camLook.lerp(_cv.set(clamp(ball.x,-HL+3,HL-3)+d*(portrait?4.5:6), 0, ball.z*(portrait?0.35:0.6)), Math.min(1,dt*3));
+    camPos.lerp(_cv.set(clamp(ball.x,-HL+3,HL-3)-d*9, 5.5, ball.z*0.6), Math.min(1,dt*2.5));
+    camLook.lerp(_cv.set(clamp(ball.x,-HL+3,HL-3)+d*6, 0, ball.z*0.6), Math.min(1,dt*3));
   }
   camera.position.copy(camPos); camera.lookAt(camLook);
+  renderer.info.reset();
   renderer.render(scene,camera);
 }

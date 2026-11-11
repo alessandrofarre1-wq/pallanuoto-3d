@@ -64,11 +64,11 @@ if('ontouchstart' in window || navigator.maxTouchPoints>0) document.body.classLi
       if(t.clientX>innerWidth*0.5) continue;
       jid=t.identifier; jc={x:t.clientX,y:t.clientY};
       joy.style.left=(jc.x-joy.offsetWidth/2)+'px'; joy.style.top=(jc.y-joy.offsetHeight/2)+'px'; joy.style.bottom='auto';
-      setJ(t.clientX,t.clientY); e.preventDefault();
+      joy.classList.add('on'); setJ(t.clientX,t.clientY); e.preventDefault();
     }
   },{passive:false});
   document.addEventListener('touchmove',e=>{ for(const t of e.changedTouches) if(t.identifier===jid){ setJ(t.clientX,t.clientY); e.preventDefault(); } },{passive:false});
-  const endJ=e=>{ for(const t of e.changedTouches) if(t.identifier===jid){ jid=null; touch.x=touch.z=0; knob.style.transform='';
+  const endJ=e=>{ for(const t of e.changedTouches) if(t.identifier===jid){ jid=null; touch.x=touch.z=0; knob.style.transform=''; joy.classList.remove('on');
     joy.style.left=''; joy.style.top=''; joy.style.bottom=''; } };
   document.addEventListener('touchend',endJ); document.addEventListener('touchcancel',endJ);
   $('tac').addEventListener('pointerdown',e=>{ const c=e.target.closest('[data-i]'); if(c&&game.state==='play'){ e.preventDefault(); callPlay(+c.dataset.i); } });

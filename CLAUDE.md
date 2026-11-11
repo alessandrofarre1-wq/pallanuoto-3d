@@ -2,12 +2,15 @@
 
 Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Proprietario: Ale, ex nuotatore agonista, non programmatore: spiega le scelte in italiano semplice, senza gergo tecnico, e chiedi conferma prima di cambiamenti grossi di direzione.
 
-## Stato attuale (v0.9.2, novembre 2026)
-- Progetto Vite a moduli in `src/` (stesso identico gioco della v0.9, solo riorganizzato): `costanti`, `stato`, `giocatori`, `regole`, `partita` (ciclo di gioco), `lotta`, `fisica`, `tiri`, `ia`, `controllo` (comandi umani), `input`, `hud`, `menu`, `audio`, `grafica/` (`scena`, `modello`, `pose`, `render`). Three.js 0.187 da npm (aggiornato dalla r128 nella fase 1 del piano; richiede WebGL2, cioè iPhone con iOS 15 o successivo).
+## Stato attuale (v0.10, novembre 2026)
+- Progetto Vite a moduli in `src/` (stesso identico gioco della v0.9, solo riorganizzato): `costanti`, `stato`, `giocatori`, `regole`, `partita` (ciclo di gioco), `lotta`, `fisica`, `tiri`, `ia`, `controllo` (comandi umani), `input`, `hud`, `menu`, `audio`, `grafica/` (`scena`, `acqua`, `modello`, `pose`, `render`). Three.js 0.187 da npm (aggiornato dalla r128 nella fase 1 del piano; richiede WebGL2, cioè iPhone con iOS 15 o successivo).
 - Le variabili condivise che cambiano si modificano con funzioni apposite: `setCtrl`, `resetTap`, `setPeriodLen`, `setDiff`, `setSpeed`, `setDpr`.
 - Colori: gestione moderna di Three.js (immagini marcate sRGB, luci ritarate: `LUCE_CIELO`, `LUCE_SOLE` in `grafica/scena.js`) per restare uguali alla v0.9.
 - Il caso del gioco passa tutto da `rnd` (`costanti.js`): mai usare `Math.random` direttamente nel codice del gioco, altrimenti la verifica non è più ripetibile.
-- Contatore FPS: si accende dal menu (o con `?fps` nell'indirizzo); mostra fotogrammi al secondo, qualità di disegno, oggetti disegnati e triangoli.
+- Acqua (`grafica/acqua.js`, adattata da Water2 di Three.js): tre livelli scelti dal menu ("Acqua: Auto/Alta/Media/Bassa") o calati in automatico se il dispositivo fatica (ordine dei tagli in `main.js`: riflesso, poi risoluzione, poi acqua semplice). Alta = riflesso + vista sott'acqua deformata; media = solo vista sott'acqua; bassa = acqua della v0.9.
+- Strati di disegno (`STRATO_*` in `acqua.js`): ogni oggetto nuovo va messo nello strato giusto (vasca, corpi, sopra l'acqua, solo vista), altrimenti non compare nel riflesso o sott'acqua, oppure viene ridisegnato inutilmente.
+- Telecamera: laterale alta e vicina in orizzontale; in verticale da dietro e dall'alto. Giocatore controllato indicato da una freccia bianca sopra la testa. Schiuma disegnata in un solo oggetto.
+- Contatore FPS: si accende dal menu (o con `?fps` nell'indirizzo); mostra fotogrammi al secondo, qualità di disegno, livello dell'acqua, oggetti disegnati e triangoli.
 - `legacy/index.html` è la v0.9 in un solo file e `legacy/three-r128.min.js` la sua libreria: termine di paragone, non modificarli.
 - Pubblicazione: GitHub Actions (`.github/workflows/pages.yml`) verifica e pubblica su GitHub Pages a ogni modifica di `main`.
 - Pubblicato anche come artifact su claude.ai (versioni v0.1 → v0.9).
@@ -43,7 +46,7 @@ Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Propr
 1. GRAFICA: obiettivo dichiarato il livello di "Saltline" (FPS fatto da Claude Fable 5.2 in un artifact, tutto procedurale). Oggi i giocatori sono cilindri e sfere animati con IK fatta a mano. Mai visto un render reale finora: lavora SEMPRE con screenshot (es. Playwright) e confronta.
 2. Movimenti di nuoto e tiro più realistici (fonte: tesi Patumi, PoliTo, fasi del tiro; velocità palla 13–23 m/s).
 3. Fluidità su iPhone: tenere d'occhio il numero di oggetti e di draw call; qualità adattiva già presente.
-4. In orizzontale il joystick copre la porta di sinistra quando si difende.
+4. In orizzontale il joystick copriva la porta di sinistra quando si difende: con la telecamera della v0.10 la porta sta più in alto e il joystick a riposo è semitrasparente. Da confermare con Ale su iPhone.
 5. Bilanciamento: conversione dei tiri intorno al 40% nelle partite simulate.
 
 ## Riferimento visivo: Water Polo Revolution (video pre-alpha v0.1.4, Eric Flório, 2019)
@@ -94,7 +97,8 @@ Limiti di fluidità da rispettare in tutte le fasi (iPhone): 60 fotogrammi al se
 - Rischi: la versione nuova gestisce colori e intensità delle luci in modo diverso, quindi l'aspetto va ritarato a mano con gli screenshot; le partite simulate potrebbero non coincidere più con la v0.9 (cambia il consumo di numeri casuali) e da lì si controllano statistiche ed errori. Fluidità: nessun rischio atteso.
 - Da Ale: niente, solo la prova su iPhone con il numero di fotogrammi.
 
-### Fase 2 — Telecamera e acqua come nel riferimento
+### Fase 2 — Telecamera e acqua come nel riferimento — FATTA (v0.10), in attesa della prova di Ale su iPhone
+- Esito: partite simulate ancora identiche alla v0.9. Prima della fase 2 l'iPhone di Ale faceva 60 fotogrammi al secondo fissi a qualità 1.50 con 240–340 oggetti. Con l'acqua alta gli oggetti disegnati salgono a circa 550 (i pezzi dei giocatori vengono ridisegnati per la vista sott'acqua): è il motivo in più per fare la fase 3 (un corpo unico per giocatore). Le caustiche sono un effetto scritto da noi sul fondo e sulle righe delle corsie.
 - A schermo: telecamera laterale più vicina (l'acqua riempie lo schermo); acqua trasparente con onde fitte, riflessi e corpi sott'acqua visibili e deformati; giochi di luce sul fondo (caustiche); scia di schiuma più credibile; freccia bianca sopra il giocatore controllato al posto dell'anello.
 - Librerie: Water2 (incluso in Three.js, riflessione + rifrazione). Le caustiche NON esistono pronte in Three.js: si fanno con un piccolo effetto scritto da noi (disegno animato proiettato sul fondo), poco costoso.
 - Rischi iPhone: è la fase più pesante. Water2 ridisegna la scena tre volte per fotogramma. Contromisure: riflesso e rifrazione a metà risoluzione, riflesso solo delle cose ferme, e livelli di qualità (alta = Water2 completo, media = solo rifrazione, bassa = acqua di oggi). Se anche così l'iPhone di Ale resta sotto i 30, si tiene il livello medio come standard.
