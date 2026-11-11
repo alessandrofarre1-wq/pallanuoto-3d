@@ -1,4 +1,5 @@
 // ================= FISICA GIOCATORI =================
+import { registraParata } from './statistiche.js';
 import { whistle } from './audio.js';
 import { BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
 import { showMsg } from './hud.js';
@@ -120,7 +121,7 @@ export function updateBall(dt){
           let prob=(1.0-0.36*ball.shotPower-dz*0.35-(ball.lob?0.2:0)-(gk.fakedUntil>game.time?0.25:0)-(ball.skipped?0.12:0))*(def.human?1:DIFF_GK())
             *(ball.rigore?0.45:1);      // sul rigore il portiere para molto meno: negli studi citati dalla tesi ne entra l'80%
           if(rnd()<prob){
-            whistle(0.12); const r=rnd(); ball.afterShot=true;
+            whistle(0.12); const r=rnd(); ball.afterShot=true; registraParata(att,def);
             if(ball.shotPower>0.55&&r<0.25){ cornerThrow(att); }
             else if(ball.shotPower>0.7&&r<0.65){
               // respinta: la palla schizza via dalle mani del portiere, verso il campo e verso l'alto

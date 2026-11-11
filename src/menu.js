@@ -1,4 +1,5 @@
 // ================= MENU =================
+import { azzeraStatistiche } from './statistiche.js';
 import { initAudio } from './audio.js';
 import { PERIOD_LEN, setDiff, setPeriodLen, setSpeed } from './costanti.js';
 import { $, fpsIniziale, setFps } from './hud.js';
@@ -37,7 +38,7 @@ export function newMatch(){
   teams[0].score=teams[1].score=0; game.period=1; game.clock=PERIOD_LEN; game.time=0;
   for(const p of allPlayers){ p.stamina=1; p.excluded=false; p.pf=0; p.cut=null; }
   for(const t of teams){ t.atkPlay=0; t.defPlay=0; t.cross=false; t.timeouts=2; }
-  game.penalty=null;
+  game.penalty=null; azzeraStatistiche();
   $('menu').style.display='none';
   kickoff();
 }

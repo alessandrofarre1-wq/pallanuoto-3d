@@ -1,4 +1,5 @@
 // ================= REGOLE / FASI =================
+import { registraEspulsione, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
 import { whistle } from './audio.js';
 import { autoSwitch, resetTap } from './controllo.js';
 import { ATK, BRV, DEFN, DIFF, EXCL_TIME, FORM, HL, HW, KICK_Z, SHOT_CLOCK, SHOT_RESET, clamp, dist, rnd } from './costanti.js';
@@ -39,9 +40,12 @@ export function giveBall(p){
     game.possTeam=p.team; game.shot=SHOT_CLOCK;
     for(const q of allPlayers) q.cut=null;
     for(const q of p.team.players) if(q.excluded) reenter(q);          // art. 9.3c
-    const ai=teams[1];
-    if(p.team===ai){ ai.atkPlay=[0,0,1,1,3][Math.floor(rnd()*5)]; ai.cross=rnd()<0.2; ai.nextDrive=game.time+3+rnd()*4; }
-    else { ai.defPlay=[0,0,0,1,1,2][Math.floor(rnd()*6)]; teams[0].nextDrive=game.time+6+rnd()*4; }
+    game.possT=game.time;
+    // le squadre guidate dal computer scelgono lo schema a ogni cambio di possesso
+    const att=p.team, dif=other(att);
+    if(!att.human){ att.atkPlay=[0,0,1,1,3][Math.floor(rnd()*5)]; att.cross=rnd()<0.2; att.nextDrive=game.time+3+rnd()*4; }
+    if(!dif.human) dif.defPlay=[0,0,0,1,1,2][Math.floor(rnd()*6)];
+    if(att.human) att.nextDrive=game.time+6+rnd()*4;
   } else if(ball.afterShot){ game.shot=SHOT_RESET; }                  // art. 8.12a
   ball.afterShot=false;
   if(p.team!==teams[0]) autoSwitch(p);
@@ -71,7 +75,7 @@ export function cornerThrow(att){   // art. 13
   });
 }
 export function penalty(d,c){       // art. 10.2
-  whistle(0.6); d.pf++;
+  whistle(0.6); d.pf++; registraRigore(c.team);
   showMsg(`Rigore! <span style="font-size:22px;display:block">fallo di ${d.team.short} #${d.num} nei 6 metri</span>`,1.7);
   ball.state='dead'; ball.holder=null; ball.x=c.x; ball.z=c.z; ball.y=BRV; ball.vx=ball.vy=ball.vz=0;
   const t=c.team;
@@ -104,7 +108,7 @@ export function areaFoul(q){      // art. 8.2.8: attaccante nell'area di porta d
 }
 export function timeout(t){       // art. 5: due time-out a squadra, solo in possesso di palla; si riparte da metà campo
   if(t.timeouts<=0||game.state!=='play'||game.penalty||game.possTeam!==t||!ball.holder||ball.holder.team!==t) return false;
-  t.timeouts--; whistle(0.7);
+  t.timeouts--; whistle(0.7); registraTimeout(t);
   showMsg(`Time-out ${t.name}<span style="font-size:20px;display:block">ne resta${t.timeouts===1?'':'no'} ${t.timeouts} · le squadre recuperano fiato</span>`,2.4);
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0;
   deadBall(2.6,()=>{
@@ -126,7 +130,7 @@ export function callPlay(i){
   } else if(i<3){ t.defPlay=i; showMsg(`<span style="font-size:24px">Difesa: ${DEFN[i]}</span>`,0.8); }
 }
 export function goalScored(t){
-  t.score++; whistle(0.6); rumble(350,1);
+  t.score++; whistle(0.6); rumble(350,1); registraGol(t,ball);
   showMsg(`GOL! <span style="font-size:22px;display:block">${t.short} · #${ball.shooter.num} ${ball.shooter.name}</span>`,2.4);
   ball.state='dead';      // la palla prosegue fino in fondo alla rete (fisica.js)
   const conceding=other(t);
@@ -145,7 +149,7 @@ export function goalThrow(defTeam,text){
   deadBall(1.0,()=>{ giveBall(defTeam.players[0]); });
 }
 export function exclude(d){
-  whistle(0.5); d.pf++; rumble(220,0.8);
+  whistle(0.5); d.pf++; rumble(220,0.8); registraEspulsione(d);
   d.excluded=true; d.exclUntil=game.time+EXCL_TIME; d.vx=d.vz=0; d.charging=false; d.cut=null;
   d.x=ownGoalX(d.team)+d.team.dir*0.6; d.z=-HW-1.0;
   showMsg(`Espulsione! <span style="font-size:22px;display:block">${d.team.short} #${d.num} ${d.name} — ${EXCL_TIME}" · ${d.pf}° fallo grave${d.pf>=3?' (definitiva)':''}</span>`,1.9);
@@ -174,7 +178,7 @@ export function tackle(d,c,o){
   const pExcl = (lineD<6?0.2:0.05)*(press?1.5:1);
   const pFoul = 0.42;
   const r=rnd();
-  if(r<pSteal){ giveBall(d); showMsg(`Palla rubata! ${d.team.short} #${d.num}`,1); return true; }
+  if(r<pSteal){ registraPallaRubata(d.team); giveBall(d); showMsg(`Palla rubata! ${d.team.short} #${d.num}`,1); return true; }
   if(r<pSteal+pPen){ penalty(d,c); return true; }
   if(r<pSteal+pPen+pExcl){ exclude(d); return true; }
   if(o.force || r<pSteal+pPen+pExcl+pFoul){ foul(d,c); return true; }   // il contrasto del giocatore finisce sempre almeno in fallo

@@ -1,4 +1,5 @@
 // ================= PASSAGGI E TIRI =================
+import { registraTiro, tipoDiTiro } from './statistiche.js';
 import { BRV, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, startCut } from './ia.js';
 import { velocitaDiLancio } from './palla.js';
@@ -94,6 +95,7 @@ export function doPass(p,m){
   if(!p.isGK && p.i>=4 && !manUp(p.team) && (p.team.atkPlay===1||rnd()<0.35)) startCut(p);
 }
 export function doShoot(p,power,lob,aimZ){
+  const tipoAzione=tipoDiTiro(p,ball);
   const t=p.team, gx=goalX(t), gk=other(t).players[0];
   // si mira un po' più dentro di prima: ora pali e traversa sono veri e la palla ha il suo ingombro
   let az = aimZ!=null ? clamp(aimZ*1.28,-1.28,1.28) : -Math.sign(gk.z||(rnd()-0.5))*(0.85+rnd()*0.38);
@@ -117,5 +119,6 @@ export function doShoot(p,power,lob,aimZ){
     launch(p,gx-t.dir*1.4,BRV,az+(p.z-az)*k,d*(1-k)/spd,'shot'); ball.skip=true;
   } else launch(p,gx,ay,az,d/spd,'shot');
   ball.shotPower=lob?0.3:power; ball.lob=lob; ball.crossZ=az; ball.rigore=game.penalty===p;
+  ball.tipoTiro=tipoAzione; registraTiro(p,tipoAzione);
   p.stamina=Math.max(0,p.stamina-0.04);
 }

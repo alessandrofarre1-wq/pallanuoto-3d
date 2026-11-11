@@ -14,6 +14,7 @@ export function autoSwitch(pt){
   if(c) setCtrl(c);
 }
 export function updateCtrl(){
+  if(game.autoplay) return;
   const ht=teams[0];
   if(ball.holder&&ball.holder.team===ht){ setCtrl(ball.holder); return; }
   if(ctrl.excluded) autoSwitch(ball);

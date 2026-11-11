@@ -7,7 +7,7 @@ export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 export function startCut(p){
   if(p.isGK||p.excluded||ball.holder===p) return;
   const t=p.team, side=Math.abs(p.z)<0.5?(rnd()<0.5?1:-1):Math.sign(p.z);
-  p.cut={t0:game.time,phase:0,x:goalX(t)-t.dir*2.6,z:side*1.7};
+  p.cut={t0:game.time,phase:0,x:goalX(t)-t.dir*2.6,z:side*1.7}; p.cutT=game.time;
 }
 export function attackTarget(p){
   const t=p.team, gx=goalX(t);
