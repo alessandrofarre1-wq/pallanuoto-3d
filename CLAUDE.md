@@ -2,8 +2,8 @@
 
 Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Proprietario: Ale, ex nuotatore agonista, non programmatore: spiega le scelte in italiano semplice, senza gergo tecnico, e chiedi conferma prima di cambiamenti grossi di direzione.
 
-## Stato attuale (v0.13, novembre 2026)
-- Progetto Vite a moduli in `src/` (stesso identico gioco della v0.9, solo riorganizzato): `costanti`, `stato`, `giocatori`, `regole`, `partita` (ciclo di gioco), `lotta`, `fisica`, `tiri`, `ia`, `controllo` (comandi umani), `input`, `hud`, `menu`, `audio`, `grafica/` (`scena`, `acqua`, `modello`, `corpo`, `pose`, `render`). Three.js 0.187 da npm (aggiornato dalla r128 nella fase 1 del piano; richiede WebGL2, cioè iPhone con iOS 15 o successivo).
+## Stato attuale (v0.14, novembre 2026)
+- Progetto Vite a moduli in `src/` (stesso identico gioco della v0.9, solo riorganizzato): `costanti`, `stato`, `giocatori`, `regole`, `partita` (ciclo di gioco), `lotta`, `fisica`, `palla` (fisica della palla con Rapier), `tiri`, `ia`, `controllo` (comandi umani), `input`, `hud`, `menu`, `audio`, `grafica/` (`scena`, `acqua`, `modello`, `corpo`, `pose`, `render`). Three.js 0.187 da npm (aggiornato dalla r128 nella fase 1 del piano; richiede WebGL2, cioè iPhone con iOS 15 o successivo).
 - Le variabili condivise che cambiano si modificano con funzioni apposite: `setCtrl`, `resetTap`, `setPeriodLen`, `setDiff`, `setSpeed`, `setDpr`.
 - Colori: gestione moderna di Three.js (immagini marcate sRGB, luci ritarate: `LUCE_CIELO`, `LUCE_SOLE` in `grafica/scena.js`) per restare uguali alla v0.9.
 - Il caso del gioco passa tutto da `rnd` (`costanti.js`): mai usare `Math.random` direttamente nel codice del gioco, altrimenti la verifica non è più ripetibile.
@@ -17,6 +17,9 @@ Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Propr
 - Calottina: oggetto a sé che segue la forma del cranio misurata sul modello, con bordo bianco, numero su lati e nuca, paraorecchie rigidi con fori e laccetti annodati sotto il mento (`calottinaGeo` in `corpo.js`). Palla: gialla a spicchi con cuciture scure e gomma ruvida (`ball3d` in `scena.js`).
 - Il vecchio manichino Y Bot di Mixamo non è più usato (resta `npm run converti-modello` per eventuali modelli FBX). Gli FBX caricati da Ale su `main` restano nella cronologia di git.
 - Corpo e fisica sono legati da `p.oriz` (0 = verticale, 1 = disteso), aggiornato in `fisica.js`: ci vuole circa mezzo secondo per distendersi o tornare in piedi; finché non si è distesi non si va a piena velocità, e chi tira mentre è ancora disteso parte con un piccolo ritardo (`startAct` in `tiri.js`).
+- Palla (v0.14): fisica vera in `src/palla.js` con il motore Rapier (`@dimforge/rapier3d-compat`, circa 1,6 MB in più da scaricare, compressi). Rapier muove la palla e calcola gli urti con pali, traversa, rete e corpi dei giocatori (solo palla vagante); noi aggiungiamo resistenza dell'aria, effetto della rotazione (Magnus), schizzo sull'acqua dei tiri tesi e veloci, tonfo, galleggiamento e attrito dell'acqua. `velocitaDiLancio` calcola la partenza tenendo conto di aria ed effetto, così tiri e passaggi arrivano dove si mira. Le regole restano in `fisica.js` (`updateBall`): parata, muro e intercetto sono ancora decisi con le probabilità di prima, ma la palla respinta ora rimbalza davvero; gol e fuori si decidono dal passaggio vero della linea (vale anche il palo-gol); dopo il gol la palla finisce in fondo alla rete (`ball.inRete`).
+- Aspetto della palla: gialla, 18 spicchi a gruppi di tre con solchi scuri e buccia ruvida, calcolata punto per punto sulla sfera (`ball3d` in `scena.js`); gira secondo la rotazione vera e galleggia per un terzo sott'acqua.
+- `npm run fisica-palla`: 10 prove della palla fuori dalla partita (mira, palo, palo interno, traversa, rete, schizzo, palombella, effetto, corpi) e disegno delle traiettorie in `tests/screenshot/fisica-palla.png`. Da rifare a ogni modifica di `palla.js`.
 - Mirino sulla porta mentre il giocatore controllato carica o esegue un tiro (`mirino` in `scena.js`, aggiornato in `render.js`).
 - Contatore FPS: si accende dal menu (o con `?fps` nell'indirizzo); mostra fotogrammi al secondo, qualità di disegno, livello dell'acqua, oggetti disegnati e triangoli.
 - `legacy/index.html` è la v0.9 in un solo file e `legacy/three-r128.min.js` la sua libreria: termine di paragone, non modificarli.
@@ -90,7 +93,7 @@ Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili
 - Storico: finché regole, fisica e IA non cambiavano, le partite simulate dovevano risultare "identiche alla v0.9" (la verifica tiene fuori dal conto i numeri casuali usati da Three.js). Attenzione: anche la grafica del gioco consuma numeri casuali (schiuma, pose) e la posizione della mano decide da dove parte la palla, quindi cambiando la grafica le partite smetteranno di coincidere: da quel momento usare `--no-legacy` e guardare statistiche ed errori.
 - Cambiamento d'aspetto voluto: `npm run verifica:aggiorna` (i nuovi screenshot diventano il riferimento).
 - Nell'ambiente cloud cdnjs è bloccato, npm funziona; Chromium gira senza scheda grafica (opzioni swiftshader già nello script).
-- Dati dell'ultima verifica (6 partite, v0.12): conversione dei tiri 33% (obiettivo 40%; era 37% prima di legare corpo e fisica); senza comandi l'Italia non segna mai.
+- Dati dell'ultima verifica (6 partite, v0.14): conversione dei tiri 35% (obiettivo 40%); pali e traverse sull'11% dei tiri (33 su 310; per questo ora si mira un po' più dentro i pali); senza comandi l'Italia non segna mai.
 - Ale gioca da telefono e manda screenshot: usali come verità.
 - Risposte brevi, in italiano, con cosa è cambiato e cosa provare.
 
@@ -142,7 +145,10 @@ Limiti di fluidità da rispettare in tutte le fasi (iPhone): 60 fotogrammi al se
 - Esito: corpi muscolosi con pelle e volto veri, 5 facce diverse, calottina e palla rifatte. 6 partite simulate senza errori. Con acqua alta: 149 oggetti disegnati (limite 100 non rispettato, resta la scena) e 145.000 triangoli (limite 150.000).
 - Non fatto: fisica della palla (è la fase 5 qui sotto); niente capelli (sotto la calottina non si vedono), niente ciglia, nessuna espressione del viso; i volti sono 5 e si ripetono; da vicino il dettaglio resta inferiore al riferimento, che gira su computer.
 
-### Fase 5 — Fisica della palla con Rapier
+### Fase 5 — Fisica della palla con Rapier — FATTA (v0.14), in attesa della prova di Ale su iPhone
+- Giudizio di Ale sulla v0.13 (atleti): "pensavo molto meglio". Ha chiesto di dedicarsi a palla, fisica e aspetto della palla.
+- Esito: vedi "Palla (v0.14)" nello stato attuale. Prove di fisica tutte superate; 6 partite simulate senza errori.
+- Non fatto: la rete non si muove quando entra la palla (la palla però ci si ferma dentro); parata, muro e intercetto restano decisi a probabilità (mani e braccia non sono ostacoli veri); i corpi fanno rimbalzare solo la palla vagante, con una sfera all'altezza della testa; Rapier NON muove i giocatori (come da consiglio del piano).
 - A schermo: rimbalzi veri su pali e traversa, palla che schizza e rallenta sull'acqua, galleggia e viene spostata dai corpi, rotazione visibile; rete della porta che si muove quando entra il gol.
 - Librerie: Rapier (motore fisico open source, versione per il web).
 - Rischi: cambia il gioco, non solo l'aspetto: percentuale di gol, parate e intercetti vanno ribilanciati (oggi 31%, obiettivo 40%) e il confronto "identico alla v0.9" finisce definitivamente. Circa 2 MB in più da scaricare al primo avvio. Fluidità: costo trascurabile con pochi oggetti. Consiglio: Rapier per palla, porte e contatto palla-corpi; NON per il movimento dei giocatori in acqua (un motore di corpi rigidi non simula il nuoto: lì resta la nostra fisica, che è già tarata).

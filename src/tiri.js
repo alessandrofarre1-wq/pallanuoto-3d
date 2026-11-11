@@ -1,6 +1,7 @@
 // ================= PASSAGGI E TIRI =================
-import { BRV, G, clamp, dist, gauss, rnd } from './costanti.js';
+import { BRV, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, startCut } from './ia.js';
+import { velocitaDiLancio } from './palla.js';
 import { allPlayers, ball, fight, game, goalX, other, setCtrl, teams } from './stato.js';
 export function startAct(p,kind,wind,fn,aim){
   const gx=goalX(p.team);
@@ -21,10 +22,12 @@ export function launch(p,tx,ty,tz,t,kind){
   ball.state='flight'; ball.holder=null; ball.kind=kind; ball.shooter=p; ball.lastTeam=p.team;
   if(p.ballW){ ball.x=p.ballW[0]; ball.y=Math.max(0.3,p.ballW[1]); ball.z=p.ballW[2]; }
   else { ball.x=p.x+p.fx*0.25; ball.z=p.z+p.fz*0.25; ball.y=1.0; }
-  const y0=ball.y;
-  ball.vx=(tx-ball.x)/t; ball.vz=(tz-ball.z)/t; ball.vy=(ty-y0+0.5*G*t*t)/t;
+  // velocità e rotazione di partenza: la palla gira all'indietro (di più nella palombella) e la mira tiene conto dell'aria
+  const giri = kind==='pass' ? 9 : ty>0.55 ? 34 : 20;
+  const L=velocitaDiLancio(ball.x,ball.y,ball.z,tx,ty,tz,t,giri);
+  ball.vx=L.vx; ball.vy=L.vy; ball.vz=L.vz; ball.wx=L.wx; ball.wy=L.wy; ball.wz=L.wz;
   ball.flightT=0; ball.intercept=new Set(); ball.saveChecked=false; ball.pickupCD=0.3;
-  ball.skip=false; ball.skipped=false;
+  ball.skip=false; ball.skipped=false; ball.schizzi=0; ball.daTiro=kind==='shot'; ball.inRete=false;
   p.charging=false; p.chargeT=0;
 }
 export function laneClear(a,bx,bz,team,rad=0.6){
@@ -84,8 +87,9 @@ export function doPass(p,m){
 }
 export function doShoot(p,power,lob,aimZ){
   const t=p.team, gx=goalX(t), gk=other(t).players[0];
-  let az = aimZ!=null ? clamp(aimZ*1.35,-1.35,1.35) : -Math.sign(gk.z||(rnd()-0.5))*(0.9+rnd()*0.4);
-  let ay = lob ? 0.6 : 0.2+rnd()*0.6;
+  // si mira un po' più dentro di prima: ora pali e traversa sono veri e la palla ha il suo ingombro
+  let az = aimZ!=null ? clamp(aimZ*1.28,-1.28,1.28) : -Math.sign(gk.z||(rnd()-0.5))*(0.85+rnd()*0.38);
+  let ay = lob ? 0.55 : 0.15+rnd()*0.55;
   const d=Math.hypot(gx-p.x,az-p.z);
   let press=99; for(const o of other(t).players){ if(!o.excluded&&!o.isGK&&game.time>=o.stunUntil&&!(p.turnedUntil>game.time&&o===fight.def)) press=Math.min(press,dist(o,p)); }
   // un tiro marcato stretto è molto meno preciso: gli schemi servono a liberare il tiratore

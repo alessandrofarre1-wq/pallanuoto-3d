@@ -30,6 +30,7 @@ jobs:
       # sul server i caratteri dei testi sono diversi da quelli usati per gli screenshot di riferimento:
       # lì gli screenshot si guardano soltanto, mentre le partite simulate devono passare
       - run: npm run verifica -- --screenshot-non-bloccanti
+      - run: npm run fisica-palla -- --no-build
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -169,24 +169,39 @@ export function makeGoal(sign){
 makeGoal(1); makeGoal(-1);
 
 // palla + ombra + anello del giocatore controllato
-// palla da pallanuoto: gialla, a spicchi con cuciture scure, gomma ruvida per la presa
+// Palla da pallanuoto: gomma gialla a buccia ruvida (per la presa a mano bagnata), 18 spicchi a gruppi di tre come nel
+// pallone vero, separati da solchi scuri. Disegno e rilievo sono calcolati punto per punto sulla sfera, così i solchi
+// sono curve esatte e non si deformano ai poli.
 export const ball3d = (()=>{
-  const cuciture=(x,w,h)=>{ // tre cerchi massimi: equatore e due meridiani → otto spicchi; più le righe parallele tipiche della palla
-    x.lineCap='round';
-    const riga=(u0,v0,u1,v1)=>{ x.beginPath(); x.moveTo(u0*w,v0*h); x.lineTo(u1*w,v1*h); x.stroke(); };
-    riga(0,0.5,1,0.5); for(const u of [0,0.25,0.5,0.75,1]) riga(u,0,u,1);
-  };
-  const colore=canvasTex(512,256,(x,w,h)=>{
-    const g=x.createLinearGradient(0,0,0,h); g.addColorStop(0,'#f2b705'); g.addColorStop(0.5,'#ffd21f'); g.addColorStop(1,'#eaa800'); x.fillStyle=g; x.fillRect(0,0,w,h);
-    for(let i=0;i<5000;i++){ x.fillStyle=i%2?'rgba(255,240,150,.10)':'rgba(150,95,0,.10)'; x.fillRect(rnd()*w,rnd()*h,1.6,1.6); }      // grana della gomma
-    x.strokeStyle='rgba(120,75,0,.55)'; x.lineWidth=9; cuciture(x,w,h);      // alone attorno alle cuciture
-    x.strokeStyle='#2b1d08'; x.lineWidth=3.2; cuciture(x,w,h);
-  });
-  const rilievo=canvasTex(256,128,(x,w,h)=>{ x.fillStyle='#808080'; x.fillRect(0,0,w,h);
-    for(let i=0;i<3500;i++){ x.fillStyle=i%2?'#a8a8a8':'#5c5c5c'; x.fillRect(rnd()*w,rnd()*h,1.5,1.5); }
-    x.strokeStyle='#202020'; x.lineWidth=2.4; cuciture(x,w,h); });
-  rilievo.colorSpace=THREE.NoColorSpace;
-  return new THREE.Mesh(new THREE.SphereGeometry(BRV,28,20),new THREE.MeshPhongMaterial({map:colore,bumpMap:rilievo,bumpScale:0.6,shininess:22,specular:0x3a3020}));
+  const W=1024, H=512, colore=document.createElement('canvas'), rilievo=document.createElement('canvas');
+  colore.width=rilievo.width=W; colore.height=rilievo.height=H;
+  const xc=colore.getContext('2d'), xr=rilievo.getContext('2d'), ic=xc.createImageData(W,H), ir=xr.createImageData(W,H);
+  const caso=(a,b,c)=>{ const t=Math.sin(a*127.1+b*311.7+c*74.7)*43758.5453; return t-Math.floor(t); };
+  const QP=4/Math.PI, SOLCO=0.021;                    // mezza larghezza del solco, in radianti
+  for(let j=0;j<H;j++){ const th=(j+0.5)/H*Math.PI, st=Math.sin(th), y=Math.cos(th);
+    for(let i=0;i<W;i++){ const ph=(i+0.5)/W*Math.PI*2, x=-Math.cos(ph)*st, z=Math.sin(ph)*st;
+      // faccia del cubo in cui cade il punto e coordinate "ad angolo uguale" dentro la faccia
+      const ax=Math.abs(x), ay=Math.abs(y), az=Math.abs(z); let u,v,faccia;
+      if(ax>=ay&&ax>=az){ u=Math.atan(y/ax)*QP; v=Math.atan(z/ax)*QP; faccia=0; }      // facce X: tre strisce divise lungo y
+      else if(ay>=az){ u=Math.atan(z/ay)*QP; v=Math.atan(x/ay)*QP; faccia=1; }         // facce Y: divise lungo z
+      else { u=Math.atan(x/az)*QP; v=Math.atan(y/az)*QP; faccia=2; }                   // facce Z: divise lungo x
+      // distanza dal solco più vicino: bordo della faccia oppure una delle due divisioni interne
+      const d=Math.min(1-Math.abs(u),1-Math.abs(v),Math.abs(Math.abs(u)-1/3))*Math.PI/4;
+      const solco=1-Math.min(1,Math.max(0,(d-SOLCO*0.45)/(SOLCO*0.55)));               // 1 nel solco, 0 fuori
+      const spalla=Math.exp(-d/0.05);                                                  // la gomma si scurisce verso il solco
+      // buccia: puntini in rilievo fitti
+      const gx=x*46, gy=y*46, gz=z*46, cx=Math.floor(gx), cy=Math.floor(gy), cz=Math.floor(gz);
+      const dx=gx-cx-0.5, dy=gy-cy-0.5, dz=gz-cz-0.5, punto=Math.max(0,1-(dx*dx+dy*dy+dz*dz)*5)*(0.6+0.4*caso(cx,cy,cz));
+      const striscia=Math.floor((u+1)*1.5)+faccia*3, tono=0.97+0.05*caso(striscia,faccia,7);      // ogni spicchio ha un tono appena diverso
+      const luce=(0.90+0.10*punto)*tono*(1-0.20*spalla);
+      const k=(j*W+i)*4, s1=1-solco;
+      ic.data[k]=(250*luce)*s1+34*solco; ic.data[k+1]=(203*luce)*s1+26*solco; ic.data[k+2]=(22*luce)*s1+12*solco; ic.data[k+3]=255;
+      const q=Math.round((0.62+0.38*punto)*255*(1-solco)+25*solco*0+0); ir.data[k]=ir.data[k+1]=ir.data[k+2]=Math.round(q*(1-0.85*solco)); ir.data[k+3]=255;
+    } }
+  xc.putImageData(ic,0,0); xr.putImageData(ir,0,0);
+  const tc=new THREE.CanvasTexture(colore); tc.colorSpace=THREE.SRGBColorSpace; tc.anisotropy=4;
+  const tr=new THREE.CanvasTexture(rilievo);
+  return new THREE.Mesh(new THREE.SphereGeometry(BRV,32,24),new THREE.MeshPhongMaterial({map:tc,bumpMap:tr,bumpScale:1.4,shininess:48,specular:0x5a5648}));
 })();
 scene.add(ball3d);
 export const shadow = new THREE.Mesh(new THREE.CircleGeometry(BRV*1.1,16),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.3}));

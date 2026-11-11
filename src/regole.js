@@ -128,7 +128,7 @@ export function callPlay(i){
 export function goalScored(t){
   t.score++; whistle(0.6); rumble(350,1);
   showMsg(`GOL! <span style="font-size:22px;display:block">${t.short} · #${ball.shooter.num} ${ball.shooter.name}</span>`,2.4);
-  ball.state='dead'; ball.vx*=0.15; ball.vz*=0.15; ball.vy=0;
+  ball.state='dead';      // la palla prosegue fino in fondo alla rete (fisica.js)
   const conceding=other(t);
   deadBall(2.6,()=>{
     placeHalves();

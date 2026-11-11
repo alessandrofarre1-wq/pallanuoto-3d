@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.13.0",
+  "version": "0.14.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,11 +11,13 @@
     "verifica": "node tests/verifica.mjs --no-legacy",
     "verifica:legacy": "node tests/verifica.mjs",
     "primi-piani": "node tests/primi-piani.mjs",
+    "fisica-palla": "node tests/fisica-palla.mjs",
     "converti-modello": "node strumenti/converti-modello.mjs",
     "costruisci-atleta": "node strumenti/costruisci-atleta.mjs",
     "verifica:aggiorna": "node tests/verifica.mjs --no-legacy --aggiorna"
   },
   "dependencies": {
+    "@dimforge/rapier3d-compat": "^0.21.0",
     "three": "^0.187.0"
   },
   "devDependencies": {

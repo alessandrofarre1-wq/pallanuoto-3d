@@ -11,7 +11,7 @@ Gioco di pallanuoto 3D nel browser: Italia contro Ungheria, regole World Aquatic
 | `index.html` | la pagina: menu, tabellone, pulsanti touch |
 | `src/main.js` | avvio e ciclo di gioco |
 | `src/regole.js`, `src/partita.js`, `src/lotta.js` | regole, fasi della partita, lotta al centro |
-| `src/fisica.js`, `src/tiri.js` | movimento in acqua, palla, passaggi e tiri |
+| `src/fisica.js`, `src/palla.js`, `src/tiri.js` | movimento in acqua, fisica della palla (Rapier), passaggi e tiri |
 | `src/ia.js` | intelligenza dei giocatori del computer |
 | `src/grafica/` | scena 3D, acqua, corpo dei giocatori con scheletro, pose, telecamera |
 | `strumenti/` | costruzione degli atleti dai dati liberi di MakeHuman (e conversione di modelli FBX) |
