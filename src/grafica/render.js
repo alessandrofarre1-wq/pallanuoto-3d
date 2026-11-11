@@ -55,6 +55,8 @@ export function render(dt,now){
     camLook.lerp(_cv.set(clamp(ball.x,-HL+3,HL-3)+d*6, 0, ball.z*0.6), Math.min(1,dt*3));
   }
   camera.position.copy(camPos); camera.lookAt(camLook);
+  const V=window.__pallanuoto&&window.__pallanuoto.vista;
+  if(V){ camera.position.set(V.pos[0],V.pos[1],V.pos[2]); camera.lookAt(V.look[0],V.look[1],V.look[2]); if(V.fov&&camera.fov!==V.fov){ camera.fov=V.fov; camera.updateProjectionMatrix(); } }
   renderer.info.reset();
   renderer.render(scene,camera);
 }

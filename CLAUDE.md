@@ -2,14 +2,16 @@
 
 Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Proprietario: Ale, ex nuotatore agonista, non programmatore: spiega le scelte in italiano semplice, senza gergo tecnico, e chiedi conferma prima di cambiamenti grossi di direzione.
 
-## Stato attuale (v0.10.1, novembre 2026)
-- Progetto Vite a moduli in `src/` (stesso identico gioco della v0.9, solo riorganizzato): `costanti`, `stato`, `giocatori`, `regole`, `partita` (ciclo di gioco), `lotta`, `fisica`, `tiri`, `ia`, `controllo` (comandi umani), `input`, `hud`, `menu`, `audio`, `grafica/` (`scena`, `acqua`, `modello`, `pose`, `render`). Three.js 0.187 da npm (aggiornato dalla r128 nella fase 1 del piano; richiede WebGL2, cioè iPhone con iOS 15 o successivo).
+## Stato attuale (v0.11, novembre 2026)
+- Progetto Vite a moduli in `src/` (stesso identico gioco della v0.9, solo riorganizzato): `costanti`, `stato`, `giocatori`, `regole`, `partita` (ciclo di gioco), `lotta`, `fisica`, `tiri`, `ia`, `controllo` (comandi umani), `input`, `hud`, `menu`, `audio`, `grafica/` (`scena`, `acqua`, `modello`, `corpo`, `pose`, `render`). Three.js 0.187 da npm (aggiornato dalla r128 nella fase 1 del piano; richiede WebGL2, cioè iPhone con iOS 15 o successivo).
 - Le variabili condivise che cambiano si modificano con funzioni apposite: `setCtrl`, `resetTap`, `setPeriodLen`, `setDiff`, `setSpeed`, `setDpr`.
 - Colori: gestione moderna di Three.js (immagini marcate sRGB, luci ritarate: `LUCE_CIELO`, `LUCE_SOLE` in `grafica/scena.js`) per restare uguali alla v0.9.
 - Il caso del gioco passa tutto da `rnd` (`costanti.js`): mai usare `Math.random` direttamente nel codice del gioco, altrimenti la verifica non è più ripetibile.
 - Acqua (`grafica/acqua.js`, adattata da Water2 di Three.js): tre livelli scelti dal menu ("Acqua: Auto/Alta/Media/Bassa") o calati in automatico se il dispositivo fatica (ordine dei tagli in `main.js`: riflesso, poi risoluzione, poi acqua semplice). Alta = riflesso + vista sott'acqua deformata; media = solo vista sott'acqua; bassa = acqua della v0.9.
 - Strati di disegno (`STRATO_*` in `acqua.js`): ogni oggetto nuovo va messo nello strato giusto (vasca, corpi, sopra l'acqua, solo vista), altrimenti non compare nel riflesso o sott'acqua, oppure viene ridisegnato inutilmente.
 - Telecamera: laterale alta e vicina in orizzontale; in verticale da dietro e dall'alto. Giocatore controllato indicato da una freccia bianca sopra la testa. Schiuma disegnata in un solo oggetto.
+- Giocatori: corpo con scheletro (`grafica/corpo.js`), manichino "Y Bot" di Mixamo ridotto a 5.000 triangoli in `src/grafica/modelli/giocatore.glb` (circa 300 kB, con le animazioni `fermo` e `nuoto`). `pose.js` calcola ancora le giunture (da lì parte anche la palla, quindi il gioco non cambia) e `corpo.js` le applica alle ossa. Cilindri e sfere restano solo come riserva finché il modello si carica o se non si carica.
+- Per rifare o ampliare il modello: `npm run converti-modello -- <cartella con modello.fbx e le animazioni .fbx>` (ogni file diventa un'animazione col nome del file). Gli FBX di Mixamo NON vanno nel repository (licenza): Ale li aveva caricati su `main`, sono stati tolti ma restano nella cronologia di git.
 - Contatore FPS: si accende dal menu (o con `?fps` nell'indirizzo); mostra fotogrammi al secondo, qualità di disegno, livello dell'acqua, oggetti disegnati e triangoli.
 - `legacy/index.html` è la v0.9 in un solo file e `legacy/three-r128.min.js` la sua libreria: termine di paragone, non modificarli.
 - Pubblicazione: GitHub Actions (`.github/workflows/pages.yml`) verifica e pubblica su GitHub Pages a ogni modifica di `main`.
@@ -78,7 +80,8 @@ Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili
 
 ## Come lavorare
 - Dopo ogni modifica: `npm run lint` e `npm run verifica` (partite simulate col caso bloccato + 5 screenshot confrontati con `tests/screenshot/riferimento/`; immagini affiancate prima/dopo in `tests/screenshot/confronto/`). Guarda sempre gli screenshot.
-- Finché regole, fisica e IA non cambiano, le partite simulate devono risultare "identiche alla v0.9" (la verifica tiene fuori dal conto i numeri casuali usati da Three.js). Attenzione: anche la grafica del gioco consuma numeri casuali (schiuma, pose) e la posizione della mano decide da dove parte la palla, quindi cambiando la grafica le partite smetteranno di coincidere: da quel momento usare `--no-legacy` e guardare statistiche ed errori.
+- Dalla v0.11 `npm run verifica` non confronta più le partite con la v0.9 (la grafica dei corpi cambia di poco il punto da cui parte la palla); `npm run verifica:legacy` fa ancora il confronto, utile per capire se una modifica tocca il gioco: oggi punteggi e tiri delle 6 partite coincidono ancora con la v0.9. `npm run primi-piani` scatta i primi piani di fermo, nuoto, nuoto con palla, dorso, tiro e portiere.
+- Storico: finché regole, fisica e IA non cambiavano, le partite simulate dovevano risultare "identiche alla v0.9" (la verifica tiene fuori dal conto i numeri casuali usati da Three.js). Attenzione: anche la grafica del gioco consuma numeri casuali (schiuma, pose) e la posizione della mano decide da dove parte la palla, quindi cambiando la grafica le partite smetteranno di coincidere: da quel momento usare `--no-legacy` e guardare statistiche ed errori.
 - Cambiamento d'aspetto voluto: `npm run verifica:aggiorna` (i nuovi screenshot diventano il riferimento).
 - Nell'ambiente cloud cdnjs è bloccato, npm funziona; Chromium gira senza scheda grafica (opzioni swiftshader già nello script).
 - Dati dell'ultima verifica (6 partite): conversione dei tiri 37% (obiettivo 40%; varia molto da un gruppo di partite all'altro: 31% in quello precedente); senza comandi l'Italia non segna mai.
@@ -106,7 +109,9 @@ Limiti di fluidità da rispettare in tutte le fasi (iPhone): 60 fotogrammi al se
 - Rischi iPhone: è la fase più pesante. Water2 ridisegna la scena tre volte per fotogramma. Contromisure: riflesso e rifrazione a metà risoluzione, riflesso solo delle cose ferme, e livelli di qualità (alta = Water2 completo, media = solo rifrazione, bassa = acqua di oggi). Se anche così l'iPhone di Ale resta sotto i 30, si tiene il livello medio come standard.
 - Da Ale: prova su iPhone in verticale e orizzontale, con numero di fotogrammi e uno screenshot.
 
-### Fase 3 — Giocatori con corpo vero e scheletro
+### Fase 3 — Giocatori con corpo vero e scheletro — FATTA (v0.11), in attesa della prova di Ale su iPhone
+- Esito: 6 partite simulate senza errori, con gli stessi punteggi di prima. Oggetti disegnati per fotogramma da circa 550 a circa 130; triangoli circa 150.000 con l'acqua alta (14 corpi da 5.000 disegnati due volte: scena e vista sott'acqua), cioè al limite che ci siamo dati; muovere i 14 scheletri costa circa 0,6 millesimi di secondo per fotogramma sul computer di prova. Se l'iPhone cala: ridurre i triangoli (secondo numero di `converti-modello`) o animare a ritmo dimezzato i giocatori lontani.
+- Non riuscito o da migliorare: il dorso di attesa si nota poco da lontano; la bracciata è solo accelerata (non accorciata né con gomito più alto); il manichino resta un manichino (niente volto, superficie un po' sfaccettata da vicino); le dita non si muovono.
 - A schermo: al posto di cilindri e sfere, un corpo umano continuo con calottina, costume e numero; da fermo galleggia in verticale, in movimento nuota a crawl (animazioni registrate da persone vere).
 - Librerie: caricatore GLTF e SkeletonUtils di Three.js; glTF-Transform per alleggerire e convertire i file; modello e animazioni da Mixamo.
 - Rischi iPhone: 14 corpi animati sono il secondo costo più grosso. Il modello Mixamo è troppo dettagliato e va ridotto a circa 5.000–8.000 triangoli, un solo materiale; i giocatori lontani si animano a ritmo dimezzato. Rischio di qualità: Mixamo non ha un nuotatore in costume, quindi si parte dal manichino "Y Bot" colorato da noi (pelle, costume, calottina aggiunta): figura umana credibile a distanza di gioco, non un atleta fotorealistico. Rischio licenza: i file Mixamo si possono usare liberamente in un gioco ma non ridistribuire così come sono; nel repository pubblico va solo il file finale convertito, gli originali Ale li manda in chat.
@@ -177,4 +182,13 @@ Effetti minimi da rispettare (verificali con partite simulate):
 Interfaccia:
 - Pannello del giocatore controllato: nome, ruolo, OVR, 3 statistiche chiave del ruolo, mano.
 - Nel menu: rosa della squadra con OVR e statistiche (schede tipo figurine).
+
+## Come si muove un pallanuotista (indicazioni di Ale, ex nuotatore) — valgono per ogni lavoro sulle animazioni
+1. Da fermo NON si galleggia come in "Treading Water" (gambe insieme, a rana): si usa la bicicletta (eggbeater), calcio a rana alternato, una gamba dopo l'altra, spinta continua, testa ferma e alta. Di "Treading Water" si usa solo la parte sopra la vita (braccia che remano, spalle); le gambe si muovono osso per osso con il ciclo alternato, più ampio e veloce quando il giocatore si alza per tirare, marcare o lottare.
+2. In nuotata: stile libero da pallanuoto, testa alta fuori dall'acqua, bracciata più corta e frequente, gomito alto. Chi porta palla la spinge davanti alla testa, tra le braccia.
+3. Dorso di attesa della palla (non esiste in Mixamo): semi-seduti sul dorso, gambe a bicicletta, braccia che remano ai lati, sguardo verso la palla. Per chi aspetta il passaggio o arretra di poco.
+4. Tiro, beduina, palombella, finta, parata e lotta al centro: sono i gesti calcolati in `pose.js` (fasi del tiro dalla tesi Patumi), riportati sullo scheletro. Durante il tiro il corpo esce dall'acqua fino al petto.
+5. Fuori dall'acqua restano solo testa, collo e spalle, tranne quando ci si alza per tirare o parare (come nel riferimento).
+6. I passaggi tra uno stato e l'altro (fermo, nuoto, dorso, tiro) devono essere sfumati, senza scatti.
+Come è realizzato oggi (`grafica/corpo.js`): animazione `fermo` solo per la parte alta, mescolata a metà con la remata raccolta davanti al petto; gambe a bicicletta calcolate; animazione `nuoto` accelerata (un ciclo di bracciata da 4,2 secondi portato a circa 1–1,3) con testa raddrizzata; dorso, tiro, parata e lotta calcolati; braccia che passano dall'animazione al gesto calcolato con i pesi `brD`/`brS` di `pose.js`.
 

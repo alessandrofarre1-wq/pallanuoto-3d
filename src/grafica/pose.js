@@ -1,5 +1,6 @@
 // Pose e animazioni: nuotata, posizione verticale, gesti di tiro e passaggio
 import { VIS, clamp, dist, rnd } from '../costanti.js';
+import { aggiornaNumero, muoviCorpo } from './corpo.js';
 import { setSeg } from './modello.js';
 import { spawnFoam } from './scena.js';
 import { ball, fight, game } from '../stato.js';
@@ -30,7 +31,7 @@ export const THROW={
   colonnello:{K:[-0.25,0.25,0.10],R:[0.50,0.30,0.0],F:[0.55,-0.10,-0.05],lift:0,tw0:0,tw1:0}         // tiro in nuotata
 };
 export function computePose(p,dt,t){
-  const sp=Math.hypot(p.vx,p.vz), hold=ball.holder===p, act=p.act, J={ball:null,ballHand:false,swim:false};
+  const sp=Math.hypot(p.vx,p.vz), hold=ball.holder===p, act=p.act, J={ball:null,ballHand:false,swim:false,brD:0,brS:0};   // brD/brS: quanto il braccio destro/sinistro segue il gesto calcolato qui (0 = animazione registrata)
   let th=null,c=0,w=0,f=0;
   if(act){ th=THROW[act.kind]||THROW.shot; c=act.wind>0?clamp(act.t/act.wind,0,1):1; w=ease(clamp((act.t-act.wind)/0.09,0,1)); f=clamp((act.t-act.wind-0.09)/0.3,0,1); }
   else if(p.charging){ th=THROW[shotKind(p)==='beduina'?'beduina':'shot']; c=clamp(p.chargeT/0.5,0,1); }
@@ -48,6 +49,7 @@ export function computePose(p,dt,t){
     J.kR=add3(J.hip,[-0.38,-0.02+0.05*Math.sin(ps),0.1]);  J.fR=add3(J.kR,[-0.38,0.08*Math.sin(ps+1),0.02]);
     J.kL=add3(J.hip,[-0.38,-0.02-0.05*Math.sin(ps),-0.1]); J.fL=add3(J.kL,[-0.38,-0.08*Math.sin(ps+1),-0.02]);
     if(hold) J.ball=[0.6,0.1,0];      // palla portata davanti alla testa, tra le braccia
+    if(th) J.brD=1;
   } else {
     // posizione verticale: gambe a bicicletta, mani che remano
     const bob=Math.sin(t*2.2+p.uid)*0.025, eg=t*5.5+p.uid;
@@ -64,14 +66,31 @@ export function computePose(p,dt,t){
     J.sR=add3(J.chest,[sx,0,sz]); J.sL=add3(J.chest,[-sx,0,-sz]);
     hR=add3(J.sR,[0.28+0.05*Math.sin(eg),-0.05-lift*0.6,0.14+0.08*Math.cos(eg)]); hintR=[0,-1,0.6];
     hL=add3(J.sL,[0.28-0.05*Math.sin(eg),-0.05-lift*0.6,-0.14-0.08*Math.cos(eg)]); hintL=[0,-1,-0.6];
-    if(gkSave){ hR=add3(J.chest,[0.2,0.5,lean*0.6+0.14]); hL=add3(J.chest,[0.2,0.5,lean*0.6-0.14]); hintR=[0,-0.3,1]; hintL=[0,-0.3,-1]; }
-    else if(p.isGK&&!hold){ hR=add3(J.sR,[0.15,0.05,0.42]); hL=add3(J.sL,[0.15,0.05,-0.42]); }
-    else if(defUp||p.biteUntil>game.time){ hR=add3(J.sR,[0.22,0.52,-0.05]); hintR=[0,-0.2,1]; }
-    else if(hold&&!th){ hR=add3(J.sR,HOLD); hintR=[-0.3,-0.6,1]; J.ballHand=true; }
-    if(th){ hL=add3(J.sL,[0.34,-0.04-lift*0.6,-0.08]); }      // il braccio libero fa appoggio sull'acqua
+    J.brD=J.brS=0.5;      // da fermi: metà animazione registrata (braccia larghe che remano), metà remata raccolta davanti al petto
+    if(gkSave){ hR=add3(J.chest,[0.2,0.5,lean*0.6+0.14]); hL=add3(J.chest,[0.2,0.5,lean*0.6-0.14]); hintR=[0,-0.3,1]; hintL=[0,-0.3,-1]; J.brD=J.brS=1; }
+    else if(p.isGK&&!hold){ hR=add3(J.sR,[0.15,0.05,0.42]); hL=add3(J.sL,[0.15,0.05,-0.42]); J.brD=J.brS=1; }
+    else if(defUp||p.biteUntil>game.time){ hR=add3(J.sR,[0.22,0.52,-0.05]); hintR=[0,-0.2,1]; J.brD=1; }
+    else if(hold&&!th){ hR=add3(J.sR,HOLD); hintR=[-0.3,-0.6,1]; J.ballHand=true; J.brD=1; }
+    if(th){ hL=add3(J.sL,[0.34,-0.04-lift*0.6,-0.08]); J.brD=1; J.brS=0.7; }      // il braccio libero fa appoggio sull'acqua
     if(fight.active && !th){
-      if(p===fight.def){ hR=add3(J.sR,[0.36,0.14,-0.08]); hL=add3(J.sL,[0.36,0.14,0.08]); hintR=[0,-1,0.5]; hintL=[0,-1,-0.5]; J.hip[1]+=0.06; J.chest[0]+=0.06; }
-      else if(p===fight.boa){ hL=add3(J.sL,[-0.28,-0.05,-0.12]); hintL=[0.3,-1,-0.6]; if(!hold) hR=add3(J.sR,[-0.26,-0.05,0.12]); J.hip[0]-=0.08; }
+      if(p===fight.def){ J.brD=J.brS=1; hR=add3(J.sR,[0.36,0.14,-0.08]); hL=add3(J.sL,[0.36,0.14,0.08]); hintR=[0,-1,0.5]; hintL=[0,-1,-0.5]; J.hip[1]+=0.06; J.chest[0]+=0.06; }
+      else if(p===fight.boa){ J.brS=1; if(!hold) J.brD=1; hL=add3(J.sL,[-0.28,-0.05,-0.12]); hintL=[0.3,-1,-0.6]; if(!hold) hR=add3(J.sR,[-0.26,-0.05,0.12]); J.hip[0]-=0.08; }
+    }
+    // dorso di attesa: semi-seduti sul dorso, braccia che remano ai lati, sguardo alla palla.
+    // Lo usa chi arretra piano e chi, sul perimetro, aspetta il passaggio da un compagno lontano.
+    const libero = !th && !hold && !p.isGK && !defUp && !(p.biteUntil>game.time) && !p.excluded && !(fight.active&&(p===fight.def||p===fight.boa));
+    let vuoleDorso=false;
+    if(libero){
+      const h=ball.holder, indietro = sp>0.22 && (p.vx*p.fx+p.vz*p.fz) < -0.3*sp;
+      vuoleDorso = indietro || (!!h && h.team===p.team && p.i>=4 && sp<0.4 && dist(p,h)>3);
+    }
+    p.dorsoK=(p.dorsoK||0)+((vuoleDorso?1:0)-(p.dorsoK||0))*Math.min(1,dt*3.5);
+    const d=libero?ease(p.dorsoK):0;
+    if(d>0.01){
+      J.hip=mix3(J.hip,[0.20,-0.40+bob,0],d); J.chest=mix3(J.chest,[-0.16,-0.12+bob,0],d); J.head=mix3(J.head,[-0.30,0.10+bob,0],d);
+      J.sR=add3(J.chest,[0,0,0.2]); J.sL=add3(J.chest,[0,0,-0.2]);
+      hR=mix3(hR,add3(J.sR,[0.10+0.05*Math.sin(eg),-0.10,0.40+0.08*Math.cos(eg)]),d); hL=mix3(hL,add3(J.sL,[0.10-0.05*Math.sin(eg),-0.10,-0.40-0.08*Math.cos(eg)]),d);
+      hintR=[-0.4,-0.5,1]; hintL=[-0.4,-0.5,-1]; J.brD=J.brS=d; J.dorso=d;
     }
     for(const side of [1,-1]){
       const a=eg+(side>0?0:Math.PI);
@@ -95,12 +114,15 @@ export function updateRig(p,dt,t){
   const J=p.J, k=1-Math.exp(-dt*(p.act?34:16));
   for(const key of JK){ const a=J[key], b=T[key]; a[0]+=(b[0]-a[0])*k; a[1]+=(b[1]-a[1])*k; a[2]+=(b[2]-a[2])*k; }
   R.g.position.set(p.x,0,p.z); R.g.rotation.y=Math.atan2(-p.fz,p.fx);
-  setSeg(R.torso,J.hip,J.chest); R.chest.position.set(J.chest[0],J.chest[1],J.chest[2]); R.pelvis.position.set(J.hip[0],J.hip[1],J.hip[2]);
-  setSeg(R.bar,J.sL,J.sR); R.shR.position.set(J.sR[0],J.sR[1],J.sR[2]); R.shL.position.set(J.sL[0],J.sL[1],J.sL[2]);
-  setSeg(R.uaR,J.sR,J.eR); setSeg(R.faR,J.eR,J.hR); setSeg(R.uaL,J.sL,J.eL); setSeg(R.faL,J.eL,J.hL);
-  R.haR.position.set(J.hR[0],J.hR[1],J.hR[2]); R.haL.position.set(J.hL[0],J.hL[1],J.hL[2]);
-  setSeg(R.thR,J.hip,J.kR); setSeg(R.snR,J.kR,J.fR); setSeg(R.thL,J.hip,J.kL); setSeg(R.snL,J.kL,J.fL);
-  R.head.position.set(J.head[0],J.head[1],J.head[2]);
+  if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)) muoviCorpo(R,J,T,dt,Math.hypot(p.vx,p.vz)); }
+  else {
+    setSeg(R.torso,J.hip,J.chest); R.chest.position.set(J.chest[0],J.chest[1],J.chest[2]); R.pelvis.position.set(J.hip[0],J.hip[1],J.hip[2]);
+    setSeg(R.bar,J.sL,J.sR); R.shR.position.set(J.sR[0],J.sR[1],J.sR[2]); R.shL.position.set(J.sL[0],J.sL[1],J.sL[2]);
+    setSeg(R.uaR,J.sR,J.eR); setSeg(R.faR,J.eR,J.hR); setSeg(R.uaL,J.sL,J.eL); setSeg(R.faL,J.eL,J.hL);
+    R.haR.position.set(J.hR[0],J.hR[1],J.hR[2]); R.haL.position.set(J.hL[0],J.hL[1],J.hL[2]);
+    setSeg(R.thR,J.hip,J.kR); setSeg(R.snR,J.kR,J.fR); setSeg(R.thL,J.hip,J.kL); setSeg(R.snL,J.kL,J.fL);
+    R.head.position.set(J.head[0],J.head[1],J.head[2]);
+  }
   R.spr.position.set(J.head[0],J.head[1]+0.3,J.head[2]);
   // posizione della palla in mano / davanti al nuotatore (coordinate mondo)
   let l=null;

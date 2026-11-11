@@ -4,6 +4,8 @@
 // Opzioni: --screenshot-non-bloccanti (differenze negli screenshot = solo avviso), --no-legacy (non confrontare le partite con la v0.9 in legacy/), --riferimento-da-legacy
 // (rifà gli screenshot di riferimento dalla v0.9), --partite=N (quante partite per tipo, predefinito 3).
 //
+// Solo la prima partita di ogni tipo muove anche gli scheletri dei giocatori (è lenta); le altre provano regole, fisica e IA.
+//
 // Come funziona: il caso (Math.random) e l'orologio sono sostituiti con versioni fisse, così la stessa
 // partita si ripete identica. Finché le regole non cambiano, la versione nuova deve giocare le STESSE
 // partite della v0.9 (stessi punteggi, stesse posizioni fotogramma per fotogramma).
@@ -40,8 +42,8 @@ function initPagina({ seed, legacy }) {
   window.requestAnimationFrame = cb => { window.__raf = cb; return 1; };
   window.__step = n => { for (let i = 0; i < n; i++) { window.__frame++; window.__raf(window.__frame * 1000 / 60); } };
 }
-function giocaPartita({ bot, seed, maxFrames }) {
-  const H = window.__H; H.renderer.render = () => {};
+function giocaPartita({ bot, seed, maxFrames, senzaCorpi }) {
+  const H = window.__H; H.renderer.render = () => {}; H.senzaCorpi = senzaCorpi;
   // eventi: ogni messaggio a schermo viene contato
   const eventi = {}, msg = document.getElementById('msg');
   const d = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
@@ -111,7 +113,7 @@ async function apri(versione, vista, seed) {
     await pg.evaluate('window.__H = { game, teams, ball, allPlayers, fight, renderer, get ctrl(){ return ctrl; } }');
   } else {
     await pg.goto(urlNuova);
-    await pg.waitForFunction('window.__pallanuoto && window.__raf');
+    await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto');
     await pg.evaluate('window.__H = window.__pallanuoto');
   }
   return pg;
@@ -143,7 +145,7 @@ const conLegacy = !opt('no-legacy') && fs.existsSync(LEGACY);
 console.log(`\nPartite simulate (${N_PARTITE} senza comandi + ${N_PARTITE} con un giocatore finto che preme tasti a caso)`);
 let totTiri = 0, totGol = 0; const totEventi = {};
 for (const bot of [false, true]) for (let s = 1; s <= N_PARTITE; s++) {
-  const gioca = async v => { const pg = await apri(v, 'desktop', s * 1000 + (bot ? 1 : 0)); const r = await pg.evaluate(giocaPartita, { bot, seed: s * 77 + 5, maxFrames: 60 * 60 * 25 }); await pg.context().close(); return r; };
+  const gioca = async v => { const pg = await apri(v, 'desktop', s * 1000 + (bot ? 1 : 0)); const r = await pg.evaluate(giocaPartita, { bot, seed: s * 77 + 5, maxFrames: 60 * 60 * 25, senzaCorpi: s > 1 }); await pg.context().close(); return r; };
   const n = await gioca('nuova');
   totTiri += n.tiri; totGol += n.gol; for (const k in n.eventi) totEventi[k] = (totEventi[k] || 0) + n.eventi[k];
   let esito = '';
