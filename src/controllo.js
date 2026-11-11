@@ -72,11 +72,21 @@ export function humanControl(p,dt){
     p.voloPronto = inp.shoot && ball.state==='flight' && ball.kind==='pass' && ball.target===p;
     const h=ball.holder;
     if(pressed('pass') && h && fightOn(p,h)){ p.aggrT=game.time+0.8; showMsg('<span style="font-size:22px">Trattieni il centroboa…</span>',0.4); }
-    else if(pressed('pass') && h && h.team!==p.team && !h.isGK){
-      const d=dist(p,h);
-      if(d<=1.35){ if(!tackle(p,h,{force:true})) showMsg('<span style="font-size:22px">Contrasto: aspetta un attimo</span>',0.4); }
-      else if(d<3.5){ p.lunge=game.time+1.3; }      // slancio verso il portatore, il contrasto parte appena arriva
-      else showMsg('Troppo lontano',0.5);
+    else {
+      // CONTRASTO: un tocco = provare a rubare palla; tenuto premuto (un terzo di secondo) = fallo voluto per fermare l'azione
+      if(pressed('pass')) p.contrDa=game.time;
+      if(p.contrDa!=null){
+        const tenuto=inp.pass && game.time-p.contrDa>=0.33;
+        if(tenuto||released('pass')||!inp.pass){
+          p.contrDa=null;
+          if(h && h.team!==p.team && !h.isGK){
+            const d=dist(p,h);
+            if(d<=1.35){ if(tackle(p,h,{voluto:tenuto})===false) showMsg('<span style="font-size:22px">Contrasto: aspetta un attimo</span>',0.4); }
+            else if(d<3.5){ p.lunge=game.time+1.3; p.lungeVoluto=tenuto; }      // slancio verso il portatore, il contrasto parte appena arriva
+            else showMsg('Troppo lontano',0.5);
+          }
+        }
+      }
     }
   }
 }

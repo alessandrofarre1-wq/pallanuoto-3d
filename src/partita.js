@@ -1,5 +1,5 @@
 // ================= CICLO DI GIOCO =================
-import { whistle } from './audio.js';
+import { bip, whistle } from './audio.js';
 import { humanControl, updateCtrl } from './controllo.js';
 import { DIFF, GW, MARK, PERIOD_LEN, clamp, dist, rnd } from './costanti.js';
 import { movePlayer, separate, updateBall } from './fisica.js';
@@ -8,7 +8,8 @@ import { pos01, rif01, aiCarrier, aiTarget, closestTo, manUp, startCut, steer } 
 import { inp, pollInput, pressed, released } from './input.js';
 import { fightOn, updateFight } from './lotta.js';
 import { endMatch } from './menu.js';
-import { areaFoul, callPlay, deadBall, giveBall, kickoff, reenter, tackle, timeout } from './regole.js';
+import { areaFoul, callPlay, deadBall, giveBall, kickoff, latoContrasto, pallaEsposta, reenter, tackle, timeout } from './regole.js';
+import { difensoriDavanti } from './statistiche.js';
 import { allPlayers, ball, ctrl, game, goalX, other, setCtrl, teams } from './stato.js';
 import { doShoot, startAct, updateActs } from './tiri.js';
 export function update(dt){
@@ -86,7 +87,7 @@ export function update(dt){
       const h=ball.holder;
       if(p.lunge>game.time && h && h.team!==p.team){
         const dx=h.x-p.x, dz=h.z-p.z, d=Math.hypot(dx,dz)||1;
-        if(d<=1.3){ p.lunge=0; tackle(p,h,{force:true}); if(game.state!=='play') return; }
+        if(d<=1.3){ p.lunge=0; tackle(p,h,{voluto:p.lungeVoluto}); if(game.state!=='play') return; }
         movePlayer(p,dx/d,dz/d,true,dt);
       } else { p.lunge=0; movePlayer(p,inp.x,inp.z,inp.sprint,dt); }
       continue;
@@ -111,7 +112,17 @@ export function update(dt){
     if(ball.holder && ball.holder.team!==p.team && !p.isGK && !ball.holder.isGK){
       if(fightOn(p,ball.holder)) continue;
       const marking = other(p.team).players[MARK[p.i]]===ball.holder;
-      if((marking||dist(p,ball.holder)<0.9) && dist(p,ball.holder)<1.0 && rnd()<dt*1.6*(p.team.defPlay===2?1.8:1)) tackle(p,ball.holder);
+      if((marking||dist(p,ball.holder)<0.9) && dist(p,ball.holder)<1.0){
+        // il computer difende con la stessa logica: prova a rubare quando la palla è esposta e non arriva da dietro; chi ha poca
+        // Disciplina ci prova anche quando non dovrebbe; in controfuga, superato, spende il fallo per fermare l'azione
+        const c=ball.holder, lato=latoContrasto(p,c), palla=pallaEsposta(c), dis=(p.s.dis-40)/59;
+        const fuga=game.time-(game.possT||0)<11 && difensoriDavanti(c)<=1 && Math.abs(goalX(c.team)-c.x)>6.5;
+        if(fuga && rnd()<dt*(1.2+1.2*(p.s.dif-40)/59)) tackle(p,c,{voluto:true});
+        else {
+          const voglia=(lato==='dietro'?0.25+0.9*(1-dis):1)*(palla==='alzata'?0.3+0.8*(1-dis):palla==='palleggio'?1.4:1);
+          if(rnd()<dt*1.5*voglia*(p.team.defPlay===2?1.8:1)) tackle(p,c);
+        }
+      }
       if(game.state!=='play') return;
     }
   }
@@ -136,7 +147,7 @@ export function update(dt){
   if(game.state!=='play') return;
   // tempo per l'azione
   if(game.possTeam && game.shot<=0 && ball.state==='held'){
-    const opp=other(game.possTeam); whistle(0.4); showMsg('Tempo d\'azione scaduto',1.2);
+    const opp=other(game.possTeam); whistle(0.4); bip(330,0.5,0.07); showMsg(`Tempo d'azione scaduto<span style="font-size:20px;display:block">palla ${opp.short}</span>`,1.2);
     const r=closestTo(opp,ball,false); ball.state='dead';
     deadBall(1.0,()=>giveBall(r));
   } else if(game.possTeam && game.shot<=0 && ball.state!=='flight'){
