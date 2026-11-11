@@ -1,9 +1,9 @@
 // ================= REGOLE / FASI =================
+import { riservaPer, vesti } from './giocatori.js';
 import { registraEspulsione, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
 import { whistle } from './audio.js';
 import { autoSwitch, resetTap } from './controllo.js';
 import { ATK, BRV, DEFN, DIFF, EXCL_TIME, FORM, HL, HW, KICK_Z, SHOT_CLOCK, SHOT_RESET, clamp, dist, rnd } from './costanti.js';
-import { numberTexture } from './grafica/modello.js';
 import { showMsg } from './hud.js';
 import { closestTo } from './ia.js';
 import { rumble } from './input.js';
@@ -56,12 +56,10 @@ export function reenter(p,keepPos){
   if(!keepPos){ p.x=ownGoalX(p.team)+p.team.dir*0.8; p.z=-HW+0.5; p.vx=p.vz=0; }
   p.lagX=p.x; p.lagZ=p.z;
 }
-export function substitute(p){   // terzo fallo personale: entra un cambio (art. 16.2)
-  const t=p.team; t.subs++;
-  p.num=8+((t.subs-1)%6); p.name=t.bench[(t.subs-1)%6]; p.pf=0; p.stamina=1;
-  p.st={ spd:0.75+rnd()*0.25, sht:0.7+rnd()*0.3, pas:0.7+rnd()*0.3, def:0.7+rnd()*0.3, frz:0.6+rnd()*0.25+((p.i===1||p.i===6)?0.15:0) };
-  const bg = t.idx===0 ? '#1d4fd6' : '#f2f2f2', fg = t.idx===0 ? '#fff' : '#111';
-  p.mesh.spr.material.map=numberTexture(p.num,bg,fg); p.mesh.spr.material.needsUpdate=true;
+export function substitute(p){   // terzo fallo personale: entra un cambio dalla panchina (art. 16.2)
+  const t=p.team, g=riservaPer(p); t.subs++;
+  p.pf=0; p.stamina=1;
+  if(g) vesti(p,g);
 }
 export function cornerThrow(att){   // art. 13
   whistle(0.25); showMsg("Tiro d'angolo",1.1);

@@ -1,7 +1,7 @@
 // Modello 3D del giocatore (cilindri e sfere) e numero di calottina
 import * as THREE from 'three';
 import { STRATO_CORPI, STRATO_SOLO_VISTA } from './acqua.js';
-import { attaccaCorpo } from './corpo.js';
+import { aggiornaColori, attaccaCorpo } from './corpo.js';
 import { VIS, rnd } from '../costanti.js';
 import { scene } from './scena.js';
 export function numberTexture(n,bg,fg){
@@ -17,14 +17,14 @@ export function setSeg(m,a,b){
   m.position.set((a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2); m.scale.set(1,L,1);
   m.quaternion.setFromUnitVectors(UPV,_dv.divideScalar(L));
 }
-export function makePlayerMesh(capColor,num,team){
+export function makePlayerMesh(num,team){
   const g=new THREE.Group();
   const skin=new THREE.MeshPhongMaterial({color:SKIN[Math.floor(rnd()*SKIN.length)],shininess:55,specular:0x555555});
-  const suit=new THREE.MeshPhongMaterial({color:team.idx===0?0x0b2a6f:0x8a1020,shininess:30});
-  const capM=new THREE.MeshPhongMaterial({color:capColor,shininess:40});
+  const suit=new THREE.MeshPhongMaterial({color:0x0b2a6f,shininess:30});
+  const capM=new THREE.MeshPhongMaterial({color:0xf4f4f4,shininess:40});
   const cyl=(rt,rb)=>{ const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,1,7),skin); g.add(m); return m; };
   const sph=(r,mat)=>{ const m=new THREE.Mesh(new THREE.SphereGeometry(r,9,7),mat||skin); g.add(m); return m; };
-  const R={ g,
+  const R={ g, suit, capM,
     torso:cyl(0.165,0.125), bar:cyl(0.078,0.078), chest:sph(0.165), pelvis:sph(0.135,suit),
     shR:sph(0.082), shL:sph(0.082), uaR:cyl(0.043,0.052), uaL:cyl(0.043,0.052), faR:cyl(0.034,0.042), faL:cyl(0.034,0.042),
     haR:sph(0.05), haL:sph(0.05),
@@ -34,15 +34,18 @@ export function makePlayerMesh(capColor,num,team){
   head.add(new THREE.Mesh(new THREE.SphereGeometry(0.105,14,12),skin));
   const cap=new THREE.Mesh(new THREE.SphereGeometry(0.113,14,10,0,Math.PI*2,0,Math.PI*0.6),capM); cap.rotation.z=0.25; head.add(cap);
   g.add(head); R.head=head;
-  const bg = team.idx===0 ? '#1d4fd6' : '#f2f2f2', fg = team.idx===0 ? '#fff' : '#111';
-  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:numberTexture(num,bg,fg),depthTest:false,transparent:true}));
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:numberTexture(num,'#f2f2f2','#111'),depthTest:false,transparent:true}));
   spr.scale.set(0.2,0.2,1); g.add(spr); R.spr=spr;
   g.traverse(c=>c.layers.set(STRATO_CORPI)); spr.layers.set(STRATO_SOLO_VISTA);
   // corpo con scheletro: quando il modello è caricato prende il posto di cilindri e sfere (che restano come riserva)
   R.vecchi=g.children.filter(c=>c!==spr);
-  const portiere=capColor===0xd62828;
-  attaccaCorpo(R,{ costume:suit.color.getHex(), calottina:capColor, paraorecchie:portiere||team.idx===0?0xf2f2ee:suit.color.getHex(),
-    testo:team.idx===0||portiere?'#fff':'#111' },num,num+team.idx*7);
+  attaccaCorpo(R,{ costume:0x0b2a6f, calottina:0xf4f4f4, paraorecchie:0x0b2a6f, testo:'#111' },num,num+team.idx*7);
   g.scale.setScalar(VIS); scene.add(g);
   return R;
+}
+// colori e numero di un giocatore (cambiano con la nazionale scelta e con le sostituzioni)
+export function coloraGiocatore(R,c,num){
+  R.suit.color.setHex(c.costume); R.capM.color.setHex(c.calottina);
+  R.spr.material.map=numberTexture(num,c.disco,c.discoTesto); R.spr.material.needsUpdate=true;
+  aggiornaColori(R,c,num);
 }

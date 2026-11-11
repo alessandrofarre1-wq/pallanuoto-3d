@@ -78,3 +78,20 @@ body.touch #player{max-width:170px}
 @media (orientation:portrait){ #fps{top:13%} }
 /* telefono in orizzontale: contatore piccolo subito sotto il riquadro del giocatore, sopra il joystick */
 @media (orientation:landscape){ body.touch #fps{top:54px;left:8px;font-size:9.5px;line-height:1.25;padding:2px 6px} body.touch #fps b{font-size:12px} }
+/* scelta delle squadre e rosa nel menu */
+.sel{min-width:170px;font-size:15px;-webkit-appearance:none;appearance:none;text-align:center}
+.sel option{color:#111}
+#rosaBox{margin:6px 0 10px;text-align:left}
+#rosaBox summary{cursor:pointer;text-align:center;font-size:14px;opacity:.85;padding:6px}
+#rosa{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-top:6px}
+.fig{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:6px 8px;font-size:11px;line-height:1.35;position:relative}
+.fig.ris{opacity:.72}
+.fig b{font-size:13px}
+.fig .ov{position:absolute;right:7px;top:5px;font-size:19px;font-weight:800;color:#facc15}
+.fig .st{display:flex;gap:6px;margin-top:3px;font-variant-numeric:tabular-nums}
+.fig .st span{background:rgba(0,0,0,.25);border-radius:4px;padding:1px 4px}
+.fig.camp{border-color:#facc15}
+/* statistiche del giocatore controllato */
+#pstat{font-size:11px;opacity:.85;margin-top:2px;font-variant-numeric:tabular-nums}
+#pstat b{color:#facc15}
+body.touch #pstat{font-size:9.5px}

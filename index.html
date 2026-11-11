@@ -23,6 +23,7 @@
 <div id="fight"><div class="fl"><span id="fdef">DIF</span><b>Lotta al centro</b><span id="fboa">BOA</span></div><div class="fb"><div id="fbar"></div><i></i></div></div>
 <div id="player">
   <div id="pname">—</div>
+  <div id="pstat"></div>
   <div class="et">Resistenza</div>
   <div class="bar" id="stam"><div></div></div>
   <div class="et">Potenza tiro</div>
@@ -46,8 +47,11 @@
 <div id="menu">
   <div class="panel">
     <h1>🤽 Pallanuoto 3D</h1>
-    <div class="sub" id="sub">Prototipo v0.15 · Italia vs Ungheria</div>
+    <div class="sub" id="sub">Prototipo v0.16</div>
     <div id="final" style="display:none"></div>
+    <div class="row"><label>La tua squadra</label><select class="opt sel" id="sqA"></select></div>
+    <div class="row"><label>Avversaria</label><select class="opt sel" id="sqB"></select></div>
+    <details id="rosaBox"><summary>Rosa e statistiche</summary><div id="rosa"></div></details>
     <div class="row"><label>Durata tempo</label>
       <button class="opt" data-len="120">2 min</button><button class="opt on" data-len="180">3 min</button><button class="opt" data-len="300">5 min</button><button class="opt" data-len="480">8 min</button></div>
     <div class="row"><label>Difficoltà</label>

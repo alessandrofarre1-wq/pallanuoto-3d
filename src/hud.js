@@ -1,11 +1,17 @@
 // ================= MESSAGGI / HUD =================
+import { CHIAVE, STAT_NOMI } from './dati/rose.js';
 import { dpr, livelloAcqua, renderer } from './grafica/scena.js';
 import { ATK, DEFN } from './costanti.js';
 import { allPlayers, ctrl, fight, game, teams } from './stato.js';
 export const $ = id => document.getElementById(id);
 export let msgT=0;
 export function showMsg(text,dur=1.4){ const m=$('msg'); m.innerHTML=text; m.style.opacity=1; msgT=dur; }
-$('capA').style.background=teams[0].css; $('capB').style.background=teams[1].css;
+let tacKey='', exclKey='', schedaVista=null;
+export function aggiornaTabellone(){
+  $('capA').style.background=teams[0].css; $('capB').style.background=teams[1].css;
+  $('nameA').textContent=teams[0].short; $('nameB').textContent=teams[1].short; tacKey=''; schedaVista=null;
+}
+aggiornaTabellone();
 export function fmt(s){ s=Math.max(0,Math.ceil(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
 export function updateHUD(){
   $('score').textContent=teams[0].score+' - '+teams[1].score;
@@ -13,7 +19,8 @@ export function updateHUD(){
   $('clock').textContent=fmt(game.clock);
   $('shotclock').textContent=game.possTeam?Math.max(0,Math.ceil(game.shot)):'—';
   if(ctrl){
-    $('pname').textContent='#'+ctrl.num+' '+ctrl.name+' · '+ctrl.role+(ctrl.sprinting?' · ⚡ SPRINT':'');
+    $('pname').textContent='#'+ctrl.num+' '+ctrl.name+' · '+ctrl.role+(ctrl.sprinting?' · ⚡':'');
+    if(ctrl.scheda!==schedaVista){ schedaVista=ctrl.scheda; const s=ctrl.s; $('pstat').innerHTML=`<b>${ctrl.ovr}</b> · `+CHIAVE[ctrl.i].map(k=>`${STAT_NOMI[k].slice(0,3).toUpperCase()} ${s[k]}`).join(' · ')+` · mano ${ctrl.mano==='S'?'sinistra':'destra'}`; }
     $('stam').firstChild.style.width=(ctrl.stamina*100)+'%';
     $('stam').firstChild.style.background= ctrl.stamina>0.5?'#4ade80':ctrl.stamina>0.25?'#facc15':'#ef4444';
     $('power').firstChild.style.width=(ctrl.charging?Math.min(1,ctrl.chargeT/0.9)*100:0)+'%';
@@ -40,7 +47,6 @@ export function updateHUD(){
     $('tac').innerHTML=h;
   }
 }
-export let tacKey='', exclKey='';
 export function tickMsg(dt){ if(msgT>0){ msgT-=dt; if(msgT<=0) $('msg').style.opacity=0; } }
 
 // ================= CONTATORE DI FOTOGRAMMI =================
