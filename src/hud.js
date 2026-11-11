@@ -1,4 +1,5 @@
 // ================= MESSAGGI / HUD =================
+import { dpr, renderer } from './grafica/scena.js';
 import { ATK, DEFN } from './costanti.js';
 import { allPlayers, ctrl, fight, game, teams } from './stato.js';
 export const $ = id => document.getElementById(id);
@@ -41,3 +42,26 @@ export function updateHUD(){
 }
 export let tacKey='', exclKey='';
 export function tickMsg(dt){ if(msgT>0){ msgT-=dt; if(msgT<=0) $('msg').style.opacity=0; } }
+
+// ================= CONTATORE DI FOTOGRAMMI =================
+// Mostra quanti fotogrammi al secondo fa davvero il dispositivo, più i numeri che pesano sulla fluidità:
+// qualità di disegno (risoluzione), oggetti disegnati e triangoli per fotogramma.
+let fpsOn=false, fpsN=0, fpsT0=0, fpsMin=1e9, fpsPrev=0;
+export function setFps(on){
+  fpsOn=!!on; $('fps').style.display=fpsOn?'block':'none'; fpsN=0; fpsT0=0;
+  try{ localStorage.setItem('pallanuoto-fps',fpsOn?'1':'0'); }catch(e){}
+}
+export function fpsIniziale(){
+  let v=false;
+  try{ v=localStorage.getItem('pallanuoto-fps')==='1'; }catch(e){}
+  return v||/[?&]fps\b/.test(location.search);
+}
+export function tickFps(now){
+  if(!fpsOn) return;
+  if(!fpsT0){ fpsT0=now; fpsPrev=now; fpsN=0; fpsMin=1e9; return; }
+  fpsN++; const d=now-fpsPrev; fpsPrev=now; if(d>0) fpsMin=Math.min(fpsMin,1000/d);
+  if(now-fpsT0<500) return;
+  const fps=fpsN*1000/(now-fpsT0), inf=renderer.info.render;
+  $('fps').innerHTML=`<b>${Math.round(fps)}</b> fps (min ${Math.round(fpsMin)})<br>qualità ${dpr.toFixed(2)}<br>${inf.calls} oggetti · ${Math.round(inf.triangles/1000)}k triangoli`;
+  fpsT0=now; fpsN=0; fpsMin=1e9;
+}

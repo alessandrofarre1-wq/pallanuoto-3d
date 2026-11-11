@@ -65,3 +65,6 @@ body.touch #player{bottom:auto;top:8px;left:8px;min-width:140px;font-size:11px;p
   .tb[data-b="cmd"]{right:152px!important;bottom:72px!important;width:50px!important;height:50px!important}
   #msg{font-size:28px;top:24%}
 }
+/* contatore di fotogrammi al secondo (si attiva dal menu) */
+#fps{position:fixed;left:6px;top:25%;background:rgba(5,15,30,.82);border-radius:6px;padding:3px 7px;font-size:11px;font-variant-numeric:tabular-nums;line-height:1.35;z-index:7;pointer-events:none;display:none}
+#fps b{font-size:15px}

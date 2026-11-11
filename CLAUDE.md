@@ -2,10 +2,13 @@
 
 Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Proprietario: Ale, ex nuotatore agonista, non programmatore: spiega le scelte in italiano semplice, senza gergo tecnico, e chiedi conferma prima di cambiamenti grossi di direzione.
 
-## Stato attuale (v0.9.1, novembre 2026)
-- Progetto Vite a moduli in `src/` (stesso identico gioco della v0.9, solo riorganizzato): `costanti`, `stato`, `giocatori`, `regole`, `partita` (ciclo di gioco), `lotta`, `fisica`, `tiri`, `ia`, `controllo` (comandi umani), `input`, `hud`, `menu`, `audio`, `grafica/` (`scena`, `modello`, `pose`, `render`). Three.js r128 da npm (non più da CDN).
+## Stato attuale (v0.9.2, novembre 2026)
+- Progetto Vite a moduli in `src/` (stesso identico gioco della v0.9, solo riorganizzato): `costanti`, `stato`, `giocatori`, `regole`, `partita` (ciclo di gioco), `lotta`, `fisica`, `tiri`, `ia`, `controllo` (comandi umani), `input`, `hud`, `menu`, `audio`, `grafica/` (`scena`, `modello`, `pose`, `render`). Three.js 0.187 da npm (aggiornato dalla r128 nella fase 1 del piano; richiede WebGL2, cioè iPhone con iOS 15 o successivo).
 - Le variabili condivise che cambiano si modificano con funzioni apposite: `setCtrl`, `resetTap`, `setPeriodLen`, `setDiff`, `setSpeed`, `setDpr`.
-- `legacy/index.html` è la v0.9 in un solo file: termine di paragone, non modificarla.
+- Colori: gestione moderna di Three.js (immagini marcate sRGB, luci ritarate: `LUCE_CIELO`, `LUCE_SOLE` in `grafica/scena.js`) per restare uguali alla v0.9.
+- Il caso del gioco passa tutto da `rnd` (`costanti.js`): mai usare `Math.random` direttamente nel codice del gioco, altrimenti la verifica non è più ripetibile.
+- Contatore FPS: si accende dal menu (o con `?fps` nell'indirizzo); mostra fotogrammi al secondo, qualità di disegno, oggetti disegnati e triangoli.
+- `legacy/index.html` è la v0.9 in un solo file e `legacy/three-r128.min.js` la sua libreria: termine di paragone, non modificarli.
 - Pubblicazione: GitHub Actions (`.github/workflows/pages.yml`) verifica e pubblica su GitHub Pages a ogni modifica di `main`.
 - Pubblicato anche come artifact su claude.ai (versioni v0.1 → v0.9).
 - Giocato soprattutto da iPhone, sia in orizzontale sia in verticale, con comandi touch. Supporta anche tastiera e controller (Gamepad API).
@@ -57,7 +60,7 @@ Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili
 
 ## Roadmap concordata
 1. FATTO (v0.9.1): migrazione a progetto vero: Vite, moduli, verifica automatica, GitHub Pages.
-2. Grafica (punto 1 sopra) con verifica a screenshot.
+2. Grafica e fisica realistiche: vedi "Piano grafica e fisica realistiche" in fondo (6 fasi, approvato).
 3. IA più ricca con steering behaviors (Reynolds) e macchine a stati.
 4. Squadre, statistiche, modalità torneo/carriera.
 
@@ -72,12 +75,67 @@ Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili
 
 ## Come lavorare
 - Dopo ogni modifica: `npm run lint` e `npm run verifica` (partite simulate col caso bloccato + 5 screenshot confrontati con `tests/screenshot/riferimento/`; immagini affiancate prima/dopo in `tests/screenshot/confronto/`). Guarda sempre gli screenshot.
-- Finché regole, fisica e IA non cambiano, le partite simulate devono risultare "identiche alla v0.9". Attenzione: anche la grafica consuma numeri casuali (schiuma, pose) e la posizione della mano decide da dove parte la palla, quindi cambiando la grafica le partite smetteranno di coincidere: da quel momento usare `--no-legacy` e guardare statistiche ed errori.
+- Finché regole, fisica e IA non cambiano, le partite simulate devono risultare "identiche alla v0.9" (la verifica tiene fuori dal conto i numeri casuali usati da Three.js). Attenzione: anche la grafica del gioco consuma numeri casuali (schiuma, pose) e la posizione della mano decide da dove parte la palla, quindi cambiando la grafica le partite smetteranno di coincidere: da quel momento usare `--no-legacy` e guardare statistiche ed errori.
 - Cambiamento d'aspetto voluto: `npm run verifica:aggiorna` (i nuovi screenshot diventano il riferimento).
 - Nell'ambiente cloud cdnjs è bloccato, npm funziona; Chromium gira senza scheda grafica (opzioni swiftshader già nello script).
-- Dati dell'ultima verifica (6 partite): conversione dei tiri 31% (obiettivo 40%); senza comandi l'Italia non segna mai.
+- Dati dell'ultima verifica (6 partite): conversione dei tiri 37% (obiettivo 40%; varia molto da un gruppo di partite all'altro: 31% in quello precedente); senza comandi l'Italia non segna mai.
 - Ale gioca da telefono e manda screenshot: usali come verità.
 - Risposte brevi, in italiano, con cosa è cambiato e cosa provare.
+
+## Piano grafica e fisica realistiche (approvato da Ale l'11 novembre 2026)
+Obiettivo: avvicinarsi al riferimento Water Polo Revolution con librerie open source. Una fase per sessione, in quest'ordine. Ogni fase finisce con `npm run verifica`, screenshot prima/dopo mostrati ad Ale e prova di Ale su iPhone; non si passa alla fase dopo senza il suo ok.
+
+Limiti di fluidità da rispettare in tutte le fasi (iPhone): 60 fotogrammi al secondo sui modelli recenti e mai sotto 30 sui vecchi; meno di 100 oggetti disegnati per fotogramma; meno di 150.000 triangoli a schermo; immagini di superficie al massimo 1024 punti; tre livelli di qualità (alta, media, bassa) scelti in automatico. Da qui non si può misurare un iPhone vero: la fase 1 aggiunge un contatore di fotogrammi a schermo, e il numero che Ale legge sul telefono è la verità.
+
+### Fase 1 — Three.js aggiornato, stesso aspetto — FATTA (v0.9.2)
+- Esito: partite simulate ancora identiche alla v0.9; aspetto quasi uguale (scarto medio di colore circa 2%). Misura utile per le fasi dopo: oggi si disegnano circa 350–430 oggetti per fotogramma (limite che ci siamo dati: 100), quasi tutti pezzi dei giocatori: si risolve nella fase 3 con un corpo unico per giocatore.
+- A schermo: quasi niente (colori e luci ritarati per restare come oggi) + contatore di fotogrammi attivabile.
+- Librerie: three da r128 (2021) all'ultima versione (0.187 a novembre 2026). Serve perché acqua con rifrazione, modelli con scheletro e strumenti moderni partono da lì.
+- Rischi: la versione nuova gestisce colori e intensità delle luci in modo diverso, quindi l'aspetto va ritarato a mano con gli screenshot; le partite simulate potrebbero non coincidere più con la v0.9 (cambia il consumo di numeri casuali) e da lì si controllano statistiche ed errori. Fluidità: nessun rischio atteso.
+- Da Ale: niente, solo la prova su iPhone con il numero di fotogrammi.
+
+### Fase 2 — Telecamera e acqua come nel riferimento
+- A schermo: telecamera laterale più vicina (l'acqua riempie lo schermo); acqua trasparente con onde fitte, riflessi e corpi sott'acqua visibili e deformati; giochi di luce sul fondo (caustiche); scia di schiuma più credibile; freccia bianca sopra il giocatore controllato al posto dell'anello.
+- Librerie: Water2 (incluso in Three.js, riflessione + rifrazione). Le caustiche NON esistono pronte in Three.js: si fanno con un piccolo effetto scritto da noi (disegno animato proiettato sul fondo), poco costoso.
+- Rischi iPhone: è la fase più pesante. Water2 ridisegna la scena tre volte per fotogramma. Contromisure: riflesso e rifrazione a metà risoluzione, riflesso solo delle cose ferme, e livelli di qualità (alta = Water2 completo, media = solo rifrazione, bassa = acqua di oggi). Se anche così l'iPhone di Ale resta sotto i 30, si tiene il livello medio come standard.
+- Da Ale: prova su iPhone in verticale e orizzontale, con numero di fotogrammi e uno screenshot.
+
+### Fase 3 — Giocatori con corpo vero e scheletro
+- A schermo: al posto di cilindri e sfere, un corpo umano continuo con calottina, costume e numero; da fermo galleggia in verticale, in movimento nuota a crawl (animazioni registrate da persone vere).
+- Librerie: caricatore GLTF e SkeletonUtils di Three.js; glTF-Transform per alleggerire e convertire i file; modello e animazioni da Mixamo.
+- Rischi iPhone: 14 corpi animati sono il secondo costo più grosso. Il modello Mixamo è troppo dettagliato e va ridotto a circa 5.000–8.000 triangoli, un solo materiale; i giocatori lontani si animano a ritmo dimezzato. Rischio di qualità: Mixamo non ha un nuotatore in costume, quindi si parte dal manichino "Y Bot" colorato da noi (pelle, costume, calottina aggiunta): figura umana credibile a distanza di gioco, non un atleta fotorealistico. Rischio licenza: i file Mixamo si possono usare liberamente in un gioco ma non ridistribuire così come sono; nel repository pubblico va solo il file finale convertito, gli originali Ale li manda in chat.
+- Da Ale, PRIMA della sessione (da computer, su mixamo.com con account Adobe gratuito). I titoli sono le parole da scrivere nella ricerca; non è stato possibile verificarli da qui (il sito richiede l'accesso): se un titolo non c'è, prendere il più simile e dirlo.
+  1. Personaggio "Y Bot" → Download: Format "FBX Binary (.fbx)", Pose "T-pose" → salvare come `modello.fbx`.
+  2. Animazione "Treading Water" → Download: Format "FBX Binary (.fbx)", Skin "Without Skin", 30 fotogrammi al secondo, Keyframe Reduction "none" → `fermo.fbx`.
+  3. Animazione "Swimming" (spuntare "In Place" se c'è), stesse impostazioni → `nuoto.fbx`.
+- Piano B se Mixamo non va: corpo e scheletro costruiti da noi via codice, senza file esterni (meno realistico, nessuna dipendenza).
+
+### Fase 4 — Gesti di gioco: tiro, passaggio, parata, muro, lotta
+- A schermo: caricamento e rilascio del tiro con busto fuori dall'acqua e palla che parte dalla mano nel momento giusto; passaggio; portiere che si allunga sul lato giusto; braccio alzato a murare; mirino sulla porta mentre si carica il tiro (come nel riferimento).
+- Librerie: sistema di animazione di Three.js (miscela tra animazioni, solo parte alta del corpo) + la nostra mira del braccio già esistente, applicata allo scheletro.
+- Rischi: Mixamo non ha gesti di pallanuoto. I lanci disponibili sono fatti in piedi sulla terra: si usa solo busto e braccio sopra le gambe che galleggiano e si corregge la mira via codice. Beduina, palombella, colonnello e lotta al centro restano in gran parte movimenti calcolati da noi (fonte: tesi Patumi). Fluidità: costo piccolo rispetto alla fase 3.
+- Da Ale, prima della sessione (stesse impostazioni della fase 3, "Without Skin"): "Throw" → `tiro.fbx`; "Goalkeeper Overhand Throw" → `passaggio.fbx`; "Goalkeeper Diving Save" → `parata.fbx`; "Goalkeeper Catch" → `presa.fbx`; "Victory" → `esulta.fbx` (facoltativo).
+
+### Fase 5 — Fisica della palla con Rapier
+- A schermo: rimbalzi veri su pali e traversa, palla che schizza e rallenta sull'acqua, galleggia e viene spostata dai corpi, rotazione visibile; rete della porta che si muove quando entra il gol.
+- Librerie: Rapier (motore fisico open source, versione per il web).
+- Rischi: cambia il gioco, non solo l'aspetto: percentuale di gol, parate e intercetti vanno ribilanciati (oggi 31%, obiettivo 40%) e il confronto "identico alla v0.9" finisce definitivamente. Circa 2 MB in più da scaricare al primo avvio. Fluidità: costo trascurabile con pochi oggetti. Consiglio: Rapier per palla, porte e contatto palla-corpi; NON per il movimento dei giocatori in acqua (un motore di corpi rigidi non simula il nuoto: lì resta la nostra fisica, che è già tarata).
+- Da Ale: partite di prova e giudizio sul "peso" della palla.
+
+### Fase 6 — Ambiente, rifiniture e prestazioni
+- A schermo: spruzzi a particelle su tiri e bracciate, ombre morbide sotto i corpi, bordo vasca e luci più curati, porte e corde rifinite; joystick che non copre più la porta in orizzontale (problema aperto n. 4).
+- Librerie: solo Three.js.
+- Rischi iPhone: le particelle trasparenti costano; numero massimo fisso e riduzione automatica. Sessione dedicata anche a misurare e tagliare ciò che pesa.
+- Da Ale: prova lunga su iPhone (surriscaldamento, batteria, cali dopo 10 minuti).
+
+### Cosa NON è raggiungibile nel browser (soprattutto su iPhone)
+- Acqua simulata davvero: onde, spruzzi e schiuma che nascono dalla fisica dei corpi. Si può solo imitare con disegni animati, scie e particelle.
+- Riflessi e caustiche fisicamente esatti (tecniche da console/PC di fascia alta): si usano approssimazioni.
+- Atleti fotorealistici con muscoli, pelle bagnata e volti: richiedono modelli fatti da artisti e troppa potenza per 14 giocatori su telefono.
+- Animazioni registrate da veri pallanuotisti: non esistono gratis; i gesti specifici restano ricostruiti da noi.
+- Tutti gli effetti insieme a 60 fotogrammi al secondo e piena risoluzione su iPhone vecchi: lì si gioca a qualità media o bassa.
+- Pubblico 3D animato, replay in stile televisivo con molte telecamere e qualità da FIFA: fuori portata per un progetto di questo tipo.
+- Nota: il riferimento è un pre-alpha del 2019 per computer; acqua, telecamera e corpi immersi sono raggiungibili, e su quelli si concentra il piano.
 
 ## Squadre nazionali (richiesta di Ale)
 - Dati pronti in `src/dati/squadre.json`: 16 nazionali maschili (classifica Mondiali 2025), forza, colori della bandiera, calottine (bianca, scura, portiere rossa).

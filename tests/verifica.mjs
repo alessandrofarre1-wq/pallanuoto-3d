@@ -19,16 +19,22 @@ const opt = k => args.includes('--' + k);
 const N_PARTITE = +(args.find(a => a.startsWith('--partite=')) || '--partite=3').split('=')[1];
 const DIR = path.join(ROOT, 'tests/screenshot');
 const LEGACY = path.join(ROOT, 'legacy/index.html');
-const THREE_MIN = path.join(ROOT, 'node_modules/three/build/three.min.js');
+// la v0.9 caricava Three.js r128 da internet: qui le si dà la copia locale, con il generatore di codici degli oggetti
+// (funzione interna "ct") sostituito da un contatore, così non consuma il caso del gioco
+const UUID_R128 = 'function ct(){';
+let THREE_R128 = fs.readFileSync(path.join(ROOT, 'legacy/three-r128.min.js'), 'utf8');
+if (THREE_R128.split(UUID_R128).length !== 2) throw new Error('three-r128.min.js: generatore di codici non trovato');
+THREE_R128 = THREE_R128.replace(UUID_R128, UUID_R128 + 'return "u"+(window.__u=(window.__u||0)+1);') + ';window.__riparti();';
 
 // ---------- codice eseguito dentro la pagina ----------
-function initPagina(seed) {
+function initPagina({ seed, legacy }) {
   let a = seed >>> 0;
-  Math.random = () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
-  // il caso riparte da capo nel momento in cui il gioco crea la sua area di disegno: così non conta quanti
-  // numeri casuali ha già consumato la libreria Three.js caricandosi (cambia tra la versione CDN e quella impacchettata)
-  const seme = a, creaNS = document.createElementNS; let primo = true;
-  document.createElementNS = function () { if (primo) { primo = false; a = seme; } return creaNS.apply(this, arguments); };
+  const caso = () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  // Il caso ripetibile deve servire SOLO al gioco, non a Three.js (che pesca numeri casuali per dare un codice a ogni
+  // oggetto, in quantità diversa da versione a versione). Versione nuova: il gioco usa window.__rnd. v0.9: gioco e
+  // Three.js usano entrambi Math.random, quindi lì il generatore di codici di Three.js viene sostituito (vedi apri()).
+  if (legacy) { Math.random = caso; window.__riparti = () => { a = seed >>> 0; }; }
+  else window.__rnd = caso;
   performance.now = () => 0;
   window.__raf = null; window.__frame = 0;
   window.requestAnimationFrame = cb => { window.__raf = cb; return 1; };
@@ -75,9 +81,9 @@ function confrontaImmagini([a, b]) {
   return Promise.all([carica(a), carica(b)]).then(([ia, ib]) => {
     if (ia.width !== ib.width || ia.height !== ib.height) return { diversi: 1, max: 255, nota: 'dimensioni diverse' };
     const px = i => { const c = document.createElement('canvas'); c.width = i.width; c.height = i.height; const x = c.getContext('2d'); x.drawImage(i, 0, 0); return x.getImageData(0, 0, i.width, i.height).data; };
-    const A = px(ia), B = px(ib); let n = 0, max = 0;
-    for (let i = 0; i < A.length; i += 4) { const m = Math.max(Math.abs(A[i] - B[i]), Math.abs(A[i + 1] - B[i + 1]), Math.abs(A[i + 2] - B[i + 2])); if (m > max) max = m; if (m > 12) n++; }
-    return { diversi: n / (A.length / 4), max };
+    const A = px(ia), B = px(ib); let n = 0, max = 0, somma = 0;
+    for (let i = 0; i < A.length; i += 4) { const m = Math.max(Math.abs(A[i] - B[i]), Math.abs(A[i + 1] - B[i + 1]), Math.abs(A[i + 2] - B[i + 2])); if (m > max) max = m; if (m > 12) n++; somma += m; }
+    return { diversi: n / (A.length / 4), max, media: somma / (A.length / 4) };
   });
 }
 
@@ -98,9 +104,9 @@ async function apri(versione, vista, seed) {
   const pg = await ctx.newPage();
   pg.on('pageerror', e => errori.push(`[${versione}] ${e.message}`));
   pg.on('console', m => { if (m.type() === 'error') errori.push(`[${versione}] console: ${m.text()}`); });
-  await pg.addInitScript(initPagina, seed);
+  await pg.addInitScript(initPagina, { seed, legacy: versione === 'legacy' });
   if (versione === 'legacy') {
-    await pg.route('**/three.min.js', r => r.fulfill({ body: fs.readFileSync(THREE_MIN), contentType: 'application/javascript' }));
+    await pg.route('**/three.min.js', r => r.fulfill({ body: THREE_R128, contentType: 'application/javascript' }));
     await pg.goto('file://' + LEGACY);
     await pg.evaluate('window.__H = { game, teams, ball, allPlayers, fight, renderer, get ctrl(){ return ctrl; } }');
   } else {
@@ -151,7 +157,7 @@ for (const bot of [false, true]) for (let s = 1; s <= N_PARTITE; s++) {
   if (!n.finita) fallito(`partita ${s} non arrivata alla fine`);
   console.log(`  partita ${s}${bot ? ' con comandi' : '            '}: ${n.punteggio}, ${n.tiri} tiri, ${Math.round(n.fotogrammi / 60)} s${esito}`);
 }
-console.log(`  totale: ${totGol} gol su ${totTiri} tiri = ${(100 * totGol / totTiri).toFixed(0)}% di conversione`);
+if (totTiri) console.log(`  totale: ${totGol} gol su ${totTiri} tiri = ${(100 * totGol / totTiri).toFixed(0)}% di conversione`);
 console.log('  eventi: ' + Object.entries(totEventi).filter(([k]) => k !== 'conto alla rovescia').sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v}`).join(' · '));
 
 console.log('\nScreenshot');
@@ -165,10 +171,10 @@ for (const scena of SCENE) {
   if (!fs.existsSync(fRif) || opt('aggiorna')) { fs.writeFileSync(fRif, nuovo); console.log(`  ${nome}: salvato come riferimento`); continue; }
   const rif = fs.readFileSync(fRif);
   const c = await pgCfr.evaluate(confrontaImmagini, [dataUrl(rif), dataUrl(nuovo)]);
-  const perc = (c.diversi * 100).toFixed(2);
-  if (c.diversi > 0.005 && opt('screenshot-non-bloccanti')) console.log(`  ! ${nome}: ${perc}% dei punti diverso dal riferimento (solo avviso)`);
-  else if (c.diversi > 0.005) fallito(`${nome}: ${perc}% dei punti diverso dal riferimento${c.nota ? ' (' + c.nota + ')' : ''}`);
-  else console.log(`  ✓ ${nome}: ${c.diversi === 0 && c.max === 0 ? 'identico al riferimento' : perc + '% dei punti diverso (entro la tolleranza)'}`);
+  const perc = (c.diversi * 100).toFixed(2) + (c.media != null ? `% (scarto medio ${c.media.toFixed(1)} su 255)` : '%');
+  if (c.diversi > 0.005 && opt('screenshot-non-bloccanti')) console.log(`  ! ${nome}: ${perc} dei punti diverso dal riferimento (solo avviso)`);
+  else if (c.diversi > 0.005) fallito(`${nome}: ${perc} dei punti diverso dal riferimento${c.nota ? ' (' + c.nota + ')' : ''}`);
+  else console.log(`  ✓ ${nome}: ${c.diversi === 0 && c.max === 0 ? 'identico al riferimento' : perc + ' dei punti diverso (entro la tolleranza)'}`);
   // immagine affiancata prima/dopo, da guardare a occhio
   const largo = scena[1] !== 'iphone-verticale';
   await pgCfr.setContent(`<body style="margin:0;background:#111;font:700 20px system-ui;color:#fff"><div id="c" style="display:inline-flex;flex-direction:${largo ? 'column' : 'row'};gap:10px;padding:10px">
