@@ -2,12 +2,17 @@
 import { game, teams, other } from './stato.js';
 
 const TIPI=['perimetro','superiorita','controfuga','entrata','centroboa','rigore'];
-const nuova=()=>({ tiri:0, inPorta:0, gol:0, parate:0, espulsioni:0, superiorita:0, superioritaGol:0, rigori:0, rigoriGol:0, palleRubate:0, timeout:0,
+const nuova=()=>({ tiri:0, inPorta:0, gol:0, parate:0, espulsioni:0, superiorita:0, superioritaGol:0, rigori:0, rigoriGol:0, palleRubate:0, timeout:0, etaPossesso:0, gesti:{},
   golTipo:Object.fromEntries(TIPI.map(t=>[t,0])), tiriTipo:Object.fromEntries(TIPI.map(t=>[t,0])) });
 export const stat={ squadre:[nuova(),nuova()] };
 export function azzeraStatistiche(){ stat.squadre=[nuova(),nuova()]; }
 const di=t=>stat.squadre[t.idx];
 
+// quanti difensori (portiere escluso) sono più vicini alla porta di chi ha la palla, o gli stanno addosso
+export function difensoriDavanti(p){
+  const t=p.team, gx=t.dir*12.5, dp=Math.hypot(gx-p.x,p.z);
+  return other(t).players.filter(q=>!q.isGK&&!q.excluded&&(Math.hypot(gx-q.x,q.z)<dp+0.8||Math.hypot(q.x-p.x,q.z-p.z)<2)).length;
+}
 // che tipo di azione ha portato a questo tiro
 export function tipoDiTiro(p,ball){
   const t=p.team, dif=other(t), gx=t.dir*12.5, dPorta=Math.hypot(gx-p.x,p.z);
@@ -15,12 +20,12 @@ export function tipoDiTiro(p,ball){
   if(dif.players.some(q=>q.excluded)) return 'superiorita';
   if(p.i===1 && dPorta<4.6) return 'centroboa';
   // controfuga: possesso appena conquistato e al massimo due difensori (portiere escluso) tra chi tira e la porta
-  const davanti=dif.players.filter(q=>!q.isGK&&!q.excluded&&Math.abs(gx-q.x)<Math.abs(gx-p.x)+0.5).length;
+  const davanti=difensoriDavanti(p);
   if(game.time-(game.possT||0)<11 && davanti<=2) return 'controfuga';
   if((p.cut||game.time-(p.cutT||-99)<3) && dPorta<5.5) return 'entrata';
   return 'perimetro';
 }
-export function registraTiro(p,tipo){ const s=di(p.team); s.tiri++; s.tiriTipo[tipo]++; }
+export function registraTiro(p,tipo){ const s=di(p.team); s.tiri++; s.tiriTipo[tipo]++; s.etaPossesso+=game.time-(game.possT||0); const g=p.act?p.act.kind:'altro'; s.gesti[g]=(s.gesti[g]||0)+1; }
 export function registraGol(t,ball){
   const s=di(t); s.gol++; s.inPorta++;
   const tipo=ball.shooter&&ball.shooter.team===t&&ball.tipoTiro ? ball.tipoTiro : 'perimetro';

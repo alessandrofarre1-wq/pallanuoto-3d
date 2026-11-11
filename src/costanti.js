@@ -34,3 +34,7 @@ export function gauss(){ let u=0,v=0; while(!u)u=rnd(); while(!v)v=rnd(); return
 export function setPeriodLen(v){ PERIOD_LEN=v; }
 export function setDiff(v){ DIFF_I=v; }
 export function setSpeed(v){ SPEED=v; }
+// Severità dell'arbitro, scelta a inizio partita: sposta il confine tra contatto lecito, fallo ed espulsione, soprattutto ai 2 metri.
+// 0,65 = permissivo (lascia giocare), 1 = normale, 1,4 = fiscale
+export let ARBITRO=1;
+export function setArbitro(v){ ARBITRO=v; }

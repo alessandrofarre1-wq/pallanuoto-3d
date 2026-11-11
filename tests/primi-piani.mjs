@@ -107,14 +107,14 @@ const gesti = [];
 {
   const pgG = await apri();
   await pgG.evaluate(() => window.__step(200));
-  for (const kind of ['shot', 'beduina', 'sciarpa']) for (const [fase, quando] of [['caricamento', 0], ['frustata', 0.72]]) {
+  for (const [kind, fase, quando] of [['shot', 'caricamento', 0], ['shot', 'frustata', 0.72], ['polso', 'frustata', 0.6], ['torsione', 'caricamento', 0], ['torsione', 'frustata', 0.8], ['lob', 'frustata', 0.7], ['beduina', 'frustata', 0.72], ['sciarpa', 'frustata', 0.72], ['fake', 'frustata', 0.9]]) {
     await pgG.evaluate(({ kind, quando }) => {
       const H = window.__pallanuoto, p = H.teams[0].players[6], B = H.ball, R = H.renderer;
       for (const q of H.allPlayers) if (q !== p) { q.x = 9 * (q.team.idx ? 1 : -1); q.z = -8 + q.i * 0.9; q.vx = q.vz = 0; }
-      p.x = 0; p.z = 0; p.vx = p.vz = 0; p.oriz = 0; p.stamina = 1; const dietro = kind !== 'shot';
+      p.x = 0; p.z = 0; p.vx = p.vz = 0; p.oriz = 0; p.stamina = 1; const dietro = kind === 'beduina' || kind === 'sciarpa';
       p.fx = dietro ? -1 : 1; p.fz = 0; B.state = 'held'; B.holder = p; H.game.state = 'play'; H.game.possTeam = p.team; H.game.shot = 28; H.game.clock = 100;
-      p.act = { t: 0, kind, wind: 0.25, frusta: 0.17, fn: () => {}, aim: [dietro ? -12.5 : 12.5, 0], done: false };
-      const fino = 0.25 + 0.17 * quando;
+      p.act = { t: 0, kind, wind: 0.25, frusta: kind === 'polso' ? 0.11 : 0.17, fn: () => {}, aim: [dietro ? -12.5 : 12.5, 0], done: false };
+      const fino = 0.25 + (kind === 'polso' ? 0.11 : 0.17) * quando;
       for (let i = 0; i < 40 && p.act && p.act.t < fino; i++) { p.x = 0; p.z = 0; window.__step(1); }
       H.vista = { pos: [(dietro ? -1 : 1) * 2.3, 1.15, 2.6], look: [0, 0.25, 0], fov: 30 }; R.render = H.disegna; p.act && (p.act.t -= 1 / 60); window.__step(1); R.render = () => {}; H.vista = null;
     }, { kind, quando });
@@ -128,7 +128,7 @@ const fogli = { partenza: scatti.filter(s => s.seq === 'partenza'), frenata: sca
 for (const [nome, lista] of Object.entries(fogli)) {
   if (!lista.length) continue;
   const p2 = await browser.newPage({ viewport: { width: 1600, height: 900 } });
-  await p2.setContent(`<body style="margin:0;background:#111"><div id="c" style="display:grid;grid-template-columns:repeat(3,500px);gap:4px;padding:4px;width:max-content">${lista.map((s, i) => `<div style="position:relative"><img src="data:image/png;base64,${fs.readFileSync(path.join(USCITA, s.nome + '.png')).toString('base64')}" style="display:block;width:500px"><b style="position:absolute;left:8px;top:5px;color:#fff;font:700 17px system-ui;text-shadow:0 1px 3px #000">${s.seq ? i + 1 : s.nome.replace(/-(tre-quarti|lato)$/, '').replace(/^volto-/, '').replace(/^gesto-/, '').replace('shot', 'tiro classico')}</b></div>`).join('')}</div></body>`);
+  await p2.setContent(`<body style="margin:0;background:#111"><div id="c" style="display:grid;grid-template-columns:repeat(3,500px);gap:4px;padding:4px;width:max-content">${lista.map((s, i) => `<div style="position:relative"><img src="data:image/png;base64,${fs.readFileSync(path.join(USCITA, s.nome + '.png')).toString('base64')}" style="display:block;width:500px"><b style="position:absolute;left:8px;top:5px;color:#fff;font:700 17px system-ui;text-shadow:0 1px 3px #000">${s.seq ? i + 1 : s.nome.replace(/-(tre-quarti|lato)$/, '').replace(/^volto-/, '').replace(/^gesto-/, '').replace('shot', 'tiro classico').replace('lob', 'palombella').replace('fake', 'finta')}</b></div>`).join('')}</div></body>`);
   await p2.waitForFunction('[...document.images].every(i => i.complete)');
   await p2.locator('#c').screenshot({ path: path.join(USCITA, nome + '.png') });
   await p2.close();

@@ -1,5 +1,6 @@
 // ================= IA =================
-import { DEF_DOWN, FORM, FORM_UP, GW, HW, KICK_Z, MARK, clamp, dist, rnd } from './costanti.js';
+import { difensoriDavanti } from './statistiche.js';
+import { DEF_DOWN, FORM, FORM_UP, GW, HW, KICK_Z, MARK, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
 import { doFake, timeout } from './regole.js';
 import { allPlayers, ball, fight, game, goalX, other, ownGoalX } from './stato.js';
 import { bestPassTarget, doPass, doShoot, laneClear, shotKind, startAct } from './tiri.js';
@@ -140,6 +141,7 @@ export function aiTarget(p){
   return {x:-t.dir*FORM[p.i][0]*0.8, z:KICK_Z[p.i]*t.dir, sprint:true};   // palla contesa: ci si ferma a metà campo
 }
 // ultimo minuto dell'ultimo tempo, sotto di un gol: la squadra del computer attacca in 7 contro 6 con il portiere avanzato
+const PAZIENZA=[16,8];      // secondi di possesso prima di cominciare a cercare il tiro, e secondi per arrivare alla piena voglia di tirare
 export function setteControSei(t){
   return !t.human && game.period===4 && game.clock<60 && other(t).score-t.score===1;
 }
@@ -186,7 +188,12 @@ export function aiCarrier(p,dt){
   const lane=laneClear(p,gx,aim,t,0.7);
   let press=99; for(const o of other(t).players){ if(!o.excluded&&!o.isGK) press=Math.min(press,dist(o,p)); }
   if(dGoal<8.5&&!ft){
-    const want = game.shot<4 ? 0.9 : game.shot<8 ? 0.45 : (lane?0.25+0.45*(1-dGoal/8.5):0.12)*(press>1.5?1.35:press<0.9?0.6:1);
+    // pazienza: a difesa schierata l'attacco si costruisce (si tira di rado nei primi secondi del possesso); in superiorità
+    // o in controfuga, con pochi difensori davanti, si tira subito
+    const davanti=difensoriDavanti(p);
+    // (con l'uomo in più si fa girare palla qualche secondo prima di cercare il tiro; la controfuga vera è con nessuno davanti)
+    const pazienza = davanti===0 ? 1 : manUp(t) ? clamp((13-game.shot)/5,0,1) : clamp((SHOT_CLOCK-game.shot-PAZIENZA[0])/PAZIENZA[1],0,1);
+    const want = game.shot<4 ? 0.9 : game.shot<8 ? 0.45 : (lane?0.25+0.45*(1-dGoal/8.5):0.12)*(press>1.5?1.35:press<0.9?0.6:1)*pazienza;
     if(rnd()<want){
       if(!p.fakeUsed && game.shot>5 && rnd()<0.18){ p.fakeUsed=true; p.shootNext=true; p.decideT=0.5; startAct(p,'fake',0.12,()=>doFake(p)); return; }
       const lob = dGoal>5 && rnd()<0.12; aiShoot(p,0.55+rnd()*0.45,lob); return;

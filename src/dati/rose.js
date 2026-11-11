@@ -53,7 +53,7 @@ export function ovr(s,ruolo){ const w=PESI[ruolo]; let a=0,b=0; for(const k in w
 const rose={};
 export function rosa(codice){
   if(rose[codice]) return rose[codice];
-  const sq=dati.squadre.find(x=>x.codice===codice), r=generatore(codice), base=sq.forza-9, nomi=NOMI[codice];
+  const sq=dati.squadre.find(x=>x.codice===codice), r=generatore(codice), base=57+(sq.forza-60)*0.72 /* da 57 di media (forza 60) a 80 (forza 92): differenze nette ma non schiaccianti */, nomi=NOMI[codice];
   // ordine dei numeri: 1 portiere, 2 centroboa, 3-4 ali, 5-6 mezzi, 7 punto, 8-12 riserve (un ruolo ciascuna), 13 secondo portiere
   const ruoli=[0,1,2,3,4,5,6, 1,2,5,6,4, 0];
   const campioni=new Set([1+Math.floor(r()*6)]); if(r()<0.6) campioni.add(1+Math.floor(r()*6));

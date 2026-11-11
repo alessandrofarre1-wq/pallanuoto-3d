@@ -1,7 +1,7 @@
 // ================= MENU =================
 import { azzeraStatistiche } from './statistiche.js';
 import { initAudio } from './audio.js';
-import { PERIOD_LEN, setDiff, setPeriodLen, setSpeed } from './costanti.js';
+import { PERIOD_LEN, setArbitro, setDiff, setPeriodLen, setSpeed } from './costanti.js';
 import { $, aggiornaTabellone, fpsIniziale, setFps } from './hud.js';
 import { RUOLI, CHIAVE, STAT_NOMI, squadre } from './dati/rose.js';
 import { applicaSquadre } from './giocatori.js';
@@ -10,6 +10,7 @@ import { kickoff } from './regole.js';
 import { allPlayers, game, teams } from './stato.js';
 document.querySelectorAll('[data-len]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-len]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setPeriodLen(+b.dataset.len); });
 document.querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-diff]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setDiff(+b.dataset.diff); });
+document.querySelectorAll('[data-arb]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-arb]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setArbitro(+b.dataset.arb); });
 document.querySelectorAll('[data-spd]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-spd]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setSpeed(+b.dataset.spd); });
 // scelta delle nazionali e rosa della propria squadra
 const selA=$('sqA'), selB=$('sqB');

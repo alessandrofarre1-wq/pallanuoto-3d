@@ -5,7 +5,7 @@ import { riservaPer, vesti } from './giocatori.js';
 import { registraEspulsione, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
 import { whistle } from './audio.js';
 import { autoSwitch, resetTap } from './controllo.js';
-import { ATK, BRV, DEFN, DIFF, EXCL_TIME, FORM, HL, HW, KICK_Z, SHOT_CLOCK, SHOT_RESET, clamp, dist, rnd } from './costanti.js';
+import { ARBITRO, ATK, BRV, DEFN, DIFF, EXCL_TIME, FORM, HL, HW, KICK_Z, SHOT_CLOCK, SHOT_RESET, clamp, dist, rnd } from './costanti.js';
 import { showMsg } from './hud.js';
 import { closestTo } from './ia.js';
 import { rumble } from './input.js';
@@ -186,11 +186,11 @@ export function tackle(d,c,o){
   if(dist(d,c)>(o.force?1.35:1.15)) return false;
   const dG=Math.hypot(ownGoalX(d.team)-c.x,c.z), lineD=Math.abs(ownGoalX(d.team)-c.x);
   const skill = d.st.def*(d.team.human?1:DIFF());
-  const pSteal = clamp((0.1+0.2*skill-0.06*c.st.pas)*(press?1.15+0.4*(d.s.dif-40)/59:1)*(o.stealMul||1),0.05,0.6);
+  const pSteal = clamp(0.45*(0.1+0.2*skill-0.06*c.st.pas)*(press?1.15+0.4*(d.s.dif-40)/59:1)*(o.stealMul||1),0.05,0.6);
   // Disciplina: chi ne ha poca commette più falli gravi (espulsione o rigore)
   const fDis=1.5-(d.s.dis-40)/59;
-  const pPen = ((lineD<5&&Math.abs(c.z)<4)?0.07:0)*fDis;
-  const pExcl = (lineD<6?0.2:0.05)*(press?1.3+0.5*(fDis-0.5):1)*fDis;
+  const pPen = ((lineD<5&&Math.abs(c.z)<4)?0.11:0)*fDis*ARBITRO;
+  const pExcl = (lineD<6?0.2:0.05)*(press?1.3+0.5*(fDis-0.5):1)*fDis*ARBITRO;
   const pFoul = 0.42;
   const r=rnd();
   if(r<pSteal){ registraPallaRubata(d.team); giveBall(d); showMsg(`Palla rubata! ${d.team.short} #${d.num}`,1); return true; }
