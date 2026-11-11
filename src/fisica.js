@@ -1,7 +1,8 @@
 // ================= FISICA GIOCATORI =================
 import { whistle } from './audio.js';
-import { BRV, DIFF, DIFF_GK, G, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
+import { BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
 import { showMsg } from './hud.js';
+import { QUOTA_GALLEGGIA, passoPalla } from './palla.js';
 import { blockR } from './ia.js';
 import { cornerThrow, giveBall, goalScored, goalThrow, sideOut } from './regole.js';
 import { active, allPlayers, ball, game, goalX, other, ownGoalX, teams } from './stato.js';
@@ -69,21 +70,48 @@ export function separate(){
 }
 
 // ================= PALLA =================
+// La palla si muove con la fisica di palla.js; qui si applicano le regole: parata, muro, intercetto, ricezione, gol, fuori.
+const _giocatori=[];
+function passo(dt,corpiAttivi){
+  // i corpi dei giocatori fanno rimbalzare solo la palla vagante (su tiri e passaggi decidono parata, muro e intercetto)
+  for(let i=0;i<allPlayers.length;i++){ const p=allPlayers[i], g=_giocatori[i]||(_giocatori[i]={x:0,z:0,attivo:false});
+    g.x=p.x; g.z=p.z; g.attivo=corpiAttivi&&!p.excluded&&p!==ball.shooter; }
+  const e=passoPalla(ball,dt,_giocatori);
+  if(e.acqua) ball.spruzzo={ forza:e.acqua.forza, schizzo:e.acqua.tipo==='schizzo' };      // lo disegna render.js
+  return e;
+}
+// la palla ha passato la linea di porta in questo passo? (px = posizione prima del passo)
+function lineaDiPorta(px){
+  for(const t of teams){
+    const gx=goalX(t);
+    if((px-gx)*(ball.x-gx)>0 || px===ball.x || Math.abs(px)>HL) continue;      // conta solo se arriva dal campo
+    const dentro=Math.abs(ball.z)<GW+0.04 && ball.y<GH+0.04 && ball.y>-0.3;
+    return { att:t, dentro };
+  }
+  return null;
+}
 export function updateBall(dt){
   if(ball.state==='held'){
     const p=ball.holder; ball.holdTime+=dt; ball.x=p.x; ball.z=p.z; ball.y=BRV;
-    ball.vx=ball.vy=ball.vz=0;
+    ball.vx=ball.vy=ball.vz=0; ball.wx=ball.wy=ball.wz=0; ball.inRete=false;
     return;
   }
   if(ball.state==='dead'){
-    ball.x+=ball.vx*dt; ball.z+=ball.vz*dt; ball.vx*=Math.exp(-2*dt); ball.vz*=Math.exp(-2*dt); ball.y=BRV; return;
+    if(ball.inRete){ const f=Math.exp(-3*dt); ball.vx*=f; ball.vz*=f; passo(dt,false); return; }      // la rete smorza la palla      // dopo il gol la palla finisce davvero in fondo alla rete
+    ball.x+=ball.vx*dt; ball.z+=ball.vz*dt; ball.vx*=Math.exp(-2*dt); ball.vz*=Math.exp(-2*dt);
+    ball.y+=(QUOTA_GALLEGGIA-ball.y)*Math.min(1,dt*6); return;      // palla ferma: galleggia
   }
   ball.pickupCD-=dt;
   if(ball.state==='flight'){
     const px=ball.x;
-    ball.vy-=G*dt; ball.x+=ball.vx*dt; ball.y+=ball.vy*dt; ball.z+=ball.vz*dt; ball.flightT+=dt;
+    const e=passo(dt,ball.kind==='rebound'); ball.flightT+=dt;
+    // pali e traversa: l'urto è vero, qui si annuncia soltanto
+    if(ball.daTiro){
+      const legno=e.urti.find(u=>u==='palo'||u==='traversa');
+      if(legno && Math.abs(Math.abs(ball.x)-HL)<0.5){ ball.kind='rebound'; ball.afterShot=true; showMsg(legno==='palo'?'Palo!':'Traversa!',1); }
+    }
     if(ball.kind==='shot'){
-      const att=ball.shooter.team, def=other(att), gk=def.players[0], gx=goalX(att);
+      const att=ball.shooter.team, def=other(att), gk=def.players[0];
       // parata
       if(!ball.saveChecked && (px-gk.x)*(ball.x-gk.x)<=0){
         ball.saveChecked=true;
@@ -94,22 +122,21 @@ export function updateBall(dt){
             whistle(0.12); const r=rnd(); ball.afterShot=true;
             if(ball.shotPower>0.55&&r<0.25){ cornerThrow(att); }
             else if(ball.shotPower>0.7&&r<0.65){
-              ball.state='free'; ball.vx=-ball.vx*0.18; ball.vz=(rnd()-0.5)*3; ball.vy=0; ball.y=BRV; ball.pickupCD=0.25;
+              // respinta: la palla schizza via dalle mani del portiere, verso il campo e verso l'alto
+              ball.kind='rebound'; ball.vx=-ball.vx*0.22; ball.vz=ball.vz*0.3+(rnd()-0.5)*4; ball.vy=1.5+rnd()*2; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.25;
               showMsg('Parata! <span style="font-size:20px;display:block">respinta</span>',1);
             } else { giveBall(gk); showMsg('Parata!',1); }
             return;
           }
         }
       }
-      // linea di porta
-      if((px-gx)*(ball.x-gx)<=0 && px!==ball.x){
-        const az=Math.abs(ball.z);
-        if(az<GW-0.06 && ball.y<GH-0.04 && ball.y>-0.3){ goalScored(att); return; }
-        if((Math.abs(az-GW)<0.16 && ball.y<GH+0.1) || (az<GW+0.1 && Math.abs(ball.y-GH)<0.12)){
-          ball.vx*=-0.35; ball.vz=(rnd()-0.5)*2; ball.vy=Math.min(ball.vy,0); ball.kind='rebound'; ball.afterShot=true;
-          showMsg(Math.abs(ball.y-GH)<0.12&&az<GW?'Traversa!':'Palo!',1); return;
-        }
-        goalThrow(def,'Fuori! Rimessa dal portiere'); return;
+    }
+    // linea di porta: gol se passa tra i pali e sotto la traversa (anche dopo aver toccato un legno), altrimenti fuori
+    if(ball.daTiro){
+      const l=lineaDiPorta(px);
+      if(l){
+        if(l.dentro){ ball.inRete=true; goalScored(l.att); return; }
+        goalThrow(other(l.att),'Fuori! Rimessa dal portiere'); return;
       }
     }
     // intercetti, muri e ricezione
@@ -121,7 +148,10 @@ export function updateBall(dt){
           ball.intercept.add(p);
           const pr=(ball.kind==='shot'?0.3:0.35)*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
           if(rnd()<pr){
-            if(ball.kind==='shot'){ ball.state='free'; ball.vx*=-0.15; ball.vz=(rnd()-0.5)*2; ball.vy=0; ball.y=BRV; ball.pickupCD=0.2; showMsg('Muro!',0.8); ball.afterShot=true; }
+            if(ball.kind==='shot'){
+              // muro: la palla rimbalza sul braccio alzato e resta in gioco
+              ball.kind='rebound'; ball.vx*=-0.2; ball.vz=ball.vz*0.3+(rnd()-0.5)*3; ball.vy=1+rnd()*1.5; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.2; showMsg('Muro!',0.8); ball.afterShot=true;
+            }
             else { giveBall(p); showMsg('Intercetto!',0.8); }
             return;
           }
@@ -129,17 +159,20 @@ export function updateBall(dt){
         if(ball.kind==='pass' && p===ball.target && hd<0.85 && ball.flightT>0.15){ giveBall(p); return; }
       }
     }
-    if(ball.y<=BRV){
-      if(ball.kind==='shot'&&ball.skip&&!ball.skipped){ ball.skipped=true; ball.y=BRV+0.01; ball.vy=Math.abs(ball.vy)*0.5; ball.vx*=0.85; ball.vz*=0.85; }
-      else { ball.y=BRV; ball.state='free'; ball.vy=0; ball.vx*=0.4; ball.vz*=0.4; ball.pickupCD=0.1; }
-    }
+    // acqua: lo schizzo tiene la palla in volo (il portiere la legge peggio), il tonfo la lascia a galleggiare
+    if(e.acqua){
+      if(e.acqua.tipo==='schizzo' && (ball.schizzi=(ball.schizzi||0)+1)<=2){ if(ball.kind==='shot') ball.skipped=true; }
+      else { ball.state='free'; ball.pickupCD=0.1; }
+    } else if(ball.y<BRV && ball.vy<=0.5 && ball.flightT>0.1){ ball.state='free'; ball.pickupCD=0.1; }
     if(ball.state==='flight' && Math.abs(ball.z)>HW+0.2){ sideOut(); return; }
-    if(ball.state==='flight' && Math.abs(ball.x)>HL+0.8){ ball.state='free'; ball.vx*=0.2; ball.vz*=0.2; ball.vy=0; ball.y=BRV; }
+    if(ball.state==='flight' && Math.abs(ball.x)>HL+1.2){ ball.state='free'; ball.vx*=0.2; ball.vz*=0.2; }
   }
   if(ball.state==='free'){
-    ball.y=BRV; ball.x+=ball.vx*dt; ball.z+=ball.vz*dt;
-    const f=Math.exp(-1.6*dt); ball.vx*=f; ball.vz*=f;
+    const px=ball.x;
+    passo(dt,true);
     if(Math.abs(ball.z)>HW+0.2){ sideOut(); return; }
+    // una palla vagante che rotola in porta dopo un tiro è gol; se esce dal fondo è rimessa
+    if(ball.daTiro){ const l=lineaDiPorta(px); if(l&&l.dentro){ ball.inRete=true; goalScored(l.att); return; } }
     if(Math.abs(ball.x)>HL){
       const defT=teams.find(t=>Math.sign(ownGoalX(t))===Math.sign(ball.x));
       goalThrow(defT); return;

@@ -8,6 +8,7 @@ import { allPlayers, ball, ctrl, game, teams } from '../stato.js';
 import { humanPassTarget } from '../tiri.js';
 export const camPos=new THREE.Vector3(0,10.5,16), camLook=new THREE.Vector3(), _cv=new THREE.Vector3();
 export let prevBY=BRV;
+const _wv=new THREE.Vector3(), _wq=new THREE.Quaternion();
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
 export function render(dt,now){
   const t=now*0.001;
@@ -17,10 +18,17 @@ export function render(dt,now){
   const h=ball.holder; let by;
   if(ball.state==='held'&&h&&h.ballW){ by=Math.max(BRV,h.ballW[1]); ball3d.position.set(h.ballW[0],by,h.ballW[2]); }
   else { by=ball.y; ball3d.position.set(ball.x,ball.y,ball.z); }
-  if(prevBY>BRV+0.25 && by<=BRV+0.02 && ball.state!=='held'){ for(let i=0;i<4;i++) spawnFoam(ball.x+(rnd()-0.5)*0.4,ball.z+(rnd()-0.5)*0.4,0.22+rnd()*0.15,0.8); }
+  // spruzzo quando la palla tocca l'acqua: più forte arriva, più schiuma; nello schizzo la schiuma si allunga nella direzione del tiro
+  if(ball.spruzzo){ const S=ball.spruzzo, n=Math.min(9,2+Math.round(S.forza*0.4)), vo=Math.hypot(ball.vx,ball.vz)||1; ball.spruzzo=null;
+    for(let i=0;i<n;i++){ const k=S.schizzo?i/n*0.9:0; spawnFoam(ball.x-ball.vx/vo*k+(rnd()-0.5)*0.35,ball.z-ball.vz/vo*k+(rnd()-0.5)*0.35,0.16+rnd()*0.14+S.forza*0.008,0.6+rnd()*0.4); } }
   prevBY=by;
   updateFoam(dt);
-  ball3d.rotation.x+=Math.hypot(ball.vx,ball.vz)*dt*2;
+  // rotazione: in aria quella data dal tiro (e dagli urti); in acqua la palla rotola nella direzione in cui scivola; in mano gira poco
+  if(ball.state==='held') _wv.set(0,0,0);
+  else if(ball.y<BRV) _wv.set(ball.vz,0,-ball.vx).multiplyScalar(4);
+  else _wv.set(ball.wx||0,ball.wy||0,ball.wz||0);
+  const wl=_wv.length();
+  if(wl>0.01){ _wq.setFromAxisAngle(_wv.divideScalar(wl),wl*dt); ball3d.quaternion.premultiply(_wq); }
   shadow.position.set(ball3d.position.x,0.015,ball3d.position.z);
   shadow.visible=ball3d.position.y>BRV+0.15;
   // anello del giocatore controllato
@@ -31,7 +39,7 @@ export function render(dt,now){
   mirino.visible=false;
   if(ctrl&&ball.holder===ctrl&&!ctrl.isGK&&game.state==='play'&&(ctrl.charging||(ctrl.act&&!ctrl.act.done&&ctrl.act.kind!=='pass'&&ctrl.act.kind!=='fake'))){
     const gk=teams[1-ctrl.team.idx].players[0];
-    const az=Math.abs(inp.z)>0.3 ? clamp(inp.z*1.35,-1.35,1.35) : -Math.sign(gk.z||1)*1.1;
+    const az=Math.abs(inp.z)>0.3 ? clamp(inp.z*1.28,-1.28,1.28) : -Math.sign(gk.z||1)*1.1;
     mirino.visible=true; mirino.position.set(HL*ctrl.team.dir,0.45,az);
     const s=0.95-0.3*Math.min(1,(ctrl.chargeT||0)/0.9); mirino.scale.set(s,s,1);      // si stringe mentre il tiro si carica
   }

@@ -76,6 +76,11 @@ scatti.sort((a, b) => a.f - b.f);
 
 // ---------- secondo giro: fotografa ----------
 const pg = await apri(); const dirSeq = {};
+// la palla da vicino, ferma a centro vasca prima del via (due distanze)
+for (const [nome, d] of [['palla', 0.55], ['palla-da-gioco', 2.2]]) {
+  await pg.evaluate(d => { const H = window.__pallanuoto, B = H.ball, R = H.renderer; H.vista = { pos: [B.x + d * 0.75, B.y + d * 0.6, B.z + d], look: [B.x, B.y, B.z], fov: 30 }; R.render = H.disegna; window.__step(1); R.render = () => {}; H.vista = null; }, d);
+  await pg.screenshot({ path: path.join(USCITA, nome + '.png') });
+}
 for (const s of scatti) {
   const info = await pg.evaluate(({ s, dir }) => {
     const H = window.__pallanuoto; if (s.f - 1 > window.__frame) window.__step(s.f - 1 - window.__frame);
