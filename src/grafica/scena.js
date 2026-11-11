@@ -169,10 +169,26 @@ export function makeGoal(sign){
 makeGoal(1); makeGoal(-1);
 
 // palla + ombra + anello del giocatore controllato
-export const ball3d = new THREE.Mesh(new THREE.SphereGeometry(BRV,18,14),new THREE.MeshPhongMaterial({color:0xffd60a,shininess:40}));
+// palla da pallanuoto: gialla, a spicchi con cuciture scure, gomma ruvida per la presa
+export const ball3d = (()=>{
+  const cuciture=(x,w,h)=>{ // tre cerchi massimi: equatore e due meridiani → otto spicchi; più le righe parallele tipiche della palla
+    x.lineCap='round';
+    const riga=(u0,v0,u1,v1)=>{ x.beginPath(); x.moveTo(u0*w,v0*h); x.lineTo(u1*w,v1*h); x.stroke(); };
+    riga(0,0.5,1,0.5); for(const u of [0,0.25,0.5,0.75,1]) riga(u,0,u,1);
+  };
+  const colore=canvasTex(512,256,(x,w,h)=>{
+    const g=x.createLinearGradient(0,0,0,h); g.addColorStop(0,'#f2b705'); g.addColorStop(0.5,'#ffd21f'); g.addColorStop(1,'#eaa800'); x.fillStyle=g; x.fillRect(0,0,w,h);
+    for(let i=0;i<5000;i++){ x.fillStyle=i%2?'rgba(255,240,150,.10)':'rgba(150,95,0,.10)'; x.fillRect(rnd()*w,rnd()*h,1.6,1.6); }      // grana della gomma
+    x.strokeStyle='rgba(120,75,0,.55)'; x.lineWidth=9; cuciture(x,w,h);      // alone attorno alle cuciture
+    x.strokeStyle='#2b1d08'; x.lineWidth=3.2; cuciture(x,w,h);
+  });
+  const rilievo=canvasTex(256,128,(x,w,h)=>{ x.fillStyle='#808080'; x.fillRect(0,0,w,h);
+    for(let i=0;i<3500;i++){ x.fillStyle=i%2?'#a8a8a8':'#5c5c5c'; x.fillRect(rnd()*w,rnd()*h,1.5,1.5); }
+    x.strokeStyle='#202020'; x.lineWidth=2.4; cuciture(x,w,h); });
+  rilievo.colorSpace=THREE.NoColorSpace;
+  return new THREE.Mesh(new THREE.SphereGeometry(BRV,28,20),new THREE.MeshPhongMaterial({map:colore,bumpMap:rilievo,bumpScale:0.6,shininess:22,specular:0x3a3020}));
+})();
 scene.add(ball3d);
-{ const stripe=new THREE.Mesh(new THREE.TorusGeometry(BRV*1.002,0.018,6,24),new THREE.MeshLambertMaterial({color:0x1e3a8a})); ball3d.add(stripe);
-  const s2=stripe.clone(); s2.rotation.y=Math.PI/2; ball3d.add(s2); }
 export const shadow = new THREE.Mesh(new THREE.CircleGeometry(BRV*1.1,16),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.3}));
 shadow.rotation.x=-Math.PI/2; scene.add(shadow);
 export const ring = new THREE.Mesh(new THREE.TorusGeometry(0.55,0.05,8,32),new THREE.MeshBasicMaterial({color:0xfacc15}));

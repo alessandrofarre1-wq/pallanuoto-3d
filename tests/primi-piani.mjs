@@ -68,6 +68,8 @@ for (const k of ['fermo', 'nuoto', 'nuoto-con-palla', 'dorso', 'tiro', 'portiere
 // ---------- elenco degli scatti ----------
 const scatti = [];   // { f, uid, nome, vista: 'tre-quarti' | 'lato', dir? }
 for (const k of ['fermo', 'nuoto', 'nuoto-con-palla', 'dorso', 'tiro', 'portiere']) if (momenti[k]) for (const vista of ['tre-quarti', 'lato']) scatti.push({ f: momenti[k].f + (vista === 'lato' ? 1 : 0), uid: momenti[k].uid, nome: `${k}-${vista}`, vista });
+// volto e calottina da vicino (giocatore fermo e portiere), e la palla in mano al tiratore
+for (const [k, d] of [['fermo', 2], ['portiere', -2], ['tiro', -1]]) if (momenti[k]) scatti.push({ f: momenti[k].f + d, uid: momenti[k].uid, nome: `volto-${k}`, vista: 'volto' });
 if (momenti.partenza) [0, 7, 14, 21, 30, 42].forEach((d, i) => scatti.push({ f: momenti.partenza.f + d, uid: momenti.partenza.uid, nome: `partenza-${i + 1}`, vista: 'seq', seq: 'partenza' }));
 if (momenti.frenata) { const m = momenti.frenata, r = m.rilascio; [m.f - 6, m.f + 6, m.f + 14, m.f + 22, r - 4, r + 5].forEach((f, i) => scatti.push({ f, uid: m.uid, nome: `frenata-${i + 1}`, vista: 'seq', seq: 'frenata' })); }
 scatti.sort((a, b) => a.f - b.f);
@@ -79,7 +81,8 @@ for (const s of scatti) {
     const H = window.__pallanuoto; if (s.f - 1 > window.__frame) window.__step(s.f - 1 - window.__frame);
     const p = H.allPlayers.find(q => q.uid === s.uid);
     let v;
-    if (s.vista === 'tre-quarti') v = { pos: [p.x + p.fx * 2.5 - p.fz * 2.3, 1.5, p.z + p.fz * 2.5 + p.fx * 2.3], look: [p.x, 0.05, p.z], fov: 30 };
+    if (s.vista === 'volto') { const a = p.mesh.spr.getWorldPosition(new p.mesh.spr.position.constructor()); v = { pos: [a.x + p.fx * 1.15 - p.fz * 0.5, a.y - 0.25, a.z + p.fz * 1.15 + p.fx * 0.5], look: [a.x, a.y - 0.45, a.z], fov: 30 }; }
+    else if (s.vista === 'tre-quarti') v = { pos: [p.x + p.fx * 2.5 - p.fz * 2.3, 1.5, p.z + p.fz * 2.5 + p.fx * 2.3], look: [p.x, 0.05, p.z], fov: 30 };
     else {
       // di lato, dalla parte dove non ci sono altri giocatori davanti all'obiettivo
       const libero = d => Math.min(...H.allPlayers.filter(q => q !== p).map(q => Math.hypot(q.x - (p.x + d[0] * 2.4), q.z - (p.z + d[1] * 2.4))));
@@ -94,11 +97,11 @@ for (const s of scatti) {
 }
 // fogli riassuntivi: le due sequenze e i primi piani, tre immagini per riga
 const fogli = { partenza: scatti.filter(s => s.seq === 'partenza'), frenata: scatti.filter(s => s.seq === 'frenata'),
-  'primi-piani': scatti.filter(s => s.vista === 'tre-quarti'), 'primi-piani-lato': scatti.filter(s => s.vista === 'lato') };
+  'primi-piani': scatti.filter(s => s.vista === 'tre-quarti'), volti: scatti.filter(s => s.vista === 'volto'), 'primi-piani-lato': scatti.filter(s => s.vista === 'lato') };
 for (const [nome, lista] of Object.entries(fogli)) {
   if (!lista.length) continue;
   const p2 = await browser.newPage({ viewport: { width: 1600, height: 900 } });
-  await p2.setContent(`<body style="margin:0;background:#111"><div id="c" style="display:grid;grid-template-columns:repeat(3,500px);gap:4px;padding:4px;width:max-content">${lista.map((s, i) => `<div style="position:relative"><img src="data:image/png;base64,${fs.readFileSync(path.join(USCITA, s.nome + '.png')).toString('base64')}" style="display:block;width:500px"><b style="position:absolute;left:8px;top:5px;color:#fff;font:700 17px system-ui;text-shadow:0 1px 3px #000">${s.seq ? i + 1 : s.nome.replace(/-(tre-quarti|lato)$/, '')}</b></div>`).join('')}</div></body>`);
+  await p2.setContent(`<body style="margin:0;background:#111"><div id="c" style="display:grid;grid-template-columns:repeat(3,500px);gap:4px;padding:4px;width:max-content">${lista.map((s, i) => `<div style="position:relative"><img src="data:image/png;base64,${fs.readFileSync(path.join(USCITA, s.nome + '.png')).toString('base64')}" style="display:block;width:500px"><b style="position:absolute;left:8px;top:5px;color:#fff;font:700 17px system-ui;text-shadow:0 1px 3px #000">${s.seq ? i + 1 : s.nome.replace(/-(tre-quarti|lato)$/, '').replace(/^volto-/, '')}</b></div>`).join('')}</div></body>`);
   await p2.waitForFunction('[...document.images].every(i => i.complete)');
   await p2.locator('#c').screenshot({ path: path.join(USCITA, nome + '.png') });
   await p2.close();
