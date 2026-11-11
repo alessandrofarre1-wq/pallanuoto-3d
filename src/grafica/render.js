@@ -8,6 +8,7 @@ import { allPlayers, ball, ctrl, game, teams } from '../stato.js';
 import { humanPassTarget } from '../tiri.js';
 export const camPos=new THREE.Vector3(0,10.5,16), camLook=new THREE.Vector3(), _cv=new THREE.Vector3();
 export let prevBY=BRV;
+const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
 export function render(dt,now){
   const t=now*0.001;
   animateWater(t);
@@ -34,7 +35,9 @@ export function render(dt,now){
   }
   // telecamera
   const portrait=camera.aspect<1;
-  const fx=clamp(ball.x*0.85,-HL+4,HL-4);
+  // su telefono in orizzontale l'azione va tenuta nella fascia libera tra joystick (a sinistra) e pulsanti (a destra):
+  // vicino alla porta di destra la telecamera avanza di più, così porta e tiratori non finiscono sotto i pulsanti
+  const fx = TOUCH&&!portrait ? clamp(ball.x*0.9+clamp(ball.x,0,HL)*0.12,-HL+4,HL-1.5) : clamp(ball.x*0.85,-HL+4,HL-4);
   if(camMode()===0){
     // laterale, alta e vicina: l'acqua riempie lo schermo e il bordo lontano della vasca sta in cima all'inquadratura
     const far=portrait?1.9:1, sz=ball.z*0.45;
@@ -43,8 +46,9 @@ export function render(dt,now){
   } else if(portrait){
     // verticale: da dietro e dall'alto, guardando in giù quanto basta per non inquadrare cielo e tribune
     const d=teams[0].dir, bx=clamp(ball.x,-HL+3,HL-3), sz=ball.z*0.75;
-    camPos.lerp(_cv.set(bx-d*7.5, 16, sz), Math.min(1,dt*2.5));
-    camLook.lerp(_cv.set(bx-d*0.4, 0, sz), Math.min(1,dt*3));
+    // la palla sta nel terzo alto dello schermo: la parte bassa è coperta da joystick e pulsanti
+    camPos.lerp(_cv.set(bx-d*10, 16, sz), Math.min(1,dt*2.5));
+    camLook.lerp(_cv.set(bx-d*2.9, 0, sz), Math.min(1,dt*3));
   } else {
     const d=teams[0].dir;
     camPos.lerp(_cv.set(clamp(ball.x,-HL+3,HL-3)-d*9, 5.5, ball.z*0.6), Math.min(1,dt*2.5));

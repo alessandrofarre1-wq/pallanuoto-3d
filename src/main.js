@@ -14,7 +14,9 @@ import { update } from './partita.js';
 import { kickoff } from './regole.js';
 import { allPlayers, ball, ctrl, fight, game, teams } from './stato.js';
 
-let last=performance.now(), frameMs=16, qT=0, hudT=1;
+let last=performance.now(), frameMs=16, qT=0, hudT=1, lenti=0;
+// tornando da un'altra app i primi fotogrammi sono lunghi: non devono contare come "dispositivo lento"
+document.addEventListener('visibilitychange',()=>{ frameMs=16; qT=0; lenti=0; });
 function loop(now){
   const raw=Math.min(0.1,(now-last)/1000); last=now;
   const dt=raw*SPEED;
@@ -24,7 +26,8 @@ function loop(now){
   // qualità adattiva: se il dispositivo fatica si abbassa la risoluzione di disegno
   frameMs+=(raw*1000-frameMs)*0.05; qT+=raw;
   // ordine dei tagli: prima il riflesso dell'acqua, poi la risoluzione, per ultima l'acqua semplice
-  if(qT>2){ qT=0; if(frameMs>21){
+  // si taglia solo dopo due controlli lenti di fila (4 secondi), non per un singolo scatto
+  if(qT>2){ qT=0; if(frameMs<=21) lenti=0; else if(++lenti>=2){ lenti=0;
     if(acquaAuto&&livelloAcqua===2) setLivelloAcqua(1);
     else if(dpr>1){ setDpr(Math.max(1,dpr-0.25)); renderer.setPixelRatio(dpr); ridimensionaAcqua(); }
     else if(acquaAuto&&livelloAcqua===1) setLivelloAcqua(0);

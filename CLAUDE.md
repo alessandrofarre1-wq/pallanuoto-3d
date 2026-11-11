@@ -2,7 +2,7 @@
 
 Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Proprietario: Ale, ex nuotatore agonista, non programmatore: spiega le scelte in italiano semplice, senza gergo tecnico, e chiedi conferma prima di cambiamenti grossi di direzione.
 
-## Stato attuale (v0.10, novembre 2026)
+## Stato attuale (v0.10.1, novembre 2026)
 - Progetto Vite a moduli in `src/` (stesso identico gioco della v0.9, solo riorganizzato): `costanti`, `stato`, `giocatori`, `regole`, `partita` (ciclo di gioco), `lotta`, `fisica`, `tiri`, `ia`, `controllo` (comandi umani), `input`, `hud`, `menu`, `audio`, `grafica/` (`scena`, `acqua`, `modello`, `pose`, `render`). Three.js 0.187 da npm (aggiornato dalla r128 nella fase 1 del piano; richiede WebGL2, cioè iPhone con iOS 15 o successivo).
 - Le variabili condivise che cambiano si modificano con funzioni apposite: `setCtrl`, `resetTap`, `setPeriodLen`, `setDiff`, `setSpeed`, `setDpr`.
 - Colori: gestione moderna di Three.js (immagini marcate sRGB, luci ritarate: `LUCE_CIELO`, `LUCE_SOLE` in `grafica/scena.js`) per restare uguali alla v0.9.
@@ -97,7 +97,9 @@ Limiti di fluidità da rispettare in tutte le fasi (iPhone): 60 fotogrammi al se
 - Rischi: la versione nuova gestisce colori e intensità delle luci in modo diverso, quindi l'aspetto va ritarato a mano con gli screenshot; le partite simulate potrebbero non coincidere più con la v0.9 (cambia il consumo di numeri casuali) e da lì si controllano statistiche ed errori. Fluidità: nessun rischio atteso.
 - Da Ale: niente, solo la prova su iPhone con il numero di fotogrammi.
 
-### Fase 2 — Telecamera e acqua come nel riferimento — FATTA (v0.10), in attesa della prova di Ale su iPhone
+### Fase 2 — Telecamera e acqua come nel riferimento — FATTA (v0.10, ritocchi v0.10.1), provata da Ale su iPhone
+- Prova di Ale (iPhone, Safari): 60 fotogrammi al secondo fissi con acqua alta e qualità 1.50, con 400–600 oggetti disegnati, in verticale e in orizzontale. C'è quindi margine anche per la fase 3. In orizzontale con le barre di Safari lo schermo utile è basso (circa 280 punti): tenere compatti i riquadri. Dalla schermata Home ("Aggiungi a Home") il gioco si apre a tutto schermo.
+- Ritocchi v0.10.1 dopo la prova: su telefono in orizzontale la telecamera avanza di più verso la porta di destra (l'azione non finisce sotto i pulsanti); in verticale la palla sta nel terzo alto dello schermo; la qualità cala solo dopo 4 secondi lenti di fila e non al rientro da un'altra app; contatore FPS piccolo sotto il riquadro del giocatore.
 - Esito: partite simulate ancora identiche alla v0.9. Prima della fase 2 l'iPhone di Ale faceva 60 fotogrammi al secondo fissi a qualità 1.50 con 240–340 oggetti. Con l'acqua alta gli oggetti disegnati salgono a circa 550 (i pezzi dei giocatori vengono ridisegnati per la vista sott'acqua): è il motivo in più per fare la fase 3 (un corpo unico per giocatore). Le caustiche sono un effetto scritto da noi sul fondo e sulle righe delle corsie.
 - A schermo: telecamera laterale più vicina (l'acqua riempie lo schermo); acqua trasparente con onde fitte, riflessi e corpi sott'acqua visibili e deformati; giochi di luce sul fondo (caustiche); scia di schiuma più credibile; freccia bianca sopra il giocatore controllato al posto dell'anello.
 - Librerie: Water2 (incluso in Three.js, riflessione + rifrazione). Le caustiche NON esistono pronte in Three.js: si fanno con un piccolo effetto scritto da noi (disegno animato proiettato sul fondo), poco costoso.
