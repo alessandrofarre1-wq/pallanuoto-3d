@@ -1,7 +1,7 @@
 // ================= MENU =================
 import { azzeraStatistiche } from './statistiche.js';
 import { initAudio } from './audio.js';
-import { PERIOD_LEN, setArbitro, setDiff, setPeriodLen, setSpeed } from './costanti.js';
+import { PERIOD_LEN, setAlzata, setArbitro, setDiff, setPeriodLen, setSpeed } from './costanti.js';
 import { $, aggiornaTabellone, fpsIniziale, setFps } from './hud.js';
 import { RUOLI, CHIAVE, STAT_NOMI, squadre } from './dati/rose.js';
 import { applicaSquadre } from './giocatori.js';
@@ -11,6 +11,8 @@ import { allPlayers, game, teams } from './stato.js';
 document.querySelectorAll('[data-len]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-len]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setPeriodLen(+b.dataset.len); });
 document.querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-diff]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setDiff(+b.dataset.diff); });
 document.querySelectorAll('[data-arb]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-arb]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setArbitro(+b.dataset.arb); });
+// PROVVISORIO: tempo per alzarsi dal nuoto alla verticale, da far provare ad Ale; scelto il valore la riga si toglie
+document.querySelectorAll('[data-alz]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-alz]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setAlzata(+b.dataset.alz); });
 document.querySelectorAll('[data-spd]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-spd]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setSpeed(+b.dataset.spd); });
 // scelta delle nazionali e rosa della propria squadra
 const selA=$('sqA'), selB=$('sqB');
@@ -49,7 +51,7 @@ export function togglePause(){
   if(game.state==='over') return;
   game.prevState=game.state; game.state='paused';
   $('goBtn').textContent='RIPRENDI'; $('sub').textContent='Pausa'; $('final').style.display='none';
-  $('menu').style.display='flex';
+  $('menu').style.display='flex'; $('menu').scrollTop=0;
 }
 export function newMatch(){
   teams[0].score=teams[1].score=0; game.period=1; game.clock=PERIOD_LEN; game.time=0;
@@ -65,5 +67,5 @@ export function endMatch(){
   $('final').style.display='block';
   $('final').innerHTML=`Finale: ${teams[0].name} ${a} - ${b} ${teams[1].name}<div style="font-size:16px;opacity:.8;margin-top:4px">${a>b?'Vittoria! 🏆':a<b?'Sconfitta, si riprova.':'Pareggio.'}</div>`;
   $('sub').textContent='Partita terminata'; $('goBtn').textContent='RIGIOCA';
-  setTimeout(()=>{ $('menu').style.display='flex'; },1500);
+  setTimeout(()=>{ $('menu').style.display='flex'; $('menu').scrollTop=0; },1500);
 }
