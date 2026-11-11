@@ -40,6 +40,18 @@ Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Propr
 4. In orizzontale il joystick copre la porta di sinistra quando si difende.
 5. Bilanciamento: conversione dei tiri intorno al 40% nelle partite simulate.
 
+## Riferimento visivo: Water Polo Revolution (video pre-alpha v0.1.4, Eric Flório, 2019)
+Ale ha indicato questo video come riferimento: https://www.youtube.com/watch?v=EUJ9M41NlCc
+Cosa si vede e cosa prendere (osservato su 5 fotogrammi):
+- Telecamera laterale, alta ma vicina, che inquadra la metà campo dove si gioca: l'acqua riempie lo schermo, niente tribune né cielo in vista.
+- Acqua trasparente con onde fitte (normal map) e rifrazione: i corpi sott'acqua si vedono distorti e ondeggianti. È l'elemento che dà più realismo.
+- Giocatori quasi tutti immersi: fuori dall'acqua solo testa, collo e spalle. Corpo verticale da fermi.
+- Chi nuota lascia una scia di schiuma dietro di sé.
+- Al tiro: braccio alzato con la palla sopra la testa e un mirino sulla porta che indica dove andrà il tiro.
+- Giocatore controllato indicato da una piccola freccia bianca sopra la testa (non un anello sull'acqua).
+- Porte semplici bianche; corde laterali con i colori delle zone.
+Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili e con una sola squadra in campo.
+
 ## Roadmap concordata
 1. Migrazione a progetto vero: Vite, moduli (regole, fisica, IA, grafica, input, HUD), GitHub Pages.
 2. Grafica (punto 1 sopra) con verifica a screenshot.
