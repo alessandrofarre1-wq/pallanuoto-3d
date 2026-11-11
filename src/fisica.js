@@ -1,4 +1,6 @@
 // ================= FISICA GIOCATORI =================
+import { rif01, setteControSei } from './ia.js';
+import { registraParata } from './statistiche.js';
 import { whistle } from './audio.js';
 import { BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
 import { showMsg } from './hud.js';
@@ -10,7 +12,8 @@ import { diSchiena, shotKind } from './tiri.js';
 export function movePlayer(p,dx,dz,sprint,dt){
   const mag=Math.hypot(dx,dz), moving=mag>0.05, swimming=mag>0.5;
   const hold=ball.holder===p, sp=Math.hypot(p.vx,p.vz);
-  let base=1.45*(0.85+0.3*p.st.spd);                 // andatura normale ~1.6 m/s
+  // Velocità: tra 60 e 90 di Velocità ci sono circa il 19% di differenza
+  let base=1.45*1.08*(0.82+(p.s.vel-40)/59*0.36);    // andatura normale ~1.6 m/s
   const canSprint=sprint&&p.stamina>0.05&&swimming;
   if(canSprint) base*=1.65;                          // sprint ~2.6 m/s da fresco
   p.sprinting=canSprint;
@@ -33,12 +36,15 @@ export function movePlayer(p,dx,dz,sprint,dt){
   // l'acqua frena subito ma fa partire piano
   const a=Math.min(1,dt*(Math.hypot(tvx,tvz)>sp?1.9:3.2));
   p.vx+=(tvx-p.vx)*a; p.vz+=(tvz-p.vz)*a;
-  if(canSprint) p.stamina-=dt*0.085; else p.stamina+=dt*(moving?0.02:0.06);
+  // Resistenza: un giocatore medio è visibilmente stanco dopo 6-7 vasche di sprint di fila (docs/tecnica.md);
+  // chi ha più Resistenza si stanca meno e recupera prima
+  const fRes=(p.s.res-40)/59;
+  if(canSprint) p.stamina-=dt*0.0092*(1.6-fRes); else p.stamina+=dt*(moving?0.006:0.02)*(0.6+0.8*fRes);
   if(p.contactT>0) p.stamina-=dt*0.02;
   p.stamina=clamp(p.stamina,0,1);
   p.x+=p.vx*dt; p.z+=p.vz*dt;
   p.x=clamp(p.x,-HL+0.25,HL-0.25); p.z=clamp(p.z,-HW+0.25,HW-0.25);
-  if(p.isGK){ const og=ownGoalX(p.team); p.x = p.team.dir>0 ? clamp(p.x,og+0.3,0) : clamp(p.x,0,og-0.3); }
+  if(p.isGK && !setteControSei(p.team)){ const og=ownGoalX(p.team); p.x = p.team.dir>0 ? clamp(p.x,og+0.3,0) : clamp(p.x,0,og-0.3); }      // il portiere resta nella sua metà, tranne nel 7 contro 6
   let tfx=p.fx, tfz=p.fz;
   if(p.act&&p.act.aim){ tfx=p.act.aim[0]-p.x; tfz=p.act.aim[1]-p.z; }
   else if(p.turnedUntil>game.time){ tfx=goalX(p.team)-p.x; tfz=-p.z; }
@@ -115,12 +121,16 @@ export function updateBall(dt){
       // parata
       if(!ball.saveChecked && (px-gk.x)*(ball.x-gk.x)<=0){
         ball.saveChecked=true;
-        const reach=0.58+0.42*gk.st.def, dz=Math.abs(ball.z-gk.z);
-        if(dz<reach && ball.y<1.9){
-          let prob=(1.0-0.36*ball.shotPower-dz*0.35-(ball.lob?0.2:0)-(gk.fakedUntil>game.time?0.25:0)-(ball.skipped?0.12:0))*(def.human?1:DIFF_GK())
+        // Parata. Conta soprattutto la POSIZIONE al momento del tiro: quanto la palla passa lontano da dove stava il portiere,
+        // tolto il pezzo che copre senza tuffarsi (braccia). Il tuffo (Riflessi) recupera solo una parte del resto; la stanchezza pesa.
+        const R=rif01(gk), fresco=0.8+0.2*gk.stamina, braccia=0.7;
+        const lontano=Math.max(0,Math.abs(ball.z-ball.gkZ0)-braccia), reach=(0.5+0.8*R)*fresco;
+        gk.stamina=Math.max(0,gk.stamina-0.035*(1.5-(gk.s.res-40)/59));          // ogni salto costa
+        if(lontano<reach && ball.y<1.9){
+          let prob=(1.02-0.30*ball.shotPower*(1.25-0.5*R)-lontano*(0.7-0.3*R)-(ball.lob?0.2:0)-(gk.fakedUntil>game.time?0.25:0)-(ball.skipped?0.12:0)-(ball.sorpresa||0))*fresco*(def.human?1:DIFF_GK())
             *(ball.rigore?0.45:1);      // sul rigore il portiere para molto meno: negli studi citati dalla tesi ne entra l'80%
           if(rnd()<prob){
-            whistle(0.12); const r=rnd(); ball.afterShot=true;
+            whistle(0.12); const r=rnd(); ball.afterShot=true; registraParata(att,def);
             if(ball.shotPower>0.55&&r<0.25){ cornerThrow(att); }
             else if(ball.shotPower>0.7&&r<0.65){
               // respinta: la palla schizza via dalle mani del portiere, verso il campo e verso l'alto
@@ -147,7 +157,14 @@ export function updateBall(dt){
         const hd=Math.hypot(p.x-ball.x,p.z-ball.z);
         if(p.team!==ball.lastTeam && !p.isGK && game.time>=p.stunUntil && hd<blockR(p) && (ball.kind!=='pass'||!ball.target||hd<Math.hypot(ball.target.x-ball.x,ball.target.z-ball.z)) && ball.flightT>0.12 && !ball.intercept.has(p)){
           ball.intercept.add(p);
-          const pr=(ball.kind==='shot'?0.3:0.35)*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
+          // il muro copre il primo palo (quello dalla parte del tiratore) e lascia al portiere l'angolo lungo
+          const primoPalo=ball.kind==='shot'&&ball.shooter&&Math.sign(ball.crossZ||0)===Math.sign(ball.shooter.z||0);
+          // sulle diagonali (palo lontano) serve il braccio alto al momento giusto: dipende dalla Difesa; una finta appena
+          // riuscita lo abbassa per un attimo; il polso non dà il tempo di alzarlo; chi tira più alto passa sopra
+          const dif01=(p.s.dif-40)/59, braccioAlto=0.2+0.7*dif01;
+          const finta=ball.shooter&&ball.shooter.fakeUntil>game.time?0.45:1;
+          const muro=(primoPalo?0.42:0.34*braccioAlto)*finta*(1-2*(ball.sorpresa||0))*(1.3-0.6*(ball.elevazione||0.5));
+          const pr=(ball.kind==='shot'?muro:0.2)*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
           if(rnd()<pr){
             if(ball.kind==='shot'){
               // muro: la palla rimbalza sul braccio alzato e resta in gioco

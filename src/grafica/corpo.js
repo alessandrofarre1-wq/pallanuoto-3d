@@ -99,10 +99,10 @@ export function attaccaCorpo(R,colori,num,seme){
     const variante=seme%pelli.length, nome=MODELLO.pelli[variante].corporatura, base=basi[nome];
     const radice=clonaConScheletro(base.scena);
     radice.scale.setScalar(base.scala); radice.rotation.y=Math.PI/2;      // il modello guarda +Z, il giocatore +X
-    const C={ radice, scala:base.scala, ossa:{}, riposo:{}, azzera:[], fase:seme*1.7, num:-1, colori };
+    const C={ radice, scala:base.scala, ossa:{}, riposo:{}, azzera:[], fase:seme*1.7, num:-1, colori:R.coloriVoluti||colori };
     // pelle con il suo disegno (volto, muscoli), lucida perché bagnata; costume nella zona segnata nel modello
     const pelle=new THREE.MeshPhongMaterial({map:pelli[variante],shininess:70,specular:0x6a6660});
-    const u={ uCostume:{value:new THREE.Color(colori.costume)}, uFascia:{value:new THREE.Vector2(base.testa.costume[0],base.testa.costume[1])} };
+    const u={ uCostume:{value:new THREE.Color(C.colori.costume)}, uFascia:{value:new THREE.Vector2(base.testa.costume[0],base.testa.costume[1])} };
     pelle.onBeforeCompile=sh=>{ Object.assign(sh.uniforms,u);
       sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float _costume; varying float vCostume; varying float vQuota;')
         .replace('#include <begin_vertex>','#include <begin_vertex>\nvCostume=_costume; vQuota=position.y;');
@@ -120,11 +120,18 @@ export function attaccaCorpo(R,colori,num,seme){
     C.calottina=new THREE.Mesh(calottinaGeo(nome),new THREE.MeshPhongMaterial({map:tex,shininess:60,specular:0x555555,side:THREE.DoubleSide}));
     C.calottina.layers.set(STRATO_SOLO_VISTA);      // la testa sta fuori dall'acqua: inutile ridisegnarla nella vista sott'acqua
     C.ossa.testa.add(C.calottina);
+    C.uCostume=u.uCostume;
     R.g.add(radice); R.corpo=C;
     for(const k of R.vecchi) k.visible=false;                          // spariscono cilindri e sfere
-    aggiornaNumero(R,num);
+    aggiornaNumero(R,R.numVoluto??num);
   };
   if(modelloPronto) crea(); else inAttesa.push(crea);
+}
+// cambia colori e numero (anche prima che il modello sia caricato: li trova pronti)
+export function aggiornaColori(R,colori,num){
+  R.coloriVoluti=colori; R.numVoluto=num;
+  const C=R.corpo; if(!C) return;
+  C.colori=colori; C.uCostume.value.setHex(colori.costume); C.num=-1; aggiornaNumero(R,num);
 }
 export function aggiornaNumero(R,num){
   const C=R.corpo; if(!C||C.num===num) return;

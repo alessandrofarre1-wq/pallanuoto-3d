@@ -23,6 +23,7 @@
 <div id="fight"><div class="fl"><span id="fdef">DIF</span><b>Lotta al centro</b><span id="fboa">BOA</span></div><div class="fb"><div id="fbar"></div><i></i></div></div>
 <div id="player">
   <div id="pname">—</div>
+  <div id="pstat"></div>
   <div class="et">Resistenza</div>
   <div class="bar" id="stam"><div></div></div>
   <div class="et">Potenza tiro</div>
@@ -46,12 +47,17 @@
 <div id="menu">
   <div class="panel">
     <h1>🤽 Pallanuoto 3D</h1>
-    <div class="sub" id="sub">Prototipo v0.15 · Italia vs Ungheria</div>
+    <div class="sub" id="sub">Prototipo v0.16 · scegli le squadre e gioca</div>
     <div id="final" style="display:none"></div>
+    <div class="row"><label>La tua squadra</label><select class="opt sel" id="sqA"></select></div>
+    <div class="row"><label>Avversaria</label><select class="opt sel" id="sqB"></select></div>
+    <details id="rosaBox"><summary>Rosa e statistiche</summary><div id="rosa"></div></details>
     <div class="row"><label>Durata tempo</label>
       <button class="opt" data-len="120">2 min</button><button class="opt on" data-len="180">3 min</button><button class="opt" data-len="300">5 min</button><button class="opt" data-len="480">8 min</button></div>
     <div class="row"><label>Difficoltà</label>
       <button class="opt" data-diff="0">Facile</button><button class="opt on" data-diff="1">Normale</button><button class="opt" data-diff="2">Difficile</button></div>
+    <div class="row"><label>Arbitro</label>
+      <button class="opt" data-arb="0.65">Permissivo</button><button class="opt on" data-arb="1">Normale</button><button class="opt" data-arb="1.4">Fiscale</button></div>
     <div class="row"><label>Ritmo di gioco</label>
       <button class="opt" data-spd="0.75">Lento</button><button class="opt on" data-spd="1">Normale</button><button class="opt" data-spd="1.25">Veloce</button></div>
     <div class="row"><label>Acqua</label>
@@ -64,10 +70,13 @@
       <div><b>Shift</b> sprint (consuma resistenza)</div>
       <div><b>Spazio</b> passaggio · in difesa: contrasto</div>
       <div><b>K (tieni premuto)</b> tiro: più tieni, più è forte</div>
-      <div><b>K due volte veloce</b> finta di tiro</div>
+      <div><b>K un tocco</b> tiro di polso (rapido, sorprende il portiere)</div>
+      <div><b>K due volte veloce</b> finta · un altro tocco subito dopo: polso</div>
+      <div><b>K + cambio di palo</b> torsione: carica verso un palo, rilascia verso l'altro (o rilascia tenendo Shift)</div>
+      <div><b>K tenuto sul passaggio</b> tiro al volo appena arriva la palla</div>
       <div><b>L</b> palombella</div>
       <div><b>Q</b> cambia giocatore (in difesa)</div>
-      <div><b>1 2 3 4</b> chiama lo schema (attacco o difesa)</div>
+      <div><b>1 2 3 4</b> chiama lo schema: attacco Arco/Entrata/Incrocio/Palla al boa · difesa A uomo/Zona/Pressing/Zona a M</div>
       <div><b>E</b> in attacco: taglio del compagno · in difesa: raddoppio</div>
       <div><b>Centroboa con palla</b>: E girata · K beduina · Spazio scarico</div>
       <div><b>Lotta al centro</b>: tieni Shift per spingere (boa o suo marcatore)</div>

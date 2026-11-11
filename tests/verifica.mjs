@@ -113,7 +113,7 @@ async function apri(versione, vista, seed) {
     await pg.evaluate('window.__H = { game, teams, ball, allPlayers, fight, renderer, get ctrl(){ return ctrl; } }');
   } else {
     await pg.goto(urlNuova);
-    await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto');
+    await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });
     await pg.evaluate('window.__H = window.__pallanuoto');
   }
   return pg;

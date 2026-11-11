@@ -12,7 +12,7 @@ const pg = await browser.newPage();
 pg.on('pageerror', e => console.log('errore nella pagina:', e.message));
 await pg.addInitScript(() => { window.requestAnimationFrame = () => 1; });
 await pg.goto(server.resolvedUrls.local[0]);
-await pg.waitForFunction('window.__pallanuoto && window.__pallanuoto.palla');
+await pg.waitForFunction('window.__pallanuoto && window.__pallanuoto.palla', null, { timeout: 60000, polling: 100 });
 const esiti = await pg.evaluate(() => {
   const { passoPalla, velocitaDiLancio } = window.__pallanuoto.palla, HL = 12.5, GW = 1.5, GH = 0.9, dt = 1 / 60, out = [];
   // lancia da "da" verso "a" in t secondi e segue la palla per "durata" secondi

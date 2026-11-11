@@ -6,7 +6,7 @@ import { inp, pressed, released } from './input.js';
 import { fightOn, girata } from './lotta.js';
 import { doFake, tackle } from './regole.js';
 import { ball, ctrl, fight, game, goalX, setCtrl, teams } from './stato.js';
-import { doPass, doShoot, humanPassTarget, shotKind, startAct } from './tiri.js';
+import { diSchiena, doPass, doShoot, humanPassTarget, shotKind, startAct } from './tiri.js';
 export let tapT=-9, pendingQuick=null;   // doppio tocco = finta, tocco singolo = tiro rapido
 export function resetTap(){ tapT=-9; pendingQuick=null; }
 export function autoSwitch(pt){
@@ -14,6 +14,7 @@ export function autoSwitch(pt){
   if(c) setCtrl(c);
 }
 export function updateCtrl(){
+  if(game.autoplay) return;
   const ht=teams[0];
   if(ball.holder&&ball.holder.team===ht){ setCtrl(ball.holder); return; }
   if(ctrl.excluded) autoSwitch(ball);
@@ -22,6 +23,10 @@ export function updateCtrl(){
 export function humanControl(p,dt){
   const hasBall = ball.holder===p;
   p.cut=null;
+  // secondo tocco rapido mentre parte il tiro di polso: il tiro diventa una finta (il braccio si ferma)
+  if(hasBall && pressed('shoot') && p.act && p.act.kind==='polso' && !p.act.done && game.time-tapT<0.3){
+    p.act.kind='fake'; p.act.frusta=0.09; p.act.fn=()=>doFake(p); p.fintaFino=game.time+1.0; tapT=-9; return;
+  }
   if(p.act&&!p.act.done) return;
   if(pressed('cmd') && hasBall && fightOn(p,fight.def) && fight.boa===p && !(p.turnedUntil>game.time)){ girata(p,fight.def); return; }
   if(pressed('cmd')){
@@ -44,24 +49,27 @@ export function humanControl(p,dt){
     if(ftBlock && (pressed('lob')||pressed('shoot'))){ showMsg('<span style="font-size:22px">Tiro libero dentro i 6 metri: devi passare o uscire oltre i 6</span>',1.2); return; }
     if(ftBlock){ p.charging=false; p.chargeT=0; pendingQuick=null; }
     if(pressed('lob')&&!p.isGK){ pendingQuick=null; startAct(p,'lob',0.12,()=>doShoot(p,0.4,true,aimZ)); return; }
-    if(inp.shoot&&!p.isGK){ p.charging=true; p.chargeT+=dt; }
+    // tiro al volo: TIRO tenuto premuto mentre il passaggio era in volo → si tira appena arriva la palla
+    if(p.voloPronto && inp.shoot && ball.holdTime<0.2 && !p.isGK && !ftBlock){ p.voloPronto=false; p.charging=false; p.chargeT=0; startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,aimZ,{volo:true})); return; }
+    p.voloPronto=false;
+    if(inp.shoot&&!p.isGK){ if(!p.charging) p.mira0=0; p.charging=true; p.chargeT+=dt; if(!p.mira0&&aimZ!=null) p.mira0=Math.sign(aimZ); }
     if(p.charging&&(released('shoot')||p.chargeT>1.4)){
       if(p.chargeT<0.2){
-        // tocco breve: se è il secondo in rapida successione è una finta, altrimenti un tiro rapido (dopo un attimo)
-        p.charging=false; p.chargeT=0;
-        if(game.time-tapT<0.32){ tapT=-9; pendingQuick=null; startAct(p,'fake',0.12,()=>doFake(p)); return; }
-        tapT=game.time; pendingQuick={aimZ};
+        // tocco breve: tiro di polso, subito (un secondo tocco rapido lo trasforma in finta; dopo una finta il polso sorprende di più)
+        p.charging=false; p.chargeT=0; tapT=game.time;
+        const dopoFinta=game.time<(p.fintaFino||0);
+        startAct(p,diSchiena(shotKind(p))?shotKind(p):'polso',0.04,()=>doShoot(p,0.42,false,aimZ,{polso:true,dopoFinta})); return;
       } else {
+        // torsione: caricare con la levetta verso un palo e rilasciare verso l'altro (oppure rilasciare tenendo SPRINT):
+        // il busto fa pensare al primo palo, il polso chiude in diagonale
         const pw=Math.min(1,p.chargeT/0.9), kind=shotKind(p);
-        pendingQuick=null; startAct(p,kind,0,()=>doShoot(p,pw,false,aimZ)); return;
+        const torsione=kind==='shot' && ((p.mira0&&aimZ!=null&&Math.sign(aimZ)!==p.mira0) || inp.sprint);
+        startAct(p,torsione?'torsione':kind,0,()=>doShoot(p,pw,false,aimZ,{torsione})); return;
       }
-    }
-    if(pendingQuick && !inp.shoot && game.time-tapT>=0.32){
-      const az=pendingQuick.aimZ; pendingQuick=null;
-      startAct(p,shotKind(p),0.1,()=>doShoot(p,0.25,false,az)); return;
     }
   } else {
     p.charging=false; p.chargeT=0; pendingQuick=null;
+    p.voloPronto = inp.shoot && ball.state==='flight' && ball.kind==='pass' && ball.target===p;
     const h=ball.holder;
     if(pressed('pass') && h && fightOn(p,h)){ p.aggrT=game.time+0.8; showMsg('<span style="font-size:22px">Trattieni il centroboa…</span>',0.4); }
     else if(pressed('pass') && h && h.team!==p.team && !h.isGK){

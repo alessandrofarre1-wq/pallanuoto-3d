@@ -1,6 +1,7 @@
 // ================= PASSAGGI E TIRI =================
+import { registraTiro, tipoDiTiro } from './statistiche.js';
 import { BRV, clamp, dist, gauss, rnd } from './costanti.js';
-import { manUp, startCut } from './ia.js';
+import { manUp, postoPortiere, setteControSei, startCut } from './ia.js';
 import { velocitaDiLancio } from './palla.js';
 import { allPlayers, ball, fight, game, goalX, other, setCtrl, teams } from './stato.js';
 export function startAct(p,kind,wind,fn,aim){
@@ -10,7 +11,7 @@ export function startAct(p,kind,wind,fn,aim){
   if(kind!=='colonnello') wind+=(kind==='pass'?0.12:0.3)*(p.oriz||0);
   // "frusta" = tempo dal braccio caricato al rilascio. Dati riportati nella tesi Patumi (Melchiorri 2015): 166 ms per i
   // professionisti, 189 ms per i semi-professionisti: chi tira meglio rilascia prima. Passaggio e finta sono gesti più corti.
-  const frusta = kind==='pass'||kind==='fake' ? 0.09 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
+  const frusta = kind==='pass'||kind==='fake' ? 0.09 : kind==='polso' ? 0.11 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
   p.act={t:0,kind,wind,frusta,fn,aim,done:false}; p.charging=false; p.chargeT=0;
   if(diSchiena(kind)) p.tiriDiSchiena=(p.tiriDiSchiena||0)+1;
 }
@@ -47,6 +48,8 @@ export function laneClear(a,bx,bz,team,rad=0.6){
 }
 export function openness(m){ let best=99; for(const o of other(m.team).players){ if(o.excluded) continue; best=Math.min(best,dist(o,m)); } return best; }
 // che tipo di tiro parte in questa situazione
+// 0-1: quanto il giocatore riesce ad alzarsi e a restare stabile sulle gambe (Forza, Resistenza, stanchezza)
+export const elevazione = p => ((p.s.frz-40)/59*0.5+(p.s.res-40)/59*0.5)*(0.55+0.45*p.stamina);
 export function shotKind(p){
   if(game.penalty===p) return 'shot';
   // centroboa spalle alla porta: beduina (braccio che gira all'esterno) oppure sciarpa (braccio che attraversa il corpo,
@@ -58,11 +61,14 @@ export function shotKind(p){
 export function bestPassTarget(p){
   let best=null, bs=-1e9;
   for(const m of p.team.players){
-    if(m===p||m.excluded||m.isGK) continue;
+    if(m===p||m.excluded||(m.isGK&&!setteControSei(p.team))) continue;
     const d=dist(p,m); if(d<2) continue;
     const dg=Math.hypot(goalX(p.team)-m.x,m.z);
     let s=Math.min(openness(m),3)*1.3 - dg*0.15 + (laneClear(p,m.x,m.z,p.team)?1.2:-2.5) - d*0.04;
     if(m.i===1 && fight.active && fight.boa===m) s+= (fight.v>0?1.6:0.4) + (p.team.atkPlay===3?1.5:0);   // palla al boa
+    if(m.i===1 && other(p.team).defPlay===3) s-=2.2;      // la zona a M taglia fuori il centroboa
+    // Visione: chi ne ha poca sceglie peggio il compagno a cui passare
+    s+=(rnd()-0.5)*(99-p.s.vis)/59*3.5;
     if(s>bs){ bs=s; best=m; }
   }
   return best;
@@ -93,7 +99,12 @@ export function doPass(p,m){
   // dai e vai: chi passa dal perimetro può tagliare verso la porta
   if(!p.isGK && p.i>=4 && !manUp(p.team) && (p.team.atkPlay===1||rnd()<0.35)) startCut(p);
 }
-export function doShoot(p,power,lob,aimZ){
+// errore di mira secondo la Precisione: piccolo a 90, circa 2,5 volte a 75, oltre 5 volte a 60
+const mira = pre => pre>=90 ? 0.18-(pre-90)/9*0.1 : 0.18+Math.pow((90-pre)/30,1.6)*0.82;
+// o = variante: polso (tiro di solo polso, poco caricato), dopoFinta, torsione (finta di busto sul primo palo e chiusura in diagonale), volo
+export function doShoot(p,power,lob,aimZ,o){
+  o=o||{};
+  const tipoAzione=tipoDiTiro(p,ball);
   const t=p.team, gx=goalX(t), gk=other(t).players[0];
   // si mira un po' più dentro di prima: ora pali e traversa sono veri e la palla ha il suo ingombro
   let az = aimZ!=null ? clamp(aimZ*1.28,-1.28,1.28) : -Math.sign(gk.z||(rnd()-0.5))*(0.85+rnd()*0.38);
@@ -101,15 +112,21 @@ export function doShoot(p,power,lob,aimZ){
   const d=Math.hypot(gx-p.x,az-p.z);
   let press=99; for(const o of other(t).players){ if(!o.excluded&&!o.isGK&&game.time>=o.stunUntil&&!(p.turnedUntil>game.time&&o===fight.def)) press=Math.min(press,dist(o,p)); }
   // un tiro marcato stretto è molto meno preciso: gli schemi servono a liberare il tiratore
+  // Precisione: tra 60 e 90 l'errore di mira cala di quasi quattro volte (dallo stesso punto, circa il doppio dei tiri nello specchio).
   // Dalla tesi: la precisione NON dipende dalla velocità del tiro (nessuna correlazione), quindi tirare forte non costa mira;
   // il tiro classico è più preciso di beduina, sciarpa e colonnello.
-  const tipo=p.act?p.act.kind:'shot', classico=tipo==='shot'||tipo==='lob';
-  const errBase=1.25*0.27*(1+(1-p.stamina)*1.3)*(classico?1:1.3)*(1.25-p.st.sht)*(1+clamp(1.4-press,0,1)*0.9)*(p.fakeUntil>game.time?0.65:1)*(p.turnedUntil>game.time?0.6:1);
-  az+=gauss()*errBase*(0.45+d*0.09); ay+=gauss()*errBase*0.35;
+  const tipo=p.act?p.act.kind:'shot', classico=tipo==='shot'||tipo==='lob'||tipo==='polso'||tipo==='torsione';
+  // elevazione: quanto il tiratore esce dall'acqua dipende da gambe (Forza), fiato (Resistenza) e stanchezza;
+  // più è alto, meno il difensore vicino gli sporca il tiro
+  const elev=elevazione(p);
+  const errBase=1.25*0.27*(1+(1-p.stamina)*1.3)*(classico?1:1.3)*mira(p.s.pre)*(1+clamp(1.4-press,0,1)*0.9*(1.45-0.9*elev))*(o.volo?1.15:1)*(p.fakeUntil>game.time?0.65:1)*(p.turnedUntil>game.time?0.6:1);
+  // Mano: dal lato destro della vasca tira meglio un mancino, dal sinistro un destro (angolo migliore sulla porta)
+  const lato=Math.abs(p.z)>1.5?Math.sign(p.z*t.dir):0, mano=lato===0?1:((p.mano==='S')===(lato>0)?0.92:1.2);
+  az+=gauss()*errBase*mano*(0.45+d*0.09); ay+=gauss()*errBase*mano*0.35;
   // Velocità al rilascio (dati riportati nella tesi): professionisti 22,8 ± 2,4 m/s a tutta forza. La bravura al tiro sposta
   // il massimo tra circa 20 e 25 m/s; il tiro classico è il più veloce.
-  const vMax=(22.8+16*(p.st.sht-0.85))*(classico?1:tipo==='colonnello'?0.9:0.85);
-  const spd = lob ? 4.5+d*0.15 : vMax*(0.5+0.5*power)*(0.75+0.25*p.stamina);
+  const vMax=(22.8+(p.s.pot-75)*0.16)*(classico?1:tipo==='colonnello'?0.9:0.85);      // Potenza: da circa 20 (60) a 25 m/s (90)
+  const spd = lob ? 4.5+d*0.15 : vMax*(0.5+0.5*power)*(0.75+0.25*p.stamina)*(o.torsione?0.92:1);
   // tiro a schizzo: la palla rimbalza sull'acqua poco prima della porta (più difficile da leggere per il portiere)
   const dxg=Math.abs(gx-p.x);
   if(!lob && power>0.55 && dxg>4 && game.penalty!==p && rnd()<0.28){
@@ -117,5 +134,13 @@ export function doShoot(p,power,lob,aimZ){
     launch(p,gx-t.dir*1.4,BRV,az+(p.z-az)*k,d*(1-k)/spd,'shot'); ball.skip=true;
   } else launch(p,gx,ay,az,d/spd,'shot');
   ball.shotPower=lob?0.3:power; ball.lob=lob; ball.crossZ=az; ball.rigore=game.penalty===p;
+  ball.tipoTiro=tipoAzione; registraTiro(p,tipoAzione);
+  // dove si trova il portiere nel momento in cui parte il tiro: è da qui che dipende soprattutto la parata
+  ball.gkZ0=gk.z; ball.gkFuoriPosto=Math.abs(gk.z-postoPortiere(gk.team,p.x,p.z));
+  // sorpresa per portiere e muro: il polso parte senza caricare (ancora di più dopo una finta); con la torsione il portiere
+  // si sposta verso il primo palo e la palla va sull'altro
+  ball.sorpresa = o.polso ? (o.dopoFinta?0.26:0.15) : o.torsione ? 0.08 : o.volo ? 0.06 : 0;
+  ball.elevazione=elev;
+  if(o.torsione) ball.gkZ0-=Math.sign(az||1)*0.4;
   p.stamina=Math.max(0,p.stamina-0.04);
 }

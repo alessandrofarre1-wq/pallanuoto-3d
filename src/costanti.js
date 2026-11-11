@@ -11,12 +11,13 @@ export const SHOT_CLOCK = 28, SHOT_RESET = 18, EXCL_TIME = 18;  // artt. 4.1.1, 
 export const ROLES = ['Portiere','Centroboa','Ala destra','Ala sinistra','Mezzo destro','Mezzo sinistro','Punto'];
 // posizioni d'attacco: [distanza dalla porta avversaria, spostamento laterale (+ = destra)]
 // arco (semicerchio 3-3) con il centroboa al centro, sui 2 metri
-export const FORM = [null,[2.6,0],[2.4,6.5],[2.4,-6.5],[5.8,4.6],[5.8,-4.6],[7.5,0]];
+// le ali stanno dentro i 2 metri ma fuori dall'area di porta (che arriva a 2 m oltre i pali): lì possono ricevere e tirare
+export const FORM = [null,[2.6,0],[1.7,6.2],[1.7,-6.2],[5.8,4.6],[5.8,-4.6],[7.5,0]];
 // uomo in più: 4-2 (quattro sui 2 metri, due dietro)
-export const FORM_UP = [null,[2.5,1.7],[2.4,5.2],[2.4,-5.2],[6,2.6],[6,-2.6],[2.5,-1.7]];
+export const FORM_UP = [null,[2.5,1.7],[1.7,5.0],[1.7,-5.0],[6,2.6],[6,-2.6],[2.5,-1.7]];
 // uomo in meno: zona a 5 davanti alla porta
 export const DEF_DOWN = [[1.8,0],[2.6,2.6],[2.6,-2.6],[5,1.6],[5,-1.6],[5,0]];
-export const ATK = ['Arco','Entrata','Incrocio','Palla al boa'], DEFN = ['A uomo','Zona','Pressing'];
+export const ATK = ['Arco','Entrata','Incrocio','Palla al boa'], DEFN = ['A uomo','Zona','Pressing','Zona a M'];
 // marcature a uomo per zona di campo: ogni difensore prende l'attaccante che gioca dal suo lato;
 // il punto marca il centroboa (e viceversa)
 export const MARK = [0,6,3,2,5,4,1];
@@ -33,3 +34,7 @@ export function gauss(){ let u=0,v=0; while(!u)u=rnd(); while(!v)v=rnd(); return
 export function setPeriodLen(v){ PERIOD_LEN=v; }
 export function setDiff(v){ DIFF_I=v; }
 export function setSpeed(v){ SPEED=v; }
+// Severità dell'arbitro, scelta a inizio partita: sposta il confine tra contatto lecito, fallo ed espulsione, soprattutto ai 2 metri.
+// 0,65 = permissivo (lascia giocare), 1 = normale, 1,4 = fiscale
+export let ARBITRO=1;
+export function setArbitro(v){ ARBITRO=v; }

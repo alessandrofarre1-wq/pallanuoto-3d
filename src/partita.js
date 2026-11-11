@@ -4,7 +4,7 @@ import { humanControl, updateCtrl } from './controllo.js';
 import { DIFF, GW, MARK, PERIOD_LEN, clamp, dist, rnd } from './costanti.js';
 import { movePlayer, separate, updateBall } from './fisica.js';
 import { showMsg } from './hud.js';
-import { aiCarrier, aiTarget, closestTo, manUp, startCut, steer } from './ia.js';
+import { pos01, rif01, aiCarrier, aiTarget, closestTo, manUp, startCut, steer } from './ia.js';
 import { inp, pollInput, pressed, released } from './input.js';
 import { fightOn, updateFight } from './lotta.js';
 import { endMatch } from './menu.js';
@@ -60,12 +60,15 @@ export function update(dt){
   // ritardo di reazione dei marcatori
   for(const p of allPlayers){
     if(p.excluded||game.time<p.stunUntil) continue;      // chi ha abboccato a una finta resta indietro
-    const a=other(p.team).players[MARK[p.i]], k=Math.min(1,dt*(2+2*p.st.def*(p.team.human?1:DIFF())));
+    const a=other(p.team).players[MARK[p.i]], k=Math.min(1,dt*(2+2*p.st.def*(p.team.human?1:DIFF()))*(p.team.defPlay===3?1.4:1));      // zona a M: scalate più rapide
     p.lagX+=(a.x-p.lagX)*k; p.lagZ+=(a.z-p.lagZ)*k;
   }
   // entrate (tagli) della squadra in attacco
   for(const t of teams){
     const h=ball.holder;
+    // palla all'ala: il mezzo dello stesso lato (il "2") attacca lo spazio lasciato dal suo marcatore che si è abbassato
+    if(game.possTeam===t&&h&&h.team===t&&(h.i===2||h.i===3)&&t.alaConPalla!==h){ t.alaConPalla=h; const m=t.players[h.i+2]; if(m!==ctrl&&!m.excluded&&!m.cut&&!manUp(t)) startCut(m); }
+    if(h&&h.team===t&&h.i!==2&&h.i!==3) t.alaConPalla=null;
     if(game.possTeam!==t||!h||h.team!==t||h.isGK||t.atkPlay===3||manUp(t)) continue;
     if(Math.abs(goalX(t)-h.x)>10||game.time<t.nextDrive) continue;
     let b=null,bd=-1;
@@ -97,8 +100,8 @@ export function update(dt){
     let mx=0,mz=0; if(d>0.12){ const s=Math.min(1,d/0.8); mx=dx/d*s; mz=dz/d*s; }
     if(d>1.0 && !tg.gk){ const st=steer(p,dx/d,dz/d,d); mx=st[0]; mz=st[1]; }
     const sprint = tg.gk ? false : ((tg.sprint && d>0.6) || (d>4 && p.stamina>0.35));
-    if(tg.gk){ // il portiere si sposta più rapidamente in orizzontale
-      const sp=2.6; p.z+=clamp(tg.z-p.z,-sp*dt,sp*dt); mz=0;
+    if(tg.gk){ // spostamento laterale del portiere: di posizione (lento o svelto secondo Posizione) oppure in tuffo (Riflessi); stanco è più lento
+      const fresco=0.75+0.25*p.stamina, sp=(tg.tuffo ? 1.6+2.2*rif01(p) : 1.1+1.3*pos01(p))*fresco; p.z+=clamp(tg.z-p.z,-sp*dt,sp*dt); mz=0;
     }
     movePlayer(p,mx,mz,sprint,dt);
     if(p.team.defPlay===2 && game.possTeam===other(p.team) && !p.isGK) p.stamina=Math.max(0,p.stamina-dt*0.012);  // il pressing stanca
@@ -113,7 +116,8 @@ export function update(dt){
   separate();
   updateFight(dt);
   if(game.state!=='play') return;
-  // area di porta (art. 8.2.8): 2 m dalla linea di porta, fino a 2 m oltre i pali (ipotesi: definizione non riportata nell'estratto)
+  // area di porta (art. 8.2.8): dalla linea di porta ai 2 metri, fino a 2 m oltre ciascun palo. La regola vale SOLO qui dentro:
+  // un'ala fuori dall'area ma dentro i 2 metri può ricevere e tirare.
   for(const t of teams){
     if(game.possTeam!==t) continue;
     const gx=goalX(t), bd=Math.abs(gx-ball.x);
