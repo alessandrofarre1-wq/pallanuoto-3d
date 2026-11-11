@@ -16,6 +16,11 @@ export function movePlayer(p,dx,dz,sprint,dt){
   base*=0.6+0.4*p.stamina;
   if(hold) base*=0.85;
   if(p.charging||(p.act&&!p.act.done&&p.act.kind!=='colonnello')) base*=0.35;
+  // corpo verticale ↔ orizzontale: ci vuole circa mezzo secondo per distendersi o per tornare in piedi (bicicletta).
+  // Finché il corpo non è disteso non si raggiunge la velocità piena.
+  const vuoleNuoto=swimming && !p.charging && !(p.act&&!p.act.done&&p.act.kind!=='colonnello');
+  p.oriz=clamp((p.oriz||0)+(vuoleNuoto?dt:-dt)/0.5,0,1);
+  if(swimming) base*=0.62+0.38*p.oriz;
   if(game.time<p.stunUntil) base*=0.15;
   p.contactT=(p.contactT||0)-dt;
   if(p.contactT>0) base*=0.55;                       // corpo a corpo: si fatica ad avanzare

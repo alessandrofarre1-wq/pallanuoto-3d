@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { BRV, GH, GW, HL, HW, rnd } from '../costanti.js';
 import { game } from '../stato.js';
-import { Acqua, STRATO_CORPI, STRATO_SOLO_VISTA, STRATO_SOPRA, STRATO_VASCA } from './acqua.js';
+import { Acqua, STRATO_CORPI, STRATO_SOLO_VISTA, STRATO_SOPRA, STRATO_SOTTO, STRATO_VASCA } from './acqua.js';
 // ================= SCENA =================
 export const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.info.autoReset=false;   // il conteggio degli oggetti disegnati si azzera a mano una volta per fotogramma (render.js)
@@ -20,7 +20,7 @@ export function canvasTex(w,h,draw,rx,ry){
 scene.background = canvasTex(16,256,(x,w,h)=>{ const g=x.createLinearGradient(0,0,0,h); g.addColorStop(0,'#2f7fd0'); g.addColorStop(0.6,'#a6d4f4'); g.addColorStop(1,'#e9f5fc'); x.fillStyle=g; x.fillRect(0,0,w,h); });
 scene.fog = new THREE.Fog(0xcfe6f5,70,170);
 export const camera = new THREE.PerspectiveCamera(innerWidth<innerHeight?62:40,innerWidth/innerHeight,0.1,300);
-camera.layers.enableAll();
+camera.layers.enableAll(); camera.layers.disable(STRATO_SOTTO);
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight; camera.fov=camera.aspect<1?62:40;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight); ridimensionaAcqua();});
 // intensità ritarate per Three.js moderno (colori calcolati in spazio lineare) in modo da restare come nella v0.9
 export const LUCE_CIELO=2.44, LUCE_SOLE=2.86;
@@ -182,13 +182,19 @@ export const freccia = new THREE.Sprite(new THREE.SpriteMaterial({depthTest:fals
   x.beginPath(); x.moveTo(8,10); x.lineTo(w-8,10); x.lineTo(w/2,h-8); x.closePath();
   x.lineJoin='round'; x.lineWidth=9; x.strokeStyle='#0b1d33'; x.stroke(); x.fillStyle='#fff'; x.fill(); })}));
 freccia.scale.set(0.5,0.5,1); freccia.renderOrder=5; scene.add(freccia);
+// mirino sulla porta: mostra dove andrà il tiro mentre lo si carica (come nel riferimento)
+export const mirino = new THREE.Sprite(new THREE.SpriteMaterial({depthTest:false,transparent:true,map:canvasTex(64,64,(x,w,h)=>{
+  for(const [colore,spessore] of [['#0b1d33',9],['#fff',4]]){ x.strokeStyle=colore; x.lineWidth=spessore; x.lineCap='round';
+    x.beginPath(); x.arc(w/2,h/2,20,0,7); x.stroke();
+    for(const [a,b,c,d] of [[w/2,3,w/2,17],[w/2,h-3,w/2,h-17],[3,h/2,17,h/2],[w-3,h/2,w-17,h/2]]){ x.beginPath(); x.moveTo(a,b); x.lineTo(c,d); x.stroke(); } } })}));
+mirino.scale.set(0.8,0.8,1); mirino.renderOrder=6; mirino.visible=false; scene.add(mirino);
 export const passMark = new THREE.Mesh(new THREE.TorusGeometry(0.4,0.035,6,24),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.6}));
 passMark.rotation.x=Math.PI/2; scene.add(passMark);
 export const camMode = () => camera.aspect<1 ? 1 : game.camMode;   // in verticale si usa sempre la vista dalla porta
 export function setDpr(v){ dpr=v; }
 // strati di disegno (vedi acqua.js): cosa compare nel riflesso e cosa nella vista sott'acqua
 {
-  const bb=new THREE.Box3(), soloVista=new Set([schiuma,shadow,ring,passMark,freccia,water,acqua]);
+  const bb=new THREE.Box3(), soloVista=new Set([schiuma,shadow,ring,passMark,freccia,mirino,water,acqua]);
   for(const o of scene.children){
     if(o.isLight){ o.layers.enableAll(); continue; }
     let st;

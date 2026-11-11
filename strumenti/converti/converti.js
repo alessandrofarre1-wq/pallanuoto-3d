@@ -23,7 +23,10 @@ window.converti = async ({ modello, animazioni }) => {
     const geo = maglie.map((m, k) => { const g = m.geometry.clone(); for (const n of Object.keys(g.attributes)) if (!['position', 'normal', 'skinIndex', 'skinWeight'].includes(n)) g.deleteAttribute(n);
       // canale "zona": 0 = superficie del corpo, 1 = giunture
       g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(g.attributes.position.count * 2).fill(k), 2)); g.morphAttributes = {}; return g; });
-    const unita = BufferGeometryUtils.mergeGeometries(geo, false);
+    let unita = BufferGeometryUtils.mergeGeometries(geo, false);
+    // superficie liscia: si uniscono i punti che coincidono (anche dove il modello aveva spigoli vivi) e si ricalcolano le normali
+    unita.deleteAttribute('normal'); unita.deleteAttribute('uv');
+    unita = BufferGeometryUtils.mergeVertices(unita, 0.01); unita.computeVertexNormals();
     corpo = new THREE.SkinnedMesh(unita, new THREE.MeshStandardMaterial({ color: 0xcccccc }));
     corpo.name = 'Corpo'; corpo.bind(maglie[0].skeleton, maglie[0].bindMatrix);
     maglie[0].parent.add(corpo); for (const m of maglie) m.parent.remove(m);

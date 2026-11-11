@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { BRV, HL, clamp, rnd } from '../costanti.js';
 import { updateRig } from './pose.js';
-import { animateWater, ball3d, camMode, camera, freccia, passMark, renderer, ring, scene, shadow, spawnFoam, updateFoam } from './scena.js';
+import { animateWater, ball3d, camMode, camera, freccia, mirino, passMark, renderer, ring, scene, shadow, spawnFoam, updateFoam } from './scena.js';
 import { inp } from '../input.js';
 import { allPlayers, ball, ctrl, game, teams } from '../stato.js';
 import { humanPassTarget } from '../tiri.js';
@@ -27,6 +27,14 @@ export function render(dt,now){
   ring.visible=false;
   freccia.visible=!!ctrl&&!ctrl.excluded&&game.state!=='menu';
   if(ctrl){ ctrl.mesh.spr.getWorldPosition(_cv); freccia.position.set(_cv.x,_cv.y+0.48+Math.sin(now*0.006)*0.05,_cv.z); }
+  // mirino: mentre il giocatore controllato carica o esegue un tiro, mostra il punto della porta a cui mira
+  mirino.visible=false;
+  if(ctrl&&ball.holder===ctrl&&!ctrl.isGK&&game.state==='play'&&(ctrl.charging||(ctrl.act&&!ctrl.act.done&&ctrl.act.kind!=='pass'&&ctrl.act.kind!=='fake'))){
+    const gk=teams[1-ctrl.team.idx].players[0];
+    const az=Math.abs(inp.z)>0.3 ? clamp(inp.z*1.35,-1.35,1.35) : -Math.sign(gk.z||1)*1.1;
+    mirino.visible=true; mirino.position.set(HL*ctrl.team.dir,0.45,az);
+    const s=0.95-0.3*Math.min(1,(ctrl.chargeT||0)/0.9); mirino.scale.set(s,s,1);      // si stringe mentre il tiro si carica
+  }
   // indicatore del compagno a cui passeresti
   passMark.visible=false;
   if(ctrl&&ball.holder===ctrl&&game.state==='play'){
