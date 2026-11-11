@@ -2,11 +2,12 @@
 import { CHIAVE, STAT_NOMI } from './dati/rose.js';
 import { dpr, livelloAcqua, renderer } from './grafica/scena.js';
 import { ATK, DEFN } from './costanti.js';
+import { bip } from './audio.js';
 import { allPlayers, ctrl, fight, game, teams } from './stato.js';
 export const $ = id => document.getElementById(id);
 export let msgT=0;
 export function showMsg(text,dur=1.4){ const m=$('msg'); m.innerHTML=text; m.style.opacity=1; msgT=dur; }
-let tacKey='', exclKey='', schedaVista=null;
+let tacKey='', exclKey='', schedaVista=null, ultimoBip=null;
 export function aggiornaTabellone(){
   $('capA').style.background=teams[0].css; $('capB').style.background=teams[1].css;
   $('nameA').textContent=teams[0].short; $('nameB').textContent=teams[1].short; tacKey=''; schedaVista=null;
@@ -17,7 +18,11 @@ export function updateHUD(){
   $('score').textContent=teams[0].score+' - '+teams[1].score;
   $('period').textContent=game.period+'°T';
   $('clock').textContent=fmt(game.clock);
-  $('shotclock').textContent=game.possTeam?Math.max(0,Math.ceil(game.shot)):'—';
+  // tempo per l'azione: negli ultimi 5 secondi il numero lampeggia e suona a ogni secondo
+  { const n=game.possTeam?Math.max(0,Math.ceil(game.shot)):null, el=$('shotclock'), urg=n!==null&&n<=5&&game.state==='play'&&!game.penalty;
+    el.textContent=n===null?'—':n; el.classList.toggle('urg',urg);
+    if(urg&&n>0&&n!==ultimoBip){ bip(n<=2?1320:880); }
+    ultimoBip=urg?n:null; }
   if(ctrl){
     $('pname').textContent='#'+ctrl.num+' '+ctrl.name+' · '+ctrl.role+(ctrl.sprinting?' · ⚡':'');
     if(ctrl.scheda!==schedaVista){ schedaVista=ctrl.scheda; const s=ctrl.s; $('pstat').innerHTML=`<b>${ctrl.ovr}</b> · `+CHIAVE[ctrl.i].map(k=>`${STAT_NOMI[k].slice(0,3).toUpperCase()} ${s[k]}`).join(' · ')+` · mano ${ctrl.mano==='S'?'sinistra':'destra'}`; }
