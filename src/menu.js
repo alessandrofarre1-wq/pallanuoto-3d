@@ -1,12 +1,15 @@
 // ================= MENU =================
 import { initAudio } from './audio.js';
 import { PERIOD_LEN, setDiff, setPeriodLen, setSpeed } from './costanti.js';
-import { $ } from './hud.js';
+import { $, fpsIniziale, setFps } from './hud.js';
 import { kickoff } from './regole.js';
 import { allPlayers, game, teams } from './stato.js';
 document.querySelectorAll('[data-len]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-len]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setPeriodLen(+b.dataset.len); });
 document.querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-diff]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setDiff(+b.dataset.diff); });
 document.querySelectorAll('[data-spd]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-spd]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setSpeed(+b.dataset.spd); });
+const scegliFps=on=>{ document.querySelectorAll('[data-fps]').forEach(x=>x.classList.toggle('on',(x.dataset.fps==='1')===on)); setFps(on); };
+document.querySelectorAll('[data-fps]').forEach(b=>b.onclick=()=>scegliFps(b.dataset.fps==='1'));
+if(fpsIniziale()) scegliFps(true);
 $('goBtn').onclick=()=>{
   initAudio();
   if(game.state==='paused'){ game.state=game.prevState; $('menu').style.display='none'; return; }

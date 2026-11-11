@@ -6,7 +6,7 @@ export function numberTexture(n,bg,fg){
   const c=document.createElement('canvas'); c.width=c.height=64; const x=c.getContext('2d');
   x.fillStyle=bg; x.beginPath(); x.arc(32,32,28,0,Math.PI*2); x.fill();
   x.fillStyle=fg; x.font='bold 34px sans-serif'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(String(n),32,34);
-  return new THREE.CanvasTexture(c);
+  const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; return t;
 }
 export const SKIN=[0xe2ad88,0xd59b74,0xc98d66,0xeab995,0xb97f5b];
 export const UPV=new THREE.Vector3(0,1,0), _dv=new THREE.Vector3();

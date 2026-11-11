@@ -81,9 +81,9 @@ function confrontaImmagini([a, b]) {
   return Promise.all([carica(a), carica(b)]).then(([ia, ib]) => {
     if (ia.width !== ib.width || ia.height !== ib.height) return { diversi: 1, max: 255, nota: 'dimensioni diverse' };
     const px = i => { const c = document.createElement('canvas'); c.width = i.width; c.height = i.height; const x = c.getContext('2d'); x.drawImage(i, 0, 0); return x.getImageData(0, 0, i.width, i.height).data; };
-    const A = px(ia), B = px(ib); let n = 0, max = 0;
-    for (let i = 0; i < A.length; i += 4) { const m = Math.max(Math.abs(A[i] - B[i]), Math.abs(A[i + 1] - B[i + 1]), Math.abs(A[i + 2] - B[i + 2])); if (m > max) max = m; if (m > 12) n++; }
-    return { diversi: n / (A.length / 4), max };
+    const A = px(ia), B = px(ib); let n = 0, max = 0, somma = 0;
+    for (let i = 0; i < A.length; i += 4) { const m = Math.max(Math.abs(A[i] - B[i]), Math.abs(A[i + 1] - B[i + 1]), Math.abs(A[i + 2] - B[i + 2])); if (m > max) max = m; if (m > 12) n++; somma += m; }
+    return { diversi: n / (A.length / 4), max, media: somma / (A.length / 4) };
   });
 }
 
@@ -157,7 +157,7 @@ for (const bot of [false, true]) for (let s = 1; s <= N_PARTITE; s++) {
   if (!n.finita) fallito(`partita ${s} non arrivata alla fine`);
   console.log(`  partita ${s}${bot ? ' con comandi' : '            '}: ${n.punteggio}, ${n.tiri} tiri, ${Math.round(n.fotogrammi / 60)} s${esito}`);
 }
-console.log(`  totale: ${totGol} gol su ${totTiri} tiri = ${(100 * totGol / totTiri).toFixed(0)}% di conversione`);
+if (totTiri) console.log(`  totale: ${totGol} gol su ${totTiri} tiri = ${(100 * totGol / totTiri).toFixed(0)}% di conversione`);
 console.log('  eventi: ' + Object.entries(totEventi).filter(([k]) => k !== 'conto alla rovescia').sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v}`).join(' · '));
 
 console.log('\nScreenshot');
@@ -171,10 +171,10 @@ for (const scena of SCENE) {
   if (!fs.existsSync(fRif) || opt('aggiorna')) { fs.writeFileSync(fRif, nuovo); console.log(`  ${nome}: salvato come riferimento`); continue; }
   const rif = fs.readFileSync(fRif);
   const c = await pgCfr.evaluate(confrontaImmagini, [dataUrl(rif), dataUrl(nuovo)]);
-  const perc = (c.diversi * 100).toFixed(2);
-  if (c.diversi > 0.005 && opt('screenshot-non-bloccanti')) console.log(`  ! ${nome}: ${perc}% dei punti diverso dal riferimento (solo avviso)`);
-  else if (c.diversi > 0.005) fallito(`${nome}: ${perc}% dei punti diverso dal riferimento${c.nota ? ' (' + c.nota + ')' : ''}`);
-  else console.log(`  ✓ ${nome}: ${c.diversi === 0 && c.max === 0 ? 'identico al riferimento' : perc + '% dei punti diverso (entro la tolleranza)'}`);
+  const perc = (c.diversi * 100).toFixed(2) + (c.media != null ? `% (scarto medio ${c.media.toFixed(1)} su 255)` : '%');
+  if (c.diversi > 0.005 && opt('screenshot-non-bloccanti')) console.log(`  ! ${nome}: ${perc} dei punti diverso dal riferimento (solo avviso)`);
+  else if (c.diversi > 0.005) fallito(`${nome}: ${perc} dei punti diverso dal riferimento${c.nota ? ' (' + c.nota + ')' : ''}`);
+  else console.log(`  ✓ ${nome}: ${c.diversi === 0 && c.max === 0 ? 'identico al riferimento' : perc + ' dei punti diverso (entro la tolleranza)'}`);
   // immagine affiancata prima/dopo, da guardare a occhio
   const largo = scena[1] !== 'iphone-verticale';
   await pgCfr.setContent(`<body style="margin:0;background:#111;font:700 20px system-ui;color:#fff"><div id="c" style="display:inline-flex;flex-direction:${largo ? 'column' : 'row'};gap:10px;padding:10px">

@@ -11,7 +11,7 @@ document.body.prepend(renderer.domElement);
 export const scene = new THREE.Scene();
 export function canvasTex(w,h,draw,rx,ry){
   const c=document.createElement('canvas'); c.width=w; c.height=h; draw(c.getContext('2d'),w,h);
-  const t=new THREE.CanvasTexture(c);
+  const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace;
   if(rx){ t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(rx,ry); }
   return t;
 }
@@ -19,8 +19,10 @@ scene.background = canvasTex(16,256,(x,w,h)=>{ const g=x.createLinearGradient(0,
 scene.fog = new THREE.Fog(0xcfe6f5,70,170);
 export const camera = new THREE.PerspectiveCamera(innerWidth<innerHeight?62:40,innerWidth/innerHeight,0.1,300);
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight; camera.fov=camera.aspect<1?62:40;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
-scene.add(new THREE.HemisphereLight(0xffffff,0x5a86a6,0.62));
-export const sun = new THREE.DirectionalLight(0xfff3dc,0.7); sun.position.set(-10,30,14); scene.add(sun);
+// intensità ritarate per Three.js moderno (colori calcolati in spazio lineare) in modo da restare come nella v0.9
+export const LUCE_CIELO=2.44, LUCE_SOLE=2.86;
+scene.add(new THREE.HemisphereLight(0xffffff,0x27385d,LUCE_CIELO));
+export const sun = new THREE.DirectionalLight(0xfff3dc,LUCE_SOLE); sun.position.set(-10,30,14); scene.add(sun);
 
 export function box(w,h,d,mat,x,y,z){
   const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),typeof mat==='number'?new THREE.MeshLambertMaterial({color:mat}):mat);

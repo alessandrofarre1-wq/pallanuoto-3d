@@ -8,7 +8,7 @@ import './menu.js';
 import { SPEED } from './costanti.js';
 import { render } from './grafica/render.js';
 import { dpr, renderer, setDpr } from './grafica/scena.js';
-import { tickMsg, updateHUD } from './hud.js';
+import { tickFps, tickMsg, updateHUD } from './hud.js';
 import { update } from './partita.js';
 import { kickoff } from './regole.js';
 import { allPlayers, ball, ctrl, fight, game, teams } from './stato.js';
@@ -26,6 +26,7 @@ function loop(now){
   tickMsg(dt);
   hudT+=raw; if(hudT>0.05){ hudT=0; updateHUD(); }
   render(dt,now);
+  tickFps(now);
   requestAnimationFrame(loop);
 }
 // accesso per le verifiche automatiche (tests/verifica.mjs) e per il debug dalla console

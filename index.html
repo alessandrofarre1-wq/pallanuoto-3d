@@ -23,6 +23,7 @@
   <div class="bar" id="power"><div></div></div>
 </div>
 <div id="msg"></div>
+<div id="fps"></div>
 
 <div id="touch">
   <div id="joy"><span>MUOVI</span><div id="knob"></div></div>
@@ -39,7 +40,7 @@
 <div id="menu">
   <div class="panel">
     <h1>🤽 Pallanuoto 3D</h1>
-    <div class="sub" id="sub">Prototipo v0.9 · Italia vs Ungheria</div>
+    <div class="sub" id="sub">Prototipo v0.9.2 · Italia vs Ungheria</div>
     <div id="final" style="display:none"></div>
     <div class="row"><label>Durata tempo</label>
       <button class="opt" data-len="120">2 min</button><button class="opt on" data-len="180">3 min</button><button class="opt" data-len="300">5 min</button><button class="opt" data-len="480">8 min</button></div>
@@ -47,6 +48,8 @@
       <button class="opt" data-diff="0">Facile</button><button class="opt on" data-diff="1">Normale</button><button class="opt" data-diff="2">Difficile</button></div>
     <div class="row"><label>Ritmo di gioco</label>
       <button class="opt" data-spd="0.75">Lento</button><button class="opt on" data-spd="1">Normale</button><button class="opt" data-spd="1.25">Veloce</button></div>
+    <div class="row"><label>Contatore FPS</label>
+      <button class="opt on" data-fps="0">No</button><button class="opt" data-fps="1">Sì</button></div>
     <button class="go" id="goBtn">GIOCA</button>
     <div class="ctrl">
       <div><b>WASD / frecce</b> nuota</div>

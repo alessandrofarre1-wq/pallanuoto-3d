@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.9.1",
+  "version": "0.9.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,7 +12,7 @@
     "verifica:aggiorna": "node tests/verifica.mjs --aggiorna"
   },
   "dependencies": {
-    "three": "^0.128.0"
+    "three": "^0.187.0"
   },
   "devDependencies": {
     "eslint": "^9.39.5",

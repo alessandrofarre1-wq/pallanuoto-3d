@@ -17,7 +17,7 @@ Gioco di pallanuoto 3D nel browser: Italia contro Ungheria, regole World Aquatic
 | `src/input.js`, `src/controllo.js` | tastiera, controller, touch e comandi del giocatore |
 | `src/hud.js`, `src/menu.js`, `src/audio.js`, `src/stile.css` | tabellone, menu, fischio, aspetto |
 | `src/costanti.js`, `src/stato.js`, `src/giocatori.js` | misure del campo, stato della partita, squadre |
-| `legacy/index.html` | la v0.9 in un solo file, tenuta come termine di paragone |
+| `legacy/` | la v0.9 in un solo file (con la sua vecchia libreria Three.js), tenuta come termine di paragone |
 | `tests/verifica.mjs` | verifica automatica: partite simulate + screenshot |
 | `CLAUDE.md` | memoria del progetto per Claude Code |
 
