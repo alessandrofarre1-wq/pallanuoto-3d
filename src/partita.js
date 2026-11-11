@@ -60,12 +60,15 @@ export function update(dt){
   // ritardo di reazione dei marcatori
   for(const p of allPlayers){
     if(p.excluded||game.time<p.stunUntil) continue;      // chi ha abboccato a una finta resta indietro
-    const a=other(p.team).players[MARK[p.i]], k=Math.min(1,dt*(2+2*p.st.def*(p.team.human?1:DIFF())));
+    const a=other(p.team).players[MARK[p.i]], k=Math.min(1,dt*(2+2*p.st.def*(p.team.human?1:DIFF()))*(p.team.defPlay===3?1.4:1));      // zona a M: scalate più rapide
     p.lagX+=(a.x-p.lagX)*k; p.lagZ+=(a.z-p.lagZ)*k;
   }
   // entrate (tagli) della squadra in attacco
   for(const t of teams){
     const h=ball.holder;
+    // palla all'ala: il mezzo dello stesso lato (il "2") attacca lo spazio lasciato dal suo marcatore che si è abbassato
+    if(game.possTeam===t&&h&&h.team===t&&(h.i===2||h.i===3)&&t.alaConPalla!==h){ t.alaConPalla=h; const m=t.players[h.i+2]; if(m!==ctrl&&!m.excluded&&!m.cut&&!manUp(t)) startCut(m); }
+    if(h&&h.team===t&&h.i!==2&&h.i!==3) t.alaConPalla=null;
     if(game.possTeam!==t||!h||h.team!==t||h.isGK||t.atkPlay===3||manUp(t)) continue;
     if(Math.abs(goalX(t)-h.x)>10||game.time<t.nextDrive) continue;
     let b=null,bd=-1;

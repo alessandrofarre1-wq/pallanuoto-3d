@@ -1,7 +1,7 @@
 // ================= PASSAGGI E TIRI =================
 import { registraTiro, tipoDiTiro } from './statistiche.js';
 import { BRV, clamp, dist, gauss, rnd } from './costanti.js';
-import { manUp, postoPortiere, startCut } from './ia.js';
+import { manUp, postoPortiere, setteControSei, startCut } from './ia.js';
 import { velocitaDiLancio } from './palla.js';
 import { allPlayers, ball, fight, game, goalX, other, setCtrl, teams } from './stato.js';
 export function startAct(p,kind,wind,fn,aim){
@@ -61,11 +61,12 @@ export function shotKind(p){
 export function bestPassTarget(p){
   let best=null, bs=-1e9;
   for(const m of p.team.players){
-    if(m===p||m.excluded||m.isGK) continue;
+    if(m===p||m.excluded||(m.isGK&&!setteControSei(p.team))) continue;
     const d=dist(p,m); if(d<2) continue;
     const dg=Math.hypot(goalX(p.team)-m.x,m.z);
     let s=Math.min(openness(m),3)*1.3 - dg*0.15 + (laneClear(p,m.x,m.z,p.team)?1.2:-2.5) - d*0.04;
     if(m.i===1 && fight.active && fight.boa===m) s+= (fight.v>0?1.6:0.4) + (p.team.atkPlay===3?1.5:0);   // palla al boa
+    if(m.i===1 && other(p.team).defPlay===3) s-=2.2;      // la zona a M taglia fuori il centroboa
     // Visione: chi ne ha poca sceglie peggio il compagno a cui passare
     s+=(rnd()-0.5)*(99-p.s.vis)/59*3.5;
     if(s>bs){ bs=s; best=m; }

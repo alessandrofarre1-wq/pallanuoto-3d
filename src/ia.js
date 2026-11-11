@@ -30,7 +30,7 @@ export function attackTarget(p){
   const ballD=Math.abs(gx-ball.x), lead=[0,14,12,12,8,8,4][p.i];
   let f0=f[0], fz=f[1];
   if(ballD-lead>f0) f0=ballD-lead;
-  return { x:gx-t.dir*f0, z:clamp(fz*t.dir+Math.sin(game.time*0.6+p.uid)*0.35,-HW+0.5,HW-0.5), sprint:t.atkPlay===2&&(p.i===4||p.i===5) };
+  return { x:gx-t.dir*f0, z:clamp(fz*t.dir+Math.sin(game.time*0.6+p.uid)*0.35,-HW+0.5,HW-0.5), sprint:(t.atkPlay===2&&(p.i===4||p.i===5))||game.time<(t.fugaFino||0) };
 }
 export function markTarget(p){
   const t=p.team, ogx=ownGoalX(t);
@@ -41,8 +41,15 @@ export function markTarget(p){
   if(t.doubleP===p && game.time<t.doubleUntil && ball.holder && ball.holder.team!==t) return {x:ball.holder.x,z:ball.holder.z,sprint:true};
   const att=other(t).players[MARK[p.i]];
   if(!att||att.excluded) return { x:ogx+t.dir*3.5, z:clamp(ball.z*0.4,-2,2) };
+  // palla all'ala (posizione 1 o 5): il marcatore del mezzo dello stesso lato (il "-2") si abbassa sulla linea tra l'ala e il
+  // centroboa per impedire quel passaggio
+  const h=ball.holder;
+  if(h && h.team!==t && (h.i===2||h.i===3) && att.i===h.i+2 && Math.abs(ogx-h.x)<5){
+    const boa=other(t).players[1];
+    if(!boa.excluded) return { x:h.x+(boa.x-h.x)*0.62, z:h.z+(boa.z-h.z)*0.62, sprint:true };
+  }
   if(MARK[p.i]===1 && Math.abs(ogx-att.x)<5){
-    if(t.defPlay===2 && ball.holder!==att){   // pressing: anticipo sul centroboa, tra lui e la palla
+    if((t.defPlay===2||t.defPlay===3) && ball.holder!==att){   // pressing e zona a M: anticipo sul centroboa, tra lui e la palla
       const bx=ball.x-att.x, bz=ball.z-att.z, bl=Math.hypot(bx,bz)||1;
       return { x:att.x+bx/bl*0.6, z:att.z+bz/bl*0.6 };
     }
@@ -54,9 +61,11 @@ export function markTarget(p){
   let gap = ball.holder===att ? 0.85 : 1.0;
   if(t.defPlay===1 && p.i!==6) gap = ball.holder===att ? 1.3 : Math.min(2.6,l*0.45);   // zona: ci si stacca verso il centroboa
   if(t.defPlay===2) gap = 0.8;                                                       // pressing
+  // zona a M: due linee strette davanti alla porta (ali e punto bassi, mezzi più alti), braccia alte; lascia il tiro da lontano
+  if(t.defPlay===3) gap = ball.holder===att ? 1.5 : Math.min(p.i===4||p.i===5?2.4:3.4,l*0.55);
   return { x:ax+dx/l*gap, z:az+dz/l*gap };
 }
-export function blockR(p){ return ball.kind==='shot' && (p.team.defPlay===1 || p.team.players.some(q=>q.excluded)) ? 0.85 : 0.6; }
+export function blockR(p){ return ball.kind==='shot' && (p.team.defPlay===1 || p.team.defPlay===3 || p.team.players.some(q=>q.excluded)) ? (p.team.defPlay===3?1.0:0.85) : 0.6; }
 // Portiere. L'80% del lavoro è la posizione (docs/tecnica.md): sta sulla linea tra la palla e il centro della porta e la segue
 // spostandosi DURANTE i passaggi, non quando sono già arrivati. Quanto in fretta lo capisce e quanto velocemente si sposta
 // dipendono dalla statistica Posizione: sulle diagonali lunghe (da 2 a 5, da 4 a 1) un portiere scarso resta indietro.
@@ -110,6 +119,7 @@ export function closestTo(team,pt,skipGK=true){
   return best;
 }
 export function aiTarget(p){
+  if(p.isGK && setteControSei(p.team) && game.possTeam===p.team) return { x:goalX(p.team)-p.team.dir*8.6, z:2.6, sprint:true };      // 7 contro 6: il portiere sale a fare il settimo attaccante
   if(p.isGK){
     // palla vagante vicino alla porta: il portiere prova ad andarla a prendere
     if(ball.state==='free' && Math.hypot(ball.x-ownGoalX(p.team),ball.z)<6.5){
@@ -129,6 +139,18 @@ export function aiTarget(p){
   // palla contesa (sprint iniziale): solo il più vicino va sulla palla, gli altri risalgono la propria corsia fino alla posizione di ruolo
   return {x:-t.dir*FORM[p.i][0]*0.8, z:KICK_Z[p.i]*t.dir, sprint:true};   // palla contesa: ci si ferma a metà campo
 }
+// ultimo minuto dell'ultimo tempo, sotto di un gol: la squadra del computer attacca in 7 contro 6 con il portiere avanzato
+export function setteControSei(t){
+  return !t.human && game.period===4 && game.clock<60 && other(t).score-t.score===1;
+}
+// il computer sceglie la difesa guardando l'avversario: centroboa forte → zona o zona a M; tiratori forti dal perimetro → pressing;
+// in ogni caso alterna, per togliere riferimenti ai registi avversari
+export function scegliDifesa(dif,att){
+  const boa=att.players[1], tir=[4,5,6].map(i=>att.players[i]).filter(q=>!q.excluded);
+  const fBoa=boa.excluded?40:(boa.s.frz+boa.s.pot)/2, fTir=tir.reduce((a,q)=>a+(q.s.pot+q.s.pre)/2,0)/Math.max(1,tir.length);
+  const scelte = fBoa>fTir+3 ? [1,1,3,3,3,0,2] : fTir>fBoa+3 ? [2,2,2,0,0,1,3] : [0,0,2,2,1,3];
+  return scelte[Math.floor(rnd()*scelte.length)];
+}
 export function aiShoot(p,power,lob){
   const kind=lob?'lob':shotKind(p), r=kind==='shot'?rnd():1;
   if(r<0.14) startAct(p,'polso',0.04,()=>doShoot(p,0.42,false,null,{polso:true,dopoFinta:p.fakeUntil>game.time}));        // tiro di polso
@@ -138,7 +160,7 @@ export function aiShoot(p,power,lob){
 export function aiPass(p,m){ startAct(p,'pass',0.08,()=>doPass(p,m),[m.x,m.z]); }
 export function aiCarrier(p,dt){
   const t=p.team, gx=goalX(t);
-  if(p.isGK){
+  if(p.isGK && !setteControSei(t)){
     p.target={x:p.x,z:p.z};
     if(p.act) return;
     if(ball.holdTime>1.0+rnd()*0.05){ const m=bestPassTarget(p); if(m) aiPass(p,m); }
@@ -155,6 +177,8 @@ export function aiCarrier(p,dt){
   if(p.decideT>0) return;
   p.decideT=0.3+rnd()*0.35;
   const ft=p.freeThrow&&Math.abs(gx-p.x)<6;       // tiro libero dentro i 6 metri: non si può tirare direttamente
+  // time-out dell'allenatore: dopo un parziale negativo, dopo una serie di espulsioni subite, o per preparare il 7 contro 6
+  if(t.timeouts>0 && !t.human && t.vuoleTimeout && timeout(t)){ t.vuoleTimeout=false; t.parzialeSubito=0; return; }
   if(t.timeouts>0 && !t.human && rnd()<0.25){ let st=0,n=0; for(const q of t.players){ if(!q.isGK&&!q.excluded){ st+=q.stamina; n++; } } if(n&&st/n<0.3&&timeout(t)) return; }
   if(p.shootNext){ p.shootNext=false; if(dGoal<9&&!ft){ aiShoot(p,0.6+rnd()*0.4,false); return; } }
   const gk=other(t).players[0];

@@ -1,4 +1,5 @@
 // ================= REGOLE / FASI =================
+import { scegliDifesa, setteControSei } from './ia.js';
 import { elevazione } from './tiri.js';
 import { riservaPer, vesti } from './giocatori.js';
 import { registraEspulsione, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
@@ -45,7 +46,10 @@ export function giveBall(p){
     // le squadre guidate dal computer scelgono lo schema a ogni cambio di possesso
     const att=p.team, dif=other(att);
     if(!att.human){ att.atkPlay=[0,0,1,1,3][Math.floor(rnd()*5)]; att.cross=rnd()<0.2; att.nextDrive=game.time+3+rnd()*4; }
-    if(!dif.human) dif.defPlay=[0,0,0,1,1,2][Math.floor(rnd()*6)];
+    if(!dif.human) dif.defPlay=scegliDifesa(dif,att);
+    if(att.defPlay===3) att.fugaFino=game.time+5;                      // dalla zona a M si riparte subito in controfuga
+    // 7 contro 6 nell'ultimo minuto: prima il time-out per prepararlo
+    if(setteControSei(att)&&!att.setteAnnunciato){ att.setteAnnunciato=true; att.vuoleTimeout=true; showMsg(`<span style="font-size:26px">${att.name}: 7 contro 6 con il portiere in attacco</span>`,1.6); }
     if(att.human) att.nextDrive=game.time+6+rnd()*4;
   } else if(ball.afterShot){ game.shot=SHOT_RESET; }                  // art. 8.12a
   ball.afterShot=false;
@@ -132,10 +136,12 @@ export function callPlay(i){
     else if(i===2){ t.atkPlay=2; t.cross=!t.cross; }
     else t.atkPlay=3;
     showMsg(`<span style="font-size:24px">Schema: ${ATK[t.atkPlay]}</span>`,0.8);
-  } else if(i<3){ t.defPlay=i; showMsg(`<span style="font-size:24px">Difesa: ${DEFN[i]}</span>`,0.8); }
+  } else if(i<4){ t.defPlay=i; showMsg(`<span style="font-size:24px">Difesa: ${DEFN[i]}</span>`,0.8); }
 }
 export function goalScored(t){
   t.score++; whistle(0.6); rumble(350,1); registraGol(t,ball);
+  // parziale: tre gol subiti di fila fanno chiamare il time-out all'allenatore del computer
+  { const sub=other(t); t.parzialeSubito=0; sub.parzialeSubito=(sub.parzialeSubito||0)+1; if(sub.parzialeSubito>=3) sub.vuoleTimeout=true; }
   showMsg(`GOL! <span style="font-size:22px;display:block">${t.short} · #${ball.shooter.num} ${ball.shooter.name}</span>`,2.4);
   ball.state='dead';      // la palla prosegue fino in fondo alla rete (fisica.js)
   const conceding=other(t);
@@ -155,6 +161,8 @@ export function goalThrow(defTeam,text){
 }
 export function exclude(d){
   whistle(0.5); d.pf++; rumble(220,0.8); registraEspulsione(d);
+  // tre espulsioni subite in due minuti: time-out per ridare calma e attenzione in marcatura
+  { const T=d.team; T.espulsioniT=(T.espulsioniT||[]).filter(x=>game.time-x<120); T.espulsioniT.push(game.time); if(T.espulsioniT.length>=3){ T.vuoleTimeout=true; T.espulsioniT=[]; } }
   d.excluded=true; d.exclUntil=game.time+EXCL_TIME; d.vx=d.vz=0; d.charging=false; d.cut=null;
   d.x=ownGoalX(d.team)+d.team.dir*0.6; d.z=-HW-1.0;
   showMsg(`Espulsione! <span style="font-size:22px;display:block">${d.team.short} #${d.num} ${d.name} — ${EXCL_TIME}" · ${d.pf}° fallo grave${d.pf>=3?' (definitiva)':''}</span>`,1.9);
@@ -178,11 +186,11 @@ export function tackle(d,c,o){
   if(dist(d,c)>(o.force?1.35:1.15)) return false;
   const dG=Math.hypot(ownGoalX(d.team)-c.x,c.z), lineD=Math.abs(ownGoalX(d.team)-c.x);
   const skill = d.st.def*(d.team.human?1:DIFF());
-  const pSteal = clamp((0.1+0.2*skill-0.06*c.st.pas)*(press?1.3:1)*(o.stealMul||1),0.05,0.6);
+  const pSteal = clamp((0.1+0.2*skill-0.06*c.st.pas)*(press?1.15+0.4*(d.s.dif-40)/59:1)*(o.stealMul||1),0.05,0.6);
   // Disciplina: chi ne ha poca commette più falli gravi (espulsione o rigore)
   const fDis=1.5-(d.s.dis-40)/59;
   const pPen = ((lineD<5&&Math.abs(c.z)<4)?0.07:0)*fDis;
-  const pExcl = (lineD<6?0.2:0.05)*(press?1.5:1)*fDis;
+  const pExcl = (lineD<6?0.2:0.05)*(press?1.3+0.5*(fDis-0.5):1)*fDis;
   const pFoul = 0.42;
   const r=rnd();
   if(r<pSteal){ registraPallaRubata(d.team); giveBall(d); showMsg(`Palla rubata! ${d.team.short} #${d.num}`,1); return true; }

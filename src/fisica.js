@@ -1,5 +1,5 @@
 // ================= FISICA GIOCATORI =================
-import { rif01 } from './ia.js';
+import { rif01, setteControSei } from './ia.js';
 import { registraParata } from './statistiche.js';
 import { whistle } from './audio.js';
 import { BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
@@ -44,7 +44,7 @@ export function movePlayer(p,dx,dz,sprint,dt){
   p.stamina=clamp(p.stamina,0,1);
   p.x+=p.vx*dt; p.z+=p.vz*dt;
   p.x=clamp(p.x,-HL+0.25,HL-0.25); p.z=clamp(p.z,-HW+0.25,HW-0.25);
-  if(p.isGK){ const og=ownGoalX(p.team); p.x = p.team.dir>0 ? clamp(p.x,og+0.3,0) : clamp(p.x,0,og-0.3); }
+  if(p.isGK && !setteControSei(p.team)){ const og=ownGoalX(p.team); p.x = p.team.dir>0 ? clamp(p.x,og+0.3,0) : clamp(p.x,0,og-0.3); }      // il portiere resta nella sua metà, tranne nel 7 contro 6
   let tfx=p.fx, tfz=p.fz;
   if(p.act&&p.act.aim){ tfx=p.act.aim[0]-p.x; tfz=p.act.aim[1]-p.z; }
   else if(p.turnedUntil>game.time){ tfx=goalX(p.team)-p.x; tfz=-p.z; }
