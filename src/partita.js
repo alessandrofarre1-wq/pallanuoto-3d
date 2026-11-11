@@ -99,6 +99,8 @@ export function update(dt){
     const dx=tg.x-p.x, dz=tg.z-p.z, d=Math.hypot(dx,dz);
     let mx=0,mz=0; if(d>0.12){ const s=Math.min(1,d/0.8); mx=dx/d*s; mz=dz/d*s; }
     if(d>1.0 && !tg.gk){ const st=steer(p,dx/d,dz/d,d); mx=st[0]; mz=st[1]; }
+    // il corpo scivola: chi sta arrivando al suo posto smette di nuotare in anticipo e si lascia portare
+    if(!tg.gk && !tg.sprint && d<Math.hypot(p.vx,p.vz)/1.5 && p.vx*dx+p.vz*dz>0){ mx=0; mz=0; }
     const sprint = tg.gk ? false : ((tg.sprint && d>0.6) || (d>4 && p.stamina>0.35));
     if(tg.gk){ // spostamento laterale del portiere: di posizione (lento o svelto secondo Posizione) oppure in tuffo (Riflessi); stanco è più lento
       const fresco=0.75+0.25*p.stamina, sp=(tg.tuffo ? 1.6+2.2*rif01(p) : 1.1+1.3*pos01(p))*fresco; p.z+=clamp(tg.z-p.z,-sp*dt,sp*dt); mz=0;

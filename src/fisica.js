@@ -2,7 +2,7 @@
 import { rif01, setteControSei } from './ia.js';
 import { registraParata } from './statistiche.js';
 import { whistle } from './audio.js';
-import { BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
+import { ALZATA, BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
 import { showMsg } from './hud.js';
 import { QUOTA_GALLEGGIA, passoPalla } from './palla.js';
 import { blockR } from './ia.js';
@@ -20,21 +20,41 @@ export function movePlayer(p,dx,dz,sprint,dt){
   base*=0.6+0.4*p.stamina;
   if(hold) base*=0.85;
   if(p.charging||(p.act&&!p.act.done&&p.act.kind!=='colonnello')) base*=0.35;
-  // corpo verticale ↔ orizzontale: ci vuole circa mezzo secondo per distendersi o per tornare in piedi (bicicletta).
-  // Finché il corpo non è disteso non si raggiunge la velocità piena.
-  const vuoleNuoto=swimming && !p.charging && !(p.act&&!p.act.done&&p.act.kind!=='colonnello');
-  p.oriz=clamp((p.oriz||0)+(vuoleNuoto?dt:-dt)/0.5,0,1);
+  // Corpo verticale ↔ orizzontale: il passaggio è rapido e frequentissimo (ci si alza per ricevere, passare, tirare, guardare,
+  // e si riparte subito): circa un quarto di secondo per alzarsi, un decimo in più per distendersi.
+  // Lo SPOSTAMENTO invece è lento e scivoloso: il corpo porta con sé la velocità anche quando smette di nuotare o si alza.
+  const lunging=p.lunge>game.time;
+  const gesto=p.charging||(p.act&&!p.act.done&&p.act.kind!=='colonnello');
+  // chi sta per ricevere un passaggio si alza un attimo prima che la palla arrivi (e continua a scivolare)
+  const riceve=ball.state==='flight'&&ball.kind==='pass'&&ball.target===p&&Math.hypot(ball.tx-ball.x,ball.tz-ball.z)<Math.hypot(ball.vx,ball.vz)*0.3;
+  // inversione: per tornare indietro non si fa una curva a U distesi, ci si alza, si gira sul posto e si riparte
+  const cosGiro=swimming?(p.fx*dx+p.fz*dz)/mag:1;
+  if(swimming&&!p.isGK&&!lunging){ if(cosGiro<-0.25) p.perno=true; else if(cosGiro>0.45) p.perno=false; } else p.perno=false;
+  const vuoleNuoto=swimming && !gesto && !riceve && !p.perno;
+  p.oriz=clamp((p.oriz||0)+(vuoleNuoto?dt/(ALZATA+0.1):-dt/ALZATA),0,1);
+  // da verticale si riparte subito, ma finché il corpo non è disteso non si spinge a piena forza
   if(swimming) base*=0.62+0.38*p.oriz;
   if(game.time<p.stunUntil) base*=0.15;
   p.contactT=(p.contactT||0)-dt;
   if(p.contactT>0) base*=0.55;                       // corpo a corpo: si fatica ad avanzare
-  const lunging=p.lunge>game.time; if(lunging) base*=1.35;
-  // per nuotare bisogna prima girare il corpo nella direzione giusta
-  let af=1;
-  if(swimming && !p.isGK && !lunging) af=0.3+0.7*Math.max(0,(p.fx*dx+p.fz*dz)/mag);
-  const tvx=dx*base*af, tvz=dz*base*af;
-  // l'acqua frena subito ma fa partire piano
-  const a=Math.min(1,dt*(Math.hypot(tvx,tvz)>sp?1.9:3.2));
+  if(lunging) base*=1.35;
+  // disteso si spinge nella direzione del corpo (e il corpo gira piano: curve ampie); in verticale ci si sposta con le gambe
+  // in qualsiasi direzione
+  let ux=dx, uz=dz;
+  if(swimming && !p.isGK && !lunging){
+    const o=p.oriz; ux=dx/mag*(1-o)+p.fx*o; uz=dz/mag*(1-o)+p.fz*o;
+    const ul=Math.hypot(ux,uz)||1, af=0.3+0.7*Math.max(0,cosGiro); ux=ux/ul*mag*af; uz=uz/ul*mag*af;
+  }
+  const tvx=ux*base, tvz=uz*base, tsp=Math.hypot(tvx,tvz);
+  // l'acqua: si accelera in modo progressivo; smettendo di nuotare si scivola e si rallenta piano (meno attrito da distesi,
+  // di più in verticale); si frena davvero solo remando contro
+  let ritmo;
+  if(!moving) ritmo=0.8+0.6*(1-p.oriz);
+  else if(sp>0.3 && (p.vx*dx+p.vz*dz)<-0.3*sp*mag) ritmo=2.4;
+  else ritmo=tsp>sp?1.5:1.25;
+  if(game.time<p.stunUntil||p.contactT>0) ritmo=Math.max(ritmo,2.6);
+  if(p.isGK) ritmo=Math.max(ritmo,2.2);            // il portiere si muove di gambe, a scatti brevi
+  const a=Math.min(1,dt*ritmo);
   p.vx+=(tvx-p.vx)*a; p.vz+=(tvz-p.vz)*a;
   // Resistenza: un giocatore medio è visibilmente stanco dopo 6-7 vasche di sprint di fila (docs/tecnica.md);
   // chi ha più Resistenza si stanca meno e recupera prima
@@ -55,9 +75,13 @@ export function movePlayer(p,dx,dz,sprint,dt){
     if(p.i===1 && Math.hypot(tfx,tfz)<4.5 && game.penalty!==p){ tfx=-tfx; tfz=-tfz; }   // il centroboa lavora spalle alla porta
   }
   else { tfx=ball.x-p.x; tfz=ball.z-p.z; }
-  const tl=Math.hypot(tfx,tfz)||1; tfx/=tl; tfz/=tl;
-  const k=Math.min(1,dt*(p.act?14:sp>1?4:7)); p.fx+=(tfx-p.fx)*k; p.fz+=(tfz-p.fz)*k;
-  const fl=Math.hypot(p.fx,p.fz)||1; p.fx/=fl; p.fz/=fl;
+  // il corpo gira a velocità limitata: in verticale ci si gira in fretta sul posto, distesi si curva largo
+  const ang=Math.atan2(p.fz,p.fx), dest=Math.atan2(tfz,tfx);
+  let diff=dest-ang; while(diff>Math.PI) diff-=2*Math.PI; while(diff<-Math.PI) diff+=2*Math.PI;
+  const o=p.oriz||0, veloce=clamp(sp/1.4,0,1);
+  const omega=(p.act?16:(7.5-4.4*o*veloce))*dt;                 // radianti: ~430°/s in verticale, ~180°/s in piena nuotata
+  const giro=clamp(diff*Math.min(1,dt*(p.act?14:9)),-omega,omega), na=ang+giro;
+  p.fx=Math.cos(na); p.fz=Math.sin(na);
 }
 export function separate(){
   const ps=allPlayers.filter(active);

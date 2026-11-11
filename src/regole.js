@@ -2,7 +2,7 @@
 import { scegliDifesa, setteControSei } from './ia.js';
 import { elevazione } from './tiri.js';
 import { riservaPer, vesti } from './giocatori.js';
-import { registraEspulsione, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
+import { registraEspulsione, registraFallo, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
 import { whistle } from './audio.js';
 import { autoSwitch, resetTap } from './controllo.js';
 import { ARBITRO, ATK, BRV, DEFN, DIFF, EXCL_TIME, FORM, HL, HW, KICK_Z, SHOT_CLOCK, SHOT_RESET, clamp, dist, rnd } from './costanti.js';
@@ -171,7 +171,7 @@ export function exclude(d){
   if(ctrl===d) autoSwitch(ball.holder||ball);
 }
 export function foul(d,c){     // fallo semplice: il gioco si ferma e l'attacco batte il tiro libero (artt. 8, 11)
-  whistle(0.22); rumble(120,0.5);
+  whistle(0.22); rumble(120,0.5); registraFallo(d.team);
   d.stunUntil=game.time+0.9;
   const dx=d.x-c.x, dz=d.z-c.z, l=Math.hypot(dx,dz)||1; d.x+=dx/l*0.9; d.z+=dz/l*0.9; d.vx=d.vz=0;
   c.act=null; c.charging=false; c.chargeT=0; c.freeThrow=true; c.decideT=0.25;

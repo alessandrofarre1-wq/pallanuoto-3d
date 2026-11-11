@@ -38,3 +38,7 @@ export function setSpeed(v){ SPEED=v; }
 // 0,65 = permissivo (lascia giocare), 1 = normale, 1,4 = fiscale
 export let ARBITRO=1;
 export function setArbitro(v){ ARBITRO=v; }
+// Tempo per passare dal nuoto alla posizione verticale (secondi); per distendersi ci vuole un decimo in più.
+// PROVVISORIO nel menu ("Alzata") finché Ale non sceglie il valore.
+export let ALZATA=0.25;
+export function setAlzata(v){ ALZATA=v; }

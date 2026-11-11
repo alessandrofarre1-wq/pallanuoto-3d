@@ -1,6 +1,6 @@
 // ================= PASSAGGI E TIRI =================
 import { registraTiro, tipoDiTiro } from './statistiche.js';
-import { BRV, clamp, dist, gauss, rnd } from './costanti.js';
+import { ALZATA, BRV, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, postoPortiere, setteControSei, startCut } from './ia.js';
 import { velocitaDiLancio } from './palla.js';
 import { allPlayers, ball, fight, game, goalX, other, setCtrl, teams } from './stato.js';
@@ -8,7 +8,8 @@ export function startAct(p,kind,wind,fn,aim){
   const gx=goalX(p.team);
   if(!aim) aim = diSchiena(kind) ? [2*p.x-gx,2*p.z] : [gx,0];
   // chi sta ancora nuotando disteso deve prima raddrizzarsi: piccolo ritardo (non per il colonnello, che si tira in nuotata)
-  if(kind!=='colonnello') wind+=(kind==='pass'?0.12:0.3)*(p.oriz||0);
+  // (il gesto parte anche mentre il corpo sta ancora scivolando: si aspetta solo il tempo di alzarsi)
+  if(kind!=='colonnello') wind+=(kind==='pass'?0.4:1)*ALZATA*(p.oriz||0);
   // "frusta" = tempo dal braccio caricato al rilascio. Dati riportati nella tesi Patumi (Melchiorri 2015): 166 ms per i
   // professionisti, 189 ms per i semi-professionisti: chi tira meglio rilascia prima. Passaggio e finta sono gesti più corti.
   const frusta = kind==='pass'||kind==='fake' ? 0.09 : kind==='polso' ? 0.11 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
@@ -55,7 +56,7 @@ export function shotKind(p){
   // centroboa spalle alla porta: beduina (braccio che gira all'esterno) oppure sciarpa (braccio che attraversa il corpo,
   // come per mettersi una sciarpa); il centroboa alterna i due gesti
   if(p.i===1 && !(p.turnedUntil>game.time) && Math.hypot(goalX(p.team)-p.x,p.z)<4.5) return (p.tiriDiSchiena||0)%2 ? 'sciarpa' : 'beduina';
-  if(Math.hypot(p.vx,p.vz)>1.3) return 'colonnello';
+  if(Math.hypot(p.vx,p.vz)>1.3 && (p.oriz||0)>0.5) return 'colonnello';      // solo in piena nuotata (chi scivola da verticale tira normale)
   return 'shot';
 }
 export function bestPassTarget(p){

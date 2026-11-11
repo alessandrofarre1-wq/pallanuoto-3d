@@ -11,6 +11,7 @@
     "verifica": "node tests/verifica.mjs --no-legacy",
     "verifica:legacy": "node tests/verifica.mjs",
     "primi-piani": "node tests/primi-piani.mjs",
+    "sequenze": "node tests/sequenze.mjs",
     "fisica-palla": "node tests/fisica-palla.mjs",
     "dati-tesi": "node tests/dati-tesi.mjs",
     "bilancio": "node tests/bilancio.mjs",
