@@ -29,15 +29,20 @@ export const THROW={
   pass:{K:[-0.08,0.44,0.10],R:[0.36,0.44,0.02],F:[0.40,0.14,-0.08],lift:0.10,tw0:-0.12,tw1:0.12,ind:0.25},  // passaggio: gesto corto, busto quasi fermo
   lob:{K:[-0.12,0.36,0.10],R:[0.22,0.66,0.02],F:[0.34,0.44,0.0],lift:0.16,tw0:-0.3,tw1:0.2,ind:0.4},       // palombella: spinta dal basso verso l'alto
   fake:{K:[-0.34,0.44,0.06],R:[0.12,0.58,0.06],F:[0.05,0.40,0.12],lift:0.24,tw0:-0.9,tw1:-0.15,ind:0.6},  // finta: il braccio parte e si ferma
-  beduina:{K:[0.30,0.0,0.20],R:[-0.35,0.45,0.25],F:[-0.45,0.10,-0.05],lift:0.16,tw0:0.3,tw1:-1.0,ind:0},   // spalle alla porta
+  beduina:{K:[0.30,0.0,0.20],R:[-0.35,0.45,0.25],F:[-0.45,0.10,-0.05],lift:0.16,tw0:0.3,tw1:-1.0,ind:0},   // spalle alla porta: busto e spalla ruotano all'esterno
+  sciarpa:{K:[0.30,0.02,0.18],R:[-0.16,0.36,-0.30],F:[-0.34,0.22,-0.34],lift:0.16,tw0:-0.25,tw1:0.95,ind:0}, // spalle alla porta: il braccio attraversa il corpo, colpo di polso
   colonnello:{K:[-0.25,0.25,0.10],R:[0.50,0.30,0.0],F:[0.55,-0.10,-0.05],lift:0,tw0:0,tw1:0,ind:0}        // tiro in nuotata
 };
 const PALLA_DAVANTI=[0.62,0.08,0];     // in nuotata la palla si spinge davanti alla testa, tra le braccia
 export function computePose(p,dt,t){
   const sp=Math.hypot(p.vx,p.vz), hold=ball.holder===p, act=p.act, J={ballHand:false,ballDavanti:0,swim:false,oriz:0,dorso:0};
   let th=null,c=0,w=0,f=0;
-  if(act){ th=THROW[act.kind]||THROW.shot; c=act.wind>0?clamp(act.t/act.wind,0,1):1; w=ease(clamp((act.t-act.wind)/0.09,0,1)); f=clamp((act.t-act.wind-0.09)/0.3,0,1); }
-  else if(p.charging){ th=THROW[shotKind(p)==='beduina'?'beduina':'shot']; c=clamp(p.chargeT/0.5,0,1); }
+  let wb=0;      // wb = rotazione del busto, w = braccio: il busto parte prima e il braccio segue (catena cinetica)
+  if(act){ th=THROW[act.kind]||THROW.shot; c=act.wind>0?clamp(act.t/act.wind,0,1):1;
+    const fr=act.frusta||0.09, tt=act.t-act.wind;
+    wb=ease(clamp(tt/Math.min(fr,0.125),0,1));                 // il busto ruota in circa 125 ms (dato riportato nella tesi)
+    w=ease(clamp((tt-0.25*fr)/(0.75*fr),0,1)); f=clamp((tt-fr)/0.3,0,1); }
+  else if(p.charging){ const k=shotKind(p); th=THROW[k==='beduina'||k==='sciarpa'?k:'shot']; c=clamp(p.chargeT/0.5,0,1); }
   // quanto il corpo è disteso (lo decide la fisica: fisica.js): 0 verticale, 1 orizzontale. Tutto sfuma tra le due pose.
   const o=p.excluded?0:(p.oriz||0), e=ease(o);
   const frena=(p.orizPrec||0)>o+1e-6 ? Math.sin(Math.PI*o) : 0; p.orizPrec=o;      // sta tornando verticale: remata di freno
@@ -52,7 +57,7 @@ export function computePose(p,dt,t){
   const muro = defUp && (h.charging || (h.act && !h.act.done && h.act.kind!=='pass'));      // l'avversario sta tirando: braccio alto a murare
   const abbocca = p.biteUntil>game.time;
   let lz=0, ly=0, arrivo=0;
-  if(th){ lift+=th.lift*c*(1-0.8*f); tw=(th.tw0*c*(1-w)+th.tw1*w)*(1-f); }
+  if(th){ lift+=th.lift*(0.8+0.2*p.stamina)*c*(1-0.8*f); tw=(th.tw0*c*(1-wb)+th.tw1*wb)*(1-f); }      // chi è stanco esce meno dall'acqua
   else if(gkSave){
     lz=clamp((ball.crossZ-p.z)*Math.sign(p.fx||1),-1.25,1.25)/VIS; ly=clamp(ball.y,0.25,1.25)/VIS;      // dove passerà la palla, nel sistema del portiere
     arrivo=ease(clamp(ball.flightT/0.22,0,1)); lean=clamp(lz/0.7,-1,1); lift+=0.34;
@@ -126,7 +131,11 @@ export function computePose(p,dt,t){
   J.oriz=e; J.swim=o>0.5;
   if(hold&&!th){ J.ballHand=true; J.ballDavanti=e; }
   if(th){
-    let off=mix3(HOLD,th.K,c); off=mix3(off,th.R,w); off=mix3(off,th.F,f);
+    // al rilascio del tiro classico il gomito non è del tutto disteso: circa 147° nei semi-professionisti, 157° nei
+    // professionisti (dati riportati nella tesi); nella tesi a gomito più disteso corrisponde palla più veloce
+    let R=th.R;
+    if(th===THROW.shot){ const ang=(146.7+10.8*clamp((p.st.sht-0.7)/0.3,0,1))*Math.PI/180, d=Math.sqrt(L1*L1+L2*L2-2*L1*L2*Math.cos(ang))/Math.hypot(R[0],R[1],R[2]); R=[R[0]*d,R[1]*d,R[2]*d]; }
+    let off=mix3(HOLD,th.K,c); off=mix3(off,R,w); off=mix3(off,th.F,f);
     hR=add3(J.sR,off); hintR=[-0.4,-0.6,1];
     if(hold && !(act&&act.done&&act.kind!=='fake')) J.ballHand=true;
   }
