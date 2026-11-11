@@ -129,7 +129,12 @@ export function aiTarget(p){
   // palla contesa (sprint iniziale): solo il più vicino va sulla palla, gli altri risalgono la propria corsia fino alla posizione di ruolo
   return {x:-t.dir*FORM[p.i][0]*0.8, z:KICK_Z[p.i]*t.dir, sprint:true};   // palla contesa: ci si ferma a metà campo
 }
-export function aiShoot(p,power,lob){ startAct(p, lob?'lob':shotKind(p), lob?0.1:0.12+rnd()*0.1, ()=>doShoot(p,power,lob,null)); }
+export function aiShoot(p,power,lob){
+  const kind=lob?'lob':shotKind(p), r=kind==='shot'?rnd():1;
+  if(r<0.14) startAct(p,'polso',0.04,()=>doShoot(p,0.42,false,null,{polso:true,dopoFinta:p.fakeUntil>game.time}));        // tiro di polso
+  else if(r<0.24) startAct(p,'torsione',0.12+rnd()*0.1,()=>doShoot(p,power,false,null,{torsione:true}));                  // torsione e diagonale
+  else startAct(p, kind, lob?0.1:0.12+rnd()*0.1, ()=>doShoot(p,power,lob,null));
+}
 export function aiPass(p,m){ startAct(p,'pass',0.08,()=>doPass(p,m),[m.x,m.z]); }
 export function aiCarrier(p,dt){
   const t=p.team, gx=goalX(t);
@@ -144,6 +149,8 @@ export function aiCarrier(p,dt){
   const dGoal=Math.hypot(gx-p.x,p.z);
   p.target={x:slot.x+t.dir*0.8, z:slot.z, sprint: Math.abs(p.x-slot.x)>6};
   if(p.act) return;
+  // in superiorità: tiro al volo appena ricevuto il passaggio
+  if(p.alVolo && ball.holdTime<0.15 && manUp(t) && dGoal<7.5 && !(p.freeThrow&&Math.abs(gx-p.x)<6)){ p.alVolo=false; startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,null,{volo:true})); return; }
   p.decideT-=dt;
   if(p.decideT>0) return;
   p.decideT=0.3+rnd()*0.35;

@@ -1,4 +1,5 @@
 // ================= REGOLE / FASI =================
+import { elevazione } from './tiri.js';
 import { riservaPer, vesti } from './giocatori.js';
 import { registraEspulsione, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
 import { whistle } from './audio.js';
@@ -33,7 +34,7 @@ export function placeHalves(){
 export function giveBall(p){
   const changed = game.possTeam!==p.team;
   ball.state='held'; ball.holder=p; ball.holdTime=0; ball.kind=null; ball.target=null; ball.lastTeam=p.team;
-  p.decideT=0.4+rnd()*0.4; p.cut=null; p.act=null; p.fakeCount=0; p.fakeUsed=false; p.shootNext=false; p.fakeUntil=0;
+  p.decideT=0.4+rnd()*0.4; p.alVolo=rnd()<0.45; p.cut=null; p.act=null; p.fakeCount=0; p.fakeUsed=false; p.shootNext=false; p.fakeUntil=0;
   for(const q of allPlayers) q.freeThrow=false;
   resetTap();
   if(changed){
@@ -193,7 +194,8 @@ export function tackle(d,c,o){
 // finta di tiro: i difensori vicini possono abboccare (e restare fuori tempo) oppure andare addosso al tiratore
 export function doFake(p){
   const t=p.team, ot=other(t), dG=Math.hypot(goalX(t)-p.x,p.z);
-  const q=(0.7+0.3*p.st.sht)*Math.pow(0.5,p.fakeCount||0)*(dG<9?1:0.4);
+  // la finta riesce se il tiratore resta alto e stabile sulle gambe
+  const q=(0.7+0.3*p.st.sht)*(0.65+0.6*elevazione(p))*Math.pow(0.5,p.fakeCount||0)*(dG<9?1:0.4);
   p.fakeCount=(p.fakeCount||0)+1;
   let bit=0;
   for(const d of ot.players){

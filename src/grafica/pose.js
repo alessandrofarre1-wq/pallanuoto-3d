@@ -31,6 +31,8 @@ export const THROW={
   fake:{K:[-0.34,0.44,0.06],R:[0.12,0.58,0.06],F:[0.05,0.40,0.12],lift:0.24,tw0:-0.9,tw1:-0.15,ind:0.6},  // finta: il braccio parte e si ferma
   beduina:{K:[0.30,0.0,0.20],R:[-0.35,0.45,0.25],F:[-0.45,0.10,-0.05],lift:0.16,tw0:0.3,tw1:-1.0,ind:0},   // spalle alla porta: busto e spalla ruotano all'esterno
   sciarpa:{K:[0.30,0.02,0.18],R:[-0.16,0.36,-0.30],F:[-0.34,0.22,-0.34],lift:0.16,tw0:-0.25,tw1:0.95,ind:0}, // spalle alla porta: il braccio attraversa il corpo, colpo di polso
+  polso:{K:[0.02,0.46,0.10],R:[0.30,0.52,0.02],F:[0.36,0.30,-0.10],lift:0.14,tw0:-0.12,tw1:0.18,ind:0.15},     // tiro di solo polso: quasi senza caricare
+  torsione:{K:[-0.34,0.44,0.06],R:[0.36,0.50,-0.20],F:[0.36,-0.02,-0.38],lift:0.30,tw0:-1.05,tw1:0.95,ind:1},   // busto verso il primo palo, chiusura in diagonale
   colonnello:{K:[-0.25,0.25,0.10],R:[0.50,0.30,0.0],F:[0.55,-0.10,-0.05],lift:0,tw0:0,tw1:0,ind:0}        // tiro in nuotata
 };
 const PALLA_DAVANTI=[0.62,0.08,0];     // in nuotata la palla si spinge davanti alla testa, tra le braccia
