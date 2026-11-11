@@ -11,7 +11,8 @@ import urlOnde2 from './immagini/acqua-normali-2.jpg';
 export const STRATO_VASCA=0;     // fondo e pareti: scena principale + vista sott'acqua
 export const STRATO_CORPI=1;     // giocatori e palla: scena principale + vista sott'acqua
 export const STRATO_SOPRA=2;     // bordo vasca, tribune, porte, corde: scena principale + riflesso
-export const STRATO_SOLO_VISTA=3;// schiuma, numeri, indicatori: solo scena principale
+export const STRATO_SOLO_VISTA=3;// schiuma, numeri, indicatori, corpo dettagliato dei giocatori: solo scena principale
+export const STRATO_SOTTO=4;     // corpo leggero dei giocatori: solo vista sott'acqua
 
 const vertice=/* glsl */`
   #include <common>
@@ -75,7 +76,7 @@ export class Acqua extends THREE.Mesh {
     this.sotto=new Refractor(geo,{textureWidth:256,textureHeight:256,multisample:0});
     this.riflesso.matrixAutoUpdate=false; this.sotto.matrixAutoUpdate=false;
     // il riflesso mostra solo le cose ferme sopra l'acqua; la vista sott'acqua solo vasca e corpi
-    this.sotto.camera.layers.set(STRATO_VASCA); this.sotto.camera.layers.enable(STRATO_CORPI);
+    this.sotto.camera.layers.set(STRATO_VASCA); this.sotto.camera.layers.enable(STRATO_CORPI); this.sotto.camera.layers.enable(STRATO_SOTTO);
     this.matrice=new THREE.Matrix4();
     this.material=new THREE.ShaderMaterial({
       name:'Acqua', transparent:true, fog:true, vertexShader:vertice, fragmentShader:frammento,

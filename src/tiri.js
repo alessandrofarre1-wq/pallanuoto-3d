@@ -5,6 +5,8 @@ import { allPlayers, ball, fight, game, goalX, other, setCtrl, teams } from './s
 export function startAct(p,kind,wind,fn,aim){
   const gx=goalX(p.team);
   if(!aim) aim = kind==='beduina' ? [2*p.x-gx,2*p.z] : [gx,0];
+  // chi sta ancora nuotando disteso deve prima raddrizzarsi: piccolo ritardo (non per il colonnello, che si tira in nuotata)
+  if(kind!=='colonnello') wind+=(kind==='pass'?0.12:0.3)*(p.oriz||0);
   p.act={t:0,kind,wind,fn,aim,done:false}; p.charging=false; p.chargeT=0;
 }
 export function updateActs(dt){

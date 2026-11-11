@@ -34,15 +34,20 @@ const { info, glb } = await pg.evaluate(a => window.converti(a), { modello: b64(
 await browser.close(); await server.close();
 console.log(JSON.stringify(info, null, 1).slice(0, 4000));
 
-// alleggerimento: meno triangoli, meno fotogrammi ripetuti, numeri più compatti
+// alleggerimento: si producono due versioni del corpo con lo stesso scheletro, una dettagliata per la scena
+// e una leggera per la vista sott'acqua (dove le increspature nascondono i dettagli)
 await MeshoptSimplifier.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
-const doc = await io.readBinary(new Uint8Array(Buffer.from(glb, 'base64')));
-const tri = () => doc.getRoot().listMeshes().reduce((n, m) => n + m.listPrimitives().reduce((k, p) => k + p.getIndices().getCount() / 3, 0), 0);
-await doc.transform(weld());
-const prima = tri();
-await doc.transform(simplify({ simplifier: MeshoptSimplifier, ratio: Math.min(1, TRIANGOLI / prima), error: 0.02 }), resample(), dedup(), prune(),
-  quantize({ quantizePosition: 14, quantizeNormal: 10, quantizeTexcoord: 8 }));
-fs.mkdirSync(path.dirname(USCITA), { recursive: true });
-fs.writeFileSync(USCITA, await io.writeBinary(doc));
-console.log(`triangoli: ${prima} → ${tri()} · file: ${(fs.statSync(USCITA).size / 1024).toFixed(0)} kB → ${path.relative(process.cwd(), USCITA)}`);
+for (const [nome, triangoli] of [['giocatore.glb', +(process.argv[3] || 5500)], ['giocatore-lontano.glb', +(process.argv[4] || 1800)]]) {
+  const doc = await io.readBinary(new Uint8Array(Buffer.from(glb, 'base64')));
+  const tri = () => doc.getRoot().listMeshes().reduce((n, m) => n + m.listPrimitives().reduce((k, p) => k + p.getIndices().getCount() / 3, 0), 0);
+  await doc.transform(weld());
+  const prima = tri();
+  // niente compressione delle posizioni: le due versioni devono stare nello stesso spazio per condividere lo scheletro
+  await doc.transform(simplify({ simplifier: MeshoptSimplifier, ratio: Math.min(1, triangoli / prima), error: 0.03 }), resample(), dedup(), prune(),
+    quantize({ quantizePosition: 16, quantizeNormal: 10, pattern: /^(NORMAL)$/ }));
+  const uscita = path.join(path.dirname(USCITA), nome);
+  fs.mkdirSync(path.dirname(uscita), { recursive: true });
+  fs.writeFileSync(uscita, await io.writeBinary(doc));
+  console.log(`${nome}: triangoli ${prima} → ${tri()} · ${(fs.statSync(uscita).size / 1024).toFixed(0)} kB`);
+}

@@ -20,88 +20,115 @@ export function ik(S,H,l1,l2,hint){
 export const add3=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
 export const mix3=(a,b,k)=>[a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k,a[2]+(b[2]-a[2])*k];
 export const ease=k=>k*k*(3-2*k);
-// traiettorie della mano (rispetto alla spalla) per i diversi gesti: K = caricamento, R = rilascio, F = chiusura
+// traiettorie della mano (rispetto alla spalla) per i diversi gesti: K = caricamento, R = rilascio, F = chiusura.
+// lift = quanto la bicicletta alza il corpo; tw0/tw1 = rotazione del busto al caricamento e al rilascio;
+// ind = quanto il busto va indietro caricando e avanti rilasciando (fasi del tiro, tesi Patumi)
 export const HOLD=[0.05,0.40,0.12];
 export const THROW={
-  shot:{K:[-0.30,0.40,0.10],R:[0.40,0.52,-0.02],F:[0.45,-0.05,-0.25],lift:0.24,tw0:-0.8,tw1:0.5},     // tiro classico: busto ruotato, elevazione
-  pass:{K:[-0.12,0.42,0.08],R:[0.38,0.42,0.0],F:[0.42,0.10,-0.10],lift:0.08,tw0:-0.35,tw1:0.3},
-  lob:{K:[-0.10,0.38,0.10],R:[0.25,0.62,0.02],F:[0.35,0.40,0.0],lift:0.15,tw0:-0.3,tw1:0.2},          // palombella
-  fake:{K:[-0.30,0.40,0.10],R:[0.12,0.58,0.06],F:[0.05,0.40,0.12],lift:0.2,tw0:-0.8,tw1:-0.1},      // finta: il braccio parte e si ferma
-  beduina:{K:[0.30,0.0,0.20],R:[-0.35,0.45,0.25],F:[-0.45,0.10,-0.05],lift:0.15,tw0:0.3,tw1:-1.0},    // spalle alla porta
-  colonnello:{K:[-0.25,0.25,0.10],R:[0.50,0.30,0.0],F:[0.55,-0.10,-0.05],lift:0,tw0:0,tw1:0}         // tiro in nuotata
+  shot:{K:[-0.34,0.44,0.06],R:[0.42,0.54,-0.02],F:[0.46,-0.04,-0.26],lift:0.30,tw0:-0.9,tw1:0.55,ind:1},   // tiro: corpo fuori fino al petto, busto ruotato, frustata
+  pass:{K:[-0.08,0.44,0.10],R:[0.36,0.44,0.02],F:[0.40,0.14,-0.08],lift:0.10,tw0:-0.12,tw1:0.12,ind:0.25},  // passaggio: gesto corto, busto quasi fermo
+  lob:{K:[-0.12,0.36,0.10],R:[0.22,0.66,0.02],F:[0.34,0.44,0.0],lift:0.16,tw0:-0.3,tw1:0.2,ind:0.4},       // palombella: spinta dal basso verso l'alto
+  fake:{K:[-0.34,0.44,0.06],R:[0.12,0.58,0.06],F:[0.05,0.40,0.12],lift:0.24,tw0:-0.9,tw1:-0.15,ind:0.6},  // finta: il braccio parte e si ferma
+  beduina:{K:[0.30,0.0,0.20],R:[-0.35,0.45,0.25],F:[-0.45,0.10,-0.05],lift:0.16,tw0:0.3,tw1:-1.0,ind:0},   // spalle alla porta
+  colonnello:{K:[-0.25,0.25,0.10],R:[0.50,0.30,0.0],F:[0.55,-0.10,-0.05],lift:0,tw0:0,tw1:0,ind:0}        // tiro in nuotata
 };
+const PALLA_DAVANTI=[0.62,0.08,0];     // in nuotata la palla si spinge davanti alla testa, tra le braccia
 export function computePose(p,dt,t){
-  const sp=Math.hypot(p.vx,p.vz), hold=ball.holder===p, act=p.act, J={ball:null,ballHand:false,swim:false,brD:0,brS:0};   // brD/brS: quanto il braccio destro/sinistro segue il gesto calcolato qui (0 = animazione registrata)
+  const sp=Math.hypot(p.vx,p.vz), hold=ball.holder===p, act=p.act, J={ballHand:false,ballDavanti:0,swim:false,oriz:0,dorso:0};
   let th=null,c=0,w=0,f=0;
   if(act){ th=THROW[act.kind]||THROW.shot; c=act.wind>0?clamp(act.t/act.wind,0,1):1; w=ease(clamp((act.t-act.wind)/0.09,0,1)); f=clamp((act.t-act.wind-0.09)/0.3,0,1); }
   else if(p.charging){ th=THROW[shotKind(p)==='beduina'?'beduina':'shot']; c=clamp(p.chargeT/0.5,0,1); }
-  const swim = sp>0.9 && !p.excluded && (!th || (act&&act.kind==='colonnello'));
-  let hR,hL,hintR,hintL;
-  if(swim){
-    // crawl a testa alta: corpo orizzontale, bracciata alternata con recupero fuori dall'acqua, battuta di gambe
-    J.swim=true; p.phase+=dt*(3+sp*1.8);
-    const ph=p.phase, roll=Math.sin(ph)*0.05;
-    J.hip=[-0.5,-0.15,0]; J.chest=[0,-0.07,0]; J.head=[0.17,0.09,0];
-    J.sR=[0,-0.07+roll,0.2]; J.sL=[0,-0.07-roll,-0.2];
-    const arm=(S,a,side)=>{ const cs=Math.cos(a), sn=Math.sin(a); return [add3(S,[0.54*cs, sn>0?-0.36*sn:-0.24*sn, side*(sn>0?0.02:0.12)]), sn>0?[0,-0.4,side]:[-0.3,1,side*0.35]]; };
-    [hR,hintR]=arm(J.sR,ph,1); [hL,hintL]=arm(J.sL,ph+Math.PI,-1);
-    const ps=ph*3;
-    J.kR=add3(J.hip,[-0.38,-0.02+0.05*Math.sin(ps),0.1]);  J.fR=add3(J.kR,[-0.38,0.08*Math.sin(ps+1),0.02]);
-    J.kL=add3(J.hip,[-0.38,-0.02-0.05*Math.sin(ps),-0.1]); J.fL=add3(J.kL,[-0.38,-0.08*Math.sin(ps+1),-0.02]);
-    if(hold) J.ball=[0.6,0.1,0];      // palla portata davanti alla testa, tra le braccia
-    if(th) J.brD=1;
-  } else {
-    // posizione verticale: gambe a bicicletta, mani che remano
-    const bob=Math.sin(t*2.2+p.uid)*0.025, eg=t*5.5+p.uid;
-    let lift=bob, tw=0, lean=0;
-    const gkSave = p.isGK && ball.state==='flight' && ball.kind==='shot' && ball.shooter && ball.shooter.team!==p.team;
-    const defUp = !hold && !p.isGK && ball.holder && ball.holder.team!==p.team && dist(p,ball.holder)<1.7;
-    if(th){ lift+=th.lift*c*(1-0.8*f); tw=(th.tw0*c*(1-w)+th.tw1*w)*(1-f); }
-    else if(gkSave){ lift+=0.38; lean=clamp((ball.crossZ-p.z)*Math.sign(p.fx||1),-1,1); }
-    else if(p.isGK) lift+=0.1;
-    else if(hold||defUp) lift+=0.07;
-    if(p.biteUntil>game.time) lift+=0.28;      // ha abboccato alla finta: salta a murare a vuoto
-    J.hip=[-0.06,-0.6+lift,lean*0.05]; J.chest=[0.02,-0.06+lift,lean*0.3]; J.head=[0.05,0.16+lift,lean*0.36];
-    const sx=0.2*Math.sin(tw), sz=0.2*Math.cos(tw);
-    J.sR=add3(J.chest,[sx,0,sz]); J.sL=add3(J.chest,[-sx,0,-sz]);
-    hR=add3(J.sR,[0.28+0.05*Math.sin(eg),-0.05-lift*0.6,0.14+0.08*Math.cos(eg)]); hintR=[0,-1,0.6];
-    hL=add3(J.sL,[0.28-0.05*Math.sin(eg),-0.05-lift*0.6,-0.14-0.08*Math.cos(eg)]); hintL=[0,-1,-0.6];
-    J.brD=J.brS=0.5;      // da fermi: metà animazione registrata (braccia larghe che remano), metà remata raccolta davanti al petto
-    if(gkSave){ hR=add3(J.chest,[0.2,0.5,lean*0.6+0.14]); hL=add3(J.chest,[0.2,0.5,lean*0.6-0.14]); hintR=[0,-0.3,1]; hintL=[0,-0.3,-1]; J.brD=J.brS=1; }
-    else if(p.isGK&&!hold){ hR=add3(J.sR,[0.15,0.05,0.42]); hL=add3(J.sL,[0.15,0.05,-0.42]); J.brD=J.brS=1; }
-    else if(defUp||p.biteUntil>game.time){ hR=add3(J.sR,[0.22,0.52,-0.05]); hintR=[0,-0.2,1]; J.brD=1; }
-    else if(hold&&!th){ hR=add3(J.sR,HOLD); hintR=[-0.3,-0.6,1]; J.ballHand=true; J.brD=1; }
-    if(th){ hL=add3(J.sL,[0.34,-0.04-lift*0.6,-0.08]); J.brD=1; J.brS=0.7; }      // il braccio libero fa appoggio sull'acqua
-    if(fight.active && !th){
-      if(p===fight.def){ J.brD=J.brS=1; hR=add3(J.sR,[0.36,0.14,-0.08]); hL=add3(J.sL,[0.36,0.14,0.08]); hintR=[0,-1,0.5]; hintL=[0,-1,-0.5]; J.hip[1]+=0.06; J.chest[0]+=0.06; }
-      else if(p===fight.boa){ J.brS=1; if(!hold) J.brD=1; hL=add3(J.sL,[-0.28,-0.05,-0.12]); hintL=[0.3,-1,-0.6]; if(!hold) hR=add3(J.sR,[-0.26,-0.05,0.12]); J.hip[0]-=0.08; }
-    }
-    // dorso di attesa: semi-seduti sul dorso, braccia che remano ai lati, sguardo alla palla.
-    // Lo usa chi arretra piano e chi, sul perimetro, aspetta il passaggio da un compagno lontano.
-    const libero = !th && !hold && !p.isGK && !defUp && !(p.biteUntil>game.time) && !p.excluded && !(fight.active&&(p===fight.def||p===fight.boa));
-    let vuoleDorso=false;
-    if(libero){
-      const h=ball.holder, indietro = sp>0.22 && (p.vx*p.fx+p.vz*p.fz) < -0.3*sp;
-      vuoleDorso = indietro || (!!h && h.team===p.team && p.i>=4 && sp<0.4 && dist(p,h)>3);
-    }
-    p.dorsoK=(p.dorsoK||0)+((vuoleDorso?1:0)-(p.dorsoK||0))*Math.min(1,dt*3.5);
-    const d=libero?ease(p.dorsoK):0;
-    if(d>0.01){
-      J.hip=mix3(J.hip,[0.20,-0.40+bob,0],d); J.chest=mix3(J.chest,[-0.16,-0.12+bob,0],d); J.head=mix3(J.head,[-0.30,0.10+bob,0],d);
-      J.sR=add3(J.chest,[0,0,0.2]); J.sL=add3(J.chest,[0,0,-0.2]);
-      hR=mix3(hR,add3(J.sR,[0.10+0.05*Math.sin(eg),-0.10,0.40+0.08*Math.cos(eg)]),d); hL=mix3(hL,add3(J.sL,[0.10-0.05*Math.sin(eg),-0.10,-0.40-0.08*Math.cos(eg)]),d);
-      hintR=[-0.4,-0.5,1]; hintL=[-0.4,-0.5,-1]; J.brD=J.brS=d; J.dorso=d;
-    }
-    for(const side of [1,-1]){
-      const a=eg+(side>0?0:Math.PI);
-      const k=add3(J.hip,[0.2,-0.2,side*0.24]), ft=add3(k,[0.04+0.13*Math.cos(a),-0.36,side*0.06+0.13*Math.sin(a)]);
-      if(side>0){ J.kR=k; J.fR=ft; } else { J.kL=k; J.fL=ft; }
-    }
+  // quanto il corpo è disteso (lo decide la fisica: fisica.js): 0 verticale, 1 orizzontale. Tutto sfuma tra le due pose.
+  const o=p.excluded?0:(p.oriz||0), e=ease(o);
+  const frena=(p.orizPrec||0)>o+1e-6 ? Math.sin(Math.PI*o) : 0; p.orizPrec=o;      // sta tornando verticale: remata di freno
+  if(o>0.02) p.phase+=dt*(3.2+sp*1.9);
+  const bob=Math.sin(t*2.2+p.uid)*0.02, eg=t*5.5+p.uid;
+
+  // ================= POSA VERTICALE: bicicletta, acqua alle spalle =================
+  let lift=bob, tw=0, lean=0;
+  const h=ball.holder;
+  const gkSave = p.isGK && ball.state==='flight' && ball.kind==='shot' && ball.shooter && ball.shooter.team!==p.team;
+  const defUp = !hold && !p.isGK && h && h.team!==p.team && dist(p,h)<1.7;
+  const muro = defUp && (h.charging || (h.act && !h.act.done && h.act.kind!=='pass'));      // l'avversario sta tirando: braccio alto a murare
+  const abbocca = p.biteUntil>game.time;
+  let lz=0, ly=0, arrivo=0;
+  if(th){ lift+=th.lift*c*(1-0.8*f); tw=(th.tw0*c*(1-w)+th.tw1*w)*(1-f); }
+  else if(gkSave){
+    lz=clamp((ball.crossZ-p.z)*Math.sign(p.fx||1),-1.25,1.25)/VIS; ly=clamp(ball.y,0.25,1.25)/VIS;      // dove passerà la palla, nel sistema del portiere
+    arrivo=ease(clamp(ball.flightT/0.22,0,1)); lean=clamp(lz/0.7,-1,1); lift+=0.34;
   }
+  else if(p.isGK) lift+=0.08;
+  else if(muro) lift+=0.2;
+  else if(hold||defUp) lift+=0.06;
+  if(abbocca) lift+=0.28;      // ha abboccato alla finta: salta a murare a vuoto
+  let vHip=[-0.06,-0.6+lift,lean*0.05], vChest=[0.02,-0.06+lift,lean*0.38], vHead=[0.05,0.16+lift,lean*0.44];
+  if(th&&th.ind){ const ind=(-0.08*c*(1-w)+0.10*w)*(1-f)*th.ind; vChest[0]+=ind; vHead[0]+=ind*1.3; }      // busto indietro caricando, avanti rilasciando
+  let sx=0.2*Math.sin(tw), sz=0.2*Math.cos(tw);
+  let vSR=add3(vChest,[sx,0,sz]), vSL=add3(vChest,[-sx,0,-sz]);
+  // mani che remano sott'acqua davanti al petto
+  let hR=add3(vSR,[0.27+0.06*Math.sin(eg),-0.14-lift*0.6,0.07+0.09*Math.cos(eg)]), hintR=[0,-1,0.6];
+  let hL=add3(vSL,[0.27-0.06*Math.sin(eg),-0.14-lift*0.6,-0.07-0.09*Math.cos(eg)]), hintL=[0,-1,-0.6];
+  if(gkSave){
+    // braccia larghe e alte, poi ci si allunga verso la palla: due mani se arriva vicino al corpo, una se è laterale
+    const due=Math.abs(lz)<0.3, lR=add3(vSR,[0.14,0.34,0.36]), lL=add3(vSL,[0.14,0.34,-0.36]);
+    hR = lz>=0||due ? mix3(lR,[0.24,ly,lz+(due?0.09:0)],arrivo) : lR;
+    hL = lz<0||due ? mix3(lL,[0.24,ly,lz-(due?0.09:0)],arrivo) : lL;
+    hintR=[0,-0.3,1]; hintL=[0,-0.3,-1];
+  }
+  else if(p.isGK&&!hold){ hR=add3(vSR,[0.15,0.05,0.42]); hL=add3(vSL,[0.15,0.05,-0.42]); }      // portiere pronto: braccia larghe a pelo d'acqua
+  else if(muro||abbocca){ hR=add3(vSR,[0.20,0.56,-0.04]); hintR=[0,-0.2,1]; }
+  else if(defUp){ hR=add3(vSR,[0.28,0.30,-0.02]); hintR=[0,-0.4,1]; }
+  else if(hold&&!th){ hR=add3(vSR,HOLD); hintR=[-0.3,-0.6,1]; J.ballHand=true; }
+  if(th){ hL=[vSL[0]+0.36,-0.03,vSL[2]-0.10]; hintL=[0,-1,-0.4]; }      // il braccio libero fa appoggio sull'acqua (a pelo d'acqua)
+  if(fight.active && !th){
+    if(p===fight.def){ hR=add3(vSR,[0.36,0.14,-0.08]); hL=add3(vSL,[0.36,0.14,0.08]); hintR=[0,-1,0.5]; hintL=[0,-1,-0.5]; vHip[1]+=0.06; vChest[0]+=0.06; }
+    else if(p===fight.boa){ hL=add3(vSL,[-0.28,-0.05,-0.12]); hintL=[0.3,-1,-0.6]; if(!hold) hR=add3(vSR,[-0.26,-0.05,0.12]); vHip[0]-=0.08; }
+  }
+  // dorso di attesa: semi-seduti sul dorso, gambe a bicicletta, braccia larghe che remano ai lati, sguardo alla palla.
+  // Lo usa chi arretra piano e chi, sul perimetro, aspetta il passaggio da un compagno lontano.
+  const libero = !th && !hold && !p.isGK && !defUp && !abbocca && !p.excluded && o<0.05 && !(fight.active&&(p===fight.def||p===fight.boa));
+  let vuoleDorso=false;
+  if(libero){
+    const indietro = sp>0.22 && (p.vx*p.fx+p.vz*p.fz) < -0.3*sp;
+    vuoleDorso = indietro || (!!h && h.team===p.team && p.i>=4 && sp<0.4 && dist(p,h)>3);
+  }
+  p.dorsoK=(p.dorsoK||0)+((vuoleDorso?1:0)-(p.dorsoK||0))*Math.min(1,dt*3);
+  const d=libero?ease(p.dorsoK):0;
+  if(d>0.01){
+    vHip=mix3(vHip,[0.30,-0.34+bob,0],d); vChest=mix3(vChest,[-0.12,-0.09+bob,0],d); vHead=mix3(vHead,[-0.26,0.10+bob,0],d);
+    vSR=add3(vChest,[0,0,0.2]); vSL=add3(vChest,[0,0,-0.2]);
+    hR=mix3(hR,add3(vSR,[0.04+0.10*Math.sin(eg),-0.03,0.50+0.04*Math.cos(eg)]),d); hL=mix3(hL,add3(vSL,[0.04-0.10*Math.sin(eg),-0.03,-0.50-0.04*Math.cos(eg)]),d);
+    hintR=[-0.3,-0.4,1]; hintL=[-0.3,-0.4,-1]; J.dorso=d;
+  }
+  // frenata: mentre il busto si raddrizza le mani spingono l'acqua in avanti
+  if(frena>0.01 && !th && !hold){ hR=mix3(hR,add3(vSR,[0.44,-0.06,0.14]),frena); hL=mix3(hL,add3(vSL,[0.44,-0.06,-0.14]),frena); }
+
+  // ================= POSA ORIZZONTALE: stile libero da pallanuoto =================
+  // corpo disteso appena sotto la superficie (schiena a pelo d'acqua), testa alta, bracciata corta e frequente con
+  // recupero fuori dall'acqua a gomito alto, gambe unite con battuta veloce
+  const ph=p.phase, rollio=Math.sin(ph)*0.06;
+  const oHip=[-0.50,-0.21,0], oChest=[0,-0.07,0], oHead=[0.17,0.09,0];
+  const oSR=[0,-0.07-rollio,0.19], oSL=[0,-0.07+rollio,-0.19];      // la spalla del braccio in recupero sale
+  const corta=hold?0.8:1;
+  const bracciata=(S,a,lato)=>{ const cs=Math.cos(a), sn=Math.sin(a);
+    return sn>0 ? [add3(S,[0.10+0.42*cs*corta,-0.34*sn,lato*0.05]),[0,-0.5,lato]]                 // trazione sott'acqua
+                : [add3(S,[0.10+0.42*cs*corta,-0.16*sn,lato*(0.14+(hold?0.10:0))]),[-0.25,1,lato*0.8]]; };      // recupero fuori dall'acqua, gomito alto
+  const [oHR,oHintR]=bracciata(oSR,ph,1), [oHL,oHintL]=bracciata(oSL,ph+Math.PI,-1);
+  const ps=ph*3;
+  J.kR=add3(oHip,[-0.40,-0.03+0.05*Math.sin(ps),0.07]);  J.fR=add3(J.kR,[-0.40,0.02+0.09*Math.sin(ps+1),0]);
+  J.kL=add3(oHip,[-0.40,-0.03-0.05*Math.sin(ps),-0.07]); J.fL=add3(J.kL,[-0.40,0.02-0.09*Math.sin(ps+1),0]);
+
+  // ================= PASSAGGIO CONTINUO TRA LE DUE =================
+  J.hip=mix3(vHip,oHip,e); J.chest=mix3(vChest,oChest,e); J.head=mix3(vHead,oHead,e);
+  J.sR=mix3(vSR,oSR,e); J.sL=mix3(vSL,oSL,e);
+  hR=mix3(hR,oHR,e); hL=mix3(hL,oHL,e);
+  if(e>0.5){ hintR=oHintR; hintL=oHintL; }
+  J.oriz=e; J.swim=o>0.5;
+  if(hold&&!th){ J.ballHand=true; J.ballDavanti=e; }
   if(th){
     let off=mix3(HOLD,th.K,c); off=mix3(off,th.R,w); off=mix3(off,th.F,f);
     hR=add3(J.sR,off); hintR=[-0.4,-0.6,1];
-    if(hold && !(act&&act.done&&act.kind!=='fake')){ J.ballHand=true; J.ball=null; }
+    if(hold && !(act&&act.done&&act.kind!=='fake')) J.ballHand=true;
   }
   [J.eR,J.hR]=ik(J.sR,hR,L1,L2,hintR); [J.eL,J.hL]=ik(J.sL,hL,L1,L2,hintL);
   return J;
@@ -114,7 +141,7 @@ export function updateRig(p,dt,t){
   const J=p.J, k=1-Math.exp(-dt*(p.act?34:16));
   for(const key of JK){ const a=J[key], b=T[key]; a[0]+=(b[0]-a[0])*k; a[1]+=(b[1]-a[1])*k; a[2]+=(b[2]-a[2])*k; }
   R.g.position.set(p.x,0,p.z); R.g.rotation.y=Math.atan2(-p.fz,p.fx);
-  if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)) muoviCorpo(R,J,T,dt,Math.hypot(p.vx,p.vz)); }
+  if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)) muoviCorpo(R,J,T,dt); }
   else {
     setSeg(R.torso,J.hip,J.chest); R.chest.position.set(J.chest[0],J.chest[1],J.chest[2]); R.pelvis.position.set(J.hip[0],J.hip[1],J.hip[2]);
     setSeg(R.bar,J.sL,J.sR); R.shR.position.set(J.sR[0],J.sR[1],J.sR[2]); R.shL.position.set(J.sL[0],J.sL[1],J.sL[2]);
@@ -126,7 +153,7 @@ export function updateRig(p,dt,t){
   R.spr.position.set(J.head[0],J.head[1]+0.3,J.head[2]);
   // posizione della palla in mano / davanti al nuotatore (coordinate mondo)
   let l=null;
-  if(T.ballHand) l=[J.hR[0]+0.02,J.hR[1]+0.13,J.hR[2]]; else if(T.ball) l=T.ball;
+  if(T.ballHand){ l=[J.hR[0]+0.02,J.hR[1]+0.13,J.hR[2]]; if(T.ballDavanti>0) l=mix3(l,PALLA_DAVANTI,T.ballDavanti); }
   if(l){ const c=p.fx, sn=-p.fz; p.ballW=[p.x+VIS*(l[0]*c+l[2]*sn), VIS*l[1], p.z+VIS*(-l[0]*sn+l[2]*c)]; } else p.ballW=null;
   // schiuma: battuta di gambe e bracciata
   if(T.swim){ p.foamT=(p.foamT||0)-dt; if(p.foamT<=0){ p.foamT=0.09;
