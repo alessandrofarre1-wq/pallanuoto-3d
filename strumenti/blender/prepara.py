@@ -45,6 +45,10 @@ for li, l in enumerate(me.loops):
     else: t[3] += 1
 az = me.attributes.new('_zona', 'FLOAT_VECTOR', 'POINT'); asc = me.attributes.new('_scuro', 'FLOAT', 'POINT')
 for i, t in enumerate(somma): az.data[i].vector = (t[0] / t[4], t[1] / t[4], t[2] / t[4]); asc.data[i].value = t[3] / t[4]
+# _numero = il 7 dipinto in bianco sulla calottina (sopra i paraorecchie) e sul costume: nel gioco viene coperto con il colore di fondo
+anu = me.attributes.new('_numero', 'FLOAT', 'POINT')
+for i, t in enumerate(somma):
+    z = me.vertices[i].co.z; anu.data[i].value = (t[2] / t[4]) if (z > 0.925 * H or z < 0.6 * H) else 0.0
 info = {'punti_prima': prima, 'punti_dopo_saldatura': len(me.vertices), 'triangoli': len(me.polygons), 'scala_applicata': k, 'altezza_m': H, 'zone_angoli': conta}
 # immagini ridotte (le originali 4096 restano nel file di partenza)
 os.makedirs(out, exist_ok=True)

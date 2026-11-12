@@ -165,7 +165,12 @@ Limiti noti dello scheletro:
 - Nessun osso per dita, viso o mascella: le dita sono unite e il viso è fisso.
 - A 5.000 triangoli il viso si rovina: quel livello va usato solo da lontano.
 
-## Cosa NON è stato fatto (in attesa dell'ok di Ale)
-- Animazioni, espressioni, punto di aggancio della palla.
-- Numero e colori per squadra dentro il gioco; pallone giallo e blu.
-- Inserimento nel gioco.
+## Fase 6 — Nel gioco (v0.20)
+Corpo dello stile Cartoon. Versione per il gioco `src/grafica/modelli/pallanuotista.glb`: circa 8.200 triangoli (testa 3.000, corpo 5.200, ridotti
+separatamente perché il viso resti pulito), una sola immagine 1024, 620 kB. Pose con questa versione: `render/pose-versione-gioco.png`.
+Squadre, numeri e toni di pelle in partita: `render/nel-gioco-squadre.png`, `render/nel-gioco-tiro.png`; su iPhone accanto alla grafica Realistica:
+`render/nel-gioco-iphone-orizzontale.png`, `render/nel-gioco-iphone-verticale.png`. Dettagli tecnici in `CLAUDE.md`.
+
+## Cosa NON è stato fatto
+- Clip dedicate (tiro, parata, esultanza), espressioni del viso, dita mobili.
+- Numero sul costume.

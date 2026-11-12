@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 // Pose e animazioni: nuotata, posizione verticale, gesti di tiro e passaggio
 import { VIS, clamp, dist, rnd } from '../costanti.js';
 import { aggiornaNumero, muoviCorpo } from './corpo.js';
@@ -158,6 +159,7 @@ export function computePose(p,dt,t){
 }
 //</POSE>
 export const JK=['hip','chest','head','sL','sR','eL','eR','hL','hR','kL','kR','fL','fR'];
+const _mano=new THREE.Vector3();
 export function updateRig(p,dt,t){
   const R=p.mesh;
   // CORPO CHE SI PIEGA. La direzione del giocatore (p.fx, p.fz) è quella di testa e spalle; petto, bacino e gambe la seguono
@@ -190,6 +192,16 @@ export function updateRig(p,dt,t){
   let l=null;
   if(T.ballHand){ l=[J.hR[0]+0.02,J.hR[1]+0.13,J.hR[2]]; if(T.ballDavanti>0) l=mix3(l,PALLA_DAVANTI,T.ballDavanti); }
   if(l){ const c=p.fx, sn=-p.fz; p.ballW=[p.x+VIS*(l[0]*c+l[2]*sn), VIS*l[1], p.z+VIS*(-l[0]*sn+l[2]*c)]; } else p.ballW=null;
+  // solo per il disegno: il personaggio Cartoon ha braccia di lunghezza diversa da quelle di pose.js, quindi la palla tenuta in
+  // mano viene spostata di quanto la sua mano vera dista da quella prevista. p.ballW (usato dal gioco per i lanci) non cambia:
+  // le partite restano identiche nei due stili.
+  p.ballVistaW=null;
+  if(l && R.corpo && R.corpo.fumetto && R.corpo.ossa.manoD && !(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){
+    const c=p.fx, sn=-p.fz, h=J.hR, k=1-(T.ballDavanti||0);
+    R.corpo.ossa.manoD.getWorldPosition(_mano);
+    const hx=p.x+VIS*(h[0]*c+h[2]*sn), hy=VIS*h[1], hz=p.z+VIS*(-h[0]*sn+h[2]*c);
+    p.ballVistaW=[p.ballW[0]+(_mano.x-hx)*k, p.ballW[1]+(_mano.y-hy)*k, p.ballW[2]+(_mano.z-hz)*k];
+  }
   // schiuma: battuta di gambe e bracciata
   if(T.swim){ p.foamT=(p.foamT||0)-dt; if(p.foamT<=0){ p.foamT=0.09;
     spawnFoam(p.x-p.fx*VIS*1.15+(rnd()-0.5)*0.2,p.z-p.fz*VIS*1.15+(rnd()-0.5)*0.2,0.2+rnd()*0.1,0.8);
