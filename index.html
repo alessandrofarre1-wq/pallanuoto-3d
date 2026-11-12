@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <!-- aggiunto alla schermata Home dell'iPhone, il gioco si apre a tutto schermo senza le barre del browser -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -19,7 +19,9 @@
   <div class="sb" id="shotclock">28</div>
 </div>
 <div id="tac"></div>
-<div id="excl"></div>
+<!-- indicatori persistenti (espulsi, superiorità) e notifica degli eventi: sotto il tabellone, mai al centro del campo -->
+<div id="stato"></div>
+<div id="cronaca" class="cr"></div>
 <div id="fight"><div class="fl"><span id="fdef">DIF</span><b>Lotta al centro</b><span id="fboa">BOA</span></div><div class="fb"><div id="fbar"></div><i></i></div></div>
 <div id="player">
   <div id="pname">—</div>
@@ -29,7 +31,13 @@
   <div class="et">Potenza tiro</div>
   <div class="bar" id="power"><div></div></div>
 </div>
-<div id="msg"></div>
+<!-- registro degli eventi: si apre dal pulsante accanto alla pausa; mentre è aperto il gioco è fermo -->
+<div id="tLog" title="Eventi della partita"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8 8.5h8M8 12h8M8 15.5h5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></div>
+<div id="registro"><div class="rcard"><div class="rtit"><b>Eventi della partita</b><span id="regChiudi">✕</span></div><ul id="regLista"></ul></div></div>
+<!-- il gioco è solo in orizzontale: in verticale si chiede di ruotare il telefono (il gioco resta fermo) -->
+<div id="ruota"><div class="rbox"><svg viewBox="0 0 64 64" class="rtel"><rect x="20" y="6" width="24" height="44" rx="5" fill="none" stroke="#fff" stroke-width="3.5"/><circle cx="32" cy="44" r="2" fill="#fff"/></svg>
+  <svg viewBox="0 0 64 64" class="rfreccia"><path d="M14 40a20 20 0 0 1 33-22" fill="none" stroke="#facc15" stroke-width="4" stroke-linecap="round"/><path d="M49 9l-1 12-11-3z" fill="#facc15"/></svg>
+  <b id="ruotaTesto">Ruota il dispositivo per giocare</b><span>Pallanuoto 3D si gioca in orizzontale</span></div></div>
 <div id="fps"></div>
 
 <div id="touch">
@@ -47,7 +55,7 @@
 <div id="menu">
   <div class="panel">
     <h1>🤽 Pallanuoto 3D</h1>
-    <div class="sub" id="sub">Prototipo v0.23 · scegli le squadre e gioca</div>
+    <div class="sub" id="sub">Prototipo v0.24 · scegli le squadre e gioca</div>
     <div id="final" style="display:none"></div>
     <div class="row"><label>La tua squadra</label><select class="opt sel" id="sqA"></select></div>
     <div class="row"><label>Avversaria</label><select class="opt sel" id="sqB"></select></div>

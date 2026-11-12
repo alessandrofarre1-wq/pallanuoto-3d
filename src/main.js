@@ -11,20 +11,27 @@ import './input.js';
 import './menu.js';
 import { SPEED } from './costanti.js';
 import { render } from './grafica/render.js';
-import { dpr, renderer, setDpr } from './grafica/scena.js';
-import { scegliSquadre } from './menu.js';
+import { camera, dpr, renderer, setDpr } from './grafica/scena.js';
+import { scegliSquadre, togglePause } from './menu.js';
 import { modelloPronto } from './grafica/corpo.js';
-import { tickFps, tickMsg, updateHUD } from './hud.js';
+import { tickFps, updateHUD } from './hud.js';
+import * as cronaca from './cronaca.js';
 import { passoPalla, velocitaDiLancio } from './palla.js';
 import { update } from './partita.js';
-import { cornerThrow, exclude, giveBall, kickoff, setupPenalty, tackle } from './regole.js';
+import { cornerThrow, exclude, foul, giveBall, goalScored, kickoff, penalty, setupPenalty, tackle, timeout } from './regole.js';
 import { allPlayers, ball, ctrl, fight, game, teams } from './stato.js';
 
 let last=performance.now(), frameMs=16, qT=0, hudT=1, lenti=0;
 // tornando da un'altra app i primi fotogrammi sono lunghi: non devono contare come "dispositivo lento"
-document.addEventListener('visibilitychange',()=>{ frameMs=16; qT=0; lenti=0; });
+// uscendo dall'app (o cambiando scheda) a partita in corso il gioco va in pausa: al ritorno si riprende dal menu
+document.addEventListener('visibilitychange',()=>{ frameMs=16; qT=0; lenti=0;
+  if(document.hidden && ['play','stop','countdown'].includes(game.state)){ cronaca.chiudiRegistro(); togglePause(); } });
+// il gioco è solo in orizzontale: in verticale resta fermo sotto la schermata "Ruota il dispositivo" (stile.css) e riparte da
+// solo appena si gira il telefono
+const verticale=()=>innerHeight>innerWidth;
 function loop(now){
   const raw=Math.min(0.1,(now-last)/1000); last=now;
+  if(verticale()){ requestAnimationFrame(loop); return; }
   const dt=raw*SPEED;
   // un aggiornamento per fotogramma (suddiviso solo se il fotogramma è lungo): movimento continuo, senza scatti
   const n=Math.max(1,Math.ceil(dt/0.02));
@@ -36,7 +43,7 @@ function loop(now){
     if(dpr>1){ setDpr(Math.max(1,dpr-0.25)); renderer.setPixelRatio(dpr); }
     frameMs=16;
   } }
-  tickMsg(dt);
+  cronaca.tick(dt);
   hudT+=raw; if(hudT>0.05){ hudT=0; updateHUD(); }
   render(dt,now);
   tickFps(now);
@@ -45,7 +52,7 @@ function loop(now){
 // accesso per le verifiche automatiche (tests/verifica.mjs) e per il debug dalla console
 // "vista" permette alla verifica di mettere la telecamera dove vuole (primi piani): { pos:[x,y,z], look:[x,y,z], fov };
 // "senzaCorpi" ferma l'animazione degli scheletri (serve solo ad accelerare le partite simulate)
-window.__pallanuoto = { game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, palla:{ passoPalla, velocitaDiLancio }, regole:{ setupPenalty, cornerThrow, exclude, giveBall, tackle }, scegliSquadre, prova:{ movePlayer, doShoot, valoriMotore }, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get modelloPronto(){ return modelloPronto; } };
+window.__pallanuoto = { cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, palla:{ passoPalla, velocitaDiLancio }, regole:{ setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, prova:{ movePlayer, doShoot, valoriMotore }, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get modelloPronto(){ return modelloPronto; } };
 // scena iniziale dietro al menu
 kickoff(); game.state='menu';
 requestAnimationFrame(loop);

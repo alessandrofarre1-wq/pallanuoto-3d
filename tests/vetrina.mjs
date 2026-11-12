@@ -45,7 +45,7 @@ for (const vista of Object.keys(VISTE)) {
   pg = await apri(vista);
   await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 'ESP'); document.getElementById('goBtn').click(); window.__vai(300);
     for (let i = 0; i < 6000; i++) { window.__salta(1); const h = H.ball.holder; if (h && h.team === H.teams[1] && Math.abs(h.x + 12.5) < 8 && H.game.state === 'play' && !H.allPlayers.some(p => p.excluded)) break; }
-    H.teams[0].defPlay = 3; window.__vai(170); document.getElementById('msg').style.opacity = 0; window.__vai(1); });
+    H.teams[0].defPlay = 3; window.__vai(170); window.__pallanuoto.cronaca.svuota(); window.__vai(1); });
   await scatta(pg, '5-zona-a-M');
   await pg.context().close();
   // 7 contro 6: ultimo minuto, il computer è sotto di un gol e ha la palla
@@ -75,7 +75,7 @@ for (const vista of Object.keys(VISTE)) {
   if (!mom) console.log('sequenza del portiere: non trovata');
   else {
     pg = await apri('orizzontale', false);
-    await pg.addStyleTag({ content: '#hud,#tac,#player,#msg,#excl,#fight,#touch,#fps{display:none!important}' });
+    await pg.addStyleTag({ content: '#hud,#tac,#player,#cronaca,#stato,#tLog,#fight,#touch,#fps{display:none!important}' });
     await pg.evaluate(prep => { eval('(' + prep + ')')(); }, prepara.toString());
     const quando = [mom.passo + 2, Math.round((mom.passo + mom.tiro) / 2), mom.tiro + 2, mom.parata + 1], file = [];
     for (const [k, f] of quando.entries()) {

@@ -6,7 +6,7 @@ import { registraEspulsione, registraFallo, registraGol, registraPallaRubata, re
 import { whistle } from './audio.js';
 import { autoSwitch, resetTap } from './controllo.js';
 import { ARBITRO, ATK, BRV, DEFN, DIFF, EXCL_TIME, FORM, HL, HW, KICK_Z, SHOT_CLOCK, SHOT_RESET, clamp, dist, rnd } from './costanti.js';
-import { showMsg } from './hud.js';
+import { annuncia } from './cronaca.js';
 import { closestTo } from './ia.js';
 import { rumble } from './input.js';
 import { allPlayers, ball, ctrl, game, goalX, other, ownGoalX, setCtrl, teams } from './stato.js';
@@ -53,7 +53,7 @@ export function giveBall(p){
     dif.lasciato=(dif.defPlay===1||dif.defPlay===3)?chiLasciare(dif):null;
     if(att.defPlay===3) att.fugaFino=game.time+5;                      // dalla zona a M si riparte subito in controfuga
     // 7 contro 6 nell'ultimo minuto: prima il time-out per prepararlo
-    if(setteControSei(att)&&!att.setteAnnunciato){ att.setteAnnunciato=true; att.vuoleTimeout=true; showMsg(`<span style="font-size:26px">${att.name}: 7 contro 6 con il portiere in attacco</span>`,1.6); }
+    if(setteControSei(att)&&!att.setteAnnunciato){ att.setteAnnunciato=true; att.vuoleTimeout=true; annuncia('info','7 contro 6',{squadra:att,dettaglio:'portiere in attacco'}); }
     if(att.human) att.nextDrive=game.time+6+rnd()*4;
   } else if(ball.afterShot){ game.shot=SHOT_RESET; }                  // art. 8.12a
   ball.afterShot=false;
@@ -71,7 +71,7 @@ export function substitute(p){   // terzo fallo personale: entra un cambio dalla
   if(g) vesti(p,g);
 }
 export function cornerThrow(att){   // art. 13
-  whistle(0.25); showMsg("Tiro d'angolo",1.1);
+  whistle(0.25); annuncia('ripresa',"Tiro d'angolo",{squadra:att});
   const side=ball.z>=0?1:-1;
   ball.state='dead'; ball.vx=ball.vy=ball.vz=0; ball.y=BRV; ball.afterShot=false;
   deadBall(1.1,()=>{
@@ -81,9 +81,9 @@ export function cornerThrow(att){   // art. 13
     giveBall(w); game.possTeam=att; game.shot=SHOT_RESET;
   });
 }
-export function penalty(d,c){       // art. 10.2
+export function penalty(d,c,motivo){       // art. 10.2 (motivo: solo per la notifica)
   whistle(0.6); d.pf++; registraRigore(c.team);
-  showMsg(`Rigore! <span style="font-size:22px;display:block">fallo di ${d.team.short} #${d.num} nei 6 metri</span>`,1.7);
+  annuncia('rigore',`Rigore per ${c.team.short}`,{p:c,dettaglio:`fallo di ${d.team.short} #${d.num}${motivo?' · '+motivo:''}`});
   ball.state='dead'; ball.holder=null; ball.x=c.x; ball.z=c.z; ball.y=BRV; ball.vx=ball.vy=ball.vz=0;
   const t=c.team;
   deadBall(1.8,()=>{ if(d.pf>=3) substitute(d); setupPenalty(t); });
@@ -105,24 +105,24 @@ export function setupPenalty(t){    // tiro dai 5 metri; tutti gli altri sulla l
   }
   for(const lato of [1,-1]) lati[lato].forEach((q,k)=>{ q.x=gx-t.dir*6; q.z=lato*(3+0.95*k); q.fx=t.dir; q.fz=0; q.lagX=q.x; q.lagZ=q.z; });
   giveBall(s); game.possTeam=t; game.penalty=s; game.penT=0;
-  if(t.human){ setCtrl(s); showMsg('<span style="font-size:24px">Rigore: tieni premuto TIRO e rilascia</span>',1.6); }
+  if(t.human){ setCtrl(s); annuncia('avviso','Rigore: tieni premuto TIRO e rilascia',{p:s,durata:2}); }
 }
 export function sideOut(){        // art. 12: palla uscita lateralmente, tiro libero agli avversari di chi l'ha toccata per ultimo
   const t = ball.lastTeam ? other(ball.lastTeam) : teams[0], side=ball.z>=0?1:-1, x=clamp(ball.x,-HL+1,HL-1);
-  whistle(0.22); showMsg(`Palla fuori<span style="font-size:20px;display:block">rimessa ${t.short}</span>`,0.9);
+  whistle(0.22); annuncia('ripresa','Palla fuori',{squadra:t,dettaglio:`rimessa ${t.short}`});
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.x=x; ball.z=side*(HW-0.3); ball.y=BRV; ball.afterShot=false;
   deadBall(0.9,()=>{ const r=closestTo(t,ball)||t.players[6]; r.x=x; r.z=side*(HW-0.7); r.vx=r.vz=0; giveBall(r); r.freeThrow=true; });
 }
 export function areaFoul(q){      // art. 8.2.8: attaccante nell'area di porta davanti alla linea della palla
   const def=other(q.team);
-  whistle(0.25); showMsg(`Fallo in attacco<span style="font-size:20px;display:block">${q.team.short} #${q.num} nell'area di porta davanti alla palla</span>`,1.3);
+  whistle(0.25); annuncia('fallo','Fallo in attacco',{p:q,dettaglio:"nell'area di porta davanti alla palla"});
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.y=BRV;
   deadBall(1.1,()=>giveBall(def.players[0]));
 }
 export function timeout(t){       // art. 5: due time-out a squadra, solo in possesso di palla; si riparte da metà campo
   if(t.timeouts<=0||game.state!=='play'||game.penalty||game.possTeam!==t||!ball.holder||ball.holder.team!==t) return false;
   t.timeouts--; whistle(0.7); registraTimeout(t);
-  showMsg(`Time-out ${t.name}<span style="font-size:20px;display:block">ne resta${t.timeouts===1?'':'no'} ${t.timeouts} · le squadre recuperano fiato</span>`,2.4);
+  annuncia('timeout','Time-out',{squadra:t,dettaglio:`${t.name} · ne resta${t.timeouts===1?'':'no'} ${t.timeouts}`});
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0;
   deadBall(2.6,()=>{
     for(const q of allPlayers){ q.stamina=Math.min(1,q.stamina+0.4); q.cut=null; }
@@ -139,15 +139,15 @@ export function callPlay(i){
     else if(i===1){ t.atkPlay=1; t.nextDrive=0; }
     else if(i===2){ t.atkPlay=2; t.cross=!t.cross; }
     else t.atkPlay=3;
-    showMsg(`<span style="font-size:24px">Schema: ${ATK[t.atkPlay]}</span>`,0.8);
+    annuncia('avviso',`Schema: ${ATK[t.atkPlay]}`);
   } else if(i===1||i===3) passaAZona(t,i,true);
-  else if(i<4){ t.defPlay=i; t.lasciato=null; showMsg(`<span style="font-size:24px">Difesa: ${DEFN[i]}</span>`,0.8); }
+  else if(i<4){ t.defPlay=i; t.lasciato=null; annuncia('avviso',`Difesa: ${DEFN[i]}`); }
 }
 export function goalScored(t){
   t.score++; whistle(0.6); rumble(350,1); registraGol(t,ball);
   // parziale: tre gol subiti di fila fanno chiamare il time-out all'allenatore del computer
   { const sub=other(t); t.parzialeSubito=0; sub.parzialeSubito=(sub.parzialeSubito||0)+1; if(sub.parzialeSubito>=3) sub.vuoleTimeout=true; }
-  showMsg(`GOL! <span style="font-size:22px;display:block">${t.short} · #${ball.shooter.num} ${ball.shooter.name}</span>`,2.4);
+  annuncia('gol','Gol',{p:ball.shooter,squadra:t});
   ball.state='dead';      // la palla prosegue fino in fondo alla rete (fisica.js)
   const conceding=other(t);
   deadBall(2.6,()=>{
@@ -155,22 +155,24 @@ export function goalScored(t){
     for(const p of allPlayers) if(p.excluded) reenter(p);        // art. 9.3b
     const r=conceding.players[6]; r.x=-conceding.dir*0.4; r.z=0;
     giveBall(r); game.possTeam=conceding; game.shot=SHOT_CLOCK;
-    showMsg('Ripresa dal centro',1);
+    annuncia('ripresa','Ripresa dal centro',{squadra:conceding,registro:false});
     deadBall(1.2,null);
   });
 }
 export function goalThrow(defTeam,text){
-  whistle(0.25); showMsg(text||'Rimessa dal portiere',1);
+  whistle(0.25); annuncia('ripresa',text||'Rimessa dal portiere',{squadra:defTeam});
   ball.state='dead'; ball.vx=ball.vy=ball.vz=0; ball.y=BRV; ball.x=clamp(ball.x,-HL-0.5,HL+0.5);
   deadBall(1.0,()=>{ giveBall(defTeam.players[0]); });
 }
-export function exclude(d){
+export function exclude(d,c,motivo){      // c (chi ha subito il fallo) e motivo: solo per la notifica
   whistle(0.5); d.pf++; rumble(220,0.8); registraEspulsione(d);
   // tre espulsioni subite in due minuti: time-out per ridare calma e attenzione in marcatura
   { const T=d.team; T.espulsioniT=(T.espulsioniT||[]).filter(x=>game.time-x<120); T.espulsioniT.push(game.time); if(T.espulsioniT.length>=3){ T.vuoleTimeout=true; T.espulsioniT=[]; } }
   d.excluded=true; d.exclUntil=game.time+EXCL_TIME; d.vx=d.vz=0; d.charging=false; d.cut=null;
   d.x=ownGoalX(d.team)+d.team.dir*0.6; d.z=-HW-1.0;
-  showMsg(`Espulsione! <span style="font-size:22px;display:block">${d.team.short} #${d.num} ${d.name} — ${EXCL_TIME}" · ${d.pf}° fallo grave${d.pf>=3?' (definitiva)':''}</span>`,1.9);
+  { const inCampo=t=>t.players.filter(q=>!q.excluded&&!q.isGK).length, a=inCampo(other(d.team)), b=inCampo(d.team);
+    annuncia('espulsione','Espulsione',{p:d,dettaglio:[c?`fallo su ${c.team.short} #${c.num}`:motivo||'', a>b?`${other(d.team).short} in superiorità ${a} c ${b}`:'',
+      d.pf>=3?'3° fallo grave: definitiva':`${EXCL_TIME}"`].filter(Boolean).join(' · ')}); }
   game.shot=Math.max(game.shot,SHOT_RESET);                           // art. 8.12c
   if(d.team.doubleP===d) d.team.doubleP=null;
   if(ctrl===d) autoSwitch(ball.holder||ball);
@@ -180,7 +182,7 @@ export function foul(d,c){     // fallo semplice: il gioco si ferma e l'attacco 
   d.stunUntil=game.time+0.9;
   const dx=d.x-c.x, dz=d.z-c.z, l=Math.hypot(dx,dz)||1; d.x+=dx/l*0.9; d.z+=dz/l*0.9; d.vx=d.vz=0;
   c.act=null; c.charging=false; c.chargeT=0; c.freeThrow=true; c.decideT=0.25;
-  showMsg(`Fallo di ${d.team.short} #${d.num}<span style="font-size:20px;display:block">tiro libero ${c.team.short}</span>`,0.9);
+  annuncia('fallo','Fallo',{p:d,dettaglio:`tiro libero ${c.team.short}`});
   deadBall(0.8,null);
 }
 // Contrasto. L'obiettivo del difensore è RUBARE PALLA SENZA FARE FALLO: il fallo è la conseguenza di un contrasto sbagliato.
@@ -214,13 +216,13 @@ export function tackle(d,c,o){
   // Disciplina: chi ne ha poca sbaglia più spesso il contrasto e commette più falli gravi
   const fDis=1.5-(d.s.dis-40)/59, sev=fDis*ARBITRO;
   const grave=()=>{ if(gol&&rnd()<(lato==='dietro'?0.6:0.35)){ penalty(d,c); return 'rigore'; }
-    if(rnd()<(lato==='dietro'?0.55:lato==='lato'?0.24:0.12)*(palla==='alzata'?1.3:1)*(press?1:0.85)*sev){ exclude(d); return 'espulsione'; }
+    if(rnd()<(lato==='dietro'?0.55:lato==='lato'?0.24:0.12)*(palla==='alzata'?1.3:1)*(press?1:0.85)*sev){ exclude(d,c); return 'espulsione'; }
     return null; };
   if(o.voluto){
     // fallo voluto: ferma il gioco; da dietro o su chi è in posizione di tiro si rischia l'espulsione (o il rigore)
     const inTiro=Math.abs(ownGoalX(d.team)-c.x)<7.5&&palla==='alzata';
     if(gol&&rnd()<0.6){ penalty(d,c); return 'rigore'; }
-    if(rnd()<(lato==='dietro'?0.42:inTiro?0.36:0.07)*sev){ exclude(d); return 'espulsione'; }
+    if(rnd()<(lato==='dietro'?0.42:inTiro?0.36:0.07)*sev){ exclude(d,c); return 'espulsione'; }
     foul(d,c); return 'fallo';
   }
   // Difesa del difensore contro la capacità dell'attaccante di proteggere palla (Forza e Passaggio)
@@ -232,11 +234,11 @@ export function tackle(d,c,o){
     *clamp(1+1.4*diff,0.45,1.8)*(press?1.2:1)*(o.stealMul||1),0.004,0.4);
   const pFallo=clamp(0.27*(lato==='dietro'?1.9:lato==='lato'?1:0.75)*(palla==='alzata'?1.6:1)*(0.6+0.4*fDis)*(press?1.2:1),0.05,0.7);
   const r=rnd();
-  if(r<pRuba){ registraPallaRubata(d.team); giveBall(d); showMsg(`Palla rubata! ${d.team.short} #${d.num}`,1); return 'rubata'; }
+  if(r<pRuba){ registraPallaRubata(d.team); giveBall(d); annuncia('possesso','Palla rubata!',{p:d}); return 'rubata'; }
   if(r<pRuba+pFallo){ const g=grave(); if(g) return g; foul(d,c); return 'fallo'; }
   // niente: l'attaccante copre la palla con il corpo e il difensore resta un attimo fuori tempo
   d.stunUntil=game.time+0.25;
-  if(d===ctrl) showMsg('<span style="font-size:22px">Palla protetta</span>',0.5);
+  if(d===ctrl) annuncia('avviso','Palla protetta',{durata:0.8});
   return null;
 }
 // finta di tiro: i difensori vicini possono abboccare (e restare fuori tempo) oppure andare addosso al tiratore
@@ -256,5 +258,5 @@ export function doFake(p){
   const gk=ot.players[0];
   if(dG<9 && !gk.excluded && rnd()<0.45*q){ gk.fakedUntil=game.time+1.1; bit++; }
   if(bit) p.fakeUntil=game.time+1.3;
-  showMsg(`<span style="font-size:24px">${bit?'Finta riuscita!':'Finta'}</span>`,0.6);
+  annuncia('avviso',bit?'Finta riuscita!':'Finta',{durata:0.8});
 }

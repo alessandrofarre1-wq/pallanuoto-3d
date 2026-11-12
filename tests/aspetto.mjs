@@ -3,7 +3,7 @@
 //     per dimostrare che un cambiamento solo grafico non tocca il gioco (--salva=file.json / --confronta=file.json);
 //  2) gambe fuori dall'acqua: durante la partita, per ogni giocatore, quanta parte delle gambe sta sopra la superficie
 //     (punti veri del corpo deformato dallo scheletro, non le ossa);
-//  3) screenshot con telecamere fisse (iPhone orizzontale e verticale, primi piani di nuoto, verticale e dall'alto),
+//  3) screenshot con telecamere fisse (iPhone orizzontale grande e piccolo, primi piani di nuoto, verticale e dall'alto),
 //     con oggetti disegnati e triangoli, da confrontare prima/dopo (--dist=<build> per fotografare una build già fatta).
 // Uso: node tests/aspetto.mjs [cartella di uscita] [--no-build] [--dist=cartella] [--salva=f.json] [--confronta=f.json] [--solo-gioco]
 import { chromium } from 'playwright';
@@ -83,7 +83,7 @@ if (!SOLO_GIOCO) {
   // a: partita a un istante fisso, con la telecamera di gioco; b: primi piani con telecamera messa a mano sul giocatore scelto
   const SCENE = [
     { nome: 'iphone-orizzontale', vp: { width: 844, height: 390 }, tel: true, f: 1500 },
-    { nome: 'iphone-verticale', vp: { width: 390, height: 844 }, tel: true, f: 1500 },
+    { nome: 'iphone-piccolo', vp: { width: 667, height: 375 }, tel: true, f: 1500 },
     { nome: 'nuoto-lato', vp: { width: 844, height: 390 }, f: 1500, chi: 'oriz', cam: (q) => ({ pos: [q.x + 0.4 * q.fz, 1.1, q.z + 4.2], look: [q.x, -0.1, q.z], fov: 32 }) },
     { nome: 'nuoto-alto', vp: { width: 844, height: 390 }, f: 1500, chi: 'oriz', cam: (q) => ({ pos: [q.x - 0.5, 4.6, q.z + 3.6], look: [q.x, -0.2, q.z], fov: 34 }) },
     { nome: 'verticale-lato', vp: { width: 844, height: 390 }, f: 1500, chi: 'vert', cam: (q) => ({ pos: [q.x + 0.2, 0.9, q.z + 3.6], look: [q.x, 0.0, q.z], fov: 32 }) },

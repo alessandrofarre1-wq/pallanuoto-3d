@@ -3,7 +3,7 @@ import { rif01, setteControSei } from './ia.js';
 import { registraIntercetto, registraParata } from './statistiche.js';
 import { whistle } from './audio.js';
 import { ALZATA, BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
-import { showMsg } from './hud.js';
+import { annuncia } from './cronaca.js';
 import { QUOTA_GALLEGGIA, passoPalla } from './palla.js';
 import { blockR } from './ia.js';
 import { cornerThrow, giveBall, goalScored, goalThrow, sideOut } from './regole.js';
@@ -138,7 +138,7 @@ export function updateBall(dt){
     // pali e traversa: l'urto è vero, qui si annuncia soltanto
     if(ball.daTiro){
       const legno=e.urti.find(u=>u==='palo'||u==='traversa');
-      if(legno && Math.abs(Math.abs(ball.x)-HL)<0.5){ ball.kind='rebound'; ball.afterShot=true; showMsg(legno==='palo'?'Palo!':'Traversa!',1); }
+      if(legno && Math.abs(Math.abs(ball.x)-HL)<0.5){ ball.kind='rebound'; ball.afterShot=true; annuncia('legno',legno==='palo'?'Palo!':'Traversa!',{p:ball.shooter}); }
     }
     if(ball.kind==='shot'){
       const att=ball.shooter.team, def=other(att), gk=def.players[0];
@@ -165,8 +165,8 @@ export function updateBall(dt){
             else if(ball.shotPower>0.7&&r<0.65){
               // respinta: la palla schizza via dalle mani del portiere, verso il campo e verso l'alto
               ball.kind='rebound'; ball.vx=-ball.vx*0.22; ball.vz=ball.vz*0.3+(rnd()-0.5)*4; ball.vy=1.5+rnd()*2; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.25;
-              showMsg('Parata! <span style="font-size:20px;display:block">respinta</span>',1);
-            } else { giveBall(gk); showMsg('Parata!',1); }
+              annuncia('parata','Parata!',{p:gk,dettaglio:'respinta'});
+            } else { giveBall(gk); annuncia('parata','Parata!',{p:gk}); }
             return;
           }
         }
@@ -201,9 +201,9 @@ export function updateBall(dt){
           if(rnd()<pr){
             if(ball.kind==='shot'){
               // muro: la palla rimbalza sul braccio alzato e resta in gioco
-              ball.kind='rebound'; ball.vx*=-0.2; ball.vz=ball.vz*0.3+(rnd()-0.5)*3; ball.vy=1+rnd()*1.5; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.2; showMsg('Muro!',0.8); ball.afterShot=true;
+              ball.kind='rebound'; ball.vx*=-0.2; ball.vz=ball.vz*0.3+(rnd()-0.5)*3; ball.vy=1+rnd()*1.5; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.2; annuncia('parata','Muro!',{p}); ball.afterShot=true;
             }
-            else { registraIntercetto(p.team); giveBall(p); showMsg('Intercetto!',0.8); }
+            else { registraIntercetto(p.team); giveBall(p); annuncia('possesso','Intercetto!',{p}); }
             return;
           }
         }

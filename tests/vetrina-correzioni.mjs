@@ -47,7 +47,7 @@ for (const vista of Object.keys(VISTE)) {
     for (let i = 0; i < 520; i++) { H.game.shot = 16; for (const q of H.teams[1].players) q.tackleCD = 9; window.__salta(1); }
     p.x = 12.5 - 2.1; p.z = -1.75; H.regole.giveBall(A.players[4]);      // palla a un giocatore dei 5 metri, il punto va al suo palo
     for (let i = 0; i < 50; i++) { H.game.shot = 12; for (const q of H.teams[1].players) q.tackleCD = 9; window.__salta(1); }
-    document.getElementById('msg').style.opacity = 0; window.__vai(1); });
+    window.__pallanuoto.cronaca.svuota(); window.__vai(1); });
   await scatta(pg, 'c-uomo-in-piu');
   if (vista === 'orizzontale') { await pg.evaluate(() => { const H = window.__pallanuoto; H.vista = { pos: [7.2, 21, 0.01], look: [7.2, 0, 0], fov: 40 }; window.__vai(1); H.vista = null; }); await pg.screenshot({ path: path.join(USCITA, 'c-uomo-in-piu-dall-alto.png') }); }
   // ---- tempo per l'azione: ultimi 5 secondi ----

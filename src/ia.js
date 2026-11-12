@@ -2,7 +2,7 @@
 import { difensoriDavanti } from './statistiche.js';
 import { DEF_DOWN, FORM, FORM_UP, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
 import { doFake, timeout } from './regole.js';
-import { showMsg } from './hud.js';
+import { annuncia as notifica } from './cronaca.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
 import { bestPassTarget, doPass, doShoot, laneClear, shotKind, situazioneTiro, startAct } from './tiri.js';
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
@@ -243,7 +243,7 @@ export function chiLasciare(dif){
 }
 export function passaAZona(t,quale,annuncia){
   t.defPlay=quale; t.lasciato=chiLasciare(t);
-  if(annuncia&&t.lasciato) showMsg(`<span style="font-size:22px">${t.short}: ${quale===3?'zona a M':'zona'} · si lascia tirare il #${t.lasciato.num} (${ROLES[t.lasciato.i].toLowerCase()})</span>`,1.3);
+  if(annuncia&&t.lasciato) notifica('avviso',`${t.short}: ${quale===3?'zona a M':'zona'}`,{dettaglio:`si lascia tirare il #${t.lasciato.num} (${ROLES[t.lasciato.i].toLowerCase()})`,durata:1.6});
 }
 // il computer, mentre difende: pressing all'inizio, zona nella seconda parte dell'azione se il centroboa sta vincendo il duello
 // (o comunque, a volte, negli ultimi secondi, per togliere riferimenti)

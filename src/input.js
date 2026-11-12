@@ -1,14 +1,16 @@
 // ================= INPUT =================
 import { camMode, renderer } from './grafica/scena.js';
-import { $, apriSchemi, showMsg } from './hud.js';
+import { $, apriSchemi } from './hud.js';
+import { annuncia } from './cronaca.js';
 import { togglePause } from './menu.js';
+import { apriRegistro, chiudiRegistro, registroAperto } from './cronaca.js';
 import { callPlay } from './regole.js';
 import { ctrl, game } from './stato.js';
 export const keys={};
 addEventListener('keydown',e=>{
   keys[e.code]=true;
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) e.preventDefault();
-  if((e.code==='Escape'||e.code==='KeyP') && !e.repeat) togglePause();
+  if((e.code==='Escape'||e.code==='KeyP') && !e.repeat){ if(registroAperto()) chiudiRegistro(); else togglePause(); }
 });
 addEventListener('keyup',e=>{ keys[e.code]=false; });
 addEventListener('blur',()=>{ for(const k in keys) keys[k]=false; });
@@ -41,7 +43,7 @@ export function pollInput(){
   if(camMode()===1){ const wx=-n.z, wz=n.x; n.x=wx; n.z=wz; }
   inp=n;
 }
-addEventListener('gamepadconnected',()=>showMsg('<span style="font-size:22px">Controller collegato</span>',1.2));
+addEventListener('gamepadconnected',()=>annuncia('avviso','Controller collegato',{durata:1.5}));
 export function rumble(ms,mag){
   try{ for(const g of (navigator.getGamepads?navigator.getGamepads():[])){
     if(g&&g.vibrationActuator&&g.vibrationActuator.playEffect){ g.vibrationActuator.playEffect('dual-rumble',{duration:ms,strongMagnitude:mag,weakMagnitude:mag*0.6}); break; } } }catch(e){}
@@ -84,4 +86,14 @@ if('ontouchstart' in window || navigator.maxTouchPoints>0) document.body.classLi
     b.addEventListener('touchend',up,{passive:false}); b.addEventListener('touchcancel',up,{passive:false});
   });
   $('tPause').addEventListener('touchstart',e=>{ e.preventDefault(); togglePause(); },{passive:false});
+}
+// registro degli eventi: mentre è aperto il gioco è fermo e i comandi touch vengono rilasciati (niente pulsanti rimasti premuti)
+{
+  const apri=e=>{ e.preventDefault(); for(const k in touch.btn) if(k!=='sprint') touch.btn[k]=false; touch.x=touch.z=0;
+    document.querySelectorAll('.tb.on').forEach(b=>{ if(b.dataset.b!=='sprint') b.classList.remove('on'); }); apriRegistro(); };
+  $('tLog').addEventListener('click',apri); $('tLog').addEventListener('touchstart',apri,{passive:false});
+  const chiudi=e=>{ e.preventDefault(); chiudiRegistro(); };
+  $('regChiudi').addEventListener('click',chiudi); $('regChiudi').addEventListener('touchend',chiudi,{passive:false});
+  $('registro').addEventListener('click',e=>{ if(e.target===$('registro')) chiudiRegistro(); });
+  if(!document.body.classList.contains('touch')) $('ruotaTesto').textContent='Allarga la finestra per giocare';
 }

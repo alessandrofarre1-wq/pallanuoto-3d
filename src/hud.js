@@ -1,13 +1,12 @@
-// ================= MESSAGGI / HUD =================
+// ================= HUD: tabellone, schemi, giocatore controllato (le notifiche degli eventi sono in cronaca.js) =================
 import { CHIAVE, STAT_NOMI } from './dati/rose.js';
 import { dpr, renderer } from './grafica/scena.js';
 import { ATK, DEFN } from './costanti.js';
 import { bip } from './audio.js';
-import { allPlayers, ctrl, fight, game, teams } from './stato.js';
+import { aggiorna as aggiornaCronaca } from './cronaca.js';
+import { ctrl, fight, game, teams } from './stato.js';
 export const $ = id => document.getElementById(id);
-export let msgT=0;
-export function showMsg(text,dur=1.4){ const m=$('msg'); m.innerHTML=text; m.style.opacity=1; msgT=dur; }
-let tacKey='', exclKey='', schedaVista=null, ultimoBip=null;
+let tacKey='', schedaVista=null, ultimoBip=null;
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
 let schemiAperti=!TOUCH;
 export function apriSchemi(v){ schemiAperti = v===undefined ? !schemiAperti : (TOUCH ? v : true); }
@@ -33,9 +32,7 @@ export function updateHUD(){
     $('stam').firstChild.style.background= ctrl.stamina>0.5?'#4ade80':ctrl.stamina>0.25?'#facc15':'#ef4444';
     $('power').firstChild.style.width=(ctrl.charging?Math.min(1,ctrl.chargeT/0.9)*100:0)+'%';
   }
-  let ex='';
-  for(const p of allPlayers) if(p.excluded) ex+=`<div>${p.team.short} #${p.num} fuori · ${Math.ceil(p.exclUntil-game.time)}"</div>`;
-  if(ex!==exclKey){ exclKey=ex; $('excl').innerHTML=ex; }
+  aggiornaCronaca();
   const fe=$('fight');
   if(fight.active){
     fe.style.display='block';
@@ -60,7 +57,6 @@ export function updateHUD(){
     $('tac').innerHTML=h;
   }
 }
-export function tickMsg(dt){ if(msgT>0){ msgT-=dt; if(msgT<=0) $('msg').style.opacity=0; } }
 
 // ================= CONTATORE DI FOTOGRAMMI =================
 // Mostra quanti fotogrammi al secondo fa davvero il dispositivo, più i numeri che pesano sulla fluidità:
