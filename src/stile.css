@@ -110,3 +110,34 @@ body.touch #pstat{font-size:9.5px}
 @media (orientation:landscape) and (max-height:480px){
   .panel h1{font-size:24px} .panel .sub{margin:2px 0 8px} .row{margin:6px 0} .go{margin-top:8px;padding:10px 40px}
 }
+/* v0.18 · telefono: meno cose sovrapposte. Pannello del giocatore ridotto a nome e barra, pulsanti più piccoli e più
+   trasparenti, barra degli schemi chiusa (un tocco la apre), tabellone più compatto */
+body.touch #pstat,body.touch #player .et,body.touch #power{display:none}
+body.touch #player{padding:3px 7px;min-width:0;max-width:150px;font-size:10px;background:rgba(5,15,30,.6)}
+body.touch #player .bar{height:4px;margin-top:3px}
+body.touch #pname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.touch .tb{background:rgba(5,15,30,.5);border-width:1.5px;border-color:rgba(255,255,255,.8)}
+body.touch .tb.on{background:#facc15}
+body.touch #tac .chip{background:rgba(5,15,30,.6)}
+body.touch #tac .chip.on{background:#facc15}
+@media (orientation:landscape){
+  body.touch .tb{width:56px;height:56px;font-size:9.5px}
+  body.touch .tb[data-b="shoot"]{right:14px!important;bottom:84px!important;width:62px;height:62px}
+  body.touch .tb[data-b="pass"]{right:82px!important;bottom:30px!important;width:62px;height:62px}
+  body.touch .tb[data-b="lob"]{right:84px!important;bottom:118px!important;width:48px;height:48px}
+  body.touch .tb[data-b="sprint"]{right:14px!important;bottom:16px!important;width:52px!important;height:52px!important}
+  body.touch .tb[data-b="sw"]{right:150px!important;bottom:16px!important;width:48px!important;height:48px!important}
+  body.touch .tb[data-b="cmd"]{right:150px!important;bottom:72px!important;width:48px!important;height:48px!important}
+  body.touch #joy{width:124px;height:124px;left:16px;bottom:14px}
+  body.touch #knob{left:37px;top:37px}
+  body.touch #hud{top:6px} body.touch .sb{font-size:15px;padding:3px 9px} body.touch #shotclock{font-size:24px;min-width:48px}
+  body.touch #tac{top:40px}
+}
+@media (orientation:portrait){
+  body.touch #player{bottom:206px;width:130px}
+  body.touch .tb{width:52px;height:52px}
+  body.touch .tb[data-b="shoot"]{width:60px;height:60px}
+  body.touch .tb[data-b="pass"]{width:60px;height:60px}
+  body.touch .tb[data-b="lob"]{bottom:140px!important;width:46px;height:46px}
+  body.touch #tPause{bottom:206px} body.touch .tb[data-b="to"]{bottom:248px}
+}

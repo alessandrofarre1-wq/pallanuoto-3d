@@ -1,6 +1,6 @@
 // ================= RENDER =================
 import * as THREE from 'three';
-import { BRV, HL, clamp, rnd } from '../costanti.js';
+import { BRV, CAM_ZOOM, HL, clamp, rnd } from '../costanti.js';
 import { updateRig } from './pose.js';
 import { animateWater, ball3d, camMode, camera, freccia, mirino, passMark, renderer, ring, scene, shadow, spawnFoam, updateFoam } from './scena.js';
 import { inp } from '../input.js';
@@ -8,6 +8,7 @@ import { allPlayers, ball, ctrl, game, teams } from '../stato.js';
 import { humanPassTarget } from '../tiri.js';
 export const camPos=new THREE.Vector3(0,10.5,16), camLook=new THREE.Vector3(), _cv=new THREE.Vector3();
 export let prevBY=BRV;
+let camLargo=0;
 const _wv=new THREE.Vector3(), _wq=new THREE.Quaternion();
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
 export function render(dt,now){
@@ -51,23 +52,30 @@ export function render(dt,now){
   }
   // telecamera
   const portrait=camera.aspect<1;
+  // Larghezza dell'inquadratura: scelta del menu × schermo piccolo (telefono: più larga, soprattutto in verticale dove il campo
+  // era tagliato) × momento di gioco: nelle ripartenze (sprint iniziale, controfughe, palla lontana dalle porte) si allarga da
+  // sola per far vedere chi sale e chi rientra, nell'attacco schierato torna stretta
+  const piccolo=Math.min(innerWidth,innerHeight)<520;
+  const ripartenza=game.state!=='menu' && Math.abs(ball.x)<HL-9.2 ? 1 : 0;
+  camLargo+=(ripartenza-camLargo)*Math.min(1,dt*(ripartenza>camLargo?1.6:0.9));
+  const k=CAM_ZOOM*(piccolo?(portrait?1.22:1.1):1)*(1+(portrait?0.3:0.22)*camLargo);
   // su telefono in orizzontale l'azione va tenuta nella fascia libera tra joystick (a sinistra) e pulsanti (a destra):
   // vicino alla porta di destra la telecamera avanza di più, così porta e tiratori non finiscono sotto i pulsanti
   const fx = TOUCH&&!portrait ? clamp(ball.x*0.9+clamp(ball.x,0,HL)*0.12,-HL+4,HL-1.5) : clamp(ball.x*0.85,-HL+4,HL-4);
   if(camMode()===0){
     // laterale, alta e vicina: l'acqua riempie lo schermo e il bordo lontano della vasca sta in cima all'inquadratura
-    const far=portrait?1.9:1, sz=ball.z*0.45;
+    const far=(portrait?1.9:1)*k, sz=ball.z*0.45/k;
     camPos.lerp(_cv.set(fx, 10*far, 11.7*far+sz), Math.min(1,dt*2.5));
     camLook.lerp(_cv.set(fx, 0, 1.9*far+sz), Math.min(1,dt*3));
   } else if(portrait){
     // verticale: da dietro e dall'alto, guardando in giù quanto basta per non inquadrare cielo e tribune
-    const d=teams[0].dir, bx=clamp(ball.x,-HL+3,HL-3), sz=ball.z*0.75;
+    const d=teams[0].dir, bx=clamp(ball.x,-HL+3,HL-3), sz=ball.z*0.75/k;
     // la palla sta nel terzo alto dello schermo: la parte bassa è coperta da joystick e pulsanti
-    camPos.lerp(_cv.set(bx-d*10, 16, sz), Math.min(1,dt*2.5));
-    camLook.lerp(_cv.set(bx-d*2.9, 0, sz), Math.min(1,dt*3));
+    camPos.lerp(_cv.set(bx-d*10*k, 16*k, sz), Math.min(1,dt*2.5));
+    camLook.lerp(_cv.set(bx-d*2.9*k, 0, sz), Math.min(1,dt*3));
   } else {
     const d=teams[0].dir;
-    camPos.lerp(_cv.set(clamp(ball.x,-HL+3,HL-3)-d*9, 5.5, ball.z*0.6), Math.min(1,dt*2.5));
+    camPos.lerp(_cv.set(clamp(ball.x,-HL+3,HL-3)-d*9*k, 5.5*k, ball.z*0.6), Math.min(1,dt*2.5));
     camLook.lerp(_cv.set(clamp(ball.x,-HL+3,HL-3)+d*6, 0, ball.z*0.6), Math.min(1,dt*3));
   }
   camera.position.copy(camPos); camera.lookAt(camLook);

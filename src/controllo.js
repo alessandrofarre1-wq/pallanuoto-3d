@@ -1,7 +1,7 @@
 // ================= CONTROLLO UMANO =================
 import { MARK, dist } from './costanti.js';
 import { showMsg } from './hud.js';
-import { closestTo, startCut } from './ia.js';
+import { closestTo, pallaVagante, startCut } from './ia.js';
 import { inp, pressed, released } from './input.js';
 import { fightOn, girata } from './lotta.js';
 import { doFake, tackle } from './regole.js';
@@ -89,4 +89,24 @@ export function humanControl(p,dt){
       }
     }
   }
+}
+
+// AIUTO ALLA GUIDA. Se si spinge più o meno verso la palla vagante (anche allo sprint iniziale: basta spingere in avanti), verso
+// il portatore avversario quando si difende o verso il compagno che sta ricevendo, la direzione si aggiusta da sola verso di loro.
+// Entro 18° la direzione diventa esatta, fino a 45° viene corretta in parte; oltre non si tocca nulla.
+const _g=[0,0];
+export function aiutoGuida(p,ix,iz){
+  _g[0]=ix; _g[1]=iz;
+  const m=Math.hypot(ix,iz); if(m<0.3||ball.holder===p) return _g;
+  let tx=null, tz=0;
+  const h=ball.holder;
+  if(pallaVagante()){ const tt=Math.min(0.6,dist(p,ball)/3); tx=ball.x+ball.vx*tt; tz=ball.z+ball.vz*tt; }
+  else if(ball.state==='flight'&&ball.kind==='pass'&&ball.target===p){ tx=ball.tx; tz=ball.tz; }
+  else if(h&&h.team!==p.team&&!h.isGK&&dist(p,h)<7){ tx=h.x; tz=h.z; }
+  if(tx===null) return _g;
+  const dx=tx-p.x, dz=tz-p.z, d=Math.hypot(dx,dz); if(d<0.25) return _g;
+  const cs=(ix*dx+iz*dz)/(m*d); if(cs<0.707) return _g;                      // oltre 45°: il giocatore vuole andare altrove
+  const k=cs>0.951?1:(cs-0.707)/(0.951-0.707)*0.8;
+  let ux=ix/m*(1-k)+dx/d*k, uz=iz/m*(1-k)+dz/d*k; const ul=Math.hypot(ux,uz)||1;
+  _g[0]=ux/ul*m; _g[1]=uz/ul*m; return _g;
 }

@@ -1,6 +1,6 @@
 // ================= CICLO DI GIOCO =================
 import { bip, whistle } from './audio.js';
-import { humanControl, updateCtrl } from './controllo.js';
+import { aiutoGuida, humanControl, updateCtrl } from './controllo.js';
 import { DIFF, GW, MARK, PERIOD_LEN, clamp, dist, rnd } from './costanti.js';
 import { movePlayer, separate, updateBall } from './fisica.js';
 import { showMsg } from './hud.js';
@@ -90,7 +90,7 @@ export function update(dt){
         const dx=h.x-p.x, dz=h.z-p.z, d=Math.hypot(dx,dz)||1;
         if(d<=1.3){ p.lunge=0; tackle(p,h,{voluto:p.lungeVoluto}); if(game.state!=='play') return; }
         movePlayer(p,dx/d,dz/d,true,dt);
-      } else { p.lunge=0; movePlayer(p,inp.x,inp.z,inp.sprint,dt); }
+      } else { p.lunge=0; const g=aiutoGuida(p,inp.x,inp.z); movePlayer(p,g[0],g[1],inp.sprint,dt); }
       continue;
     }
     let tg;

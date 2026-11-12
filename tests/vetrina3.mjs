@@ -58,4 +58,21 @@ if (fare('rientro')) {
   console.log('rientro: palla presa da', chi);
   await pg.context().close();
 }
+// ---------- 5. telecamera su iPhone: sprint iniziale (ripartenza) e attacco schierato, con le tre impostazioni ----------
+if (fare('telecamera')) {
+  for (const vista of Object.keys(TELEFONO)) {
+    const file = [], titoli = [];
+    const cams = DIST ? [['prima', null]] : [['Vicina', '0.85'], ['Normale', '1'], ['Larga', '1.22']];
+    for (const [nome, cam] of cams) {
+      const pg = await apri(TELEFONO[vista], true);
+      await pg.evaluate(cam => { if (cam) document.querySelector(`[data-cam="${cam}"]`).click(); document.getElementById('goBtn').click(); window.__vai(330); }, cam);
+      let f = path.join(USCITA, `_c-${vista}-${nome}-1.png`); await pg.screenshot({ path: f }); file.push(f); titoli.push(`${nome} · sprint iniziale`);
+      await pg.evaluate(() => { const H = window.__pallanuoto; for (let i = 0; i < 6000; i++) { window.__salta(1); const h = H.ball.holder; if (h && H.game.state === 'play' && h.team === H.teams[1] && Math.abs(h.x + 12.5) < 7.5 && !H.allPlayers.some(p => p.excluded)) break; }
+        window.__salta(50); document.getElementById('msg').style.opacity = 0; window.__vai(1); });
+      f = path.join(USCITA, `_c-${vista}-${nome}-2.png`); await pg.screenshot({ path: f }); file.push(f); titoli.push(`${nome} · attacco schierato (difendi tu)`);
+      await pg.context().close();
+    }
+    await foglio(`telecamera-${vista}`, file, titoli, vista === 'verticale' ? Math.min(6, file.length) : 2, vista === 'verticale' ? 280 : 620);
+  }
+}
 await browser.close(); await new Promise(r => server.httpServer.close(r));
