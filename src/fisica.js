@@ -194,7 +194,10 @@ export function updateBall(dt){
           const dif01=(p.s.dif-40)/59, braccioAlto=0.2+0.7*dif01;
           const finta=ball.shooter&&ball.shooter.fakeUntil>game.time?0.45:1;
           const muro=(primoPalo?0.42:0.34*braccioAlto)*finta*(1-2*(ball.sorpresa||0))*(1.3-0.6*(ball.elevazione||0.5));
-          const pr=(ball.kind==='shot'?muro:0.2)*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
+          // intercetto: è da qui che nasce la maggior parte delle palle rubate. Un passaggio lungo e lento dà il tempo di leggerlo;
+          // conta la Difesa di chi anticipa contro il Passaggio di chi l'ha fatto
+          const letto=0.1+0.28*clamp((ball.flightT-0.2)/0.7,0,1)+(ball.shooter?(p.s.dif-ball.shooter.s.pas)/59*0.12:0);
+          const pr=(ball.kind==='shot'?muro:clamp(letto,0.04,0.5))*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
           if(rnd()<pr){
             if(ball.kind==='shot'){
               // muro: la palla rimbalza sul braccio alzato e resta in gioco

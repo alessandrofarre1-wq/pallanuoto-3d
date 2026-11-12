@@ -223,8 +223,11 @@ export function tackle(d,c,o){
   }
   // Difesa del difensore contro la capacità dell'attaccante di proteggere palla (Forza e Passaggio)
   const diff=(d.s.dif-(c.s.frz+c.s.pas)/2)/59*(d.team.human?1:DIFF());
-  const pRuba=clamp(0.135*(lato==='davanti'?1.15:lato==='lato'?1:0.3)*(palla==='palleggio'?1.3:palla==='appoggiata'?1:0.25)
-    *clamp(1+1.4*diff,0.45,1.8)*(press?1.2:1)*(o.stealMul||1),0.02,0.6);
+  // Chi protegge la palla (corpo in mezzo: difensore alle spalle, o palla tenuta lontana) non si deruba quasi mai.
+  // Si ruba soprattutto il palleggio preso di lato in controfuga e la palla tenuta troppo a lungo sotto pressione.
+  const aLungo=clamp((ball.holdTime-3)/3,0,1);
+  const pRuba=clamp(0.032*(lato==='davanti'?1:lato==='lato'?1.1:0.12)*(palla==='palleggio'?(lato==='lato'?2.4:1.5):palla==='appoggiata'?0.8+1.6*aLungo:0.2)
+    *clamp(1+1.4*diff,0.45,1.8)*(press?1.2:1)*(o.stealMul||1),0.004,0.4);
   const pFallo=clamp(0.27*(lato==='dietro'?1.9:lato==='lato'?1:0.75)*(palla==='alzata'?1.6:1)*(0.6+0.4*fDis)*(press?1.2:1),0.05,0.7);
   const r=rnd();
   if(r<pRuba){ registraPallaRubata(d.team); giveBall(d); showMsg(`Palla rubata! ${d.team.short} #${d.num}`,1); return 'rubata'; }

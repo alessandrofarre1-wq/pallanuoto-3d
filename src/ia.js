@@ -76,7 +76,7 @@ function rientro(p){
   const t=p.team, att=other(t), ogx=ownGoalX(t);
   if(game.possTeam!==att) return null;
   const ballD=Math.abs(ball.x-ogx), myD=Math.abs(p.x-ogx), trans=ballD>9.2;
-  if(!trans && myD<=ballD+0.6) return null;                 // difesa rientrata: marcature normali
+  if(!trans && (myD<=ballD+0.6 || ballD<7)) return null;    // difesa rientrata (o palla ormai in zona d'attacco): marcature normali
   const h=ball.holder;
   if(trans && h && chiRallenta(t)===p){
     // davanti al portatore, sulla linea verso il centro della porta, arretrando con lui
