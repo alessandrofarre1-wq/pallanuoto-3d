@@ -40,6 +40,7 @@ export function giveBall(p){
   resetTap();
   if(changed){
     game.possTeam=p.team; game.shot=SHOT_CLOCK;
+    game.passaggi=0; game.cambiLato=0;      // passaggi e cambi di lato di questa azione (per le statistiche)
     for(const q of allPlayers) q.cut=null;
     for(const q of p.team.players) if(q.excluded) reenter(q);          // art. 9.3c
     game.possT=game.time;

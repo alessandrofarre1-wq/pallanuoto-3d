@@ -53,6 +53,44 @@ function postiInferiorita(t){
   }
   t.postiT=game.time; t.posti=m; return m;
 }
+// RIENTRO DIFENSIVO. Chi perde palla rientra: finché la palla è ancora lontana dalla nostra porta (transizione) nessuno va
+// incontro al proprio uomo; tutti nuotano verso la propria porta restando tra la palla e la porta e chiudendo il centro.
+// Il più vicino al portatore lo rallenta standogli davanti (senza buttarsi, per non farsi saltare). Solo quando la palla è
+// arrivata nella zona d'attacco e il difensore è tornato dalla parte giusta si riprendono le marcature (o la zona scelta).
+const RIENTRO_BASE=[0,2.8,3.0,3.0,5.0,5.0,3.4];      // profondità minima a cui si ripiega, per ruolo (metri dalla propria porta)
+function chiRallenta(t){
+  if(t.rallT===game.time) return t.rall;
+  const h=ball.holder, ogx=ownGoalX(t); let b=null, bs=1e9;
+  if(h&&h.team!==t&&!h.isGK) for(const q of t.players){
+    if(q.excluded||q.isGK||game.time<q.stunUntil) continue;
+    const davanti=Math.abs(q.x-ogx)<Math.abs(h.x-ogx)+0.3, sc=dist(q,h)+(davanti?0:3.5);
+    if(sc<bs){ bs=sc; b=q; }
+  }
+  t.rallT=game.time; t.rall=b; return b;
+}
+export function inRientro(t){
+  const att=other(t); if(game.possTeam!==att) return false;
+  return Math.abs(ball.x-ownGoalX(t))>9.2;
+}
+function rientro(p){
+  const t=p.team, att=other(t), ogx=ownGoalX(t);
+  if(game.possTeam!==att) return null;
+  const ballD=Math.abs(ball.x-ogx), myD=Math.abs(p.x-ogx), trans=ballD>9.2;
+  if(!trans && myD<=ballD+0.6) return null;                 // difesa rientrata: marcature normali
+  const h=ball.holder;
+  if(trans && h && chiRallenta(t)===p){
+    // davanti al portatore, sulla linea verso il centro della porta, arretrando con lui
+    const gx=ogx-h.x, gz=-h.z, gl=Math.hypot(gx,gz)||1;
+    return { x:h.x+gx/gl*1.7, z:h.z+gz/gl*1.7, sprint:true, rallenta:true };
+  }
+  const a=att.players[MARK[p.i]], attD=a&&!a.excluded?Math.abs(a.x-ogx):99;
+  // sempre qualche metro più indietro del proprio uomo e della palla; mai più bassi del posto di ruolo
+  // in transizione si nuota dritti al proprio posto davanti alla porta (blocco stretto al centro), senza aspettare l'uomo;
+  // a difesa quasi rientrata ci si tiene un metro dietro di lui
+  const d=trans ? Math.min(RIENTRO_BASE[p.i]+1.2, Math.max(RIENTRO_BASE[p.i], ballD-2.2)) : Math.max(RIENTRO_BASE[p.i], Math.min(ballD-2.2, attD-0.8));
+  const z=clamp((a&&!a.excluded?a.z:p.z)*(trans?0.55:0.85),-5,5);
+  return { x:ogx+t.dir*d, z, sprint:myD>d+0.8 };
+}
 export function markTarget(p){
   const t=p.team, ogx=ownGoalX(t);
   if(t.players.some(q=>q.excluded)){            // uomo in meno: tre sulla linea dei 2 metri negli spazi tra i quattro attaccanti, due davanti ai pali
@@ -171,7 +209,7 @@ export function aiTarget(p){
   if(ball.state==='flight'&&ball.kind==='pass'&&ball.target===p) return {x:ball.tx,z:ball.tz,sprint:true};
   const poss = game.possTeam || (ball.lastTeam);
   if(poss===t) return attackTarget(p);
-  if(poss===other(t)) return markTarget(p);
+  if(poss===other(t)) return rientro(p)||markTarget(p);
   // palla contesa (sprint iniziale): solo il più vicino va sulla palla, gli altri risalgono la propria corsia fino alla posizione di ruolo
   return {x:-t.dir*FORM[p.i][0]*0.8, z:KICK_Z[p.i]*t.dir, sprint:true};   // palla contesa: ci si ferma a metà campo
 }

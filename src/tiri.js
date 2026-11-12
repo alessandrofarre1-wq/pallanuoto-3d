@@ -106,6 +106,7 @@ export function doPass(p,m){
   const err=(0.2+(1-p.stamina)*0.5)*(1.25-p.st.pas)*(0.3+d*0.05);
   tx+=gauss()*err; tz+=gauss()*err;
   launch(p,tx,0.45,tz,t,'pass'); ball.target=m; ball.tx=tx; ball.tz=tz;
+  game.passaggi=(game.passaggi||0)+1; if(Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1)) game.cambiLato=(game.cambiLato||0)+1;
   m.daChi=p; ball.cambioLato=Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1);      // passaggio da un lato all'altro: chi riceve può tirare al volo
   if(p.team===teams[0]) setCtrl(m);
   // dai e vai: chi passa dal perimetro può tagliare verso la porta

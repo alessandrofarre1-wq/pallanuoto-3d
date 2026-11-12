@@ -1,6 +1,6 @@
 // ================= FISICA GIOCATORI =================
 import { rif01, setteControSei } from './ia.js';
-import { registraParata } from './statistiche.js';
+import { registraIntercetto, registraParata } from './statistiche.js';
 import { whistle } from './audio.js';
 import { ALZATA, BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
 import { showMsg } from './hud.js';
@@ -196,7 +196,7 @@ export function updateBall(dt){
               // muro: la palla rimbalza sul braccio alzato e resta in gioco
               ball.kind='rebound'; ball.vx*=-0.2; ball.vz=ball.vz*0.3+(rnd()-0.5)*3; ball.vy=1+rnd()*1.5; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.2; showMsg('Muro!',0.8); ball.afterShot=true;
             }
-            else { giveBall(p); showMsg('Intercetto!',0.8); }
+            else { registraIntercetto(p.team); giveBall(p); showMsg('Intercetto!',0.8); }
             return;
           }
         }

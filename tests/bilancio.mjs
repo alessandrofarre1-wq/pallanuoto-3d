@@ -10,8 +10,8 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const arg = (k, d) => { const a = process.argv.find(x => x.startsWith('--' + k + '=')); return a ? a.split('=')[1] : d; };
 const N = +arg('partite', 20), DURATA = arg('tempo', '480'), OPZ = arg('opzioni', ''), SQ = arg('squadre', 'ITA,HUN'), ARB = arg('arbitro', '');
-if (!process.argv.includes('--no-build')) await build({ root: ROOT, logLevel: 'warn' });
-const server = await preview({ root: ROOT, logLevel: 'warn', preview: { port: 4175, host: '127.0.0.1' } });
+if (!process.argv.includes('--no-build') && !arg('dist', '')) await build({ root: ROOT, logLevel: 'warn' });
+const server = await preview({ root: ROOT, logLevel: 'warn', build: arg('dist', '') ? { outDir: arg('dist', '') } : {}, preview: { port: +arg('porta', 4175), host: '127.0.0.1' } });
 const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 const errori = [], partite = [];
 for (let n = 1; n <= N; n++) {
@@ -56,7 +56,7 @@ const tutte = partite.flatMap(p => p.squadre), M = k => tutte.reduce((s, x) => s
 const tipi = Object.keys(tutte[0].golTipo), golTot = S('gol');
 const sintesi = { partite: N, tempo: +DURATA, gol: M('gol'), tiri: M('tiri'), conversione: 100 * S('gol') / S('tiri'), inPorta: 100 * S('inPorta') / S('tiri'), parate: M('parate'),
   espulsioni: M('espulsioni'), superiorita: M('superiorita'), superioritaTrasformate: 100 * S('superioritaGol') / Math.max(1, S('superiorita')), rigori: M('rigori'), rigoriSegnati: 100 * S('rigoriGol') / Math.max(1, S('rigori')),
-  palleRubate: M('palleRubate'), falli: M('falli'), timeout: M('timeout'),
+  palleRubate: M('palleRubate'), falli: M('falli'), intercetti: M('intercetti'), tiriLontani: M('tiriLontani'), golLontani: M('golLontani'), tiriSoli: M('tiriSoli'), golCostruiti: 100 * S('golCostruiti') / Math.max(1, S('gol')), passaggiGol: S('passaggiGol') / Math.max(1, S('gol')), timeout: M('timeout'),
   golTipo: Object.fromEntries(tipi.map(t => [t, 100 * tutte.reduce((s, x) => s + x.golTipo[t], 0) / Math.max(1, golTot)])),
   vittorie: [0, 1].map(i => partite.filter(p => p.squadre[i].gol > p.squadre[1 - i].gol).length), nomi: partite[0].squadre.map(s => s.nome),
   golPerSquadra: [0, 1].map(i => partite.reduce((s, p) => s + p.squadre[i].gol, 0) / N), espulsioniPerSquadra: [0, 1].map(i => partite.reduce((s, p) => s + p.squadre[i].espulsioni, 0) / N) };
@@ -67,6 +67,7 @@ console.log(`  espulsioni ${r1(sintesi.espulsioni)} · superiorità trasformate 
 { const g = {}; for (const x of tutte) for (const k in x.gesti) g[k] = (g[k] || 0) + x.gesti[k]; const tt = S('tiri');
   console.log('  tiri per tipo di azione: ' + tipi.map(t => `${t} ${r1(100 * tutte.reduce((s, x) => s + x.tiriTipo[t], 0) / tt)}%`).join(' · '));
   console.log(`  tiro dopo ${r1(S('etaPossesso') / tt)} s di possesso in media · gesti: ` + Object.entries(g).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${r1(100 * v / tt)}%`).join(' · ')); }
+console.log(`  intercetti ${r1(sintesi.intercetti)} · tiri da oltre 8 m ${r1(sintesi.tiriLontani)} (gol ${r1(sintesi.golLontani)}) · tiri senza difensori davanti ${r1(sintesi.tiriSoli)} · gol dopo 2+ passaggi o un cambio di lato ${r1(sintesi.golCostruiti)}% (in media ${r1(sintesi.passaggiGol)} passaggi)`);
 console.log('  gol per tipo: ' + tipi.map(t => `${t} ${r1(sintesi.golTipo[t])}%`).join(' · '));
 if (errori.length) console.log('ERRORI nella pagina:\n  ' + [...new Set(errori)].slice(0, 10).join('\n  '));
 sintesi.pallaSola = Math.max(...partite.map(p => p.pallaSola)); sintesi.pallaVagante = Math.max(...partite.map(p => p.pallaVagante));
