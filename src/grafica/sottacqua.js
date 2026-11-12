@@ -26,9 +26,9 @@ vec3 sottAcqua(vec3 c, vec3 p, float bagnato, float luci){
   float y=p.y-pelo(p.xz);
   float dentro=smoothstep(0.012,-0.05,y);                                  // fascia morbida fuori -> dentro
   float prof=max(0.0,-y);
-  float k=dentro*(0.20+0.58*(1.0-exp(-prof*1.4)));                         // quanto prende il colore dell'acqua
-  vec3 acqua=vec3(0.006,0.13,0.30)*(0.8+0.35*exp(-prof*0.8));              // blu dell'acqua (lineare): più chiaro vicino alla superficie
-  vec3 r=mix(c*mix(vec3(1.0),vec3(0.80,0.93,1.0),dentro),acqua,k);
+  float k=dentro*(0.10+0.62*(1.0-exp(-prof*1.1)));                         // quanto prende il colore dell'acqua
+  vec3 acqua=vec3(0.008,0.17,0.35)*(0.8+0.35*exp(-prof*0.8));              // blu dell'acqua (lineare): più chiaro vicino alla superficie
+  vec3 r=mix(c*mix(vec3(1.0),vec3(0.90,0.97,1.0),dentro),acqua,k);
   // luce che tremola sotto la superficie: reticolo morbido e irregolare che si muove piano (sui corpi si spegne in profondità,
   // sul fondo resta: sono i giochi di luce della piscina, in versione disegnata e leggera)
   vec2 q=p.xz*1.35+vec2(sin(p.z*0.9+uTempoAcqua*0.6),sin(p.x*0.8-uTempoAcqua*0.5))*0.9;

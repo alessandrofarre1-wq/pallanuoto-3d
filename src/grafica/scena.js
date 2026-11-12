@@ -36,7 +36,7 @@ export const tileDraw=(base,line)=>(x,w,h)=>{ x.fillStyle=base; x.fillRect(0,0,w
   for(let i=0;i<=w;i+=32){ x.beginPath(); x.moveTo(i,0); x.lineTo(i,h); x.stroke(); x.beginPath(); x.moveTo(0,i); x.lineTo(w,i); x.stroke(); } };
 // fondo, corsie e pareti prendono il colore dell'acqua secondo la profondità (sottacqua.js): piastrelle e righe si vedono, ma
 // attenuate come in una piscina vera; sul fondo si muovono giochi di luce leggeri
-box(PX*2,0.1,PZ*2,sottAcqua(new THREE.MeshBasicMaterial({map:canvasTex(256,256,tileDraw('#3fa6ea','rgba(255,255,255,.4)'),PX/2,PZ/2)}),{luci:'0.26'}),0,-DEPTH,0);
+box(PX*2,0.1,PZ*2,sottAcqua(new THREE.MeshBasicMaterial({map:canvasTex(256,256,tileDraw('#52baf2','rgba(255,255,255,.3)'),PX/2,PZ/2)}),{luci:'0.3'}),0,-DEPTH,0);
 { const riga=sottAcqua(new THREE.MeshLambertMaterial({color:0x0d3566}),{luci:'0.18'}); for(let i=-4;i<=4;i++) box(PX*2-4,0.02,0.28,riga,0,-DEPTH+0.06,i*2.5); }
 export const wallMat=sottAcqua(new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#8fe0f7','rgba(255,255,255,.55)'),12,1)}));
 box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,-PZ-0.15); box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,PZ+0.15);
@@ -68,10 +68,11 @@ box(0.4,0.08,PZ*2,0xffffff,-PX-0.2,0.32,0); box(0.4,0.08,PZ*2,0xffffff,PX+0.2,0.
 // Fino alla v0.21 qui si disegnava l'immagine dell'acqua semplice della grafica realistica, che consumava 420 numeri del caso
 // del gioco al caricamento. Si consumano ancora, così le partite simulate restano identiche a quelle di prima (verifica).
 for(let i=0;i<420;i++) rnd();
-// acqua: superficie azzurro-turchese con sfumature morbide che si muovono piano, increspature sottili e irregolari
-// (solo a macchie, mai a strisce) e piccoli riflessi che si accendono e si spengono. Tutto calcolato in un solo passaggio di
-// disegno (niente riflesso né vista sott'acqua). Semitrasparente: le corsie sul fondo si vedono.
-// I riflessi più fini si spengono da lontano, dove sfarfallerebbero.
+// acqua: superficie azzurro-turchese con sfumature morbide che si muovono piano, piccole onde disegnate dalla luce (un rilievo
+// finto: chiaro dove l'onda guarda il sole, appena più scuro dietro), increspature corte e spezzate solo a macchie, piccoli
+// riflessi irregolari che si accendono e si spengono. Guardata di taglio (lontano) l'acqua riflette di più il cielo e lascia
+// vedere meno il fondo, come quella vera; guardata dall'alto è trasparente. I dettagli fini si spengono da lontano, dove
+// sfarfallerebbero. Un solo passaggio di disegno; ciò che sta sotto si colora da sé (sottacqua.js).
 export const acqua=new THREE.Mesh(new THREE.PlaneGeometry(PX*2,PZ*2).rotateX(-Math.PI/2),new THREE.ShaderMaterial({ transparent:true, depthWrite:false,
   uniforms:{ uTempo:{value:0} },
   vertexShader:`varying vec2 vP; void main(){ vP=position.xz; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
@@ -79,22 +80,31 @@ export const acqua=new THREE.Mesh(new THREE.PlaneGeometry(PX*2,PZ*2).rotateX(-Ma
     float h(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
     float n(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
       return mix(mix(h(i),h(i+vec2(1.0,0.0)),f.x),mix(h(i+vec2(0.0,1.0)),h(i+vec2(1.0,1.0)),f.x),f.y); }
+    // piccole onde: due disegni che scorrono in direzioni diverse
+    float onda(vec2 p,float t){ return n(p*1.9+vec2(t*0.32,t*0.11))*0.6+n(p*3.3+vec2(-t*0.21,t*0.37)+3.1)*0.4; }
     void main(){
       float t=uTempo; vec2 p=vP;
+      float lontano=1.0-smoothstep(0.35,1.1,length(fwidth(p))*6.0);      // 1 vicino, 0 lontano
+      vec3 vista=normalize(cameraPosition-vec3(p.x,0.0,p.y));
+      float taglio=pow(1.0-clamp(vista.y,0.0,1.0),3.0);                  // 0 guardando dall'alto, 1 di taglio
       // colore di fondo: azzurro più profondo e turchese più chiaro, a macchie larghe e morbide che scivolano lentamente
       float g=n(p*0.13+vec2(t*0.020,-t*0.014))*0.62+n(p*0.37+vec2(-t*0.030,t*0.022))*0.38;
-      vec3 c=mix(vec3(0.05,0.60,0.80),vec3(0.28,0.84,0.88),smoothstep(0.22,0.82,g));
-      // increspature: creste sottili di un disegno deformato (non diritte), visibili solo a macchie che cambiano nel tempo
-      vec2 q=p*0.95+vec2(n(p*0.42+vec2(t*0.16,0.0)),n(p*0.42+vec2(5.3,-t*0.13)))*1.7;
-      float cresta=smoothstep(0.80,0.97,1.0-abs(n(q+vec2(t*0.22,t*0.09))*2.0-1.0));
-      float zona=smoothstep(0.42,0.78,n(p*0.5+vec2(-t*0.05,t*0.04)+11.0));
-      float lontano=1.0-smoothstep(0.35,1.1,length(fwidth(p))*6.0);      // da lontano niente dettagli fini
-      c=mix(c,vec3(0.80,0.95,1.0),cresta*zona*mix(0.18,0.42,lontano));
+      vec3 c=mix(vec3(0.06,0.62,0.84),vec3(0.30,0.85,0.90),smoothstep(0.22,0.82,g));
+      // piccole onde: rilievo finto, la luce viene da sinistra in alto (come il sole della scena)
+      float o0=onda(p,t), ox=onda(p+vec2(0.09,0.0),t), oz=onda(p+vec2(0.0,0.09),t);
+      float rilievo=clamp(((o0-ox)*0.8+(o0-oz)*0.5)*5.0,-1.0,1.0)*lontano;
+      c*=1.0+0.10*rilievo;
+      // increspature: creste corte e sottili (non strisce lunghe), solo a macchie che cambiano nel tempo, spezzate dalle onde
+      float zona=smoothstep(0.45,0.80,n(p*0.5+vec2(-t*0.05,t*0.04)+11.0));
+      float cresta=smoothstep(0.86,0.98,1.0-abs(o0*2.0-1.0))*smoothstep(0.35,0.65,ox);
+      c=mix(c,vec3(0.82,0.96,1.0),cresta*zona*0.35*lontano);
       // riflessi piccoli e irregolari: due disegni che si muovono in direzioni diverse, si accendono solo dove coincidono
       float r=n(p*4.3+vec2(t*0.55,-t*0.35))*n(p*2.9+vec2(-t*0.30,-t*0.48)+7.7);
-      float luce=smoothstep(0.56,0.76,r)*(0.4+0.6*zona)*lontano;
-      c=mix(c,vec3(1.0),luce*0.7);
-      float a=0.36+0.24*cresta*zona+0.3*luce;
+      float luce=smoothstep(0.58,0.78,r)*(0.35+0.65*zona)*lontano*(0.6+0.4*max(rilievo,0.0));
+      c=mix(c,vec3(1.0),luce*0.65);
+      // di taglio: più cielo riflesso e meno trasparenza
+      c=mix(c,vec3(0.50,0.84,0.95),taglio*0.35);
+      float a=0.27+0.20*cresta*zona*lontano+0.3*luce+0.22*taglio;
       gl_FragColor=vec4(pow(c,vec3(2.2)),a);      // colori scritti in sRGB, convertiti per il disegno
       #include <colorspace_fragment>
     }` }));
