@@ -11,13 +11,18 @@ const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
 let schemiAperti=!TOUCH;
 export function apriSchemi(v){ schemiAperti = v===undefined ? !schemiAperti : (TOUCH ? v : true); }
 export function aggiornaTabellone(){
+  // ogni squadra: colore della calottina (pallino a forma di cuffia e filo sotto la sigla), sigla sempre scritta, e il segno
+  // «tu» sulla squadra comandata: le squadre si distinguono anche senza guardare il colore
   $('capA').style.background=teams[0].css; $('capB').style.background=teams[1].css;
+  const [qa,qb]=document.querySelectorAll('#hud .sq');
+  qa.style.setProperty('--col',teams[0].css); qb.style.setProperty('--col',teams[1].css);
+  qa.classList.toggle('tu',!!teams[0].human); qb.classList.toggle('tu',!!teams[1].human);
   $('nameA').textContent=teams[0].short; $('nameB').textContent=teams[1].short; tacKey=''; schedaVista=null;
 }
 aggiornaTabellone();
 export function fmt(s){ s=Math.max(0,Math.ceil(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
 export function updateHUD(){
-  $('score').textContent=teams[0].score+' - '+teams[1].score;
+  $('scA').textContent=teams[0].score; $('scB').textContent=teams[1].score;
   $('period').textContent=game.period+'°T';
   $('clock').textContent=fmt(game.clock);
   // tempo per l'azione: negli ultimi 5 secondi il numero lampeggia e suona a ogni secondo
@@ -48,7 +53,8 @@ export function updateHUD(){
     const names=atk?ATK:DEFN, cur=atk?hum.atkPlay:hum.defPlay;
     // barra degli schemi: su telefono è chiusa (si vede solo lo schema in uso) e si apre con un tocco
     let h;
-    if(!schemiAperti) h=`<span class="chip on" data-apri="1">${atk?'ATT':'DIF'}: ${names[cur]} ▾</span><span class="chip lab">${ai.short}: ${(atk?DEFN[ai.defPlay]:ATK[ai.atkPlay]).toLowerCase()}</span>`;
+    // chiusa si vede solo il proprio schema (lo schema avversario si legge aprendo la barra: in gioco non serve sempre)
+    if(!schemiAperti) h=`<span class="chip on" data-apri="1">${atk?'ATT':'DIF'}: ${names[cur]} ▾</span>`;
     else {
       h=`<span class="chip lab" data-apri="1">${atk?'ATTACCO':'DIFESA'}${TOUCH?' ▴':''}</span>`;
       names.forEach((n,i)=>{ h+=`<span class="chip${i===cur?' on':''}" data-i="${i}">${i+1} ${n}</span>`; });

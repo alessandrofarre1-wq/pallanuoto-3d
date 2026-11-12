@@ -26,7 +26,7 @@ async function apri() {
   });
   await pg.goto(server.resolvedUrls.local[0]);
   await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });
-  await pg.addStyleTag({ content: '#hud,#tac,#player,#cronaca,#stato,#tLog,#fight,#touch,#fps{display:none!important}' });
+  await pg.addStyleTag({ content: '#hud,#tac,#player,#cronaca,#tLog,#fight,#touch,#fps{display:none!important}' });
   await pg.evaluate(() => { const H = window.__pallanuoto; H.disegna = H.renderer.render; H.renderer.render = () => {}; document.getElementById('goBtn').click(); });
   return pg;
 }

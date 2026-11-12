@@ -75,7 +75,7 @@ for (const vista of Object.keys(VISTE)) {
   if (!mom) console.log('sequenza del portiere: non trovata');
   else {
     pg = await apri('orizzontale', false);
-    await pg.addStyleTag({ content: '#hud,#tac,#player,#cronaca,#stato,#tLog,#fight,#touch,#fps{display:none!important}' });
+    await pg.addStyleTag({ content: '#hud,#tac,#player,#cronaca,#tLog,#fight,#touch,#fps{display:none!important}' });
     await pg.evaluate(prep => { eval('(' + prep + ')')(); }, prepara.toString());
     const quando = [mom.passo + 2, Math.round((mom.passo + mom.tiro) / 2), mom.tiro + 2, mom.parata + 1], file = [];
     for (const [k, f] of quando.entries()) {

@@ -4,24 +4,71 @@
 html,body{width:100%;height:100%;overflow:hidden;background:#0b1d33;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff;touch-action:none;user-select:none;-webkit-user-select:none}
 canvas{display:block}
 
-/* ---------- tabellone (in alto al centro) ---------- */
-#hud{position:fixed;top:calc(8px + var(--st));left:50%;transform:translateX(-50%);display:flex;gap:6px;align-items:stretch;pointer-events:none;z-index:5}
-.sb{background:rgba(5,15,30,.86);border:1.5px solid rgba(255,255,255,.14);border-radius:10px;padding:4px 11px;font-weight:800;font-size:16px;display:flex;align-items:center;gap:9px;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.3)}
-.cap{width:14px;height:14px;border-radius:50%;display:inline-block;border:1px solid rgba(255,255,255,.5)}
-#score{font-variant-numeric:tabular-nums;transition:transform .2s}
-#score.gol{color:#facc15;transform:scale(1.25)}
-/* tempo per l'azione: numero grande; negli ultimi 5 secondi diventa giallo e lampeggia */
-#shotclock{background:#c1121f;min-width:50px;justify-content:center;font-variant-numeric:tabular-nums;font-size:24px;font-weight:800;padding:2px 9px;line-height:1}
-#shotclock.urg{background:#facc15;color:#111;animation:urg .5s steps(2,jump-none) infinite;transform:scale(1.2);transform-origin:left center}
-@keyframes urg{from{background:#facc15;color:#111}to{background:#c1121f;color:#fff}}
-#clock{font-variant-numeric:tabular-nums;font-weight:700}
+/* ================= DESIGN SYSTEM DELL'HUD =================
+   Regola prima di tutto: la partita si deve leggere. L'interfaccia sta ai margini, è compatta e non copre mai l'azione.
+   Colori con un significato fisso (mai solo decorativi):
+     --h-oro    «tu» e azioni richieste al giocatore (squadra comandata, scelta attiva, superiorità a favore)
+     --h-rosso  sanzioni e urgenza (espulsione, rigore, ultimi secondi del tempo per l'azione)
+     --h-ciano  informazioni di servizio (time-out, ripresa)
+     colore della squadra: solo per identificarla, sempre accompagnato dalla sigla e dalla posizione (sinistra/destra)
+   Superfici: blu notte semitrasparente, bordo sottile chiaro, ombra leggera; niente neri pieni, neon o gradienti forti.
+   Testo: carattere di sistema (SF su iPhone); numeri a larghezza fissa; etichette in maiuscolo piccolo e spaziato.
+   Misure: altezza del tabellone 32 px (28 sugli schermi bassi), angoli 9 px, spaziature 4/6/8/12 px.
+   Movimento: 180 ms in uscita morbida; niente lampeggi tranne gli ultimi 5 secondi dell'azione. */
+:root{
+  --h-bg:rgba(12,27,48,.78); --h-bg-forte:rgba(9,21,38,.9); --h-linea:rgba(255,255,255,.13); --h-testo:#f4f7fb; --h-tenue:rgba(244,247,251,.64);
+  --h-oro:#ffc93c; --h-rosso:#ff5b5f; --h-ciano:#5cc8ff; --h-verde:#3ddc84;
+  --h-r:9px; --h-ombra:0 2px 10px rgba(3,10,22,.28);
+  --h-anim:180ms cubic-bezier(.2,.8,.2,1);
+  --h-num:800 1em/1 system-ui,-apple-system,"SF Pro Display",sans-serif;
+}
 
-/* ---------- indicatori persistenti: espulsi con il tempo che manca e superiorità numerica ---------- */
-#stato{position:fixed;top:calc(48px + var(--st));left:50%;transform:translateX(-50%);display:flex;gap:5px;pointer-events:none;z-index:5;white-space:nowrap}
-#stato span{display:flex;align-items:center;gap:5px;background:rgba(5,15,30,.86);border-radius:8px;padding:2px 8px;font-size:12px;font-weight:700;border-left:3px solid #ef4444}
-#stato b{font-variant-numeric:tabular-nums;color:#fca5a5;font-weight:800}
-#stato .sup{border-left-color:var(--col);background:rgba(5,15,30,.86)}
-#stato .sup b{color:#facc15}
+/* ---------- tabellone (in alto al centro): un pezzo unico ---------- */
+#hud{position:fixed;top:calc(6px + var(--st));left:50%;transform:translateX(-50%);display:flex;align-items:stretch;height:32px;pointer-events:none;z-index:5;
+  background:var(--h-bg);border:1px solid var(--h-linea);border-radius:var(--h-r);box-shadow:var(--h-ombra);color:var(--h-testo);white-space:nowrap}
+#hud>*+*{border-left:1px solid var(--h-linea)}
+/* squadra: cuffia, sigla e filo del colore della squadra in basso */
+#hud .sq{position:relative;display:flex;align-items:center;gap:6px;padding:0 10px;font-weight:800;font-size:13px;letter-spacing:.06em;box-shadow:inset 0 -3px 0 var(--col,#888)}
+#hud .sqa{border-radius:var(--h-r) 0 0 var(--h-r)}
+.cuffia{width:15px;height:13px;border-radius:8px 8px 5px 5px;border:1.5px solid rgba(255,255,255,.75);position:relative;flex:none}
+.cuffia::after{content:'';position:absolute;bottom:1px;width:4px;height:5px;border-radius:2px;background:rgba(255,255,255,.85);left:1px}
+.sqb .cuffia::after{left:auto;right:1px}
+/* «tu»: la squadra comandata */
+#hud .sq.tu .sigla::after{content:'TU';margin-left:5px;font-size:8.5px;letter-spacing:.08em;color:#0b1d33;background:var(--h-oro);border-radius:4px;padding:1px 3px;vertical-align:2px}
+#score{display:flex;align-items:center;gap:6px;padding:0 12px;background:var(--h-bg-forte);font:var(--h-num);font-size:21px;font-variant-numeric:tabular-nums}
+#score i{font-style:normal;color:var(--h-tenue);font-size:15px;font-weight:600}
+#score b{transition:color var(--h-anim),transform var(--h-anim);display:inline-block}
+#hud.gol #score b{color:var(--h-oro);transform:scale(1.15)}
+#hud .tempo{display:flex;align-items:center;gap:6px;padding:0 10px}
+#period{font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--h-tenue)}
+#clock{font:var(--h-num);font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+/* tempo per l'azione: numero in evidenza; diventa rosso e lampeggia solo negli ultimi 5 secondi */
+#shotclock{display:flex;align-items:center;justify-content:center;min-width:42px;padding:0 9px;font:var(--h-num);font-size:20px;font-variant-numeric:tabular-nums;border-radius:0 var(--h-r) var(--h-r) 0}
+#shotclock.urg{background:var(--h-rosso);color:#fff;animation:urg .5s steps(2,jump-none) infinite}
+@keyframes urg{from{background:var(--h-rosso)}to{background:rgba(255,91,95,.45)}}
+
+/* ---------- espulsioni e superiorità: linguette appese sotto la squadra interessata ---------- */
+#hud .esp{position:absolute;top:calc(100% + 4px);display:flex;gap:4px;align-items:flex-start;width:max-content;max-width:240px}
+#espA{left:0} #espB{right:0;flex-direction:row-reverse}
+.ex{display:flex;align-items:center;gap:5px;height:21px;padding:0 7px 0 6px;border-radius:7px;background:var(--h-bg);border:1px solid var(--h-linea);box-shadow:var(--h-ombra);
+  font-size:11.5px;font-weight:800;letter-spacing:.02em;position:relative;overflow:hidden;animation:cala var(--h-anim)}
+@keyframes cala{from{transform:translateY(-6px);opacity:0}to{transform:none;opacity:1}}
+.ex{border-left:3px solid var(--h-rosso)}
+.ex svg{width:12px;height:12px;color:var(--h-rosso);flex:none}
+.ex .t{font:var(--h-num);font-size:12px;font-variant-numeric:tabular-nums;color:var(--h-testo)}
+/* barra del tempo che manca, in basso */
+.ex::after{content:'';position:absolute;left:0;bottom:0;height:2px;width:var(--p,100%);background:var(--h-rosso);transition:width .3s linear}
+/* appena fischiata: la linguetta si apre con chi è espulso e su chi ha fatto fallo, poi si richiude */
+.ex.nuova{height:auto;padding:4px 9px 5px 7px;align-items:flex-start;flex-direction:column;gap:1px;background:var(--h-bg-forte)}
+.ex.nuova .r1{display:flex;align-items:center;gap:5px}
+.ex.nuova .lab{font-size:9.5px;letter-spacing:.1em;color:var(--h-rosso)}
+.ex.nuova .chi{font-size:13px}
+.ex.nuova .chi small{font-weight:600;color:var(--h-tenue);font-size:11px}
+.ex.nuova .det{font-size:10.5px;font-weight:600;color:var(--h-tenue)}
+.ex:not(.nuova) .lab,.ex:not(.nuova) .det,.ex:not(.nuova) small{display:none}
+/* superiorità: distintivo oro dentro il tabellone, accanto alla squadra con l'uomo in più («6 c 5») */
+.piu{display:none;font:var(--h-num);font-size:11px;letter-spacing:0;color:#0b1d33;background:var(--h-oro);border-radius:5px;padding:2px 5px;font-variant-numeric:tabular-nums}
+.piu.on{display:inline-block;animation:cala var(--h-anim)}
 .capc{display:inline-block;width:10px;height:10px;border-radius:50%;border:1px solid rgba(255,255,255,.6);flex:none}
 
 /* ---------- notifica degli eventi (una sola alla volta, sotto il tabellone) ---------- */
@@ -147,8 +194,13 @@ body.touch #tac .chip.on{background:#facc15}
 body.touch #fps{top:calc(76px + var(--st));left:calc(8px + var(--sl));font-size:9.5px;line-height:1.25;padding:2px 6px}
 body.touch #fps b{font-size:12px}
 /* schermi bassi (iPhone piccoli, barre di Safari): tabellone e notifiche più compatti */
+/* schermi stretti (iPhone SE, mini): tabellone più compatto, così non tocca il pannello del giocatore a sinistra */
+@media (max-width:720px){
+  #hud .sq{padding:0 7px;gap:5px} #score{padding:0 8px;font-size:19px} #hud .tempo{padding:0 7px;gap:4px} #shotclock{min-width:34px;padding:0 6px;font-size:18px}
+  #hud .sq.tu .sigla::after{margin-left:3px}
+}
 @media (max-height:340px){
-  .sb{font-size:14px;padding:3px 8px} #shotclock{font-size:20px;min-width:42px}
+  #hud{height:28px} #hud .sq{padding:0 8px;font-size:12px} #score{font-size:18px;padding:0 9px} #clock{font-size:13px} #shotclock{font-size:17px;min-width:36px}
   .cr .tx{font-size:12px} .cr .tx b{font-size:13px} .cr.grande .tx b{font-size:16px} .cr.t-gol .tx b{font-size:22px}
   body.touch .tb[data-b="lob"]{bottom:calc(108px + var(--sb))!important}
 }
