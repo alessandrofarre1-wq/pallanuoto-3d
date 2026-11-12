@@ -88,8 +88,11 @@ function rientro(p){
   // sempre qualche metro più indietro del proprio uomo e della palla; mai più bassi del posto di ruolo
   // in transizione si nuota dritti al proprio posto davanti alla porta (blocco stretto al centro), senza aspettare l'uomo;
   // a difesa quasi rientrata ci si tiene un metro dietro di lui
-  const d=trans ? Math.min(RIENTRO_BASE[p.i]+1.2, Math.max(RIENTRO_BASE[p.i], ballD-2.2)) : Math.max(RIENTRO_BASE[p.i], Math.min(ballD-2.2, attD-0.8));
-  const z=clamp((a&&!a.excluded?a.z:p.z)*(trans?0.55:0.85),-5,5);
+  // (chi ha l'uomo che è scappato più avanti della palla lo segue fino in fondo, restandogli dalla parte della porta)
+  const scappato=trans&&attD<ballD-2.5;
+  let d=trans ? Math.min(RIENTRO_BASE[p.i]+1.2, Math.max(RIENTRO_BASE[p.i], ballD-2.2)) : Math.max(RIENTRO_BASE[p.i], Math.min(ballD-2.2, attD-0.8));
+  if(scappato) d=Math.max(1.6,Math.min(d,attD-0.7));
+  const z=clamp((a&&!a.excluded?a.z:p.z)*(scappato?0.85:trans?0.55:0.85),-6.5,6.5);
   return { x:ogx+t.dir*d, z, sprint:myD>d+0.8 };
 }
 export function markTarget(p){
@@ -218,7 +221,7 @@ export function aiTarget(p){
   return {x:-t.dir*FORM[p.i][0]*0.8, z:KICK_Z[p.i]*t.dir, sprint:true};   // palla contesa: ci si ferma a metà campo
 }
 // ultimo minuto dell'ultimo tempo, sotto di un gol: la squadra del computer attacca in 7 contro 6 con il portiere avanzato
-const PAZIENZA=[22,5];      // secondi di possesso prima di cominciare a cercare il tiro, e secondi per arrivare alla piena voglia di tirare
+const PAZIENZA=[23,4];      // secondi di possesso prima di cominciare a cercare il tiro, e secondi per arrivare alla piena voglia di tirare
 export function setteControSei(t){
   return !t.human && game.period===4 && game.clock<60 && other(t).score-t.score===1;
 }
@@ -297,7 +300,7 @@ export function aiCarrier(p,dt){
     // si tira quando si è liberi: subito dopo un passaggio che ha liberato il tiratore o cambiato lato; con il difensore davanti
     // a braccio alto e tutti piazzati si aspetta, si finta o si fa girare palla (il tiro arriva comunque a fine azione)
     const sit=situazioneTiro(p), occasione=(sit.liberato?1.7:1)*(sit.dopoCambio?1.6:1)*(1-0.75*sit.marcato)*(sit.daFermo?0.6:1);
-    const want = game.shot<2.5 ? 0.9 : (game.shot<6 ? 0.35 : (lane?0.25+0.45*(1-dGoal/8.5):0.12)*(press>1.5?1.35:press<0.9?0.6:1)*pazienza)*angolo*clamp(occasione,0.12,2.2);
+    const want = game.shot<2.5 ? 0.9 : (game.shot<6 ? 0.35 : (lane?0.2+0.36*(1-dGoal/8.5):0.1)*(press>1.5?1.35:press<0.9?0.6:1)*pazienza)*angolo*clamp(occasione,0.12,2.2);
     if(rnd()<want){
       if(!p.fakeUsed && game.shot>5 && rnd()<0.18){ p.fakeUsed=true; p.shootNext=true; p.decideT=0.5; startAct(p,'fake',0.12,()=>doFake(p)); return; }
       const lob = dGoal>5 && rnd()<0.12; aiShoot(p,0.55+rnd()*0.45,lob); return;

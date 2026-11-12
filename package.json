@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.17.0",
+  "version": "0.18.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,6 +14,7 @@
     "sequenze": "node tests/sequenze.mjs",
     "azione": "node tests/azione.mjs",
     "vetrina-correzioni": "node tests/vetrina-correzioni.mjs",
+    "vetrina3": "node tests/vetrina3.mjs",
     "fisica-palla": "node tests/fisica-palla.mjs",
     "dati-tesi": "node tests/dati-tesi.mjs",
     "bilancio": "node tests/bilancio.mjs",

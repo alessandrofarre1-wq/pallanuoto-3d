@@ -96,4 +96,21 @@ if (fare('curva')) {
   await foglio('curva-dall-alto', file, titoli, 4, 400);
   await pg.context().close();
 }
+// ---------- 4. zona a M chiamata a metà azione: prima pressing, poi il giocatore chiama la zona (tasto 4) ----------
+if (fare('zona')) {
+  for (const vista of Object.keys(TELEFONO)) {
+    const pg = await apri(TELEFONO[vista], true);
+    const info = await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 'ESP'); document.getElementById('goBtn').click(); window.__salta(300);
+      for (let i = 0; i < 8000; i++) { window.__salta(1); const h = H.ball.holder; if (h && h.team === H.teams[1] && Math.abs(h.x + 12.5) < 8 && H.game.state === 'play' && H.game.shot < 17 && H.game.shot > 9 && !H.allPlayers.some(p => p.excluded)) break; }
+      const prima = H.teams[0].defPlay; window.__vai(1); return { prima, shot: H.game.shot.toFixed(0) }; });
+    await pg.screenshot({ path: path.join(USCITA, `_z-${vista}-1.png`) });
+    const dopo = await pg.evaluate(() => { const H = window.__pallanuoto; window.__tasti(['Digit4']); window.__salta(2); window.__tasti([]);
+      for (let i = 0; i < 100; i++) { H.game.shot = Math.max(H.game.shot, 8); for (const q of H.allPlayers) { q.decideT = 9; q.tackleCD = 9; } window.__salta(1); }
+      window.__vai(1); const l = H.teams[0].lasciato; return { difesa: H.teams[0].defPlay, lasciato: l ? `#${l.num} ${l.name} (${l.role}, mano ${l.mano === 'S' ? 'sinistra' : 'destra'}, potenza ${l.s.pot}, precisione ${l.s.pre})` : '-' }; });
+    await pg.screenshot({ path: path.join(USCITA, `_z-${vista}-2.png`) });
+    console.log(`zona a M (${vista}): difesa prima ${info.prima} (2 = pressing) a ${info.shot} s dalla fine dell'azione; dopo ${dopo.difesa} (3 = zona a M); lasciato: ${dopo.lasciato}`);
+    await foglio(`zona-a-M-${vista}`, [path.join(USCITA, `_z-${vista}-1.png`), path.join(USCITA, `_z-${vista}-2.png`)], ['pressing (inizio azione)', 'zona a M chiamata a metà azione'], 2, vista === 'verticale' ? 320 : 640);
+    await pg.context().close();
+  }
+}
 await browser.close(); await new Promise(r => server.httpServer.close(r));

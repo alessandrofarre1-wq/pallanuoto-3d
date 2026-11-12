@@ -228,7 +228,7 @@ export function tackle(d,c,o){
   // Chi protegge la palla (corpo in mezzo: difensore alle spalle, o palla tenuta lontana) non si deruba quasi mai.
   // Si ruba soprattutto il palleggio preso di lato in controfuga e la palla tenuta troppo a lungo sotto pressione.
   const aLungo=clamp((ball.holdTime-3)/3,0,1);
-  const pRuba=clamp(0.032*(lato==='davanti'?1:lato==='lato'?1.1:0.12)*(palla==='palleggio'?(lato==='lato'?2.4:1.5):palla==='appoggiata'?0.8+1.6*aLungo:0.2)
+  const pRuba=clamp(0.021*(lato==='davanti'?1:lato==='lato'?1.1:0.12)*(palla==='palleggio'?(lato==='lato'?2.4:1.5):palla==='appoggiata'?0.8+1.6*aLungo:0.2)
     *clamp(1+1.4*diff,0.45,1.8)*(press?1.2:1)*(o.stealMul||1),0.004,0.4);
   const pFallo=clamp(0.27*(lato==='dietro'?1.9:lato==='lato'?1:0.75)*(palla==='alzata'?1.6:1)*(0.6+0.4*fDis)*(press?1.2:1),0.05,0.7);
   const r=rnd();
