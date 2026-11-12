@@ -2,7 +2,7 @@
 import { scegliDifesa, setteControSei } from './ia.js';
 import { elevazione } from './tiri.js';
 import { riservaPer, vesti } from './giocatori.js';
-import { registraEspulsione, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
+import { registraEspulsione, registraFallo, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
 import { whistle } from './audio.js';
 import { autoSwitch, resetTap } from './controllo.js';
 import { ARBITRO, ATK, BRV, DEFN, DIFF, EXCL_TIME, FORM, HL, HW, KICK_Z, SHOT_CLOCK, SHOT_RESET, clamp, dist, rnd } from './costanti.js';
@@ -35,7 +35,7 @@ export function placeHalves(){
 export function giveBall(p){
   const changed = game.possTeam!==p.team;
   ball.state='held'; ball.holder=p; ball.holdTime=0; ball.kind=null; ball.target=null; ball.lastTeam=p.team;
-  p.decideT=0.4+rnd()*0.4; p.alVolo=rnd()<0.45; p.cut=null; p.act=null; p.fakeCount=0; p.fakeUsed=false; p.shootNext=false; p.fakeUntil=0;
+  p.decideT=0.4+rnd()*0.4; p.alVolo=rnd()<(ball.cambioLato?0.8:0.4); ball.cambioLato=false; p.cut=null; p.act=null; p.fakeCount=0; p.fakeUsed=false; p.shootNext=false; p.fakeUntil=0;
   for(const q of allPlayers) q.freeThrow=false;
   resetTap();
   if(changed){
@@ -171,33 +171,65 @@ export function exclude(d){
   if(ctrl===d) autoSwitch(ball.holder||ball);
 }
 export function foul(d,c){     // fallo semplice: il gioco si ferma e l'attacco batte il tiro libero (artt. 8, 11)
-  whistle(0.22); rumble(120,0.5);
+  whistle(0.22); rumble(120,0.5); registraFallo(d.team);
   d.stunUntil=game.time+0.9;
   const dx=d.x-c.x, dz=d.z-c.z, l=Math.hypot(dx,dz)||1; d.x+=dx/l*0.9; d.z+=dz/l*0.9; d.vx=d.vz=0;
   c.act=null; c.charging=false; c.chargeT=0; c.freeThrow=true; c.decideT=0.25;
   showMsg(`Fallo di ${d.team.short} #${d.num}<span style="font-size:20px;display:block">tiro libero ${c.team.short}</span>`,0.9);
   deadBall(0.8,null);
 }
+// Contrasto. L'obiettivo del difensore è RUBARE PALLA SENZA FARE FALLO: il fallo è la conseguenza di un contrasto sbagliato.
+// Da dove si arriva: davanti o di lato si può mettere la mano sulla palla; da dietro si finisce addosso all'attaccante.
+export function latoContrasto(d,c){
+  const dx=d.x-c.x, dz=d.z-c.z, l=Math.hypot(dx,dz)||1, cs=(dx*c.fx+dz*c.fz)/l;
+  return cs>0.35 ? 'davanti' : cs>-0.45 ? 'lato' : 'dietro';
+}
+// Com'è tenuta la palla: in palleggio davanti alla testa (nuotando) o appoggiata sull'acqua è esposta; alzata in mano per
+// tirare o passare non si può prendere senza toccare il braccio.
+export function pallaEsposta(c){
+  if(c.charging||(c.act&&!c.act.done)) return 'alzata';
+  return (c.oriz||0)>0.5 ? 'palleggio' : 'appoggiata';
+}
+// l'attaccante avrebbe probabilmente segnato? (dentro i 6 metri, rivolto alla porta, senza altri difensori davanti)
+function probabileGol(d,c){
+  const gx=ownGoalX(d.team), dxg=gx-c.x;
+  if(Math.abs(dxg)>6||Math.abs(c.z)>5) return false;
+  const l=Math.hypot(dxg,c.z)||1; if((c.fx*dxg-c.fz*c.z)/l<0.1) return false;
+  return !d.team.players.some(q=>q!==d&&!q.isGK&&!q.excluded&&Math.hypot(gx-q.x,q.z)<l+0.5&&dist(q,c)<1.6);
+}
+// o.voluto = CONTRASTO tenuto premuto: fallo semplice cercato apposta per fermare l'azione (scelta tattica normale)
+// Esiti: 'rubata', 'niente' (l'attaccante la protegge), 'fallo', 'espulsione', 'rigore'; false se il contrasto non parte.
 export function tackle(d,c,o){
   o=o||{};
   if(d.tackleCD>0||d.excluded||game.time<d.stunUntil) return false;
   const press=d.team.defPlay===2;
-  d.tackleCD = d===ctrl ? 0.35 : 0.9+rnd()*0.8;
-  if(dist(d,c)>(o.force?1.35:1.15)) return false;
-  const dG=Math.hypot(ownGoalX(d.team)-c.x,c.z), lineD=Math.abs(ownGoalX(d.team)-c.x);
-  const skill = d.st.def*(d.team.human?1:DIFF());
-  const pSteal = clamp(0.45*(0.1+0.2*skill-0.06*c.st.pas)*(press?1.15+0.4*(d.s.dif-40)/59:1)*(o.stealMul||1),0.05,0.6);
-  // Disciplina: chi ne ha poca commette più falli gravi (espulsione o rigore)
-  const fDis=1.5-(d.s.dis-40)/59;
-  const pPen = ((lineD<5&&Math.abs(c.z)<4)?0.11:0)*fDis*ARBITRO;
-  const pExcl = (lineD<6?0.2:0.05)*(press?1.3+0.5*(fDis-0.5):1)*fDis*ARBITRO;
-  const pFoul = 0.42;
+  d.tackleCD = d===ctrl ? 0.45 : 0.9+rnd()*0.8;
+  if(dist(d,c)>(d===ctrl?1.35:1.15)) return false;
+  const lato=latoContrasto(d,c), palla=pallaEsposta(c), gol=probabileGol(d,c);
+  // Disciplina: chi ne ha poca sbaglia più spesso il contrasto e commette più falli gravi
+  const fDis=1.5-(d.s.dis-40)/59, sev=fDis*ARBITRO;
+  const grave=()=>{ if(gol&&rnd()<(lato==='dietro'?0.8:0.6)){ penalty(d,c); return 'rigore'; }
+    if(rnd()<(lato==='dietro'?0.55:lato==='lato'?0.24:0.12)*(palla==='alzata'?1.3:1)*(press?1.25:1)*sev){ exclude(d); return 'espulsione'; }
+    return null; };
+  if(o.voluto){
+    // fallo voluto: ferma il gioco; da dietro o su chi è in posizione di tiro si rischia l'espulsione (o il rigore)
+    const inTiro=Math.abs(ownGoalX(d.team)-c.x)<7.5&&palla==='alzata';
+    if(gol&&rnd()<0.6){ penalty(d,c); return 'rigore'; }
+    if(rnd()<(lato==='dietro'?0.42:inTiro?0.36:0.07)*sev){ exclude(d); return 'espulsione'; }
+    foul(d,c); return 'fallo';
+  }
+  // Difesa del difensore contro la capacità dell'attaccante di proteggere palla (Forza e Passaggio)
+  const diff=(d.s.dif-(c.s.frz+c.s.pas)/2)/59*(d.team.human?1:DIFF());
+  const pRuba=clamp(0.135*(lato==='davanti'?1.15:lato==='lato'?1:0.3)*(palla==='palleggio'?1.3:palla==='appoggiata'?1:0.25)
+    *clamp(1+1.4*diff,0.45,1.8)*(press?1.2:1)*(o.stealMul||1),0.02,0.6);
+  const pFallo=clamp(0.27*(lato==='dietro'?1.9:lato==='lato'?1:0.75)*(palla==='alzata'?1.6:1)*(0.6+0.4*fDis)*(press?1.2:1),0.05,0.7);
   const r=rnd();
-  if(r<pSteal){ registraPallaRubata(d.team); giveBall(d); showMsg(`Palla rubata! ${d.team.short} #${d.num}`,1); return true; }
-  if(r<pSteal+pPen){ penalty(d,c); return true; }
-  if(r<pSteal+pPen+pExcl){ exclude(d); return true; }
-  if(o.force || r<pSteal+pPen+pExcl+pFoul){ foul(d,c); return true; }   // il contrasto del giocatore finisce sempre almeno in fallo
-  return false;
+  if(r<pRuba){ registraPallaRubata(d.team); giveBall(d); showMsg(`Palla rubata! ${d.team.short} #${d.num}`,1); return 'rubata'; }
+  if(r<pRuba+pFallo){ const g=grave(); if(g) return g; foul(d,c); return 'fallo'; }
+  // niente: l'attaccante copre la palla con il corpo e il difensore resta un attimo fuori tempo
+  d.stunUntil=game.time+0.25;
+  if(d===ctrl) showMsg('<span style="font-size:22px">Palla protetta</span>',0.5);
+  return null;
 }
 // finta di tiro: i difensori vicini possono abboccare (e restare fuori tempo) oppure andare addosso al tiratore
 export function doFake(p){

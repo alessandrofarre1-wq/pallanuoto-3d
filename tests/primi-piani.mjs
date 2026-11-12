@@ -134,3 +134,5 @@ for (const [nome, lista] of Object.entries(fogli)) {
   await p2.close();
 }
 await browser.close(); await new Promise(r => server.httpServer.close(r));
+// sequenze fitte (10 fotogrammi al secondo) di partenza, frenata e tiro, cambio di direzione, passaggio in nuotata
+if (!process.argv.includes('--no-sequenze')) { const { execFileSync } = await import('node:child_process'); execFileSync(process.execPath, [path.join(ROOT, 'tests/sequenze.mjs'), USCITA, '--no-build'], { stdio: 'inherit' }); }

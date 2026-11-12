@@ -38,7 +38,7 @@ const R = await pg.evaluate(() => {
     return { st, vel }; };
   out.res75 = vasche(75); out.res90 = vasche(90); out.res60 = vasche(60);
   // 3. Precisione: stesso tiro dallo stesso punto, senza portiere né difensori: quanti finiscono nello specchio
-  const tiri = pre => { con({ pre, pot: 80 }); let dentro = 0; const N = 600, gx = 12.5;
+  const tiri = pre => { con({ pre, pot: 80 }); let dentro = 0; const N = 1500, gx = 12.5;
     for (let n = 0; n < N; n++) { lontani(); p.x = gx - 7.5; p.z = 3; p.vx = p.vz = 0; p.fx = 1; p.fz = 0; p.stamina = 0.85; p.act = null; p.ballW = [p.x + 0.2, 1.1, p.z]; p.fakeUntil = 0; p.turnedUntil = 0;
       H.ball.state = 'held'; H.ball.holder = p; H.game.penalty = null;
       P.doShoot(p, 0.8, false, -1);      // mira all'angolo

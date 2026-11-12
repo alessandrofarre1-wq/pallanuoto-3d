@@ -4,7 +4,10 @@ canvas{display:block}
 #hud{position:fixed;top:10px;left:50%;transform:translateX(-50%);display:flex;gap:8px;align-items:stretch;pointer-events:none;z-index:5}
 .sb{background:rgba(5,15,30,.82);border-radius:8px;padding:6px 12px;font-weight:700;font-size:18px;display:flex;align-items:center;gap:10px;white-space:nowrap}
 .cap{width:14px;height:14px;border-radius:50%;display:inline-block;border:1px solid rgba(255,255,255,.5)}
-#shotclock{background:#c1121f;min-width:52px;justify-content:center;font-variant-numeric:tabular-nums}
+/* tempo per l'azione: numero grande; negli ultimi 5 secondi diventa giallo e lampeggia */
+#shotclock{background:#c1121f;min-width:62px;justify-content:center;font-variant-numeric:tabular-nums;font-size:30px;font-weight:800;padding:2px 10px;line-height:1}
+#shotclock.urg{background:#facc15;color:#111;animation:urg .5s steps(2,jump-none) infinite;transform:scale(1.25);transform-origin:left center}
+@keyframes urg{from{background:#facc15;color:#111}to{background:#c1121f;color:#fff}}
 #clock{font-variant-numeric:tabular-nums;font-weight:600}
 #player{position:fixed;left:12px;bottom:12px;background:rgba(5,15,30,.82);border-radius:8px;padding:8px 12px;font-size:13px;z-index:5;pointer-events:none;min-width:190px}
 .bar{height:6px;background:rgba(255,255,255,.15);border-radius:3px;margin-top:5px;overflow:hidden}
@@ -23,8 +26,13 @@ canvas{display:block}
 #fbar{position:absolute;top:0;bottom:0;left:50%;width:0}
 #excl{position:fixed;top:88px;left:50%;transform:translateX(-50%);font-size:13px;pointer-events:none;z-index:5;text-align:center}
 #excl div{background:rgba(193,18,31,.85);border-radius:6px;padding:3px 8px;margin-top:4px}
-#menu{position:fixed;inset:0;background:rgba(5,15,30,.9);display:flex;align-items:center;justify-content:center;z-index:20;padding:16px;overflow:auto}
-.panel{max-width:520px;width:100%;text-align:center}
+/* menu: parte dall'alto e scorre; se il contenuto è più basso dello schermo resta centrato (margin:auto), se è più alto
+   la cima resta raggiungibile (con align-items:center la parte alta finiva fuori e non si poteva scegliere la squadra) */
+#menu{position:fixed;inset:0;background:rgba(5,15,30,.9);display:flex;align-items:flex-start;justify-content:center;z-index:20;
+  padding:max(14px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
+  overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+#menu,#menu *{touch-action:pan-y}
+.panel{max-width:520px;width:100%;text-align:center;margin:auto}
 .panel h1{font-size:34px;letter-spacing:.5px}
 .panel .sub{opacity:.7;margin:4px 0 18px}
 .row{display:flex;gap:8px;justify-content:center;align-items:center;margin:10px 0;flex-wrap:wrap}
@@ -32,7 +40,7 @@ canvas{display:block}
 .opt{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:6px;padding:7px 12px;font-size:14px;cursor:pointer}
 .opt.on{background:#1d4fd6;border-color:#1d4fd6}
 .go{background:#22c55e;border:none;color:#05210f;font-weight:800;font-size:20px;padding:12px 40px;border-radius:10px;margin-top:14px;cursor:pointer}
-.ctrl{margin-top:20px;font-size:13px;text-align:left;background:rgba(255,255,255,.06);border-radius:8px;padding:10px 14px;line-height:1.7}
+.ctrl{margin-top:6px;font-size:13px;text-align:left;background:rgba(255,255,255,.06);border-radius:8px;padding:10px 14px;line-height:1.7}
 .ctrl b{display:inline-block;min-width:118px;color:#facc15}
 #final{font-size:26px;font-weight:800;margin-bottom:10px}
 #touch{display:none}
@@ -47,7 +55,7 @@ body.touch #player{bottom:auto;top:8px;left:8px;min-width:140px;font-size:11px;p
   #fight{bottom:auto;top:92px;width:210px}
   #hud{top:6px;gap:4px}
   .sb{font-size:14px;padding:4px 8px;gap:6px}
-  #shotclock{min-width:38px}
+  #shotclock{min-width:46px;font-size:24px}
   #tac{top:40px;gap:3px}
   .chip{font-size:10.5px;padding:3px 7px}
   body.touch #player{top:auto;bottom:228px;left:8px;min-width:0;width:150px;font-size:10px;padding:4px 7px}
@@ -95,3 +103,10 @@ body.touch #player{max-width:170px}
 #pstat{font-size:11px;opacity:.85;margin-top:2px;font-variant-numeric:tabular-nums}
 #pstat b{color:#facc15}
 body.touch #pstat{font-size:9.5px}
+#ctrlBox{margin-top:14px;text-align:left}
+#ctrlBox summary,#rosaBox summary{background:rgba(255,255,255,.08);border-radius:8px}
+#ctrlBox summary{cursor:pointer;text-align:center;font-size:14px;opacity:.85;padding:6px}
+/* telefono in orizzontale: schermo basso, menu più compatto */
+@media (orientation:landscape) and (max-height:480px){
+  .panel h1{font-size:24px} .panel .sub{margin:2px 0 8px} .row{margin:6px 0} .go{margin-top:8px;padding:10px 40px}
+}

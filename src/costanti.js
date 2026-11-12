@@ -13,10 +13,12 @@ export const ROLES = ['Portiere','Centroboa','Ala destra','Ala sinistra','Mezzo 
 // arco (semicerchio 3-3) con il centroboa al centro, sui 2 metri
 // le ali stanno dentro i 2 metri ma fuori dall'area di porta (che arriva a 2 m oltre i pali): lì possono ricevere e tirare
 export const FORM = [null,[2.6,0],[1.7,6.2],[1.7,-6.2],[5.8,4.6],[5.8,-4.6],[7.5,0]];
-// uomo in più: 4-2 (quattro sui 2 metri, due dietro)
-export const FORM_UP = [null,[2.5,1.7],[1.7,5.0],[1.7,-5.0],[6,2.6],[6,-2.6],[2.5,-1.7]];
-// uomo in meno: zona a 5 davanti alla porta
-export const DEF_DOWN = [[1.8,0],[2.6,2.6],[2.6,-2.6],[5,1.6],[5,-1.6],[5,0]];
+// Uomo in più: 4-2. Quattro sulla linea dei 2 metri (due esterni larghi, due vicino ai pali, uno per palo: centroboa e punto,
+// appena fuori dall'area di porta) e due fuori, a 5 metri (i mezzi).
+export const FORM_UP = [null,[2.1,1.75],[2.0,5.4],[2.0,-5.4],[5.2,2.5],[5.2,-2.5],[2.1,-1.75]];
+// Uomo in meno, posizione di partenza: [distanza dalla propria porta, spostamento laterale]. Tre sulla linea dei 2 metri, ciascuno
+// in mezzo tra due dei quattro attaccanti; due davanti ai pali, a metà tra gli attaccanti ai 2 metri e quelli a 5.
+export const DEF_DOWN = [[1.8,0],[3.6,1.6],[3.6,-1.6],[1.9,3.55],[1.9,-3.55]];
 export const ATK = ['Arco','Entrata','Incrocio','Palla al boa'], DEFN = ['A uomo','Zona','Pressing','Zona a M'];
 // marcature a uomo per zona di campo: ogni difensore prende l'attaccante che gioca dal suo lato;
 // il punto marca il centroboa (e viceversa)
@@ -38,3 +40,7 @@ export function setSpeed(v){ SPEED=v; }
 // 0,65 = permissivo (lascia giocare), 1 = normale, 1,4 = fiscale
 export let ARBITRO=1;
 export function setArbitro(v){ ARBITRO=v; }
+// Tempo per passare dal nuoto alla posizione verticale (secondi); per distendersi ci vuole un decimo in più.
+// PROVVISORIO nel menu ("Alzata") finché Ale non sceglie il valore.
+export let ALZATA=0.25;
+export function setAlzata(v){ ALZATA=v; }

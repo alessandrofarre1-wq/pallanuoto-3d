@@ -70,6 +70,13 @@ export function computePose(p,dt,t){
   else if(muro) lift+=0.2;
   else if(hold||defUp) lift+=0.06;
   if(abbocca) lift+=0.28;      // ha abboccato alla finta: salta a murare a vuoto
+  // passaggio in arrivo: ci si alza e si allunga la mano verso la palla
+  let presa=0, pallaL=null;
+  if(!th && !hold && ball.state==='flight' && ball.kind==='pass' && ball.target===p){
+    const bx=ball.x-p.x, bz=ball.z-p.z, vel=Math.hypot(ball.vx,ball.vz)||1;
+    presa=ease(clamp(1-Math.hypot(bx,bz)/(vel*0.45),0,1)); lift+=0.12*presa;
+    pallaL=[(bx*p.fx+bz*p.fz)/VIS, ball.y/VIS, (-bx*p.fz+bz*p.fx)/VIS];
+  }
   let vHip=[-0.06,-0.6+lift,lean*0.05], vChest=[0.02,-0.06+lift,lean*0.38], vHead=[0.05,0.16+lift,lean*0.44];
   if(th&&th.ind){ const ind=(-0.08*c*(1-w)+0.10*w)*(1-f)*th.ind; vChest[0]+=ind; vHead[0]+=ind*1.3; }      // busto indietro caricando, avanti rilasciando
   let sx=0.2*Math.sin(tw), sz=0.2*Math.cos(tw);
@@ -88,6 +95,7 @@ export function computePose(p,dt,t){
   else if(muro||abbocca){ hR=add3(vSR,[0.20,0.56,-0.04]); hintR=[0,-0.2,1]; }
   else if(defUp){ hR=add3(vSR,[0.28,0.30,-0.02]); hintR=[0,-0.4,1]; }
   else if(hold&&!th){ hR=add3(vSR,HOLD); hintR=[-0.3,-0.6,1]; J.ballHand=true; }
+  if(presa>0.01){ const v=[pallaL[0]-vSR[0],pallaL[1]-vSR[1],pallaL[2]-vSR[2]], l=Math.hypot(v[0],v[1],v[2])||1, m=Math.min(1,0.55/l); hR=mix3(hR,add3(vSR,[v[0]*m,Math.max(0.1,v[1]*m),v[2]*m]),presa); hintR=[0,-0.4,1]; }
   if(th){ hL=[vSL[0]+0.36,-0.03,vSL[2]-0.10]; hintL=[0,-1,-0.4]; }      // il braccio libero fa appoggio sull'acqua (a pelo d'acqua)
   if(fight.active && !th){
     if(p===fight.def){ hR=add3(vSR,[0.36,0.14,-0.08]); hL=add3(vSL,[0.36,0.14,0.08]); hintR=[0,-1,0.5]; hintL=[0,-1,-0.5]; vHip[1]+=0.06; vChest[0]+=0.06; }
@@ -116,7 +124,9 @@ export function computePose(p,dt,t){
   // corpo disteso appena sotto la superficie (schiena a pelo d'acqua), testa alta, bracciata corta e frequente con
   // recupero fuori dall'acqua a gomito alto, gambe unite con battuta veloce
   const ph=p.phase, rollio=Math.sin(ph)*0.06;
-  const oHip=[-0.50,-0.21,0], oChest=[0,-0.07,0], oHead=[0.17,0.09,0];
+  // ogni tanto, nuotando, la testa si alza un attimo per guardare l'azione
+  const guarda=hold?0:ease(clamp((Math.sin(t*1.7+p.uid*2.3)-0.72)/0.2,0,1));
+  const oHip=[-0.50,-0.21-0.02*guarda,0], oChest=[0,-0.07+0.03*guarda,0], oHead=[0.17-0.04*guarda,0.09+0.10*guarda,0];
   const oSR=[0,-0.07-rollio,0.19], oSL=[0,-0.07+rollio,-0.19];      // la spalla del braccio in recupero sale
   const corta=hold?0.8:1;
   const bracciata=(S,a,lato)=>{ const cs=Math.cos(a), sn=Math.sin(a);
