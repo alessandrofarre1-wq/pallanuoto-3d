@@ -204,7 +204,7 @@ export function updateRig(p,dt,t){
   }
   // schiuma: battuta di gambe e bracciata
   if(T.swim){ p.foamT=(p.foamT||0)-dt; if(p.foamT<=0){ p.foamT=0.09;
-    spawnFoam(p.x-p.fx*VIS*1.15+(rnd()-0.5)*0.2,p.z-p.fz*VIS*1.15+(rnd()-0.5)*0.2,0.2+rnd()*0.1,0.8);
+    spawnFoam(p.x-p.fx*VIS*1.15+(rnd()-0.5)*0.2,p.z-p.fz*VIS*1.15+(rnd()-0.5)*0.2,0.2+rnd()*0.1,0.8,p.fx,p.fz);      // scia dietro (allungata nel verso del nuoto)
     spawnFoam(p.x+p.fx*VIS*0.5+(rnd()-0.5)*0.5,p.z+p.fz*VIS*0.5+(rnd()-0.5)*0.5,0.12,0.5); } }
   else if(p.act&&p.act.kind!=='pass'&&p.act.kind!=='fake'&&!p.act.foam&&p.act.done){ p.act.foam=true; for(let i=0;i<4;i++) spawnFoam(p.x+(rnd()-0.5)*0.7,p.z+(rnd()-0.5)*0.7,0.25,0.9); }
 }
