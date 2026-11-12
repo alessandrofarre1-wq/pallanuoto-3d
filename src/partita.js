@@ -3,7 +3,7 @@ import { bip, whistle } from './audio.js';
 import { aiutoGuida, humanControl, updateCtrl } from './controllo.js';
 import { DIFF, GW, MARK, PERIOD_LEN, clamp, dist, rnd } from './costanti.js';
 import { movePlayer, separate, updateBall } from './fisica.js';
-import { showMsg } from './hud.js';
+import { annuncia } from './cronaca.js';
 import { aggiornaDifesa, pos01, rif01, aiCarrier, aiTarget, closestTo, manUp, startCut, steer } from './ia.js';
 import { inp, pollInput, pressed, released } from './input.js';
 import { fightOn, updateFight } from './lotta.js';
@@ -19,8 +19,8 @@ export function update(dt){
   if(game.state==='countdown'){
     game.timer-=dt;
     const n=Math.ceil(game.timer);
-    if(n>0) showMsg(`${game.period}° tempo<span style="font-size:60px;display:block">${n}</span>`,0.3);
-    if(game.timer<=0){ game.state='play'; whistle(0.5); showMsg('Via!',0.7); }
+    if(n>0&&n!==game.contoVisto){ game.contoVisto=n; annuncia('conto',`${game.period}° tempo · ${n}`,{durata:0.9}); }
+    if(game.timer<=0){ game.state='play'; game.contoVisto=0; whistle(0.5); annuncia('ripresa','Via!',{dettaglio:`inizio ${game.period}° tempo`,durata:1}); }
     return;
   }
   if(game.state==='stop'){
@@ -57,7 +57,7 @@ export function update(dt){
   if(game.possTeam && !ball.afterShot) game.shot-=dt;     // dopo un tiro respinto il cronometro riparte solo quando qualcuno riprende palla
   if(pressed('to')) { timeout(teams[0]); if(game.state!=='play') return; }
   // rientro espulsi
-  for(const p of allPlayers) if(p.excluded && game.time>=p.exclUntil){ reenter(p); showMsg(`Rientra ${p.team.short} #${p.num}`,0.8); }
+  for(const p of allPlayers) if(p.excluded && game.time>=p.exclUntil){ reenter(p); annuncia('info','Rientro',{p,dettaglio:'fine espulsione'}); }
   // ritardo di reazione dei marcatori
   for(const p of allPlayers){
     if(p.excluded||game.time<p.stunUntil) continue;      // chi ha abboccato a una finta resta indietro
@@ -148,7 +148,7 @@ export function update(dt){
   if(game.state!=='play') return;
   // tempo per l'azione
   if(game.possTeam && game.shot<=0 && ball.state==='held'){
-    const opp=other(game.possTeam); whistle(0.4); bip(330,0.5,0.07); showMsg(`Tempo d'azione scaduto<span style="font-size:20px;display:block">palla ${opp.short}</span>`,1.2);
+    const opp=other(game.possTeam); whistle(0.4); bip(330,0.5,0.07); annuncia('possesso',"Tempo d'azione scaduto",{squadra:opp,dettaglio:`palla ${opp.short}`});
     const r=closestTo(opp,ball,false); ball.state='dead';
     deadBall(1.0,()=>giveBall(r));
   } else if(game.possTeam && game.shot<=0 && ball.state!=='flight'){
@@ -158,7 +158,7 @@ export function update(dt){
   if(game.clock<=0 && game.state==='play'){
     game.clock=0; whistle(0.9);
     if(game.period<4){
-      showMsg(`Fine ${game.period}° tempo`,2.2);
+      annuncia('fine',`Fine ${game.period}° tempo`,{dettaglio:`${teams[0].short} ${teams[0].score} - ${teams[1].score} ${teams[1].short}`});
       ball.state='dead';
       deadBall(2.5,()=>{ game.period++; game.clock=PERIOD_LEN; kickoff(); });
     } else endMatch();

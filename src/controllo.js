@@ -1,6 +1,6 @@
 // ================= CONTROLLO UMANO =================
 import { MARK, dist } from './costanti.js';
-import { showMsg } from './hud.js';
+import { annuncia } from './cronaca.js';
 import { closestTo, pallaVagante, startCut } from './ia.js';
 import { inp, pressed, released } from './input.js';
 import { fightOn, girata } from './lotta.js';
@@ -30,11 +30,11 @@ export function humanControl(p,dt){
   if(p.act&&!p.act.done) return;
   if(pressed('cmd') && hasBall && fightOn(p,fight.def) && fight.boa===p && !(p.turnedUntil>game.time)){ girata(p,fight.def); return; }
   if(pressed('cmd')){
-    if(hasBall){ const m=humanPassTarget(p,inp.x,inp.z); if(m&&!m.isGK){ startCut(m); showMsg(`<span style="font-size:24px">Taglio di #${m.num} ${m.name}</span>`,0.7); } }
+    if(hasBall){ const m=humanPassTarget(p,inp.x,inp.z); if(m&&!m.isGK){ startCut(m); annuncia('avviso','Taglio',{p:m}); } }
     else if(ball.holder&&ball.holder.team!==p.team){
       let b=null,bd=1e9;
       for(const m of p.team.players){ if(m===p||m.excluded||m.isGK||MARK[m.i]===ball.holder.i) continue; const d=dist(m,ball.holder); if(d<bd){bd=d;b=m;} }
-      if(b){ p.team.doubleP=b; p.team.doubleUntil=game.time+3.5; showMsg('<span style="font-size:24px">Raddoppio!</span>',0.6); }
+      if(b){ p.team.doubleP=b; p.team.doubleUntil=game.time+3.5; annuncia('avviso','Raddoppio!'); }
     }
   }
   if(pressed('sw') && !hasBall){
@@ -46,7 +46,7 @@ export function humanControl(p,dt){
     const aimZ=Math.abs(inp.z)>0.3?inp.z:null;
     const ftBlock = p.freeThrow && Math.abs(goalX(p.team)-p.x)<6;
     if(pressed('pass')){ pendingQuick=null; const m=humanPassTarget(p,inp.x,inp.z); if(m) startAct(p,'pass',0.05,()=>doPass(p,m),[m.x,m.z]); return; }
-    if(ftBlock && (pressed('lob')||pressed('shoot'))){ showMsg('<span style="font-size:22px">Tiro libero dentro i 6 metri: devi passare o uscire oltre i 6</span>',1.2); return; }
+    if(ftBlock && (pressed('lob')||pressed('shoot'))){ annuncia('avviso','Tiro libero dentro i 6 metri',{dettaglio:'devi passare o uscire oltre i 6',durata:1.6}); return; }
     if(ftBlock){ p.charging=false; p.chargeT=0; pendingQuick=null; }
     if(pressed('lob')&&!p.isGK){ pendingQuick=null; startAct(p,'lob',0.12,()=>doShoot(p,0.4,true,aimZ)); return; }
     // tiro al volo: TIRO tenuto premuto mentre il passaggio era in volo → si tira appena arriva la palla
@@ -71,7 +71,7 @@ export function humanControl(p,dt){
     p.charging=false; p.chargeT=0; pendingQuick=null;
     p.voloPronto = inp.shoot && ball.state==='flight' && ball.kind==='pass' && ball.target===p;
     const h=ball.holder;
-    if(pressed('pass') && h && fightOn(p,h)){ p.aggrT=game.time+0.8; showMsg('<span style="font-size:22px">Trattieni il centroboa…</span>',0.4); }
+    if(pressed('pass') && h && fightOn(p,h)){ p.aggrT=game.time+0.8; annuncia('avviso','Trattieni il centroboa…',{durata:0.7}); }
     else {
       // CONTRASTO: un tocco = provare a rubare palla; tenuto premuto (un terzo di secondo) = fallo voluto per fermare l'azione
       if(pressed('pass')) p.contrDa=game.time;
@@ -81,9 +81,9 @@ export function humanControl(p,dt){
           p.contrDa=null;
           if(h && h.team!==p.team && !h.isGK){
             const d=dist(p,h);
-            if(d<=1.35){ if(tackle(p,h,{voluto:tenuto})===false) showMsg('<span style="font-size:22px">Contrasto: aspetta un attimo</span>',0.4); }
+            if(d<=1.35){ if(tackle(p,h,{voluto:tenuto})===false) annuncia('avviso','Contrasto: aspetta un attimo',{durata:0.7}); }
             else if(d<3.5){ p.lunge=game.time+1.3; p.lungeVoluto=tenuto; }      // slancio verso il portatore, il contrasto parte appena arriva
-            else showMsg('Troppo lontano',0.5);
+            else annuncia('avviso','Troppo lontano',{durata:0.7});
           }
         }
       }

@@ -44,12 +44,9 @@ function initPagina({ seed, legacy }) {
 }
 function giocaPartita({ bot, seed, maxFrames, senzaCorpi }) {
   const H = window.__H; H.renderer.render = () => {}; H.senzaCorpi = senzaCorpi;
-  // eventi: ogni messaggio a schermo viene contato
-  const eventi = {}, msg = document.getElementById('msg');
-  const d = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
-  Object.defineProperty(msg, 'innerHTML', { get() { return d.get.call(this); }, set(v) {
-    const k = String(v).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().replace(/#\d+.*/, '').replace(/\d+° tempo \d/, 'conto alla rovescia').slice(0, 40);
-    eventi[k] = (eventi[k] || 0) + 1; d.set.call(this, v); } });
+  // eventi: ogni notifica della cronaca viene contata (tipo e titolo, senza il giocatore)
+  const eventi = {};
+  if (H.cronaca) H.cronaca.ascoltatori.push((tipo, testo) => { const k = (tipo + ': ' + testo).replace(/ · [A-Z]{3} #\d+.*/, '').replace(/\d+° tempo · \d/, 'conto alla rovescia').slice(0, 44); eventi[k] = (eventi[k] || 0) + 1; });
   // giocatore finto: preme tasti a caso (con un suo generatore, per non toccare il caso del gioco)
   let b = seed >>> 0; const r = () => { b = Math.imul(b ^ b >>> 15, 0x2c1b3c6d) + 0x9e3779b9 | 0; return ((b ^ b >>> 13) >>> 0) / 4294967296; };
   const TASTI = [['KeyW', .02, 90], ['KeyS', .02, 90], ['KeyA', .02, 90], ['KeyD', .03, 120], ['ShiftLeft', .01, 150], ['Space', .012, 6], ['KeyK', .012, 70],
@@ -92,12 +89,12 @@ function confrontaImmagini([a, b]) {
 // ---------- apertura delle due versioni ----------
 const VISTE = {
   desktop: { viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 },
-  'iphone-verticale': { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true },
+  'iphone-piccolo': { viewport: { width: 667, height: 375 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true },
   'iphone-orizzontale': { viewport: { width: 844, height: 390 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true },
 };
 const SCENE = [   // nome, vista, fotogrammi dopo aver premuto GIOCA (0 = resta nel menu)
   ['1-menu', 'desktop', 0], ['2-sprint-iniziale', 'desktop', 420], ['3-azione', 'desktop', 1500],
-  ['4-iphone-verticale', 'iphone-verticale', 700], ['5-iphone-orizzontale', 'iphone-orizzontale', 700],
+  ['4-iphone-piccolo', 'iphone-piccolo', 700], ['5-iphone-orizzontale', 'iphone-orizzontale', 700],
 ];
 let browser, server, urlNuova;
 const errori = [];
@@ -180,7 +177,7 @@ for (const scena of SCENE) {
   else if (c.diversi > 0.005) fallito(`${nome}: ${perc} dei punti diverso dal riferimento${c.nota ? ' (' + c.nota + ')' : ''}`);
   else console.log(`  ✓ ${nome}: ${c.diversi === 0 && c.max === 0 ? 'identico al riferimento' : perc + ' dei punti diverso (entro la tolleranza)'}`);
   // immagine affiancata prima/dopo, da guardare a occhio
-  const largo = scena[1] !== 'iphone-verticale';
+  const largo = true;
   await pgCfr.setContent(`<body style="margin:0;background:#111;font:700 20px system-ui;color:#fff"><div id="c" style="display:inline-flex;flex-direction:${largo ? 'column' : 'row'};gap:10px;padding:10px">
     ${[['PRIMA (riferimento)', rif], ['DOPO (versione attuale)', nuovo]].map(([t, b]) => `<div><div style="padding:4px 0 8px">${t}</div><img src="${dataUrl(b)}" style="display:block;width:${largo ? 1000 : 390}px"></div>`).join('')}</div></body>`);
   await pgCfr.waitForFunction('[...document.images].every(i => i.complete)');

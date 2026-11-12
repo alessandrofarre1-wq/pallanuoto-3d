@@ -3,7 +3,7 @@ import { ARBITRO } from './costanti.js';
 import { whistle } from './audio.js';
 import { BRV, DIFF, MARK, clamp, dist, gauss, rnd } from './costanti.js';
 import { spawnFoam } from './grafica/scena.js';
-import { showMsg } from './hud.js';
+import { annuncia } from './cronaca.js';
 import { aiPass, aiShoot, closestTo } from './ia.js';
 import { inp } from './input.js';
 import { deadBall, exclude, foul, giveBall, penalty } from './regole.js';
@@ -45,11 +45,11 @@ export function boaHold(b,d,dt){
   const rE=Math.max(0.12,0.42+0.5*v)*ag*(1.5-(d.s.dis-40)/59)*sev, rF=0.5*ag, rO=0.14+0.3*Math.max(0,-v), rS=(0.08+0.25*Math.max(0,-v))*(d===ctrl&&d.aggrT>game.time?1.5:1);
   if(fight.holdT>0.35){
     const r=rnd();
-    if(r>1-rP*dt){ showMsg('<span style="font-size:26px">Centroboa affondato: rigore</span>',1.2); penalty(d,b); return; }
-    if(r<rE*dt){ showMsg('<span style="font-size:26px">Espulsione guadagnata dal centroboa!</span>',1.2); exclude(d); return; }
+    if(r>1-rP*dt){ penalty(d,b,'centroboa affondato'); return; }
+    if(r<rE*dt){ exclude(d,b,'guadagnata dal centroboa'); return; }
     if(r<(rE+rF)*dt){ foul(d,b); return; }
     if(r<(rE+rF+rO)*dt){ offFoul(b); return; }
-    if(r<(rE+rF+rO+rS)*dt){ giveBall(d); showMsg(`Palla rubata al centroboa! ${d.team.short} #${d.num}`,1); return; }
+    if(r<(rE+rF+rO+rS)*dt){ giveBall(d); annuncia('possesso','Palla rubata al centroboa',{p:d}); return; }
   }
   if(b===ctrl) return;
   // centroboa gestito dal computer: girata, beduina o scarico
@@ -63,22 +63,22 @@ export function girata(b,d){
   const ok = rnd() < clamp(0.38+0.4*fight.v+0.3*(b.st.frz-d.st.frz),0.1,0.85);
   if(!ok){
     const r=rnd();
-    if(r<0.35){ giveBall(d); showMsg('<span style="font-size:24px">Girata fallita: palla persa</span>',1); }
+    if(r<0.35){ giveBall(d); annuncia('possesso','Girata fallita: palla persa',{p:d}); }
     else if(r<0.6) offFoul(b);
-    else { fight.v=Math.max(-1,fight.v-0.3); showMsg('<span style="font-size:24px">Girata respinta</span>',0.7); }
+    else { fight.v=Math.max(-1,fight.v-0.3); annuncia('avviso','Girata respinta'); }
     return;
   }
   b.turnedUntil=game.time+1.1;
   b.fx=Math.sign(goalX(b.team)-b.x); b.fz=0;
   // il marcatore che trattiene un centroboa ormai girato fronte porta commette fallo da rigore (art. 11.1)
-  if(rnd()<0.45*(d===ctrl?(d.aggrT>game.time?1.4:0.6):1)){ showMsg('<span style="font-size:26px">Girata! Trattenuto: rigore</span>',1.2); penalty(d,b); return; }
-  showMsg('<span style="font-size:26px">Girata! Fronte alla porta</span>',0.9);
+  if(rnd()<0.45*(d===ctrl?(d.aggrT>game.time?1.4:0.6):1)){ penalty(d,b,'girata, centroboa trattenuto'); return; }
+  annuncia('info','Girata! Fronte alla porta',{p:b});
   if(b!==ctrl) startAct(b,'shot',0.1,()=>doShoot(b,0.75+rnd()*0.25,false,null));
 }
 export function offFoul(b){       // fallo in attacco del centroboa (spinta sul difensore): palla alla difesa
   whistle(0.22);
   const t=other(b.team);
-  showMsg(`Fallo in attacco<span style="font-size:20px;display:block">${b.team.short} #${b.num} spinge il difensore</span>`,1.1);
+  annuncia('fallo','Fallo in attacco',{p:b,dettaglio:'spinge il difensore'});
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.y=BRV;
   deadBall(0.9,()=>{ const r=boaDef(b.team)||closestTo(t,b); giveBall(r); r.freeThrow=true; });
 }

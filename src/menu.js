@@ -34,6 +34,8 @@ document.querySelectorAll('[data-fps]').forEach(b=>b.onclick=()=>scegliFps(b.dat
 if(fpsIniziale()) scegliFps(true);
 $('goBtn').onclick=()=>{
   initAudio();
+  // dove il browser lo permette si blocca lo schermo in orizzontale (non è indispensabile: in verticale c'è comunque l'avviso)
+  try{ const o=screen.orientation; if(o&&o.lock) o.lock('landscape').catch(()=>{}); }catch(e){ /* non supportato */ }
   if(game.state==='paused'){ game.state=game.prevState; $('menu').style.display='none'; return; }
   newMatch();
 };
