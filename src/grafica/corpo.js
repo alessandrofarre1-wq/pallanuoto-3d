@@ -6,6 +6,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as clonaConScheletro } from 'three/addons/utils/SkeletonUtils.js';
 import MODELLO from './modelli/atleta.js';
 import { STRATO_CORPI, STRATO_SOLO_VISTA, STRATO_SOTTO } from './acqua.js';
+import { alCambioStile, cartoon } from './stile.js';
 
 const SPALLE=0.40;                       // distanza tra le spalle nel sistema di pose.js: da qui si ricava la scala del modello
 const basi={};                           // per ogni corporatura: { scena, scala, testa }
@@ -45,7 +46,7 @@ function disegnaCalottina(tex,num,colore,paraorecchie,testo){
   // cuciture a spicchi e bordo bianco
   x.strokeStyle='rgba(0,0,0,.16)'; x.lineWidth=1.5; for(let i=0;i<6;i++){ x.beginPath(); x.moveTo((i+0.5)/6*w,0); x.lineTo((i+0.5)/6*w,yBordo); x.stroke(); }
   x.fillStyle='#f4f4f0'; x.fillRect(0,yBordo-h*0.05,w,h*0.05+1);
-  x.fillStyle=testo; x.font=`bold ${Math.round(h*0.3)}px sans-serif`; x.textAlign='center'; x.textBaseline='middle';
+  x.fillStyle=testo; x.font=`bold ${Math.round(h*(cartoon()?0.46:0.3))}px sans-serif`; x.textAlign='center'; x.textBaseline='middle';
   for(const u of [0.25,0.5,0.75]) x.fillText(String(num),u*w,h*0.4);                 // lati e nuca
   // riquadro dei paraorecchie (in basso a sinistra): plastica con fori; riquadro dei laccetti (in basso a destra): bianco
   x.fillStyle=paraorecchie; x.fillRect(0,yBordo,w/2,h-yBordo);
@@ -93,6 +94,36 @@ function calottinaGeo(nome){
 }
 
 const hex=n=>'#'+n.toString(16).padStart(6,'0');
+// ---------- stile cartoon ----------
+// luce a tre gradini per i colori pieni
+const GRADINI=(()=>{ const t=new THREE.DataTexture(new Uint8Array([120,120,120,255, 200,200,200,255, 255,255,255,255]),3,1,THREE.RGBAFormat); t.minFilter=t.magFilter=THREE.NearestFilter; t.needsUpdate=true; return t; })();
+const corpi=[];
+// tinta piatta di ogni pelle: il colore medio della sua immagine (un po' ravvivato); sotto una certa luminosità l'immagine
+// diventa "tratto scuro" (occhi, sopracciglia, barba, ombre dei muscoli), così il volto resta leggibile anche a colori pieni
+const _toni=[];
+function tonoPelle(i){
+  if(_toni[i]) return _toni[i];
+  const c=document.createElement('canvas'); c.width=c.height=32; const x=c.getContext('2d',{willReadFrequently:true});
+  x.drawImage(pelli[i].image,0,0,32,32); const d=x.getImageData(0,0,32,32).data; let r=0,g=0,b=0;
+  for(let k=0;k<d.length;k+=4){ r+=d[k]; g+=d[k+1]; b+=d[k+2]; }
+  const n=d.length/4, col=new THREE.Color().setRGB(r/n/255,g/n/255,b/n/255,THREE.SRGBColorSpace), lum=col.r*0.3+col.g*0.6+col.b*0.1;
+  const tono=col.clone().multiplyScalar(1.18);
+  return _toni[i]={ tono, scuro:lum*0.5 };
+}
+// proporzioni semplificate e un po' esagerate: testa (con calottina e numero) e mani più grandi, spalle più larghe.
+// Sono solo scale delle ossa: pose e posizione della palla non cambiano.
+function vestiStile(C,c){
+  for(const m of C.maglie) m.material=c?C.fumetto:C.pelle;
+  C.calottina.material=c?C.calPiatta:C.calVera;
+  const O=C.ossa;
+  O.testa.scale.setScalar(c?1.3:1);
+  for(const k of ['manoD','manoS']) if(O[k]) O[k].scale.setScalar(c?1.45:1);
+  for(const [o] of C.azzera) if(/^clavicle/.test(o.name)) o.scale.setScalar(c?1.14:1);      // spalle più larghe…
+  for(const k of ['bracD','bracS']) O[k].scale.setScalar(c?1/1.14:1);                           // …ma braccia lunghe uguali (la mano resta sulla palla)
+  C.num=-1;      // la calottina va ridisegnata (in cartoon il numero è più grande)
+}
+alCambioStile(c=>{ for(const C of corpi) vestiStile(C,c); });
+
 // R = "manichino" del giocatore creato in modello.js; colori = { costume, calottina, paraorecchie, testo }
 export function attaccaCorpo(R,colori,num,seme){
   const crea=()=>{
@@ -108,21 +139,34 @@ export function attaccaCorpo(R,colori,num,seme){
         .replace('#include <begin_vertex>','#include <begin_vertex>\nvCostume=_costume; vQuota=position.y;');
       sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uCostume; uniform vec2 uFascia; varying float vCostume; varying float vQuota;')
         .replace('#include <map_fragment>','#include <map_fragment>\ndiffuseColor.rgb=mix(diffuseColor.rgb,uCostume,smoothstep(0.3,0.7,vCostume)*smoothstep(uFascia.x,uFascia.x+0.05,vQuota)*(1.0-smoothstep(uFascia.y-0.05,uFascia.y,vQuota)));'); };
+    // versione cartoon: colori pieni a poche tonalità (luce a gradini e immagine della pelle "appiattita"), bordo scuro lungo il
+    // profilo del corpo; stesso costume. Nessun oggetto in più da disegnare: cambia solo il materiale.
+    const fumetto=new THREE.MeshToonMaterial({map:pelli[variante],gradientMap:GRADINI});
+    const T=tonoPelle(variante);
+    fumetto.onBeforeCompile=sh=>{ Object.assign(sh.uniforms,u,{ uTono:{value:T.tono}, uScuro:{value:T.scuro} });
+      sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float _costume; varying float vCostume; varying float vQuota;')
+        .replace('#include <begin_vertex>','#include <begin_vertex>\nvCostume=_costume; vQuota=position.y;');
+      sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uCostume; uniform vec2 uFascia; uniform vec3 uTono; uniform float uScuro; varying float vCostume; varying float vQuota;')
+        .replace('#include <map_fragment>','#include <map_fragment>\n{ float lum=dot(diffuseColor.rgb,vec3(0.3,0.6,0.1)); diffuseColor.rgb=uTono*(lum<uScuro?0.42:lum<uScuro*1.35?0.8:1.0); }\ndiffuseColor.rgb=mix(diffuseColor.rgb,uCostume,step(0.5,vCostume)*step(uFascia.x,vQuota)*(1.0-step(uFascia.y,vQuota)));')
+        .replace('#include <opaque_fragment>','if(abs(dot(normalize(vViewPosition),normal))<0.4) outgoingLight=vec3(0.05,0.07,0.13);\n#include <opaque_fragment>'); };
+    C.pelle=pelle; C.fumetto=fumetto; C.maglie=[];
     const nomi=Object.entries(MODELLO.ossa);
     radice.traverse(o=>{
       for(const [k,n] of nomi) if(o.name===n){ C.ossa[k]=o; C.riposo[k]=o.quaternion.clone(); }
       if(MODELLO.daAzzerare.includes(o.name)) C.azzera.push([o,o.quaternion.clone()]);
       if(/^spine_0[123]$/.test(o.name)) C.schiena.push(o);
       o.layers.set(STRATO_CORPI);
-      if(o.isSkinnedMesh){ o.material=pelle; o.frustumCulled=false; o.layers.set(o.name==='corpoLontano'?STRATO_SOTTO:STRATO_SOLO_VISTA); }
+      if(o.isSkinnedMesh){ o.material=pelle; C.maglie.push(o); o.frustumCulled=false; o.layers.set(o.name==='corpoLontano'?STRATO_SOTTO:STRATO_SOLO_VISTA); }
     });
     const tex=new THREE.CanvasTexture(Object.assign(document.createElement('canvas'),{width:256,height:128})); tex.colorSpace=THREE.SRGBColorSpace;
     C.texCal=tex;
     C.calottina=new THREE.Mesh(calottinaGeo(nome),new THREE.MeshPhongMaterial({map:tex,shininess:60,specular:0x555555,side:THREE.DoubleSide}));
+    C.calVera=C.calottina.material; C.calPiatta=new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide});
     C.calottina.layers.set(STRATO_SOLO_VISTA);      // la testa sta fuori dall'acqua: inutile ridisegnarla nella vista sott'acqua
     C.ossa.testa.add(C.calottina);
     C.uCostume=u.uCostume;
     R.g.add(radice); R.corpo=C;
+    corpi.push(C); vestiStile(C,cartoon());
     for(const k of R.vecchi) k.visible=false;                          // spariscono cilindri e sfere
     aggiornaNumero(R,R.numVoluto??num);
   };
