@@ -134,11 +134,38 @@ venv/bin/python -I strumenti/blender/dita.py model.glb dita.json
 venv/bin/python -I strumenti/blender/prepara.py model.glb cartella-uscita      # .blend + 4 file .glb
 venv/bin/python -I strumenti/blender/render.py -- model.glb cartella-render    # MODO=argilla / MODO=zone per le varianti
 venv/bin/python -I strumenti/blender/prova_scheletro.py cartella-uscita/player_base_LOD1.glb prova.blend
+venv/bin/python -I strumenti/blender/scheletro.py cartella-uscita/player_base.blend cartella-rig              # scheletro definitivo: .blend + 4 file .glb
+node strumenti/posa-glb.mjs cartella-rig/player_rig_LOD1.glb pose.png                                        # pose di prova in Three.js
 node strumenti/prova-glb.mjs cartella-uscita/player_base_LOD2.glb prova.png   # controllo in Three.js
 ```
 
+## Fase 5 — Scheletro definitivo (approvato da Ale il 12 novembre 2026)
+Script: `strumenti/blender/scheletro.py`. File: `player_rig_LOD1.glb` (30.000 triangoli), `player_rig_LOD2.glb` (12.000), `player_rig_LOD3.glb` (5.000);
+`player_rig.blend` e `player_rig_LOD0.glb` (100.000) inviati ad Ale, non nel repository. Misure delle giunture in `scheletro.json`.
+
+- **24 ossa con gli stessi nomi e la stessa gerarchia degli atleti attuali del gioco**: `pelvis`, `spine_01`, `spine_02`, `spine_03`, `neck_01`, `head`,
+  `clavicle_l/r`, `upperarm_l/r`, `lowerarm_l/r`, `hand_l/r`, `thigh_l/r`, `calf_l/r`, `foot_l/r`, `ball_l/r`, più `presa_l/r`.
+- **Rotazioni di riposo nulle** (misurato in Three.js: 0°): è quello che si aspetta il codice del gioco, che orienta ogni osso verso la giuntura
+  successiva. I movimenti procedurali (nuoto, bicicletta, rotazione del busto, piega della colonna) si applicano quindi senza adattamenti.
+- **Pesi**: automatici di Blender calcolati su un'ossatura anatomica, poi rifiniti: testa rigida (cuffia, paraorecchie, riccioli e viso seguono solo
+  la testa), lisciati, al massimo 4 ossa per punto, somma 1. Nessun punto senza pesi.
+- **Punto di aggancio della palla**: ossa `presa_r` e `presa_l`, figlie delle mani, al centro del palmo. Con la mano in posa di riposo (palmo in
+  giù) la palla va centrata un raggio sotto il palmo.
+- **Clip dedicate in futuro**: lo scheletro è un normale scheletro umanoide in un `.glb`; tiro, passaggio, parata, blocco ed esultanza si possono
+  aggiungere come animazioni registrate sugli stessi nomi di ossa, mescolate ai movimenti calcolati.
+
+### Prova delle pose in Three.js r187, con la tecnica del gioco
+`strumenti/posa-glb.mjs` (funzione `punta`, la stessa di `src/grafica/corpo.js`): `render/pose-scheletro.png` e `render/pose-scheletro-solo-geometria.png`.
+Pose provate: riposo, galleggiamento a bicicletta, tiro (caricamento e rilascio), stile libero, parata del portiere. Nessun errore né avviso;
+spalle, gomiti, anche e ginocchia si piegano senza strappi; testa e cuffia restano rigide.
+
+Limiti noti dello scheletro:
+- Le pose di prova sono indicative (le direzioni le ho scritte a mano): non sono le animazioni del gioco.
+- L'orientamento del polso e la torsione dell'avambraccio non sono controllati dalla sola direzione dell'osso (vale anche per gli atleti attuali).
+- Nessun osso per dita, viso o mascella: le dita sono unite e il viso è fisso.
+- A 5.000 triangoli il viso si rovina: quel livello va usato solo da lontano.
+
 ## Cosa NON è stato fatto (in attesa dell'ok di Ale)
-- Scheletro definitivo (nomi e ossa compatibili con i movimenti calcolati dal gioco) e pesi rifiniti.
 - Animazioni, espressioni, punto di aggancio della palla.
 - Numero e colori per squadra dentro il gioco; pallone giallo e blu.
 - Inserimento nel gioco.
