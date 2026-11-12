@@ -1,6 +1,6 @@
 // ================= MESSAGGI / HUD =================
 import { CHIAVE, STAT_NOMI } from './dati/rose.js';
-import { dpr, livelloAcqua, renderer } from './grafica/scena.js';
+import { dpr, renderer } from './grafica/scena.js';
 import { ATK, DEFN } from './costanti.js';
 import { bip } from './audio.js';
 import { allPlayers, ctrl, fight, game, teams } from './stato.js';
@@ -81,6 +81,6 @@ export function tickFps(now){
   fpsN++; const d=now-fpsPrev; fpsPrev=now; if(d>0) fpsMin=Math.min(fpsMin,1000/d);
   if(now-fpsT0<500) return;
   const fps=fpsN*1000/(now-fpsT0), inf=renderer.info.render;
-  $('fps').innerHTML=`<b>${Math.round(fps)}</b> fps (min ${Math.round(fpsMin)})<br>qualità ${dpr.toFixed(2)} · acqua ${['bassa','media','alta'][livelloAcqua]}<br>${inf.calls} oggetti · ${Math.round(inf.triangles/1000)}k triangoli`;
+  $('fps').innerHTML=`<b>${Math.round(fps)}</b> fps (min ${Math.round(fpsMin)})<br>qualità ${dpr.toFixed(2)}<br>${inf.calls} oggetti · ${Math.round(inf.triangles/1000)}k triangoli`;
   fpsT0=now; fpsN=0; fpsMin=1e9;
 }

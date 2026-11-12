@@ -1,6 +1,5 @@
 // Modello 3D del giocatore (cilindri e sfere) e numero di calottina
 import * as THREE from 'three';
-import { STRATO_CORPI, STRATO_SOLO_VISTA } from './acqua.js';
 import { aggiornaColori, attaccaCorpo } from './corpo.js';
 import { VIS, rnd } from '../costanti.js';
 import { scene } from './scena.js';
@@ -36,7 +35,6 @@ export function makePlayerMesh(num,team){
   g.add(head); R.head=head;
   const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:numberTexture(num,'#f2f2f2','#111'),depthTest:false,transparent:true}));
   spr.scale.set(0.2,0.2,1); g.add(spr); R.spr=spr;
-  g.traverse(c=>c.layers.set(STRATO_CORPI)); spr.layers.set(STRATO_SOLO_VISTA);
   // corpo con scheletro: quando il modello è caricato prende il posto di cilindri e sfere (che restano come riserva)
   R.vecchi=g.children.filter(c=>c!==spr);
   attaccaCorpo(R,{ costume:0x0b2a6f, calottina:0xf4f4f4, paraorecchie:0x0b2a6f, testo:'#111' },num,num+team.idx*7);

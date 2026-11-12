@@ -4,50 +4,19 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as clonaConScheletro } from 'three/addons/utils/SkeletonUtils.js';
-import MODELLO from './modelli/atleta.js';
 import FUMETTO from './modelli/pallanuotista.js';
-import { STRATO_CORPI, STRATO_SOLO_VISTA, STRATO_SOTTO } from './acqua.js';
-import { alCambioStile, cartoon } from './stile.js';
-import { calottinaGeo, disegnaCalottina } from './calottina.js';
 
 const SPALLE=0.40;                       // distanza tra le spalle nel sistema di pose.js: da qui si ricava la scala del modello
-const basi={};                           // per ogni corporatura: { scena, scala, testa }
-let pelli=[];                            // immagini della pelle (una per variante)
 const inAttesa=[];
 export let modelloPronto=false;
-{
-  const carica=u=>new Promise((ok,ko)=>new GLTFLoader().load(u,ok,undefined,ko));
-  const immagine=u=>new Promise((ok,ko)=>new THREE.TextureLoader().load(u,t=>{ t.colorSpace=THREE.SRGBColorSpace; t.flipY=false; t.anisotropy=4; ok(t); },undefined,ko));
-  const nomi=Object.keys(MODELLO.corporature);
-  Promise.all([Promise.all(nomi.map(n=>Promise.all([carica(MODELLO.corporature[n].url),carica(MODELLO.corporature[n].urlLontano)]))),
-               Promise.all(MODELLO.pelli.map(p=>immagine(p.url))), carica(FUMETTO.url)]).then(([modelli,immagini,fumetto])=>{
-    preparaFumetto(fumetto.scene);
-    const maglia=s=>{ let m=null; s.traverse(o=>{ if(o.isSkinnedMesh) m=o; }); return m; };
-    nomi.forEach((n,i)=>{
-      const [vicino,lontano]=modelli[i], mv=maglia(vicino.scene), ml=maglia(lontano.scene);
-      mv.name='corpo';
-      // versione leggera (vista sott'acqua): stessa ossatura della versione dettagliata
-      const leggera=new THREE.SkinnedMesh(ml.geometry,mv.material); leggera.name='corpoLontano';
-      mv.parent.add(leggera); leggera.bind(mv.skeleton,mv.bindMatrix);
-      vicino.scene.updateMatrixWorld(true);
-      const a=new THREE.Vector3(), b=new THREE.Vector3();
-      vicino.scene.getObjectByName(MODELLO.ossa.bracD).getWorldPosition(a); vicino.scene.getObjectByName(MODELLO.ossa.bracS).getWorldPosition(b);
-      basi[n]={ scena:vicino.scene, scala:SPALLE/a.distanceTo(b)*MODELLO.proporzione, testa:MODELLO.corporature[n].testa };
-    });
-    pelli=immagini;
-    for(const f of inAttesa) f();
-    inAttesa.length=0; modelloPronto=true;
-  }).catch(e=>console.error('Modello dei giocatori non caricato: restano i manichini semplici',e));
-}
-
-const geoCalottine={};
-const calottinaPer=nome=>geoCalottine[nome]||(geoCalottine[nome]=calottinaGeo(basi[nome].testa));
-const hex=n=>'#'+n.toString(16).padStart(6,'0');
-// ---------- stile cartoon: il pallanuotista del concept ----------
-// Ogni giocatore ha due corpi con le stesse ossa: l'atleta (grafica Realistica) e il pallanuotista del concept (grafica Cartoon).
-// Se ne vede e se ne muove uno solo; i movimenti sono gli stessi, calcolati da pose.js.
+// Il corpo di tutti i giocatori è il pallanuotista del concept (modelli/pallanuotista.glb): un solo modello, ricolorato per
+// squadra, numero e tono della pelle. Se non si carica restano i manichini semplici di modello.js.
 let baseF=null;
-const giocatori=[];
+new GLTFLoader().load(FUMETTO.url,g=>{
+  preparaFumetto(g.scene);
+  for(const f of inAttesa) f();
+  inAttesa.length=0; modelloPronto=true;
+},undefined,e=>console.error('Modello dei giocatori non caricato: restano i manichini semplici',e));
 // pelle: cinque toni (moltiplicano il colore dell'immagine solo sulla pelle), scelti dal giocatore
 const TONI=[[1,1,1],[1.04,0.96,0.9],[0.86,0.72,0.6],[0.62,0.47,0.36],[0.42,0.3,0.23]].map(t=>new THREE.Vector3(...t));
 function preparaFumetto(scena){
@@ -83,7 +52,7 @@ function numeroCuffia(tex,num,colore){
 function attaccaFumetto(R,colori,num,seme){
   const radice=clonaConScheletro(baseF.scena);
   radice.scale.setScalar(baseF.scala); radice.rotation.y=Math.PI/2;      // il modello guarda +Z, il giocatore +X
-  const K={ radice, scala:baseF.scala, ossa:{}, riposo:{}, azzera:[], schiena:[], fase:seme*1.7, num:-1, fumetto:true };
+  const K={ radice, scala:baseF.scala, ossa:{}, riposo:{}, azzera:[], schiena:[], fase:seme*1.7, num:-1, colori };
   // colori per giocatore: il blu dell'immagine diventa il colore di cuffia e costume (con le sue luci e ombre); il 7 dipinto
   // viene coperto; la pelle prende il tono del giocatore. Stesso programma per tutti (cambia solo il valore dei colori).
   const mat=baseF.materiale.clone(); mat.roughness=0.62; mat.metalness=0;
@@ -108,56 +77,19 @@ function attaccaFumetto(R,colori,num,seme){
     for(const [k,n] of nomi) if(o.name===n){ K.ossa[k]=o; K.riposo[k]=o.quaternion.clone(); }
     if(FUMETTO.daAzzerare.includes(o.name)) K.azzera.push([o,o.quaternion.clone()]);
     if(/^spine_0[123]$/.test(o.name)) K.schiena.push(o);
-    o.layers.set(STRATO_SOLO_VISTA);      // in Cartoon non c'è la vista sott'acqua: si disegna solo nella scena
     if(o.isSkinnedMesh){ o.material=mat; o.frustumCulled=false; }
   });
   const tex=new THREE.CanvasTexture(Object.assign(document.createElement('canvas'),{width:128,height:128})); tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=4;
   K.texNum=tex;
   const n=new THREE.Mesh(baseF.numeroGeo,new THREE.MeshStandardMaterial({map:tex,transparent:true,roughness:0.55,polygonOffset:true,polygonOffsetFactor:-2,depthWrite:false}));
-  n.layers.set(STRATO_SOLO_VISTA); n.renderOrder=2; K.ossa.testa.add(n);
+  n.renderOrder=2; K.ossa.testa.add(n);
   R.g.add(radice);
   return K;
 }
-// mostra il corpo dello stile scelto e nasconde l'altro
-function mostraStile(R){
-  const K=R.corpi.cartoon, C=R.corpi.realistica, c=cartoon()&&!!K;
-  C.radice.visible=!c; if(K) K.radice.visible=c;
-  R.corpo=c?K:C;
-}
-alCambioStile(()=>{ for(const R of giocatori) mostraStile(R); });
-
 // R = "manichino" del giocatore creato in modello.js; colori = { costume, calottina, paraorecchie, testo }
 export function attaccaCorpo(R,colori,num,seme){
   const crea=()=>{
-    const variante=seme%pelli.length, nome=MODELLO.pelli[variante].corporatura, base=basi[nome];
-    const radice=clonaConScheletro(base.scena);
-    radice.scale.setScalar(base.scala); radice.rotation.y=Math.PI/2;      // il modello guarda +Z, il giocatore +X
-    const C={ radice, scala:base.scala, ossa:{}, riposo:{}, azzera:[], schiena:[], fase:seme*1.7, num:-1, colori:R.coloriVoluti||colori };
-    // pelle con il suo disegno (volto, muscoli), lucida perché bagnata; costume nella zona segnata nel modello
-    const pelle=new THREE.MeshPhongMaterial({map:pelli[variante],shininess:70,specular:0x6a6660});
-    const u={ uCostume:{value:new THREE.Color(C.colori.costume)}, uFascia:{value:new THREE.Vector2(base.testa.costume[0],base.testa.costume[1])} };
-    pelle.onBeforeCompile=sh=>{ Object.assign(sh.uniforms,u);
-      sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float _costume; varying float vCostume; varying float vQuota;')
-        .replace('#include <begin_vertex>','#include <begin_vertex>\nvCostume=_costume; vQuota=position.y;');
-      sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uCostume; uniform vec2 uFascia; varying float vCostume; varying float vQuota;')
-        .replace('#include <map_fragment>','#include <map_fragment>\ndiffuseColor.rgb=mix(diffuseColor.rgb,uCostume,smoothstep(0.3,0.7,vCostume)*smoothstep(uFascia.x,uFascia.x+0.05,vQuota)*(1.0-smoothstep(uFascia.y-0.05,uFascia.y,vQuota)));'); };
-    C.maglie=[];
-    const nomi=Object.entries(MODELLO.ossa);
-    radice.traverse(o=>{
-      for(const [k,n] of nomi) if(o.name===n){ C.ossa[k]=o; C.riposo[k]=o.quaternion.clone(); }
-      if(MODELLO.daAzzerare.includes(o.name)) C.azzera.push([o,o.quaternion.clone()]);
-      if(/^spine_0[123]$/.test(o.name)) C.schiena.push(o);
-      o.layers.set(STRATO_CORPI);
-      if(o.isSkinnedMesh){ o.material=pelle; C.maglie.push(o); o.frustumCulled=false; o.layers.set(o.name==='corpoLontano'?STRATO_SOTTO:STRATO_SOLO_VISTA); }
-    });
-    const tex=new THREE.CanvasTexture(Object.assign(document.createElement('canvas'),{width:256,height:128})); tex.colorSpace=THREE.SRGBColorSpace;
-    C.texCal=tex;
-    C.calottina=new THREE.Mesh(calottinaPer(nome),new THREE.MeshPhongMaterial({map:tex,shininess:60,specular:0x555555,side:THREE.DoubleSide}));
-    C.calottina.layers.set(STRATO_SOLO_VISTA);      // la testa sta fuori dall'acqua: inutile ridisegnarla nella vista sott'acqua
-    C.ossa.testa.add(C.calottina);
-    C.uCostume=u.uCostume;
-    R.g.add(radice);
-    R.corpi={ realistica:C, cartoon:baseF?attaccaFumetto(R,C.colori,num,seme):null }; giocatori.push(R); mostraStile(R);
+    R.corpo=attaccaFumetto(R,R.coloriVoluti||colori,num,seme);
     for(const k of R.vecchi) k.visible=false;                          // spariscono cilindri e sfere
     aggiornaColori(R,R.coloriVoluti||colori,R.numVoluto??num);
   };
@@ -166,17 +98,13 @@ export function attaccaCorpo(R,colori,num,seme){
 // cambia colori e numero (anche prima che il modello sia caricato: li trova pronti)
 export function aggiornaColori(R,colori,num){
   R.coloriVoluti=colori; R.numVoluto=num;
-  if(!R.corpi) return;
-  const C=R.corpi.realistica, K=R.corpi.cartoon;
-  C.colori=colori; C.uCostume.value.setHex(colori.costume); C.num=-1;
-  if(K){ K.colori=colori; K.u.uCal.value.setHex(colori.calottina); K.u.uCos.value.setHex(colori.costume); K.num=-1; }
+  const K=R.corpo; if(!K) return;
+  K.colori=colori; K.u.uCal.value.setHex(colori.calottina); K.u.uCos.value.setHex(colori.costume); K.num=-1;
   aggiornaNumero(R,num);
 }
 export function aggiornaNumero(R,num){
   const C=R.corpo; if(!C||C.num===num) return;
-  C.num=num;
-  if(C.fumetto) numeroCuffia(C.texNum,num,C.colori.testo);
-  else disegnaCalottina(C.texCal,num,hex(C.colori.calottina),hex(C.colori.paraorecchie),C.colori.testo,false);
+  C.num=num; numeroCuffia(C.texNum,num,C.colori.testo);
 }
 
 // ---------- movimento ----------

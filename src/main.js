@@ -11,13 +11,12 @@ import './input.js';
 import './menu.js';
 import { SPEED } from './costanti.js';
 import { render } from './grafica/render.js';
-import { dpr, livelloAcqua, renderer, ridimensionaAcqua, setDpr, setLivelloAcqua } from './grafica/scena.js';
-import { acquaAuto, scegliSquadre } from './menu.js';
+import { dpr, renderer, setDpr } from './grafica/scena.js';
+import { scegliSquadre } from './menu.js';
 import { modelloPronto } from './grafica/corpo.js';
 import { tickFps, tickMsg, updateHUD } from './hud.js';
 import { passoPalla, velocitaDiLancio } from './palla.js';
 import { update } from './partita.js';
-import { setStile, stileAttuale } from './grafica/stile.js';
 import { cornerThrow, exclude, giveBall, kickoff, setupPenalty, tackle } from './regole.js';
 import { allPlayers, ball, ctrl, fight, game, teams } from './stato.js';
 
@@ -32,12 +31,9 @@ function loop(now){
   try{ for(let i=0;i<n;i++) update(dt/n); }catch(e){ console.error(e); }
   // qualità adattiva: se il dispositivo fatica si abbassa la risoluzione di disegno
   frameMs+=(raw*1000-frameMs)*0.05; qT+=raw;
-  // ordine dei tagli: prima il riflesso dell'acqua, poi la risoluzione, per ultima l'acqua semplice
   // si taglia solo dopo due controlli lenti di fila (4 secondi), non per un singolo scatto
   if(qT>2){ qT=0; if(frameMs<=21) lenti=0; else if(++lenti>=2){ lenti=0;
-    if(acquaAuto&&livelloAcqua===2) setLivelloAcqua(1);
-    else if(dpr>1){ setDpr(Math.max(1,dpr-0.25)); renderer.setPixelRatio(dpr); ridimensionaAcqua(); }
-    else if(acquaAuto&&livelloAcqua===1) setLivelloAcqua(0);
+    if(dpr>1){ setDpr(Math.max(1,dpr-0.25)); renderer.setPixelRatio(dpr); }
     frameMs=16;
   } }
   tickMsg(dt);
@@ -49,7 +45,7 @@ function loop(now){
 // accesso per le verifiche automatiche (tests/verifica.mjs) e per il debug dalla console
 // "vista" permette alla verifica di mettere la telecamera dove vuole (primi piani): { pos:[x,y,z], look:[x,y,z], fov };
 // "senzaCorpi" ferma l'animazione degli scheletri (serve solo ad accelerare le partite simulate)
-window.__pallanuoto = { stile:{ setStile, stileAttuale }, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, palla:{ passoPalla, velocitaDiLancio }, regole:{ setupPenalty, cornerThrow, exclude, giveBall, tackle }, scegliSquadre, prova:{ movePlayer, doShoot, valoriMotore }, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get modelloPronto(){ return modelloPronto; } };
+window.__pallanuoto = { game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, palla:{ passoPalla, velocitaDiLancio }, regole:{ setupPenalty, cornerThrow, exclude, giveBall, tackle }, scegliSquadre, prova:{ movePlayer, doShoot, valoriMotore }, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get modelloPronto(){ return modelloPronto; } };
 // scena iniziale dietro al menu
 kickoff(); game.state='menu';
 requestAnimationFrame(loop);

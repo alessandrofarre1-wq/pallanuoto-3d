@@ -1,10 +1,10 @@
-// Personaggio dello stile Cartoon: il pallanuotista del concept di Ale, modellato da Hunyuan 3D Pro e preparato con Blender
-// (strumenti/blender/: saldatura, scala 1,80 m, scheletro con gli stessi nomi degli atleti, versione da circa 8.200 triangoli).
+// Corpo di tutti i giocatori: il pallanuotista del concept di Ale, modellato da Hunyuan 3D Pro e preparato con Blender
+// (strumenti/blender/: saldatura, scala 1,80 m, scheletro con le ossa che il gioco muove, versione da circa 8.200 triangoli).
 // Report e sorgenti in modelli-sorgente/pallanuotista/.
 import url from './pallanuotista.glb?url';
 export default {
   url,
-  // stesse ossa degli atleti (src/grafica/modelli/atleta.js): i movimenti del gioco valgono uguali
+  // ossa mosse dal gioco (corpo.js), con i nomi che hanno nel modello
   ossa:{ bacino:'pelvis', collo:'neck_01', testa:'head',
     bracD:'upperarm_r', avamD:'lowerarm_r', manoD:'hand_r', bracS:'upperarm_l', avamS:'lowerarm_l', manoS:'hand_l',
     cosciaD:'thigh_r', gambaD:'calf_r', piedeD:'foot_r', puntaD:'ball_r',

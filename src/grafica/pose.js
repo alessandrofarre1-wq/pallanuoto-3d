@@ -192,11 +192,11 @@ export function updateRig(p,dt,t){
   let l=null;
   if(T.ballHand){ l=[J.hR[0]+0.02,J.hR[1]+0.13,J.hR[2]]; if(T.ballDavanti>0) l=mix3(l,PALLA_DAVANTI,T.ballDavanti); }
   if(l){ const c=p.fx, sn=-p.fz; p.ballW=[p.x+VIS*(l[0]*c+l[2]*sn), VIS*l[1], p.z+VIS*(-l[0]*sn+l[2]*c)]; } else p.ballW=null;
-  // solo per il disegno: il personaggio Cartoon ha braccia di lunghezza diversa da quelle di pose.js, quindi la palla tenuta in
+  // solo per il disegno: il pallanuotista ha braccia di lunghezza diversa da quelle di pose.js, quindi la palla tenuta in
   // mano viene spostata di quanto la sua mano vera dista da quella prevista. p.ballW (usato dal gioco per i lanci) non cambia:
-  // le partite restano identiche nei due stili.
+  // il gioco non dipende dal disegno.
   p.ballVistaW=null;
-  if(l && R.corpo && R.corpo.fumetto && R.corpo.ossa.manoD && !(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){
+  if(l && R.corpo && R.corpo.ossa.manoD && !(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){
     const c=p.fx, sn=-p.fz, h=J.hR, k=1-(T.ballDavanti||0);
     R.corpo.ossa.manoD.getWorldPosition(_mano);
     const hx=p.x+VIS*(h[0]*c+h[2]*sn), hy=VIS*h[1], hz=p.z+VIS*(-h[0]*sn+h[2]*c);
