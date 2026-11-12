@@ -13,7 +13,7 @@ for(const t of teams){
   }
 }
 allPlayers.push(...teams[0].players, ...teams[1].players);
-for(const t of teams) Object.assign(t,{atkPlay:0,defPlay:0,cross:false,doubleP:null,doubleUntil:0,nextDrive:0,subs:0,timeouts:2});
+for(const t of teams) Object.assign(t,{atkPlay:0,defPlay:2,cross:false,doubleP:null,doubleUntil:0,nextDrive:0,subs:0,timeouts:2});
 
 // calottine: la squadra del giocatore in bianco, quella del computer in blu, portieri in rosso (scelta di Ale finché non ci sono
 // "casa" e "ospite"); il costume ha il colore della nazionale

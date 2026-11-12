@@ -1,7 +1,8 @@
 // ================= IA =================
 import { difensoriDavanti } from './statistiche.js';
-import { DEF_DOWN, FORM, FORM_UP, GW, HW, KICK_Z, MARK, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
+import { DEF_DOWN, FORM, FORM_UP, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
 import { doFake, timeout } from './regole.js';
+import { showMsg } from './hud.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
 import { bestPassTarget, doPass, doShoot, laneClear, shotKind, situazioneTiro, startAct } from './tiri.js';
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
@@ -117,10 +118,13 @@ export function markTarget(p){
   // il difensore reagisce con un piccolo ritardo ai movimenti del suo uomo
   const ax=p.lagX, az=p.lagZ, dx=ogx-ax, dz=-az, l=Math.hypot(dx,dz)||1;
   let gap = ball.holder===att ? 0.85 : 1.0;
-  if(t.defPlay===1 && p.i!==6) gap = ball.holder===att ? 1.3 : Math.min(2.6,l*0.45);   // zona: ci si stacca verso il centroboa
+  // zona: ci si stacca verso il centroboa; chi marca il giocatore "lasciato" si stacca di più e resta staccato anche quando
+  // quello ha la palla (gli si concede il tiro), gli altri restano più vicini al proprio uomo
+  const lasc=(t.defPlay===1||t.defPlay===3)&&att===t.lasciato;
+  if(t.defPlay===1 && p.i!==6) gap = lasc ? Math.min(ball.holder===att?2.6:3.4,l*0.6) : ball.holder===att ? 1.1 : Math.min(1.8,l*0.4);
   if(t.defPlay===2) gap = 0.8;                                                       // pressing
   // zona a M: due linee strette davanti alla porta (ali e punto bassi, mezzi più alti), braccia alte; lascia il tiro da lontano
-  if(t.defPlay===3) gap = ball.holder===att ? 1.5 : Math.min(p.i===4||p.i===5?2.4:3.4,l*0.55);
+  if(t.defPlay===3) gap = ball.holder===att ? (lasc?2.5:1.4) : Math.min(p.i===4||p.i===5?2.4:3.4,l*0.55);
   return { x:ax+dx/l*gap, z:az+dz/l*gap };
 }
 export function blockR(p){ return ball.kind==='shot' && (p.team.defPlay===1 || p.team.defPlay===3 || p.team.players.some(q=>q.excluded)) ? (p.team.defPlay===3?1.0:0.85) : 0.6; }
@@ -218,13 +222,35 @@ const PAZIENZA=[22,5];      // secondi di possesso prima di cominciare a cercare
 export function setteControSei(t){
   return !t.human && game.period===4 && game.clock<60 && other(t).score-t.score===1;
 }
-// il computer sceglie la difesa guardando l'avversario: centroboa forte → zona o zona a M; tiratori forti dal perimetro → pressing;
-// in ogni caso alterna, per togliere riferimenti ai registi avversari
-export function scegliDifesa(dif,att){
-  const boa=att.players[1], tir=[4,5,6].map(i=>att.players[i]).filter(q=>!q.excluded);
-  const fBoa=boa.excluded?40:(boa.s.frz+boa.s.pot)/2, fTir=tir.reduce((a,q)=>a+(q.s.pot+q.s.pre)/2,0)/Math.max(1,tir.length);
-  const scelte = fBoa>fTir+3 ? [1,1,3,3,3,0,2] : fTir>fBoa+3 ? [2,2,2,0,0,1,3] : [0,0,2,2,1,3];
-  return scelte[Math.floor(rnd()*scelte.length)];
+// DIFESA COME SI GIOCA OGGI. Di base pressing (uomo contro uomo). Nella seconda parte dell'azione, soprattutto se il marcatore
+// del centroboa è in difficoltà (il centroboa gli ha preso posizione), si passa a zona: zona a M se il centroboa avversario è
+// forte, altrimenti zona semplice. La zona si costruisce decidendo CHI LASCIARE TIRARE.
+export function scegliDifesa(){ return 2; }
+// Chi lasciare tirare: il giocatore di perimetro meno pericoloso in questo momento. Conta la bravura al tiro (Potenza e Precisione)
+// e la mano: dal lato destro (posizioni 1 e 2) un destro ha poco angolo, lì è pericoloso il mancino; dal lato sinistro il contrario.
+export function chiLasciare(dif){
+  const att=other(dif); let b=null, bs=1e9;
+  for(const q of att.players){
+    if(q.isGK||q.excluded||q.i===1) continue;
+    const destra=q.i===2||q.i===4, sinistra=q.i===3||q.i===5, manc=q.mano==='S';
+    let per=(q.s.pot+q.s.pre)/2 + (destra?(manc?7:(q.i===2?-12:-6)):sinistra?(manc?-8:3):0) + (q.i===2||q.i===3?-4:0);      // dalle ali si vede meno porta
+    if(per<bs){ bs=per; b=q; }
+  }
+  return b;
+}
+export function passaAZona(t,quale,annuncia){
+  t.defPlay=quale; t.lasciato=chiLasciare(t);
+  if(annuncia&&t.lasciato) showMsg(`<span style="font-size:22px">${t.short}: ${quale===3?'zona a M':'zona'} · si lascia tirare il #${t.lasciato.num} (${ROLES[t.lasciato.i].toLowerCase()})</span>`,1.3);
+}
+// il computer, mentre difende: pressing all'inizio, zona nella seconda parte dell'azione se il centroboa sta vincendo il duello
+// (o comunque, a volte, negli ultimi secondi, per togliere riferimenti)
+export function aggiornaDifesa(t,dt){
+  if(t.human||game.possTeam!==other(t)||t.defPlay!==2||game.shot>15||inRientro(t)||t.players.some(q=>q.excluded)) return;
+  const att=other(t), boa=att.players[1], inDifficolta=fight.active&&fight.def&&fight.def.team===t&&fight.v>0.2;
+  if(inDifficolta||rnd()<dt*0.07){
+    const forte=!boa.excluded&&(boa.s.frz+boa.s.pot)/2>74;
+    passaAZona(t,forte||inDifficolta?3:1,true);
+  }
 }
 export function aiShoot(p,power,lob){
   const kind=lob?'lob':shotKind(p), r=kind==='shot'?rnd():1;

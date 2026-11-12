@@ -4,7 +4,7 @@ import { humanControl, updateCtrl } from './controllo.js';
 import { DIFF, GW, MARK, PERIOD_LEN, clamp, dist, rnd } from './costanti.js';
 import { movePlayer, separate, updateBall } from './fisica.js';
 import { showMsg } from './hud.js';
-import { pos01, rif01, aiCarrier, aiTarget, closestTo, manUp, startCut, steer } from './ia.js';
+import { aggiornaDifesa, pos01, rif01, aiCarrier, aiTarget, closestTo, manUp, startCut, steer } from './ia.js';
 import { inp, pollInput, pressed, released } from './input.js';
 import { fightOn, updateFight } from './lotta.js';
 import { endMatch } from './menu.js';
@@ -77,6 +77,7 @@ export function update(dt){
     if(b) startCut(b);
     t.nextDrive=game.time+(t.atkPlay===1?4.5:10+rnd()*5);
   }
+  for(const t of teams) aggiornaDifesa(t,dt);
   updateCtrl();
   for(const p of allPlayers){
     if(p.excluded) continue;
@@ -120,7 +121,7 @@ export function update(dt){
         if(fuga && rnd()<dt*(1.2+1.2*(p.s.dif-40)/59)) tackle(p,c,{voluto:true});
         else {
           const voglia=(lato==='dietro'?0.25+0.9*(1-dis):1)*(palla==='alzata'?0.3+0.8*(1-dis):palla==='palleggio'?1.4:1);
-          if(rnd()<dt*1.5*voglia*(p.team.defPlay===2?1.8:1)) tackle(p,c);
+          if(rnd()<dt*1.5*voglia*(p.team.defPlay===2?1.2:1)) tackle(p,c);
         }
       }
       if(game.state!=='play') return;

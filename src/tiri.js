@@ -124,6 +124,7 @@ export function situazioneTiro(p){
     const cs=((o.x-p.x)*(gx-p.x)+(o.z-p.z)*(-p.z))/((dd||1)*dP);
     if(cs>0.4) marcato=Math.max(marcato,clamp((2-dd)/1.1,0,1)*clamp((cs-0.4)/0.4,0,1));
   }
+  if(manUp(t)) marcato*=0.45;      // con l'uomo in più ogni difensore deve guardarne due: il braccio arriva tardi
   const da=game.time-(p.ricevutoT||0)-(p.act?p.act.t:0);      // tempo tra la ricezione e l'inizio del gesto
   return { marcato, vicino, liberato:!!p.ricevutoPassaggio&&da<1.5&&vicino>1.8, dopoCambio:!!p.ricevutoCambio&&da<1.5, daFermo:da>2.5 };
 }
