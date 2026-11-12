@@ -1,10 +1,11 @@
 {
- "_nota": "Rose reali delle 16 nazionali. Squadre europee: convocati agli Europei di Belgrado (gennaio 2026), con ruolo, nascita e club; numeri di calottina presi dai Mondiali 2025 quando il giocatore c'era (gli altri assegnati, 'numeroDaVerificare'). Altre squadre: convocati ai Mondiali di Singapore 2025 (solo nome, numero e portiere/movimento). 'mano' è sconosciuta per tutti: da completare (Ale). I ruoli di Wikipedia sono indicativi e vanno verificati (es. alcuni tiratori dal perimetro risultano 'centroboa'). Le statistiche di gioco (40-99) NON ci sono: si calcolano con il metodo in docs/valutazioni.md.",
+ "_nota": "Rose reali delle 16 nazionali. Squadre europee: convocati agli Europei di Belgrado (gennaio 2026), con ruolo, nascita e club; numeri di calottina presi dai Mondiali 2025 quando il giocatore c'era (gli altri assegnati, 'numeroDaVerificare'). Altre squadre: convocati ai Mondiali di Singapore 2025 (solo nome, numero e portiere/movimento). 'mano' è sconosciuta per tutti: da completare (Ale). I ruoli di Wikipedia sono indicativi e vanno verificati (es. alcuni tiratori dal perimetro risultano 'centroboa'). Le statistiche di gioco (40-99) NON ci sono: si calcolano con il metodo in docs/valutazioni.md. Dal rapporto ufficiale World Aquatics: ruolo ufficiale ('ruoloWorldAquatics') e statistiche dei Mondiali 2025 per marcatori, portieri, palle rubate, rimbalzi, stoppate, sprint ed espulsioni; dati di squadra in 'squadreMondiali2025'.",
  "fonti": {
   "Mondiali 2025 rose": "https://en.wikipedia.org/wiki/Water_polo_at_the_2025_World_Aquatics_Championships_%E2%80%93_Men%27s_team_rosters",
   "Mondiali 2025 classifica, marcatori, premi": "https://en.wikipedia.org/wiki/Water_polo_at_the_2025_World_Aquatics_Championships_%E2%80%93_Men%27s_tournament",
   "Europei 2026 rose": "https://en.wikipedia.org/wiki/2026_Men%27s_European_Water_Polo_Championship_squads",
-  "Europei 2026 classifica, marcatori, all-star": "https://en.wikipedia.org/wiki/2026_Men%27s_European_Water_Polo_Championship"
+  "Europei 2026 classifica, marcatori, all-star": "https://en.wikipedia.org/wiki/2026_Men%27s_European_Water_Polo_Championship",
+  "Rapporto ufficiale World Aquatics Singapore 2025 (pallanuoto)": "https://resources.fina.org/fina/document/2026/01/29/d065bb42-328a-4922-874e-291f9f8fea36/2025_Singapore_WP_Report_F.pdf"
  },
  "europei2026Classifica": [
   "SRB",
@@ -25,7 +26,15 @@
     "nascita": "2002-07-14",
     "club": "CN Atlètic-Barceloneta",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 53,
+      "tiriSubiti": 98,
+      "parate%": 54
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Alberto Munárriz",
@@ -49,7 +58,16 @@
      "All-star Mondiali 2025",
      "Mondiali 2025: 21 gol su 52 tiri (40%)"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 21,
+      "quotaGolSquadra%": 27,
+      "tiriInGol%": 40,
+      "palleRubatePerPartita": 1.17
+     }
+    },
+    "ruoloWorldAquatics": "ala sinistra"
    },
    {
     "nome": "Bernat Sanahuja",
@@ -61,7 +79,14 @@
     "riconoscimenti": [
      "Mondiali 2025: 20 gol su 42 tiri (48%)"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 20,
+      "quotaGolSquadra%": 25
+     }
+    },
+    "ruoloWorldAquatics": "difensore"
    },
    {
     "nome": "Miguel del Toro",
@@ -144,7 +169,15 @@
     "nascita": "1993-09-25",
     "club": "CN Sabadell",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 15,
+      "tiriSubiti": 30,
+      "parate%": 50
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Biel Gomila Faiges",
@@ -162,7 +195,14 @@
     "nascita": "1999-03-21",
     "club": "Jadran Herceg Novi",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "espulsioni": 11,
+      "partite": 5
+     }
+    },
+    "ruoloWorldAquatics": "ala sinistra"
    }
   ],
   "HUN": [
@@ -173,7 +213,15 @@
     "nascita": "1992-01-26",
     "club": "Budapesti Honvéd",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 51,
+      "tiriSubiti": 112,
+      "parate%": 46
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Dániel Angyal",
@@ -196,7 +244,17 @@
      "All-star Europei 2026"
     ],
     "capitano": true,
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 14,
+      "quotaGolSquadra%": 12,
+      "tiriInGol%": 42,
+      "palleRubatePerPartita": 1.43,
+      "stoppatePerPartita": 1.29
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Dávid Tátrai",
@@ -265,7 +323,13 @@
     "nascita": "2001-09-10",
     "club": "FTC-Telekom",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "sprintPerPartita": 1.6
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Szilárd Jansik",
@@ -325,7 +389,15 @@
      "Miglior portiere Mondiali 2025",
      "All-star Mondiali 2025"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 54,
+      "tiriSubiti": 103,
+      "parate%": 52
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Konstantinos Genidounias",
@@ -344,7 +416,13 @@
     "nascita": "1998-12-18",
     "club": "Panathinaikos",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "stoppatePerPartita": 0.86
+     }
+    },
+    "ruoloWorldAquatics": "difensore"
    },
    {
     "nome": "Konstantinos Gkiouvetsis",
@@ -367,7 +445,14 @@
      "All-star Europei 2026",
      "Capocannoniere Europei 2026: 26 gol su 38 tiri (68%)"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 14,
+      "quotaGolSquadra%": 14,
+      "tiriInGol%": 37
+     }
+    }
    },
    {
     "nome": "Aristeidis Chalyvopoulos",
@@ -443,7 +528,15 @@
     "nascita": "1997-08-12",
     "club": "Olympiacos",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 22,
+      "tiriSubiti": 33,
+      "parate%": 67
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Evangelos Pouros",
@@ -452,7 +545,14 @@
     "nascita": "2003-08-27",
     "club": "Olympiacos",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "espulsioni": 15,
+      "partite": 7
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Semir Spachits",
@@ -473,7 +573,15 @@
     "nascita": "1997-08-19",
     "club": "Radnički Kragujevac",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 65,
+      "tiriSubiti": 111,
+      "parate%": 59
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Dušan Mandić",
@@ -488,7 +596,16 @@
      "Europei 2026: 20 gol su 35 tiri (57%)",
      "Migliore in campo nella finale degli Europei 2026"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 23,
+      "quotaGolSquadra%": 19,
+      "tiriInGol%": 58,
+      "stoppatePerPartita": 1.29
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Strahinja Rašović",
@@ -606,7 +723,13 @@
     "nascita": "2003-01-13",
     "club": "VK Novi Beograd",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "sprintPerPartita": 2.14
+     }
+    },
+    "ruoloWorldAquatics": "ala destra"
    },
    {
     "nome": "Nikola Lukić",
@@ -616,7 +739,14 @@
     "club": "VK Novi Beograd",
     "fonte": "Europei 2026",
     "numeroDaVerificare": true,
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "espulsioni": 12,
+      "partite": 4
+     }
+    },
+    "ruoloWorldAquatics": "centroboa"
    }
   ],
   "CRO": [
@@ -628,7 +758,15 @@
     "club": "VK Jadran Split",
     "fonte": "Europei 2026",
     "capitano": true,
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 55,
+      "tiriSubiti": 111,
+      "parate%": 50
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Rino Burić",
@@ -676,7 +814,16 @@
     "riconoscimenti": [
      "Mondiali 2025: 16 gol su 26 tiri (62%)"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 16,
+      "quotaGolSquadra%": 17,
+      "tiriInGol%": 62,
+      "sprintPerPartita": 1.33
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Ante Vukičević",
@@ -721,7 +868,13 @@
     "nascita": "1998-11-02",
     "club": "VK Jadran Split",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "stoppatePerPartita": 1.0
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Konstantin Kharkov",
@@ -770,7 +923,15 @@
     "club": "CN Marseille",
     "fonte": "Europei 2026",
     "capitano": true,
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 53,
+      "tiriSubiti": 105,
+      "parate%": 50
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Dmitrii Kholod",
@@ -779,7 +940,15 @@
     "nascita": "1992-01-16",
     "club": "Jadran Herceg Novi",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "sprintPerPartita": 1.71,
+      "espulsioni": 18,
+      "partite": 7
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Marko Mrsić",
@@ -868,7 +1037,14 @@
     "riconoscimenti": [
      "Europei 2026: 19 gol su 32 tiri (59%)"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "espulsioni": 18,
+      "partite": 7
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Vasilije Radović",
@@ -967,7 +1143,15 @@
     "nascita": "2002-07-21",
     "club": "AN Brescia",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 4,
+      "tiriSubiti": 12,
+      "parate%": 33
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Mario Del Basso",
@@ -985,7 +1169,13 @@
     "nascita": "2003-12-23",
     "club": "Pro Recco",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "palleRubatePerPartita": 1.5
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Alessandro Balzarini",
@@ -1004,7 +1194,14 @@
     "nascita": "1994-04-08",
     "club": "RN Savona",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 10,
+      "quotaGolSquadra%": 12,
+      "tiriInGol%": 71
+     }
+    }
    },
    {
     "nome": "Edoardo Di Somma",
@@ -1041,7 +1238,13 @@
     "nascita": "2002-03-29",
     "club": "Pro Recco",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "palleRubatePerPartita": 1.6
+     }
+    },
+    "ruoloWorldAquatics": "difensore"
    },
    {
     "nome": "Matteo Iocchi Gratta",
@@ -1050,7 +1253,13 @@
     "nascita": "2002-09-01",
     "club": "Pro Recco",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "palleRubatePerPartita": 1.5
+     }
+    },
+    "ruoloWorldAquatics": "ala sinistra"
    }
   ],
   "USA": [
@@ -1059,7 +1268,17 @@
     "numero": 1,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 61,
+      "tiriSubiti": 93,
+      "parate%": 66,
+      "espulsioni": 13,
+      "partite": 6
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Jack Larsen",
@@ -1080,7 +1299,13 @@
     "numero": 4,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "palleRubatePerPartita": 1.67
+     }
+    },
+    "ruoloWorldAquatics": "ala sinistra"
    },
    {
     "nome": "Hannes Daube",
@@ -1132,7 +1357,14 @@
     "riconoscimenti": [
      "Mondiali 2025: tra i migliori marcatori (33 tiri, 45%)"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 15,
+      "quotaGolSquadra%": 17,
+      "tiriInGol%": 45
+     }
+    }
    },
    {
     "nome": "Max Irving",
@@ -1146,7 +1378,15 @@
     "numero": 13,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 8,
+      "tiriSubiti": 13,
+      "parate%": 62
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Ryan Ohl",
@@ -1169,14 +1409,28 @@
     "numero": 1,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 43,
+      "tiriSubiti": 72,
+      "parate%": 60
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Seiya Adachi",
     "numero": 2,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "rimbalziPerPartita": 1.33
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Taiyo Watanabe",
@@ -1186,14 +1440,28 @@
     "riconoscimenti": [
      "Mondiali 2025: tra i migliori marcatori (37 tiri, 46%)"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 17,
+      "quotaGolSquadra%": 17,
+      "sprintPerPartita": 2.5
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Toshiyuki Maeda",
     "numero": 4,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "rimbalziPerPartita": 1.33
+     }
+    },
+    "ruoloWorldAquatics": "difensore"
    },
    {
     "nome": "Enishi Ura",
@@ -1228,7 +1496,13 @@
     "numero": 9,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "rimbalziPerPartita": 1.5
+     }
+    },
+    "ruoloWorldAquatics": "difensore"
    },
    {
     "nome": "Yusuke Inaba",
@@ -1239,7 +1513,15 @@
      "All-star Mondiali 2025",
      "Mondiali 2025: 23 gol su 49 tiri (47%)"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 23,
+      "quotaGolSquadra%": 23,
+      "tiriInGol%": 47
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Daichi Ogihara",
@@ -1260,7 +1542,15 @@
     "numero": 13,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 51,
+      "tiriSubiti": 87,
+      "parate%": 59
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Jun Lowrey",
@@ -1286,7 +1576,15 @@
     "club": "Steaua București",
     "fonte": "Europei 2026",
     "capitano": true,
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 61,
+      "tiriSubiti": 140,
+      "parate%": 44
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Francesco Iudean",
@@ -1295,7 +1593,13 @@
     "nascita": "2001-09-28",
     "club": "Steaua București",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "palleRubatePerPartita": 1.17
+     }
+    },
+    "ruoloWorldAquatics": "difensore"
    },
    {
     "nome": "Matei-Ioan Lutescu",
@@ -1313,7 +1617,14 @@
     "nascita": "1997-03-13",
     "club": "Steaua București",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "espulsioni": 8,
+      "partite": 2
+     }
+    },
+    "ruoloWorldAquatics": "ala sinistra"
    },
    {
     "nome": "Andrei Neamțu",
@@ -1326,7 +1637,14 @@
      "Mondiali 2025: tra i migliori marcatori (27 tiri, 59%)",
      "Europei 2026: tra i migliori marcatori"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 16,
+      "quotaGolSquadra%": 19
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Andrei Prioteasa",
@@ -1375,7 +1693,15 @@
      "Mondiali 2025: 17 gol su 35 tiri (49%)",
      "Europei 2026: 24 gol su 43 tiri (56%)"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 17,
+      "quotaGolSquadra%": 20,
+      "tiriInGol%": 49
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Darian Luncan",
@@ -1403,7 +1729,15 @@
     "nascita": "1984-01-05",
     "club": "Steaua București",
     "fonte": "Europei 2026",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 5,
+      "tiriSubiti": 8,
+      "parate%": 62
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "David Belenyesi",
@@ -1430,7 +1764,15 @@
     "numero": 1,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 34,
+      "tiriSubiti": 46,
+      "parate%": 74
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Ali Oussadou",
@@ -1472,7 +1814,13 @@
     "numero": 7,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "sprintPerPartita": 3.0
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Bor Tanasijevic",
@@ -1486,7 +1834,13 @@
     "numero": 9,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "stoppatePerPartita": 1.0
+     }
+    },
+    "ruoloWorldAquatics": "difensore"
    },
    {
     "nome": "Aria Soleimanipak",
@@ -1511,14 +1865,32 @@
      "Capocannoniere Mondiali 2025: 26 gol su 45 tiri (58%)",
      "All-star Mondiali 2025"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 26,
+      "quotaGolSquadra%": 33,
+      "tiriInGol%": 58
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Brody McKnight",
     "numero": 13,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 49,
+      "tiriSubiti": 95,
+      "parate%": 52,
+      "espulsioni": 13,
+      "partite": 6
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Andrej Gavric",
@@ -1541,7 +1913,15 @@
     "numero": 1,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 11,
+      "tiriSubiti": 22,
+      "parate%": 50
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Logan Cabral",
@@ -1597,7 +1977,13 @@
     "numero": 9,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "sprintPerPartita": 1.0
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Lucas Andrade",
@@ -1607,14 +1993,29 @@
     "riconoscimenti": [
      "Mondiali 2025: 15 gol su 38 tiri (39%)"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 15,
+      "quotaGolSquadra%": 23,
+      "tiriInGol%": 39,
+      "palleRubatePerPartita": 1.17
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Gustavo Guimarães",
     "numero": 11,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "rimbalziPerPartita": 1.33
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Luis Ricardo Silva",
@@ -1628,7 +2029,15 @@
     "numero": 13,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 78,
+      "tiriSubiti": 139,
+      "parate%": 56
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "João Pedro Leme",
@@ -1651,7 +2060,15 @@
     "numero": 1,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 55,
+      "tiriSubiti": 87,
+      "parate%": 63
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Angus Lambie",
@@ -1672,7 +2089,14 @@
     "numero": 4,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "palleRubatePerPartita": 1.4,
+      "stoppatePerPartita": 0.8
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Nathan Power",
@@ -1682,7 +2106,16 @@
     "riconoscimenti": [
      "Mondiali 2025: tra i migliori marcatori (26 tiri, 58%)"
     ],
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 15,
+      "quotaGolSquadra%": 22,
+      "tiriInGol%": 58,
+      "stoppatePerPartita": 0.8
+     }
+    },
+    "ruoloWorldAquatics": "difensore"
    },
    {
     "nome": "Timothy Putt",
@@ -1710,14 +2143,26 @@
     "numero": 9,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "sprintPerPartita": 1.0
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Marcus Berehulak",
     "numero": 10,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "palleRubatePerPartita": 1.4
+     }
+    },
+    "ruoloWorldAquatics": "difensore"
    },
    {
     "nome": "Sam Nangle",
@@ -1738,7 +2183,15 @@
     "numero": 13,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 18,
+      "tiriSubiti": 29,
+      "parate%": 62
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Andrej Grgurevic",
@@ -1761,21 +2214,42 @@
     "numero": 1,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 52,
+      "tiriSubiti": 120,
+      "parate%": 43
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Liu Yu",
     "numero": 2,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "rimbalziPerPartita": 1.6
+     }
+    },
+    "ruoloWorldAquatics": "difensore"
    },
    {
     "nome": "Li Deming",
     "numero": 3,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "espulsioni": 7,
+      "partite": 3
+     }
+    },
+    "ruoloWorldAquatics": "ala destra"
    },
    {
     "nome": "Peng Jiahao",
@@ -1789,7 +2263,13 @@
     "numero": 5,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "sprintPerPartita": 1.2
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Xie Zekai",
@@ -1803,7 +2283,14 @@
     "numero": 7,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 13,
+      "quotaGolSquadra%": 27,
+      "tiriInGol%": 30
+     }
+    }
    },
    {
     "nome": "Chen Rui",
@@ -1817,7 +2304,13 @@
     "numero": 9,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "rimbalziPerPartita": 1.4
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Zhu Jiashao",
@@ -1868,7 +2361,15 @@
     "numero": 1,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 51,
+      "tiriSubiti": 88,
+      "parate%": 58
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Loh Zhi Zhi",
@@ -1889,7 +2390,14 @@
     "numero": 4,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 8,
+      "quotaGolSquadra%": 17,
+      "tiriInGol%": 42
+     }
+    }
    },
    {
     "nome": "Loh de Jun Cayde",
@@ -1952,7 +2460,15 @@
     "numero": 13,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 26,
+      "tiriSubiti": 48,
+      "parate%": 54
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Matthias Goh",
@@ -1966,7 +2482,15 @@
     "numero": 15,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 10,
+      "tiriSubiti": 20,
+      "parate%": 50
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    }
   ],
   "RSA": [
@@ -1975,7 +2499,15 @@
     "numero": 1,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 44,
+      "tiriSubiti": 95,
+      "parate%": 46
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Nathan Ward",
@@ -2045,29 +2577,195 @@
     "numero": 11,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "sprintPerPartita": 1.0
+     }
+    },
+    "ruoloWorldAquatics": "esterno (driver)"
    },
    {
     "nome": "Tristan Grimmett",
     "numero": 12,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "palleRubatePerPartita": 1.4
+     }
+    },
+    "ruoloWorldAquatics": "ala sinistra"
    },
    {
     "nome": "Matthew Smith",
     "numero": 13,
     "ruolo": "portiere",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "parate": 34,
+      "tiriSubiti": 71,
+      "parate%": 48
+     }
+    },
+    "ruoloWorldAquatics": "portiere"
    },
    {
     "nome": "Brett Sneddon",
     "numero": 14,
     "ruolo": "giocatore di movimento",
     "fonte": "Mondiali 2025",
-    "mano": null
+    "mano": null,
+    "statistiche": {
+     "mondiali2025": {
+      "gol": 5,
+      "quotaGolSquadra%": 17,
+      "tiriInGol%": 36
+     }
+    }
    }
   ]
+ },
+ "squadreMondiali2025": {
+  "_nota": "Dati di squadra del rapporto ufficiale World Aquatics (Singapore 2025, torneo maschile)",
+  "AUS": {
+   "gol": 67,
+   "tiriInGol%": 42,
+   "tiriNelloSpecchio%": 71,
+   "tiriInSuperiorita%": 19,
+   "palleRubate": 37,
+   "parate%": 54
+  },
+  "BRA": {
+   "gol": 64,
+   "tiriInGol%": 34,
+   "tiriNelloSpecchio%": 65,
+   "tiriInSuperiorita%": 20,
+   "palleRubate": 28,
+   "parate%": 44
+  },
+  "CAN": {
+   "gol": 80,
+   "tiriInGol%": 38,
+   "tiriNelloSpecchio%": 67,
+   "tiriInSuperiorita%": 24,
+   "palleRubate": 33,
+   "parate%": 36
+  },
+  "CHN": {
+   "gol": 49,
+   "tiriInGol%": 28,
+   "tiriNelloSpecchio%": 61,
+   "tiriInSuperiorita%": 20,
+   "palleRubate": 30,
+   "parate%": 27
+  },
+  "CRO": {
+   "gol": 94,
+   "tiriInGol%": 46,
+   "tiriNelloSpecchio%": 71,
+   "tiriInSuperiorita%": 31,
+   "palleRubate": 39,
+   "parate%": 45
+  },
+  "ESP": {
+   "gol": 79,
+   "tiriInGol%": 38,
+   "tiriNelloSpecchio%": 71,
+   "tiriInSuperiorita%": 30,
+   "palleRubate": 36,
+   "parate%": 55
+  },
+  "GRE": {
+   "gol": 101,
+   "tiriInGol%": 42,
+   "tiriNelloSpecchio%": 70,
+   "tiriInSuperiorita%": 27,
+   "palleRubate": 53,
+   "parate%": 60
+  },
+  "HUN": {
+   "gol": 115,
+   "tiriInGol%": 48,
+   "tiriNelloSpecchio%": 74,
+   "tiriInSuperiorita%": 30,
+   "palleRubate": 39,
+   "parate%": 42
+  },
+  "ITA": {
+   "gol": 86,
+   "tiriInGol%": 42,
+   "tiriNelloSpecchio%": 74,
+   "tiriInSuperiorita%": 26,
+   "palleRubate": 59,
+   "parate%": 45
+  },
+  "JPN": {
+   "gol": 99,
+   "tiriInGol%": 44,
+   "tiriNelloSpecchio%": 77,
+   "tiriInSuperiorita%": 21,
+   "palleRubate": 30,
+   "parate%": 35
+  },
+  "MNE": {
+   "gol": 87,
+   "tiriInGol%": 36,
+   "tiriNelloSpecchio%": 66,
+   "tiriInSuperiorita%": 24,
+   "palleRubate": 41,
+   "parate%": 42
+  },
+  "ROU": {
+   "gol": 83,
+   "tiriInGol%": 43,
+   "tiriNelloSpecchio%": 64,
+   "tiriInSuperiorita%": 23,
+   "palleRubate": 45,
+   "parate%": 43
+  },
+  "RSA": {
+   "gol": 29,
+   "tiriInGol%": 25,
+   "tiriNelloSpecchio%": 63,
+   "tiriInSuperiorita%": 15,
+   "palleRubate": 28,
+   "parate%": 28
+  },
+  "SGP": {
+   "gol": 47,
+   "tiriInGol%": 35,
+   "tiriNelloSpecchio%": 66,
+   "tiriInSuperiorita%": 20,
+   "palleRubate": 26,
+   "parate%": 35
+  },
+  "SRB": {
+   "gol": 119,
+   "tiriInGol%": 48,
+   "tiriNelloSpecchio%": 76,
+   "tiriInSuperiorita%": 30,
+   "palleRubate": 46,
+   "parate%": 45
+  },
+  "USA": {
+   "gol": 87,
+   "tiriInGol%": 44,
+   "tiriNelloSpecchio%": 72,
+   "tiriInSuperiorita%": 23,
+   "palleRubate": 52,
+   "parate%": 44
+  },
+  "torneo": {
+   "tiri": 3170,
+   "tiriNelloSpecchio": 2213,
+   "gol": 1280,
+   "espulsioniCentroboa": 687,
+   "espulsioniAltre": 335,
+   "falliDaRigore": 169
+  }
  }
 }
