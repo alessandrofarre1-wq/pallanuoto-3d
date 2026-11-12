@@ -28,6 +28,8 @@ vec3 sottAcqua(vec3 c, vec3 p, float bagnato, float luci){
   float prof=max(0.0,-y);
   float k=dentro*(0.10+0.62*(1.0-exp(-prof*1.1)));                         // quanto prende il colore dell'acqua
   vec3 acqua=vec3(0.008,0.17,0.35)*(0.8+0.35*exp(-prof*0.8));              // blu dell'acqua (lineare): più chiaro vicino alla superficie
+  // più si scende, meno contrasto: il colore si appiattisce verso la sua luminosità media prima di sfumare nel blu
+  c=mix(c,vec3(dot(c,vec3(0.3,0.55,0.15))),dentro*0.35*(1.0-exp(-prof*1.6)));
   vec3 r=mix(c*mix(vec3(1.0),vec3(0.90,0.97,1.0),dentro),acqua,k);
   // luce che tremola sotto la superficie: reticolo morbido e irregolare che si muove piano (sui corpi si spegne in profondità,
   // sul fondo resta: sono i giochi di luce della piscina, in versione disegnata e leggera)
