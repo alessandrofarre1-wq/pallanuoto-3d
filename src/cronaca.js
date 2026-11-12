@@ -10,8 +10,8 @@
 //  - ogni evento (non i suggerimenti) va nel registro, consultabile dal pulsante accanto alla pausa.
 // Solo interfaccia: niente caso del gioco, niente regole.
 import { camera } from './grafica/scena.js';
-import { HL } from './costanti.js';
-import { allPlayers, ball, ctrl, game, teams } from './stato.js';
+import { EXCL_TIME, HL } from './costanti.js';
+import { ball, ctrl, game, teams } from './stato.js';
 import * as THREE from 'three';
 
 const $ = id => document.getElementById(id);
@@ -52,6 +52,9 @@ export function annuncia(tipo,titolo,o={}){
       chi:o.p?`${chi(o.p)} ${o.p.name}`:(squadra?squadra.short:''), dettaglio:o.dettaglio||'' });
   if(registro.length>300) registro.shift();
   if(tipo==='gol') golFlash=1.6;
+  // l'espulsione non usa lo spazio delle notifiche: si apre come linguetta sotto la squadra dell'espulso (vedi più sotto)
+  // (nella linguetta solo su chi ha fatto fallo: tempo e superiorità si vedono già lì accanto; il resto va nel registro)
+  if(tipo==='espulsione'&&n.p){ fresche.set(n.p,{ eta:0, det:(o.dettaglio||'').split(' · ')[0] }); return; }
   if(!attuale){ mostra(n); return; }
   if(attuale.chiave===n.chiave){ attuale.eta=Math.min(attuale.eta,0.3); return; }
   if(n.pri>attuale.pri || (n.pri===attuale.pri && attuale.eta>0.6 && !GRANDE.has(n.tipo)) || (n.tipo==='conto'&&attuale.tipo==='conto')){ mostra(n); return; }
@@ -82,7 +85,8 @@ export function svuota(){ coda=[]; chiudi(); }
 // a ogni fotogramma (dt in secondi di gioco)
 export function tick(dt){
   for(const n of coda) n.attesa+=dt;
-  if(golFlash>0){ golFlash-=dt; $('score').classList.toggle('gol',golFlash>0); }
+  if(golFlash>0){ golFlash-=dt; $('hud').classList.toggle('gol',golFlash>0); }
+  for(const [p,f] of fresche){ f.eta+=dt; if(f.eta>DURATA.espulsione||!p.excluded) fresche.delete(p); }
   if(!attuale) return;
   attuale.eta+=dt;
   // time-out e gol restano finché il gioco è fermo; il time-out mostra quanto manca alla ripresa
@@ -92,15 +96,28 @@ export function tick(dt){
   if(attuale.eta>=attuale.durata) chiudi();
 }
 
-// ---------- indicatori persistenti: espulsi con il tempo che manca, superiorità numerica ----------
-let statoChiave='';
+// ---------- espulsioni e superiorità: linguette appese sotto la squadra interessata (tabellone) ----------
+// Appena fischiata, la linguetta dell'espulso si apre per DURATA.espulsione secondi con nome e su chi ha fatto fallo; poi si
+// richiude e resta piccola: numero, tempo che manca e una barra che si accorcia. Sotto la squadra con l'uomo in più compare
+// il distintivo oro «6 c 5» nel tabellone. Nessun banner al centro: il gioco intanto continua.
+const fresche=new Map();
+const USCITA_SVG='<svg viewBox="0 0 24 24"><path d="M4 3.5h9v4h-2.4V6H6.4v12h4.2v-1.5H13v4H4z" fill="currentColor"/><path d="M13.5 8l6 4-6 4v-2.6H8.6v-2.8h4.9z" fill="currentColor"/></svg>';
+const chiaviEsp=['',''];
 function aggiornaStato(){
-  let h='';
   const inCampo=t=>t.players.filter(p=>!p.excluded&&!p.isGK).length;      // giocatori di movimento: «6 contro 5»
-  for(const p of allPlayers) if(p.excluded) h+=`<span class="ex">${pallino(p.team)}${p.team.short} #${p.num}<b>${fmt(p.exclUntil-game.time)}</b></span>`;
-  if(h){ const a=inCampo(teams[0]), b=inCampo(teams[1]);
-    if(a!==b){ const t=a>b?teams[0]:teams[1]; h+=`<span class="sup" style="--col:${t.css}">${pallino(t)}${t.short} in superiorità <b>${Math.max(a,b)} c ${Math.min(a,b)}</b></span>`; } }
-  if(h!==statoChiave){ statoChiave=h; $('stato').innerHTML=h; }
+  const a=inCampo(teams[0]), b=inCampo(teams[1]);
+  teams.forEach((t,k)=>{
+    let h='';
+    for(const p of t.players) if(p.excluded){
+      const resta=Math.max(0,p.exclUntil-game.time), f=fresche.get(p), def=p.pf>=3;
+      h+=`<span class="ex${f?' nuova':''}" style="--p:${def?100:Math.round(Math.min(1,resta/EXCL_TIME)*100)}%">`
+        +`<span class="r1">${USCITA_SVG}<span class="lab">Espulsione</span><span class="chi">#${p.num} <small>${p.name}</small></span><span class="t">${def?'def.':fmt(resta)}</span></span>`
+        +(f&&f.det?`<span class="det">${f.det}</span>`:'')+'</span>';
+    }
+    const mia=k===0?a:b, altra=k===0?b:a, piu=$(k===0?'piuA':'piuB'), sup=mia>altra?`${mia} c ${altra}`:'';
+    if(piu.textContent!==sup){ piu.textContent=sup; piu.classList.toggle('on',!!sup); piu.title=sup?'uomo in più':''; }
+    if(h!==chiaviEsp[k]){ chiaviEsp[k]=h; $(k===0?'espA':'espB').innerHTML=h; }
+  });
 }
 
 // ---------- la notifica non deve coprire palla, porte e giocatore controllato ----------
@@ -121,8 +138,10 @@ export function aggiorna(){
   aggiornaStato();
   // posizione verticale: sotto il tabellone e sotto gli indicatori delle espulsioni
   // al centro e a destra: sotto il tabellone (e sotto gli espulsi); a sinistra: sotto gli schemi, che stanno in alto a sinistra
-  const hud=$('hud').getBoundingClientRect(), st=$('stato'), el=$('cronaca'), tac=$('tac').getBoundingClientRect();
-  const sotto=hud.bottom+6+(st.childElementCount?st.offsetHeight+4:0), alto={ '':sotto, dx:sotto, sx:Math.max(sotto,tac.bottom+6) };
+  const el=$('cronaca'), tac=$('tac').getBoundingClientRect();
+  let sotto=$('hud').getBoundingClientRect().bottom;
+  for(const id of ['espA','espB']) if($(id).childElementCount) sotto=Math.max(sotto,$(id).getBoundingClientRect().bottom);
+  sotto+=6; const alto={ '':sotto, dx:sotto, sx:Math.max(sotto,tac.bottom+6) };
   const metti=p=>{ el.classList.remove('sx','dx'); if(p) el.classList.add(p); el.style.top=alto[p]+'px'; };
   metti(pos);
   if(!visibile||game.state==='menu') return;

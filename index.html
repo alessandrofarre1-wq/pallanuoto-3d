@@ -13,14 +13,17 @@
 <link rel="stylesheet" href="./src/stile.css">
 </head>
 <body>
+<!-- tabellone: un pezzo unico. Squadre ai lati (sigla, cuffia, segno «tu» sulla propria), punteggio al centro, tempo e
+     tempo per l'azione a destra. Sotto ogni squadra pendono gli indicatori di espulsione e superiorità (cronaca.js). -->
 <div id="hud">
-  <div class="sb"><span class="cap" id="capA"></span><span id="nameA">ITA</span><span id="score">0 - 0</span><span id="nameB">HUN</span><span class="cap" id="capB"></span></div>
-  <div class="sb"><span id="period">1°T</span><span id="clock">3:00</span></div>
-  <div class="sb" id="shotclock">28</div>
+  <div class="sq sqa"><i class="cuffia" id="capA"></i><span class="sigla" id="nameA">ITA</span><b class="piu" id="piuA"></b><div class="esp" id="espA"></div></div>
+  <div id="score"><b id="scA">0</b><i>–</i><b id="scB">0</b></div>
+  <div class="sq sqb"><b class="piu" id="piuB"></b><span class="sigla" id="nameB">HUN</span><i class="cuffia" id="capB"></i><div class="esp" id="espB"></div></div>
+  <div class="tempo"><span id="period">1°T</span><span id="clock">3:00</span></div>
+  <div id="shotclock">28</div>
 </div>
 <div id="tac"></div>
-<!-- indicatori persistenti (espulsi, superiorità) e notifica degli eventi: sotto il tabellone, mai al centro del campo -->
-<div id="stato"></div>
+<!-- notifica degli eventi: sotto il tabellone, mai al centro del campo -->
 <div id="cronaca" class="cr"></div>
 <div id="fight"><div class="fl"><span id="fdef">DIF</span><b>Lotta al centro</b><span id="fboa">BOA</span></div><div class="fb"><div id="fbar"></div><i></i></div></div>
 <div id="player">
@@ -55,7 +58,7 @@
 <div id="menu">
   <div class="panel">
     <h1>🤽 Pallanuoto 3D</h1>
-    <div class="sub" id="sub">Prototipo v0.24 · scegli le squadre e gioca</div>
+    <div class="sub" id="sub">Prototipo v0.25 · scegli le squadre e gioca</div>
     <div id="final" style="display:none"></div>
     <div class="row"><label>La tua squadra</label><select class="opt sel" id="sqA"></select></div>
     <div class="row"><label>Avversaria</label><select class="opt sel" id="sqB"></select></div>

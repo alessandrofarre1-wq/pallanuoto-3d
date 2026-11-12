@@ -28,7 +28,7 @@ async function apri(viewport, telefono) {
   await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });
   return pg;
 }
-const NASCONDI = '#hud,#tac,#player,#cronaca,#stato,#tLog,#fight,#touch,#fps{display:none!important}';
+const NASCONDI = '#hud,#tac,#player,#cronaca,#tLog,#fight,#touch,#fps{display:none!important}';
 async function foglio(nome, file, titoli, colonne, larg) {
   const p2 = await browser.newPage({ viewport: { width: 1800, height: 900 } });
   await p2.setContent(`<body style="margin:0;background:#111"><div id="c" style="display:grid;grid-template-columns:repeat(${colonne},${larg}px);gap:3px;padding:3px;width:max-content">${file.map((f, i) => `<div style="position:relative"><img src="data:image/png;base64,${fs.readFileSync(f).toString('base64')}" style="display:block;width:${larg}px"><b style="position:absolute;left:6px;top:4px;color:#fff;font:700 14px system-ui;text-shadow:0 1px 3px #000">${titoli[i]}</b></div>`).join('')}</div></body>`);
