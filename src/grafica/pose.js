@@ -3,8 +3,8 @@ import * as THREE from 'three';
 import { VIS, clamp, dist, rnd } from '../costanti.js';
 import { aggiornaNumero, muoviCorpo } from './corpo.js';
 import { setSeg } from './modello.js';
-import { spawnFoam } from './scena.js';
-import { ball, fight, game } from '../stato.js';
+import { contatto, spawnFoam } from './scena.js';
+import { allPlayers, ball, fight, game } from '../stato.js';
 import { shotKind } from '../tiri.js';
 //<POSE>
 export const L1=0.30, L2=0.29;
@@ -192,19 +192,36 @@ export function updateRig(p,dt,t){
   let l=null;
   if(T.ballHand){ l=[J.hR[0]+0.02,J.hR[1]+0.13,J.hR[2]]; if(T.ballDavanti>0) l=mix3(l,PALLA_DAVANTI,T.ballDavanti); }
   if(l){ const c=p.fx, sn=-p.fz; p.ballW=[p.x+VIS*(l[0]*c+l[2]*sn), VIS*l[1], p.z+VIS*(-l[0]*sn+l[2]*c)]; } else p.ballW=null;
-  // solo per il disegno: il personaggio Cartoon ha braccia di lunghezza diversa da quelle di pose.js, quindi la palla tenuta in
+  // solo per il disegno: il pallanuotista ha braccia di lunghezza diversa da quelle di pose.js, quindi la palla tenuta in
   // mano viene spostata di quanto la sua mano vera dista da quella prevista. p.ballW (usato dal gioco per i lanci) non cambia:
-  // le partite restano identiche nei due stili.
+  // il gioco non dipende dal disegno.
   p.ballVistaW=null;
-  if(l && R.corpo && R.corpo.fumetto && R.corpo.ossa.manoD && !(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){
+  if(l && R.corpo && R.corpo.ossa.manoD && !(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){
     const c=p.fx, sn=-p.fz, h=J.hR, k=1-(T.ballDavanti||0);
     R.corpo.ossa.manoD.getWorldPosition(_mano);
     const hx=p.x+VIS*(h[0]*c+h[2]*sn), hy=VIS*h[1], hz=p.z+VIS*(-h[0]*sn+h[2]*c);
     p.ballVistaW=[p.ballW[0]+(_mano.x-hx)*k, p.ballW[1]+(_mano.y-hy)*k, p.ballW[2]+(_mano.z-hz)*k];
   }
-  // schiuma: battuta di gambe e bracciata
+  // contatto con l'acqua (scena.js): cerchio attorno alle spalle da fermi, ovale lungo il corpo in nuotata, onda davanti se veloce
+  const sp=Math.hypot(p.vx,p.vz), vel=clamp(sp/1.6,0,1), e=T.oriz||0, c=p.fx, sn=-p.fz;
+  { const mx=(J.sL[0]+J.sR[0])/2*(1-e)+(J.head[0]+J.hip[0])/2*e, mz=(J.sL[2]+J.sR[2])/2*(1-e)+(J.head[2]+J.hip[2])/2*e;
+    const i=p.iContatto??(p.iContatto=allPlayers.indexOf(p));
+    contatto(i,p.x+VIS*(mx*c+mz*sn),p.z+VIS*(-mx*sn+mz*c),R.g.rotation.y,0.5+0.32*e,0.5-0.13*e,R.g.visible?0.7+(0.3*vel-0.25)*e:0,R.g.visible?e*vel:0); }
+  // spruzzo quando una mano rientra in acqua (bracciata, appoggio del braccio libero nel tiro): solo disegno, niente caso
+  if(R.corpo && R.corpo.ossa.manoD && !(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){
+    const Y=p.maniY||(p.maniY=[0,0]);
+    [R.corpo.ossa.manoD,R.corpo.ossa.manoS].forEach((o,k)=>{ o.getWorldPosition(_mano);
+      if(Y[k]>0.04&&_mano.y<=0.04) spawnFoam(_mano.x,_mano.z,T.swim?0.11:0.09,0.45);
+      Y[k]=_mano.y; });
+  }
+  // schiuma: scia dietro (allungata nel verso del nuoto) e increspatura davanti, più grandi se si va veloci; ogni due colpi due
+  // scie laterali che si aprono a V dai fianchi. I numeri del caso usati sono gli stessi di prima (le partite non cambiano).
   if(T.swim){ p.foamT=(p.foamT||0)-dt; if(p.foamT<=0){ p.foamT=0.09;
-    spawnFoam(p.x-p.fx*VIS*1.15+(rnd()-0.5)*0.2,p.z-p.fz*VIS*1.15+(rnd()-0.5)*0.2,0.2+rnd()*0.1,0.8,p.fx,p.fz);      // scia dietro (allungata nel verso del nuoto)
-    spawnFoam(p.x+p.fx*VIS*0.5+(rnd()-0.5)*0.5,p.z+p.fz*VIS*0.5+(rnd()-0.5)*0.5,0.12,0.5); } }
+    const f=0.75+0.45*vel;
+    spawnFoam(p.x-p.fx*VIS*1.15+(rnd()-0.5)*0.2,p.z-p.fz*VIS*1.15+(rnd()-0.5)*0.2,(0.2+rnd()*0.1)*f,0.8,p.fx,p.fz);
+    spawnFoam(p.x+p.fx*VIS*0.5+(rnd()-0.5)*0.5,p.z+p.fz*VIS*0.5+(rnd()-0.5)*0.5,0.12*f,0.5);
+    p.sciaV=!p.sciaV;
+    if(p.sciaV&&vel>0.5) for(const l of [1,-1]){ const a=0.45*l, dx=p.fx*Math.cos(a)-p.fz*Math.sin(a), dz=p.fx*Math.sin(a)+p.fz*Math.cos(a);
+      spawnFoam(p.x-p.fx*VIS*0.55-p.fz*l*0.22,p.z-p.fz*VIS*0.55+p.fx*l*0.22,0.11*f,0.8,dx,dz); } } }
   else if(p.act&&p.act.kind!=='pass'&&p.act.kind!=='fake'&&!p.act.foam&&p.act.done){ p.act.foam=true; for(let i=0;i<4;i++) spawnFoam(p.x+(rnd()-0.5)*0.7,p.z+(rnd()-0.5)*0.7,0.25,0.9); }
 }

@@ -2,8 +2,7 @@
 import * as THREE from 'three';
 import { BRV, GH, GW, HL, HW, rnd } from '../costanti.js';
 import { game } from '../stato.js';
-import { alCambioStile, cartoon } from './stile.js';
-import { Acqua, STRATO_CORPI, STRATO_SOLO_VISTA, STRATO_SOPRA, STRATO_SOTTO, STRATO_VASCA } from './acqua.js';
+import { sottAcqua, tempoAcqua } from './sottacqua.js';
 // ================= SCENA =================
 export const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.info.autoReset=false;   // il conteggio degli oggetti disegnati si azzera a mano una volta per fotogramma (render.js)
@@ -21,8 +20,7 @@ export function canvasTex(w,h,draw,rx,ry){
 scene.background = canvasTex(16,256,(x,w,h)=>{ const g=x.createLinearGradient(0,0,0,h); g.addColorStop(0,'#2f7fd0'); g.addColorStop(0.6,'#a6d4f4'); g.addColorStop(1,'#e9f5fc'); x.fillStyle=g; x.fillRect(0,0,w,h); });
 scene.fog = new THREE.Fog(0xcfe6f5,70,170);
 export const camera = new THREE.PerspectiveCamera(innerWidth<innerHeight?62:40,innerWidth/innerHeight,0.1,300);
-camera.layers.enableAll(); camera.layers.disable(STRATO_SOTTO);
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight; camera.fov=camera.aspect<1?62:40;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight); ridimensionaAcqua();});
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight; camera.fov=camera.aspect<1?62:40;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
 // intensità ritarate per Three.js moderno (colori calcolati in spazio lineare) in modo da restare come nella v0.9
 export const LUCE_CIELO=2.44, LUCE_SOLE=2.86;
 scene.add(new THREE.HemisphereLight(0xffffff,0x27385d,LUCE_CIELO));
@@ -36,30 +34,11 @@ export const PX=15, PZ=12.5, DEPTH=2.2;
 // fondo piastrellato
 export const tileDraw=(base,line)=>(x,w,h)=>{ x.fillStyle=base; x.fillRect(0,0,w,h); x.strokeStyle=line; x.lineWidth=2;
   for(let i=0;i<=w;i+=32){ x.beginPath(); x.moveTo(i,0); x.lineTo(i,h); x.stroke(); x.beginPath(); x.moveTo(0,i); x.lineTo(w,i); x.stroke(); } };
-// sul fondo e sulle righe delle corsie si muovono i giochi di luce (caustiche): disegno animato calcolato dalla scheda grafica
-export const caustiche={ tempo:{value:0}, forza:{value:1} };
-function conCaustiche(mat){
-  mat.onBeforeCompile=sh=>{
-    sh.uniforms.uTempo=caustiche.tempo; sh.uniforms.uForza=caustiche.forza;
-    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vPosMondo;')
-      .replace('#include <begin_vertex>','#include <begin_vertex>\nvPosMondo=(modelMatrix*vec4(transformed,1.0)).xyz;');
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>',`#include <common>
-      varying vec3 vPosMondo; uniform float uTempo, uForza;
-      float caustica(vec2 q,float t){
-        vec2 p=mod(q*1.7,6.2831853)-250.0, i=p; float c=1.0;
-        for(int n=0;n<3;n++){ float tt=t*(1.0-3.5/float(n+1));
-          i=p+vec2(cos(tt-i.x)+sin(tt+i.y),sin(tt-i.y)+cos(tt+i.x));
-          c+=1.0/length(vec2(p.x/(sin(i.x+tt)/0.005),p.y/(cos(i.y+tt)/0.005))); }
-        c=1.17-pow(c/3.0,1.4); return pow(abs(c),8.0);
-      }`).replace('#include <opaque_fragment>','outgoingLight+=vec3(0.75,0.9,1.0)*caustica(vPosMondo.xz,uTempo*0.55)*uForza;\n#include <opaque_fragment>');
-  };
-  return mat;
-}
-const fondoVero=conCaustiche(new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#3aaee4','rgba(255,255,255,.45)'),PX,PZ)}));
-const fondoPiatto=new THREE.MeshBasicMaterial({color:0x2f9be6});      // cartoon: fondo a tinta unita, così le corsie scure risaltano
-const fondo=box(PX*2,0.1,PZ*2,fondoVero,0,-DEPTH,0);
-{ const riga=conCaustiche(new THREE.MeshLambertMaterial({color:0x0d3566})); for(let i=-4;i<=4;i++) box(PX*2-4,0.02,0.28,riga,0,-DEPTH+0.06,i*2.5); }
-export const wallMat=new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#8fe0f7','rgba(255,255,255,.55)'),12,1)});
+// fondo, corsie e pareti prendono il colore dell'acqua secondo la profondità (sottacqua.js): piastrelle e righe si vedono, ma
+// attenuate come in una piscina vera; sul fondo si muovono giochi di luce leggeri
+box(PX*2,0.1,PZ*2,sottAcqua(new THREE.MeshBasicMaterial({map:canvasTex(256,256,tileDraw('#52baf2','rgba(255,255,255,.3)'),PX/2,PZ/2)}),{luci:'0.3'}),0,-DEPTH,0);
+{ const riga=sottAcqua(new THREE.MeshLambertMaterial({color:0x0d3566}),{luci:'0.18'}); for(let i=-4;i<=4;i++) box(PX*2-4,0.02,0.28,riga,0,-DEPTH+0.06,i*2.5); }
+export const wallMat=sottAcqua(new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#8fe0f7','rgba(255,255,255,.55)'),12,1)}));
 box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,-PZ-0.15); box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,PZ+0.15);
 box(0.3,DEPTH+0.3,PZ*2,wallMat,-PX-0.15,-DEPTH/2+0.15,0); box(0.3,DEPTH+0.3,PZ*2,wallMat,PX+0.15,-DEPTH/2+0.15,0);
 // bordo vasca
@@ -86,93 +65,75 @@ box(0.4,0.08,PZ*2,0xffffff,-PX-0.2,0.32,0); box(0.4,0.08,PZ*2,0xffffff,PX+0.2,0.
   box(PX*2+14,1.2,0.4,0x1b2d4a,0,0.6,-PZ-5.4);
   box(PX*2+14,0.3,1.5,0x9aa7b8,0,7.3,-PZ-11.6);
 }
-// acqua: superficie ondulata con riflessi
-export const waterTex = canvasTex(256,256,(x,w,h)=>{ x.fillStyle='#1f86d2'; x.fillRect(0,0,w,h);
-  for(let i=0;i<70;i++){ x.strokeStyle=i%3?'rgba(170,225,255,.35)':'rgba(10,80,150,.28)'; x.lineWidth=1+rnd()*2.5;
-    const px=rnd()*w, py=rnd()*h, l=20+rnd()*50; x.beginPath();
-    x.moveTo(px,py); x.quadraticCurveTo(px+l/2,py+(rnd()-0.5)*18,px+l,py+(rnd()-0.5)*8); x.stroke(); } },7,6);
-export const waterGeo = new THREE.PlaneGeometry(PX*2,PZ*2,28,22); waterGeo.rotateX(-Math.PI/2);
-export const water = new THREE.Mesh(waterGeo,new THREE.MeshPhongMaterial({map:waterTex,transparent:true,opacity:0.76,shininess:150,specular:0xffffff}));
-scene.add(water);
-// acqua realistica (livelli alta e media); quella qui sopra resta come livello basso
-export const acqua=new Acqua(PX*2,PZ*2,{ colore:0xc4e8ff, cielo:0xa6d4f4, sole:sun.position, metriPerOnda:5.5 });
-scene.add(acqua);
-// acqua cartoon: superficie azzurro-turchese con sfumature morbide che si muovono piano, increspature sottili e irregolari
-// (solo a macchie, mai a strisce) e piccoli riflessi che si accendono e si spengono. Tutto calcolato in un solo passaggio di
-// disegno (niente riflesso né vista sott'acqua): costa meno dell'acqua realistica. Semitrasparente: le corsie sul fondo si vedono.
-// I riflessi più fini si spengono da lontano, dove sfarfallerebbero.
-export const acquaFumetto=new THREE.Mesh(new THREE.PlaneGeometry(PX*2,PZ*2).rotateX(-Math.PI/2),new THREE.ShaderMaterial({ transparent:true, depthWrite:false,
+// Fino alla v0.21 qui si disegnava l'immagine dell'acqua semplice della grafica realistica, che consumava 420 numeri del caso
+// del gioco al caricamento. Si consumano ancora, così le partite simulate restano identiche a quelle di prima (verifica).
+for(let i=0;i<420;i++) rnd();
+// acqua: superficie azzurro-turchese con sfumature morbide che si muovono piano, piccole onde disegnate dalla luce (un rilievo
+// finto: chiaro dove l'onda guarda il sole, appena più scuro dietro), increspature corte e spezzate solo a macchie, piccoli
+// riflessi irregolari che si accendono e si spengono. Guardata di taglio (lontano) l'acqua riflette di più il cielo e lascia
+// vedere meno il fondo, come quella vera; guardata dall'alto è trasparente. I dettagli fini si spengono da lontano, dove
+// sfarfallerebbero. Un solo passaggio di disegno; ciò che sta sotto si colora da sé (sottacqua.js).
+export const acqua=new THREE.Mesh(new THREE.PlaneGeometry(PX*2,PZ*2).rotateX(-Math.PI/2),new THREE.ShaderMaterial({ transparent:true, depthWrite:false,
   uniforms:{ uTempo:{value:0} },
   vertexShader:`varying vec2 vP; void main(){ vP=position.xz; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
   fragmentShader:`uniform float uTempo; varying vec2 vP;
     float h(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
     float n(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
       return mix(mix(h(i),h(i+vec2(1.0,0.0)),f.x),mix(h(i+vec2(0.0,1.0)),h(i+vec2(1.0,1.0)),f.x),f.y); }
+    // piccole onde: due disegni che scorrono in direzioni diverse
+    float onda(vec2 p,float t){ return n(p*1.9+vec2(t*0.32,t*0.11))*0.6+n(p*3.3+vec2(-t*0.21,t*0.37)+3.1)*0.4; }
     void main(){
       float t=uTempo; vec2 p=vP;
+      float lontano=1.0-smoothstep(0.35,1.1,length(fwidth(p))*6.0);      // 1 vicino, 0 lontano
+      vec3 vista=normalize(cameraPosition-vec3(p.x,0.0,p.y));
+      float taglio=pow(1.0-clamp(vista.y,0.0,1.0),3.0);                  // 0 guardando dall'alto, 1 di taglio
       // colore di fondo: azzurro più profondo e turchese più chiaro, a macchie larghe e morbide che scivolano lentamente
       float g=n(p*0.13+vec2(t*0.020,-t*0.014))*0.62+n(p*0.37+vec2(-t*0.030,t*0.022))*0.38;
-      vec3 c=mix(vec3(0.05,0.60,0.80),vec3(0.28,0.84,0.88),smoothstep(0.22,0.82,g));
-      // increspature: creste sottili di un disegno deformato (non diritte), visibili solo a macchie che cambiano nel tempo
-      vec2 q=p*0.95+vec2(n(p*0.42+vec2(t*0.16,0.0)),n(p*0.42+vec2(5.3,-t*0.13)))*1.7;
-      float cresta=smoothstep(0.80,0.97,1.0-abs(n(q+vec2(t*0.22,t*0.09))*2.0-1.0));
-      float zona=smoothstep(0.42,0.78,n(p*0.5+vec2(-t*0.05,t*0.04)+11.0));
-      float lontano=1.0-smoothstep(0.35,1.1,length(fwidth(p))*6.0);      // da lontano niente dettagli fini
-      c=mix(c,vec3(0.80,0.95,1.0),cresta*zona*mix(0.18,0.42,lontano));
+      vec3 c=mix(vec3(0.06,0.62,0.84),vec3(0.30,0.85,0.90),smoothstep(0.22,0.82,g));
+      // piccole onde: rilievo finto, la luce viene da sinistra in alto (come il sole della scena)
+      float o0=onda(p,t), ox=onda(p+vec2(0.09,0.0),t), oz=onda(p+vec2(0.0,0.09),t);
+      float rilievo=clamp(((o0-ox)*0.8+(o0-oz)*0.5)*5.0,-1.0,1.0)*lontano;
+      c*=1.0+0.10*rilievo;
+      // increspature: creste corte e sottili (non strisce lunghe), solo a macchie che cambiano nel tempo, spezzate dalle onde
+      float zona=smoothstep(0.45,0.80,n(p*0.5+vec2(-t*0.05,t*0.04)+11.0));
+      float cresta=smoothstep(0.86,0.98,1.0-abs(o0*2.0-1.0))*smoothstep(0.35,0.65,ox);
+      c=mix(c,vec3(0.82,0.96,1.0),cresta*zona*0.35*lontano);
       // riflessi piccoli e irregolari: due disegni che si muovono in direzioni diverse, si accendono solo dove coincidono
       float r=n(p*4.3+vec2(t*0.55,-t*0.35))*n(p*2.9+vec2(-t*0.30,-t*0.48)+7.7);
-      float luce=smoothstep(0.56,0.76,r)*(0.4+0.6*zona)*lontano;
-      c=mix(c,vec3(1.0),luce*0.7);
-      float a=0.58+0.22*cresta*zona+0.25*luce;
+      float luce=smoothstep(0.58,0.78,r)*(0.35+0.65*zona)*lontano*(0.6+0.4*max(rilievo,0.0));
+      c=mix(c,vec3(1.0),luce*0.65);
+      // di taglio: più cielo riflesso e meno trasparenza
+      c=mix(c,vec3(0.50,0.84,0.95),taglio*0.35);
+      float a=0.27+0.20*cresta*zona*lontano+0.3*luce+0.22*taglio;
       gl_FragColor=vec4(pow(c,vec3(2.2)),a);      // colori scritti in sRGB, convertiti per il disegno
       #include <colorspace_fragment>
     }` }));
-acquaFumetto.position.y=0.0; acquaFumetto.visible=false; acquaFumetto.renderOrder=-1; scene.add(acquaFumetto);
-export let livelloAcqua=2;
-export function ridimensionaAcqua(){ const v=renderer.getDrawingBufferSize(new THREE.Vector2()); acqua.ridimensiona(v.x,v.y); }
-export function setLivelloAcqua(l){
-  livelloAcqua=l;
-  if(cartoon()){ acqua.visible=false; water.visible=false; acquaFumetto.visible=true; caustiche.forza.value=0; return; }      // in cartoon l'acqua è sempre quella disegnata
-  acquaFumetto.visible=false; acqua.visible=l>0; water.visible=l===0; acqua.setLivello(l); caustiche.forza.value=l>0?1:0; ridimensionaAcqua();
-}
-export let waterN=0;
-export function animateWater(t){
-  caustiche.tempo.value=t;
-  if(cartoon()){ acquaFumetto.material.uniforms.uTempo.value=t; return; }
-  if(livelloAcqua>0){ acqua.setTempo(t); return; }
-  const pos=waterGeo.attributes.position, n=pos.count;
-  for(let i=0;i<n;i++){ const x=pos.getX(i), z=pos.getZ(i);
-    pos.setY(i,0.03*Math.sin(x*1.3+t*1.7)+0.028*Math.sin(z*1.7-t*1.4)+0.016*Math.sin((x+z)*2.4+t*2.3)); }
-  pos.needsUpdate=true; if((waterN=(waterN+1)%3)===0) waterGeo.computeVertexNormals();
-  waterTex.offset.x=t*0.012; waterTex.offset.y=t*0.007;
-}
-// schiuma: macchie morbide disegnate tutte insieme (un solo oggetto per la scheda grafica)
-const N_SCHIUMA=160;
+acqua.renderOrder=-1; scene.add(acqua);
+export function animateWater(t){ acqua.material.uniforms.uTempo.value=t; tempoAcqua.value=t; }
+// schiuma: increspature e scie disegnate tutte insieme (un solo oggetto per la scheda grafica)
+const N_SCHIUMA=320;
 export const foams=[]; let foamI=0;
-const schiumaNetta={value:0};
 const schiumaAlfa=new THREE.InstancedBufferAttribute(new Float32Array(N_SCHIUMA),1);
 const schiumaEta=new THREE.InstancedBufferAttribute(new Float32Array(N_SCHIUMA),1);      // 0 appena nata, 1 finita
+const schiumaScia=new THREE.InstancedBufferAttribute(new Float32Array(N_SCHIUMA),1);     // 1 = scia di chi nuota
 export const schiuma=(()=>{
-  const g=new THREE.PlaneGeometry(2,2); g.rotateX(-Math.PI/2); g.setAttribute('aAlfa',schiumaAlfa); g.setAttribute('aEta',schiumaEta);
-  const tex=canvasTex(64,64,(x,w,h)=>{ const gr=x.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);
-    gr.addColorStop(0,'rgba(255,255,255,1)'); gr.addColorStop(0.55,'rgba(255,255,255,.75)'); gr.addColorStop(1,'rgba(255,255,255,0)'); x.fillStyle=gr; x.fillRect(0,0,w,h); });
-  const m=new THREE.ShaderMaterial({ transparent:true, depthWrite:false, uniforms:{map:{value:tex},uNetta:schiumaNetta},
-    vertexShader:`attribute float aAlfa; attribute float aEta; varying float vA; varying float vK; varying float vSeme; varying vec2 vUv;
-      void main(){ vA=aAlfa; vK=aEta; vUv=uv; vSeme=fract(instanceMatrix[3].x*3.17+instanceMatrix[3].z*1.71); vec3 transformed=position;
+  const g=new THREE.PlaneGeometry(2,2); g.rotateX(-Math.PI/2); g.setAttribute('aAlfa',schiumaAlfa); g.setAttribute('aEta',schiumaEta); g.setAttribute('aScia',schiumaScia);
+  const m=new THREE.ShaderMaterial({ transparent:true, depthWrite:false,
+    vertexShader:`attribute float aAlfa; attribute float aEta; attribute float aScia; varying float vA; varying float vK; varying float vS; varying float vSeme; varying vec2 vUv;
+      void main(){ vA=aAlfa; vK=aEta; vS=aScia; vUv=uv; vSeme=fract(instanceMatrix[3].x*3.17+instanceMatrix[3].z*1.71); vec3 transformed=position;
         #include <project_vertex>
       }`,
-    // realistica: macchia morbida (come prima). Cartoon: increspatura, cioè un anello sottile un po' spezzato che si allarga e
-    // svanisce, con un velo chiaro dentro appena nato; le scie dei nuotatori sono anelli allungati nella direzione del nuoto
-    fragmentShader:`uniform sampler2D map; uniform float uNetta; varying float vA; varying float vK; varying float vSeme; varying vec2 vUv;
+    // increspatura: un anello sottile un po' spezzato che si allarga e svanisce, con un velo chiaro dentro appena nato;
+    // le scie dei nuotatori sono anelli allungati nella direzione del nuoto, aperti davanti: restano i lati e la coda, cioè due
+    // strisce chiare che si allontanano dal corpo
+    fragmentShader:`varying float vA; varying float vK; varying float vS; varying float vSeme; varying vec2 vUv;
       void main(){
-        float a=texture2D(map,vUv).a*vA;
-        if(uNetta>0.5){
-          vec2 d=vUv*2.0-1.0; float r=length(d), ang=atan(d.y,d.x);
-          float spezzato=0.55+0.45*sin(ang*3.0+vSeme*6.283)*sin(ang*5.0-vSeme*12.0+vK*2.0);
-          float anello=1.0-smoothstep(0.0,0.07+0.05*vK,abs(r-0.74));
-          float velo=(1.0-smoothstep(0.0,0.74,r))*0.35*(1.0-vK)*(1.0-vK);
-          a=clamp((anello*clamp(spezzato,0.0,1.0)*0.85+velo)*min(1.0,vA*1.6),0.0,0.8);
-        }
+        vec2 d=vUv*2.0-1.0; float r=length(d), ang=atan(d.y,d.x);
+        float spezzato=0.55+0.45*sin(ang*3.0+vSeme*6.283)*sin(ang*5.0-vSeme*12.0+vK*2.0);
+        float anello=1.0-smoothstep(0.0,0.07+0.05*vK,abs(r-0.74));
+        float velo=(1.0-smoothstep(0.0,0.74,r))*0.35*(1.0-vK)*(1.0-vK);
+        float aperto=mix(1.0,1.0-smoothstep(-0.2,0.55,d.x),vS);
+        float a=clamp((anello*clamp(spezzato,0.0,1.0)*0.85*aperto+velo*mix(1.0,0.5,vS))*min(1.0,vA*1.6),0.0,0.8);
         gl_FragColor=vec4(1.0,1.0,1.0,a);
         #include <colorspace_fragment>
       }` });
@@ -181,18 +142,58 @@ export const schiuma=(()=>{
   return im;
 })();
 const _ms=new THREE.Matrix4();
-// dx,dz (facoltativi) = direzione del nuoto: in Cartoon la scia viene allungata in quella direzione
+// dx,dz (facoltativi) = direzione del nuoto: la scia viene allungata in quella direzione
 export function spawnFoam(x,z,size,life,dx,dz){ const f=foams[foamI=(foamI+1)%foams.length]; f.max=(life||0.9)*1.5; f.life=f.max; f.size=size; f.x=x; f.z=z; f.dx=dx||0; f.dz=dz||0; }
 const _sq=new THREE.Quaternion(), _sv=new THREE.Vector3(), _sp=new THREE.Vector3(), _sy=new THREE.Vector3(0,1,0);
 export function updateFoam(dt){
-  const fumetto=schiumaNetta.value>0.5;
   for(let i=0;i<N_SCHIUMA;i++){ const f=foams[i]; let sc=0, al=0, k=1;
     if(f.life>0){ f.life-=dt; k=1-Math.max(0,f.life)/f.max; sc=f.size*(0.7+1.9*k); al=0.85*(1-k)*(1-k); }
-    // Cartoon: l'increspatura si allarga di più; la scia è più lunga nel verso del nuoto e un po' più stretta di traverso
-    const lungo=fumetto&&(f.dx||f.dz)?1.7:1, largo=fumetto&&(f.dx||f.dz)?0.75:1, s2=fumetto?sc*1.25:sc;
-    _sq.setFromAxisAngle(_sy,fumetto&&(f.dx||f.dz)?Math.atan2(-f.dz,f.dx):0);
-    _ms.compose(_sp.set(f.x,0.06+i*0.0002,f.z),_sq,_sv.set(s2*lungo,1,s2*largo)); schiuma.setMatrixAt(i,_ms); schiumaAlfa.array[i]=al; schiumaEta.array[i]=k; }
-  schiuma.instanceMatrix.needsUpdate=true; schiumaAlfa.needsUpdate=true; schiumaEta.needsUpdate=true;
+    // la scia è più lunga nel verso del nuoto e un po' più stretta di traverso
+    const scia=!!(f.dx||f.dz), lungo=scia?1.7:1, largo=scia?0.75:1, s2=sc*1.25;
+    _sq.setFromAxisAngle(_sy,scia?Math.atan2(-f.dz,f.dx):0);
+    _ms.compose(_sp.set(f.x,0.06+i*0.0002,f.z),_sq,_sv.set(s2*lungo,1,s2*largo)); schiuma.setMatrixAt(i,_ms); schiumaAlfa.array[i]=al; schiumaEta.array[i]=k; schiumaScia.array[i]=scia?1:0; }
+  schiuma.instanceMatrix.needsUpdate=true; schiumaAlfa.needsUpdate=true; schiumaEta.needsUpdate=true; schiumaScia.needsUpdate=true;
+  contatti.instanceMatrix.needsUpdate=true; contattoForza.needsUpdate=true; contattoVel.needsUpdate=true;
+}
+// contatto con l'acqua attorno a ogni giocatore: dove il corpo attraversa la superficie l'acqua fa un bordo chiaro e mosso, e
+// da lì partono piccole increspature che si allargano; chi nuota spinge davanti a sé un'onda (più forte se veloce).
+// Da fermi è un cerchio attorno alle spalle, in nuotata un ovale lungo il corpo. Tutti i giocatori in un solo oggetto.
+const N_CONTATTI=16;
+const contattoForza=new THREE.InstancedBufferAttribute(new Float32Array(N_CONTATTI),1);
+const contattoVel=new THREE.InstancedBufferAttribute(new Float32Array(N_CONTATTI),1);
+export const contatti=(()=>{
+  const g=new THREE.PlaneGeometry(2,2); g.rotateX(-Math.PI/2); g.setAttribute('aForza',contattoForza); g.setAttribute('aVel',contattoVel);
+  const m=new THREE.ShaderMaterial({ transparent:true, depthWrite:false, uniforms:{ uTempo:tempoAcqua },
+    vertexShader:`attribute float aForza; attribute float aVel; varying float vF; varying float vV; varying float vSeme; varying vec2 vUv;
+      void main(){ vF=aForza; vV=aVel; vUv=uv; vSeme=fract(instanceMatrix[3].x*0.37+instanceMatrix[3].z*0.71)*6.283; vec3 transformed=position;
+        #include <project_vertex>
+      }`,
+    fragmentShader:`uniform float uTempo; varying float vF; varying float vV; varying float vSeme; varying vec2 vUv;
+      void main(){
+        vec2 d=vUv*2.0-1.0; float r=length(d), ang=atan(d.y,d.x), t=uTempo;
+        // bordo chiaro attorno al corpo, mosso e un po' spezzato
+        float mosso=0.6+0.4*sin(ang*5.0+t*3.1+vSeme)*sin(ang*3.0-t*2.3+vSeme*2.0);
+        float bordo=(1.0-smoothstep(0.0,0.09,abs(r-0.60-0.025*sin(ang*6.0+t*4.0+vSeme))))*mosso;
+        // due increspature che partono dal corpo e si allargano svanendo
+        float onde=0.0;
+        for(int i=0;i<2;i++){ float k=fract(t*0.75+float(i)*0.5+vSeme*0.16);
+          onde+=(1.0-smoothstep(0.0,0.05+0.04*k,abs(r-0.62-0.36*k)))*(1.0-k)*(1.0-k)*(0.55+0.45*sin(ang*4.0+vSeme+float(i)*2.0)); }
+        // onda davanti a chi nuota
+        float prua=smoothstep(0.15,0.75,d.x)*(1.0-smoothstep(0.0,0.16,abs(r-0.66)))*vV;
+        float a=(bordo*0.5+onde*0.28)*vF+prua*0.5;
+        a*=1.0-smoothstep(0.92,1.0,r);
+        gl_FragColor=vec4(1.0,1.0,1.0,clamp(a,0.0,0.7));
+        #include <colorspace_fragment>
+      }` });
+  const im=new THREE.InstancedMesh(g,m,N_CONTATTI); im.frustumCulled=false;
+  const zero=new THREE.Matrix4().makeScale(0,0,0); for(let i=0;i<N_CONTATTI;i++) im.setMatrixAt(i,zero);
+  scene.add(im); return im;
+})();
+// i = numero del giocatore (0..15); ang = direzione del corpo; lungo/largo = mezze misure in metri; forza 0..1; vel 0..1 (onda davanti)
+export function contatto(i,x,z,ang,lungo,largo,forza,vel){
+  if(i>=N_CONTATTI) return;
+  _sq.setFromAxisAngle(_sy,ang); _ms.compose(_sp.set(x,0.03+i*0.0003,z),_sq,_sv.set(lungo,1,largo)); contatti.setMatrixAt(i,_ms);
+  contattoForza.array[i]=forza; contattoVel.array[i]=vel;
 }
 // corde di delimitazione con i colori delle zone
 {
@@ -202,7 +203,7 @@ export function updateFoam(dt){
   for(const xs of [-HL-0.6,HL+0.6]) for(let z=-HW;z<=HW;z+=0.3) pts.w.push([xs,z]);
   const mtx=new THREE.Matrix4();
   for(const c in pts){
-    const im=new THREE.InstancedMesh(geo,new THREE.MeshLambertMaterial({color:cols[c]}),pts[c].length);
+    const im=new THREE.InstancedMesh(geo,sottAcqua(new THREE.MeshLambertMaterial({color:cols[c]})),pts[c].length);
     pts[c].forEach((q,i)=>{ mtx.makeTranslation(q[0],0.04,q[1]); im.setMatrixAt(i,mtx); });
     im.instanceMatrix.needsUpdate=true; scene.add(im);
   }
@@ -211,27 +212,26 @@ export function updateFoam(dt){
 }
 // porte
 export function makeGoal(sign){
-  const g=new THREE.Group(); const mat=new THREE.MeshPhongMaterial({color:0xffffff,shininess:60});
+  const g=new THREE.Group(); const mat=sottAcqua(new THREE.MeshPhongMaterial({color:0xffffff,shininess:60}));
   const H=GH+0.3;
   for(const z of [-GW-0.04,GW+0.04]){ const p=new THREE.Mesh(new THREE.BoxGeometry(0.08,H,0.08),mat); p.position.set(0,H/2-0.3,z); g.add(p); }
   const bar=new THREE.Mesh(new THREE.BoxGeometry(0.08,0.08,GW*2+0.16),mat); bar.position.set(0,GH+0.04,0); g.add(bar);
-  const netMat=new THREE.MeshBasicMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:0.5});
+  const netMat=sottAcqua(new THREE.MeshBasicMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:0.5}));
   const back=new THREE.Mesh(new THREE.PlaneGeometry(GW*2,H,12,5),netMat); back.rotation.y=Math.PI/2; back.position.set(sign*0.8,H/2-0.3,0); g.add(back);
   const top=new THREE.Mesh(new THREE.PlaneGeometry(0.8,GW*2,3,12),netMat); top.rotation.x=-Math.PI/2; top.position.set(sign*0.4,GH,0); g.add(top);
   for(const z of [-GW,GW]){ const sd=new THREE.Mesh(new THREE.PlaneGeometry(0.8,H,4,8),netMat); sd.position.set(sign*0.4,H/2-0.3,z); g.add(sd); }
-  const flo=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.14,GW*2+0.5),new THREE.MeshLambertMaterial({color:0xf4f4f4})); flo.position.set(sign*0.45,-0.02,0); g.add(flo);
+  const flo=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.14,GW*2+0.5),sottAcqua(new THREE.MeshLambertMaterial({color:0xf4f4f4}))); flo.position.set(sign*0.45,-0.02,0); g.add(flo);
   g.position.set(sign*HL,0,0); scene.add(g);
 }
 makeGoal(1); makeGoal(-1);
 
 // palla + ombra + anello del giocatore controllato
-// Palla da pallanuoto: gomma gialla a buccia ruvida (per la presa a mano bagnata), 18 spicchi a gruppi di tre come nel
-// pallone vero, separati da solchi scuri. Disegno e rilievo sono calcolati punto per punto sulla sfera, così i solchi
-// sono curve esatte e non si deformano ai poli.
+// Palla da pallanuoto gialla e blu come nel concept: 18 spicchi a gruppi di tre (la striscia di mezzo di ogni spicchio è blu),
+// separati da solchi scuri, con la buccia a puntini. Disegno calcolato punto per punto sulla sfera, così i solchi sono curve
+// esatte e non si deformano ai poli. Un po' più grande del vero (1,3) e con un contorno scuro, per leggerla anche da lontano.
 export const ball3d = (()=>{
-  const W=1024, H=512, colore=document.createElement('canvas'), rilievo=document.createElement('canvas'), gialloBlu=document.createElement('canvas');
-  colore.width=rilievo.width=gialloBlu.width=W; colore.height=rilievo.height=gialloBlu.height=H;
-  const xc=colore.getContext('2d'), xr=rilievo.getContext('2d'), xg=gialloBlu.getContext('2d'), ic=xc.createImageData(W,H), ir=xr.createImageData(W,H), ig=xg.createImageData(W,H);
+  const W=1024, H=512, tela=document.createElement('canvas'); tela.width=W; tela.height=H;
+  const xg=tela.getContext('2d'), ig=xg.createImageData(W,H);
   const caso=(a,b,c)=>{ const t=Math.sin(a*127.1+b*311.7+c*74.7)*43758.5453; return t-Math.floor(t); };
   const QP=4/Math.PI, SOLCO=0.021;                    // mezza larghezza del solco, in radianti
   for(let j=0;j<H;j++){ const th=(j+0.5)/H*Math.PI, st=Math.sin(th), y=Math.cos(th);
@@ -250,23 +250,15 @@ export const ball3d = (()=>{
       const dx=gx-cx-0.5, dy=gy-cy-0.5, dz=gz-cz-0.5, punto=Math.max(0,1-(dx*dx+dy*dy+dz*dz)*5)*(0.6+0.4*caso(cx,cy,cz));
       const striscia=Math.floor((u+1)*1.5)+faccia*3, tono=0.97+0.05*caso(striscia,faccia,7);      // ogni spicchio ha un tono appena diverso
       const luce=(0.90+0.10*punto)*tono*(1-0.20*spalla);
-      const k=(j*W+i)*4, s1=1-solco;
-      ic.data[k]=(250*luce)*s1+34*solco; ic.data[k+1]=(203*luce)*s1+26*solco; ic.data[k+2]=(22*luce)*s1+12*solco; ic.data[k+3]=255;
-      // palla del concept (stile Cartoon): la striscia di mezzo di ogni spicchio è blu
-      const blu=Math.floor((u+1)*1.5)===1; ig.data[k]=(blu?28:250*luce)*s1+20*solco; ig.data[k+1]=(blu?78:203*luce)*s1+22*solco; ig.data[k+2]=(blu?196:22*luce)*s1+40*solco; ig.data[k+3]=255;
-      const q=Math.round((0.62+0.38*punto)*255*(1-solco)+25*solco*0+0); ir.data[k]=ir.data[k+1]=ir.data[k+2]=Math.round(q*(1-0.85*solco)); ir.data[k+3]=255;
+      const k=(j*W+i)*4, s1=1-solco, blu=Math.floor((u+1)*1.5)===1;
+      ig.data[k]=(blu?28:250*luce)*s1+20*solco; ig.data[k+1]=(blu?78:203*luce)*s1+22*solco; ig.data[k+2]=(blu?196:22*luce)*s1+40*solco; ig.data[k+3]=255;
     } }
-  xc.putImageData(ic,0,0); xr.putImageData(ir,0,0); xg.putImageData(ig,0,0);
-  const tc=new THREE.CanvasTexture(colore); tc.colorSpace=THREE.SRGBColorSpace; tc.anisotropy=4;
-  const tr=new THREE.CanvasTexture(rilievo);
-  const vera=new THREE.MeshPhongMaterial({map:tc,bumpMap:tr,bumpScale:1.4,shininess:48,specular:0x5a5648});
-  const m=new THREE.Mesh(new THREE.SphereGeometry(BRV,32,24),vera);
-  // cartoon: la palla gialla e blu del concept, un po' più grande, con contorno scuro (una sfera nera appena più larga vista da dentro)
-  const tg=new THREE.CanvasTexture(gialloBlu); tg.colorSpace=THREE.SRGBColorSpace; tg.anisotropy=4;
-  const piatta=new THREE.MeshLambertMaterial({map:tg,emissive:0x222222});
-  const contorno=new THREE.Mesh(new THREE.SphereGeometry(BRV*1.13,16,12),new THREE.MeshBasicMaterial({color:0x10182a,side:THREE.BackSide}));
-  contorno.visible=false; m.add(contorno);
-  m.userData={ vera, piatta, contorno };
+  xg.putImageData(ig,0,0);
+  const tg=new THREE.CanvasTexture(tela); tg.colorSpace=THREE.SRGBColorSpace; tg.anisotropy=4;
+  const m=new THREE.Mesh(new THREE.SphereGeometry(BRV,32,24),sottAcqua(new THREE.MeshLambertMaterial({map:tg,emissive:0x222222})));
+  // contorno scuro: una sfera nera appena più larga vista da dentro
+  m.add(new THREE.Mesh(new THREE.SphereGeometry(BRV*1.13,16,12),new THREE.MeshBasicMaterial({color:0x10182a,side:THREE.BackSide})));
+  m.scale.setScalar(1.3);
   return m;
 })();
 scene.add(ball3d);
@@ -289,23 +281,3 @@ export const passMark = new THREE.Mesh(new THREE.TorusGeometry(0.4,0.035,6,24),n
 passMark.rotation.x=Math.PI/2; scene.add(passMark);
 export const camMode = () => camera.aspect<1 ? 1 : game.camMode;   // in verticale si usa sempre la vista dalla porta
 export function setDpr(v){ dpr=v; }
-// strati di disegno (vedi acqua.js): cosa compare nel riflesso e cosa nella vista sott'acqua
-{
-  const bb=new THREE.Box3(), soloVista=new Set([schiuma,shadow,ring,passMark,freccia,mirino,water,acqua,acquaFumetto]);
-  for(const o of scene.children){
-    if(o.isLight){ o.layers.enableAll(); continue; }
-    let st;
-    if(soloVista.has(o)) st=STRATO_SOLO_VISTA;
-    else if(o===ball3d) st=STRATO_CORPI;
-    else { bb.setFromObject(o); st = bb.min.y<-0.5 ? STRATO_VASCA : STRATO_SOPRA; }
-    o.traverse(c=>c.layers.set(st));
-  }
-  setLivelloAcqua(2);
-}
-// cambio di stile: acqua disegnata, schiuma netta, palla piatta e più grande con contorno
-alCambioStile(c=>{
-  schiumaNetta.value=c?1:0;
-  const U=ball3d.userData; ball3d.material=c?U.piatta:U.vera; U.contorno.visible=c; ball3d.scale.setScalar(c?1.3:1);
-  if(fondo) fondo.material=c?fondoPiatto:fondoVero;
-  setLivelloAcqua(livelloAcqua);
-});
