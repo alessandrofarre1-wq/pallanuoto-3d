@@ -45,13 +45,14 @@
 
 <div id="touch">
   <div id="joy"><span>MUOVI</span><div id="knob"></div></div>
-  <div class="tb" data-b="shoot" style="right:20px;bottom:100px">TIRO<br>2x finta</div>
-  <div class="tb" data-b="pass" style="right:96px;bottom:40px">PASSA<br>CONTRASTO</div>
-  <div class="tb" data-b="lob" style="right:96px;bottom:150px">PALOMB.</div>
-  <div class="tb" data-b="sprint" style="right:20px;bottom:20px;width:56px;height:56px">SPRINT</div>
-  <div class="tb" data-b="sw" style="right:172px;bottom:20px;width:56px;height:56px">CAMBIA</div>
-  <div class="tb" data-b="cmd" style="right:172px;bottom:86px;width:56px;height:56px;font-size:10px">TAGLIO<br>RADD.</div>
-  <div class="tb" data-b="to" style="right:10px;top:58px;width:40px;height:40px;border-radius:8px;font-size:10px">T.O.</div>
+  <!-- pulsanti: icona + etichetta; i due principali (TIRO, PASSA) più grandi; l'area di tocco è più ampia del disegno -->
+  <div class="tb pri" data-b="shoot"><svg viewBox="0 0 24 24"><circle cx="15.5" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M2 8.5h5.5M3 12h5M2 15.5h5.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><b>TIRO</b><small>2× finta</small></div>
+  <div class="tb pri" data-b="pass"><svg viewBox="0 0 24 24"><path d="M4 16c4-7 10-9 15-8M15 4.5l4 3.5-4 3.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>PASSA</b><small>contrasto</small></div>
+  <div class="tb sec" data-b="lob"><svg viewBox="0 0 24 24"><path d="M3 18C6 6 16 4 21 15M17.5 14.5l3.5.8.7-3.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>PALOMB.</b></div>
+  <div class="tb sec" data-b="sprint"><svg viewBox="0 0 24 24"><path d="M5 6l6 6-6 6M12 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><b>SPRINT</b></div>
+  <div class="tb sec" data-b="sw"><svg viewBox="0 0 24 24"><path d="M19 9a7 7 0 0 0-12.5-2.5M5 15a7 7 0 0 0 12.5 2.5M6 3v4h4M18 21v-4h-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>CAMBIA</b></div>
+  <div class="tb sec" data-b="cmd"><svg viewBox="0 0 24 24"><circle cx="7" cy="16" r="2.6" fill="currentColor"/><path d="M9.5 13.5L19 4M14 4h5v5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 2.5"/></svg><b>TAGLIO</b><small>raddoppio</small></div>
+  <div class="tb ang" data-b="to"><b>T.O.</b></div>
   <div id="tPause">II</div>
 </div>
 
