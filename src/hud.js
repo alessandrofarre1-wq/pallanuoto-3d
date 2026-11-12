@@ -8,6 +8,9 @@ export const $ = id => document.getElementById(id);
 export let msgT=0;
 export function showMsg(text,dur=1.4){ const m=$('msg'); m.innerHTML=text; m.style.opacity=1; msgT=dur; }
 let tacKey='', exclKey='', schedaVista=null, ultimoBip=null;
+const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
+let schemiAperti=!TOUCH;
+export function apriSchemi(v){ schemiAperti = v===undefined ? !schemiAperti : (TOUCH ? v : true); }
 export function aggiornaTabellone(){
   $('capA').style.background=teams[0].css; $('capB').style.background=teams[1].css;
   $('nameA').textContent=teams[0].short; $('nameB').textContent=teams[1].short; tacKey=''; schedaVista=null;
@@ -42,13 +45,18 @@ export function updateHUD(){
     fb.style.background=v>=0?fight.boa.team.css:fight.def.team.css;
   } else fe.style.display='none';
   const hum=teams[0], ai=teams[1], atk=game.possTeam===hum;
-  const key=(atk?'a'+hum.atkPlay:'d'+hum.defPlay)+'|'+ai.defPlay+ai.atkPlay;
+  const key=(atk?'a'+hum.atkPlay:'d'+hum.defPlay)+'|'+ai.defPlay+ai.atkPlay+'|'+schemiAperti;
   if(key!==tacKey){
     tacKey=key;
     const names=atk?ATK:DEFN, cur=atk?hum.atkPlay:hum.defPlay;
-    let h=`<span class="chip lab">${atk?'ATTACCO':'DIFESA'}</span>`;
-    names.forEach((n,i)=>{ h+=`<span class="chip${i===cur?' on':''}" data-i="${i}">${i+1} ${n}</span>`; });
-    h+=`<span class="chip lab">${ai.short}: ${(atk?DEFN[ai.defPlay]:ATK[ai.atkPlay]).toLowerCase()}</span>`;
+    // barra degli schemi: su telefono è chiusa (si vede solo lo schema in uso) e si apre con un tocco
+    let h;
+    if(!schemiAperti) h=`<span class="chip on" data-apri="1">${atk?'ATT':'DIF'}: ${names[cur]} ▾</span><span class="chip lab">${ai.short}: ${(atk?DEFN[ai.defPlay]:ATK[ai.atkPlay]).toLowerCase()}</span>`;
+    else {
+      h=`<span class="chip lab" data-apri="1">${atk?'ATTACCO':'DIFESA'}${TOUCH?' ▴':''}</span>`;
+      names.forEach((n,i)=>{ h+=`<span class="chip${i===cur?' on':''}" data-i="${i}">${i+1} ${n}</span>`; });
+      h+=`<span class="chip lab">${ai.short}: ${(atk?DEFN[ai.defPlay]:ATK[ai.atkPlay]).toLowerCase()}</span>`;
+    }
     $('tac').innerHTML=h;
   }
 }

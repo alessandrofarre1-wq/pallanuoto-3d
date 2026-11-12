@@ -1,6 +1,6 @@
 // ================= INPUT =================
 import { camMode, renderer } from './grafica/scena.js';
-import { $, showMsg } from './hud.js';
+import { $, apriSchemi, showMsg } from './hud.js';
 import { togglePause } from './menu.js';
 import { callPlay } from './regole.js';
 import { ctrl, game } from './stato.js';
@@ -53,8 +53,9 @@ export const released = k => !inp[k] && prev[k];
 if('ontouchstart' in window || navigator.maxTouchPoints>0) document.body.classList.add('touch');
 {
   const joy=$('joy'), knob=$('knob'); let jid=null, jc=null;
-  const setJ=(cx,cy)=>{ const R=joy.offsetWidth/2-10; let dx=(cx-jc.x)/R, dy=(cy-jc.y)/R;
-    const l=Math.hypot(dx,dy); if(l>1){dx/=l;dy/=l;} touch.x=Math.abs(dx)<0.15?0:dx; touch.z=Math.abs(dy)<0.15?0:dy;
+  // joystick: zona morta piccola e rotonda (prima era a croce e larga: le diagonali leggere si perdevano), corsa più ampia
+  const setJ=(cx,cy)=>{ const R=joy.offsetWidth/2+6; let dx=(cx-jc.x)/R, dy=(cy-jc.y)/R;
+    const l=Math.hypot(dx,dy); if(l>1){dx/=l;dy/=l;} const m=Math.min(1,l), ZM=0.09, f=m<ZM?0:(m-ZM)/(1-ZM)/m; touch.x=dx*f; touch.z=dy*f;
     knob.style.transform='translate('+(dx*(joy.offsetWidth/2-25))+'px,'+(dy*(joy.offsetWidth/2-25))+'px)'; };
   document.addEventListener('touchstart',e=>{
     for(const t of e.changedTouches){
@@ -71,7 +72,7 @@ if('ontouchstart' in window || navigator.maxTouchPoints>0) document.body.classLi
   const endJ=e=>{ for(const t of e.changedTouches) if(t.identifier===jid){ jid=null; touch.x=touch.z=0; knob.style.transform=''; joy.classList.remove('on');
     joy.style.left=''; joy.style.top=''; joy.style.bottom=''; } };
   document.addEventListener('touchend',endJ); document.addEventListener('touchcancel',endJ);
-  $('tac').addEventListener('pointerdown',e=>{ const c=e.target.closest('[data-i]'); if(c&&game.state==='play'){ e.preventDefault(); callPlay(+c.dataset.i); } });
+  $('tac').addEventListener('pointerdown',e=>{ if(e.target.closest('[data-apri]')){ e.preventDefault(); apriSchemi(); return; } const c=e.target.closest('[data-i]'); if(c&&game.state==='play'){ e.preventDefault(); callPlay(+c.dataset.i); apriSchemi(false); } });
   document.querySelectorAll('.tb').forEach(b=>{
     const k=b.dataset.b;
     if(k==='sprint'){   // su touch lo sprint è un interruttore: un tocco lo accende, un altro lo spegne

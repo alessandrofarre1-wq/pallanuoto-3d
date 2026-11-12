@@ -1,7 +1,7 @@
 // ================= MENU =================
 import { azzeraStatistiche } from './statistiche.js';
 import { initAudio } from './audio.js';
-import { PERIOD_LEN, setAlzata, setArbitro, setDiff, setPeriodLen, setSpeed } from './costanti.js';
+import { PERIOD_LEN, setCamZoom, setArbitro, setDiff, setPeriodLen, setSpeed } from './costanti.js';
 import { $, aggiornaTabellone, fpsIniziale, setFps } from './hud.js';
 import { RUOLI, CHIAVE, STAT_NOMI, squadre } from './dati/rose.js';
 import { applicaSquadre } from './giocatori.js';
@@ -11,8 +11,10 @@ import { allPlayers, game, teams } from './stato.js';
 document.querySelectorAll('[data-len]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-len]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setPeriodLen(+b.dataset.len); });
 document.querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-diff]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setDiff(+b.dataset.diff); });
 document.querySelectorAll('[data-arb]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-arb]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setArbitro(+b.dataset.arb); });
-// PROVVISORIO: tempo per alzarsi dal nuoto alla verticale, da far provare ad Ale; scelto il valore la riga si toglie
-document.querySelectorAll('[data-alz]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-alz]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setAlzata(+b.dataset.alz); });
+// telecamera: vicina, normale o larga (la scelta si ricorda)
+const scegliCam=v=>{ document.querySelectorAll('[data-cam]').forEach(x=>x.classList.toggle('on',x.dataset.cam===v)); setCamZoom(+v); try{ localStorage.setItem('pallanuoto-cam',v); }catch(e){} };
+document.querySelectorAll('[data-cam]').forEach(b=>b.onclick=()=>scegliCam(b.dataset.cam));
+try{ const v=localStorage.getItem('pallanuoto-cam'); if(v&&document.querySelector(`[data-cam="${v}"]`)) scegliCam(v); }catch(e){}
 document.querySelectorAll('[data-spd]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-spd]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setSpeed(+b.dataset.spd); });
 // scelta delle nazionali e rosa della propria squadra
 const selA=$('sqA'), selB=$('sqB');
@@ -56,7 +58,7 @@ export function togglePause(){
 export function newMatch(){
   teams[0].score=teams[1].score=0; game.period=1; game.clock=PERIOD_LEN; game.time=0;
   for(const p of allPlayers){ p.stamina=1; p.excluded=false; p.pf=0; p.cut=null; }
-  for(const t of teams){ t.atkPlay=0; t.defPlay=0; t.cross=false; t.timeouts=2; t.vuoleTimeout=false; t.parzialeSubito=0; t.espulsioniT=[]; t.setteAnnunciato=false; t.fugaFino=0; }
+  for(const t of teams){ t.atkPlay=0; t.defPlay=2; t.lasciato=null; t.cross=false; t.timeouts=2; t.vuoleTimeout=false; t.parzialeSubito=0; t.espulsioniT=[]; t.setteAnnunciato=false; t.fugaFino=0; }
   game.penalty=null; azzeraStatistiche();
   $('menu').style.display='none';
   kickoff();

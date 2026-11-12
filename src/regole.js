@@ -1,5 +1,5 @@
 // ================= REGOLE / FASI =================
-import { scegliDifesa, setteControSei } from './ia.js';
+import { chiLasciare, passaAZona, scegliDifesa, setteControSei } from './ia.js';
 import { elevazione } from './tiri.js';
 import { riservaPer, vesti } from './giocatori.js';
 import { registraEspulsione, registraFallo, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
@@ -33,20 +33,24 @@ export function placeHalves(){
   }
 }
 export function giveBall(p){
-  const changed = game.possTeam!==p.team;
+  const changed = game.possTeam!==p.team, daPassaggio = ball.kind==='pass' && ball.state==='flight' && !changed;
   ball.state='held'; ball.holder=p; ball.holdTime=0; ball.kind=null; ball.target=null; ball.lastTeam=p.team;
+  // quando e come è arrivata la palla: un tiro subito dopo un passaggio che ha cambiato lato trova il portiere fuori posto
+  p.ricevutoT=game.time; p.ricevutoCambio=!!ball.cambioLato; p.ricevutoPassaggio=daPassaggio; if(!daPassaggio) p.ricevutoCambio=false;
   p.decideT=0.4+rnd()*0.4; p.alVolo=rnd()<(ball.cambioLato?0.8:0.4); ball.cambioLato=false; p.cut=null; p.act=null; p.fakeCount=0; p.fakeUsed=false; p.shootNext=false; p.fakeUntil=0;
   for(const q of allPlayers) q.freeThrow=false;
   resetTap();
   if(changed){
     game.possTeam=p.team; game.shot=SHOT_CLOCK;
+    game.passaggi=0; game.cambiLato=0;      // passaggi e cambi di lato di questa azione (per le statistiche)
     for(const q of allPlayers) q.cut=null;
     for(const q of p.team.players) if(q.excluded) reenter(q);          // art. 9.3c
     game.possT=game.time;
     // le squadre guidate dal computer scelgono lo schema a ogni cambio di possesso
     const att=p.team, dif=other(att);
     if(!att.human){ att.atkPlay=[0,0,1,1,3][Math.floor(rnd()*5)]; att.cross=rnd()<0.2; att.nextDrive=game.time+3+rnd()*4; }
-    if(!dif.human) dif.defPlay=scegliDifesa(dif,att);
+    if(!dif.human) dif.defPlay=scegliDifesa(dif,att);      // il computer riparte sempre dal pressing (la zona arriva a metà azione)
+    dif.lasciato=(dif.defPlay===1||dif.defPlay===3)?chiLasciare(dif):null;
     if(att.defPlay===3) att.fugaFino=game.time+5;                      // dalla zona a M si riparte subito in controfuga
     // 7 contro 6 nell'ultimo minuto: prima il time-out per prepararlo
     if(setteControSei(att)&&!att.setteAnnunciato){ att.setteAnnunciato=true; att.vuoleTimeout=true; showMsg(`<span style="font-size:26px">${att.name}: 7 contro 6 con il portiere in attacco</span>`,1.6); }
@@ -136,7 +140,8 @@ export function callPlay(i){
     else if(i===2){ t.atkPlay=2; t.cross=!t.cross; }
     else t.atkPlay=3;
     showMsg(`<span style="font-size:24px">Schema: ${ATK[t.atkPlay]}</span>`,0.8);
-  } else if(i<4){ t.defPlay=i; showMsg(`<span style="font-size:24px">Difesa: ${DEFN[i]}</span>`,0.8); }
+  } else if(i===1||i===3) passaAZona(t,i,true);
+  else if(i<4){ t.defPlay=i; t.lasciato=null; showMsg(`<span style="font-size:24px">Difesa: ${DEFN[i]}</span>`,0.8); }
 }
 export function goalScored(t){
   t.score++; whistle(0.6); rumble(350,1); registraGol(t,ball);
@@ -208,8 +213,8 @@ export function tackle(d,c,o){
   const lato=latoContrasto(d,c), palla=pallaEsposta(c), gol=probabileGol(d,c);
   // Disciplina: chi ne ha poca sbaglia più spesso il contrasto e commette più falli gravi
   const fDis=1.5-(d.s.dis-40)/59, sev=fDis*ARBITRO;
-  const grave=()=>{ if(gol&&rnd()<(lato==='dietro'?0.8:0.6)){ penalty(d,c); return 'rigore'; }
-    if(rnd()<(lato==='dietro'?0.55:lato==='lato'?0.24:0.12)*(palla==='alzata'?1.3:1)*(press?1.25:1)*sev){ exclude(d); return 'espulsione'; }
+  const grave=()=>{ if(gol&&rnd()<(lato==='dietro'?0.6:0.35)){ penalty(d,c); return 'rigore'; }
+    if(rnd()<(lato==='dietro'?0.55:lato==='lato'?0.24:0.12)*(palla==='alzata'?1.3:1)*(press?1:0.85)*sev){ exclude(d); return 'espulsione'; }
     return null; };
   if(o.voluto){
     // fallo voluto: ferma il gioco; da dietro o su chi è in posizione di tiro si rischia l'espulsione (o il rigore)
@@ -220,8 +225,11 @@ export function tackle(d,c,o){
   }
   // Difesa del difensore contro la capacità dell'attaccante di proteggere palla (Forza e Passaggio)
   const diff=(d.s.dif-(c.s.frz+c.s.pas)/2)/59*(d.team.human?1:DIFF());
-  const pRuba=clamp(0.135*(lato==='davanti'?1.15:lato==='lato'?1:0.3)*(palla==='palleggio'?1.3:palla==='appoggiata'?1:0.25)
-    *clamp(1+1.4*diff,0.45,1.8)*(press?1.2:1)*(o.stealMul||1),0.02,0.6);
+  // Chi protegge la palla (corpo in mezzo: difensore alle spalle, o palla tenuta lontana) non si deruba quasi mai.
+  // Si ruba soprattutto il palleggio preso di lato in controfuga e la palla tenuta troppo a lungo sotto pressione.
+  const aLungo=clamp((ball.holdTime-3)/3,0,1);
+  const pRuba=clamp(0.021*(lato==='davanti'?1:lato==='lato'?1.1:0.12)*(palla==='palleggio'?(lato==='lato'?2.4:1.5):palla==='appoggiata'?0.8+1.6*aLungo:0.2)
+    *clamp(1+1.4*diff,0.45,1.8)*(press?1.2:1)*(o.stealMul||1),0.004,0.4);
   const pFallo=clamp(0.27*(lato==='dietro'?1.9:lato==='lato'?1:0.75)*(palla==='alzata'?1.6:1)*(0.6+0.4*fDis)*(press?1.2:1),0.05,0.7);
   const r=rnd();
   if(r<pRuba){ registraPallaRubata(d.team); giveBall(d); showMsg(`Palla rubata! ${d.team.short} #${d.num}`,1); return 'rubata'; }

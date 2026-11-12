@@ -123,13 +123,13 @@ export function computePose(p,dt,t){
   // ================= POSA ORIZZONTALE: stile libero da pallanuoto =================
   // corpo disteso appena sotto la superficie (schiena a pelo d'acqua), testa alta, bracciata corta e frequente con
   // recupero fuori dall'acqua a gomito alto, gambe unite con battuta veloce
-  const ph=p.phase, rollio=Math.sin(ph)*0.06;
+  const cur=p.curva||0, ph=p.phase, rollio=Math.sin(ph)*0.06+cur*0.05;      // in curva il corpo rolla verso l'interno
   // ogni tanto, nuotando, la testa si alza un attimo per guardare l'azione
   const guarda=hold?0:ease(clamp((Math.sin(t*1.7+p.uid*2.3)-0.72)/0.2,0,1));
   const oHip=[-0.50,-0.21-0.02*guarda,0], oChest=[0,-0.07+0.03*guarda,0], oHead=[0.17-0.04*guarda,0.09+0.10*guarda,0];
   const oSR=[0,-0.07-rollio,0.19], oSL=[0,-0.07+rollio,-0.19];      // la spalla del braccio in recupero sale
-  const corta=hold?0.8:1;
-  const bracciata=(S,a,lato)=>{ const cs=Math.cos(a), sn=Math.sin(a);
+  // in curva la bracciata esterna è più lunga e ampia, quella interna più corta (una remata che fa da perno)
+  const bracciata=(S,a,lato)=>{ const cs=Math.cos(a), sn=Math.sin(a), corta=(hold?0.8:1)*(1-0.42*clamp(cur*lato,-0.6,1));
     return sn>0 ? [add3(S,[0.10+0.42*cs*corta,-0.34*sn,lato*0.05]),[0,-0.5,lato]]                 // trazione sott'acqua
                 : [add3(S,[0.10+0.42*cs*corta,-0.16*sn,lato*(0.14+(hold?0.10:0))]),[-0.25,1,lato*0.8]]; };      // recupero fuori dall'acqua, gomito alto
   const [oHR,oHintR]=bracciata(oSR,ph,1), [oHL,oHintL]=bracciata(oSL,ph+Math.PI,-1);
@@ -159,7 +159,19 @@ export function computePose(p,dt,t){
 //</POSE>
 export const JK=['hip','chest','head','sL','sR','eL','eR','hL','hR','kL','kR','fL','fR'];
 export function updateRig(p,dt,t){
-  const R=p.mesh, T=computePose(p,dt,t);
+  const R=p.mesh;
+  // CORPO CHE SI PIEGA. La direzione del giocatore (p.fx, p.fz) è quella di testa e spalle; petto, bacino e gambe la seguono
+  // ciascuno con un piccolo ritardo, così in curva la colonna si piega verso l'interno e le gambe vengono dietro come una coda.
+  // In linea retta i ritardi si annullano e il corpo resta disteso. Più la curva è stretta e veloce, più il corpo si piega.
+  const ry=Math.atan2(-p.fz,p.fx), S=p.spina||(p.spina={petto:ry,bacino:ry,gambe:ry});
+  const segui=(k,tau,max)=>{ let d=S[k]-ry; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI;
+    if(Math.abs(d)>2.2) d=0;                                   // spostamento improvviso (ripresa del gioco): niente piega
+    d*=Math.exp(-dt/tau); d=clamp(d,-max,max); S[k]=ry+d; return d; };
+  const disteso=p.excluded?0:(p.oriz||0), forza=0.45+0.55*clamp(Math.hypot(p.vx,p.vz)/1.4,0,1);
+  const dPet=segui('petto',0.07,0.3), dBac=segui('bacino',0.17+0.05*disteso,0.42+0.3*disteso), dGam=segui('gambe',0.3+0.1*disteso,0.6+0.5*disteso);
+  p.piega={ petto:dPet*forza, bacino:dBac*forza, gambe:dGam*forza };
+  p.curva=clamp(dBac*forza/0.5,-1,1);                          // > 0 = sta girando a destra
+  const T=computePose(p,dt,t); T.piega=p.piega; T.curva=p.curva;
   if(!p.J){ p.J={}; for(const k of JK) p.J[k]=T[k].slice(); }
   const J=p.J, k=1-Math.exp(-dt*(p.act?34:16));
   for(const key of JK){ const a=J[key], b=T[key]; a[0]+=(b[0]-a[0])*k; a[1]+=(b[1]-a[1])*k; a[2]+=(b[2]-a[2])*k; }

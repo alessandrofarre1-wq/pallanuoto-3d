@@ -1,6 +1,6 @@
 // ================= FISICA GIOCATORI =================
 import { rif01, setteControSei } from './ia.js';
-import { registraParata } from './statistiche.js';
+import { registraIntercetto, registraParata } from './statistiche.js';
 import { whistle } from './audio.js';
 import { ALZATA, BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
 import { showMsg } from './hud.js';
@@ -148,13 +148,17 @@ export function updateBall(dt){
         // Parata. Conta soprattutto la POSIZIONE al momento del tiro: quanto la palla passa lontano da dove stava il portiere,
         // tolto il pezzo che copre senza tuffarsi (braccia). Il tuffo (Riflessi) recupera solo una parte del resto; la stanchezza pesa.
         const R=rif01(gk), fresco=0.8+0.2*gk.stamina, braccia=0.7;
-        const lontano=Math.max(0,Math.abs(ball.z-ball.gkZ0)-braccia), reach=(0.5+0.8*R)*fresco;
+        // tiro da lontano: il portiere ha più tempo, arriva più lontano e para molto di più (da oltre 8-9 metri quasi sempre);
+        // da poco angolo vede poca porta da coprire
+        const tempo=clamp((ball.flightT-0.28)/0.3,0,1), dT=ball.distTiro||6, ang=ball.angoloTiro==null?1:ball.angoloTiro;
+        const facile=0.3*tempo+Math.max(0,dT-7.5)*0.2+Math.max(0,0.6-ang)*0.8+0.1*(ball.marcato||0)+(ball.daFermo?0.1:0)-(ball.dopoCambio?0.16:0)-(ball.liberato?0.05:0)-(ball.tipoTiro==='superiorita'?0.2:0);
+        const lontano=Math.max(0,Math.abs(ball.z-ball.gkZ0)-braccia), reach=(0.5+0.8*R)*fresco+0.7*tempo+Math.max(0,dT-7.5)*0.3;
         gk.stamina=Math.max(0,gk.stamina-0.035*(1.5-(gk.s.res-40)/59));          // ogni salto costa
         // tiro da vicino: la palla arriva in meno di un quarto di secondo e il portiere non fa in tempo a reagire
         const vicino=clamp((0.26-ball.flightT)/0.26,0,1)*0.42;
         if(lontano<reach && ball.y<1.9){
-          let prob=(1.02-0.30*ball.shotPower*(1.25-0.5*R)-lontano*(0.7-0.3*R)-(ball.lob?0.2:0)-(gk.fakedUntil>game.time?0.25:0)-(ball.skipped?0.12:0)-(ball.sorpresa||0)-vicino)*fresco*(def.human?1:DIFF_GK())
-            *(ball.rigore?0.45:1);      // sul rigore il portiere para molto meno: negli studi citati dalla tesi ne entra l'80%
+          let prob=(1.07-0.30*ball.shotPower*(1.25-0.5*R)-lontano*(0.7-0.3*R)-(ball.lob?0.2:0)-(gk.fakedUntil>game.time?0.25:0)-(ball.skipped?0.12:0)-(ball.sorpresa||0)-vicino+facile)*fresco*(def.human?1:DIFF_GK())
+            *(ball.rigore?0.41:1);      // sul rigore il portiere para molto meno: negli studi citati dalla tesi ne entra l'80%
           if(rnd()<prob){
             whistle(0.12); const r=rnd(); ball.afterShot=true; registraParata(att,def);
             if(ball.shotPower>0.55&&r<0.25){ cornerThrow(att); }
@@ -190,13 +194,16 @@ export function updateBall(dt){
           const dif01=(p.s.dif-40)/59, braccioAlto=0.2+0.7*dif01;
           const finta=ball.shooter&&ball.shooter.fakeUntil>game.time?0.45:1;
           const muro=(primoPalo?0.42:0.34*braccioAlto)*finta*(1-2*(ball.sorpresa||0))*(1.3-0.6*(ball.elevazione||0.5));
-          const pr=(ball.kind==='shot'?muro:0.2)*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
+          // intercetto: è da qui che nasce la maggior parte delle palle rubate. Un passaggio lungo e lento dà il tempo di leggerlo;
+          // conta la Difesa di chi anticipa contro il Passaggio di chi l'ha fatto
+          const letto=0.06+0.26*clamp((ball.flightT-0.2)/0.7,0,1)+(ball.shooter?(p.s.dif-ball.shooter.s.pas)/59*0.12:0);
+          const pr=(ball.kind==='shot'?muro:clamp(letto,0.04,0.5))*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
           if(rnd()<pr){
             if(ball.kind==='shot'){
               // muro: la palla rimbalza sul braccio alzato e resta in gioco
               ball.kind='rebound'; ball.vx*=-0.2; ball.vz=ball.vz*0.3+(rnd()-0.5)*3; ball.vy=1+rnd()*1.5; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.2; showMsg('Muro!',0.8); ball.afterShot=true;
             }
-            else { giveBall(p); showMsg('Intercetto!',0.8); }
+            else { registraIntercetto(p.team); giveBall(p); showMsg('Intercetto!',0.8); }
             return;
           }
         }

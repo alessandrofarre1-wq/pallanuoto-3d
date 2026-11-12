@@ -39,7 +39,7 @@ export function boaHold(b,d,dt){
   if(b.turnedUntil>game.time) return;
   const v=fight.v, gx=goalX(b.team);
   // aggressività del marcatore: il giocatore la alza premendo CONTRASTO
-  let ag = d===ctrl ? (d.aggrT>game.time?1.6:0.35) : (d.team.defPlay===2?1.3:1)*(0.85+0.3*DIFF());
+  let ag = d===ctrl ? (d.aggrT>game.time?1.6:0.35) : (d.team.defPlay===2?1.05:0.85)*(0.85+0.3*DIFF());
   // ai 2 metri l'arbitro pesa di più: un arbitro fiscale fischia molte più espulsioni (e rigori) al marcatore del centroboa
   const sev=Math.pow(ARBITRO,1.5), rP=(v>0.15?0.07:0.02)*sev*(1.5-(d.s.dis-40)/59);
   const rE=Math.max(0.12,0.42+0.5*v)*ag*(1.5-(d.s.dis-40)/59)*sev, rF=0.5*ag, rO=0.14+0.3*Math.max(0,-v), rS=(0.08+0.25*Math.max(0,-v))*(d===ctrl&&d.aggrT>game.time?1.5:1);

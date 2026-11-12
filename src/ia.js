@@ -1,9 +1,10 @@
 // ================= IA =================
 import { difensoriDavanti } from './statistiche.js';
-import { DEF_DOWN, FORM, FORM_UP, GW, HW, KICK_Z, MARK, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
+import { DEF_DOWN, FORM, FORM_UP, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
 import { doFake, timeout } from './regole.js';
+import { showMsg } from './hud.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
-import { bestPassTarget, doPass, doShoot, laneClear, shotKind, startAct } from './tiri.js';
+import { bestPassTarget, doPass, doShoot, laneClear, shotKind, situazioneTiro, startAct } from './tiri.js';
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 export function startCut(p){
   if(p.isGK||p.excluded||ball.holder===p) return;
@@ -53,6 +54,47 @@ function postiInferiorita(t){
   }
   t.postiT=game.time; t.posti=m; return m;
 }
+// RIENTRO DIFENSIVO. Chi perde palla rientra: finché la palla è ancora lontana dalla nostra porta (transizione) nessuno va
+// incontro al proprio uomo; tutti nuotano verso la propria porta restando tra la palla e la porta e chiudendo il centro.
+// Il più vicino al portatore lo rallenta standogli davanti (senza buttarsi, per non farsi saltare). Solo quando la palla è
+// arrivata nella zona d'attacco e il difensore è tornato dalla parte giusta si riprendono le marcature (o la zona scelta).
+const RIENTRO_BASE=[0,2.8,3.0,3.0,5.0,5.0,3.4];      // profondità minima a cui si ripiega, per ruolo (metri dalla propria porta)
+function chiRallenta(t){
+  if(t.rallT===game.time) return t.rall;
+  const h=ball.holder, ogx=ownGoalX(t); let b=null, bs=1e9;
+  if(h&&h.team!==t&&!h.isGK) for(const q of t.players){
+    if(q.excluded||q.isGK||game.time<q.stunUntil) continue;
+    const davanti=Math.abs(q.x-ogx)<Math.abs(h.x-ogx)+0.3, sc=dist(q,h)+(davanti?0:3.5);
+    if(sc<bs){ bs=sc; b=q; }
+  }
+  t.rallT=game.time; t.rall=b; return b;
+}
+export function inRientro(t){
+  const att=other(t); if(game.possTeam!==att) return false;
+  return Math.abs(ball.x-ownGoalX(t))>9.2;
+}
+function rientro(p){
+  const t=p.team, att=other(t), ogx=ownGoalX(t);
+  if(game.possTeam!==att) return null;
+  const ballD=Math.abs(ball.x-ogx), myD=Math.abs(p.x-ogx), trans=ballD>9.2;
+  if(!trans && (myD<=ballD+0.6 || ballD<7)) return null;    // difesa rientrata (o palla ormai in zona d'attacco): marcature normali
+  const h=ball.holder;
+  if(trans && h && chiRallenta(t)===p){
+    // davanti al portatore, sulla linea verso il centro della porta, arretrando con lui
+    const gx=ogx-h.x, gz=-h.z, gl=Math.hypot(gx,gz)||1;
+    return { x:h.x+gx/gl*1.7, z:h.z+gz/gl*1.7, sprint:true, rallenta:true };
+  }
+  const a=att.players[MARK[p.i]], attD=a&&!a.excluded?Math.abs(a.x-ogx):99;
+  // sempre qualche metro più indietro del proprio uomo e della palla; mai più bassi del posto di ruolo
+  // in transizione si nuota dritti al proprio posto davanti alla porta (blocco stretto al centro), senza aspettare l'uomo;
+  // a difesa quasi rientrata ci si tiene un metro dietro di lui
+  // (chi ha l'uomo che è scappato più avanti della palla lo segue fino in fondo, restandogli dalla parte della porta)
+  const scappato=trans&&attD<ballD-2.5;
+  let d=trans ? Math.min(RIENTRO_BASE[p.i]+1.2, Math.max(RIENTRO_BASE[p.i], ballD-2.2)) : Math.max(RIENTRO_BASE[p.i], Math.min(ballD-2.2, attD-0.8));
+  if(scappato) d=Math.max(1.6,Math.min(d,attD-0.7));
+  const z=clamp((a&&!a.excluded?a.z:p.z)*(scappato?0.85:trans?0.55:0.85),-6.5,6.5);
+  return { x:ogx+t.dir*d, z, sprint:myD>d+0.8 };
+}
 export function markTarget(p){
   const t=p.team, ogx=ownGoalX(t);
   if(t.players.some(q=>q.excluded)){            // uomo in meno: tre sulla linea dei 2 metri negli spazi tra i quattro attaccanti, due davanti ai pali
@@ -79,10 +121,13 @@ export function markTarget(p){
   // il difensore reagisce con un piccolo ritardo ai movimenti del suo uomo
   const ax=p.lagX, az=p.lagZ, dx=ogx-ax, dz=-az, l=Math.hypot(dx,dz)||1;
   let gap = ball.holder===att ? 0.85 : 1.0;
-  if(t.defPlay===1 && p.i!==6) gap = ball.holder===att ? 1.3 : Math.min(2.6,l*0.45);   // zona: ci si stacca verso il centroboa
+  // zona: ci si stacca verso il centroboa; chi marca il giocatore "lasciato" si stacca di più e resta staccato anche quando
+  // quello ha la palla (gli si concede il tiro), gli altri restano più vicini al proprio uomo
+  const lasc=(t.defPlay===1||t.defPlay===3)&&att===t.lasciato;
+  if(t.defPlay===1 && p.i!==6) gap = lasc ? Math.min(ball.holder===att?2.6:3.4,l*0.6) : ball.holder===att ? 1.1 : Math.min(1.8,l*0.4);
   if(t.defPlay===2) gap = 0.8;                                                       // pressing
   // zona a M: due linee strette davanti alla porta (ali e punto bassi, mezzi più alti), braccia alte; lascia il tiro da lontano
-  if(t.defPlay===3) gap = ball.holder===att ? 1.5 : Math.min(p.i===4||p.i===5?2.4:3.4,l*0.55);
+  if(t.defPlay===3) gap = ball.holder===att ? (lasc?2.5:1.4) : Math.min(p.i===4||p.i===5?2.4:3.4,l*0.55);
   return { x:ax+dx/l*gap, z:az+dz/l*gap };
 }
 export function blockR(p){ return ball.kind==='shot' && (p.team.defPlay===1 || p.team.defPlay===3 || p.team.players.some(q=>q.excluded)) ? (p.team.defPlay===3?1.0:0.85) : 0.6; }
@@ -171,22 +216,44 @@ export function aiTarget(p){
   if(ball.state==='flight'&&ball.kind==='pass'&&ball.target===p) return {x:ball.tx,z:ball.tz,sprint:true};
   const poss = game.possTeam || (ball.lastTeam);
   if(poss===t) return attackTarget(p);
-  if(poss===other(t)) return markTarget(p);
+  if(poss===other(t)) return rientro(p)||markTarget(p);
   // palla contesa (sprint iniziale): solo il più vicino va sulla palla, gli altri risalgono la propria corsia fino alla posizione di ruolo
   return {x:-t.dir*FORM[p.i][0]*0.8, z:KICK_Z[p.i]*t.dir, sprint:true};   // palla contesa: ci si ferma a metà campo
 }
 // ultimo minuto dell'ultimo tempo, sotto di un gol: la squadra del computer attacca in 7 contro 6 con il portiere avanzato
-const PAZIENZA=[16,8];      // secondi di possesso prima di cominciare a cercare il tiro, e secondi per arrivare alla piena voglia di tirare
+const PAZIENZA=[23,4];      // secondi di possesso prima di cominciare a cercare il tiro, e secondi per arrivare alla piena voglia di tirare
 export function setteControSei(t){
   return !t.human && game.period===4 && game.clock<60 && other(t).score-t.score===1;
 }
-// il computer sceglie la difesa guardando l'avversario: centroboa forte → zona o zona a M; tiratori forti dal perimetro → pressing;
-// in ogni caso alterna, per togliere riferimenti ai registi avversari
-export function scegliDifesa(dif,att){
-  const boa=att.players[1], tir=[4,5,6].map(i=>att.players[i]).filter(q=>!q.excluded);
-  const fBoa=boa.excluded?40:(boa.s.frz+boa.s.pot)/2, fTir=tir.reduce((a,q)=>a+(q.s.pot+q.s.pre)/2,0)/Math.max(1,tir.length);
-  const scelte = fBoa>fTir+3 ? [1,1,3,3,3,0,2] : fTir>fBoa+3 ? [2,2,2,0,0,1,3] : [0,0,2,2,1,3];
-  return scelte[Math.floor(rnd()*scelte.length)];
+// DIFESA COME SI GIOCA OGGI. Di base pressing (uomo contro uomo). Nella seconda parte dell'azione, soprattutto se il marcatore
+// del centroboa è in difficoltà (il centroboa gli ha preso posizione), si passa a zona: zona a M se il centroboa avversario è
+// forte, altrimenti zona semplice. La zona si costruisce decidendo CHI LASCIARE TIRARE.
+export function scegliDifesa(){ return 2; }
+// Chi lasciare tirare: il giocatore di perimetro meno pericoloso in questo momento. Conta la bravura al tiro (Potenza e Precisione)
+// e la mano: dal lato destro (posizioni 1 e 2) un destro ha poco angolo, lì è pericoloso il mancino; dal lato sinistro il contrario.
+export function chiLasciare(dif){
+  const att=other(dif); let b=null, bs=1e9;
+  for(const q of att.players){
+    if(q.isGK||q.excluded||q.i===1) continue;
+    const destra=q.i===2||q.i===4, sinistra=q.i===3||q.i===5, manc=q.mano==='S';
+    let per=(q.s.pot+q.s.pre)/2 + (destra?(manc?7:(q.i===2?-12:-6)):sinistra?(manc?-8:3):0) + (q.i===2||q.i===3?-4:0);      // dalle ali si vede meno porta
+    if(per<bs){ bs=per; b=q; }
+  }
+  return b;
+}
+export function passaAZona(t,quale,annuncia){
+  t.defPlay=quale; t.lasciato=chiLasciare(t);
+  if(annuncia&&t.lasciato) showMsg(`<span style="font-size:22px">${t.short}: ${quale===3?'zona a M':'zona'} · si lascia tirare il #${t.lasciato.num} (${ROLES[t.lasciato.i].toLowerCase()})</span>`,1.3);
+}
+// il computer, mentre difende: pressing all'inizio, zona nella seconda parte dell'azione se il centroboa sta vincendo il duello
+// (o comunque, a volte, negli ultimi secondi, per togliere riferimenti)
+export function aggiornaDifesa(t,dt){
+  if(t.human||game.possTeam!==other(t)||t.defPlay!==2||game.shot>15||inRientro(t)||t.players.some(q=>q.excluded)) return;
+  const att=other(t), boa=att.players[1], inDifficolta=fight.active&&fight.def&&fight.def.team===t&&fight.v>0.2;
+  if(inDifficolta||rnd()<dt*0.07){
+    const forte=!boa.excluded&&(boa.s.frz+boa.s.pot)/2>74;
+    passaAZona(t,forte||inDifficolta?3:1,true);
+  }
 }
 export function aiShoot(p,power,lob){
   const kind=lob?'lob':shotKind(p), r=kind==='shot'?rnd():1;
@@ -230,7 +297,10 @@ export function aiCarrier(p,dt){
     const pazienza = davanti===0 ? 1 : manUp(t) ? clamp((15.5-game.shot)/4,0,1) : clamp((SHOT_CLOCK-game.shot-PAZIENZA[0])/PAZIENZA[1],0,1);
     // con l'uomo in più l'esterno, che ha poco angolo, tira di rado: cerca l'uomo al palo o chi sta ai 5 metri
     const angolo = manUp(t) ? clamp(Math.abs(gx-p.x)/Math.max(0.1,dGoal)*2,0.15,1) : 1;
-    const want = game.shot<4 ? 0.9 : (game.shot<8 ? 0.45 : (lane?0.25+0.45*(1-dGoal/8.5):0.12)*(press>1.5?1.35:press<0.9?0.6:1)*pazienza)*angolo;
+    // si tira quando si è liberi: subito dopo un passaggio che ha liberato il tiratore o cambiato lato; con il difensore davanti
+    // a braccio alto e tutti piazzati si aspetta, si finta o si fa girare palla (il tiro arriva comunque a fine azione)
+    const sit=situazioneTiro(p), occasione=(sit.liberato?1.7:1)*(sit.dopoCambio?1.6:1)*(1-0.75*sit.marcato)*(sit.daFermo?0.6:1);
+    const want = game.shot<2.5 ? 0.9 : (game.shot<6 ? 0.35 : (lane?0.2+0.36*(1-dGoal/8.5):0.1)*(press>1.5?1.35:press<0.9?0.6:1)*pazienza)*angolo*clamp(occasione,0.12,2.2);
     if(rnd()<want){
       if(!p.fakeUsed && game.shot>5 && rnd()<0.18){ p.fakeUsed=true; p.shootNext=true; p.decideT=0.5; startAct(p,'fake',0.12,()=>doFake(p)); return; }
       const lob = dGoal>5 && rnd()<0.12; aiShoot(p,0.55+rnd()*0.45,lob); return;
