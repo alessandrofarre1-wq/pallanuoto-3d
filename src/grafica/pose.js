@@ -99,8 +99,11 @@ export function computePose(p,dt,t){
   if(presa>0.01){ const v=[pallaL[0]-vSR[0],pallaL[1]-vSR[1],pallaL[2]-vSR[2]], l=Math.hypot(v[0],v[1],v[2])||1, m=Math.min(1,0.55/l); hR=mix3(hR,add3(vSR,[v[0]*m,Math.max(0.1,v[1]*m),v[2]*m]),presa); hintR=[0,-0.4,1]; }
   if(th){ hL=[vSL[0]+0.36,-0.03,vSL[2]-0.10]; hintL=[0,-1,-0.4]; }      // il braccio libero fa appoggio sull'acqua (a pelo d'acqua)
   if(fight.active && !th){
-    if(p===fight.def){ hR=add3(vSR,[0.36,0.14,-0.08]); hL=add3(vSL,[0.36,0.14,0.08]); hintR=[0,-1,0.5]; hintL=[0,-1,-0.5]; vHip[1]+=0.06; vChest[0]+=0.06; }
-    else if(p===fight.boa){ hL=add3(vSL,[-0.28,-0.05,-0.12]); hintL=[0.3,-1,-0.6]; if(!hold) hR=add3(vSR,[-0.26,-0.05,0.12]); vHip[0]-=0.08; }
+    // braccia vive nella lotta: il difensore spinge a mani alterne sulla schiena e sul fianco del centroboa; il centroboa rema
+    // dietro di sé per tenere la posizione (la mano con la palla non cambia: da lì parte il tiro)
+    const wl=t*5.2+p.uid*1.3, a1=Math.sin(wl), a2=Math.sin(wl+Math.PI);
+    if(p===fight.def){ hR=hold?add3(vSR,[0.36,0.14,-0.08]):add3(vSR,[0.34+0.05*a1,0.12+0.04*a1,-0.07]); hL=add3(vSL,[0.31+0.05*a2,0.02+0.05*a2,0.09]); hintR=[0,-1,0.5]; hintL=[0,-1,-0.5]; vHip[1]+=0.06; vChest[0]+=0.06; }
+    else if(p===fight.boa){ hL=add3(vSL,[-0.27+0.04*a1,-0.06+0.03*a2,-0.13-0.03*a1]); hintL=[0.3,-1,-0.6]; if(!hold) hR=add3(vSR,[-0.25+0.04*a2,-0.06+0.03*a1,0.13+0.03*a2]); vHip[0]-=0.08; }
   }
   // dorso di attesa: semi-seduti sul dorso, gambe a bicicletta, braccia larghe che remano ai lati, sguardo alla palla.
   // Lo usa chi arretra piano e chi, sul perimetro, aspetta il passaggio da un compagno lontano.
@@ -160,6 +163,20 @@ export function computePose(p,dt,t){
 //</POSE>
 export const JK=['hip','chest','head','sL','sR','eL','eR','hL','hR','kL','kR','fL','fR'];
 const _mano=new THREE.Vector3();
+// POSTURA DISEGNATA IN NUOTATA (solo disegno: le giunture del gioco, da cui parte la palla, restano quelle di computePose).
+// Nel crawl da pallanuoto la testa e le spalle stanno fuori dall'acqua e il corpo è inclinato: bacino e gambe scendono.
+// Le giunture del corpo disegnato vengono quindi alzate di SU_NUOTO (testa e spalle a pelo d'acqua) e la parte bassa
+// (bacino, ginocchia, piedi) ruota verso il basso di INCLINA_NUOTO attorno alle spalle; tutto in proporzione a quanto il
+// corpo è disteso, quindi da verticale non cambia nulla e il passaggio resta continuo.
+const SU_NUOTO=0.09, INCLINA_NUOTO=0.42, BASSI=['hip','kL','kR','fL','fR'];
+function posturaVista(p,J,e){
+  if(e<0.001) return J;
+  const V=p.Jv||(p.Jv={}), su=SU_NUOTO*e, a=INCLINA_NUOTO*e, ca=Math.cos(a), sa=Math.sin(a);
+  const cx=(J.sL[0]+J.sR[0])/2, cy=(J.sL[1]+J.sR[1])/2;
+  for(const k of JK){ const q=J[k], v=V[k]||(V[k]=[0,0,0]); v[0]=q[0]; v[1]=q[1]+su; v[2]=q[2]; }
+  for(const k of BASSI){ const q=J[k], v=V[k], dx=q[0]-cx, dy=q[1]-cy; v[0]=cx+dx*ca-dy*sa; v[1]=cy+dx*sa+dy*ca+su; }
+  return V;
+}
 export function updateRig(p,dt,t){
   const R=p.mesh;
   // CORPO CHE SI PIEGA. La direzione del giocatore (p.fx, p.fz) è quella di testa e spalle; petto, bacino e gambe la seguono
@@ -178,7 +195,8 @@ export function updateRig(p,dt,t){
   const J=p.J, k=1-Math.exp(-dt*(p.act?34:16));
   for(const key of JK){ const a=J[key], b=T[key]; a[0]+=(b[0]-a[0])*k; a[1]+=(b[1]-a[1])*k; a[2]+=(b[2]-a[2])*k; }
   R.g.position.set(p.x,0,p.z); R.g.rotation.y=Math.atan2(-p.fz,p.fx);
-  if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)) muoviCorpo(R,J,T,dt); }
+  const Jv=posturaVista(p,J,T.oriz||0);
+  if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)) muoviCorpo(R,Jv,T,dt); }
   else {
     setSeg(R.torso,J.hip,J.chest); R.chest.position.set(J.chest[0],J.chest[1],J.chest[2]); R.pelvis.position.set(J.hip[0],J.hip[1],J.hip[2]);
     setSeg(R.bar,J.sL,J.sR); R.shR.position.set(J.sR[0],J.sR[1],J.sR[2]); R.shL.position.set(J.sL[0],J.sL[1],J.sL[2]);
@@ -187,7 +205,7 @@ export function updateRig(p,dt,t){
     setSeg(R.thR,J.hip,J.kR); setSeg(R.snR,J.kR,J.fR); setSeg(R.thL,J.hip,J.kL); setSeg(R.snL,J.kL,J.fL);
     R.head.position.set(J.head[0],J.head[1],J.head[2]);
   }
-  R.spr.position.set(J.head[0],J.head[1]+0.3,J.head[2]);
+  R.spr.position.set(Jv.head[0],Jv.head[1]+0.3,Jv.head[2]);
   // posizione della palla in mano / davanti al nuotatore (coordinate mondo)
   let l=null;
   if(T.ballHand){ l=[J.hR[0]+0.02,J.hR[1]+0.13,J.hR[2]]; if(T.ballDavanti>0) l=mix3(l,PALLA_DAVANTI,T.ballDavanti); }
@@ -197,16 +215,23 @@ export function updateRig(p,dt,t){
   // il gioco non dipende dal disegno.
   p.ballVistaW=null;
   if(l && R.corpo && R.corpo.ossa.manoD && !(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){
-    const c=p.fx, sn=-p.fz, h=J.hR, k=1-(T.ballDavanti||0);
+    const c=p.fx, sn=-p.fz, h=Jv.hR, k=1-(T.ballDavanti||0);
     R.corpo.ossa.manoD.getWorldPosition(_mano);
     const hx=p.x+VIS*(h[0]*c+h[2]*sn), hy=VIS*h[1], hz=p.z+VIS*(-h[0]*sn+h[2]*c);
     p.ballVistaW=[p.ballW[0]+(_mano.x-hx)*k, p.ballW[1]+(_mano.y-hy)*k, p.ballW[2]+(_mano.z-hz)*k];
+    // in nuotata con palla la si disegna appena davanti al viso, appoggiata sull'acqua tra le braccia (nel gioco resta più avanti)
+    const dv=T.ballDavanti||0;
+    if(dv>0){ const ox=Jv.head[0]+0.30-PALLA_DAVANTI[0], oy=0.05-PALLA_DAVANTI[1], oz=Jv.head[2];
+      p.ballVistaW[0]+=dv*VIS*(ox*c+oz*sn); p.ballVistaW[1]+=dv*VIS*oy; p.ballVistaW[2]+=dv*VIS*(-ox*sn+oz*c); }
   }
-  // contatto con l'acqua (scena.js): cerchio attorno alle spalle da fermi, ovale lungo il corpo in nuotata, onda davanti se veloce
+  // contatto con l'acqua (scena.js), dove il corpo disegnato attraversa la superficie: attorno alle spalle da fermi, attorno a
+  // testa e spalle in nuotata (il resto del corpo è sotto). Più forte quanto più ci si muove: da fermi, con la sola bicicletta,
+  // resta un bordo leggero; cresce quando ci si alza (tiro, parata, lotta) e con la velocità; onda davanti a chi nuota veloce.
   const sp=Math.hypot(p.vx,p.vz), vel=clamp(sp/1.6,0,1), e=T.oriz||0, c=p.fx, sn=-p.fz;
-  { const mx=(J.sL[0]+J.sR[0])/2*(1-e)+(J.head[0]+J.hip[0])/2*e, mz=(J.sL[2]+J.sR[2])/2*(1-e)+(J.head[2]+J.hip[2])/2*e;
-    const i=p.iContatto??(p.iContatto=allPlayers.indexOf(p));
-    contatto(i,p.x+VIS*(mx*c+mz*sn),p.z+VIS*(-mx*sn+mz*c),R.g.rotation.y,0.5+0.32*e,0.5-0.13*e,R.g.visible?0.7+(0.3*vel-0.25)*e:0,R.g.visible?e*vel:0); }
+  { const mx=(Jv.sL[0]+Jv.sR[0])/2*(1-e)+(Jv.head[0]+Jv.chest[0])/2*e, mz=(Jv.sL[2]+Jv.sR[2])/2*(1-e)+(Jv.head[2]+Jv.chest[2])/2*e;
+    const i=p.iContatto??(p.iContatto=allPlayers.indexOf(p)), sforzo=clamp((J.chest[1]+0.06)/0.26,0,1);
+    const forza=(1-e)*(0.3+0.4*sforzo+0.3*vel)+e*(0.3+0.6*vel);
+    contatto(i,p.x+VIS*(mx*c+mz*sn),p.z+VIS*(-mx*sn+mz*c),R.g.rotation.y,0.5+0.12*e,0.5-0.08*e,R.g.visible?forza:0,R.g.visible?e*vel:0); }
   // spruzzo quando una mano rientra in acqua (bracciata, appoggio del braccio libero nel tiro): solo disegno, niente caso
   if(R.corpo && R.corpo.ossa.manoD && !(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){
     const Y=p.maniY||(p.maniY=[0,0]);
@@ -216,12 +241,14 @@ export function updateRig(p,dt,t){
   }
   // schiuma: scia dietro (allungata nel verso del nuoto) e increspatura davanti, più grandi se si va veloci; ogni due colpi due
   // scie laterali che si aprono a V dai fianchi. I numeri del caso usati sono gli stessi di prima (le partite non cambiano).
+  // La scia segue la direzione in cui il corpo si sposta davvero (in curva o scivolando di lato non è quella in cui guarda);
+  // quasi fermi (bracciate sul posto) la scia è piccola e le scie laterali non partono.
   if(T.swim){ p.foamT=(p.foamT||0)-dt; if(p.foamT<=0){ p.foamT=0.09;
-    const f=0.75+0.45*vel;
-    spawnFoam(p.x-p.fx*VIS*1.15+(rnd()-0.5)*0.2,p.z-p.fz*VIS*1.15+(rnd()-0.5)*0.2,(0.2+rnd()*0.1)*f,0.8,p.fx,p.fz);
+    const f=0.45+0.75*vel, ux=sp>0.3?p.vx/sp:p.fx, uz=sp>0.3?p.vz/sp:p.fz;
+    spawnFoam(p.x-ux*VIS*1.0+(rnd()-0.5)*0.2,p.z-uz*VIS*1.0+(rnd()-0.5)*0.2,(0.2+rnd()*0.1)*f,0.8,ux,uz);
     spawnFoam(p.x+p.fx*VIS*0.5+(rnd()-0.5)*0.5,p.z+p.fz*VIS*0.5+(rnd()-0.5)*0.5,0.12*f,0.5);
     p.sciaV=!p.sciaV;
-    if(p.sciaV&&vel>0.5) for(const l of [1,-1]){ const a=0.45*l, dx=p.fx*Math.cos(a)-p.fz*Math.sin(a), dz=p.fx*Math.sin(a)+p.fz*Math.cos(a);
-      spawnFoam(p.x-p.fx*VIS*0.55-p.fz*l*0.22,p.z-p.fz*VIS*0.55+p.fx*l*0.22,0.11*f,0.8,dx,dz); } } }
+    if(p.sciaV&&vel>0.5) for(const l of [1,-1]){ const a=0.45*l, dx=ux*Math.cos(a)-uz*Math.sin(a), dz=ux*Math.sin(a)+uz*Math.cos(a);
+      spawnFoam(p.x-ux*VIS*0.4-uz*l*0.22,p.z-uz*VIS*0.4+ux*l*0.22,0.11*f,0.8,dx,dz); } } }
   else if(p.act&&p.act.kind!=='pass'&&p.act.kind!=='fake'&&!p.act.foam&&p.act.done){ p.act.foam=true; for(let i=0;i<4;i++) spawnFoam(p.x+(rnd()-0.5)*0.7,p.z+(rnd()-0.5)*0.7,0.25,0.9); }
 }

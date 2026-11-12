@@ -193,7 +193,7 @@ export function muoviCorpo(R,J,T,dt){
     sottoIlPelo(coscia,gamba,_d,0.10);
     punta(coscia,gamba,_d);
     // sotto il ginocchio: il piede gira in cerchio (verso opposto tra destra e sinistra, mezzo giro di ritardo)
-    _d.copy(_su).multiplyScalar(-0.80).addScaledVector(_de,lato*0.55*cs*amp).addScaledVector(_av,-0.15+0.5*sn*amp).normalize();
+    _d.copy(_su).multiplyScalar(-0.80).addScaledVector(_de,lato*0.46*cs*amp).addScaledVector(_av,-0.15+0.42*sn*amp).normalize();
     if(e>0.001){ dirMondo(gin,pie,_d2); _d.lerp(_d2,e).normalize(); }
     if(qGambe) _d.applyQuaternion(_qy.setFromAxisAngle(SU,pg.gambe*1.25));      // la gamba sotto il ginocchio resta ancora un po' più indietro: coda leggermente piegata
     sottoIlPelo(gamba,piede,_d,0.12);

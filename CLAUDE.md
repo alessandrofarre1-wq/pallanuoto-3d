@@ -2,7 +2,8 @@
 
 Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Proprietario: Ale, ex nuotatore agonista, non programmatore: spiega le scelte in italiano semplice, senza gergo tecnico, e chiedi conferma prima di cambiamenti grossi di direzione.
 
-## Stato attuale (v0.22, novembre 2026)
+## Stato attuale (v0.23, novembre 2026)
+- v0.23 = giocatori più credibili in acqua: crawl a testa alta con corpo inclinato, palla disegnata davanti al viso, braccia vive nella lotta, scie e increspature legate al movimento vero. Dettagli in "Giocatori e animazioni (v0.23)".
 - v0.22 = solo grafica Cartoon (la Realistica è stata tolta) e giocatori immersi davvero nell'acqua. Dettagli in "Solo Cartoon e immersione (v0.22)".
 - v0.21 = acqua e schiuma dello stile Cartoon rifatte (vedi "Grafica Cartoon (v0.19)").
 - v0.20 = il pallanuotista del concept di Ale è il corpo dello stile Cartoon. Dettagli in "Personaggio cartoon da modello generato".
@@ -336,3 +337,15 @@ Come è realizzato oggi: `pose.js` calcola una posa verticale (con tutti i gesti
 - Costo (schermo da iPhone, computer di prova; FPS NON misurabili da qui): oggetti disegnati da 87 a 88 (il contatto con l'acqua), triangoli invariati (135 mila). Il colore secondo la profondità aggiunge qualche calcolo per punto a corpi e fondo, la superficie qualche campione di disegno in più: costo stimato piccolo, da verificare con il contatore FPS sull'iPhone di Ale.
 - Immagini prima/dopo: `docs/immagini/immersione-prima-dopo.png`, `partita-orizzontale-prima-dopo.png`, `partita-verticale-prima-dopo.png`.
 - Non fatto: vera rifrazione (la vista sott'acqua deformata richiederebbe un passaggio di disegno in più); bordo vasca, tribune e porte non sono stati ridisegnati in stile cartoon.
+
+## Giocatori e animazioni (v0.23) — cosa c'è e dove
+- Richiesta di Ale (con un'immagine di riferimento generata: giocatori verticali, fuori solo testa e spalle): giocatori che non sembrino distesi o sospesi sulla superficie, nuoto più naturale, interazione con l'acqua legata al movimento. Vincoli: solo disegno; acqua, gioco, fisica, IA, comandi e telecamera invariati.
+- Causa principale: in nuotata le giunture di `pose.js` mettono il corpo piatto (spalle 10 cm sotto, bacino a 30 cm, gambe orizzontali), e il viso del personaggio (testa grande) finiva mezzo sott'acqua: visto attraverso l'acqua trasparente sembrava sdraiato in superficie.
+- `posturaVista` in `pose.js` (solo per il corpo disegnato, `p.Jv`): in proporzione a quanto il corpo è disteso, alza tutto di `SU_NUOTO` (0,09, cioè 13 cm) e ruota bacino, ginocchia e piedi verso il basso di `INCLINA_NUOTO` (0,42 rad, circa 24°) attorno alle spalle. Da verticale non cambia nulla. Le giunture del gioco (`p.J`, da cui `p.ballW`, punto di partenza della palla) NON cambiano.
+- REGOLA importante: nel gioco conta solo `p.ballW`, ricavato da `J.hR` quando il giocatore ha la palla. Ogni ritocco visivo alle giunture va fatto su `Jv` o, se fatto in `computePose`, mai sulla mano destra di chi ha la palla (errore trovato in questa sessione con la lotta: la verifica è passata da 69 a 70 gol finché la mano del difensore con palla non è stata esclusa).
+- Palla in nuotata (`p.ballVistaW`): disegnata appena davanti al viso, appoggiata sull'acqua tra le braccia (nel gioco resta 0,9 m avanti, come prima).
+- Lotta al centro: il difensore spinge a mani alterne, il centroboa rema dietro di sé (la mano con la palla non cambia).
+- Bicicletta da fermi un po' meno ampia (`muoviCorpo` in `corpo.js`).
+- Acqua: il contatto attorno al corpo è leggero da fermi e cresce con l'alzata e la velocità; in nuotata sta attorno a testa e spalle. La scia segue la direzione in cui il corpo si sposta davvero (non quella in cui guarda) ed è piccola quando si va piano. Sott'acqua i colori perdono un po' di contrasto con la profondità (`sottacqua.js`).
+- Verifiche: partita simulata identica alla v0.22 (`npm run aspetto -- --confronta=`), stesse 6 partite di `npm run verifica` (69 gol su 217 tiri), gambe mai sopra l'acqua, oggetti disegnati e triangoli invariati (88 e 135 mila). Immagini in `docs/immagini/giocatori-*-prima-dopo.png`.
+- Non fatto: dita e polsi fermi, nessuna vera presa del portiere, braccio in recupero che passa vicino alla cuffia in alcune bracciate, la bicicletta resta "seduta" (cosce in avanti) come prima.
