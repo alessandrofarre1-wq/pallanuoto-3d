@@ -309,3 +309,10 @@ Come è realizzato oggi: `pose.js` calcola una posa verticale (con tutti i gesti
 - Sostituisce i cognomi scritti a memoria di `src/dati/rose.js` (vedi "Passi 1-7").
 - Volti: niente foto dei giocatori reali e niente somiglianza; ogni giocatore ha un aspetto fisso scelto dal nome, uguale in grafica realistica e cartoon.
 
+## Personaggio cartoon da modello generato (in corso, 12 novembre 2026)
+- Ale vuole il personaggio del suo concept riprodotto FEDELMENTE (immagine di riferimento vincolante). Il tentativo di deformare MakeHuman è stato BOCCIATO ("sembra un MakeHuman con cuffia e costume"): non riproporlo. La corporatura `k` in `strumenti/costruisci-atleta.mjs` resta solo come prova, non va nel gioco.
+- Base obbligatoria: il modello `.glb` generato da Ale con Hunyuan 3D Pro (30 MB, non nel repository). Analisi, render, correzioni e versioni ottimizzate in `modelli-sorgente/pallanuotista/` (leggere `REPORT.md`); script Blender in `strumenti/blender/`.
+- Blender qui funziona senza interfaccia come modulo Python (`pip install bpy`, versione 5.3; render con Cycles su processore). I file da analizzare vanno aperti con `python -I`.
+- Esito: modello idoneo, nessun problema bloccante. Guscio unico dopo la saldatura delle cuciture; muscoli e viso sono geometria vera; dita unite (pollice separato); numero 7 dipinto; colori cambiabili per giocatore con i dati `_zona`/`_scuro`; livelli da 100.000, 30.000, 12.000 e 5.000 triangoli. ATTENZIONE: nel `.glb` non salvare le zone come "colore per vertice" (scurisce il modello).
+- Differenze dal concept che Blender non corregge: riccioli sulla fronte, occhi socchiusi, sorriso fisso, cuffia a casco. Decide Ale se accettarle o rigenerare.
+- FERMO in attesa dell'ok di Ale prima di: scheletro definitivo (compatibile con i movimenti calcolati dal gioco: nuoto, bicicletta, busto procedurali; tiro, passaggio, parata, blocco, esultanza anche con clip dedicate), animazioni, inserimento nel gioco, pallone giallo e blu.

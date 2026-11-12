@@ -1,0 +1,28 @@
+{
+ "punti_prima": 60754,
+ "punti_dopo": 49992,
+ "componenti": 1,
+ "componenti_elenco": [
+  {
+   "punti": 49992,
+   "facce": 100000,
+   "min": [
+    -0.519,
+    -0.0,
+    -0.116
+   ],
+   "max": [
+    0.517,
+    1.115,
+    0.129
+   ]
+  }
+ ],
+ "spigoli_di_bordo": 0,
+ "spigoli_non_manifold": 0,
+ "dove_non_manifold": [],
+ "dove_bordo": [],
+ "punti_non_manifold": 0,
+ "volume": 0.0265,
+ "spigoli_verso_incoerente": 0
+}

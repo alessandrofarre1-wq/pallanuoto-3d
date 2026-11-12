@@ -1,0 +1,38 @@
+{
+ "punti_prima": 60754,
+ "punti_dopo_saldatura": 49992,
+ "triangoli": 100000,
+ "scala_applicata": 1.6141714764869712,
+ "altezza_m": 1.8,
+ "zone_angoli": {
+  "calottina": 23963,
+  "costume": 16565,
+  "bianco": 6467,
+  "scuro": 6105,
+  "pelle": 246900
+ },
+ "player_base_LOD0": {
+  "triangoli": 100000,
+  "punti": 49992,
+  "immagini": 2048,
+  "kB": 3944
+ },
+ "player_base_LOD1": {
+  "triangoli": 30000,
+  "punti": 14992,
+  "immagini": 1024,
+  "kB": 1365
+ },
+ "player_base_LOD2": {
+  "triangoli": 12000,
+  "punti": 5992,
+  "immagini": 1024,
+  "kB": 721
+ },
+ "player_base_LOD3": {
+  "triangoli": 5000,
+  "punti": 2492,
+  "immagini": 512,
+  "kB": 332
+ }
+}
