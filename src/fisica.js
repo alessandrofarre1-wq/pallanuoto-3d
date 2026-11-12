@@ -150,8 +150,10 @@ export function updateBall(dt){
         const R=rif01(gk), fresco=0.8+0.2*gk.stamina, braccia=0.7;
         const lontano=Math.max(0,Math.abs(ball.z-ball.gkZ0)-braccia), reach=(0.5+0.8*R)*fresco;
         gk.stamina=Math.max(0,gk.stamina-0.035*(1.5-(gk.s.res-40)/59));          // ogni salto costa
+        // tiro da vicino: la palla arriva in meno di un quarto di secondo e il portiere non fa in tempo a reagire
+        const vicino=clamp((0.26-ball.flightT)/0.26,0,1)*0.42;
         if(lontano<reach && ball.y<1.9){
-          let prob=(1.02-0.30*ball.shotPower*(1.25-0.5*R)-lontano*(0.7-0.3*R)-(ball.lob?0.2:0)-(gk.fakedUntil>game.time?0.25:0)-(ball.skipped?0.12:0)-(ball.sorpresa||0))*fresco*(def.human?1:DIFF_GK())
+          let prob=(1.02-0.30*ball.shotPower*(1.25-0.5*R)-lontano*(0.7-0.3*R)-(ball.lob?0.2:0)-(gk.fakedUntil>game.time?0.25:0)-(ball.skipped?0.12:0)-(ball.sorpresa||0)-vicino)*fresco*(def.human?1:DIFF_GK())
             *(ball.rigore?0.45:1);      // sul rigore il portiere para molto meno: negli studi citati dalla tesi ne entra l'80%
           if(rnd()<prob){
             whistle(0.12); const r=rnd(); ball.afterShot=true; registraParata(att,def);

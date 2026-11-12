@@ -105,6 +105,8 @@ async function apri(versione, vista, seed) {
   const ctx = await browser.newContext(VISTE[vista]);
   const pg = await ctx.newPage();
   pg.on('pageerror', e => errori.push(`[${versione}] ${e.message}`));
+  // gli errori dentro il ciclo di gioco vengono intercettati e scritti in console: contano come errori (una volta sola ciascuno)
+  pg.on('console', m => { const t = m.text(); if (m.type() === 'error' && /Error/.test(t) && !/Failed to load resource/.test(t)) { const e = `[${versione}] ${t.split('\n')[0]}`; if (!errori.includes(e)) errori.push(e); } });
   pg.on('console', m => { if (m.type() === 'error') errori.push(`[${versione}] console: ${m.text()}`); });
   await pg.addInitScript(initPagina, { seed, legacy: versione === 'legacy' });
   if (versione === 'legacy') {

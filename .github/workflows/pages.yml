@@ -33,6 +33,7 @@ jobs:
       - run: npm run fisica-palla -- --no-build
       - run: npm run dati-tesi -- --no-build
       - run: npm run statistiche -- --no-build
+      - run: npm run azione -- --no-build
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -60,7 +60,7 @@ export function shotKind(p){
   return 'shot';
 }
 export function bestPassTarget(p){
-  let best=null, bs=-1e9;
+  let best=null, bs=-1e9; const sup=manUp(p.team);
   for(const m of p.team.players){
     if(m===p||m.excluded||(m.isGK&&!setteControSei(p.team))) continue;
     const d=dist(p,m); if(d<2) continue;
@@ -69,6 +69,16 @@ export function bestPassTarget(p){
     if(m.i===1 && fight.active && fight.boa===m) s+= (fight.v>0?1.6:0.4) + (p.team.atkPlay===3?1.5:0);   // palla al boa
     if(m.i===1 && other(p.team).defPlay===3) s-=2.2;      // la zona a M taglia fuori il centroboa
     // Visione: chi ne ha poca sceglie peggio il compagno a cui passare
+    // schemi dell'uomo in più: dai 5 metri la palla va all'esterno opposto (il portiere deve attraversare la porta); dall'esterno
+    // torna ai 5 metri o va sull'uomo al palo lontano; mai due volte di fila allo stesso compagno
+    if(sup){
+      const lato=Math.sign(p.z||1), opposto=Math.sign(m.z||1)!==lato;
+      if((p.i===4||p.i===5) && (m.i===2||m.i===3)) s+=opposto?2.6:0.8;
+      if((p.i===2||p.i===3) && (m.i===4||m.i===5)) s+=opposto?1.4:1.8;
+      if((p.i===2||p.i===3) && (m.i===1||m.i===6) && opposto) s+=1.2;
+      if((m.i===1||m.i===6) && laneClear(p,m.x,m.z,p.team,0.5)) s+=(p.i===4||p.i===5)?1.6:1.0;      // palla all'uomo al palo, che tira subito
+      if(m===p.daChi) s-=1.5;
+    }
     s+=(rnd()-0.5)*(99-p.s.vis)/59*3.5;
     if(s>bs){ bs=s; best=m; }
   }
@@ -96,12 +106,13 @@ export function doPass(p,m){
   const err=(0.2+(1-p.stamina)*0.5)*(1.25-p.st.pas)*(0.3+d*0.05);
   tx+=gauss()*err; tz+=gauss()*err;
   launch(p,tx,0.45,tz,t,'pass'); ball.target=m; ball.tx=tx; ball.tz=tz;
+  m.daChi=p; ball.cambioLato=Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1);      // passaggio da un lato all'altro: chi riceve può tirare al volo
   if(p.team===teams[0]) setCtrl(m);
   // dai e vai: chi passa dal perimetro può tagliare verso la porta
   if(!p.isGK && p.i>=4 && !manUp(p.team) && (p.team.atkPlay===1||rnd()<0.35)) startCut(p);
 }
-// errore di mira secondo la Precisione: piccolo a 90, circa 2,5 volte a 75, oltre 5 volte a 60
-const mira = pre => pre>=90 ? 0.18-(pre-90)/9*0.1 : 0.18+Math.pow((90-pre)/30,1.6)*0.82;
+// errore di mira secondo la Precisione: piccolo a 90, circa 3 volte a 75, 7 volte a 60 (misurato su 1500 tiri: vedi npm run statistiche)
+const mira = pre => pre>=90 ? 0.18-(pre-90)/9*0.1 : 0.18+Math.pow((90-pre)/30,1.6)*1.55;
 // o = variante: polso (tiro di solo polso, poco caricato), dopoFinta, torsione (finta di busto sul primo palo e chiusura in diagonale), volo
 export function doShoot(p,power,lob,aimZ,o){
   o=o||{};
@@ -120,7 +131,7 @@ export function doShoot(p,power,lob,aimZ,o){
   // elevazione: quanto il tiratore esce dall'acqua dipende da gambe (Forza), fiato (Resistenza) e stanchezza;
   // più è alto, meno il difensore vicino gli sporca il tiro
   const elev=elevazione(p);
-  const errBase=1.25*0.27*(1+(1-p.stamina)*1.3)*(classico?1:1.3)*mira(p.s.pre)*(1+clamp(1.4-press,0,1)*0.9*(1.45-0.9*elev))*(o.volo?1.15:1)*(p.fakeUntil>game.time?0.65:1)*(p.turnedUntil>game.time?0.6:1);
+  const errBase=1.08*0.27*(1+(1-p.stamina)*1.3)*(classico?1:1.3)*mira(p.s.pre)*(1+clamp(1.4-press,0,1)*0.9*(1.45-0.9*elev))*(o.volo?1.15:1)*(p.fakeUntil>game.time?0.65:1)*(p.turnedUntil>game.time?0.6:1);
   // Mano: dal lato destro della vasca tira meglio un mancino, dal sinistro un destro (angolo migliore sulla porta)
   const lato=Math.abs(p.z)>1.5?Math.sign(p.z*t.dir):0, mano=lato===0?1:((p.mano==='S')===(lato>0)?0.92:1.2);
   az+=gauss()*errBase*mano*(0.45+d*0.09); ay+=gauss()*errBase*mano*0.35;
