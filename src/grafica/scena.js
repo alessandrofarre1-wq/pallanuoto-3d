@@ -49,7 +49,7 @@ box(PX*2+0.8,0.08,0.4,0xffffff,0,0.32,-PZ-0.2); box(PX*2+0.8,0.08,0.4,0xffffff,0
 box(0.4,0.08,PZ*2,0xffffff,-PX-0.2,0.32,0); box(0.4,0.08,PZ*2,0xffffff,PX+0.2,0.32,0);
 // cartelloni e tribuna con pubblico sul lato lontano
 {
-  const cols=['#0b3d91','#c1121f','#0a7d4b','#f59e0b','#111827'], words=['PALLANUOTO 3D','MILANO','WATERPOLO','FORZA AZZURRI','PALLANUOTO 3D'];
+  const cols=['#0b3d91','#c1121f','#0a7d4b','#f59e0b','#111827'], words=['WATERPOLO 7','MILANO','WATERPOLO','FORZA AZZURRI','WATERPOLO 7'];
   for(let i=0;i<5;i++){
     const tex=canvasTex(512,96,(x,w,h)=>{ x.fillStyle=cols[i]; x.fillRect(0,0,w,h); x.fillStyle='#fff'; x.font='bold 54px sans-serif'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(words[i],w/2,h/2+3); });
     const m=new THREE.Mesh(new THREE.PlaneGeometry(6.2,1.0),new THREE.MeshBasicMaterial({map:tex})); m.position.set((i-2)*6.4,0.82,-PZ-2.6); scene.add(m);
