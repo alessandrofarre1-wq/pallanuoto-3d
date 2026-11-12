@@ -99,7 +99,7 @@ export function attaccaCorpo(R,colori,num,seme){
     const variante=seme%pelli.length, nome=MODELLO.pelli[variante].corporatura, base=basi[nome];
     const radice=clonaConScheletro(base.scena);
     radice.scale.setScalar(base.scala); radice.rotation.y=Math.PI/2;      // il modello guarda +Z, il giocatore +X
-    const C={ radice, scala:base.scala, ossa:{}, riposo:{}, azzera:[], fase:seme*1.7, num:-1, colori:R.coloriVoluti||colori };
+    const C={ radice, scala:base.scala, ossa:{}, riposo:{}, azzera:[], schiena:[], fase:seme*1.7, num:-1, colori:R.coloriVoluti||colori };
     // pelle con il suo disegno (volto, muscoli), lucida perché bagnata; costume nella zona segnata nel modello
     const pelle=new THREE.MeshPhongMaterial({map:pelli[variante],shininess:70,specular:0x6a6660});
     const u={ uCostume:{value:new THREE.Color(C.colori.costume)}, uFascia:{value:new THREE.Vector2(base.testa.costume[0],base.testa.costume[1])} };
@@ -112,6 +112,7 @@ export function attaccaCorpo(R,colori,num,seme){
     radice.traverse(o=>{
       for(const [k,n] of nomi) if(o.name===n){ C.ossa[k]=o; C.riposo[k]=o.quaternion.clone(); }
       if(MODELLO.daAzzerare.includes(o.name)) C.azzera.push([o,o.quaternion.clone()]);
+      if(/^spine_0[123]$/.test(o.name)) C.schiena.push(o);
       o.layers.set(STRATO_CORPI);
       if(o.isSkinnedMesh){ o.material=pelle; o.frustumCulled=false; o.layers.set(o.name==='corpoLontano'?STRATO_SOTTO:STRATO_SOLO_VISTA); }
     });
@@ -142,6 +143,7 @@ export function aggiornaNumero(R,num){
 const _a=new THREE.Vector3(), _b=new THREE.Vector3(), _d=new THREE.Vector3(), _d2=new THREE.Vector3(), _v=new THREE.Vector3();
 const _q=new THREE.Quaternion(), _qp=new THREE.Quaternion(), _qd=new THREE.Quaternion(), _qg=new THREE.Quaternion(), _qr=new THREE.Quaternion();
 const _su=new THREE.Vector3(), _av=new THREE.Vector3(), _de=new THREE.Vector3(), _m=new THREE.Matrix4(), _inv=new THREE.Matrix4();
+const SU=new THREE.Vector3(0,1,0), _qy=new THREE.Quaternion(), _qg2=new THREE.Quaternion(), PIEGA0={petto:0,bacino:0,gambe:0};
 const ROT_MODELLO=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),Math.PI/2);
 // gira l'osso in modo che punti (verso il figlio) nella direzione data, in coordinate del mondo
 function punta(osso,figlio,dir,peso){
@@ -171,7 +173,18 @@ export function muoviCorpo(R,J,T,dt){
   dirMondo(J.hip,J.chest,_su);
   dirMondo(J.sL,J.sR,_de); _av.crossVectors(_su,_de).normalize(); _de.crossVectors(_av,_su).normalize();
   _m.makeBasis(_v.copy(_de).negate(),_su,_av); _qr.setFromRotationMatrix(_m);      // assi del modello: X = sinistra, Y = su, Z = avanti
+  // colonna che si piega: il bacino resta indietro rispetto alle spalle (ruota attorno alla verticale del ritardo calcolato da
+  // pose.js) e le tre ossa della schiena recuperano la differenza un po' ciascuna, fino al petto; le spalle restano dove le
+  // vuole la posa, quindi il corpo gira attorno a testa e spalle e il bacino descrive l'arco più largo
+  const pg=T.piega||PIEGA0;
+  if(Math.abs(pg.bacino)>0.002) _qr.premultiply(_qy.setFromAxisAngle(SU,pg.bacino));
   O.bacino.parent.getWorldQuaternion(_qp); O.bacino.quaternion.copy(_qr).premultiply(_qp.invert());
+  if(Math.abs(pg.bacino)>0.002 && C.schiena.length){
+    const passo=(pg.petto-pg.bacino)/C.schiena.length; _qy.setFromAxisAngle(SU,passo);
+    for(const o of C.schiena){ o.getWorldQuaternion(_q); o.parent.getWorldQuaternion(_qp); o.quaternion.copy(_q.premultiply(_qy).premultiply(_qp.invert())); }
+  }
+  // le gambe seguono con un ritardo ancora maggiore
+  const qGambe=Math.abs(pg.gambe)>0.002 ? _qg2.setFromAxisAngle(SU,pg.gambe) : null, curva=Math.abs(T.curva||0);
   // posizione: le spalle del modello vanno dove le vuole pose.js
   const pv=O.bacino.position; pv.set(0,0,0);
   _inv.copy(C.radice.matrixWorld).invert();
@@ -179,8 +192,9 @@ export function muoviCorpo(R,J,T,dt){
   pv.set(-(J.sL[2]+J.sR[2])/2/s-_a.x, (J.sL[1]+J.sR[1])/2/s-_a.y, (J.sL[0]+J.sR[0])/2/s-_a.z);
   // --- gambe: bicicletta (calcio a rana alternato) da verticali, battuta a gambe unite da distesi, con passaggio continuo ---
   const sforzo=Math.min(1,Math.max(0,(J.chest[1]+0.06)/0.26))*(1-e);
-  C.fase+=dt*(5.2+6.5*sforzo);
-  const amp=0.85+0.45*sforzo;
+  // girandosi da verticali le gambe cambiano ritmo e ampiezza (è la bicicletta che fa ruotare il corpo)
+  C.fase+=dt*(5.2+6.5*sforzo)*(1+0.6*curva*(1-e));
+  const amp=(0.85+0.45*sforzo)*(1+0.3*curva*(1-e));
   for(const lato of [1,-1]){
     const f=C.fase+(lato>0?0:Math.PI), cs=Math.cos(f), sn=Math.sin(f);
     const coscia=lato>0?O.cosciaD:O.cosciaS, gamba=lato>0?O.gambaD:O.gambaS, piede=lato>0?O.piedeD:O.piedeS, puntaP=lato>0?O.puntaD:O.puntaS;
@@ -188,10 +202,12 @@ export function muoviCorpo(R,J,T,dt){
     // coscia: da verticali avanti e in fuori, quasi seduti, con il ginocchio che disegna un piccolo cerchio
     _d.copy(_av).multiplyScalar(0.70).addScaledVector(_de,lato*(0.50+0.10*sn)).addScaledVector(_su,-0.48-0.09*cs).normalize();
     if(e>0.001){ dirMondo(J.hip,gin,_d2); _d.lerp(_d2,e).normalize(); }
+    if(qGambe) _d.applyQuaternion(qGambe);
     punta(coscia,gamba,_d);
     // sotto il ginocchio: il piede gira in cerchio (verso opposto tra destra e sinistra, mezzo giro di ritardo)
     _d.copy(_su).multiplyScalar(-0.80).addScaledVector(_de,lato*0.55*cs*amp).addScaledVector(_av,-0.15+0.5*sn*amp).normalize();
     if(e>0.001){ dirMondo(gin,pie,_d2); _d.lerp(_d2,e).normalize(); }
+    if(qGambe) _d.applyQuaternion(_qy.setFromAxisAngle(SU,pg.gambe*1.25));      // la gamba sotto il ginocchio resta ancora un po' più indietro: coda leggermente piegata
     punta(gamba,piede,_d);
     // in battuta il piede si distende in linea con la gamba
     if(puntaP&&e>0.05) punta(piede,puntaP,_d,e*0.8);

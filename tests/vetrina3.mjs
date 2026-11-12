@@ -75,4 +75,25 @@ if (fare('telecamera')) {
     await foglio(`telecamera-${vista}`, file, titoli, vista === 'verticale' ? Math.min(6, file.length) : 2, vista === 'verticale' ? 280 : 620);
   }
 }
+// ---------- 6. corpo che si piega: nuotata con curva di 90° a destra e poi a sinistra, 8 immagini dall'alto ----------
+if (fare('curva')) {
+  const pg = await apri({ width: 520, height: 520 }, false);
+  await pg.addStyleTag({ content: NASCONDI });
+  await pg.evaluate(() => { const H = window.__pallanuoto; document.getElementById('goBtn').click(); window.__salta(200);
+    const p = H.teams[0].players[6], B = H.ball; p.x = -6; p.z = 0; p.vx = p.vz = 0; p.fx = 1; p.fz = 0; p.oriz = 0; p.stamina = 1; window.__p = p;
+    B.state = 'free'; B.x = -11; B.z = 9.2; B.vx = B.vz = 0; H.game.possTeam = p.team;
+    window.__ferma = () => { H.game.shot = 28; H.game.clock = 100; H.game.state = 'play'; B.state = 'free'; B.x = -11.5; B.z = 9.4; B.vx = B.vz = 0;
+      for (const q of H.allPlayers) { if (q === p || q.isGK) continue; q.x = (q.team.idx ? 11.5 : -11.5); q.z = -8.5 + q.i * 0.8; q.vx = q.vz = 0; q.oriz = 0; } };
+    window.__ferma(); });
+  const tasti = t => t < 2 ? ['KeyD'] : t < 3.7 ? ['KeyS'] : ['KeyD'], quando = [1.9, 2.2, 2.5, 2.9, 3.9, 4.2, 4.5, 4.9], file = [], titoli = [];
+  for (let f = 1; f <= Math.round(4.95 * 60); f++) {
+    const t = f / 60, k = quando.findIndex(q => Math.abs(q - t) < 1e-6);
+    await pg.evaluate(({ tasti, scatta }) => { const H = window.__pallanuoto, p = window.__p; window.__tasti(tasti);
+      if (scatta) { H.vista = { pos: [p.x, 6.2, p.z + 0.01], look: [p.x, 0, p.z], fov: 30 }; window.__vai(1); H.vista = null; } else window.__salta(1);
+      window.__ferma(); }, { tasti: tasti(t), scatta: k >= 0 });
+    if (k >= 0) { const n = path.join(USCITA, `_k${k}.png`); await pg.screenshot({ path: n }); file.push(n); titoli.push(`${t.toFixed(1)} s · ${t < 2 ? 'dritto' : t < 3.7 ? 'curva a destra' : 'curva a sinistra'}`); }
+  }
+  await foglio('curva-dall-alto', file, titoli, 4, 400);
+  await pg.context().close();
+}
 await browser.close(); await new Promise(r => server.httpServer.close(r));
