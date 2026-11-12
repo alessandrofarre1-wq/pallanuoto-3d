@@ -50,24 +50,26 @@ let ok = true; const nota = (bene, testo) => { console.log(`${bene ? 'OK ' : 'NO
     const puntiGambe = m => { if (gambe.has(m)) return gambe.get(m);
       const g = m.geometry, si = g.attributes.skinIndex, sw = g.attributes.skinWeight, ossa = m.skeleton.bones, L = [];
       for (let i = 0; i < si.count; i += 3) { let b = 0, w = -1; for (let k = 0; k < 4; k++) { const wk = sw.getComponent(i, k); if (wk > w) { w = wk; b = si.getComponent(i, k); } }
-        if (/^(thigh|calf|foot|ball)_/.test(ossa[b].name)) L.push(i); }
+        if (/^(thigh|calf|foot|ball)_/.test(ossa[b].name)) L.push([i, ossa[b].name]); }
       gambe.set(m, L); return L; };
-    const conta = { vert: [0, 0], oriz: [0, 0], mezzo: [0, 0] }; let sopraMax = 0;
+    const conta = { vert: [0, 0], oriz: [0, 0], mezzo: [0, 0] }; let sopraMax = 0; const casi = [];
     for (let f = 0; f < 60 * 60 * 30 && H.game.state !== 'over'; f++) {
       if (f % 240 === 0) window.__vai(1); else window.__salta(1);
       if (f % 30 !== 15 || H.game.state !== 'play') continue;
       for (const p of H.allPlayers) { const C = p.mesh.corpo; if (!C || !C.radice.visible) continue;
         let m = null; C.radice.traverse(o => { if (o.isSkinnedMesh && !m) m = o; }); if (!m) continue;
         C.radice.updateMatrixWorld(true); m.skeleton.update(); if (!v) v = C.radice.position.clone();
-        let su = 0; for (const i of puntiGambe(m)) { m.getVertexPosition(i, v); const w = m.localToWorld(v); if (w.y > su) su = w.y; }
+        let su = 0, osso = ''; for (const [i, n] of puntiGambe(m)) { m.getVertexPosition(i, v); const w = m.localToWorld(v); if (w.y > su) { su = w.y; osso = n; } }
+        const bac = C.ossa.bacino.getWorldPosition(C.radice.position.clone()).y;
         const o = p.oriz || 0, k = o < 0.2 ? 'vert' : o > 0.8 ? 'oriz' : 'mezzo';
-        conta[k][0]++; if (su > 0.01) conta[k][1]++; if (su > sopraMax) sopraMax = su; }
+        conta[k][0]++; if (su > 0.01) { conta[k][1]++; casi.push([+su.toFixed(3), +o.toFixed(2), p.isGK ? 'portiere' : 'giocatore', p.act ? p.act.kind : (p.charging ? 'carica' : ''), H.ball.holder === p ? 'palla' : '', p.excluded ? 'escluso' : '', H.game.state, osso, 'bacino ' + bac.toFixed(2)]); } if (su > sopraMax) sopraMax = su; }
     }
-    return { st: JSON.stringify({ fine: H.game.state, st: H.statistiche }), conta, sopraMax };
+    return { st: JSON.stringify({ fine: H.game.state, st: H.statistiche }), conta, sopraMax, casi };
   });
   if (pg.errori.length) nota(false, `errori: ${pg.errori.slice(0, 2).join(' | ')}`);
   nota(JSON.parse(r.st).fine === 'over', 'partita simulata arrivata alla fine');
   for (const [k, [n, s]] of Object.entries(r.conta)) console.log(`   gambe sopra l'acqua (${k === 'vert' ? 'verticale' : k === 'oriz' ? 'in nuotata' : 'a metà'}): ${s} campioni su ${n} (${n ? Math.round(s / n * 100) : 0}%)`);
+  for (const c of r.casi.slice(0, 8)) console.log('     caso:', c.join(' · '));
   console.log(`   punto delle gambe più alto: ${(r.sopraMax * 100).toFixed(0)} cm sopra la superficie`);
   if (SALVA) { fs.writeFileSync(SALVA, r.st); console.log(`   statistiche salvate in ${SALVA}`); }
   if (CONFRONTA) nota(fs.readFileSync(CONFRONTA, 'utf8') === r.st, `partita simulata identica a quella di ${path.basename(CONFRONTA)}`);

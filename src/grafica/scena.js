@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { BRV, GH, GW, HL, HW, rnd } from '../costanti.js';
 import { game } from '../stato.js';
+import { sottAcqua, tempoAcqua } from './sottacqua.js';
 // ================= SCENA =================
 export const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.info.autoReset=false;   // il conteggio degli oggetti disegnati si azzera a mano una volta per fotogramma (render.js)
@@ -33,9 +34,11 @@ export const PX=15, PZ=12.5, DEPTH=2.2;
 // fondo piastrellato
 export const tileDraw=(base,line)=>(x,w,h)=>{ x.fillStyle=base; x.fillRect(0,0,w,h); x.strokeStyle=line; x.lineWidth=2;
   for(let i=0;i<=w;i+=32){ x.beginPath(); x.moveTo(i,0); x.lineTo(i,h); x.stroke(); x.beginPath(); x.moveTo(0,i); x.lineTo(w,i); x.stroke(); } };
-box(PX*2,0.1,PZ*2,new THREE.MeshBasicMaterial({color:0x2f9be6}),0,-DEPTH,0);      // fondo a tinta unita: le corsie scure risaltano
-{ const riga=new THREE.MeshLambertMaterial({color:0x0d3566}); for(let i=-4;i<=4;i++) box(PX*2-4,0.02,0.28,riga,0,-DEPTH+0.06,i*2.5); }
-export const wallMat=new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#8fe0f7','rgba(255,255,255,.55)'),12,1)});
+// fondo, corsie e pareti prendono il colore dell'acqua secondo la profondità (sottacqua.js): piastrelle e righe si vedono, ma
+// attenuate come in una piscina vera; sul fondo si muovono giochi di luce leggeri
+box(PX*2,0.1,PZ*2,sottAcqua(new THREE.MeshBasicMaterial({map:canvasTex(256,256,tileDraw('#3fa6ea','rgba(255,255,255,.4)'),PX/2,PZ/2)}),{luci:'0.26'}),0,-DEPTH,0);
+{ const riga=sottAcqua(new THREE.MeshLambertMaterial({color:0x0d3566}),{luci:'0.18'}); for(let i=-4;i<=4;i++) box(PX*2-4,0.02,0.28,riga,0,-DEPTH+0.06,i*2.5); }
+export const wallMat=sottAcqua(new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#8fe0f7','rgba(255,255,255,.55)'),12,1)}));
 box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,-PZ-0.15); box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,PZ+0.15);
 box(0.3,DEPTH+0.3,PZ*2,wallMat,-PX-0.15,-DEPTH/2+0.15,0); box(0.3,DEPTH+0.3,PZ*2,wallMat,PX+0.15,-DEPTH/2+0.15,0);
 // bordo vasca
@@ -91,33 +94,36 @@ export const acqua=new THREE.Mesh(new THREE.PlaneGeometry(PX*2,PZ*2).rotateX(-Ma
       float r=n(p*4.3+vec2(t*0.55,-t*0.35))*n(p*2.9+vec2(-t*0.30,-t*0.48)+7.7);
       float luce=smoothstep(0.56,0.76,r)*(0.4+0.6*zona)*lontano;
       c=mix(c,vec3(1.0),luce*0.7);
-      float a=0.58+0.22*cresta*zona+0.25*luce;
+      float a=0.36+0.24*cresta*zona+0.3*luce;
       gl_FragColor=vec4(pow(c,vec3(2.2)),a);      // colori scritti in sRGB, convertiti per il disegno
       #include <colorspace_fragment>
     }` }));
 acqua.renderOrder=-1; scene.add(acqua);
-export function animateWater(t){ acqua.material.uniforms.uTempo.value=t; }
+export function animateWater(t){ acqua.material.uniforms.uTempo.value=t; tempoAcqua.value=t; }
 // schiuma: increspature e scie disegnate tutte insieme (un solo oggetto per la scheda grafica)
-const N_SCHIUMA=160;
+const N_SCHIUMA=320;
 export const foams=[]; let foamI=0;
 const schiumaAlfa=new THREE.InstancedBufferAttribute(new Float32Array(N_SCHIUMA),1);
 const schiumaEta=new THREE.InstancedBufferAttribute(new Float32Array(N_SCHIUMA),1);      // 0 appena nata, 1 finita
+const schiumaScia=new THREE.InstancedBufferAttribute(new Float32Array(N_SCHIUMA),1);     // 1 = scia di chi nuota
 export const schiuma=(()=>{
-  const g=new THREE.PlaneGeometry(2,2); g.rotateX(-Math.PI/2); g.setAttribute('aAlfa',schiumaAlfa); g.setAttribute('aEta',schiumaEta);
+  const g=new THREE.PlaneGeometry(2,2); g.rotateX(-Math.PI/2); g.setAttribute('aAlfa',schiumaAlfa); g.setAttribute('aEta',schiumaEta); g.setAttribute('aScia',schiumaScia);
   const m=new THREE.ShaderMaterial({ transparent:true, depthWrite:false,
-    vertexShader:`attribute float aAlfa; attribute float aEta; varying float vA; varying float vK; varying float vSeme; varying vec2 vUv;
-      void main(){ vA=aAlfa; vK=aEta; vUv=uv; vSeme=fract(instanceMatrix[3].x*3.17+instanceMatrix[3].z*1.71); vec3 transformed=position;
+    vertexShader:`attribute float aAlfa; attribute float aEta; attribute float aScia; varying float vA; varying float vK; varying float vS; varying float vSeme; varying vec2 vUv;
+      void main(){ vA=aAlfa; vK=aEta; vS=aScia; vUv=uv; vSeme=fract(instanceMatrix[3].x*3.17+instanceMatrix[3].z*1.71); vec3 transformed=position;
         #include <project_vertex>
       }`,
     // increspatura: un anello sottile un po' spezzato che si allarga e svanisce, con un velo chiaro dentro appena nato;
-    // le scie dei nuotatori sono anelli allungati nella direzione del nuoto
-    fragmentShader:`varying float vA; varying float vK; varying float vSeme; varying vec2 vUv;
+    // le scie dei nuotatori sono anelli allungati nella direzione del nuoto, aperti davanti: restano i lati e la coda, cioè due
+    // strisce chiare che si allontanano dal corpo
+    fragmentShader:`varying float vA; varying float vK; varying float vS; varying float vSeme; varying vec2 vUv;
       void main(){
         vec2 d=vUv*2.0-1.0; float r=length(d), ang=atan(d.y,d.x);
         float spezzato=0.55+0.45*sin(ang*3.0+vSeme*6.283)*sin(ang*5.0-vSeme*12.0+vK*2.0);
         float anello=1.0-smoothstep(0.0,0.07+0.05*vK,abs(r-0.74));
         float velo=(1.0-smoothstep(0.0,0.74,r))*0.35*(1.0-vK)*(1.0-vK);
-        float a=clamp((anello*clamp(spezzato,0.0,1.0)*0.85+velo)*min(1.0,vA*1.6),0.0,0.8);
+        float aperto=mix(1.0,1.0-smoothstep(-0.2,0.55,d.x),vS);
+        float a=clamp((anello*clamp(spezzato,0.0,1.0)*0.85*aperto+velo*mix(1.0,0.5,vS))*min(1.0,vA*1.6),0.0,0.8);
         gl_FragColor=vec4(1.0,1.0,1.0,a);
         #include <colorspace_fragment>
       }` });
@@ -135,8 +141,49 @@ export function updateFoam(dt){
     // la scia è più lunga nel verso del nuoto e un po' più stretta di traverso
     const scia=!!(f.dx||f.dz), lungo=scia?1.7:1, largo=scia?0.75:1, s2=sc*1.25;
     _sq.setFromAxisAngle(_sy,scia?Math.atan2(-f.dz,f.dx):0);
-    _ms.compose(_sp.set(f.x,0.06+i*0.0002,f.z),_sq,_sv.set(s2*lungo,1,s2*largo)); schiuma.setMatrixAt(i,_ms); schiumaAlfa.array[i]=al; schiumaEta.array[i]=k; }
-  schiuma.instanceMatrix.needsUpdate=true; schiumaAlfa.needsUpdate=true; schiumaEta.needsUpdate=true;
+    _ms.compose(_sp.set(f.x,0.06+i*0.0002,f.z),_sq,_sv.set(s2*lungo,1,s2*largo)); schiuma.setMatrixAt(i,_ms); schiumaAlfa.array[i]=al; schiumaEta.array[i]=k; schiumaScia.array[i]=scia?1:0; }
+  schiuma.instanceMatrix.needsUpdate=true; schiumaAlfa.needsUpdate=true; schiumaEta.needsUpdate=true; schiumaScia.needsUpdate=true;
+  contatti.instanceMatrix.needsUpdate=true; contattoForza.needsUpdate=true; contattoVel.needsUpdate=true;
+}
+// contatto con l'acqua attorno a ogni giocatore: dove il corpo attraversa la superficie l'acqua fa un bordo chiaro e mosso, e
+// da lì partono piccole increspature che si allargano; chi nuota spinge davanti a sé un'onda (più forte se veloce).
+// Da fermi è un cerchio attorno alle spalle, in nuotata un ovale lungo il corpo. Tutti i giocatori in un solo oggetto.
+const N_CONTATTI=16;
+const contattoForza=new THREE.InstancedBufferAttribute(new Float32Array(N_CONTATTI),1);
+const contattoVel=new THREE.InstancedBufferAttribute(new Float32Array(N_CONTATTI),1);
+export const contatti=(()=>{
+  const g=new THREE.PlaneGeometry(2,2); g.rotateX(-Math.PI/2); g.setAttribute('aForza',contattoForza); g.setAttribute('aVel',contattoVel);
+  const m=new THREE.ShaderMaterial({ transparent:true, depthWrite:false, uniforms:{ uTempo:tempoAcqua },
+    vertexShader:`attribute float aForza; attribute float aVel; varying float vF; varying float vV; varying float vSeme; varying vec2 vUv;
+      void main(){ vF=aForza; vV=aVel; vUv=uv; vSeme=fract(instanceMatrix[3].x*0.37+instanceMatrix[3].z*0.71)*6.283; vec3 transformed=position;
+        #include <project_vertex>
+      }`,
+    fragmentShader:`uniform float uTempo; varying float vF; varying float vV; varying float vSeme; varying vec2 vUv;
+      void main(){
+        vec2 d=vUv*2.0-1.0; float r=length(d), ang=atan(d.y,d.x), t=uTempo;
+        // bordo chiaro attorno al corpo, mosso e un po' spezzato
+        float mosso=0.6+0.4*sin(ang*5.0+t*3.1+vSeme)*sin(ang*3.0-t*2.3+vSeme*2.0);
+        float bordo=(1.0-smoothstep(0.0,0.09,abs(r-0.60-0.025*sin(ang*6.0+t*4.0+vSeme))))*mosso;
+        // due increspature che partono dal corpo e si allargano svanendo
+        float onde=0.0;
+        for(int i=0;i<2;i++){ float k=fract(t*0.75+float(i)*0.5+vSeme*0.16);
+          onde+=(1.0-smoothstep(0.0,0.05+0.04*k,abs(r-0.62-0.36*k)))*(1.0-k)*(1.0-k)*(0.55+0.45*sin(ang*4.0+vSeme+float(i)*2.0)); }
+        // onda davanti a chi nuota
+        float prua=smoothstep(0.15,0.75,d.x)*(1.0-smoothstep(0.0,0.16,abs(r-0.66)))*vV;
+        float a=(bordo*0.5+onde*0.28)*vF+prua*0.5;
+        a*=1.0-smoothstep(0.92,1.0,r);
+        gl_FragColor=vec4(1.0,1.0,1.0,clamp(a,0.0,0.7));
+        #include <colorspace_fragment>
+      }` });
+  const im=new THREE.InstancedMesh(g,m,N_CONTATTI); im.frustumCulled=false;
+  const zero=new THREE.Matrix4().makeScale(0,0,0); for(let i=0;i<N_CONTATTI;i++) im.setMatrixAt(i,zero);
+  scene.add(im); return im;
+})();
+// i = numero del giocatore (0..15); ang = direzione del corpo; lungo/largo = mezze misure in metri; forza 0..1; vel 0..1 (onda davanti)
+export function contatto(i,x,z,ang,lungo,largo,forza,vel){
+  if(i>=N_CONTATTI) return;
+  _sq.setFromAxisAngle(_sy,ang); _ms.compose(_sp.set(x,0.03+i*0.0003,z),_sq,_sv.set(lungo,1,largo)); contatti.setMatrixAt(i,_ms);
+  contattoForza.array[i]=forza; contattoVel.array[i]=vel;
 }
 // corde di delimitazione con i colori delle zone
 {
@@ -146,7 +193,7 @@ export function updateFoam(dt){
   for(const xs of [-HL-0.6,HL+0.6]) for(let z=-HW;z<=HW;z+=0.3) pts.w.push([xs,z]);
   const mtx=new THREE.Matrix4();
   for(const c in pts){
-    const im=new THREE.InstancedMesh(geo,new THREE.MeshLambertMaterial({color:cols[c]}),pts[c].length);
+    const im=new THREE.InstancedMesh(geo,sottAcqua(new THREE.MeshLambertMaterial({color:cols[c]})),pts[c].length);
     pts[c].forEach((q,i)=>{ mtx.makeTranslation(q[0],0.04,q[1]); im.setMatrixAt(i,mtx); });
     im.instanceMatrix.needsUpdate=true; scene.add(im);
   }
@@ -155,15 +202,15 @@ export function updateFoam(dt){
 }
 // porte
 export function makeGoal(sign){
-  const g=new THREE.Group(); const mat=new THREE.MeshPhongMaterial({color:0xffffff,shininess:60});
+  const g=new THREE.Group(); const mat=sottAcqua(new THREE.MeshPhongMaterial({color:0xffffff,shininess:60}));
   const H=GH+0.3;
   for(const z of [-GW-0.04,GW+0.04]){ const p=new THREE.Mesh(new THREE.BoxGeometry(0.08,H,0.08),mat); p.position.set(0,H/2-0.3,z); g.add(p); }
   const bar=new THREE.Mesh(new THREE.BoxGeometry(0.08,0.08,GW*2+0.16),mat); bar.position.set(0,GH+0.04,0); g.add(bar);
-  const netMat=new THREE.MeshBasicMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:0.5});
+  const netMat=sottAcqua(new THREE.MeshBasicMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:0.5}));
   const back=new THREE.Mesh(new THREE.PlaneGeometry(GW*2,H,12,5),netMat); back.rotation.y=Math.PI/2; back.position.set(sign*0.8,H/2-0.3,0); g.add(back);
   const top=new THREE.Mesh(new THREE.PlaneGeometry(0.8,GW*2,3,12),netMat); top.rotation.x=-Math.PI/2; top.position.set(sign*0.4,GH,0); g.add(top);
   for(const z of [-GW,GW]){ const sd=new THREE.Mesh(new THREE.PlaneGeometry(0.8,H,4,8),netMat); sd.position.set(sign*0.4,H/2-0.3,z); g.add(sd); }
-  const flo=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.14,GW*2+0.5),new THREE.MeshLambertMaterial({color:0xf4f4f4})); flo.position.set(sign*0.45,-0.02,0); g.add(flo);
+  const flo=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.14,GW*2+0.5),sottAcqua(new THREE.MeshLambertMaterial({color:0xf4f4f4}))); flo.position.set(sign*0.45,-0.02,0); g.add(flo);
   g.position.set(sign*HL,0,0); scene.add(g);
 }
 makeGoal(1); makeGoal(-1);
@@ -198,7 +245,7 @@ export const ball3d = (()=>{
     } }
   xg.putImageData(ig,0,0);
   const tg=new THREE.CanvasTexture(tela); tg.colorSpace=THREE.SRGBColorSpace; tg.anisotropy=4;
-  const m=new THREE.Mesh(new THREE.SphereGeometry(BRV,32,24),new THREE.MeshLambertMaterial({map:tg,emissive:0x222222}));
+  const m=new THREE.Mesh(new THREE.SphereGeometry(BRV,32,24),sottAcqua(new THREE.MeshLambertMaterial({map:tg,emissive:0x222222})));
   // contorno scuro: una sfera nera appena più larga vista da dentro
   m.add(new THREE.Mesh(new THREE.SphereGeometry(BRV*1.13,16,12),new THREE.MeshBasicMaterial({color:0x10182a,side:THREE.BackSide})));
   m.scale.setScalar(1.3);

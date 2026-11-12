@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as clonaConScheletro } from 'three/addons/utils/SkeletonUtils.js';
 import FUMETTO from './modelli/pallanuotista.js';
+import { sottAcqua } from './sottacqua.js';
 
 const SPALLE=0.40;                       // distanza tra le spalle nel sistema di pose.js: da qui si ricava la scala del modello
 const inAttesa=[];
@@ -71,6 +72,8 @@ function attaccaFumetto(R,colori,num,seme){
           c=mix(c,uCal*ombra,max(blu,num)*zc); c=mix(c,uCos*ombra,max(blu,num)*zs);
           float pelle=(1.0-max(zc,zs))*(1.0-zb)*smoothstep(0.25,0.45,(mx-mn)/max(mx,0.001));
           diffuseColor.rgb=mix(c,c*uTono,pelle); }`); };
+  // sott'acqua il corpo prende il colore dell'acqua secondo la profondità e ondeggia appena; linea bagnata sul pelo dell'acqua
+  sottAcqua(mat,{ ondeggia:1, bagnato:1, chiave:'corpo' });
   K.u=u;
   const nomi=Object.entries(FUMETTO.ossa);
   radice.traverse(o=>{
@@ -121,6 +124,17 @@ function punta(osso,figlio,dir,peso){
   _q.premultiply(_qd).premultiply(_qp.invert());
   if(peso===undefined||peso>=0.999) osso.quaternion.copy(_q); else osso.quaternion.slerp(_q,peso);
 }
+// solo per il disegno: se la giuntura in fondo all'osso (ginocchio, caviglia) finirebbe fuori dall'acqua, la direzione si piega
+// verso il basso quanto basta a tenerla sotto di "margine" metri. Succede solo al portiere che si allunga per parare (busto
+// inclinato e bicicletta con le ginocchia avanti); per gli altri le gambe sono già ben sotto e la direzione non cambia.
+function sottoIlPelo(osso,figlio,dir,margine){
+  osso.getWorldPosition(_a); figlio.getWorldPosition(_b);
+  const L=_a.distanceTo(_b), yMax=-margine-_a.y;
+  if(dir.y*L<=yMax) return;
+  const dy=Math.max(-1,Math.min(1,yMax/L)), h=Math.hypot(dir.x,dir.z);
+  if(h<1e-4){ dir.set(0,-1,0); return; }
+  const k=Math.sqrt(Math.max(0,1-dy*dy))/h; dir.set(dir.x*k,dy,dir.z*k);
+}
 // porta l'orientamento dell'osso verso quello dato (nel mondo)
 function orienta(osso,qMondo,peso){
   osso.parent.getWorldQuaternion(_qp); _q.copy(qMondo).premultiply(_qp.invert());
@@ -158,6 +172,11 @@ export function muoviCorpo(R,J,T,dt){
   _inv.copy(C.radice.matrixWorld).invert();
   O.bracD.getWorldPosition(_a); O.bracS.getWorldPosition(_b); _a.add(_b).multiplyScalar(0.5).applyMatrix4(_inv);
   pv.set(-(J.sL[2]+J.sR[2])/2/s-_a.x, (J.sL[1]+J.sR[1])/2/s-_a.y, (J.sL[0]+J.sR[0])/2/s-_a.z);
+  // solo per il disegno: il personaggio ha il busto più corto delle giunture di pose.js, quindi quando il portiere si alza tutto
+  // per parare il bacino arriverebbe quasi in superficie e le cosce uscirebbero dall'acqua. Il bacino non sale mai sopra i 22 cm
+  // sotto il pelo dell'acqua (il corpo si abbassa di quel poco, senza scatti); gli altri giocatori non ci arrivano mai.
+  O.bacino.getWorldPosition(_b);
+  if(_b.y>-0.22){ _b.y=-0.22; O.bacino.parent.worldToLocal(_b); pv.copy(_b); }
   // --- gambe: bicicletta (calcio a rana alternato) da verticali, battuta a gambe unite da distesi, con passaggio continuo ---
   const sforzo=Math.min(1,Math.max(0,(J.chest[1]+0.06)/0.26))*(1-e);
   // girandosi da verticali le gambe cambiano ritmo e ampiezza (è la bicicletta che fa ruotare il corpo)
@@ -171,11 +190,13 @@ export function muoviCorpo(R,J,T,dt){
     _d.copy(_av).multiplyScalar(0.70).addScaledVector(_de,lato*(0.50+0.10*sn)).addScaledVector(_su,-0.48-0.09*cs).normalize();
     if(e>0.001){ dirMondo(J.hip,gin,_d2); _d.lerp(_d2,e).normalize(); }
     if(qGambe) _d.applyQuaternion(qGambe);
+    sottoIlPelo(coscia,gamba,_d,0.10);
     punta(coscia,gamba,_d);
     // sotto il ginocchio: il piede gira in cerchio (verso opposto tra destra e sinistra, mezzo giro di ritardo)
     _d.copy(_su).multiplyScalar(-0.80).addScaledVector(_de,lato*0.55*cs*amp).addScaledVector(_av,-0.15+0.5*sn*amp).normalize();
     if(e>0.001){ dirMondo(gin,pie,_d2); _d.lerp(_d2,e).normalize(); }
     if(qGambe) _d.applyQuaternion(_qy.setFromAxisAngle(SU,pg.gambe*1.25));      // la gamba sotto il ginocchio resta ancora un po' più indietro: coda leggermente piegata
+    sottoIlPelo(gamba,piede,_d,0.12);
     punta(gamba,piede,_d);
     // in battuta il piede si distende in linea con la gamba
     if(puntaP&&e>0.05) punta(piede,puntaP,_d,e*0.8);
