@@ -17,7 +17,7 @@ export function render(dt,now){
   for(const p of allPlayers) updateRig(p,dt,t);
   // palla
   const h=ball.holder; let by;
-  if(ball.state==='held'&&h&&h.ballW){ by=Math.max(BRV,h.ballW[1]); ball3d.position.set(h.ballW[0],by,h.ballW[2]); }
+  if(ball.state==='held'&&h&&h.ballW){ const w=h.ballVistaW||h.ballW; by=Math.max(BRV,w[1]); ball3d.position.set(w[0],by,w[2]); }
   else { by=ball.y; ball3d.position.set(ball.x,ball.y,ball.z); }
   // spruzzo quando la palla tocca l'acqua: più forte arriva, più schiuma; nello schizzo la schiuma si allunga nella direzione del tiro
   if(ball.spruzzo){ const S=ball.spruzzo, n=Math.min(9,2+Math.round(S.forza*0.4)), vo=Math.hypot(ball.vx,ball.vz)||1; ball.spruzzo=null;

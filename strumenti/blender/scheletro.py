@@ -90,5 +90,33 @@ def esporta(nome, rapporto, lato):
                               export_skins=True, export_animations=False, export_def_bones=False, export_influence_nb=4, export_rest_position_armature=True)
     info[nome] = {'triangoli': len(d.data.polygons), 'kB': round(os.path.getsize(f) / 1024), 'immagini': lato}
     bpy.data.objects.remove(d)
+# versione PER IL GIOCO: testa e corpo ridotti SEPARATAMENTE (il viso, la cuffia e i paraorecchie sono ciò che si vede in partita
+# e hanno bisogno di più triangoli; il corpo è quasi tutto sott'acqua). Una sola immagine (il colore, 1024): rilievo, metallo e
+# ruvidezza non servono a distanza di gioco e pesano sul telefono.
+def esporta_gioco(nome, triTesta, triCorpo, lato):
+    import bmesh
+    d = o.copy(); d.data = o.data.copy(); d.name = nome; bpy.context.scene.collection.objects.link(d)
+    while d.data.color_attributes: d.data.color_attributes.remove(d.data.color_attributes[0])
+    bpy.ops.object.select_all(action='DESELECT'); bpy.context.view_layer.objects.active = d; d.select_set(True)
+    zc = G['neck_01'].z
+    for testa, voluti in ((True, triTesta), (False, triCorpo)):
+        bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='DESELECT'); bpy.ops.object.mode_set(mode='OBJECT')
+        n = 0
+        for pl in d.data.polygons:
+            pl.select = (pl.center.z > zc) == testa; n += pl.select
+        bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.decimate(ratio=min(1, voluti / max(1, n)), use_vertex_group=False); bpy.ops.object.mode_set(mode='OBJECT')
+    bpy.ops.object.mode_set(mode='WEIGHT_PAINT'); bpy.ops.object.vertex_group_limit_total(group_select_mode='ALL', limit=4); bpy.ops.object.vertex_group_normalize_all(lock_active=False); bpy.ops.object.mode_set(mode='OBJECT')
+    mat = d.data.materials[0].copy(); d.data.materials[0] = mat; nt = mat.node_tree; p = nt.nodes['Principled BSDF']
+    for nomeIng, val in (('Normal', None), ('Metallic', 0.0), ('Roughness', 0.62)):
+        for l in list(p.inputs[nomeIng].links): nt.links.remove(l)
+        if val is not None: p.inputs[nomeIng].default_value = val
+    ridotte(lato); Gi.select_set(True)
+    f = os.path.join(out, nome + '.glb')
+    bpy.ops.export_scene.gltf(filepath=f, export_format='GLB', use_selection=True, export_image_format='JPEG', export_jpeg_quality=88, export_yup=True, export_vertex_color='NONE', export_attributes=True, export_tangents=False,
+                              export_skins=True, export_animations=False, export_def_bones=False, export_influence_nb=4, export_rest_position_armature=True)
+    testa = sum(1 for pl in d.data.polygons if pl.center.z > zc)
+    info[nome] = {'triangoli': len(d.data.polygons), 'di_cui_testa': testa, 'kB': round(os.path.getsize(f) / 1024), 'immagini': lato}
+    bpy.data.objects.remove(d)
 esporta('player_rig_LOD0', 1.0, 2048); esporta('player_rig_LOD1', 0.30, 1024); esporta('player_rig_LOD2', 0.12, 1024); esporta('player_rig_LOD3', 0.05, 512)
-json.dump(info, open(os.path.join(out, 'scheletro.json'), 'w'), indent=1); print(json.dumps(info)[:1800])
+esporta_gioco('pallanuotista', 3200, 5300, 1024)
+json.dump(info, open(os.path.join(out, 'scheletro.json'), 'w'), indent=1); print(json.dumps({k: v for k, v in info.items() if k.startswith('p')}))

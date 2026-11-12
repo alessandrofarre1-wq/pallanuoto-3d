@@ -202,9 +202,9 @@ makeGoal(1); makeGoal(-1);
 // pallone vero, separati da solchi scuri. Disegno e rilievo sono calcolati punto per punto sulla sfera, così i solchi
 // sono curve esatte e non si deformano ai poli.
 export const ball3d = (()=>{
-  const W=1024, H=512, colore=document.createElement('canvas'), rilievo=document.createElement('canvas');
-  colore.width=rilievo.width=W; colore.height=rilievo.height=H;
-  const xc=colore.getContext('2d'), xr=rilievo.getContext('2d'), ic=xc.createImageData(W,H), ir=xr.createImageData(W,H);
+  const W=1024, H=512, colore=document.createElement('canvas'), rilievo=document.createElement('canvas'), gialloBlu=document.createElement('canvas');
+  colore.width=rilievo.width=gialloBlu.width=W; colore.height=rilievo.height=gialloBlu.height=H;
+  const xc=colore.getContext('2d'), xr=rilievo.getContext('2d'), xg=gialloBlu.getContext('2d'), ic=xc.createImageData(W,H), ir=xr.createImageData(W,H), ig=xg.createImageData(W,H);
   const caso=(a,b,c)=>{ const t=Math.sin(a*127.1+b*311.7+c*74.7)*43758.5453; return t-Math.floor(t); };
   const QP=4/Math.PI, SOLCO=0.021;                    // mezza larghezza del solco, in radianti
   for(let j=0;j<H;j++){ const th=(j+0.5)/H*Math.PI, st=Math.sin(th), y=Math.cos(th);
@@ -225,15 +225,18 @@ export const ball3d = (()=>{
       const luce=(0.90+0.10*punto)*tono*(1-0.20*spalla);
       const k=(j*W+i)*4, s1=1-solco;
       ic.data[k]=(250*luce)*s1+34*solco; ic.data[k+1]=(203*luce)*s1+26*solco; ic.data[k+2]=(22*luce)*s1+12*solco; ic.data[k+3]=255;
+      // palla del concept (stile Cartoon): la striscia di mezzo di ogni spicchio è blu
+      const blu=Math.floor((u+1)*1.5)===1; ig.data[k]=(blu?28:250*luce)*s1+20*solco; ig.data[k+1]=(blu?78:203*luce)*s1+22*solco; ig.data[k+2]=(blu?196:22*luce)*s1+40*solco; ig.data[k+3]=255;
       const q=Math.round((0.62+0.38*punto)*255*(1-solco)+25*solco*0+0); ir.data[k]=ir.data[k+1]=ir.data[k+2]=Math.round(q*(1-0.85*solco)); ir.data[k+3]=255;
     } }
-  xc.putImageData(ic,0,0); xr.putImageData(ir,0,0);
+  xc.putImageData(ic,0,0); xr.putImageData(ir,0,0); xg.putImageData(ig,0,0);
   const tc=new THREE.CanvasTexture(colore); tc.colorSpace=THREE.SRGBColorSpace; tc.anisotropy=4;
   const tr=new THREE.CanvasTexture(rilievo);
   const vera=new THREE.MeshPhongMaterial({map:tc,bumpMap:tr,bumpScale:1.4,shininess:48,specular:0x5a5648});
   const m=new THREE.Mesh(new THREE.SphereGeometry(BRV,32,24),vera);
-  // cartoon: giallo pieno con gli spicchi, un po' più grande, con contorno scuro (una sfera nera appena più larga vista da dentro)
-  const piatta=new THREE.MeshBasicMaterial({map:tc,color:0xffffff});
+  // cartoon: la palla gialla e blu del concept, un po' più grande, con contorno scuro (una sfera nera appena più larga vista da dentro)
+  const tg=new THREE.CanvasTexture(gialloBlu); tg.colorSpace=THREE.SRGBColorSpace; tg.anisotropy=4;
+  const piatta=new THREE.MeshLambertMaterial({map:tg,emissive:0x222222});
   const contorno=new THREE.Mesh(new THREE.SphereGeometry(BRV*1.13,16,12),new THREE.MeshBasicMaterial({color:0x10182a,side:THREE.BackSide}));
   contorno.visible=false; m.add(contorno);
   m.userData={ vera, piatta, contorno };
