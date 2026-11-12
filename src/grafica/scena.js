@@ -97,24 +97,34 @@ scene.add(water);
 // acqua realistica (livelli alta e media); quella qui sopra resta come livello basso
 export const acqua=new Acqua(PX*2,PZ*2,{ colore:0xc4e8ff, cielo:0xa6d4f4, sole:sun.position, metriPerOnda:5.5 });
 scene.add(acqua);
-// acqua cartoon: tinta piatta con onde disegnate (tratti bianchi che scorrono), un po' trasparente per far vedere le corsie sul
-// fondo. Un solo passaggio di disegno: niente riflesso né vista sott'acqua, quindi costa meno di quella realistica.
+// acqua cartoon: superficie azzurro-turchese con sfumature morbide che si muovono piano, increspature sottili e irregolari
+// (solo a macchie, mai a strisce) e piccoli riflessi che si accendono e si spengono. Tutto calcolato in un solo passaggio di
+// disegno (niente riflesso né vista sott'acqua): costa meno dell'acqua realistica. Semitrasparente: le corsie sul fondo si vedono.
+// I riflessi più fini si spengono da lontano, dove sfarfallerebbero.
 export const acquaFumetto=new THREE.Mesh(new THREE.PlaneGeometry(PX*2,PZ*2).rotateX(-Math.PI/2),new THREE.ShaderMaterial({ transparent:true, depthWrite:false,
   uniforms:{ uTempo:{value:0} },
   vertexShader:`varying vec2 vP; void main(){ vP=position.xz; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
   fragmentShader:`uniform float uTempo; varying vec2 vP;
-    float onde(vec2 p,float t){
-      p.y+=0.22*sin(p.x*0.8+t*0.9);
-      float riga=floor(p.y*0.7), r=fract(p.y*0.7);
-      float tratto=step(0.45,fract(p.x*0.16+riga*0.37+t*0.035*(mod(riga,2.0)*2.0-1.0)));
-      return (1.0-smoothstep(0.035,0.06,abs(r-0.5)))*tratto;
-    }
+    float h(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+    float n(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
+      return mix(mix(h(i),h(i+vec2(1.0,0.0)),f.x),mix(h(i+vec2(0.0,1.0)),h(i+vec2(1.0,1.0)),f.x),f.y); }
     void main(){
-      float o=onde(vP,uTempo), o2=onde(vP*1.9+vec2(7.3,2.1),uTempo*1.3)*0.22;
-      float fascia=step(0.5,fract(vP.y*0.11+0.03*sin(vP.x*0.4+uTempo*0.5)));          // due tonalità piatte a grandi fasce
-      vec3 c=mix(vec3(0.05,0.47,0.86),vec3(0.09,0.54,0.92),fascia);
-      c=mix(c,vec3(1.0),clamp(o+o2,0.0,1.0)*0.9);
-      gl_FragColor=vec4(c,mix(0.56,0.95,clamp(o+o2,0.0,1.0)));
+      float t=uTempo; vec2 p=vP;
+      // colore di fondo: azzurro più profondo e turchese più chiaro, a macchie larghe e morbide che scivolano lentamente
+      float g=n(p*0.13+vec2(t*0.020,-t*0.014))*0.62+n(p*0.37+vec2(-t*0.030,t*0.022))*0.38;
+      vec3 c=mix(vec3(0.05,0.60,0.80),vec3(0.28,0.84,0.88),smoothstep(0.22,0.82,g));
+      // increspature: creste sottili di un disegno deformato (non diritte), visibili solo a macchie che cambiano nel tempo
+      vec2 q=p*0.95+vec2(n(p*0.42+vec2(t*0.16,0.0)),n(p*0.42+vec2(5.3,-t*0.13)))*1.7;
+      float cresta=smoothstep(0.80,0.97,1.0-abs(n(q+vec2(t*0.22,t*0.09))*2.0-1.0));
+      float zona=smoothstep(0.42,0.78,n(p*0.5+vec2(-t*0.05,t*0.04)+11.0));
+      float lontano=1.0-smoothstep(0.35,1.1,length(fwidth(p))*6.0);      // da lontano niente dettagli fini
+      c=mix(c,vec3(0.80,0.95,1.0),cresta*zona*mix(0.18,0.42,lontano));
+      // riflessi piccoli e irregolari: due disegni che si muovono in direzioni diverse, si accendono solo dove coincidono
+      float r=n(p*4.3+vec2(t*0.55,-t*0.35))*n(p*2.9+vec2(-t*0.30,-t*0.48)+7.7);
+      float luce=smoothstep(0.56,0.76,r)*(0.4+0.6*zona)*lontano;
+      c=mix(c,vec3(1.0),luce*0.7);
+      float a=0.58+0.22*cresta*zona+0.25*luce;
+      gl_FragColor=vec4(pow(c,vec3(2.2)),a);      // colori scritti in sRGB, convertiti per il disegno
       #include <colorspace_fragment>
     }` }));
 acquaFumetto.position.y=0.0; acquaFumetto.visible=false; acquaFumetto.renderOrder=-1; scene.add(acquaFumetto);
@@ -141,31 +151,48 @@ const N_SCHIUMA=160;
 export const foams=[]; let foamI=0;
 const schiumaNetta={value:0};
 const schiumaAlfa=new THREE.InstancedBufferAttribute(new Float32Array(N_SCHIUMA),1);
+const schiumaEta=new THREE.InstancedBufferAttribute(new Float32Array(N_SCHIUMA),1);      // 0 appena nata, 1 finita
 export const schiuma=(()=>{
-  const g=new THREE.PlaneGeometry(2,2); g.rotateX(-Math.PI/2); g.setAttribute('aAlfa',schiumaAlfa);
+  const g=new THREE.PlaneGeometry(2,2); g.rotateX(-Math.PI/2); g.setAttribute('aAlfa',schiumaAlfa); g.setAttribute('aEta',schiumaEta);
   const tex=canvasTex(64,64,(x,w,h)=>{ const gr=x.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);
     gr.addColorStop(0,'rgba(255,255,255,1)'); gr.addColorStop(0.55,'rgba(255,255,255,.75)'); gr.addColorStop(1,'rgba(255,255,255,0)'); x.fillStyle=gr; x.fillRect(0,0,w,h); });
   const m=new THREE.ShaderMaterial({ transparent:true, depthWrite:false, uniforms:{map:{value:tex},uNetta:schiumaNetta},
-    vertexShader:`attribute float aAlfa; varying float vA; varying vec2 vUv;
-      void main(){ vA=aAlfa; vUv=uv; vec3 transformed=position;
+    vertexShader:`attribute float aAlfa; attribute float aEta; varying float vA; varying float vK; varying float vSeme; varying vec2 vUv;
+      void main(){ vA=aAlfa; vK=aEta; vUv=uv; vSeme=fract(instanceMatrix[3].x*3.17+instanceMatrix[3].z*1.71); vec3 transformed=position;
         #include <project_vertex>
       }`,
-    fragmentShader:`uniform sampler2D map; uniform float uNetta; varying float vA; varying vec2 vUv;
-      void main(){ float a=texture2D(map,vUv).a; a=mix(a*vA, step(0.5,a)*step(0.12,vA)*0.95, uNetta);      // cartoon: macchie bianche dal bordo netto
+    // realistica: macchia morbida (come prima). Cartoon: increspatura, cioè un anello sottile un po' spezzato che si allarga e
+    // svanisce, con un velo chiaro dentro appena nato; le scie dei nuotatori sono anelli allungati nella direzione del nuoto
+    fragmentShader:`uniform sampler2D map; uniform float uNetta; varying float vA; varying float vK; varying float vSeme; varying vec2 vUv;
+      void main(){
+        float a=texture2D(map,vUv).a*vA;
+        if(uNetta>0.5){
+          vec2 d=vUv*2.0-1.0; float r=length(d), ang=atan(d.y,d.x);
+          float spezzato=0.55+0.45*sin(ang*3.0+vSeme*6.283)*sin(ang*5.0-vSeme*12.0+vK*2.0);
+          float anello=1.0-smoothstep(0.0,0.07+0.05*vK,abs(r-0.74));
+          float velo=(1.0-smoothstep(0.0,0.74,r))*0.35*(1.0-vK)*(1.0-vK);
+          a=clamp((anello*clamp(spezzato,0.0,1.0)*0.85+velo)*min(1.0,vA*1.6),0.0,0.8);
+        }
         gl_FragColor=vec4(1.0,1.0,1.0,a);
         #include <colorspace_fragment>
       }` });
   const im=new THREE.InstancedMesh(g,m,N_SCHIUMA); im.frustumCulled=false; scene.add(im);
-  for(let i=0;i<N_SCHIUMA;i++) foams.push({life:0,max:1,size:0,x:0,z:0});
+  for(let i=0;i<N_SCHIUMA;i++) foams.push({life:0,max:1,size:0,x:0,z:0,dx:0,dz:0});
   return im;
 })();
 const _ms=new THREE.Matrix4();
-export function spawnFoam(x,z,size,life){ const f=foams[foamI=(foamI+1)%foams.length]; f.max=(life||0.9)*1.5; f.life=f.max; f.size=size; f.x=x; f.z=z; }
+// dx,dz (facoltativi) = direzione del nuoto: in Cartoon la scia viene allungata in quella direzione
+export function spawnFoam(x,z,size,life,dx,dz){ const f=foams[foamI=(foamI+1)%foams.length]; f.max=(life||0.9)*1.5; f.life=f.max; f.size=size; f.x=x; f.z=z; f.dx=dx||0; f.dz=dz||0; }
+const _sq=new THREE.Quaternion(), _sv=new THREE.Vector3(), _sp=new THREE.Vector3(), _sy=new THREE.Vector3(0,1,0);
 export function updateFoam(dt){
-  for(let i=0;i<N_SCHIUMA;i++){ const f=foams[i]; let sc=0, al=0;
-    if(f.life>0){ f.life-=dt; const k=1-Math.max(0,f.life)/f.max; sc=f.size*(0.7+1.9*k); al=0.85*(1-k)*(1-k); }
-    _ms.makeScale(sc,1,sc).setPosition(f.x,0.06+i*0.0002,f.z); schiuma.setMatrixAt(i,_ms); schiumaAlfa.array[i]=al; }
-  schiuma.instanceMatrix.needsUpdate=true; schiumaAlfa.needsUpdate=true;
+  const fumetto=schiumaNetta.value>0.5;
+  for(let i=0;i<N_SCHIUMA;i++){ const f=foams[i]; let sc=0, al=0, k=1;
+    if(f.life>0){ f.life-=dt; k=1-Math.max(0,f.life)/f.max; sc=f.size*(0.7+1.9*k); al=0.85*(1-k)*(1-k); }
+    // Cartoon: l'increspatura si allarga di più; la scia è più lunga nel verso del nuoto e un po' più stretta di traverso
+    const lungo=fumetto&&(f.dx||f.dz)?1.7:1, largo=fumetto&&(f.dx||f.dz)?0.75:1, s2=fumetto?sc*1.25:sc;
+    _sq.setFromAxisAngle(_sy,fumetto&&(f.dx||f.dz)?Math.atan2(-f.dz,f.dx):0);
+    _ms.compose(_sp.set(f.x,0.06+i*0.0002,f.z),_sq,_sv.set(s2*lungo,1,s2*largo)); schiuma.setMatrixAt(i,_ms); schiumaAlfa.array[i]=al; schiumaEta.array[i]=k; }
+  schiuma.instanceMatrix.needsUpdate=true; schiumaAlfa.needsUpdate=true; schiumaEta.needsUpdate=true;
 }
 // corde di delimitazione con i colori delle zone
 {
