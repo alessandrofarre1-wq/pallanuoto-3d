@@ -1,0 +1,2073 @@
+{
+ "_nota": "Rose reali delle 16 nazionali. Squadre europee: convocati agli Europei di Belgrado (gennaio 2026), con ruolo, nascita e club; numeri di calottina presi dai Mondiali 2025 quando il giocatore c'era (gli altri assegnati, 'numeroDaVerificare'). Altre squadre: convocati ai Mondiali di Singapore 2025 (solo nome, numero e portiere/movimento). 'mano' è sconosciuta per tutti: da completare (Ale). I ruoli di Wikipedia sono indicativi e vanno verificati (es. alcuni tiratori dal perimetro risultano 'centroboa'). Le statistiche di gioco (40-99) NON ci sono: si calcolano con il metodo in docs/valutazioni.md.",
+ "fonti": {
+  "Mondiali 2025 rose": "https://en.wikipedia.org/wiki/Water_polo_at_the_2025_World_Aquatics_Championships_%E2%80%93_Men%27s_team_rosters",
+  "Mondiali 2025 classifica, marcatori, premi": "https://en.wikipedia.org/wiki/Water_polo_at_the_2025_World_Aquatics_Championships_%E2%80%93_Men%27s_tournament",
+  "Europei 2026 rose": "https://en.wikipedia.org/wiki/2026_Men%27s_European_Water_Polo_Championship_squads",
+  "Europei 2026 classifica, marcatori, all-star": "https://en.wikipedia.org/wiki/2026_Men%27s_European_Water_Polo_Championship"
+ },
+ "europei2026Classifica": [
+  "SRB",
+  "HUN",
+  "GRE",
+  "ITA",
+  "ESP",
+  "CRO",
+  "MNE",
+  "ROU"
+ ],
+ "rose": {
+  "ESP": [
+   {
+    "nome": "Unai Aguirre",
+    "numero": 1,
+    "ruolo": "portiere",
+    "nascita": "2002-07-14",
+    "club": "CN Atlètic-Barceloneta",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Alberto Munárriz",
+    "numero": 2,
+    "ruolo": "difensore",
+    "nascita": "1994-05-19",
+    "club": "CN Atlètic-Barceloneta",
+    "fonte": "Europei 2026",
+    "capitano": true,
+    "mano": null
+   },
+   {
+    "nome": "Álvaro Granados",
+    "numero": 3,
+    "ruolo": "esterno",
+    "nascita": "1998-10-08",
+    "club": "Pro Recco",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "MVP Mondiali 2025",
+     "All-star Mondiali 2025",
+     "Mondiali 2025: 21 gol su 52 tiri (40%)"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Bernat Sanahuja",
+    "numero": 4,
+    "ruolo": "difensore",
+    "nascita": "2000-10-21",
+    "club": "CN Atlètic-Barceloneta",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "Mondiali 2025: 20 gol su 42 tiri (48%)"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Miguel del Toro",
+    "numero": 5,
+    "ruolo": "centroboa",
+    "nascita": "1993-08-16",
+    "club": "FTC-Telekom",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Marc Larumbe",
+    "numero": 6,
+    "ruolo": "esterno",
+    "nascita": "1994-05-30",
+    "club": "CN Marseille",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Pol Daura",
+    "numero": 7,
+    "ruolo": "difensore",
+    "nascita": "2002-10-03",
+    "club": "CN Barcelona",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Sergi Cabanas",
+    "numero": 8,
+    "ruolo": "esterno",
+    "nascita": "1996-02-10",
+    "club": "CN Sabadell",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Roger Tahull",
+    "numero": 9,
+    "ruolo": "centroboa",
+    "nascita": "1997-05-11",
+    "club": "CN Atlètic-Barceloneta",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Oscar Asensio",
+    "numero": 10,
+    "ruolo": "centroboa",
+    "nascita": "2001-02-02",
+    "club": "CN Sabadell",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Unai Biel",
+    "numero": 11,
+    "ruolo": "esterno",
+    "nascita": "2002-11-19",
+    "club": "CN Atlètic-Barceloneta",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Alejandro Bustos",
+    "numero": 12,
+    "ruolo": "difensore",
+    "nascita": "1997-03-17",
+    "club": "CN Atlètic-Barceloneta",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Eduardo Lorrio",
+    "numero": 13,
+    "ruolo": "portiere",
+    "nascita": "1993-09-25",
+    "club": "CN Sabadell",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Biel Gomila Faiges",
+    "numero": 14,
+    "ruolo": "difensore",
+    "nascita": "2006-02-24",
+    "club": "CN Atlètic-Barceloneta",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Fran Valera",
+    "numero": 15,
+    "ruolo": "esterno",
+    "nascita": "1999-03-21",
+    "club": "Jadran Herceg Novi",
+    "fonte": "Europei 2026",
+    "mano": null
+   }
+  ],
+  "HUN": [
+   {
+    "nome": "Kristóf Csoma",
+    "numero": 1,
+    "ruolo": "portiere",
+    "nascita": "1992-01-26",
+    "club": "Budapesti Honvéd",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Dániel Angyal",
+    "numero": 2,
+    "ruolo": "difensore",
+    "nascita": "1992-03-29",
+    "club": "Olympiacos",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Krisztián Manhercz",
+    "numero": 3,
+    "ruolo": "esterno",
+    "nascita": "1997-02-06",
+    "club": "FTC-Telekom",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "All-star Mondiali 2025",
+     "All-star Europei 2026"
+    ],
+    "capitano": true,
+    "mano": null
+   },
+   {
+    "nome": "Dávid Tátrai",
+    "numero": 4,
+    "ruolo": "esterno",
+    "nascita": "2003-08-15",
+    "club": "BVSC",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Benedek Batizi",
+    "numero": 5,
+    "ruolo": "centroboa",
+    "nascita": "2001-08-21",
+    "club": "BVSC",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Ádám Nagy",
+    "numero": 6,
+    "ruolo": "difensore",
+    "nascita": "1998-05-19",
+    "club": "CN Marseille",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "All-star Europei 2026"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Gergő Fekete",
+    "numero": 7,
+    "ruolo": "esterno",
+    "nascita": "2000-06-24",
+    "club": "FTC-Telekom",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Vince Varga",
+    "numero": 8,
+    "ruolo": "esterno",
+    "nascita": "2005-08-16",
+    "club": "FTC-Telekom",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Péter Kovács",
+    "numero": 9,
+    "ruolo": "centroboa",
+    "nascita": "1991-05-16",
+    "club": "BVSC",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Vendel Vigvári",
+    "numero": 10,
+    "ruolo": "esterno",
+    "nascita": "2001-09-10",
+    "club": "FTC-Telekom",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Szilárd Jansik",
+    "numero": 11,
+    "ruolo": "esterno",
+    "nascita": "1994-04-06",
+    "club": "FTC-Telekom",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Vince Vigvári",
+    "numero": 12,
+    "ruolo": "esterno",
+    "nascita": "2003-06-23",
+    "club": "CN Barcelona",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Soma Vogel",
+    "numero": 13,
+    "ruolo": "portiere",
+    "nascita": "1997-07-07",
+    "club": "FTC-Telekom",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Ákos Nagy",
+    "numero": 14,
+    "ruolo": "esterno",
+    "nascita": "2004-04-15",
+    "club": "FTC-Telekom",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Zsombor Vismeg",
+    "numero": 15,
+    "ruolo": "difensore",
+    "nascita": "2003-03-14",
+    "club": "FTC-Telekom",
+    "fonte": "Europei 2026",
+    "mano": null
+   }
+  ],
+  "GRE": [
+   {
+    "nome": "Panagiotis Tzortzatos",
+    "numero": 1,
+    "ruolo": "portiere",
+    "nascita": "1992-05-11",
+    "club": "Olympiacos",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "Miglior portiere Mondiali 2025",
+     "All-star Mondiali 2025"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Konstantinos Genidounias",
+    "numero": 2,
+    "ruolo": "centroboa",
+    "nascita": "1998-05-03",
+    "club": "Olympiacos",
+    "fonte": "Europei 2026",
+    "capitano": true,
+    "mano": null
+   },
+   {
+    "nome": "Dimitrios Skoumpakis",
+    "numero": 3,
+    "ruolo": "difensore",
+    "nascita": "1998-12-18",
+    "club": "Panathinaikos",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Konstantinos Gkiouvetsis",
+    "numero": 4,
+    "ruolo": "centroboa",
+    "nascita": "1999-11-19",
+    "club": "Panathinaikos",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Stylianos Argyropoulos",
+    "numero": 5,
+    "ruolo": "centroboa",
+    "nascita": "1996-08-02",
+    "club": "FTC-Telekom",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "All-star Mondiali 2025",
+     "All-star Europei 2026",
+     "Capocannoniere Europei 2026: 26 gol su 38 tiri (68%)"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Aristeidis Chalyvopoulos",
+    "numero": 6,
+    "ruolo": "centroboa",
+    "nascita": "2002-03-20",
+    "club": "Panathinaikos",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Nikolaos Gkillas",
+    "numero": 7,
+    "ruolo": "centroboa",
+    "nascita": "2003-06-21",
+    "club": "Olympiacos",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Efstathios Kalogeropoulos",
+    "numero": 8,
+    "ruolo": "centroboa",
+    "nascita": "2001-06-28",
+    "club": "CN Marseille",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Alexandros Papanastasiou",
+    "numero": 9,
+    "ruolo": "centroboa",
+    "nascita": "1999-02-12",
+    "club": "Olympiacos",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Konstantinos Kakaris",
+    "numero": 10,
+    "ruolo": "esterno",
+    "nascita": "1999-07-02",
+    "club": "Olympiacos",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "All-star Europei 2026"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Dimitrios Nikolaidis",
+    "numero": 11,
+    "ruolo": "esterno",
+    "nascita": "1999-06-10",
+    "club": "Olympiacos",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Nikolaos Papanikolaou",
+    "numero": 12,
+    "ruolo": "difensore",
+    "nascita": "2000-08-31",
+    "club": "Panathinaikos",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Emmanouil Zerdevas",
+    "numero": 13,
+    "ruolo": "portiere",
+    "nascita": "1997-08-12",
+    "club": "Olympiacos",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Evangelos Pouros",
+    "numero": 14,
+    "ruolo": "centroboa",
+    "nascita": "2003-08-27",
+    "club": "Olympiacos",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Semir Spachits",
+    "numero": 15,
+    "ruolo": "esterno",
+    "nascita": "2005-11-18",
+    "club": "Vouliagmeni",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   }
+  ],
+  "SRB": [
+   {
+    "nome": "Radoslav Filipović",
+    "numero": 1,
+    "ruolo": "portiere",
+    "nascita": "1997-08-19",
+    "club": "Radnički Kragujevac",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Dušan Mandić",
+    "numero": 2,
+    "ruolo": "esterno",
+    "nascita": "1994-06-16",
+    "club": "FTC-Telekom",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "All-star Mondiali 2025",
+     "All-star Europei 2026",
+     "Europei 2026: 20 gol su 35 tiri (57%)",
+     "Migliore in campo nella finale degli Europei 2026"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Strahinja Rašović",
+    "numero": 3,
+    "ruolo": "esterno",
+    "nascita": "1992-03-09",
+    "club": "Radnički Kragujevac",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "All-star Europei 2026",
+     "Europei 2026: tra i migliori marcatori"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Sava Ranđelović",
+    "numero": 4,
+    "ruolo": "difensore",
+    "nascita": "1993-07-17",
+    "club": "Radnički Kragujevac",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Miloš Ćuk",
+    "numero": 5,
+    "ruolo": "esterno",
+    "nascita": "1990-12-21",
+    "club": "VK Novi Beograd",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Radomir Drašović",
+    "numero": 6,
+    "ruolo": "esterno",
+    "nascita": "1997-07-22",
+    "club": "CN Marseille",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Đorđe Lazić",
+    "numero": 7,
+    "ruolo": "centroboa",
+    "nascita": "1996-05-19",
+    "club": "Jadran Herceg Novi",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Nikola Jakšić",
+    "numero": 8,
+    "ruolo": "esterno",
+    "nascita": "1997-01-17",
+    "club": "Radnički Kragujevac",
+    "fonte": "Europei 2026",
+    "capitano": true,
+    "mano": null
+   },
+   {
+    "nome": "Nemanja Vico",
+    "numero": 9,
+    "ruolo": "centroboa",
+    "nascita": "1994-11-19",
+    "club": "Primorac Kotor",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Nikola Dedović",
+    "numero": 10,
+    "ruolo": "esterno",
+    "nascita": "1992-01-25",
+    "club": "Radnički Kragujevac",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Petar Jakšić",
+    "numero": 11,
+    "ruolo": "difensore",
+    "nascita": "2001-07-20",
+    "club": "Radnički Kragujevac",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Viktor Rašović",
+    "numero": 12,
+    "ruolo": "difensore",
+    "nascita": "1993-08-13",
+    "club": "Radnički Kragujevac",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Milan Glušac",
+    "numero": 13,
+    "ruolo": "portiere",
+    "nascita": "2002-09-30",
+    "club": "VK Novi Beograd",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "Portiere dell'all-star Europei 2026"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Vasilije Martinović",
+    "numero": 14,
+    "ruolo": "esterno",
+    "nascita": "2003-01-13",
+    "club": "VK Novi Beograd",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Nikola Lukić",
+    "numero": 15,
+    "ruolo": "esterno",
+    "nascita": "1998-04-14",
+    "club": "VK Novi Beograd",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   }
+  ],
+  "CRO": [
+   {
+    "nome": "Marko Bijač",
+    "numero": 1,
+    "ruolo": "portiere",
+    "nascita": "1991-01-12",
+    "club": "VK Jadran Split",
+    "fonte": "Europei 2026",
+    "capitano": true,
+    "mano": null
+   },
+   {
+    "nome": "Rino Burić",
+    "numero": 2,
+    "ruolo": "difensore",
+    "nascita": "1997-04-05",
+    "club": "Pro Recco",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Loren Fatović",
+    "numero": 3,
+    "ruolo": "centroboa",
+    "nascita": "1996-11-16",
+    "club": "VK Jadran Split",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Luka Lončar",
+    "numero": 4,
+    "ruolo": "centroboa",
+    "nascita": "1987-06-26",
+    "club": "HAVK Mladost",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Franko Lazić",
+    "numero": 5,
+    "ruolo": "esterno",
+    "nascita": "1998-02-25",
+    "club": "HAVK Mladost",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Luka Bukić",
+    "numero": 6,
+    "ruolo": "esterno",
+    "nascita": "1994-04-30",
+    "club": "HAVK Mladost",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "Mondiali 2025: 16 gol su 26 tiri (62%)"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Ante Vukičević",
+    "numero": 7,
+    "ruolo": "esterno",
+    "nascita": "1993-02-24",
+    "club": "HAVK Mladost",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Marko Žuvela",
+    "numero": 8,
+    "ruolo": "difensore",
+    "nascita": "2001-12-22",
+    "club": "Jug Dubrovnik",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Filip Kržić",
+    "numero": 9,
+    "ruolo": "difensore",
+    "nascita": "2000-08-28",
+    "club": "Jug Dubrovnik",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Josip Vrlić",
+    "numero": 10,
+    "ruolo": "centroboa",
+    "nascita": "1986-04-25",
+    "club": "HAVK Mladost",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Zvonimir Butić",
+    "numero": 11,
+    "ruolo": "esterno",
+    "nascita": "1998-11-02",
+    "club": "VK Jadran Split",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Konstantin Kharkov",
+    "numero": 12,
+    "ruolo": "esterno",
+    "nascita": "1997-02-23",
+    "club": "HAVK Mladost",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Ivan Marcelić",
+    "numero": 13,
+    "ruolo": "portiere",
+    "nascita": "1997-02-23",
+    "club": "HAVK Mladost",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Matias Biljaka",
+    "numero": 14,
+    "ruolo": "difensore",
+    "nascita": "1999-01-20",
+    "club": "HAVK Mladost",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Andrija Basić",
+    "numero": 15,
+    "ruolo": "esterno",
+    "nascita": "1995-09-09",
+    "club": "HAVK Mladost",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   }
+  ],
+  "MNE": [
+   {
+    "nome": "Petar Tešanović",
+    "numero": 1,
+    "ruolo": "portiere",
+    "nascita": "1998-11-26",
+    "club": "CN Marseille",
+    "fonte": "Europei 2026",
+    "capitano": true,
+    "mano": null
+   },
+   {
+    "nome": "Dmitrii Kholod",
+    "numero": 2,
+    "ruolo": "esterno",
+    "nascita": "1992-01-16",
+    "club": "Jadran Herceg Novi",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Marko Mrsić",
+    "numero": 3,
+    "ruolo": "esterno",
+    "nascita": "2003-01-02",
+    "club": "Primorac Kotor",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Vlado Popadić",
+    "numero": 4,
+    "ruolo": "esterno",
+    "nascita": "1996-04-25",
+    "club": "AN Brescia",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Aljoša Macic",
+    "numero": 5,
+    "ruolo": "difensore",
+    "nascita": "2000-10-31",
+    "club": "VK Šabac",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Jovan Vujović",
+    "numero": 6,
+    "ruolo": "centroboa",
+    "nascita": "2003-01-20",
+    "club": "Jadran Herceg Novi",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Danilo Stupar",
+    "numero": 7,
+    "ruolo": "esterno",
+    "nascita": "2007-04-09",
+    "club": "Jadran Herceg Novi",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Vladan Spaić",
+    "numero": 8,
+    "ruolo": "centroboa",
+    "nascita": "1997-06-18",
+    "club": "CN Marseille",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Miroslav Perković",
+    "numero": 9,
+    "ruolo": "centroboa",
+    "nascita": "2001-03-15",
+    "club": "VK Novi Beograd",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Srdan Janović",
+    "numero": 10,
+    "ruolo": "esterno",
+    "nascita": "2006-11-14",
+    "club": "Jadran Herceg Novi",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Dušan Matković",
+    "numero": 11,
+    "ruolo": "esterno",
+    "nascita": "1999-02-01",
+    "club": "VK Jadran Split",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "Europei 2026: 19 gol su 32 tiri (59%)"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Vasilije Radović",
+    "numero": 12,
+    "ruolo": "difensore",
+    "nascita": "2003-05-12",
+    "club": "Jadran Herceg Novi",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Darko Durović",
+    "numero": 13,
+    "ruolo": "portiere",
+    "nascita": "2000-04-29",
+    "club": "VK Šabac",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Balša Vučković",
+    "numero": 14,
+    "ruolo": "difensore",
+    "nascita": "2005-04-14",
+    "club": "Primorac Kotor",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "Europei 2026: tra i migliori marcatori (35 tiri, 57%)"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Strahinja Gojković",
+    "numero": 15,
+    "ruolo": "esterno",
+    "nascita": "2007-03-15",
+    "club": "Jadran Herceg Novi",
+    "fonte": "Europei 2026",
+    "mano": null
+   }
+  ],
+  "ITA": [
+   {
+    "nome": "Marco Del Lungo",
+    "numero": 1,
+    "ruolo": "portiere",
+    "nascita": "1990-03-01",
+    "club": "RN Savona",
+    "fonte": "Europei 2026",
+    "capitano": true,
+    "mano": null
+   },
+   {
+    "nome": "Jacopo Alesiani",
+    "numero": 2,
+    "ruolo": "esterno",
+    "nascita": "1996-06-18",
+    "club": "AN Brescia",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Vincenzo Dolce",
+    "numero": 3,
+    "ruolo": "centroboa",
+    "nascita": "1995-05-11",
+    "club": "AN Brescia",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Alessandro Carnesecchi",
+    "numero": 4,
+    "ruolo": "esterno",
+    "nascita": "2002-01-18",
+    "club": "CC Ortigia",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Filippo Ferrero",
+    "numero": 5,
+    "ruolo": "esterno",
+    "nascita": "2002-07-31",
+    "club": "AN Brescia",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Tommaso Gianazza",
+    "numero": 6,
+    "ruolo": "centroboa",
+    "nascita": "2002-07-21",
+    "club": "AN Brescia",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Mario Del Basso",
+    "numero": 7,
+    "ruolo": "centroboa",
+    "nascita": "1998-11-14",
+    "club": "AN Brescia",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Francesco Condemi",
+    "numero": 8,
+    "ruolo": "esterno",
+    "nascita": "2003-12-23",
+    "club": "Pro Recco",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Alessandro Balzarini",
+    "numero": 9,
+    "ruolo": "centroboa",
+    "nascita": "2003-11-28",
+    "club": "AN Brescia",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Lorenzo Bruni",
+    "numero": 10,
+    "ruolo": "centroboa",
+    "nascita": "1994-04-08",
+    "club": "RN Savona",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Edoardo Di Somma",
+    "numero": 11,
+    "ruolo": "difensore",
+    "nascita": "1996-08-30",
+    "club": "FTC-Telekom",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Mattia Antonucci",
+    "numero": 12,
+    "ruolo": "difensore",
+    "nascita": "2000-11-02",
+    "club": "Roma Vis Nova",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Francesco De Michelis",
+    "numero": 13,
+    "ruolo": "portiere",
+    "nascita": "1999-09-03",
+    "club": "Olympic Roma",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Francesco Cassia",
+    "numero": 14,
+    "ruolo": "esterno",
+    "nascita": "2002-03-29",
+    "club": "Pro Recco",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Matteo Iocchi Gratta",
+    "numero": 15,
+    "ruolo": "centroboa",
+    "nascita": "2002-09-01",
+    "club": "Pro Recco",
+    "fonte": "Europei 2026",
+    "mano": null
+   }
+  ],
+  "USA": [
+   {
+    "nome": "Adrian Weinberg",
+    "numero": 1,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Jack Larsen",
+    "numero": 2,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Marko Vavic",
+    "numero": 3,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Nicolas Saveljic",
+    "numero": 4,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Hannes Daube",
+    "numero": 5,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Ben Liecht",
+    "numero": 6,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Connor Ohl",
+    "numero": 7,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Dylan Woodhead",
+    "numero": 8,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Jake Ehrhardt",
+    "numero": 9,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Chase Dodd",
+    "numero": 10,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Ryder Dodd",
+    "numero": 11,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "riconoscimenti": [
+     "Mondiali 2025: tra i migliori marcatori (33 tiri, 45%)"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Max Irving",
+    "numero": 12,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Bernardo Herzer",
+    "numero": 13,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Ryan Ohl",
+    "numero": 14,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Dom Brown",
+    "numero": 15,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   }
+  ],
+  "JPN": [
+   {
+    "nome": "Towa Nishimura",
+    "numero": 1,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Seiya Adachi",
+    "numero": 2,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Taiyo Watanabe",
+    "numero": 3,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "riconoscimenti": [
+     "Mondiali 2025: tra i migliori marcatori (37 tiri, 46%)"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Toshiyuki Maeda",
+    "numero": 4,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Enishi Ura",
+    "numero": 5,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Toi Suzuki",
+    "numero": 6,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Kiyomu Date",
+    "numero": 7,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Mitsuru Takata",
+    "numero": 8,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Ikkei Nitta",
+    "numero": 9,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Yusuke Inaba",
+    "numero": 10,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "riconoscimenti": [
+     "All-star Mondiali 2025",
+     "Mondiali 2025: 23 gol su 49 tiri (47%)"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Daichi Ogihara",
+    "numero": 11,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Kenta Araki",
+    "numero": 12,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Ren Sasano",
+    "numero": 13,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Jun Lowrey",
+    "numero": 14,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Yuki Moriya",
+    "numero": 15,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   }
+  ],
+  "ROU": [
+   {
+    "nome": "Marius-Florin Tic",
+    "numero": 1,
+    "ruolo": "portiere",
+    "nascita": "1996-09-09",
+    "club": "Steaua București",
+    "fonte": "Europei 2026",
+    "capitano": true,
+    "mano": null
+   },
+   {
+    "nome": "Francesco Iudean",
+    "numero": 2,
+    "ruolo": "difensore",
+    "nascita": "2001-09-28",
+    "club": "Steaua București",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Matei-Ioan Lutescu",
+    "numero": 3,
+    "ruolo": "difensore",
+    "nascita": "2002-06-05",
+    "club": "Dinamo București",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Tudor-Andrei Fulea",
+    "numero": 4,
+    "ruolo": "esterno",
+    "nascita": "1997-03-13",
+    "club": "Steaua București",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Andrei Neamțu",
+    "numero": 5,
+    "ruolo": "esterno",
+    "nascita": "2004-04-06",
+    "club": "Steaua București",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "Mondiali 2025: tra i migliori marcatori (27 tiri, 59%)",
+     "Europei 2026: tra i migliori marcatori"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Andrei Prioteasa",
+    "numero": 6,
+    "ruolo": "esterno",
+    "nascita": "1996-04-03",
+    "club": "Dinamo București",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Andrei Tepelus",
+    "numero": 7,
+    "ruolo": "esterno",
+    "nascita": "2005-02-09",
+    "club": "Steaua București",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Nicolae Oanță",
+    "numero": 8,
+    "ruolo": "difensore",
+    "nascita": "1990-08-14",
+    "club": "Steaua București",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Alexandru Gheorghe",
+    "numero": 9,
+    "ruolo": "centroboa",
+    "nascita": "2002-08-24",
+    "club": "Stanford",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Vlad-Luca Georgescu",
+    "numero": 10,
+    "ruolo": "esterno",
+    "nascita": "1999-03-31",
+    "club": "Steaua București",
+    "fonte": "Europei 2026",
+    "riconoscimenti": [
+     "Mondiali 2025: 17 gol su 35 tiri (49%)",
+     "Europei 2026: 24 gol su 43 tiri (56%)"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Darian Luncan",
+    "numero": 11,
+    "ruolo": "difensore",
+    "nascita": "2002-09-20",
+    "club": "CSM Oradea",
+    "fonte": "Europei 2026",
+    "numeroDaVerificare": true,
+    "mano": null
+   },
+   {
+    "nome": "Levente Vancsik",
+    "numero": 12,
+    "ruolo": "centroboa",
+    "nascita": "1994-07-12",
+    "club": "CSM Oradea",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "Eduard-Mihai Drăgușin",
+    "numero": 13,
+    "ruolo": "portiere",
+    "nascita": "1984-01-05",
+    "club": "Steaua București",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "David Belenyesi",
+    "numero": 14,
+    "ruolo": "esterno",
+    "nascita": "2003-04-21",
+    "club": "CSM Oradea",
+    "fonte": "Europei 2026",
+    "mano": null
+   },
+   {
+    "nome": "David-Joan Bota",
+    "numero": 15,
+    "ruolo": "centroboa",
+    "nascita": "1999-06-02",
+    "club": "Steaua București",
+    "fonte": "Europei 2026",
+    "mano": null
+   }
+  ],
+  "CAN": [
+   {
+    "nome": "Milan Radenovic",
+    "numero": 1,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Ali Oussadou",
+    "numero": 2,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Bogdan Djerkovic",
+    "numero": 3,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Jérémie Côté",
+    "numero": 4,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Nikos Gerakoudis",
+    "numero": 5,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "David Lapins",
+    "numero": 6,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Roko Pozaric",
+    "numero": 7,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Bor Tanasijevic",
+    "numero": 8,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Aleksa Gardijan",
+    "numero": 9,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Aria Soleimanipak",
+    "numero": 10,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Jason O'Donnell",
+    "numero": 11,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Reuel D'Souza",
+    "numero": 12,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "riconoscimenti": [
+     "Capocannoniere Mondiali 2025: 26 gol su 45 tiri (58%)",
+     "All-star Mondiali 2025"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Brody McKnight",
+    "numero": 13,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Andrej Gavric",
+    "numero": 14,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Leo Hachem",
+    "numero": 15,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   }
+  ],
+  "BRA": [
+   {
+    "nome": "João Gabriel Silveira",
+    "numero": 1,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Logan Cabral",
+    "numero": 2,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Gabriel da Silva",
+    "numero": 3,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Gustavo Coutinho",
+    "numero": 4,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "André Luiz Freitas",
+    "numero": 5,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Marcos Paulo Pedroso",
+    "numero": 6,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Lucas Farias",
+    "numero": 7,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Pedro Real",
+    "numero": 8,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Paulo Ricardo Oliveira",
+    "numero": 9,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Lucas Andrade",
+    "numero": 10,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "riconoscimenti": [
+     "Mondiali 2025: 15 gol su 38 tiri (39%)"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Gustavo Guimarães",
+    "numero": 11,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Luis Ricardo Silva",
+    "numero": 12,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "João Pedro Fernandes",
+    "numero": 13,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "João Pedro Leme",
+    "numero": 14,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Lucas Wulfhorst",
+    "numero": 15,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   }
+  ],
+  "AUS": [
+   {
+    "nome": "Nick Porter",
+    "numero": 1,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Angus Lambie",
+    "numero": 2,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Miloš Maksimović",
+    "numero": 3,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Charlie Negus",
+    "numero": 4,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Nathan Power",
+    "numero": 5,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "riconoscimenti": [
+     "Mondiali 2025: tra i migliori marcatori (26 tiri, 58%)"
+    ],
+    "mano": null
+   },
+   {
+    "nome": "Timothy Putt",
+    "numero": 6,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Luka Krstic",
+    "numero": 7,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Jacob Mercep",
+    "numero": 8,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Matthew Byrnes",
+    "numero": 9,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Marcus Berehulak",
+    "numero": 10,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Sam Nangle",
+    "numero": 11,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Tristan Glanznig",
+    "numero": 12,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Laurence Barker",
+    "numero": 13,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Andrej Grgurevic",
+    "numero": 14,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Drew McJannett",
+    "numero": 15,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   }
+  ],
+  "CHN": [
+   {
+    "nome": "Wu Honghui",
+    "numero": 1,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Liu Yu",
+    "numero": 2,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Li Deming",
+    "numero": 3,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Peng Jiahao",
+    "numero": 4,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Cai Yuhao",
+    "numero": 5,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Xie Zekai",
+    "numero": 6,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Chen Zhongxian",
+    "numero": 7,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Chen Rui",
+    "numero": 8,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Chen Yimin",
+    "numero": 9,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Zhu Jiashao",
+    "numero": 10,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Wen Zijun",
+    "numero": 11,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Shen Dingsong",
+    "numero": 12,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Wu Yongxiang",
+    "numero": 13,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Wang Beiyi",
+    "numero": 14,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Liu Zhilong",
+    "numero": 15,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   }
+  ],
+  "SGP": [
+   {
+    "nome": "Chou Ken",
+    "numero": 1,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Loh Zhi Zhi",
+    "numero": 2,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Fong Wai Chun",
+    "numero": 3,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Goh Wen Zhe",
+    "numero": 4,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Loh de Jun Cayde",
+    "numero": 5,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Yap Dong Xuan Ryan",
+    "numero": 6,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Chan Dominic Bo Xun",
+    "numero": 7,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Lok Shaunn Blasius Jun Jie",
+    "numero": 8,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Sanjiv Rajandra",
+    "numero": 9,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Sajk Justin Kin Yan",
+    "numero": 10,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "See Tien Ee Jayden",
+    "numero": 11,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Koh Jian Ying",
+    "numero": 12,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Lee Lee Kai Yang",
+    "numero": 13,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Matthias Goh",
+    "numero": 14,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Lee Darren Jit An",
+    "numero": 15,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   }
+  ],
+  "RSA": [
+   {
+    "nome": "Luka Rajak",
+    "numero": 1,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Nathan Ward",
+    "numero": 2,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Manqoba Bungane",
+    "numero": 3,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Dean Sneddon",
+    "numero": 4,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Calvin Kuperus",
+    "numero": 5,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Carl Germishuys",
+    "numero": 6,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Dylan Watt",
+    "numero": 7,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Ryan Sneddon",
+    "numero": 8,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Matthew Bowers",
+    "numero": 9,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Kelly Geldenhuys",
+    "numero": 10,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Matthew Neser",
+    "numero": 11,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Tristan Grimmett",
+    "numero": 12,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Matthew Smith",
+    "numero": 13,
+    "ruolo": "portiere",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   },
+   {
+    "nome": "Brett Sneddon",
+    "numero": 14,
+    "ruolo": "giocatore di movimento",
+    "fonte": "Mondiali 2025",
+    "mano": null
+   }
+  ]
+ }
+}

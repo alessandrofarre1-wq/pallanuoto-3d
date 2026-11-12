@@ -277,3 +277,9 @@ Come è realizzato oggi: `pose.js` calcola una posa verticale (con tutti i gesti
 - Tutto in `docs/tecnica.md`: regole confermate (area di porta) e da correggere (posizioni al rigore), come si muove un pallanuotista (tempo in verticale/orizzontale, metri a partita, sprint ripetuti), varianti di tiro (polso, finte, torsione, elevazione), difensore e muro, portiere (posizione prima del tuffo, si muove con il passaggio, coppia con il difensore). Ogni sezione ha le "Proposte" per il gioco.
 - Da usare per animazioni (fase 3-4), statistiche (Resistenza, Posizionamento del portiere) e IA.
 
+## Rose reali e valutazioni (dati raccolti il 12 novembre 2026)
+- `src/dati/rose-reali.json`: 239 giocatori veri delle 16 nazionali. Europee: convocati agli Europei 2026 (ruolo, nascita, club); altre: convocati ai Mondiali 2025. Premi e numeri dei tornei dove disponibili. Mano sconosciuta per tutti; ruoli di Wikipedia da verificare con Ale.
+- `docs/valutazioni.md`: metodo per trasformare questi dati nelle statistiche 40-99 (forza della squadra, ruolo, premi, percentuale al tiro, età, correzioni di Ale in `src/dati/correzioni.json`).
+- Sostituisce i cognomi scritti a memoria di `src/dati/rose.js` (vedi "Passi 1-7").
+- Volti: niente foto dei giocatori reali e niente somiglianza; ogni giocatore ha un aspetto fisso scelto dal nome, uguale in grafica realistica e cartoon.
+
