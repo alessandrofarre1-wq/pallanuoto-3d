@@ -15,19 +15,50 @@ import { fileURLToPath } from 'node:url';
 import { MeshoptSimplifier } from 'meshoptimizer';
 
 const QUI = path.dirname(fileURLToPath(import.meta.url));
-const [DATI, RISORSE] = process.argv.slice(2);
+const [DATI, RISORSE] = process.argv.slice(2).filter(a => !a.startsWith('--'));
+const opz = k => { const a = process.argv.find(x => x.startsWith('--' + k + '=')); return a ? a.split('=')[1] : ''; };
+const SOLO = opz('solo').split(',').filter(Boolean);      // --solo=k costruisce solo quella corporatura (per le prove)
 if (!DATI || !RISORSE) { console.error('Uso: node strumenti/costruisci-atleta.mjs <dati MPFB> <risorse MakeHuman>'); process.exit(1); }
-const USCITA = path.join(QUI, '../src/grafica/modelli');
+const USCITA = opz('uscita') || path.join(QUI, '../src/grafica/modelli');
 // triangoli [testa, resto del corpo]: versione per la scena e versione per la vista sott'acqua.
 // La testa ha un suo conto a parte, altrimenti la riduzione le toglie quasi tutto e il viso diventa spigoloso.
 const TRI = [[2400, 3000], [450, 1250]];
+const TRI_CARTOON = [[3600, 3400], [600, 1300]];      // la testa cartoon è più grande e conta di più: più triangoli al viso
 
 // corporature (una per gruppo di pelli) e pelli: [cartella della pelle, colore degli occhi, barba corta?]
 const CORPORATURE = [
   { nome: 'a', etnia: 'caucasian', pelli: [['young_caucasian_male', 'brown', false], ['young_caucasian_male2', 'blue', true], ['middleage_caucasian_male', 'green', true]] },
   { nome: 'b', etnia: 'african', pelli: [['young_african_male', 'brown', false]] },
   { nome: 'c', etnia: 'asian', pelli: [['young_asian_male', 'brown', false]] },
+  // PERSONAGGIO CARTOON (stile "videogioco sportivo"): MakeHuman dà anatomia e scheletro, ma la GEOMETRIA è stilizzata:
+  // testa più grande, occhi grandi, mascella larga e morbida, naso e bocca semplificati, spalle larghe e vita stretta,
+  // mani e piedi più grandi, sopracciglia spesse in rilievo. Stesse ossa degli altri: i movimenti del gioco valgono uguali.
+  { nome: 'k', etnia: 'caucasian', cartoon: true, pelli: [['young_caucasian_male', 'brown', false], ['young_caucasian_male2', 'blue', false], ['middleage_caucasian_male', 'green', false], ['young_african_male', 'brown', false], ['young_asian_male', 'brown', false]] },
+].filter(c => !SOLO.length || SOLO.includes(c.nome));
+// ricetta del personaggio cartoon: [forma di MakeHuman, quanto]
+const DUE = (nome, peso) => [[nome.replace('#', 'l'), peso], [nome.replace('#', 'r'), peso]];
+const FORMA_CARTOON = [
+  ['macrodetails/universal-male-young-averagemuscle-averageweight', 0.25], ['macrodetails/universal-male-young-maxmuscle-averageweight', 0.75],
+  ['macrodetails/caucasian-male-young', 1],
+  ['macrodetails/proportions/male-young-maxmuscle-averageweight-idealproportions', 0.7],
+  // corpo: atletico ma semplificato, a "V"
+  ['torso/torso-vshape-incr', 1.3], ['torso/measure-shoulder-dist-incr', 1.5], ['torso/torso-muscle-pectoral-incr', 0.9], ['torso/measure-waist-circ-decr', 0.4],
+  ['torso/torso-scale-horiz-incr', 0.6], ['torso/torso-scale-depth-incr', 0.5], ['torso/torso-muscle-dorsi-incr', 0.8], ['torso/measure-bust-circ-incr', 0.5],
+  ...DUE('arms/#-upperarm-shoulder-muscle-incr', 1.2), ...DUE('arms/#-upperarm-muscle-incr', 0.9), ...DUE('arms/#-lowerarm-muscle-incr', 0.8),
+  ...DUE('hands/#-hand-scale-incr', 1.6), ...DUE('feet/#-foot-scale-incr', 1.1), ...DUE('legs/#-upperleg-muscle-incr', 0.3), ...DUE('legs/#-lowerleg-muscle-incr', 0.4),
+  ['neck/neck-scale-horiz-incr', 1.0], ['neck/neck-scale-depth-incr', 0.7],
+  // testa e viso
+  ['head/head-square', 0.75], ['head/head-round', 0.45], ['head/head-scale-horiz-incr', 0.7], ['head/head-scale-vert-decr', 0.6], ['forehead/forehead-scale-vert-decr', 0.3], ['chin/chin-height-decr', 0.5],
+  ...DUE('eyes/#-eye-scale-incr', 1.0), ...DUE('eyes/#-eye-height1-incr', 0.5), ...DUE('eyes/#-eye-height3-incr', 0.5), ...DUE('eyes/#-eye-bag-decr', 1.0), ...DUE('eyes/#-eye-trans-out', 0.25), ...DUE('eyes/#-eye-corner2-up', 0.5),
+  ['expression/units/caucasian/eye-left-opened-up', 0.9], ['expression/units/caucasian/eye-right-opened-up', 0.9],
+  ['eyebrows/eyebrows-trans-down', 0.3],
+  ['nose/nose-nostrils-width-decr', 0.6], ['nose/nose-hump-decr', 0.8], ['nose/nose-point-width-incr', 0.6], ['nose/nose-scale-vert-decr', 0.9], ['nose/nose-trans-up', 0.25], ['nose/nose-flaring-decr', 0.8], ['nose/nose-scale-depth-decr', 0.3],
+  ['mouth/mouth-scale-horiz-incr', 0.9], ['mouth/mouth-angles-up', 0.8], ['expression/units/caucasian/mouth-corner-puller', 0.55], ['mouth/mouth-lowerlip-volume-decr', 0.4], ['mouth/mouth-upperlip-volume-decr', 0.4],
+  ['chin/chin-width-incr', 1.1], ['chin/chin-bones-incr', 1.0], ['chin/chin-prominent-incr', 0.35], ['chin/chin-cleft-decr', 0.8],
+  ...DUE('cheek/#-cheek-volume-incr', 0.8), ...DUE('cheek/#-cheek-bones-decr', 0.5),
+  ...DUE('ears/#-ear-scale-decr', 0.8),
 ];
+const TESTA_CARTOON = 1.72;      // la testa intera viene ingrandita di questo fattore attorno alla base del collo
 const forma = etnia => [
   ['macrodetails/universal-male-young-averagemuscle-averageweight', 0.3], ['macrodetails/universal-male-young-maxmuscle-averageweight', 0.7],
   [`macrodetails/${etnia}-male-young`, 1],
@@ -96,7 +127,7 @@ cerca: for (let n = 8; n >= 3; n--) for (let y = 0; y + n <= G; y++) for (let x 
 if (!libero) throw new Error('nessuna zona libera nella pelle per gli occhi');
 
 const occhi = leggiMhclo(path.join(RISORSE, 'eyes/low-poly/low-poly.mhclo')), occhiObj = leggiObj(occhi.obj);
-const sopr = leggiMhclo(path.join(RISORSE, 'eyebrows/eyebrow001/eyebrow001.mhclo'));
+const sopr = leggiMhclo(path.join(RISORSE, 'eyebrows/eyebrow001/eyebrow001.mhclo')), soprObj = leggiObj(sopr.obj);
 // (solo i punti che cadono nella zona del viso dell'immagine della pelle)
 const nelViso = ([u, v]) => u > 0.62 && v > 0.15 && v < 0.83;
 const uvSopracciglia = sopr.punti.filter(p => p.length > 1).map(p => [0, 1].map(k => uvPunto.get(p[0])[k] * p[3] + uvPunto.get(p[1])[k] * p[4] + uvPunto.get(p[2])[k] * p[5])).filter(nelViso);
@@ -105,7 +136,34 @@ const uvSopracciglia = sopr.punti.filter(p => p.length > 1).map(p => [0, 1].map(
 const lavori = [], misure = {};
 for (const C of CORPORATURE) {
   const V = base.v.map(p => p.slice());
-  for (const [nome, peso] of forma(C.etnia)) for (const [i, dx, dy, dz] of leggiTarget(nome)) { V[i][0] += dx * peso; V[i][1] += dy * peso; V[i][2] += dz * peso; }
+  for (const [nome, peso] of (C.cartoon ? FORMA_CARTOON : forma(C.etnia))) for (const [i, dx, dy, dz] of leggiTarget(nome)) { V[i][0] += dx * peso; V[i][1] += dy * peso; V[i][2] += dz * peso; }
+  if (C.cartoon) {
+    // ARTI PIÙ PIENI: ogni punto si allontana dall'asse del suo osso (braccia, avambracci, cosce, polpacci), in proporzione a
+    // quanto dipende da quell'osso. Le giunture stanno sull'asse e non si spostano: lo scheletro resta identico.
+    const giu = n => media(V, [...cubi[rig[n].head.cube_name]]);
+    const GROSSO = { upperarm: 1.42, lowerarm: 1.4, thigh: 1.22, calf: 1.3 }, figlio = { upperarm: 'lowerarm', lowerarm: 'hand', thigh: 'calf', calf: 'foot' };
+    const spost = V.map(() => [0, 0, 0]);
+    for (const lato of ['l', 'r']) for (const [osso, k] of Object.entries(GROSSO)) {
+      const A = giu(`${osso}_${lato}`), B = giu(`${figlio[osso]}_${lato}`), ab = [B[0] - A[0], B[1] - A[1], B[2] - A[2]], l2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2, o = indiceOsso[`${osso}_${lato}`];
+      pesiPunto.forEach((m, vi) => { const w = m.get(o); if (!w) return; const tot = [...m.values()].reduce((a, b) => a + b, 0), p = V[vi];
+        const t = Math.min(1, Math.max(0, ((p[0] - A[0]) * ab[0] + (p[1] - A[1]) * ab[1] + (p[2] - A[2]) * ab[2]) / l2));
+        for (let j = 0; j < 3; j++) spost[vi][j] += (p[j] - (A[j] + ab[j] * t)) * (k - 1) * w / tot; });
+    }
+    V.forEach((p, i) => { p[0] += spost[i][0]; p[1] += spost[i][1]; p[2] += spost[i][2]; });
+    // OCCHI GRANDI: tutta la zona dell'occhio (palpebre, orbita e i punti a cui è agganciato il bulbo) si ingrandisce attorno al
+    // centro del bulbo, con un passaggio morbido verso il resto del viso
+    { const pO = adatta(occhi, V); for (const lato of [1, -1]) { const idx = pO.map((p, i) => i).filter(i => Math.sign(pO[i][0]) === lato), c = media(pO, idx);
+        const r = Math.max(...idx.map(i => Math.hypot(pO[i][0] - c[0], pO[i][1] - c[1], pO[i][2] - c[2]))), R = r * 2.5;
+        for (const p of V) { const d = Math.hypot(p[0] - c[0], p[1] - c[1], p[2] - c[2]); if (d >= R) continue; const t = d / R, k = 1 + 0.85 * (1 - t * t) ** 2;
+          p[0] = c[0] + (p[0] - c[0]) * k; p[1] = c[1] + (p[1] - c[1]) * k; p[2] = c[2] + (p[2] - c[2]) * (1 + (k - 1) * 0.5); } } }
+    // testa più grande: tutti i punti sopra la base del collo (anche quelli di servizio per occhi e giunture) si allontanano dal
+    // perno, con un passaggio morbido lungo il collo così non si vede lo stacco
+    const giunto = n => media(V, [...cubi[rig[n].head.cube_name]]);
+    const N = giunto('neck_01'), H = giunto('head'), dy = H[1] - N[1];
+    for (const p of V) { if (Math.abs(p[0]) > 2.2) continue;      // non le braccia
+      const t = Math.min(1, Math.max(0, (p[1] - (N[1] + 0.35 * dy)) / (0.9 * dy))), k = 1 + (TESTA_CARTOON - 1) * t * t * (3 - 2 * t);
+      p[0] = N[0] + (p[0] - N[0]) * k; p[1] = N[1] + (p[1] - N[1]) * k; p[2] = N[2] + (p[2] - N[2]) * k; }
+  }
   const ossa = ordine.map(n => { const cubo = rig[n].head.cube_name; return { nome: n, genitore: rig[n].parent ? indiceOsso[rig[n].parent] : -1, pos: media(V, [...cubi[cubo]]) }; });
   // triangoli del corpo: un punto per ogni coppia posizione/uv, normali lisce calcolate sulla posizione
   const normali = V.map(() => [0, 0, 0]);
@@ -115,12 +173,15 @@ for (const C of CORPORATURE) {
   const pos = [], nor = [], uv = [], si = [], sw = [], cost = [], ind = [], mappa = new Map();
   const bacino = indiceOsso.pelvis, cosce = [indiceOsso.thigh_l, indiceOsso.thigh_r];
   const yAnca = ossa[indiceOsso.thigh_l].pos[1], yGin = ossa[indiceOsso.calf_l].pos[1], yVita = ossa[indiceOsso.spine_01].pos[1];
-  const y0 = yAnca - 0.30 * (yAnca - yGin), y1 = yAnca + 0.55 * (yVita - yAnca) + 0.45;      // fascia del costume
+  const y0 = yAnca - (C.cartoon ? 0.6 : 0.30) * (yAnca - yGin), y1 = yAnca + 0.55 * (yVita - yAnca) + 0.45;      // fascia del costume
   const punto = (vi, ti) => { const k = vi + '/' + ti; let i = mappa.get(k); if (i !== undefined) return i; i = pos.length / 3; mappa.set(k, i);
     pos.push(...V[vi]); const n = normali[vi], l = Math.hypot(...n) || 1; nor.push(n[0] / l, n[1] / l, n[2] / l); uv.push(base.vt[ti][0], base.vt[ti][1]);
     const q = quattro(pesiPunto[vi]); si.push(...q.map(x => x[0])); sw.push(...q.map(x => x[1]));
     const wb = q.reduce((t, [o, w]) => t + (o === bacino || cosce.includes(o) || o === indiceOsso.spine_01 ? w : 0), 0);
-    cost.push(wb > 0.3 ? 1 : 0); return i; };      // zona larga (bacino e cosce, non le mani): il bordo netto lo dà la quota in posa di riposo
+    let slip = wb > 0.3 ? 1 : 0;
+    if (C.cartoon) { const p = V[vi], xA = Math.abs(ossa[indiceOsso.thigh_l].pos[0]) * 1.9, yCav = yAnca - 0.16 * (yAnca - yGin), yFia = yAnca + 0.42 * (yVita - yAnca);
+      slip = Math.min(1, Math.max(0, 0.5 + (p[1] - (yCav + Math.min(1, Math.abs(p[0]) / xA) ** 1.4 * (yFia - yCav))) * 1.2)) * (wb > 0 ? 1 : 0); }      // valore continuo: il bordo viene liscio      // slip: sgambato, dal cavallo sale verso i fianchi
+    cost.push(slip); return i; };      // zona larga (bacino e cosce, non le mani): il bordo netto lo dà la quota in posa di riposo
   for (const f of facceCorpo) for (let k = 1; k + 1 < f.vi.length; k++) ind.push(punto(f.vi[0], f.ti[0]), punto(f.vi[k], f.ti[k]), punto(f.vi[k + 1], f.ti[k + 1]));
   // occhi: seguono la testa; la loro immagine sta in un riquadro libero della pelle
   const pOcchi = adatta(occhi, V), testa = indiceOsso.head, baseO = pos.length / 3, mo = new Map();
@@ -128,6 +189,18 @@ for (const C of CORPORATURE) {
     pos.push(...pOcchi[vi]); nor.push(0, 0, 1); const t = occhiObj.vt[ti]; uv.push(libero.u + t[0] * libero.lato, libero.v + t[1] * libero.lato);
     si.push(testa, 0, 0, 0); sw.push(1, 0, 0, 0); cost.push(0); return i; };
   for (const f of occhiObj.facce) for (let k = 1; k + 1 < f.vi.length; k++) ind.push(puntoO(f.vi[0], f.ti[0]), puntoO(f.vi[k], f.ti[k]), puntoO(f.vi[k + 1], f.ti[k + 1]));
+  if (C.cartoon) {
+    // sopracciglia spesse in rilievo: la striscia delle sopracciglia di MakeHuman, ingrossata e staccata dalla fronte; nel gioco
+    // viene colorata a tinta scura (segnata con il valore 2 nel dato "_costume")
+    const pS = adatta(sopr, V), centro = lato => media(pS, pS.map((p, i) => i).filter(i => Math.sign(pS[i][0]) === lato));
+    const cS = { 1: centro(1), [-1]: centro(-1) }, ms = new Map();
+    const puntoS = vi => { let i = ms.get(vi); if (i !== undefined) return i; i = pos.length / 3; ms.set(vi, i);
+      const p = pS[vi], c = cS[Math.sign(p[0]) || 1];
+      const dentro = Math.max(0, 1 - Math.abs(p[0]) / Math.abs(c[0]));      // la punta verso il naso resta sottile e non scende
+      pos.push(c[0] + (p[0] - c[0]) * 1.05 + Math.sign(c[0]) * 0.03, c[1] + (p[1] - c[1]) * (2.4 - 1.2 * dentro) + 0.05 + 0.06 * dentro, p[2] + 0.06); nor.push(0, 0.2, 0.98); uv.push(0.5, 0.5);
+      si.push(testa, 0, 0, 0); sw.push(1, 0, 0, 0); cost.push(2); return i; };
+    for (const f of soprObj.facce) for (let k = 1; k + 1 < f.vi.length; k++) ind.push(puntoS(f.vi[0]), puntoS(f.vi[k]), puntoS(f.vi[k + 1]));
+  }
   // misure della testa (per la calottina), rispetto all'osso della testa
   const T = ossa[testa].pos, capo = []; pesiPunto.forEach((m, vi) => { if ((m.get(testa) || 0) > 0.85 && uvPunto.has(vi)) capo.push(V[vi]); });
   const estr = (f) => [Math.min(...capo.map(f)), Math.max(...capo.map(f))];
@@ -150,9 +223,9 @@ for (const C of CORPORATURE) {
   misure[C.nome] = { profilo: { NA, NP, fino: 125, r: [...profilo].map(x => +x.toFixed(3)) }, costume: [+y0.toFixed(3), +y1.toFixed(3)], centro: rel([0, cy, (zS[0] + zS[1]) / 2]), raggi: [+rx.toFixed(3), +(yMax - cy).toFixed(3), +((zS[1] - zS[0]) / 2).toFixed(3)], orecchio: rel(orecchio), mento: rel(mento), altezza: +(tutto[1] - tutto[0]).toFixed(2) };
   // barba corta: punti della pelle attorno a bocca e mascella
   const uvBarba = []; pesiPunto.forEach((m, vi) => { const p = V[vi]; if ((m.get(testa) || 0) > 0.6 && uvPunto.has(vi) && p[1] < denti[1] + 0.12 && p[1] > mento[1] - 0.25 && p[2] > orecchio[2] + 0.15 && Math.hypot(p[0], (p[1] - denti[1]) * 2.2, p[2] - denti[2] - 0.2) > 0.42 && nelViso(uvPunto.get(vi))) uvBarba.push(uvPunto.get(vi)); });
-  lavori.push({ nome: C.nome, pos, nor, uv, si, sw, cost, ind, ossa, testa, collo: indiceOsso.neck_01, pelli: C.pelli.map(([cartella, occhi, barba]) => {
+  lavori.push({ nome: C.nome, cartoon: !!C.cartoon, pos, nor, uv, si, sw, cost, ind, ossa, testa, collo: indiceOsso.neck_01, pelli: C.pelli.map(([cartella, occhi, barba]) => {
     const mhmat = fs.readFileSync(path.join(RISORSE, 'skins', cartella, cartella + '.mhmat'), 'utf8'), file = /diffuseTexture\s+(\S+)/.exec(mhmat)[1];
-    return { nome: cartella, pelle: fs.readFileSync(path.join(RISORSE, 'skins', cartella, file)).toString('base64'), occhi: fs.readFileSync(path.join(RISORSE, 'eyes/materials', occhi + '_eye.png')).toString('base64'), barba: barba ? uvBarba : [] }; }) });
+    return { nome: (C.cartoon ? 'k-' : '') + cartella, cartoon: !!C.cartoon, pelle: fs.readFileSync(path.join(RISORSE, 'skins', cartella, file)).toString('base64'), occhi: fs.readFileSync(path.join(RISORSE, 'eyes/materials', occhi + '_eye.png')).toString('base64'), coloreOcchi: occhi, barba: barba ? uvBarba : [] }; }) });
   console.log(`corporatura ${C.nome} (${C.etnia}): ${pos.length / 3} punti, ${ind.length / 3} triangoli, ${ossa.length} ossa, testa`, JSON.stringify(misure[C.nome]));
 }
 
@@ -180,7 +253,7 @@ function riduci(L, [triTesta, triCorpo]) {
 }
 const elenco = [];
 for (const L of lavori) {
-  for (const [k, tri] of TRI.entries()) {
+  for (const [k, tri] of (L.cartoon ? TRI_CARTOON : TRI).entries()) {
     const R = riduci(L, tri);
     const { glb } = await pg.evaluate(a => window.costruisci(a), { ...R, libero, uvSopracciglia, lato: 1024 });
     const f = path.join(USCITA, `atleta-${L.nome}${k ? '-lontano' : ''}.glb`); fs.writeFileSync(f, Buffer.from(glb, 'base64'));
