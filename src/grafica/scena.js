@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { BRV, GH, GW, HL, HW, rnd } from '../costanti.js';
 import { game } from '../stato.js';
+import { alCambioStile, cartoon } from './stile.js';
 import { Acqua, STRATO_CORPI, STRATO_SOLO_VISTA, STRATO_SOPRA, STRATO_SOTTO, STRATO_VASCA } from './acqua.js';
 // ================= SCENA =================
 export const renderer = new THREE.WebGLRenderer({antialias:true});
@@ -54,7 +55,9 @@ function conCaustiche(mat){
   };
   return mat;
 }
-box(PX*2,0.1,PZ*2,conCaustiche(new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#3aaee4','rgba(255,255,255,.45)'),PX,PZ)})),0,-DEPTH,0);
+const fondoVero=conCaustiche(new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#3aaee4','rgba(255,255,255,.45)'),PX,PZ)}));
+const fondoPiatto=new THREE.MeshBasicMaterial({color:0x2f9be6});      // cartoon: fondo a tinta unita, così le corsie scure risaltano
+const fondo=box(PX*2,0.1,PZ*2,fondoVero,0,-DEPTH,0);
 { const riga=conCaustiche(new THREE.MeshLambertMaterial({color:0x0d3566})); for(let i=-4;i<=4;i++) box(PX*2-4,0.02,0.28,riga,0,-DEPTH+0.06,i*2.5); }
 export const wallMat=new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#8fe0f7','rgba(255,255,255,.55)'),12,1)});
 box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,-PZ-0.15); box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,PZ+0.15);
@@ -94,14 +97,38 @@ scene.add(water);
 // acqua realistica (livelli alta e media); quella qui sopra resta come livello basso
 export const acqua=new Acqua(PX*2,PZ*2,{ colore:0xc4e8ff, cielo:0xa6d4f4, sole:sun.position, metriPerOnda:5.5 });
 scene.add(acqua);
+// acqua cartoon: tinta piatta con onde disegnate (tratti bianchi che scorrono), un po' trasparente per far vedere le corsie sul
+// fondo. Un solo passaggio di disegno: niente riflesso né vista sott'acqua, quindi costa meno di quella realistica.
+export const acquaFumetto=new THREE.Mesh(new THREE.PlaneGeometry(PX*2,PZ*2).rotateX(-Math.PI/2),new THREE.ShaderMaterial({ transparent:true, depthWrite:false,
+  uniforms:{ uTempo:{value:0} },
+  vertexShader:`varying vec2 vP; void main(){ vP=position.xz; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+  fragmentShader:`uniform float uTempo; varying vec2 vP;
+    float onde(vec2 p,float t){
+      p.y+=0.22*sin(p.x*0.8+t*0.9);
+      float riga=floor(p.y*0.7), r=fract(p.y*0.7);
+      float tratto=step(0.45,fract(p.x*0.16+riga*0.37+t*0.035*(mod(riga,2.0)*2.0-1.0)));
+      return (1.0-smoothstep(0.035,0.06,abs(r-0.5)))*tratto;
+    }
+    void main(){
+      float o=onde(vP,uTempo), o2=onde(vP*1.9+vec2(7.3,2.1),uTempo*1.3)*0.22;
+      float fascia=step(0.5,fract(vP.y*0.11+0.03*sin(vP.x*0.4+uTempo*0.5)));          // due tonalità piatte a grandi fasce
+      vec3 c=mix(vec3(0.05,0.47,0.86),vec3(0.09,0.54,0.92),fascia);
+      c=mix(c,vec3(1.0),clamp(o+o2,0.0,1.0)*0.9);
+      gl_FragColor=vec4(c,mix(0.56,0.95,clamp(o+o2,0.0,1.0)));
+      #include <colorspace_fragment>
+    }` }));
+acquaFumetto.position.y=0.0; acquaFumetto.visible=false; acquaFumetto.renderOrder=-1; scene.add(acquaFumetto);
 export let livelloAcqua=2;
 export function ridimensionaAcqua(){ const v=renderer.getDrawingBufferSize(new THREE.Vector2()); acqua.ridimensiona(v.x,v.y); }
 export function setLivelloAcqua(l){
-  livelloAcqua=l; acqua.visible=l>0; water.visible=l===0; acqua.setLivello(l); caustiche.forza.value=l>0?1:0; ridimensionaAcqua();
+  livelloAcqua=l;
+  if(cartoon()){ acqua.visible=false; water.visible=false; acquaFumetto.visible=true; caustiche.forza.value=0; return; }      // in cartoon l'acqua è sempre quella disegnata
+  acquaFumetto.visible=false; acqua.visible=l>0; water.visible=l===0; acqua.setLivello(l); caustiche.forza.value=l>0?1:0; ridimensionaAcqua();
 }
 export let waterN=0;
 export function animateWater(t){
   caustiche.tempo.value=t;
+  if(cartoon()){ acquaFumetto.material.uniforms.uTempo.value=t; return; }
   if(livelloAcqua>0){ acqua.setTempo(t); return; }
   const pos=waterGeo.attributes.position, n=pos.count;
   for(let i=0;i<n;i++){ const x=pos.getX(i), z=pos.getZ(i);
@@ -112,18 +139,20 @@ export function animateWater(t){
 // schiuma: macchie morbide disegnate tutte insieme (un solo oggetto per la scheda grafica)
 const N_SCHIUMA=160;
 export const foams=[]; let foamI=0;
+const schiumaNetta={value:0};
 const schiumaAlfa=new THREE.InstancedBufferAttribute(new Float32Array(N_SCHIUMA),1);
 export const schiuma=(()=>{
   const g=new THREE.PlaneGeometry(2,2); g.rotateX(-Math.PI/2); g.setAttribute('aAlfa',schiumaAlfa);
   const tex=canvasTex(64,64,(x,w,h)=>{ const gr=x.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);
     gr.addColorStop(0,'rgba(255,255,255,1)'); gr.addColorStop(0.55,'rgba(255,255,255,.75)'); gr.addColorStop(1,'rgba(255,255,255,0)'); x.fillStyle=gr; x.fillRect(0,0,w,h); });
-  const m=new THREE.ShaderMaterial({ transparent:true, depthWrite:false, uniforms:{map:{value:tex}},
+  const m=new THREE.ShaderMaterial({ transparent:true, depthWrite:false, uniforms:{map:{value:tex},uNetta:schiumaNetta},
     vertexShader:`attribute float aAlfa; varying float vA; varying vec2 vUv;
       void main(){ vA=aAlfa; vUv=uv; vec3 transformed=position;
         #include <project_vertex>
       }`,
-    fragmentShader:`uniform sampler2D map; varying float vA; varying vec2 vUv;
-      void main(){ gl_FragColor=vec4(1.0,1.0,1.0,texture2D(map,vUv).a*vA);
+    fragmentShader:`uniform sampler2D map; uniform float uNetta; varying float vA; varying vec2 vUv;
+      void main(){ float a=texture2D(map,vUv).a; a=mix(a*vA, step(0.5,a)*step(0.12,vA)*0.95, uNetta);      // cartoon: macchie bianche dal bordo netto
+        gl_FragColor=vec4(1.0,1.0,1.0,a);
         #include <colorspace_fragment>
       }` });
   const im=new THREE.InstancedMesh(g,m,N_SCHIUMA); im.frustumCulled=false; scene.add(im);
@@ -201,7 +230,14 @@ export const ball3d = (()=>{
   xc.putImageData(ic,0,0); xr.putImageData(ir,0,0);
   const tc=new THREE.CanvasTexture(colore); tc.colorSpace=THREE.SRGBColorSpace; tc.anisotropy=4;
   const tr=new THREE.CanvasTexture(rilievo);
-  return new THREE.Mesh(new THREE.SphereGeometry(BRV,32,24),new THREE.MeshPhongMaterial({map:tc,bumpMap:tr,bumpScale:1.4,shininess:48,specular:0x5a5648}));
+  const vera=new THREE.MeshPhongMaterial({map:tc,bumpMap:tr,bumpScale:1.4,shininess:48,specular:0x5a5648});
+  const m=new THREE.Mesh(new THREE.SphereGeometry(BRV,32,24),vera);
+  // cartoon: giallo pieno con gli spicchi, un po' più grande, con contorno scuro (una sfera nera appena più larga vista da dentro)
+  const piatta=new THREE.MeshBasicMaterial({map:tc,color:0xffffff});
+  const contorno=new THREE.Mesh(new THREE.SphereGeometry(BRV*1.13,16,12),new THREE.MeshBasicMaterial({color:0x10182a,side:THREE.BackSide}));
+  contorno.visible=false; m.add(contorno);
+  m.userData={ vera, piatta, contorno };
+  return m;
 })();
 scene.add(ball3d);
 export const shadow = new THREE.Mesh(new THREE.CircleGeometry(BRV*1.1,16),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.3}));
@@ -225,7 +261,7 @@ export const camMode = () => camera.aspect<1 ? 1 : game.camMode;   // in vertica
 export function setDpr(v){ dpr=v; }
 // strati di disegno (vedi acqua.js): cosa compare nel riflesso e cosa nella vista sott'acqua
 {
-  const bb=new THREE.Box3(), soloVista=new Set([schiuma,shadow,ring,passMark,freccia,mirino,water,acqua]);
+  const bb=new THREE.Box3(), soloVista=new Set([schiuma,shadow,ring,passMark,freccia,mirino,water,acqua,acquaFumetto]);
   for(const o of scene.children){
     if(o.isLight){ o.layers.enableAll(); continue; }
     let st;
@@ -236,3 +272,10 @@ export function setDpr(v){ dpr=v; }
   }
   setLivelloAcqua(2);
 }
+// cambio di stile: acqua disegnata, schiuma netta, palla piatta e più grande con contorno
+alCambioStile(c=>{
+  schiumaNetta.value=c?1:0;
+  const U=ball3d.userData; ball3d.material=c?U.piatta:U.vera; U.contorno.visible=c; ball3d.scale.setScalar(c?1.3:1);
+  if(fondo) fondo.material=c?fondoPiatto:fondoVero;
+  setLivelloAcqua(livelloAcqua);
+});

@@ -1,0 +1,272 @@
+{
+ "blender": "5.3.0",
+ "oggetti": [
+  {
+   "nome": "node_0",
+   "punti": 60754,
+   "triangoli": 100000,
+   "facce": 100000,
+   "spigoli": 160291,
+   "materiali": [
+    "Material.001"
+   ],
+   "uv": [
+    "UVMap"
+   ],
+   "colori_vertice": [],
+   "gruppi": 0,
+   "componenti": 772,
+   "componenti_grandi": [
+    {
+     "punti": 4128,
+     "min": [
+      -0.501,
+      0.6,
+      -0.112
+     ],
+     "max": [
+      0.173,
+      0.954,
+      0.009
+     ]
+    },
+    {
+     "punti": 2678,
+     "min": [
+      -0.232,
+      0.004,
+      -0.077
+     ],
+     "max": [
+      -0.073,
+      0.55,
+      0.082
+     ]
+    },
+    {
+     "punti": 1841,
+     "min": [
+      -0.261,
+      0.765,
+      -0.047
+     ],
+     "max": [
+      0.195,
+      0.916,
+      0.088
+     ]
+    },
+    {
+     "punti": 1760,
+     "min": [
+      -0.518,
+      0.805,
+      -0.069
+     ],
+     "max": [
+      -0.023,
+      0.909,
+      0.092
+     ]
+    },
+    {
+     "punti": 1710,
+     "min": [
+      -0.162,
+      0.579,
+      -0.091
+     ],
+     "max": [
+      -0.025,
+      0.835,
+      0.077
+     ]
+    },
+    {
+     "punti": 1556,
+     "min": [
+      -0.152,
+      0.005,
+      -0.057
+     ],
+     "max": [
+      -0.006,
+      0.507,
+      0.123
+     ]
+    },
+    {
+     "punti": 1332,
+     "min": [
+      -0.165,
+      0.006,
+      -0.081
+     ],
+     "max": [
+      -0.02,
+      0.505,
+      -0.044
+     ]
+    },
+    {
+     "punti": 1279,
+     "min": [
+      -0.515,
+      0.783,
+      -0.082
+     ],
+     "max": [
+      -0.148,
+      0.821,
+      0.093
+     ]
+    },
+    {
+     "punti": 1231,
+     "min": [
+      0.169,
+      0.783,
+      -0.077
+     ],
+     "max": [
+      0.514,
+      0.814,
+      0.092
+     ]
+    },
+    {
+     "punti": 1051,
+     "min": [
+      0.011,
+      0.205,
+      -0.081
+     ],
+     "max": [
+      0.14,
+      0.505,
+      -0.024
+     ]
+    },
+    {
+     "punti": 939,
+     "min": [
+      -0.001,
+      0.164,
+      -0.066
+     ],
+     "max": [
+      0.112,
+      0.504,
+      0.046
+     ]
+    },
+    {
+     "punti": 937,
+     "min": [
+      0.127,
+      0.004,
+      -0.076
+     ],
+     "max": [
+      0.229,
+      0.346,
+      0.08
+     ]
+    }
+   ],
+   "componenti_piccole_sotto_100_punti": 670,
+   "spigoli_di_bordo": 20582,
+   "spigoli_non_manifold": 0,
+   "spigoli_liberi": 0,
+   "facce_degeneri": 0,
+   "spigoli_verso_incoerente": 0,
+   "volume": 0.0265,
+   "punti_doppi": 10762,
+   "ingombro_min": [
+    -0.5185,
+    -0.1285,
+    -0.0
+   ],
+   "ingombro_max": [
+    0.5167,
+    0.1164,
+    1.1151
+   ],
+   "dimensioni": [
+    1.0353,
+    0.2449,
+    1.1151
+   ],
+   "lato_medio": 0.00564,
+   "lato_mediano": 0.00496,
+   "scala": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "rotazione": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  }
+ ],
+ "materiali": [
+  {
+   "nome": "Material.001",
+   "nodi": [
+    "BSDF_PRINCIPLED",
+    "OUTPUT_MATERIAL",
+    "TEX_IMAGE",
+    "SEPARATE_COLOR",
+    "TEX_IMAGE",
+    "NORMAL_MAP",
+    "TEX_IMAGE"
+   ],
+   "principled": {
+    "Base Color": "TEX_IMAGE:texture_pbr_20250901",
+    "Metallic": "SEPARATE_COLOR",
+    "Roughness": "SEPARATE_COLOR",
+    "Alpha": 1.0,
+    "Normal": "NORMAL_MAP",
+    "Emission Color": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ]
+   }
+  }
+ ],
+ "immagini": [
+  {
+   "nome": "texture_pbr_20250901",
+   "dim": [
+    4096,
+    4096
+   ],
+   "canali": 4,
+   "spazio": "sRGB"
+  },
+  {
+   "nome": "texture_pbr_20250901_metallic-texture_pbr_20250901_roughness",
+   "dim": [
+    4096,
+    4096
+   ],
+   "canali": 4,
+   "spazio": "Non-Color"
+  },
+  {
+   "nome": "texture_pbr_20250901_normal",
+   "dim": [
+    4096,
+    4096
+   ],
+   "canali": 4,
+   "spazio": "Non-Color"
+  }
+ ],
+ "armature": [],
+ "animazioni": 0
+}
