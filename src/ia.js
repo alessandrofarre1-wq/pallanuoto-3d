@@ -3,7 +3,7 @@ import { difensoriDavanti } from './statistiche.js';
 import { DEF_DOWN, FORM, FORM_UP, GW, HW, KICK_Z, MARK, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
 import { doFake, timeout } from './regole.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
-import { bestPassTarget, doPass, doShoot, laneClear, shotKind, startAct } from './tiri.js';
+import { bestPassTarget, doPass, doShoot, laneClear, shotKind, situazioneTiro, startAct } from './tiri.js';
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 export function startCut(p){
   if(p.isGK||p.excluded||ball.holder===p) return;
@@ -214,7 +214,7 @@ export function aiTarget(p){
   return {x:-t.dir*FORM[p.i][0]*0.8, z:KICK_Z[p.i]*t.dir, sprint:true};   // palla contesa: ci si ferma a metà campo
 }
 // ultimo minuto dell'ultimo tempo, sotto di un gol: la squadra del computer attacca in 7 contro 6 con il portiere avanzato
-const PAZIENZA=[16,8];      // secondi di possesso prima di cominciare a cercare il tiro, e secondi per arrivare alla piena voglia di tirare
+const PAZIENZA=[22,5];      // secondi di possesso prima di cominciare a cercare il tiro, e secondi per arrivare alla piena voglia di tirare
 export function setteControSei(t){
   return !t.human && game.period===4 && game.clock<60 && other(t).score-t.score===1;
 }
@@ -268,7 +268,10 @@ export function aiCarrier(p,dt){
     const pazienza = davanti===0 ? 1 : manUp(t) ? clamp((15.5-game.shot)/4,0,1) : clamp((SHOT_CLOCK-game.shot-PAZIENZA[0])/PAZIENZA[1],0,1);
     // con l'uomo in più l'esterno, che ha poco angolo, tira di rado: cerca l'uomo al palo o chi sta ai 5 metri
     const angolo = manUp(t) ? clamp(Math.abs(gx-p.x)/Math.max(0.1,dGoal)*2,0.15,1) : 1;
-    const want = game.shot<4 ? 0.9 : (game.shot<8 ? 0.45 : (lane?0.25+0.45*(1-dGoal/8.5):0.12)*(press>1.5?1.35:press<0.9?0.6:1)*pazienza)*angolo;
+    // si tira quando si è liberi: subito dopo un passaggio che ha liberato il tiratore o cambiato lato; con il difensore davanti
+    // a braccio alto e tutti piazzati si aspetta, si finta o si fa girare palla (il tiro arriva comunque a fine azione)
+    const sit=situazioneTiro(p), occasione=(sit.liberato?1.7:1)*(sit.dopoCambio?1.6:1)*(1-0.75*sit.marcato)*(sit.daFermo?0.6:1);
+    const want = game.shot<2.5 ? 0.9 : (game.shot<6 ? 0.35 : (lane?0.25+0.45*(1-dGoal/8.5):0.12)*(press>1.5?1.35:press<0.9?0.6:1)*pazienza)*angolo*clamp(occasione,0.12,2.2);
     if(rnd()<want){
       if(!p.fakeUsed && game.shot>5 && rnd()<0.18){ p.fakeUsed=true; p.shootNext=true; p.decideT=0.5; startAct(p,'fake',0.12,()=>doFake(p)); return; }
       const lob = dGoal>5 && rnd()<0.12; aiShoot(p,0.55+rnd()*0.45,lob); return;

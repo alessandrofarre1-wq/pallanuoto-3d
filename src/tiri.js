@@ -112,6 +112,21 @@ export function doPass(p,m){
   // dai e vai: chi passa dal perimetro può tagliare verso la porta
   if(!p.isGK && p.i>=4 && !manUp(p.team) && (p.team.atkPlay===1||rnd()<0.35)) startCut(p);
 }
+// Situazione di chi sta per tirare (usata dal tiro e dalle scelte del computer):
+// marcato 0-1 = difensore vicino, tra lui e la porta, con il braccio alto; liberato = palla appena ricevuta su passaggio e
+// nessuno entro 1,8 m; dopoCambio = palla arrivata da un passaggio che ha cambiato lato, meno di un secondo e mezzo fa;
+// daFermo = palla tenuta a lungo (difesa e portiere hanno avuto il tempo di piazzarsi)
+export function situazioneTiro(p){
+  const t=p.team, gx=goalX(t), dP=Math.hypot(gx-p.x,p.z)||1; let marcato=0, vicino=99;
+  for(const o of other(t).players){
+    if(o.excluded||o.isGK||game.time<o.stunUntil||(p.turnedUntil>game.time&&o===fight.def)) continue;
+    const dd=dist(o,p); vicino=Math.min(vicino,dd); if(dd>2) continue;
+    const cs=((o.x-p.x)*(gx-p.x)+(o.z-p.z)*(-p.z))/((dd||1)*dP);
+    if(cs>0.4) marcato=Math.max(marcato,clamp((2-dd)/1.1,0,1)*clamp((cs-0.4)/0.4,0,1));
+  }
+  const da=game.time-(p.ricevutoT||0)-(p.act?p.act.t:0);      // tempo tra la ricezione e l'inizio del gesto
+  return { marcato, vicino, liberato:!!p.ricevutoPassaggio&&da<1.5&&vicino>1.8, dopoCambio:!!p.ricevutoCambio&&da<1.5, daFermo:da>2.5 };
+}
 // errore di mira secondo la Precisione: piccolo a 90, circa 3 volte a 75, 7 volte a 60 (misurato su 1500 tiri: vedi npm run statistiche)
 const mira = pre => pre>=90 ? 0.18-(pre-90)/9*0.1 : 0.18+Math.pow((90-pre)/30,1.6)*1.55;
 // o = variante: polso (tiro di solo polso, poco caricato), dopoFinta, torsione (finta di busto sul primo palo e chiusura in diagonale), volo
@@ -132,7 +147,10 @@ export function doShoot(p,power,lob,aimZ,o){
   // elevazione: quanto il tiratore esce dall'acqua dipende da gambe (Forza), fiato (Resistenza) e stanchezza;
   // più è alto, meno il difensore vicino gli sporca il tiro
   const elev=elevazione(p);
-  const errBase=1.08*0.27*(1+(1-p.stamina)*1.3)*(classico?1:1.3)*mira(p.s.pre)*(1+clamp(1.4-press,0,1)*0.9*(1.45-0.9*elev))*(o.volo?1.15:1)*(p.fakeUntil>game.time?0.65:1)*(p.turnedUntil>game.time?0.6:1);
+  // QUANTO È LIBERO CHI TIRA. Un difensore davanti con il braccio alto (tra il tiratore e la porta) rende il tiro molto più
+  // difficile; chi tira subito dopo aver ricevuto, senza nessuno addosso, è stato "liberato" dal passaggio e tira meglio.
+  const dPorta=Math.hypot(gx-p.x,p.z), q=situazioneTiro(p);
+  const errBase=(1+0.75*q.marcato)*(q.liberato?0.8:1)*(1+Math.max(0,dPorta-7)*0.3)*1.08*0.27*(1+(1-p.stamina)*1.3)*(classico?1:1.3)*mira(p.s.pre)*(1+clamp(1.4-press,0,1)*0.9*(1.45-0.9*elev))*(o.volo?1.15:1)*(p.fakeUntil>game.time?0.65:1)*(p.turnedUntil>game.time?0.6:1);
   // Mano: dal lato destro della vasca tira meglio un mancino, dal sinistro un destro (angolo migliore sulla porta)
   const lato=Math.abs(p.z)>1.5?Math.sign(p.z*t.dir):0, mano=lato===0?1:((p.mano==='S')===(lato>0)?0.92:1.2);
   az+=gauss()*errBase*mano*(0.45+d*0.09); ay+=gauss()*errBase*mano*0.35;
@@ -154,6 +172,10 @@ export function doShoot(p,power,lob,aimZ,o){
   // si sposta verso il primo palo e la palla va sull'altro
   ball.sorpresa = o.polso ? (o.dopoFinta?0.26:0.15) : o.torsione ? 0.08 : o.volo ? 0.06 : 0;
   ball.elevazione=elev;
+  // per il portiere: tiro da lontano o da poco angolo = più tempo e meno porta; tiro "da fermo" con tutti piazzati = facile da
+  // leggere; tiro subito dopo un cambio di lato della palla = portiere ancora in viaggio
+  ball.distTiro=dPorta; ball.angoloTiro=Math.abs(gx-p.x)/Math.max(0.5,dPorta); ball.marcato=q.marcato; ball.liberato=q.liberato;
+  ball.dopoCambio=q.dopoCambio; ball.daFermo=q.daFermo&&!o.polso&&!o.torsione;
   if(o.torsione) ball.gkZ0-=Math.sign(az||1)*0.4;
   p.stamina=Math.max(0,p.stamina-0.04);
 }
