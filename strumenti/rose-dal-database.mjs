@@ -54,6 +54,11 @@ function cognome(nome) {
   for (const w of t) { if (w === w.toUpperCase() && /[A-ZÀ-Ý]/.test(w)) c.push(w); else if (!c.length && /^[a-z]/.test(w)) c.push(w); else if (c.length) break; }
   return (c.length ? c : [t[0]]).map(w => w.toLowerCase().replace(/(^|[-' ])(\p{L})/gu, (m, a, b) => a + b.toUpperCase())).join(' ');
 }
+// «DEL LUNGO Marco» → «Marco Del Lungo» (nome e cognome, come lo vuole vedere Ale nei cambi)
+function nomeIntero(nome) {
+  const c = cognome(nome), propri = nome.split(/\s+/).filter(w => !(w === w.toUpperCase() && /[A-ZÀ-Ý]/.test(w)) && !/^[a-z]/.test(w));
+  return (propri.length ? propri.join(' ') + ' ' : '') + c;
+}
 // ruoli del gioco: 0 portiere, 1 centroboa, 2 ala destra, 3 ala sinistra, 4 mezzo destro, 5 mezzo sinistro, 6 punto
 function tipo(pos) {
   if (/Goalkeeper/i.test(pos)) return 'gk';
@@ -182,7 +187,7 @@ for (const sq of SQ) {
     for (const k in s) s[k] = lim(s[k]);
     const S = x.S, dati = S ? (x.t === 'gk' ? { tornei: new Set(S.eventi).size, partite: S.partite, parate: S.par, tiriSubiti: S.tir, minuti: Math.round(x.min) }
       : { tornei: new Set(S.eventi).size, partite: S.partite, minuti: Math.round(x.min), gol: S.G, tiri: S.T, assist: S.AS, rubate: S.ST, murati: S.BL, espulsioni: S.ESP }) : null;
-    return { num: x.r.cap_number, nome: cognome(x.r.name), nomeCompleto: x.r.name, ruolo, ruoloVero: x.r.position || x.pos || null,
+    return { num: x.r.cap_number, nome: cognome(x.r.name), nomeIntero: nomeIntero(x.r.name), nomeCompleto: x.r.name, ruolo, ruoloVero: x.r.position || x.pos || null,
       mano: x.mano === 'L' ? 'S' : 'D', manoNota: x.mano ? null : 'sconosciuta', altezza: x.r.height_cm || null, nascita: x.r.birth_date || null, capitano: !!x.r.captain,
       s, ovr: ovr(s, ruolo), dati, convocazione: x.ev };
   });

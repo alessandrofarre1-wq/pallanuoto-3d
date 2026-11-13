@@ -6,6 +6,7 @@
    {
     "num": 1,
     "nome": "Aguirre",
+    "nomeIntero": "Unai Aguirre",
     "nomeCompleto": "AGUIRRE Unai",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -45,6 +46,7 @@
    {
     "num": 9,
     "nome": "Tahull",
+    "nomeIntero": "Roger Tahull",
     "nomeCompleto": "TAHULL Roger",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -88,6 +90,7 @@
    {
     "num": 10,
     "nome": "Valera",
+    "nomeIntero": "Fran Valera",
     "nomeCompleto": "VALERA Fran",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -130,6 +133,7 @@
    {
     "num": 11,
     "nome": "Biel",
+    "nomeIntero": "Unai Biel",
     "nomeCompleto": "BIEL Unai",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -172,6 +176,7 @@
    {
     "num": 4,
     "nome": "Sanahuja",
+    "nomeIntero": "Bernat Sanahuja",
     "nomeCompleto": "SANAHUJA Bernat",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -214,6 +219,7 @@
    {
     "num": 8,
     "nome": "Cabanas",
+    "nomeIntero": "Sergi Cabanas",
     "nomeCompleto": "CABANAS Sergi",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -256,6 +262,7 @@
    {
     "num": 7,
     "nome": "Daura",
+    "nomeIntero": "Pol Daura",
     "nomeCompleto": "DAURA Pol",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -298,6 +305,7 @@
    {
     "num": 5,
     "nome": "De Toro",
+    "nomeIntero": "Miguel De Toro",
     "nomeCompleto": "DE TORO Miguel",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -340,6 +348,7 @@
    {
     "num": 6,
     "nome": "Bonet",
+    "nomeIntero": "Josep Bonet",
     "nomeCompleto": "BONET Josep",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -382,6 +391,7 @@
    {
     "num": 14,
     "nome": "Casabella",
+    "nomeIntero": "Max Casabella",
     "nomeCompleto": "CASABELLA Max",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -424,6 +434,7 @@
    {
     "num": 12,
     "nome": "Bustos",
+    "nomeIntero": "Alejandro Bustos",
     "nomeCompleto": "BUSTOS Alejandro",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -466,6 +477,7 @@
    {
     "num": 3,
     "nome": "Valls",
+    "nomeIntero": "Marc Valls",
     "nomeCompleto": "VALLS Marc",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -508,6 +520,7 @@
    {
     "num": 13,
     "nome": "Garcia",
+    "nomeIntero": "Didac Garcia",
     "nomeCompleto": "GARCIA Didac",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -548,6 +561,7 @@
    {
     "num": 1,
     "nome": "Csoma",
+    "nomeIntero": "Kristof Csoma",
     "nomeCompleto": "CSOMA Kristof",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -586,6 +600,7 @@
    {
     "num": 7,
     "nome": "Fekete",
+    "nomeIntero": "Gergo Janos Fekete",
     "nomeCompleto": "FEKETE Gergo Janos",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -628,6 +643,7 @@
    {
     "num": 2,
     "nome": "Burian",
+    "nomeIntero": "Gergely Zoltan Burian",
     "nomeCompleto": "BURIAN Gergely Zoltan",
     "ruolo": 2,
     "ruoloVero": "Wing",
@@ -670,6 +686,7 @@
    {
     "num": 3,
     "nome": "Manhercz",
+    "nomeIntero": "Krisztian Manhercz",
     "nomeCompleto": "MANHERCZ Krisztian",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -713,6 +730,7 @@
    {
     "num": 4,
     "nome": "Nagy Akos",
+    "nomeIntero": "Akos Nagy",
     "nomeCompleto": "NAGY Akos",
     "ruolo": 4,
     "ruoloVero": "Driver",
@@ -756,6 +774,7 @@
    {
     "num": 10,
     "nome": "Vigvari",
+    "nomeIntero": "Vendel Csaba Vigvari",
     "nomeCompleto": "VIGVARI Vendel Csaba",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -798,6 +817,7 @@
    {
     "num": 6,
     "nome": "Nagy Adam",
+    "nomeIntero": "Adam Nagy",
     "nomeCompleto": "NAGY Adam",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -840,6 +860,7 @@
    {
     "num": 11,
     "nome": "Jansik",
+    "nomeIntero": "Szilard Jansik",
     "nomeCompleto": "JANSIK Szilard",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -882,6 +903,7 @@
    {
     "num": 9,
     "nome": "Kovacs",
+    "nomeIntero": "Peter Kovacs",
     "nomeCompleto": "KOVACS Peter",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -924,6 +946,7 @@
    {
     "num": 14,
     "nome": "Vismeg",
+    "nomeIntero": "Zsombor Vismeg",
     "nomeCompleto": "VISMEG Zsombor",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -966,6 +989,7 @@
    {
     "num": 5,
     "nome": "Varga",
+    "nomeIntero": "Vince Varga",
     "nomeCompleto": "VARGA Vince",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -1008,6 +1032,7 @@
    {
     "num": 15,
     "nome": "Szalai",
+    "nomeIntero": "Peter Szalai",
     "nomeCompleto": "SZALAI Peter",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -1050,6 +1075,7 @@
    {
     "num": 13,
     "nome": "Gyapjas",
+    "nomeIntero": "Viktor Gyapjas",
     "nomeCompleto": "GYAPJAS Viktor",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -1090,6 +1116,7 @@
    {
     "num": 13,
     "nome": "Andreadis",
+    "nomeIntero": "Emmanouil Andreadis",
     "nomeCompleto": "ANDREADIS Emmanouil",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -1128,6 +1155,7 @@
    {
     "num": 10,
     "nome": "Kakaris",
+    "nomeIntero": "Konstantinos Kakaris",
     "nomeCompleto": "KAKARIS Konstantinos",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -1171,6 +1199,7 @@
    {
     "num": 8,
     "nome": "Kalogeropoulos",
+    "nomeIntero": "Efstathios Kalogeropoulos",
     "nomeCompleto": "KALOGEROPOULOS Efstathios",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -1213,6 +1242,7 @@
    {
     "num": 4,
     "nome": "Gkiouvetsis",
+    "nomeIntero": "Konstantinos Gkiouvetsis",
     "nomeCompleto": "GKIOUVETSIS Konstantinos",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -1255,6 +1285,7 @@
    {
     "num": 6,
     "nome": "Papanastasiou",
+    "nomeIntero": "Alexandros Papanastasiou",
     "nomeCompleto": "PAPANASTASIOU Alexandros",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -1297,6 +1328,7 @@
    {
     "num": 7,
     "nome": "Pouros",
+    "nomeIntero": "Evangelos Pouros",
     "nomeCompleto": "POUROS Evangelos",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -1339,6 +1371,7 @@
    {
     "num": 3,
     "nome": "Skoumpakis",
+    "nomeIntero": "Dimitrios Skoumpakis",
     "nomeCompleto": "SKOUMPAKIS Dimitrios",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -1382,6 +1415,7 @@
    {
     "num": 5,
     "nome": "Argyropoulos",
+    "nomeIntero": "Stylianos Argyropoulos",
     "nomeCompleto": "ARGYROPOULOS Stylianos",
     "ruolo": 6,
     "ruoloVero": "Point",
@@ -1424,6 +1458,7 @@
    {
     "num": 11,
     "nome": "Nikolaidis",
+    "nomeIntero": "Dimitrios Nikolaidis",
     "nomeCompleto": "NIKOLAIDIS Dimitrios",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -1466,6 +1501,7 @@
    {
     "num": 9,
     "nome": "Alafragkis",
+    "nomeIntero": "Ioannis Alafragkis",
     "nomeCompleto": "ALAFRAGKIS Ioannis",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -1508,6 +1544,7 @@
    {
     "num": 14,
     "nome": "Spachits",
+    "nomeIntero": "Semir Spachits",
     "nomeCompleto": "SPACHITS Semir",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -1550,6 +1587,7 @@
    {
     "num": 2,
     "nome": "Chalyvopoulos",
+    "nomeIntero": "Aristeidis Chalyvopoulos",
     "nomeCompleto": "CHALYVOPOULOS Aristeidis",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -1592,6 +1630,7 @@
    {
     "num": 1,
     "nome": "Tzortzatos",
+    "nomeIntero": "Panagiotis Tzortzatos",
     "nomeCompleto": "TZORTZATOS Panagiotis",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -1632,6 +1671,7 @@
    {
     "num": 1,
     "nome": "Misovic",
+    "nomeIntero": "Vladimir Misovic",
     "nomeCompleto": "MISOVIC Vladimir",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -1670,6 +1710,7 @@
    {
     "num": 5,
     "nome": "Lazic",
+    "nomeIntero": "Dorde Lazic",
     "nomeCompleto": "LAZIC Dorde",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -1713,6 +1754,7 @@
    {
     "num": 14,
     "nome": "Martinovic",
+    "nomeIntero": "Vasilije Martinovic",
     "nomeCompleto": "MARTINOVIC Vasilije",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -1755,6 +1797,7 @@
    {
     "num": 8,
     "nome": "Jaksic N.",
+    "nomeIntero": "Nikola Jaksic",
     "nomeCompleto": "JAKSIC Nikola",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -1797,6 +1840,7 @@
    {
     "num": 4,
     "nome": "Lukic",
+    "nomeIntero": "Nikola Lukic",
     "nomeCompleto": "LUKIC Nikola",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -1839,6 +1883,7 @@
    {
     "num": 10,
     "nome": "Gladovic",
+    "nomeIntero": "Luka Gladovic",
     "nomeCompleto": "GLADOVIC Luka",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -1881,6 +1926,7 @@
    {
     "num": 11,
     "nome": "Jaksic P.",
+    "nomeIntero": "Petar Jaksic",
     "nomeCompleto": "JAKSIC Petar",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -1924,6 +1970,7 @@
    {
     "num": 7,
     "nome": "Trtovic",
+    "nomeIntero": "Dusan Trtovic",
     "nomeCompleto": "TRTOVIC Dusan",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -1966,6 +2013,7 @@
    {
     "num": 9,
     "nome": "Murisic",
+    "nomeIntero": "Nikola Murisic",
     "nomeCompleto": "MURISIC Nikola",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -2008,6 +2056,7 @@
    {
     "num": 12,
     "nome": "Dimitrijevic",
+    "nomeIntero": "Marko Dimitrijevic",
     "nomeCompleto": "DIMITRIJEVIC Marko",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -2050,6 +2099,7 @@
    {
     "num": 6,
     "nome": "Milojevic",
+    "nomeIntero": "Vuk Milojevic",
     "nomeCompleto": "MILOJEVIC Vuk",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -2092,6 +2142,7 @@
    {
     "num": 3,
     "nome": "Stanojevic",
+    "nomeIntero": "Nemanja Stanojevic",
     "nomeCompleto": "STANOJEVIC Nemanja",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -2134,6 +2185,7 @@
    {
     "num": 13,
     "nome": "Glusac",
+    "nomeIntero": "Milan Glusac",
     "nomeCompleto": "GLUSAC Milan",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -2174,6 +2226,7 @@
    {
     "num": 1,
     "nome": "Cubranic",
+    "nomeIntero": "Mauro Ivan Cubranic",
     "nomeCompleto": "CUBRANIC Mauro Ivan",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -2212,6 +2265,7 @@
    {
     "num": 2,
     "nome": "Dragosevic",
+    "nomeIntero": "Karlo Dragosevic",
     "nomeCompleto": "DRAGOSEVIC Karlo",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -2254,6 +2308,7 @@
    {
     "num": 4,
     "nome": "Susic",
+    "nomeIntero": "Maro Susic",
     "nomeCompleto": "SUSIC Maro",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -2297,6 +2352,7 @@
    {
     "num": 12,
     "nome": "Pavlic",
+    "nomeIntero": "Vlaho Pavlic",
     "nomeCompleto": "PAVLIC Vlaho",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -2340,6 +2396,7 @@
    {
     "num": 10,
     "nome": "Brubnjak",
+    "nomeIntero": "Tin Brubnjak",
     "nomeCompleto": "BRUBNJAK Tin",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -2382,6 +2439,7 @@
    {
     "num": 15,
     "nome": "Dragas",
+    "nomeIntero": "Nardo Dragas",
     "nomeCompleto": "DRAGAS Nardo",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -2424,6 +2482,7 @@
    {
     "num": 8,
     "nome": "Babic",
+    "nomeIntero": "Karlo Babic",
     "nomeCompleto": "BABIC Karlo",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -2466,6 +2525,7 @@
    {
     "num": 14,
     "nome": "Dobric",
+    "nomeIntero": "Fran Dobric",
     "nomeCompleto": "DOBRIC Fran",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -2508,6 +2568,7 @@
    {
     "num": 5,
     "nome": "Burburan",
+    "nomeIntero": "Gabrijel Burburan",
     "nomeCompleto": "BURBURAN Gabrijel",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -2550,6 +2611,7 @@
    {
     "num": 9,
     "nome": "Zilic",
+    "nomeIntero": "Sime Zilic",
     "nomeCompleto": "ZILIC Sime",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -2592,6 +2654,7 @@
    {
     "num": 11,
     "nome": "Toncinic",
+    "nomeIntero": "Viktor Toncinic",
     "nomeCompleto": "TONCINIC Viktor",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -2634,6 +2697,7 @@
    {
     "num": 6,
     "nome": "Curkovic",
+    "nomeIntero": "Mislav Curkovic",
     "nomeCompleto": "CURKOVIC Mislav",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -2676,6 +2740,7 @@
    {
     "num": 13,
     "nome": "Batos",
+    "nomeIntero": "Nikola Batos",
     "nomeCompleto": "BATOS Nikola",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -2716,6 +2781,7 @@
    {
     "num": 1,
     "nome": "Durovic",
+    "nomeIntero": "Darko Durovic",
     "nomeCompleto": "DUROVIC Darko",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -2754,6 +2820,7 @@
    {
     "num": 9,
     "nome": "Perkovic",
+    "nomeIntero": "Miroslav Perkovic",
     "nomeCompleto": "PERKOVIC Miroslav",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -2797,6 +2864,7 @@
    {
     "num": 14,
     "nome": "Stupar",
+    "nomeIntero": "Danilo Stupar",
     "nomeCompleto": "STUPAR Danilo",
     "ruolo": 2,
     "ruoloVero": "Wing",
@@ -2839,6 +2907,7 @@
    {
     "num": 15,
     "nome": "Gojkovic",
+    "nomeIntero": "Strahinja Gojkovic",
     "nomeCompleto": "GOJKOVIC Strahinja",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -2881,6 +2950,7 @@
    {
     "num": 7,
     "nome": "Ukropina",
+    "nomeIntero": "Aleksa Ukropina",
     "nomeCompleto": "UKROPINA Aleksa",
     "ruolo": 4,
     "ruoloVero": "Driver",
@@ -2923,6 +2993,7 @@
    {
     "num": 8,
     "nome": "Vuckovic",
+    "nomeIntero": "Balsa Vuckovic",
     "nomeCompleto": "VUCKOVIC Balsa",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -2965,6 +3036,7 @@
    {
     "num": 2,
     "nome": "Vujovic",
+    "nomeIntero": "Jovan Vujovic",
     "nomeCompleto": "VUJOVIC Jovan",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -3008,6 +3080,7 @@
    {
     "num": 3,
     "nome": "Radovic D.",
+    "nomeIntero": "Duro Radovic",
     "nomeCompleto": "RADOVIC Duro",
     "ruolo": 2,
     "ruoloVero": "Wing",
@@ -3050,6 +3123,7 @@
    {
     "num": 5,
     "nome": "Macic",
+    "nomeIntero": "Aljosa Macic",
     "nomeCompleto": "MACIC Aljosa",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -3092,6 +3166,7 @@
    {
     "num": 10,
     "nome": "Spaic",
+    "nomeIntero": "Vladan Spaic",
     "nomeCompleto": "SPAIC Vladan",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -3134,6 +3209,7 @@
    {
     "num": 11,
     "nome": "Matkovic",
+    "nomeIntero": "Dusan Matkovic",
     "nomeCompleto": "MATKOVIC Dusan",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -3176,6 +3252,7 @@
    {
     "num": 12,
     "nome": "Radovic V.",
+    "nomeIntero": "Vasilije Radovic",
     "nomeCompleto": "RADOVIC Vasilije",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -3218,6 +3295,7 @@
    {
     "num": 13,
     "nome": "Radovic I.",
+    "nomeIntero": "Ilija Radovic",
     "nomeCompleto": "RADOVIC Ilija",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -3258,6 +3336,7 @@
    {
     "num": 13,
     "nome": "Nicosia",
+    "nomeIntero": "Gianmarco Nicosia",
     "nomeCompleto": "NICOSIA Gianmarco",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -3296,6 +3375,7 @@
    {
     "num": 8,
     "nome": "Gianazza",
+    "nomeIntero": "Tommaso Gianazza",
     "nomeCompleto": "GIANAZZA Tommaso",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -3338,6 +3418,7 @@
    {
     "num": 12,
     "nome": "Carnesecchi",
+    "nomeIntero": "Alessandro Carnesecchi",
     "nomeCompleto": "CARNESECCHI Alessandro",
     "ruolo": 2,
     "ruoloVero": "Wing",
@@ -3380,6 +3461,7 @@
    {
     "num": 14,
     "nome": "Alesiani",
+    "nomeIntero": "Jacopo Alesiani",
     "nomeCompleto": "ALESIANI Jacopo",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -3422,6 +3504,7 @@
    {
     "num": 5,
     "nome": "Ferrero",
+    "nomeIntero": "Filippo Ferrero",
     "nomeCompleto": "FERRERO Filippo",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -3464,6 +3547,7 @@
    {
     "num": 4,
     "nome": "Cannella",
+    "nomeIntero": "Giacomo Cannella",
     "nomeCompleto": "CANNELLA Giacomo",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -3506,6 +3590,7 @@
    {
     "num": 9,
     "nome": "Iocchi Gratta",
+    "nomeIntero": "Matteo Iocchi Gratta",
     "nomeCompleto": "IOCCHI GRATTA Matteo",
     "ruolo": 6,
     "ruoloVero": "Point",
@@ -3549,6 +3634,7 @@
    {
     "num": 11,
     "nome": "Condemi",
+    "nomeIntero": "Francesco Condemi",
     "nomeCompleto": "CONDEMI Francesco",
     "ruolo": 6,
     "ruoloVero": "Point",
@@ -3592,6 +3678,7 @@
    {
     "num": 7,
     "nome": "Dolce",
+    "nomeIntero": "Vincenzo Dolce",
     "nomeCompleto": "DOLCE Vincenzo",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -3634,6 +3721,7 @@
    {
     "num": 3,
     "nome": "Guerrato",
+    "nomeIntero": "Stefano Guerrato",
     "nomeCompleto": "GUERRATO Stefano",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -3676,6 +3764,7 @@
    {
     "num": 10,
     "nome": "Del Basso",
+    "nomeIntero": "Mario Del Basso",
     "nomeCompleto": "DEL BASSO Mario",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -3718,6 +3807,7 @@
    {
     "num": 15,
     "nome": "Balzarini",
+    "nomeIntero": "Alessandro Balzarini",
     "nomeCompleto": "BALZARINI Alessandro",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -3760,6 +3850,7 @@
    {
     "num": 1,
     "nome": "Del Lungo",
+    "nomeIntero": "Marco Del Lungo",
     "nomeCompleto": "DEL LUNGO Marco",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -3800,6 +3891,7 @@
    {
     "num": 1,
     "nome": "Weinberg",
+    "nomeIntero": "Adrian Weinberg",
     "nomeCompleto": "WEINBERG Adrian",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -3838,6 +3930,7 @@
    {
     "num": 15,
     "nome": "Brown",
+    "nomeIntero": "Dom Brown",
     "nomeCompleto": "BROWN Dom",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -3881,6 +3974,7 @@
    {
     "num": 7,
     "nome": "Liechty",
+    "nomeIntero": "Ben Liechty",
     "nomeCompleto": "LIECHTY Ben",
     "ruolo": 2,
     "ruoloVero": "Wing",
@@ -3923,6 +4017,7 @@
    {
     "num": 10,
     "nome": "Dodd C.",
+    "nomeIntero": "Chase Dodd",
     "nomeCompleto": "DODD Chase",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -3965,6 +4060,7 @@
    {
     "num": 4,
     "nome": "Saveljic",
+    "nomeIntero": "Nicolas Saveljic",
     "nomeCompleto": "SAVELJIC Nicolas",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -4007,6 +4103,7 @@
    {
     "num": 11,
     "nome": "Dodd R.",
+    "nomeIntero": "Ryder Dodd",
     "nomeCompleto": "DODD Ryder",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -4049,6 +4146,7 @@
    {
     "num": 8,
     "nome": "Nelson",
+    "nomeIntero": "Luke James Nelson",
     "nomeCompleto": "NELSON Luke James",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -4092,6 +4190,7 @@
    {
     "num": 2,
     "nome": "Larsen",
+    "nomeIntero": "Jack Larsen",
     "nomeCompleto": "LARSEN Jack",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -4134,6 +4233,7 @@
    {
     "num": 12,
     "nome": "Irving",
+    "nomeIntero": "Max Irving",
     "nomeCompleto": "IRVING Max",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -4176,6 +4276,7 @@
    {
     "num": 3,
     "nome": "Vavic",
+    "nomeIntero": "Marko Vavic",
     "nomeCompleto": "VAVIC Marko",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -4218,6 +4319,7 @@
    {
     "num": 5,
     "nome": "Daube",
+    "nomeIntero": "Hannes Daube",
     "nomeCompleto": "DAUBE Hannes",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -4260,6 +4362,7 @@
    {
     "num": 14,
     "nome": "Ohl",
+    "nomeIntero": "Ryan Ohl",
     "nomeCompleto": "OHL Ryan",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -4302,6 +4405,7 @@
    {
     "num": 13,
     "nome": "Mills",
+    "nomeIntero": "Charlie Mills",
     "nomeCompleto": "MILLS Charlie",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -4342,6 +4446,7 @@
    {
     "num": 1,
     "nome": "Nishimura",
+    "nomeIntero": "Towa Nishimura",
     "nomeCompleto": "NISHIMURA Towa",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -4380,6 +4485,7 @@
    {
     "num": 12,
     "nome": "Araki",
+    "nomeIntero": "Kenta Araki",
     "nomeCompleto": "ARAKI Kenta",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -4422,6 +4528,7 @@
    {
     "num": 10,
     "nome": "Inaba",
+    "nomeIntero": "Yusuke Inaba",
     "nomeCompleto": "INABA Yusuke",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -4465,6 +4572,7 @@
    {
     "num": 7,
     "nome": "Date",
+    "nomeIntero": "Kiyomu Date",
     "nomeCompleto": "DATE Kiyomu",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -4507,6 +4615,7 @@
    {
     "num": 5,
     "nome": "Ura",
+    "nomeIntero": "Enishi Ura",
     "nomeCompleto": "URA Enishi",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -4549,6 +4658,7 @@
    {
     "num": 3,
     "nome": "Watanabe",
+    "nomeIntero": "Taiyo Watanabe",
     "nomeCompleto": "WATANABE Taiyo",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -4591,6 +4701,7 @@
    {
     "num": 9,
     "nome": "Nitta",
+    "nomeIntero": "Ikkei Nitta",
     "nomeCompleto": "NITTA Ikkei",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -4634,6 +4745,7 @@
    {
     "num": 8,
     "nome": "Takata",
+    "nomeIntero": "Mitsuru Takata",
     "nomeCompleto": "TAKATA Mitsuru",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -4676,6 +4788,7 @@
    {
     "num": 11,
     "nome": "Suzuki",
+    "nomeIntero": "Toi Suzuki",
     "nomeCompleto": "SUZUKI Toi",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -4718,6 +4831,7 @@
    {
     "num": 2,
     "nome": "Adachi",
+    "nomeIntero": "Seiya Adachi",
     "nomeCompleto": "ADACHI Seiya",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -4760,6 +4874,7 @@
    {
     "num": 4,
     "nome": "Ogihara",
+    "nomeIntero": "Daichi Ogihara",
     "nomeCompleto": "OGIHARA Daichi",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -4802,6 +4917,7 @@
    {
     "num": 14,
     "nome": "Lowrey",
+    "nomeIntero": "Jun Lowrey",
     "nomeCompleto": "LOWREY Jun",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -4844,6 +4960,7 @@
    {
     "num": 13,
     "nome": "Sasano",
+    "nomeIntero": "Ren Sasano",
     "nomeCompleto": "SASANO Ren",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -4884,6 +5001,7 @@
    {
     "num": 13,
     "nome": "Gavris",
+    "nomeIntero": "Raul-Ioan Gavris",
     "nomeCompleto": "GAVRIS Raul-Ioan",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -4922,6 +5040,7 @@
    {
     "num": 12,
     "nome": "Vancsik",
+    "nomeIntero": "Levente Vancsik",
     "nomeCompleto": "VANCSIK Levente",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -4965,6 +5084,7 @@
    {
     "num": 5,
     "nome": "Neamtu",
+    "nomeIntero": "Andrei Neamtu",
     "nomeCompleto": "NEAMTU Andrei",
     "ruolo": 2,
     "ruoloVero": "Wing",
@@ -5007,6 +5127,7 @@
    {
     "num": 6,
     "nome": "Prioteasa",
+    "nomeIntero": "Andrei Prioteasa",
     "nomeCompleto": "PRIOTEASA Andrei",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -5049,6 +5170,7 @@
    {
     "num": 10,
     "nome": "Georgescu",
+    "nomeIntero": "Vlad-Luca Georgescu",
     "nomeCompleto": "GEORGESCU Vlad-Luca",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -5091,6 +5213,7 @@
    {
     "num": 2,
     "nome": "Belenyesi",
+    "nomeIntero": "David Belenyesi",
     "nomeCompleto": "BELENYESI David",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -5133,6 +5256,7 @@
    {
     "num": 8,
     "nome": "Oanta",
+    "nomeIntero": "Nicolae Oanta",
     "nomeCompleto": "OANTA Nicolae",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -5176,6 +5300,7 @@
    {
     "num": 11,
     "nome": "Iudean",
+    "nomeIntero": "Francesco Iudean",
     "nomeCompleto": "IUDEAN Francesco",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -5218,6 +5343,7 @@
    {
     "num": 7,
     "nome": "Tepelus",
+    "nomeIntero": "Andrei Tepelus",
     "nomeCompleto": "TEPELUS Andrei",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -5260,6 +5386,7 @@
    {
     "num": 3,
     "nome": "Lutescu",
+    "nomeIntero": "Matei Lutescu",
     "nomeCompleto": "LUTESCU Matei",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -5302,6 +5429,7 @@
    {
     "num": 14,
     "nome": "Luncan",
+    "nomeIntero": "Iosif-Darian Luncan",
     "nomeCompleto": "LUNCAN Iosif-Darian",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -5344,6 +5472,7 @@
    {
     "num": 4,
     "nome": "Oltean",
+    "nomeIntero": "Sebastian Oltean",
     "nomeCompleto": "OLTEAN Sebastian",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -5386,6 +5515,7 @@
    {
     "num": 1,
     "nome": "Tic",
+    "nomeIntero": "Marius-Florin Tic",
     "nomeCompleto": "TIC Marius-Florin",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -5426,6 +5556,7 @@
    {
     "num": 13,
     "nome": "Radenovic",
+    "nomeIntero": "Milan Radenovic",
     "nomeCompleto": "RADENOVIC Milan",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -5464,6 +5595,7 @@
    {
     "num": 3,
     "nome": "Djerkovic",
+    "nomeIntero": "Bogdan Djerkovic",
     "nomeCompleto": "DJERKOVIC Bogdan",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -5507,6 +5639,7 @@
    {
     "num": 12,
     "nome": "D'Souza",
+    "nomeIntero": "Reuel D'Souza",
     "nomeCompleto": "D'SOUZA Reuel",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -5549,6 +5682,7 @@
    {
     "num": 7,
     "nome": "Pozaric",
+    "nomeIntero": "Roko Pozaric",
     "nomeCompleto": "POZARIC Roko",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -5591,6 +5725,7 @@
    {
     "num": 4,
     "nome": "Cote",
+    "nomeIntero": "Jeremie Cote",
     "nomeCompleto": "COTE Jeremie",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -5633,6 +5768,7 @@
    {
     "num": 5,
     "nome": "Gerakoudis",
+    "nomeIntero": "Nikos Gerakoudis",
     "nomeCompleto": "GERAKOUDIS Nikos",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -5675,6 +5811,7 @@
    {
     "num": 10,
     "nome": "Merrill",
+    "nomeIntero": "Jack Merrill",
     "nomeCompleto": "MERRILL Jack",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -5718,6 +5855,7 @@
    {
     "num": 11,
     "nome": "O'Donnell",
+    "nomeIntero": "Jason O'Donnell",
     "nomeCompleto": "O'DONNELL Jason",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -5760,6 +5898,7 @@
    {
     "num": 9,
     "nome": "Gardijan",
+    "nomeIntero": "Aleksa Gardijan",
     "nomeCompleto": "GARDIJAN Aleksa",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -5802,6 +5941,7 @@
    {
     "num": 2,
     "nome": "Radulovic",
+    "nomeIntero": "Nikola Vuk Radulovic",
     "nomeCompleto": "RADULOVIC Nikola Vuk",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -5844,6 +5984,7 @@
    {
     "num": 8,
     "nome": "Tanasijevic",
+    "nomeIntero": "Bor Tanasijevic",
     "nomeCompleto": "TANASIJEVIC Bor",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -5886,6 +6027,7 @@
    {
     "num": 15,
     "nome": "Hachem",
+    "nomeIntero": "Leo Hachem",
     "nomeCompleto": "HACHEM Leo",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -5928,6 +6070,7 @@
    {
     "num": 1,
     "nome": "Mcknight",
+    "nomeIntero": "Brody Mcknight",
     "nomeCompleto": "MCKNIGHT Brody",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -5968,6 +6111,7 @@
    {
     "num": 13,
     "nome": "Fernandes",
+    "nomeIntero": "Joao Pedro Fernandes",
     "nomeCompleto": "FERNANDES Joao Pedro",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -6007,6 +6151,7 @@
    {
     "num": 12,
     "nome": "Silva",
+    "nomeIntero": "Luis Ricardo Silva",
     "nomeCompleto": "SILVA Luis Ricardo",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -6049,6 +6194,7 @@
    {
     "num": 7,
     "nome": "Vergara R.",
+    "nomeIntero": "Rafael Vergara",
     "nomeCompleto": "VERGARA Rafael",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -6092,6 +6238,7 @@
    {
     "num": 6,
     "nome": "Oliveira",
+    "nomeIntero": "Paulo Ricardo Oliveira",
     "nomeCompleto": "OLIVEIRA Paulo Ricardo",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -6134,6 +6281,7 @@
    {
     "num": 10,
     "nome": "Andrade",
+    "nomeIntero": "Lucas Andrade",
     "nomeCompleto": "ANDRADE Lucas",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -6176,6 +6324,7 @@
    {
     "num": 8,
     "nome": "Vergara P.",
+    "nomeIntero": "Pedro Vergara",
     "nomeCompleto": "VERGARA Pedro",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -6218,6 +6367,7 @@
    {
     "num": 2,
     "nome": "Cabral",
+    "nomeIntero": "Logan Cabral",
     "nomeCompleto": "CABRAL Logan",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -6260,6 +6410,7 @@
    {
     "num": 3,
     "nome": "Da Silva",
+    "nomeIntero": "Gabriel Da Silva",
     "nomeCompleto": "DA SILVA Gabriel",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -6302,6 +6453,7 @@
    {
     "num": 9,
     "nome": "Nardaci Jr",
+    "nomeIntero": "Alipio Nardaci Jr",
     "nomeCompleto": "NARDACI JR Alipio",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -6344,6 +6496,7 @@
    {
     "num": 11,
     "nome": "Guimaraes",
+    "nomeIntero": "Gustavo Guimaraes",
     "nomeCompleto": "GUIMARAES Gustavo",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -6386,6 +6539,7 @@
    {
     "num": 5,
     "nome": "Wulfhorst",
+    "nomeIntero": "Lucas Wulfhorst",
     "nomeCompleto": "WULFHORST Lucas",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -6428,6 +6582,7 @@
    {
     "num": 4,
     "nome": "Coutinho",
+    "nomeIntero": "Gustavo Coutinho",
     "nomeCompleto": "COUTINHO Gustavo",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -6470,6 +6625,7 @@
    {
     "num": 1,
     "nome": "Silveira",
+    "nomeIntero": "Joao Gabriel Silveira",
     "nomeCompleto": "SILVEIRA Joao Gabriel",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -6510,6 +6666,7 @@
    {
     "num": 1,
     "nome": "Porter",
+    "nomeIntero": "Nic Porter",
     "nomeCompleto": "PORTER Nic",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -6548,6 +6705,7 @@
    {
     "num": 4,
     "nome": "Constantin-Bicari",
+    "nomeIntero": "Nicolas Constantin-Bicari",
     "nomeCompleto": "CONSTANTIN-BICARI Nicolas",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -6591,6 +6749,7 @@
    {
     "num": 8,
     "nome": "Mercep",
+    "nomeIntero": "Jacob Mercep",
     "nomeCompleto": "MERCEP Jacob",
     "ruolo": 2,
     "ruoloVero": "Wing",
@@ -6633,6 +6792,7 @@
    {
     "num": 9,
     "nome": "Byrnes",
+    "nomeIntero": "Matthew Byrnes",
     "nomeCompleto": "BYRNES Matthew",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -6675,6 +6835,7 @@
    {
     "num": 12,
     "nome": "Edwards",
+    "nomeIntero": "Blake Edwards",
     "nomeCompleto": "EDWARDS Blake",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -6717,6 +6878,7 @@
    {
     "num": 14,
     "nome": "Schuler",
+    "nomeIntero": "Loui Schuler",
     "nomeCompleto": "SCHULER Loui",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -6759,6 +6921,7 @@
    {
     "num": 10,
     "nome": "Berehulak",
+    "nomeIntero": "Marcus Berehulak",
     "nomeCompleto": "BEREHULAK Marcus",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -6802,6 +6965,7 @@
    {
     "num": 5,
     "nome": "Power",
+    "nomeIntero": "Nathan Power",
     "nomeCompleto": "POWER Nathan",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -6844,6 +7008,7 @@
    {
     "num": 7,
     "nome": "Negus",
+    "nomeIntero": "Charlie Negus",
     "nomeCompleto": "NEGUS Charlie",
     "ruolo": 6,
     "ruoloVero": "Point",
@@ -6886,6 +7051,7 @@
    {
     "num": 2,
     "nome": "Lambie",
+    "nomeIntero": "Angus Lambie",
     "nomeCompleto": "LAMBIE Angus",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -6928,6 +7094,7 @@
    {
     "num": 11,
     "nome": "Putt",
+    "nomeIntero": "Timothy Putt",
     "nomeCompleto": "PUTT Timothy",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -6970,6 +7137,7 @@
    {
     "num": 3,
     "nome": "Maksimovic",
+    "nomeIntero": "Milos Maksimovic",
     "nomeCompleto": "MAKSIMOVIC Milos",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -7012,6 +7180,7 @@
    {
     "num": 13,
     "nome": "Barker",
+    "nomeIntero": "Laurence Barker",
     "nomeCompleto": "BARKER Laurence",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -7052,6 +7221,7 @@
    {
     "num": 1,
     "nome": "Wu",
+    "nomeIntero": "Honghui Wu",
     "nomeCompleto": "WU Honghui",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -7091,6 +7261,7 @@
    {
     "num": 2,
     "nome": "Liu Z.",
+    "nomeIntero": "Zhilong Liu",
     "nomeCompleto": "LIU Zhilong",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -7135,6 +7306,7 @@
    {
     "num": 3,
     "nome": "Chen",
+    "nomeIntero": "Zhongxian Chen",
     "nomeCompleto": "CHEN Zhongxian",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -7179,6 +7351,7 @@
    {
     "num": 4,
     "nome": "Li",
+    "nomeIntero": "Diheng Li",
     "nomeCompleto": "LI Diheng",
     "ruolo": 5,
     "ruoloVero": null,
@@ -7222,6 +7395,7 @@
    {
     "num": 5,
     "nome": "Cai",
+    "nomeIntero": "Yuhao Cai",
     "nomeCompleto": "CAI Yuhao",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -7265,6 +7439,7 @@
    {
     "num": 6,
     "nome": "Ouyang",
+    "nomeIntero": "Haiyuan Ouyang",
     "nomeCompleto": "OUYANG Haiyuan",
     "ruolo": 5,
     "ruoloVero": null,
@@ -7308,6 +7483,7 @@
    {
     "num": 7,
     "nome": "Liu Y.",
+    "nomeIntero": "Yu Liu",
     "nomeCompleto": "LIU Yu",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -7351,6 +7527,7 @@
    {
     "num": 8,
     "nome": "Shen",
+    "nomeIntero": "Dingsong Shen",
     "nomeCompleto": "SHEN Dingsong",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -7394,6 +7571,7 @@
    {
     "num": 9,
     "nome": "Lyu",
+    "nomeIntero": "Zikang Lyu",
     "nomeCompleto": "LYU Zikang",
     "ruolo": 5,
     "ruoloVero": null,
@@ -7437,6 +7615,7 @@
    {
     "num": 10,
     "nome": "He",
+    "nomeIntero": "Xingmeng He",
     "nomeCompleto": "HE Xingmeng",
     "ruolo": 5,
     "ruoloVero": null,
@@ -7480,6 +7659,7 @@
    {
     "num": 11,
     "nome": "Zhu",
+    "nomeIntero": "Beile Zhu",
     "nomeCompleto": "ZHU Beile",
     "ruolo": 5,
     "ruoloVero": null,
@@ -7523,6 +7703,7 @@
    {
     "num": 12,
     "nome": "Yang",
+    "nomeIntero": "Shanglin Yang",
     "nomeCompleto": "YANG Shanglin",
     "ruolo": 5,
     "ruoloVero": null,
@@ -7566,6 +7747,7 @@
    {
     "num": 13,
     "nome": "Liang",
+    "nomeIntero": "Zhiwei Liang",
     "nomeCompleto": "LIANG Zhiwei",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -7607,6 +7789,7 @@
    {
     "num": 1,
     "nome": "Lee D.",
+    "nomeIntero": "Darren Jit An Lee",
     "nomeCompleto": "LEE Darren Jit An",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -7645,6 +7828,7 @@
    {
     "num": 2,
     "nome": "Chan",
+    "nomeIntero": "Derek Wen Kai Chan",
     "nomeCompleto": "CHAN Derek Wen Kai",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -7688,6 +7872,7 @@
    {
     "num": 7,
     "nome": "Low",
+    "nomeIntero": "Gabriel Low",
     "nomeCompleto": "LOW Gabriel",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -7730,6 +7915,7 @@
    {
     "num": 4,
     "nome": "Goh W.",
+    "nomeIntero": "Wen Zhe Goh",
     "nomeCompleto": "GOH Wen Zhe",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -7773,6 +7959,7 @@
    {
     "num": 9,
     "nome": "Rajandra",
+    "nomeIntero": "Sanjiv Rajandra",
     "nomeCompleto": "RAJANDRA Sanjiv",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -7815,6 +8002,7 @@
    {
     "num": 14,
     "nome": "Lee C.",
+    "nomeIntero": "Cheng Kang Lee",
     "nomeCompleto": "LEE Cheng Kang",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -7857,6 +8045,7 @@
    {
     "num": 10,
     "nome": "Lee Isaac",
+    "nomeIntero": "Isaac Lee",
     "nomeCompleto": "LEE Isaac",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -7899,6 +8088,7 @@
    {
     "num": 8,
     "nome": "Saik",
+    "nomeIntero": "Justin Kin Yan Saik",
     "nomeCompleto": "SAIK Justin Kin Yan",
     "ruolo": 6,
     "ruoloVero": "Centre Back",
@@ -7941,6 +8131,7 @@
    {
     "num": 3,
     "nome": "Fong",
+    "nomeIntero": "Wai Chun Fong",
     "nomeCompleto": "FONG Wai Chun",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -7983,6 +8174,7 @@
    {
     "num": 15,
     "nome": "Goh M.",
+    "nomeIntero": "Matthias Goh",
     "nomeCompleto": "GOH Matthias",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -8025,6 +8217,7 @@
    {
     "num": 11,
     "nome": "Wong",
+    "nomeIntero": "Hong Kai Wong",
     "nomeCompleto": "WONG Hong Kai",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -8067,6 +8260,7 @@
    {
     "num": 12,
     "nome": "Lok",
+    "nomeIntero": "Shaunn Blasius Jun Jie Lok",
     "nomeCompleto": "LOK Shaunn Blasius Jun Jie",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -8109,6 +8303,7 @@
    {
     "num": 13,
     "nome": "Lee Ivaac",
+    "nomeIntero": "Ivaac Lee",
     "nomeCompleto": "LEE Ivaac",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -8149,6 +8344,7 @@
    {
     "num": 13,
     "nome": "Smith",
+    "nomeIntero": "Matthew Smith",
     "nomeCompleto": "SMITH Matthew",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",
@@ -8188,6 +8384,7 @@
    {
     "num": 10,
     "nome": "Strydom",
+    "nomeIntero": "Corbett Strydom",
     "nomeCompleto": "STRYDOM Corbett",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -8231,6 +8428,7 @@
    {
     "num": 11,
     "nome": "Neser",
+    "nomeIntero": "Matthew Neser",
     "nomeCompleto": "NESER Matthew",
     "ruolo": 3,
     "ruoloVero": "Wing",
@@ -8273,6 +8471,7 @@
    {
     "num": 4,
     "nome": "Welton",
+    "nomeIntero": "Jensen Welton",
     "nomeCompleto": "WELTON Jensen",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -8315,6 +8514,7 @@
    {
     "num": 12,
     "nome": "Grimett",
+    "nomeIntero": "Tristan Grimett",
     "nomeCompleto": "GRIMETT Tristan",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -8357,6 +8557,7 @@
    {
     "num": 8,
     "nome": "Van Rooyen",
+    "nomeIntero": "Keenan Van Rooyen",
     "nomeCompleto": "VAN ROOYEN Keenan",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -8399,6 +8600,7 @@
    {
     "num": 5,
     "nome": "Flinn",
+    "nomeIntero": "Connor Flinn",
     "nomeCompleto": "FLINN Connor",
     "ruolo": 6,
     "ruoloVero": "Point",
@@ -8441,6 +8643,7 @@
    {
     "num": 14,
     "nome": "Seiler",
+    "nomeIntero": "Taylor Seiler",
     "nomeCompleto": "SEILER Taylor",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -8483,6 +8686,7 @@
    {
     "num": 6,
     "nome": "Kuperus",
+    "nomeIntero": "Calvin Kuperus",
     "nomeCompleto": "KUPERUS Calvin",
     "ruolo": 6,
     "ruoloVero": "Point",
@@ -8525,6 +8729,7 @@
    {
     "num": 9,
     "nome": "Macleod",
+    "nomeIntero": "Ethan Macleod",
     "nomeCompleto": "MACLEOD Ethan",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
@@ -8567,6 +8772,7 @@
    {
     "num": 7,
     "nome": "Johnson",
+    "nomeIntero": "David Johnson",
     "nomeCompleto": "JOHNSON David",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -8609,6 +8815,7 @@
    {
     "num": 3,
     "nome": "Bungane",
+    "nomeIntero": "Manqoba Bungane",
     "nomeCompleto": "BUNGANE Manqoba",
     "ruolo": 5,
     "ruoloVero": "Driver",
@@ -8651,6 +8858,7 @@
    {
     "num": 1,
     "nome": "Rajak",
+    "nomeIntero": "Luka Rajak",
     "nomeCompleto": "RAJAK Luka",
     "ruolo": 0,
     "ruoloVero": "Goalkeeper",

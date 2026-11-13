@@ -498,3 +498,27 @@ body.touch #tCambi{right:calc(94px + var(--sr))}
 #rosa .fm-ripristina{grid-column:1/-1;justify-self:start;margin-top:6px;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer}
 #rosa .fm-dati{display:block;font-size:11px;color:#9fc3ef;margin-top:2px}
 #rosa .fm-fonte{font-size:11px;color:#9fc3ef}
+
+/* barra dei cambi con nome e cognome, ruolo e valutazione (richiesta di Ale) */
+#cambiBox{max-width:min(640px,calc(100vw - 280px));max-height:calc(100vh - 120px);overflow:auto}
+.cr-tit{font:800 12px system-ui;color:var(--h-oro)}
+.cr-ind{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:6px;font:700 11px system-ui;margin-left:6px;cursor:pointer}
+.cr-griglia{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px}
+.cr-griglia .cr-g{flex-direction:column;align-items:flex-start;gap:2px;padding:5px 8px;min-width:0}
+.cr-g.pozz{border-color:#fca5a5}
+.cr-nome{display:block;font:800 12.5px system-ui;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.cr-info{display:flex;align-items:center;gap:5px;font:600 11px system-ui;color:#cfe3ff}
+.cr-info b{color:var(--h-oro);font-size:12px}
+.cr-consigli .cr-cons{flex-direction:column;align-items:flex-start;gap:1px}
+.pc-cons{display:flex;align-items:center;gap:10px;justify-content:space-between;width:100%}
+.pc-cons small{display:block;font-weight:600;color:#ffd77a;font-size:12px;margin-top:2px}
+.pc-cons span b{color:#fff}
+.pc-ok{color:#cfe3ff;font-weight:600}
+@media (max-width:720px){ #cambiBox{max-width:calc(100vw - 200px)} .cr-griglia{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))} }
+/* barra compatta: tre colonne, schede basse */
+#cambiBox{padding:6px 30px 6px 8px;gap:4px;max-width:min(700px,calc(100vw - 250px))}
+.cr-griglia{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.cr-griglia .cr-g{padding:3px 7px;gap:0}
+.cr-nome{font-size:12px}.cr-info{font-size:10.5px}
+.cr-consigli{gap:4px}.cr-consigli .cr-cons{padding:3px 8px}
+.pc-cons strong{color:#fff}

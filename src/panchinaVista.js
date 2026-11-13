@@ -2,14 +2,14 @@
 // e gol; suggerimenti per chi è stanco; si sceglie chi esce e chi entra e il cambio volante parte quando si riprende a giocare.
 import { CHIAVE, RUOLI, STAT_NOMI } from './dati/rose.js';
 import { iconaMano } from './mano.js';
-import { PANCHINA, annullaRichiesta, chiediCambio, suggerimento } from './panchina.js';
+import { PANCHINA, RUOLI_BREVI, annullaRichiesta, chiediCambio, consigli } from './panchina.js';
 import { teams } from './stato.js';
 let sel = null;      // giocatore in acqua scelto per uscire
 const barra = s => { const v = Math.round((s ?? 1) * 100); return `<span class="pc-bar ${v < PANCHINA.stanco * 100 ? 'stanco' : v < 65 ? 'medio' : ''}"><i style="width:${v}%"></i></span><b class="pc-pct">${v}%</b>`; };
 const chiave = g => CHIAVE[g.ruolo].map(k => `${STAT_NOMI[k].slice(0, 3).toUpperCase()} ${g.s[k]}`).join(' · ');
 function riga(g, extra, cls, attr) {
   return `<button type="button" class="pc-g ${cls}" ${attr}><span class="pc-num">${g.num}</span>`
-    + `<span class="pc-nome">${g.nome}${iconaMano(g.mano)}<small>${RUOLI[g.ruolo]} · OVR ${g.ovr}${g.gol ? ` · ${g.gol} gol` : ''}${g.pf ? ` · ${g.pf} falli gravi` : ''}</small></span>`
+    + `<span class="pc-nome">${g.nomeIntero || g.nome}${iconaMano(g.mano)}<small>${RUOLI[g.ruolo]} · OVR ${g.ovr}${g.tiriP ? ` · ${g.gol || 0} gol su ${g.tiriP} tiri` : g.gol ? ` · ${g.gol} gol` : ''}${g.pf ? ` · ${g.pf} falli gravi` : ''}</small></span>`
     + `<span class="pc-stat">${chiave(g)}</span><span class="pc-stam">${barra(g.stamina)}</span>${extra || ''}</button>`;
 }
 export function disegnaPanchina() {
@@ -18,14 +18,11 @@ export function disegnaPanchina() {
   for (const p of t.players) if (p.scheda) p.scheda.stamina = p.stamina;
   const coda = t.coda || [];
   const inCoda = p => coda.find(x => x.esce === p), entraCoda = g => coda.find(x => x.entra === g);
-  // suggerimenti: prima i più stanchi, ogni riserva proposta una volta sola
-  const usate = new Set(coda.map(x => x.entra)), sugg = [];
-  for (const p of [...t.players].sort((a, b) => a.stamina - b.stamina)) {
-    if (inCoda(p) || p.isGK) continue;
-    const g = suggerimento(p, usate); if (g) { usate.add(g); sugg.push({ p, g }); }
-  }
+  // consigli con il motivo (stanco, chi rende di più, partita storta, falli): ogni riserva proposta una volta sola
+  const sugg = consigli(t, 4);
   let h = '';
-  if (sugg.length) h += `<div class="pc-sugg"><b>Consigliati</b>${sugg.map(x => `<button type="button" class="pc-cons" data-esce="${x.p.i}" data-entra="${x.g.num}">#${x.p.num} ${x.p.name} è stanco (${Math.round(x.p.stamina * 100)}%) → entra #${x.g.num} ${x.g.nome} <em>Cambia</em></button>`).join('')}</div>`;
+  if (sugg.length) h += `<div class="pc-sugg"><b>Consigliati</b>${sugg.map(x => `<button type="button" class="pc-cons" data-esce="${x.p.i}" data-entra="${x.g.num}"><span>Esce <strong>${x.p.scheda.nomeIntero || x.p.name}</strong> (${RUOLI_BREVI[x.p.scheda.ruolo]} · ${x.p.ovr}) → entra <strong>${x.g.nomeIntero || x.g.nome}</strong> (${RUOLI_BREVI[x.g.ruolo]} · ${x.g.ovr})<small>${x.motivo}</small></span><em>Cambia</em></button>`).join('')}</div>`;
+  else h += `<div class="pc-sugg"><b>Consigliati</b><span class="pc-ok">Per ora nessun cambio necessario: tutti in forma.</span></div>`;
   if (coda.length) h += `<div class="pc-coda"><b>Cambi alla ripresa</b>${coda.map(x => `<span>esce #${x.esce.num} → entra #${x.entra.num} ${x.entra.nome} <button type="button" class="pc-x" data-annulla="${x.esce.i}" aria-label="Annulla">✕</button></span>`).join('')}</div>`;
   h += `<h3>In acqua <small>${sel ? `scegli chi entra al posto di #${sel.num}` : 'tocca chi vuoi far uscire'}</small></h3><div class="pc-lista">`;
   const bloccato = p => p.excluded && p.pf >= 3;      // terzo fallo grave: esce comunque, entra la riserva in automatico
@@ -69,13 +66,15 @@ export function disegnaCambi(forza = true) {
   }
   const coda = t.coda || [], C = t.cambio;
   const inCoda = p => coda.find(x => x.esce === p) || (C && C.esce === p), entraCoda = g => coda.find(x => x.entra === g) || (C && C.entra === g);
-  const usate = new Set([...coda.map(x => x.entra), ...(C ? [C.entra] : [])]), sugg = [];
-  for (const p of [...t.players].sort((a, b) => a.stamina - b.stamina)) { if (inCoda(p) || p.isGK) continue; const g = suggerimento(p, usate); if (g) { usate.add(g); sugg.push({ p, g }); } if (sugg.length >= 2) break; }
+  const sugg = consigli(t, 2);
+  // scheda di un giocatore: nome e cognome, ruolo, valutazione e stamina (quello che serve per decidere al volo)
+  const gio = (g, st, q) => `<span class="cr-nome">${g.nomeIntero || g.nome}</span><span class="cr-info">${RUOLI_BREVI[g.ruolo]} · <b>${g.ovr}</b> ${mini(st, q)}</span>`;
   let h = '<button type="button" class="cr-chiudi" data-chiudi aria-label="Chiudi">✕</button>';
-  if (C || coda.length) h += `<div class="cr-riga cr-corso">${C ? `<span>in corso: esce #${C.esce.num} → entra #${C.entra.num}</span>` : ''}${coda.map(x => `<span>esce #${x.esce.num} → entra #${x.entra.num} <button type="button" data-annulla="${x.esce.i}">✕</button></span>`).join('')}</div>`;
-  if (sugg.length && !selR) h += `<div class="cr-riga">${sugg.map(x => `<button type="button" class="cr-cons" data-esce="${x.p.i}" data-entra="${x.g.num}">#${x.p.num} ${mini(x.p.stamina, 'c' + x.p.i)} → #${x.g.num} ${x.g.nome}</button>`).join('')}</div>`;
-  if (!selR) h += `<div class="cr-riga"><b>Chi esce?</b>${t.players.map(p => { const no = (p.excluded && p.pf >= 3) || inCoda(p); return `<button type="button" class="cr-g${no ? ' no' : ''}" data-campo="${p.i}">#${p.num}${p.excluded ? '<em>pozz.</em>' : ''}${mini(p.stamina, 'c' + p.i)}</button>`; }).join('')}</div>`;
-  else h += `<div class="cr-riga"><b>Al posto di #${selR.num}:</b>${t.rosa.filter(g => !g.inAcqua && !g.fuori && (g.ruolo === 0) === selR.isGK && !entraCoda(g)).map(g => `<button type="button" class="cr-g" data-riserva="${g.num}">#${g.num} ${g.nome}${mini(g.stamina, 'r' + g.num)}</button>`).join('') || '<span>nessuna riserva disponibile</span>'}<button type="button" class="cr-g no" data-indietro-c>‹</button></div>`;
+  const nomeDi = p => (p.scheda && p.scheda.nomeIntero) || p.name;
+  if (C || coda.length) h += `<div class="cr-riga cr-corso">${C ? `<span>in corso: esce ${nomeDi(C.esce)} → entra ${C.entra.nomeIntero || C.entra.nome}</span>` : ''}${coda.map(x => `<span>esce ${nomeDi(x.esce)} → entra ${x.entra.nomeIntero || x.entra.nome} <button type="button" data-annulla="${x.esce.i}">✕</button></span>`).join('')}</div>`;
+  if (sugg.length && !selR) h += `<div class="cr-riga cr-consigli">${sugg.map(x => `<button type="button" class="cr-cons" data-esce="${x.p.i}" data-entra="${x.g.num}"><span class="cr-nome">${nomeDi(x.p)} → ${x.g.nomeIntero || x.g.nome}</span><span class="cr-info">${RUOLI_BREVI[x.g.ruolo]} · <b>${x.g.ovr}</b> · ${x.motivo}</span></button>`).join('')}</div>`;
+  if (!selR) h += `<div class="cr-tit">Chi esce?</div><div class="cr-griglia">${t.players.map(p => { const no = (p.excluded && p.pf >= 3) || inCoda(p); return `<button type="button" class="cr-g${no ? ' no' : ''}${p.excluded ? ' pozz' : ''}" data-campo="${p.i}">${gio(p.scheda, p.stamina, 'c' + p.i)}</button>`; }).join('')}</div>`;
+  else h += `<div class="cr-tit">Al posto di ${nomeDi(selR)} (${RUOLI_BREVI[selR.scheda.ruolo]} · ${selR.ovr}) entra: <button type="button" class="cr-ind" data-indietro-c>‹ indietro</button></div><div class="cr-griglia">${t.rosa.filter(g => !g.inAcqua && !g.fuori && (g.ruolo === 0) === selR.isGK && !entraCoda(g)).sort((a, b) => b.ovr - a.ovr).map(g => `<button type="button" class="cr-g" data-riserva="${g.num}">${gio(g, g.stamina, 'r' + g.num)}</button>`).join('') || '<span>nessuna riserva disponibile</span>'}</div>`;
   box.innerHTML = h;
   const ok = () => { selR = null; disegnaCambi(); };
   box.querySelector('[data-chiudi]').onclick = () => apriCambi(false);
