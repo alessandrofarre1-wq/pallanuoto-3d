@@ -7,6 +7,7 @@ import { contatto, spawnFoam } from './scena.js';
 import { evento } from './acqua-eventi.js';
 import { allPlayers, ball, fight, game } from '../stato.js';
 import { shotKind } from '../tiri.js';
+import { braccioMuro } from '../muro.js';
 //<POSE>
 export const L1=0.30, L2=0.29;
 export function ik(S,H,l1,l2,hint){
@@ -96,9 +97,13 @@ export function computePose(p,dt,t){
     hintR=[0,-0.3,1]; hintL=[0,-0.3,-1];
   }
   else if(p.isGK&&!hold&&vicinaGK>0.02){ hR=mix3(hR,add3(vSR,[0.15,0.05,0.42]),vicinaGK); hL=mix3(hL,add3(vSL,[0.15,0.05,-0.42]),vicinaGK); }      // palla vicina: braccia larghe a pelo d'acqua, pronte a uscire
+  else if(muro||abbocca||(defUp&&!(p.fintaC>game.time))){
+    // braccio dalla parte del palo da coprire (muro.js); alto a murare quando l'avversario tira, a metà quando lo marca
+    const alto=muro||abbocca, su=alto?[0.16,0.74,0.08]:[0.28,0.34,0.05];
+    if(!h||h.team===p.team||braccioMuro(p,h)==='D'){ hR=add3(vSR,[su[0],su[1],su[2]]); hintR=[0,-0.3,1]; }
+    else { hL=add3(vSL,[su[0],su[1],-su[2]]); hintL=[0,-0.3,-1]; }
+  }
   else if(p.fintaC>game.time&&!hold){ hR=add3(vSR,[0.50,0.04,-0.04]); hintR=[0,-0.6,1]; }      // contrasto di disturbo: la mano parte verso la palla
-  else if(muro||abbocca){ hR=add3(vSR,[0.20,0.56,-0.04]); hintR=[0,-0.2,1]; }
-  else if(defUp){ hR=add3(vSR,[0.28,0.30,-0.02]); hintR=[0,-0.4,1]; }
   else if(hold&&!th){ hR=add3(vSR,HOLD); hintR=[-0.3,-0.6,1]; J.ballHand=true; }
   if(presa>0.01){ const v=[pallaL[0]-vSR[0],pallaL[1]-vSR[1],pallaL[2]-vSR[2]], l=Math.hypot(v[0],v[1],v[2])||1, m=Math.min(1,0.55/l); hR=mix3(hR,add3(vSR,[v[0]*m,Math.max(0.1,v[1]*m),v[2]*m]),presa); hintR=[0,-0.4,1]; }
   if(th){ hL=[vSL[0]+0.36,-0.03,vSL[2]-0.10]; hintL=[0,-1,-0.4]; }      // il braccio libero fa appoggio sull'acqua (a pelo d'acqua)

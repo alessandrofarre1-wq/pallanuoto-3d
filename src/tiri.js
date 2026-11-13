@@ -3,6 +3,7 @@ import { registraTiro, tipoDiTiro } from './statistiche.js';
 import { ALZATA, BRV, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, postoPortiere, setteControSei, startCut } from './ia.js';
 import { velocitaDiLancio } from './palla.js';
+import { paloCoperto } from './muro.js';
 import { P } from './fisica-palla/parametri.js';
 import { allPlayers, ball, fight, game, goalX, other, setCtrl, teams } from './stato.js';
 export function startAct(p,kind,wind,fn,aim){
@@ -168,7 +169,7 @@ export function doShoot(p,power,lob,aimZ,o){
     const k=1.4/dxg;
     launch(p,gx-t.dir*1.4,BRV,az+(p.z-az)*k,d*(1-k)/spd,'shot'); ball.skip=true;
   } else launch(p,gx,ay,az,d/spd,'shot');
-  ball.shotPower=lob?0.3:power; ball.lob=lob; ball.crossZ=az; ball.rigore=game.penalty===p;
+  ball.shotPower=lob?0.3:power; ball.lob=lob; ball.crossZ=az; ball.paloCoperto=paloCoperto(p); ball.rigore=game.penalty===p;
   ball.tipoTiro=tipoAzione; registraTiro(p,tipoAzione);
   // dove si trova il portiere nel momento in cui parte il tiro: è da qui che dipende soprattutto la parata
   ball.gkZ0=gk.z; ball.gkFuoriPosto=Math.abs(gk.z-postoPortiere(gk.team,p.x,p.z));

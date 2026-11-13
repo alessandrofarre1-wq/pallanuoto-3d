@@ -12,6 +12,7 @@ import { areaFoul, callPlay, contrasto, deadBall, giveBall, kickoff, latoContras
 import { difensoriDavanti } from './statistiche.js';
 import { allPlayers, ball, ctrl, game, goalX, other, setCtrl, teams } from './stato.js';
 import { doShoot, startAct, updateActs } from './tiri.js';
+export const CONTR_AI={ ritmo:1.5, insiste:2.0, fallo:0.2, indisciplina:0.4 };      // contrasto del computer (sezione 2)
 export function update(dt){
   pollInput();
   if(pressed('cam')) game.camMode=1-game.camMode;
@@ -118,13 +119,14 @@ export function update(dt){
         // Disciplina ci prova anche quando non dovrebbe; in controfuga, superato, spende il fallo per fermare l'azione
         const c=ball.holder, lato=latoContrasto(p,c), palla=pallaEsposta(c), dis=(p.s.dis-40)/59;
         const fuga=game.time-(game.possT||0)<11 && difensoriDavanti(c)<=1 && Math.abs(goalX(c.team)-c.x)>6.5;
-        if(fuga && rnd()<dt*(1.2+1.2*(p.s.dif-40)/59)) tackle(p,c,{voluto:true});
+        if(fuga && rnd()<dt*(1.2+1.2*(p.s.dif-40)/59)) tackle(p,c,{voluto:true,origine:'fuga'});
         else {
           const voglia=(lato==='dietro'?0.25+0.9*(1-dis):1)*(palla==='alzata'?0.3+0.8*(1-dis):palla==='palleggio'?1.4:1);
           // stessa regola del giocatore: disturbo a tocchi; il terzo tocco ravvicinato è fallo, e il computer insiste di rado
           // (di più chi ha poca Disciplina)
           const recenti=(p.colpi||[]).filter(t=>game.time-t<1.5).length;
-          if(rnd()<dt*1.5*voglia*(p.team.defPlay===2?1.2:1) && (recenti<2 || rnd()<0.08+0.35*(1-dis))) contrasto(p,c);
+          // (tarato sulla v0.28: circa 30 falli e 12-13 espulsioni per squadra a partita, come prima del contrasto a tocchi)
+          if(rnd()<dt*CONTR_AI.ritmo*(recenti>=1?CONTR_AI.insiste:1)*voglia*(p.team.defPlay===2?1.2:1) && (recenti<2 || rnd()<CONTR_AI.fallo+CONTR_AI.indisciplina*(1-dis))) contrasto(p,c);
         }
       }
       if(game.state!=='play') return;

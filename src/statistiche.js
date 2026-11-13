@@ -2,7 +2,7 @@
 import { ball, game, teams, other } from './stato.js';
 
 const TIPI=['perimetro','superiorita','controfuga','entrata','centroboa','rigore'];
-const nuova=()=>({ tiri:0, inPorta:0, gol:0, parate:0, espulsioni:0, superiorita:0, superioritaGol:0, rigori:0, rigoriGol:0, palleRubate:0, intercetti:0, falli:0, tiriLontani:0, golLontani:0, tiriSoli:0, golCostruiti:0, passaggiGol:0, timeout:0, etaPossesso:0, gesti:{},
+const nuova=()=>({ tiri:0, inPorta:0, gol:0, parate:0, espulsioni:0, espCentro:0, espFuga:0, espAltro:0, superiorita:0, superioritaGol:0, rigori:0, rigoriGol:0, palleRubate:0, intercetti:0, falli:0, tiriLontani:0, golLontani:0, tiriSoli:0, golCostruiti:0, passaggiGol:0, timeout:0, etaPossesso:0, gesti:{},
   golTipo:Object.fromEntries(TIPI.map(t=>[t,0])), tiriTipo:Object.fromEntries(TIPI.map(t=>[t,0])) });
 export const stat={ squadre:[nuova(),nuova()] };
 export function azzeraStatistiche(){ stat.squadre=[nuova(),nuova()]; }
@@ -38,7 +38,7 @@ export function registraGol(t,ball){
   if(tipo==='rigore') s.rigoriGol++;
 }
 export function registraParata(att,dif){ di(att).inPorta++; di(dif).parate++; }
-export function registraEspulsione(d){ di(d.team).espulsioni++; di(other(d.team)).superiorita++; }
+export function registraEspulsione(d,origine){ const s=di(d.team); s.espulsioni++; s[origine==='centro'?'espCentro':origine==='fuga'?'espFuga':'espAltro']++; di(other(d.team)).superiorita++; }
 export function registraRigore(t){ di(t).rigori++; }
 export function registraPallaRubata(t){ di(t).palleRubate++; }
 export function registraIntercetto(t){ di(t).intercetti++; }

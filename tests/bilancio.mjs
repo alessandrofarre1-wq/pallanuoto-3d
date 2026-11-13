@@ -55,7 +55,7 @@ await browser.close(); await new Promise(r => server.httpServer.close(r));
 const tutte = partite.flatMap(p => p.squadre), M = k => tutte.reduce((s, x) => s + x[k], 0) / tutte.length, S = k => tutte.reduce((s, x) => s + x[k], 0);
 const tipi = Object.keys(tutte[0].golTipo), golTot = S('gol');
 const sintesi = { partite: N, tempo: +DURATA, gol: M('gol'), tiri: M('tiri'), conversione: 100 * S('gol') / S('tiri'), inPorta: 100 * S('inPorta') / S('tiri'), parate: M('parate'),
-  espulsioni: M('espulsioni'), superiorita: M('superiorita'), superioritaTrasformate: 100 * S('superioritaGol') / Math.max(1, S('superiorita')), rigori: M('rigori'), rigoriSegnati: 100 * S('rigoriGol') / Math.max(1, S('rigori')),
+  espulsioni: M('espulsioni'), espCentro: 100 * S('espCentro') / Math.max(1, S('espulsioni')), espFuga: 100 * S('espFuga') / Math.max(1, S('espulsioni')), superiorita: M('superiorita'), superioritaTrasformate: 100 * S('superioritaGol') / Math.max(1, S('superiorita')), rigori: M('rigori'), rigoriSegnati: 100 * S('rigoriGol') / Math.max(1, S('rigori')),
   palleRubate: M('palleRubate'), falli: M('falli'), intercetti: M('intercetti'), tiriLontani: M('tiriLontani'), golLontani: M('golLontani'), tiriSoli: M('tiriSoli'), golCostruiti: 100 * S('golCostruiti') / Math.max(1, S('gol')), passaggiGol: S('passaggiGol') / Math.max(1, S('gol')), timeout: M('timeout'),
   golTipo: Object.fromEntries(tipi.map(t => [t, 100 * tutte.reduce((s, x) => s + x.golTipo[t], 0) / Math.max(1, golTot)])),
   vittorie: [0, 1].map(i => partite.filter(p => p.squadre[i].gol > p.squadre[1 - i].gol).length), nomi: partite[0].squadre.map(s => s.nome),
@@ -64,6 +64,7 @@ const r1 = x => x.toFixed(1);
 console.log(`\nMedie per squadra a partita (${N} partite, tempi da ${DURATA / 60} minuti) — ${sintesi.nomi.join(' contro ')}: vittorie ${sintesi.vittorie.join(' - ')}`);
 console.log(`  gol ${r1(sintesi.gol)} · tiri ${r1(sintesi.tiri)} · tiri in gol ${r1(sintesi.conversione)}% · tiri nello specchio ${r1(sintesi.inPorta)}% · parate ${r1(sintesi.parate)}`);
 console.log(`  espulsioni ${r1(sintesi.espulsioni)} · superiorità trasformate ${r1(sintesi.superioritaTrasformate)}% · rigori ${r1(sintesi.rigori)} (segnati ${r1(sintesi.rigoriSegnati)}%) · palle rubate ${r1(sintesi.palleRubate)} · falli ${r1(sintesi.falli)} · time-out ${r1(sintesi.timeout)}`);
+console.log(`  espulsioni per origine: lotta al centro ${r1(sintesi.espCentro)}% · fallo tattico in controfuga ${r1(sintesi.espFuga)}% · altri contrasti ${r1(100 - sintesi.espCentro - sintesi.espFuga)}%`);
 { const g = {}; for (const x of tutte) for (const k in x.gesti) g[k] = (g[k] || 0) + x.gesti[k]; const tt = S('tiri');
   console.log('  tiri per tipo di azione: ' + tipi.map(t => `${t} ${r1(100 * tutte.reduce((s, x) => s + x.tiriTipo[t], 0) / tt)}%`).join(' · '));
   console.log(`  tiro dopo ${r1(S('etaPossesso') / tt)} s di possesso in media · gesti: ` + Object.entries(g).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${r1(100 * v / tt)}%`).join(' · ')); }
