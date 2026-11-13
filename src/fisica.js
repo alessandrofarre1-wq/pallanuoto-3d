@@ -2,12 +2,12 @@
 import { rif01, setteControSei } from './ia.js';
 import { registraIntercetto, registraParata } from './statistiche.js';
 import { whistle } from './audio.js';
-import { ALZATA, BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
+import { ALZATA, ARBITRO, BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
 import { annuncia } from './cronaca.js';
 import { QUOTA_GALLEGGIA, passoPalla } from './palla.js';
 import { blockR } from './ia.js';
-import { cornerThrow, giveBall, goalScored, goalThrow, sideOut } from './regole.js';
-import { active, allPlayers, ball, game, goalX, other, ownGoalX, teams } from './stato.js';
+import { cornerThrow, giveBall, goalScored, goalThrow, sfondamento, sideOut } from './regole.js';
+import { active, allPlayers, ball, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
 import { diSchiena, shotKind } from './tiri.js';
 export function movePlayer(p,dx,dz,sprint,dt){
   const mag=Math.hypot(dx,dz), moving=mag>0.05, swimming=mag>0.5;
@@ -86,12 +86,24 @@ export function movePlayer(p,dx,dz,sprint,dt){
 export function separate(){
   const ps=allPlayers.filter(active);
   for(let i=0;i<ps.length;i++) for(let j=i+1;j<ps.length;j++){
-    const a=ps[i], b=ps[j], opp=a.team!==b.team, R=opp?0.78:0.6;
+    // distanza minima tra due corpi: tra avversari c'è contatto, tra compagni un po' di spazio in più (meno ammassi)
+    const a=ps[i], b=ps[j], opp=a.team!==b.team, R=opp?0.8:0.75;
     const dx=b.x-a.x, dz=b.z-a.z, d=Math.hypot(dx,dz);
     if(d>=R||d<0.0001) continue;
     const nx=dx/d, nz=dz/d, push=(R-d)/2;
     a.x-=nx*push; a.z-=nz*push; b.x+=nx*push; b.z+=nz*push;
     if(opp){   // un avversario davanti fa resistenza: si perde la velocità verso di lui e si deve girargli attorno
+      // chi ha la palla e nuota dritto addosso al difensore fa fallo in attacco (sfondamento); si decide una volta per contatto
+      if(game.state==='play'&&(ball.holder===a||ball.holder===b)&&!(fight.active&&(fight.boa===a||fight.boa===b))){
+        const c=ball.holder, d=c===a?b:a, sx=c===a?nx:-nx, sz=c===a?nz:-nz;      // (sx,sz): da chi ha palla verso il difensore
+        if(!(c.sfondaT>game.time)&&!c.act&&!d.isGK){
+          c.sfondaT=game.time+1.2;
+          const vc=c.vx*sx+c.vz*sz, vd=-(d.vx*sx+d.vz*sz), fronte=c.fx*sx+c.fz*sz;
+          // conta la velocità verso il difensore, il fatto di guardarlo in faccia e che il difensore non gli venga addosso
+          const p=clamp((vc-0.9)/1.3,0,1)*clamp((fronte-0.6)/0.3,0,1)*(vd>0.4?0.3:1)*0.55*ARBITRO;
+          if(p>0&&rnd()<p){ sfondamento(c,d); return; }
+        }
+      }
       const va=a.vx*nx+a.vz*nz; if(va>0){ a.vx-=nx*va*0.9; a.vz-=nz*va*0.9; }
       const vb=-(b.vx*nx+b.vz*nz); if(vb>0){ b.vx+=nx*vb*0.9; b.vz+=nz*vb*0.9; }
       a.contactT=b.contactT=0.25;
@@ -105,10 +117,16 @@ const _giocatori=[];
 function passo(dt,corpiAttivi){
   // i corpi dei giocatori fanno rimbalzare solo la palla vagante (su tiri e passaggi decidono parata, muro e intercetto)
   for(let i=0;i<allPlayers.length;i++){ const p=allPlayers[i], g=_giocatori[i]||(_giocatori[i]={x:0,z:0,attivo:false});
-    g.x=p.x; g.z=p.z; g.attivo=corpiAttivi&&!p.excluded&&p!==ball.shooter; }
+    g.x=p.x; g.z=p.z; g.attivo=corpiAttivi&&!p.excluded&&p!==ball.shooter&&p!==ball.ignora; }
   const e=passoPalla(ball,dt,_giocatori);
   if(e.acqua) ball.spruzzo={ forza:e.acqua.forza, schizzo:e.acqua.tipo==='schizzo'||e.acqua.radente };      // lo disegna render.js
   return e;
+}
+// palla uscita dalla linea di fondo (art. 12-13): tiro d'angolo se l'ha toccata per ultimo un difensore (portiere compreso),
+// altrimenti rimessa del portiere
+function fuoriDalFondo(att){
+  const def=other(att);
+  if(ball.toccoDifesa===def) cornerThrow(att); else goalThrow(def,'Fuori! Rimessa dal portiere');
 }
 // la palla ha passato la linea di porta in questo passo? (px = posizione prima del passo)
 function lineaDiPorta(px){
@@ -127,7 +145,10 @@ export function updateBall(dt){
     return;
   }
   if(ball.state==='dead'){
-    if(ball.inRete){ const f=Math.exp(-3*dt); ball.vx*=f; ball.vz*=f; passo(dt,false); return; }      // la rete smorza la palla      // dopo il gol la palla finisce davvero in fondo alla rete
+    // dopo il gol la palla finisce davvero in fondo alla rete, che la smorza
+    if(ball.inRete){ const f=Math.exp(-3*dt); ball.vx*=f; ball.vz*=f; passo(dt,false); return; }
+    // palla uscita: finisce il suo volo (pareti della vasca comprese) finché il gioco riparte
+    if(ball.inUscita){ passo(dt,false); return; }
     ball.x+=ball.vx*dt; ball.z+=ball.vz*dt; ball.vx*=Math.exp(-2*dt); ball.vz*=Math.exp(-2*dt);
     ball.y+=(QUOTA_GALLEGGIA-ball.y)*Math.min(1,dt*6); return;      // palla ferma: galleggia
   }
@@ -161,10 +182,16 @@ export function updateBall(dt){
             *(ball.rigore?0.41:1);      // sul rigore il portiere para molto meno: negli studi citati dalla tesi ne entra l'80%
           if(rnd()<prob){
             whistle(0.12); const r=rnd(); ball.afterShot=true; registraParata(att,def);
-            if(ball.shotPower>0.55&&r<0.25){ cornerThrow(att); }
+            if(ball.shotPower>0.55&&r<0.25){
+              // deviata in angolo: il portiere la alza sopra la traversa; uscirà dal fondo toccata per ultimo da lui (tiro d'angolo)
+              const gx=ownGoalX(def), dx=Math.max(0.25,Math.abs(gx-ball.x)), vxs=3.2, t=dx/vxs, y0=Math.max(0.3,ball.y);
+              ball.kind='rebound'; ball.toccoDifesa=def; ball.ignora=gk; ball.vx=Math.sign(gx-ball.x||1)*vxs; ball.vz=ball.vz*0.15+(rnd()-0.5)*1.5;
+              ball.vy=(GH+0.45-y0+4.9*t*t)/t; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=9;
+              annuncia('parata','Parata!',{p:gk,dettaglio:"deviata in angolo"});
+            }
             else if(ball.shotPower>0.7&&r<0.65){
               // respinta: la palla schizza via dalle mani del portiere, verso il campo e verso l'alto
-              ball.kind='rebound'; ball.vx=-ball.vx*0.22; ball.vz=ball.vz*0.3+(rnd()-0.5)*4; ball.vy=1.5+rnd()*2; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.25;
+              ball.kind='rebound'; ball.toccoDifesa=def; ball.ignora=gk; ball.vx=-ball.vx*0.22; ball.vz=ball.vz*0.3+(rnd()-0.5)*4; ball.vy=1.5+rnd()*2; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.25;
               annuncia('parata','Parata!',{p:gk,dettaglio:'respinta'});
             } else { giveBall(gk); annuncia('parata','Parata!',{p:gk}); }
             return;
@@ -177,7 +204,7 @@ export function updateBall(dt){
       const l=lineaDiPorta(px);
       if(l){
         if(l.dentro){ ball.inRete=true; goalScored(l.att); return; }
-        goalThrow(other(l.att),'Fuori! Rimessa dal portiere'); return;
+        fuoriDalFondo(l.att); return;
       }
     }
     // intercetti, muri e ricezione
@@ -201,7 +228,7 @@ export function updateBall(dt){
           if(rnd()<pr){
             if(ball.kind==='shot'){
               // muro: la palla rimbalza sul braccio alzato e resta in gioco
-              ball.kind='rebound'; ball.vx*=-0.2; ball.vz=ball.vz*0.3+(rnd()-0.5)*3; ball.vy=1+rnd()*1.5; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.2; annuncia('parata','Muro!',{p}); ball.afterShot=true;
+              ball.kind='rebound'; ball.toccoDifesa=p.team; ball.ignora=p; ball.vx*=-0.2; ball.vz=ball.vz*0.3+(rnd()-0.5)*3; ball.vy=1+rnd()*1.5; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.2; annuncia('parata','Muro!',{p}); ball.afterShot=true;
             }
             else { registraIntercetto(p.team); giveBall(p); annuncia('possesso','Intercetto!',{p}); }
             return;
@@ -225,7 +252,7 @@ export function updateBall(dt){
     if(ball.daTiro){ const l=lineaDiPorta(px); if(l&&l.dentro){ ball.inRete=true; goalScored(l.att); return; } }
     if(Math.abs(ball.x)>HL){
       const defT=teams.find(t=>Math.sign(ownGoalX(t))===Math.sign(ball.x));
-      goalThrow(defT); return;
+      fuoriDalFondo(other(defT)); return;
     }
     if(ball.pickupCD<=0){
       let best=null,bd=1e9;

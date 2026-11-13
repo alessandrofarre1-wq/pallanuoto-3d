@@ -36,7 +36,7 @@ export function launch(p,tx,ty,tz,t,kind){
   const L=velocitaDiLancio(ball.x,ball.y,ball.z,tx,ty,tz,t,giri);
   ball.vx=L.vx; ball.vy=L.vy; ball.vz=L.vz; ball.wx=L.wx; ball.wy=L.wy; ball.wz=L.wz;
   ball.flightT=0; ball.intercept=new Set(); ball.saveChecked=false; ball.pickupCD=0.3;
-  ball.skip=false; ball.skipped=false; ball.schizzi=0; ball.daTiro=kind==='shot'; ball.inRete=false;
+  ball.skip=false; ball.skipped=false; ball.schizzi=0; ball.daTiro=kind==='shot'; ball.inRete=false; ball.toccoDifesa=null; ball.ignora=null;
   p.charging=false; p.chargeT=0;
 }
 export function laneClear(a,bx,bz,team,rad=0.6){
