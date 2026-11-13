@@ -25,7 +25,7 @@ https://claude.ai/artifact/4H7yZMi99DmYJVPEvsKeWp (13 novembre 2026). Qui il ria
 
 ## Piano approvato (13 novembre 2026, «vai avanti»)
 1. **FATTO** — Strumenti senza cambiare il gioco (sotto).
-2. Palla in aria: raggio unico 0,1106 m, inerzia del guscio (2/3·m·a²), passo fisso 1/240 s, Cd e Magnus dai parametri, mira ricalibrata.
+2. **FATTO** — Palla in aria: misure vere, inerzia del guscio, passo massimo 1/240 s, Cd e Magnus dai parametri, mira ricalibrata (sotto).
 3. Palla in acqua: volume immerso, Archimede, resistenza e portanza della parte immersa, massa aggiunta; via le regole «schizzo» e «tonfo».
 4. Rotazione in acqua. 5. Urti (pali, bordi della vasca, palla respinta da mani e portiere). 6. Effetti grafici dagli eventi fisici, con un generatore casuale solo per la grafica. 7. Tiro a schizzo e bilanciamento con i video.
 
@@ -43,7 +43,7 @@ https://claude.ai/artifact/4H7yZMi99DmYJVPEvsKeWp (13 novembre 2026). Qui il ria
 | 2. Galleggia | 7,8 cm sott'acqua (raggio 0,12) | 3,7 cm (de Mestre) |
 | 3. Spinta a 3 m/s | 1,85 m in 5 s | da video |
 | 4. Palombella | 4,3 cm dal punto mirato | entro 5 cm ✓ |
-| 5. Tiro teso | 0,886 della velocità dopo 5 m | 0,917 ± 0,02 (tesi Patumi) |
+| 5. Tiro teso (13,3 m/s, come nella tesi) | circa 12,1 m/s dopo 5 m (calcolato) | 12,2 ± 0,25 m/s (tesi Patumi) |
 | 6. Radente 18 m/s, 10° | tre rimbalzi identici, tiene l'83% | 50–80% (da video) |
 | 7. 30° (caso misurato) | «tonfo», non esce | esce a 6,6 / 1,8 m/s (de Mestre) |
 | 8. Con rotazione | la rotazione non cambia l'uscita | in avanti > nessuna > indietro |
@@ -52,3 +52,12 @@ https://claude.ai/artifact/4H7yZMi99DmYJVPEvsKeWp (13 novembre 2026). Qui il ria
 | 11. Energia persa e angolo (14 m/s) | 5°: 31%, 10°: 32%, da 20° non esce più | cresce con l'angolo (Lyu 2021) |
 - Scarto tra 30, 60 e 120 passi al secondo: 0,7%.
 - Trovato: a palla ferma in acqua la velocità verticale segnata resta 0,06 m/s (gravità di Rapier e galleggiamento si alternano a ogni passo); la palla però non si muove.
+
+## Passo 2 — palla in aria (13 novembre 2026)
+- Raggio della palla per gli urti 0,1106 m (era 0,12), massa 0,425 kg (era 0,43), inerzia di una palla cava 2/3·m·a² (era quella di una sfera piena, 2/5): `setAdditionalMassProperties` in `palla.js`, collisore a densità zero.
+- Il fotogramma si divide in passi di al massimo 1/240 s (`passoMax`): a 60 fotogrammi al secondo sono 4 passi. Risultato uguale a 30, 60 e 120 fotogrammi al secondo (scarto 0,0%, prima 0,7%). La velocità «fantasma» della palla ferma scende da 0,061 a 0,015 m/s.
+- Resistenza dell'aria calcolata da Cd = 0,42 (era 0,0245 1/m fisso, cioè circa 0,46): ricavato dalla tesi Patumi, che misura la velocità **in valore assoluto** (Tabelle 5.2–5.6). Nella stessa situazione della tesi (13,3 m/s da 1,2 m) la palla arriva a 12,20 m/s dopo 5 m (tesi 12,2). ATTENZIONE: guardando solo la velocità in avanti verrebbe Cd 0,32, ma la tesi riporta il modulo.
+- Magnus da cMagnus = 0,75 (stesso effetto di prima). La mira (`velocitaDiLancio`) usa lo stesso passo del volo vero e tiene conto del calo della rotazione: palombella a 1,8 cm dal punto mirato (prima 4,3).
+- `fisica-palla`: la prova «palo interno» ora controlla il passaggio della linea tra i pali (come decide il gol in partita). Trovato: dopo l'urto con l'interno del palo la palla perde quasi tutta la velocità in avanti e scivola lungo la linea (attrito palla–palo 0,4 in media): c'era già prima; da tarare nel passo 5.
+- Partite di prova (`npm run verifica`): 63 gol su 211 tiri (30%), prima 69 su 217 (32%); nessun errore. `dati-tesi`, `statistiche`, `azione` superati.
+- `npm run bilancio` (12 partite ITA–USA, 4×8 min, per squadra a partita), prima → dopo: gol 13,3 → 14,5; tiri 41,7 → 43,1; tiri in gol 31,9% → 33,6%; nello specchio 71,8% → 68,6%; parate 16,6 → 15,1; superiorità trasformate 32,6% → 36,9%; rigori segnati 78,8% → 71,4% (pochi rigori: poco significativo); vittorie 6–6 → 9–3. Con 12 partite differenze di questa misura stanno quasi tutte nel caso: il gioco resta nella stessa fascia.

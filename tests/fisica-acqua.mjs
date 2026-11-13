@@ -17,12 +17,14 @@ const arg = (k, d) => { const a = process.argv.find(x => x.startsWith('--' + k +
 
 let ok = true; const errore = t => { console.log('ERRORE ' + t); ok = false; };
 const r = RAGGIO;
+const { BRV } = await import('../src/costanti.js');
+const ARIA_DA = Math.max(r, BRV);           // sopra questa quota del centro il gioco non applica forze dell'acqua
 // segue la palla per "durata" secondi a "fps" passi al secondo; registra traiettoria, contatti con l'acqua e uscite
 function segui(B0, durata, fps = 60, giocatori = null) {
   const B = { wx: 0, wy: 0, wz: 0, ...B0 }, dt = 1 / fps, storia = [], urti = [], eventi = [];
   let primoContatto = null, uscita = null, hMax = 0, energiaAriaMax = -Infinity, cresciuta = 0, ePrec = energia(B), sotto = B.y < r;
   for (let i = 0; i < Math.round(durata * fps); i++) {
-    const t = (i + 1) * dt, eraInAria = B.y >= r, vPrima = [Math.hypot(B.vx, B.vz), -B.vy];
+    const B0y = B.y, t = (i + 1) * dt, eraInAria = B.y >= r, vPrima = [Math.hypot(B.vx, B.vz), -B.vy];
     const e = passoPalla(B, dt, giocatori);
     for (const u of e.urti) urti.push({ t, u });
     if (e.acqua) eventi.push({ t, tipo: e.acqua.tipo });
@@ -35,7 +37,7 @@ function segui(B0, durata, fps = 60, giocatori = null) {
     if (primoContatto && !uscita && h === 0 && B.vy > 0 && !eraInAria) uscita = { t, vOrizz: Math.hypot(B.vx, B.vz), vVert: B.vy, contatto: t - primoContatto.t };
     // in aria (prima di toccare l'acqua e senza urti) l'energia non può crescere
     const en = energia(B);
-    if (eraInAria && B.y >= r && !e.urti.length && !e.acqua && en > ePrec * 1.0001 + 1e-6) cresciuta = Math.max(cresciuta, en / ePrec - 1);
+    if (B0y >= ARIA_DA && B.y >= ARIA_DA && !e.urti.length && !e.acqua && en > ePrec * 1.0001 + 1e-6) cresciuta = Math.max(cresciuta, en / ePrec - 1);
     energiaAriaMax = Math.max(energiaAriaMax, en); ePrec = en;
     storia.push([t, B.x, B.y, B.z, Math.hypot(B.vx, B.vy, B.vz)]);
   }
@@ -69,10 +71,10 @@ const riga = (n, nome, misura, riferimento, vicino) => { righe.push({ n, nome, m
   let best = Infinity; for (const q of s.storia) if (Math.abs(q[0] - t) < 0.0017) best = Math.hypot(q[1] - a[0], q[2] - a[1], q[3] - a[2]);
   riga(4, 'Palombella', `arriva a ${f(best * 100, 1)} cm dal punto mirato (partenza ${f(Math.hypot(L.vx, L.vy, L.vz))} m/s)`, 'entro 5 cm', best < 0.05);
   disegni.push({ n: 4, nome: 'Palombella', s, asse: 'x' }); }
-// 5. tiro teso a 22,8 m/s (tesi Patumi: 13,3 → 12,2 m/s in 5 m, cioè 0,917)
-{ const v0 = 22.8, s = segui({ x: 0, y: 1.0, z: -6, vx: v0, vy: 0.6, vz: 0 }, 0.4, 600);
-  const q = s.storia.find(p => p[1] >= 5); const rapp = q[4] / Math.hypot(v0, 0.6);
-  riga(5, 'Tiro teso a 22,8 m/s', `dopo 5 m va a ${f(q[4])} m/s (${f(rapp, 3)} della partenza)`, '0,917 ± 0,02 (tesi Patumi: 13,3 → 12,2 m/s in 5 m)', Math.abs(rapp - 0.917) < 0.02);
+// 5. tiro teso: la situazione della tesi Patumi (13,3 m/s in valore assoluto, da 1,2 m, 3,4° in su → 12,2 m/s dopo 5 m)
+{ const v0 = 13.3, s = segui({ x: 0, y: 1.2, z: -6, vx: v0 * Math.cos(0.06), vy: v0 * Math.sin(0.06), vz: 0 }, 0.6, 600);
+  const q = s.storia.find(p => p[1] >= 5);
+  riga(5, 'Tiro teso (situazione della tesi)', `dopo 5 m va a ${f(q[4])} m/s`, '12,2 ± 0,25 m/s (tesi Patumi)', Math.abs(q[4] - 12.2) < 0.25);
   disegni.push({ n: 5, nome: 'Tiro teso', s, asse: 'x' }); }
 // 6. schizzo radente: 18 m/s a 10°
 const impatto = (v, gradi, w = 0) => { const a = gradi * Math.PI / 180, vx = v * Math.cos(a), vy = -v * Math.sin(a), y0 = r + 0.25;

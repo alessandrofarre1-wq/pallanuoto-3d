@@ -42,8 +42,9 @@ const esiti = await pg.evaluate(() => {
     disegna('Palo: torna in campo', '#ef4444', storia);
     prova('Palo pieno: torna in campo', fatti.urti.includes('palo') && vmax < -3 && B.x < HL, `urti: ${fatti.urti.join(', ')} · velocità di ritorno ${r(-vmax)} m/s · finisce a x=${r(B.x)}`); }
   // 3. palo interno: tocca il palo ed entra
-  { const { B, fatti } = lancia([6, 1.1, 0.6], [HL, 0.45, GW - 0.065], 0.36, 20, 1.2);
-    prova('Palo interno: entra', fatti.urti.includes('palo') && B.x > HL && Math.abs(B.z) < GW + 0.1, `urti: ${fatti.urti.join(', ')} · finisce a x=${r(B.x)}, z=${r(B.z)}`); }
+  // come in partita conta il passaggio della linea di porta tra i pali (dopo, senza il freno della rete, la palla può rimbalzare)
+  { const { fatti, storia } = lancia([6, 1.1, 0.6], [HL, 0.45, GW - 0.065], 0.36, 20, 1.2), oltre = storia.find(p => p.x > HL);
+    prova('Palo interno: entra', fatti.urti.includes('palo') && !!oltre && Math.abs(oltre.z) < GW && oltre.y < GH, `urti: ${fatti.urti.join(', ')} · passa la linea a z=${oltre ? r(oltre.z) : '–'}, quota ${oltre ? r(oltre.y) : '–'}`); }
   // 4. traversa: sotto entra, sopra esce verso l'alto
   { const { fatti, storia } = lancia([6, 1.1, 0], [HL, GH + 0.045, 0.3], 0.36, 20, 0.6), dopo = storia.find(p => p.t > 0.4);
     prova('Traversa piena: rimbalza', fatti.urti.includes('traversa') && dopo.vx < 0, `urti: ${fatti.urti.join(', ')} · dopo l'urto vx=${r(dopo.vx)}, vy=${r(dopo.vy)}`); }

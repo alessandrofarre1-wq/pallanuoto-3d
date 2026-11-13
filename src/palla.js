@@ -10,16 +10,19 @@ await RAPIER.init();
 // Tutti i numeri stanno in fisica-palla/parametri.js, con unità, fonte e intervallo.
 export const RAGGIO=P.raggioUrti;           // raggio della palla per gli urti (una palla vera misura circa 11 cm)
 export const QUOTA_GALLEGGIA=P.quotaGalleggia;   // altezza del centro quando la palla galleggia ferma
-// resistenza dell'aria, tarata sulle misure della tesi Patumi (PoliTo 2018): la palla lascia la mano a 13,3 m/s
-// e arriva in porta, 5 metri dopo, a 12,2 m/s (perde circa l'8%)
-const ARIA=P.aria;
-const EFFETTO=P.effetto;                    // spinta laterale/verticale di una palla che gira (effetto Magnus)
-const MASSA=P.massa, INERZIA=0.4*P.massa*P.raggioUrti*P.raggioUrti;   // Rapier calcola l'inerzia di una sfera piena
+const MASSA=P.massa, SEZIONE=Math.PI*RAGGIO*RAGGIO;
+const INERZIA=P.inerzia*MASSA*RAGGIO*RAGGIO;      // palla cava: più vicina a un guscio (2/3·m·a²) che a una sfera piena
+// resistenza dell'aria: Cd dalla tesi Patumi (PoliTo 2018), la palla lascia la mano a 13,3 m/s e 5 metri dopo va a 12,2
+const ARIA=P.densitaAria*P.cdAria*SEZIONE/(2*MASSA);
+// effetto Magnus: CL = cMagnus·S (S = aω/v), quindi accelerazione = EFFETTO·(ω×v)
+const EFFETTO=P.densitaAria*SEZIONE*RAGGIO*P.cMagnus/(2*MASSA);
+const PASSO=P.passoMax;                     // passo massimo del calcolo (più passi per fotogramma)
 
 const mondo=new RAPIER.World({x:0,y:-G,z:0});
 const eventi=new RAPIER.EventQueue(true);
 const corpoPalla=mondo.createRigidBody(RAPIER.RigidBodyDesc.dynamic().setCcdEnabled(true).setCanSleep(false).setAngularDamping(P.smorzaRotAria));
-const urtoPalla=mondo.createCollider(RAPIER.ColliderDesc.ball(RAGGIO).setMass(MASSA).setRestitution(P.rimbalzo).setFriction(P.attrito)
+corpoPalla.setAdditionalMassProperties(MASSA,{x:0,y:0,z:0},{x:INERZIA,y:INERZIA,z:INERZIA},{w:1,x:0,y:0,z:0},true);
+const urtoPalla=mondo.createCollider(RAPIER.ColliderDesc.ball(RAGGIO).setDensity(0).setRestitution(P.rimbalzo).setFriction(P.attrito)
   .setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS),corpoPalla);
 
 // ---------- porte: pali, traversa e rete ----------
@@ -61,11 +64,13 @@ const _a=[0,0,0];
 // gravità, aria ed effetto? Si parte dalla formula senza aria e si corregge provando il volo qualche volta.
 export function velocitaDiLancio(x,y,z,tx,ty,tz,t,giri){
   let vx=(tx-x)/t, vz=(tz-z)/t, vy=(ty-y+0.5*G*t*t)/t;
-  const n=Math.max(4,Math.round(t*60)), dt=t/n, w=[0,0,0];
+  const n=Math.max(4,Math.ceil(t/PASSO)), dt=t/n, w=[0,0,0];
   for(let giro=0;giro<5;giro++){
     rotazioneDiLancio(vx,vz,giri,w);
     let px=x,py=y,pz=z, ux=vx,uy=vy,uz=vz;
-    for(let i=0;i<n;i++){ aria(ux,uy,uz,w[0],w[1],w[2],_a); ux+=_a[0]*dt; uy+=(_a[1]-G)*dt; uz+=_a[2]*dt; px+=ux*dt; py+=uy*dt; pz+=uz*dt; }
+    const cala=1/(1+dt*P.smorzaRotAria);      // la rotazione cala come nel volo vero (smorzamento di Rapier)
+    let wx=w[0], wz=w[2];
+    for(let i=0;i<n;i++){ aria(ux,uy,uz,wx,0,wz,_a); ux+=_a[0]*dt; uy+=(_a[1]-G)*dt; uz+=_a[2]*dt; px+=ux*dt; py+=uy*dt; pz+=uz*dt; wx*=cala; wz*=cala; }
     vx+=(tx-px)/t; vy+=(ty-py)/t; vz+=(tz-pz)/t;
   }
   rotazioneDiLancio(vx,vz,giri,w);
@@ -89,11 +94,17 @@ function aggiornaDiagnosi(B,inAcqua,aGalleggia,fo,fv,fr){
 // ---------- un passo di simulazione ----------
 // B = stato della palla (x,y,z,vx,vy,vz,wx,wy,wz); giocatori = elenco di {x,z,attivo}; restituisce cosa è successo
 const esito={ urti:[], acqua:null };
+// il gioco chiama una volta per fotogramma; qui il fotogramma si divide in passi di al massimo PASSO secondi
 export function passoPalla(B,dt,giocatori){
   esito.urti.length=0; esito.acqua=null;
+  const n=Math.max(1,Math.ceil(dt/PASSO-1e-9)), h=dt/n;
+  for(let i=0;i<n;i++) passoSingolo(B,h,giocatori,i===0);
+  return esito;
+}
+function passoSingolo(B,dt,giocatori,primo){
   // corpi dei giocatori
   if(giocatori&&corpi.length<giocatori.length) creaCorpiGiocatori(giocatori.length);
-  if(giocatori) for(let i=0;i<corpi.length;i++){ const g=giocatori[i], k=corpi[i], on=!!(g&&g.attivo);
+  if(giocatori&&primo) for(let i=0;i<corpi.length;i++){ const g=giocatori[i], k=corpi[i], on=!!(g&&g.attivo);
     if(on!==k.attivo){ k.c.setEnabled(on); k.attivo=on; }
     if(on) k.b.setNextKinematicTranslation({x:g.x,y:P.quotaCorpo,z:g.z}); }
   // aria ed effetto (in aria) oppure acqua (a contatto con la superficie)
@@ -120,13 +131,12 @@ export function passoPalla(B,dt,giocatori){
     const I=diagnosi.impatto, prima=energia(B); I.angolo=angolo; I.vOrizz=vo; I.vVert=-B.vy; I.rot=Math.hypot(B.wx,B.wy,B.wz);
     if(vo>P.schizzoVelMin && angolo<P.schizzoAngMax){
       B.y=BRV+0.005; B.vy=-B.vy*P.schizzoVert; B.vx*=P.schizzoOrizz; B.vz*=P.schizzoOrizz; B.wx*=P.schizzoRot; B.wz*=P.schizzoRot;
-      esito.acqua={ tipo:'schizzo', forza };
+      if(!esito.acqua) esito.acqua={ tipo:'schizzo', forza };
     } else {
       B.vx*=P.tonfoOrizz; B.vz*=P.tonfoOrizz; B.vy*=P.tonfoVert;
-      esito.acqua={ tipo:'tonfo', forza };
+      if(!esito.acqua) esito.acqua={ tipo:'tonfo', forza };
     }
     I.n++; I.tipo=esito.acqua.tipo; I.prima=prima; I.dopo=energia(B);
   }
   aggiornaDiagnosi(B,inAcqua,aGalleggia,fo,fv,fr);
-  return esito;
 }
