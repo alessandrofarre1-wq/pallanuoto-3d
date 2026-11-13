@@ -119,7 +119,8 @@ const live = await pg.evaluate(() => {
   r.fase = t.cambio && t.cambio.fase; r.pos = t.cambio && [t.cambio.esce.x, t.cambio.esce.z, t.cambio.esce.num, H.ball.holder && H.ball.holder.num, H.game.state, H.game.time, H.ctrl && H.ctrl.num, t.cambio.esce.uscendo]; r.coda = (t.coda||[]).length; r.inCorso = !!t.cambio; r.cambiato = t.players.map(p => p.num).join(',') !== prima; r.eraLui = t.players[5].num !== esce;
   return r;
 });
-prova(live.stato === "consiglio" && /stanco/.test(live.testo), `pulsante CAMBI: mostra il cambio consigliato per chi è stanco («${live.testo}»)`);
+prova(live.vuoto !== "consiglio", `pulsante CAMBI: non dorato se nessuno è stanco o con 2 falli gravi (${live.vuoto})`);
+prova(live.stato === "consiglio" && /stanco/.test(live.testo), `pulsante CAMBI: dorato con il cambio consigliato per chi è stanco («${live.testo}»)`);
 prova(live.partito && live.statoGioco === 'play' && live.cambiato && live.eraLui && !live.barra, `un tocco e il cambio volante parte subito, senza elenchi e senza fermare il gioco (stato ${live.dopo})`);
 
 // ---------- cambi scelti in pausa: partono al primo momento utile ----------

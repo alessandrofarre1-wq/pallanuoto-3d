@@ -63,7 +63,7 @@ export function aggiornaPulsanteCambi(forza = false) {
   let html, stato;
   if (C) { html = `<small>cambio in corso</small><b>${cognomeDi(C.esce.scheda || {})} → ${cognomeDi(C.entra)}</b>`; stato = 'corso'; }
   else if (coda.length) { html = `<small>${coda.length === 1 ? '1 cambio' : coda.length + ' cambi'} in attesa</small><b>${cognomeDi(coda[0].esce.scheda || {})} → ${cognomeDi(coda[0].entra)}</b>`; stato = 'corso'; }
-  else if (c) { html = `<small>cambio consigliato · ${c.motivo.split(':')[0].split(' (')[0]}</small><b>${cognomeDi(c.p.scheda)} → ${cognomeDi(c.g)} <i>${RUOLI_BREVI[c.g.ruolo]} ${c.g.ovr}</i></b>`; stato = 'consiglio'; }
+  else if (c) { html = `<small>cambio consigliato · ${c.motivo.split(':')[0].split(' (')[0]}</small><b>${cognomeDi(c.p.scheda)} → ${cognomeDi(c.g)} <i>${RUOLI_BREVI[c.g.ruolo]} ${c.g.ovr}</i></b>`; stato = c.urgente ? 'consiglio' : 'proposta'; }
   else { html = '<b>CAMBI</b>'; stato = 'vuoto'; }
   if (b.dataset.h !== html) { b.dataset.h = html; b.querySelector('.tc-testo').innerHTML = html; b.dataset.stato = stato; }
 }
