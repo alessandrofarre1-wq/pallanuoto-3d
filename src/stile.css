@@ -531,3 +531,5 @@ body.touch #qte{display:none}
 #tCambi[data-stato="consiglio"]{border-color:var(--h-oro);box-shadow:0 0 0 2px rgba(255,200,60,.45),var(--h-ombra)}
 #tCambi[data-stato="consiglio"] .tc-testo small{color:var(--h-oro)}
 #tCambi[data-stato="vuoto"]{opacity:.7}
+/* consiglio non urgente (partita storta, in panchina c'è chi rende di più): visibile ma senza oro */
+#tCambi[data-stato="proposta"]{opacity:.85}

@@ -169,12 +169,12 @@ export function consigli(t, max = 3) {
     if (p.isGK || !p.scheda || occupato(p) || (p.excluded && (p.pf >= 3 || !p.alPozzetto))) continue;
     const g = migliorRiserva(t, p, usate); if (!g) continue;
     const ora = valoreAdesso(p.ovr, p.stamina), dopo = valoreAdesso(g.ovr, g.stamina), sc = p.scheda;
-    let motivo = null, peso = 0;
-    if (p.stamina < 0.5 && dopo > ora - 4) { motivo = `stanco (${Math.round(p.stamina * 100)}%)`; peso = 60 + (0.5 - p.stamina) * 100; }
-    else if (p.pf >= 2) { motivo = '2 falli gravi: al terzo esce per sempre'; peso = 40; }
+    let motivo = null, peso = 0, urgente = false;
+    if (p.stamina < 0.5 && dopo > ora - 4) { motivo = `stanco (${Math.round(p.stamina * 100)}%)`; peso = 60 + (0.5 - p.stamina) * 100; urgente = true; }
+    else if (p.pf >= 2) { motivo = '2 falli gravi: al terzo esce per sempre'; peso = 40; urgente = true; }
     else if ((sc.tiriP || 0) >= 4 && !(sc.gol)) { motivo = `partita storta (0 gol su ${sc.tiriP} tiri)`; peso = 30; }
     else if (dopo > ora + 3) { motivo = `in panchina c'è chi ora rende di più (${Math.round(dopo)} contro ${Math.round(ora)})`; peso = 10 + dopo - ora; }
-    if (motivo) cand.push({ p, g, motivo, peso });
+    if (motivo) cand.push({ p, g, motivo, peso, urgente });      // urgente = stanco o 2 falli gravi: il pulsante in gioco diventa dorato
   }
   cand.sort((a, b) => b.peso - a.peso);
   const out = [], prese = new Set();
