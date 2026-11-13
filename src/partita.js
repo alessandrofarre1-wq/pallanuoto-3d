@@ -119,7 +119,7 @@ export function update(dt){
         // Disciplina ci prova anche quando non dovrebbe; in controfuga, superato, spende il fallo per fermare l'azione
         const c=ball.holder, lato=latoContrasto(p,c), palla=pallaEsposta(c), dis=(p.s.dis-40)/59;
         const fuga=game.time-(game.possT||0)<11 && difensoriDavanti(c)<=1 && Math.abs(goalX(c.team)-c.x)>6.5;
-        if(fuga && rnd()<dt*(1.2+1.2*(p.s.dif-40)/59)) tackle(p,c,{voluto:true});
+        if(fuga && rnd()<dt*(1.2+1.2*(p.s.dif-40)/59)) tackle(p,c,{voluto:true,origine:'fuga'});
         else {
           const voglia=(lato==='dietro'?0.25+0.9*(1-dis):1)*(palla==='alzata'?0.3+0.8*(1-dis):palla==='palleggio'?1.4:1);
           // stessa regola del giocatore: disturbo a tocchi; il terzo tocco ravvicinato è fallo, e il computer insiste di rado

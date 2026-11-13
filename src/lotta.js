@@ -6,7 +6,7 @@ import { spawnFoam } from './grafica/scena.js';
 import { annuncia } from './cronaca.js';
 import { aiPass, aiShoot, closestTo } from './ia.js';
 import { inp } from './input.js';
-import { deadBall, exclude, foul, giveBall, penalty } from './regole.js';
+import { ESPULSIONI, deadBall, exclude, foul, giveBall, penalty } from './regole.js';
 import { ball, ctrl, fight, game, goalX, other } from './stato.js';
 import { bestPassTarget, doShoot, startAct } from './tiri.js';
 export const boaDef = t => other(t).players.find(q=>MARK[q.i]===1);
@@ -42,11 +42,11 @@ export function boaHold(b,d,dt){
   let ag = d===ctrl ? (d.aggrT>game.time?1.6:0.35) : (d.team.defPlay===2?1.05:0.85)*(0.85+0.3*DIFF());
   // ai 2 metri l'arbitro pesa di più: un arbitro fiscale fischia molte più espulsioni (e rigori) al marcatore del centroboa
   const sev=Math.pow(ARBITRO,1.5), rP=(v>0.15?0.07:0.02)*sev*(1.5-(d.s.dis-40)/59);
-  const rE=Math.max(0.12,0.42+0.5*v)*ag*(1.5-(d.s.dis-40)/59)*sev, rF=0.5*ag, rO=0.14+0.3*Math.max(0,-v), rS=(0.08+0.25*Math.max(0,-v))*(d===ctrl&&d.aggrT>game.time?1.5:1);
+  const rE=Math.max(0.12,0.42+0.5*v)*ESPULSIONI.centro*ag*(1.5-(d.s.dis-40)/59)*sev, rF=0.5*ag, rO=0.14+0.3*Math.max(0,-v), rS=(0.08+0.25*Math.max(0,-v))*(d===ctrl&&d.aggrT>game.time?1.5:1);
   if(fight.holdT>0.35){
     const r=rnd();
     if(r>1-rP*dt){ penalty(d,b,'centroboa affondato'); return; }
-    if(r<rE*dt){ exclude(d,b,'guadagnata dal centroboa'); return; }
+    if(r<rE*dt){ exclude(d,b,'guadagnata dal centroboa','centro'); return; }
     if(r<(rE+rF)*dt){ foul(d,b); return; }
     if(r<(rE+rF+rO)*dt){ offFoul(b); return; }
     if(r<(rE+rF+rO+rS)*dt){ giveBall(d); annuncia('possesso','Palla rubata al centroboa',{p:d}); return; }

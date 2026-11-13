@@ -34,7 +34,7 @@ const r = await pg.evaluate(() => {
     let dz = 0;
     for (let i = 0; i < 150; i++) {      // 1,5 s con la palla in mano, poi 1 s di carica del tiro
       att.x = gx - dir * 6.5; att.z = z; att.vx = att.vz = 0; att.fx = dir; att.fz = 0;
-      att.act = i < 90 ? null : (att.act || { kind: 'shot', t: 0.05, wind: 99, frusta: 0.17, done: false, fn: () => {} }); att.decideT = 99; att.pressatoUntil = 0;
+      att.act = i < 90 ? null : (att.act || { kind: 'shot', t: 0.05, wind: 99, frusta: 0.17, done: false, fn: () => {} }); att.decideT = 99; att.pressatoUntil = 0; d.tackleCD = 9; d.stunUntil = 0; H.fight.active = false; H.game.state = 'play'; H.game.after = null; for (const q of H.allPlayers) q.excluded = false;      // qui si misura solo il muro: niente contrasti, lotta al centro ed espulsioni
       if (B.holder !== att) H.regole.giveBall(att);
       window.__salta(1);
     }
@@ -71,7 +71,7 @@ if (process.argv.includes('--foto')) {
       att.mano = mano; H.regole.giveBall(att); H.game.state = 'play'; H.game.after = null; att.act = null;
       d.x = gx - dir * 4.0; d.z = z * 0.8;
       for (let i = 0; i < 150; i++) {
-        att.x = gx - dir * 6.5; att.z = z; att.vx = att.vz = 0; att.decideT = 99; att.pressatoUntil = 0;
+        att.x = gx - dir * 6.5; att.z = z; att.vx = att.vz = 0; att.decideT = 99; att.pressatoUntil = 0; d.tackleCD = 9; d.stunUntil = 0; H.fight.active = false; H.game.state = 'play'; H.game.after = null; for (const q of H.allPlayers) q.excluded = false;      // qui si misura solo il muro: niente contrasti, lotta al centro ed espulsioni
         att.act = i < 90 ? null : (att.act || { kind: 'shot', t: 0.05, wind: 99, frusta: 0.17, done: false, fn: () => {} });
         if (B.holder !== att) H.regole.giveBall(att);
         window.__salta(1);

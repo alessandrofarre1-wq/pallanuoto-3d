@@ -179,8 +179,8 @@ export function goalThrow(defTeam,text){
   fermaOVola(); if(!ball.inUscita){ ball.y=BRV; ball.x=clamp(ball.x,-HL-0.5,HL+0.5); }
   deadBall(ball.inUscita?1.4:1.0,()=>{ giveBall(defTeam.players[0]); });
 }
-export function exclude(d,c,motivo){      // c (chi ha subito il fallo) e motivo: solo per la notifica
-  whistle(0.5); d.pf++; rumble(220,0.8); registraEspulsione(d);
+export function exclude(d,c,motivo,origine){      // c e motivo: solo per la notifica; origine: «centro» (lotta), «fuga» (fallo tattico), altro
+  whistle(0.5); d.pf++; rumble(220,0.8); registraEspulsione(d,origine);
   // tre espulsioni subite in due minuti: time-out per ridare calma e attenzione in marcatura
   { const T=d.team; T.espulsioniT=(T.espulsioniT||[]).filter(x=>game.time-x<120); T.espulsioniT.push(game.time); if(T.espulsioniT.length>=3){ T.vuoleTimeout=true; T.espulsioniT=[]; } }
   d.excluded=true; d.exclUntil=game.time+EXCL_TIME; d.vx=d.vz=0; d.charging=false; d.cut=null;
@@ -234,6 +234,9 @@ export function contrasto(d,c){
   c.pressatoUntil=game.time+CONTRASTO.pressione; c.pressatoDa=d;
   return tackle(d,c,{soloRuba:true});
 }
+// Da dove nascono le espulsioni (indicazione di Ale, 13/11/2026): circa il 70% dalla lotta tra centroboa e marcatore,
+// il resto da falli tattici (fermare una controfuga) o da interventi irruenti. Moltiplicatori della probabilità:
+export const ESPULSIONI={ centro:6, contrasto:0.12 };
 export function tackle(d,c,o){
   o=o||{};
   if(d.tackleCD>0||d.excluded||game.time<d.stunUntil) return false;
@@ -244,13 +247,13 @@ export function tackle(d,c,o){
   // Disciplina: chi ne ha poca sbaglia più spesso il contrasto e commette più falli gravi
   const fDis=1.5-(d.s.dis-40)/59, sev=fDis*ARBITRO;
   const grave=()=>{ if(gol&&rnd()<(lato==='dietro'?0.6:0.35)){ penalty(d,c); return 'rigore'; }
-    if(rnd()<(lato==='dietro'?0.55:lato==='lato'?0.24:0.12)*(palla==='alzata'?1.3:1)*(press?1:0.85)*sev){ exclude(d,c); return 'espulsione'; }
+    if(rnd()<(lato==='dietro'?0.55:lato==='lato'?0.24:0.12)*(palla==='alzata'?1.3:1)*(press?1:0.85)*sev*ESPULSIONI.contrasto){ exclude(d,c,undefined,o.origine); return 'espulsione'; }
     return null; };
   if(o.voluto){
     // fallo voluto: ferma il gioco; da dietro o su chi è in posizione di tiro si rischia l'espulsione (o il rigore)
     const inTiro=Math.abs(ownGoalX(d.team)-c.x)<7.5&&palla==='alzata';
     if(gol&&rnd()<0.6){ penalty(d,c); return 'rigore'; }
-    if(rnd()<(lato==='dietro'?0.42:inTiro?0.36:0.07)*sev){ exclude(d,c); return 'espulsione'; }
+    if(rnd()<(o.origine==='fuga'?(lato==='dietro'?0.8:lato==='lato'?0.5:0.2):(lato==='dietro'?0.42:inTiro?0.36:0.07))*sev){ exclude(d,c,undefined,o.origine); return 'espulsione'; }      // in controfuga il fallo per fermare l'azione è quasi sempre espulsione
     foul(d,c); return 'fallo';
   }
   // Difesa del difensore contro la capacità dell'attaccante di proteggere palla (Forza e Passaggio)
