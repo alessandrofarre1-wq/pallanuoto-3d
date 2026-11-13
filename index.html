@@ -7,9 +7,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Pallanuoto 3D">
+<meta name="apple-mobile-web-app-title" content="WATERPOLO 7">
 <meta name="theme-color" content="#0b1d33">
-<title>Pallanuoto 3D — Prototipo</title>
+<title>WATERPOLO 7</title>
+<meta name="application-name" content="WATERPOLO 7">
+<meta name="description" content="WATERPOLO 7 — videogioco di pallanuoto 3D nel browser, da giocare su iPhone in orizzontale.">
+<meta property="og:title" content="WATERPOLO 7">
+<meta property="og:description" content="Videogioco di pallanuoto 3D nel browser.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a2448'/%3E%3Ctext x='33' y='52' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='900' font-style='italic' font-size='54' fill='%23ffc93c'%3E7%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="./src/stile.css">
 </head>
 <body>
@@ -40,67 +45,97 @@
 <!-- il gioco è solo in orizzontale: in verticale si chiede di ruotare il telefono (il gioco resta fermo) -->
 <div id="ruota"><div class="rbox"><svg viewBox="0 0 64 64" class="rtel"><rect x="20" y="6" width="24" height="44" rx="5" fill="none" stroke="#fff" stroke-width="3.5"/><circle cx="32" cy="44" r="2" fill="#fff"/></svg>
   <svg viewBox="0 0 64 64" class="rfreccia"><path d="M14 40a20 20 0 0 1 33-22" fill="none" stroke="#facc15" stroke-width="4" stroke-linecap="round"/><path d="M49 9l-1 12-11-3z" fill="#facc15"/></svg>
-  <b id="ruotaTesto">Ruota il dispositivo per giocare</b><span>Pallanuoto 3D si gioca in orizzontale</span></div></div>
+  <b id="ruotaTesto">Ruota il dispositivo per giocare</b><span>WATERPOLO 7 si gioca in orizzontale</span></div></div>
 <div id="fps"></div>
 
 <div id="touch">
   <div id="joy"><span>MUOVI</span><div id="knob"></div></div>
-  <div class="tb" data-b="shoot" style="right:20px;bottom:100px">TIRO<br>2x finta</div>
-  <div class="tb" data-b="pass" style="right:96px;bottom:40px">PASSA<br>CONTRASTO</div>
-  <div class="tb" data-b="lob" style="right:96px;bottom:150px">PALOMB.</div>
-  <div class="tb" data-b="sprint" style="right:20px;bottom:20px;width:56px;height:56px">SPRINT</div>
-  <div class="tb" data-b="sw" style="right:172px;bottom:20px;width:56px;height:56px">CAMBIA</div>
-  <div class="tb" data-b="cmd" style="right:172px;bottom:86px;width:56px;height:56px;font-size:10px">TAGLIO<br>RADD.</div>
-  <div class="tb" data-b="to" style="right:10px;top:58px;width:40px;height:40px;border-radius:8px;font-size:10px">T.O.</div>
+  <!-- pulsanti: icona + etichetta; i due principali (TIRO, PASSA) più grandi; l'area di tocco è più ampia del disegno -->
+  <div class="tb pri" data-b="shoot"><svg viewBox="0 0 24 24"><circle cx="15.5" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M2 8.5h5.5M3 12h5M2 15.5h5.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><b>TIRO</b><small>2× finta</small></div>
+  <div class="tb pri" data-b="pass"><svg viewBox="0 0 24 24"><path d="M4 16c4-7 10-9 15-8M15 4.5l4 3.5-4 3.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>PASSA</b><small>contrasto</small></div>
+  <div class="tb sec" data-b="lob"><svg viewBox="0 0 24 24"><path d="M3 18C6 6 16 4 21 15M17.5 14.5l3.5.8.7-3.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>PALOMB.</b></div>
+  <div class="tb sec" data-b="sprint"><svg viewBox="0 0 24 24"><path d="M5 6l6 6-6 6M12 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><b>SPRINT</b></div>
+  <div class="tb sec" data-b="sw"><svg viewBox="0 0 24 24"><path d="M19 9a7 7 0 0 0-12.5-2.5M5 15a7 7 0 0 0 12.5 2.5M6 3v4h4M18 21v-4h-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>CAMBIA</b></div>
+  <div class="tb sec" data-b="cmd"><svg viewBox="0 0 24 24"><circle cx="7" cy="16" r="2.6" fill="currentColor"/><path d="M9.5 13.5L19 4M14 4h5v5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 2.5"/></svg><b>TAGLIO</b><small>raddoppio</small></div>
+  <div class="tb ang" data-b="to"><b>T.O.</b></div>
   <div id="tPause">II</div>
 </div>
 
-<div id="menu">
-  <div class="panel">
-    <h1>🤽 Pallanuoto 3D</h1>
-    <div class="sub" id="sub">Prototipo v0.25 · scegli le squadre e gioca</div>
-    <div id="final" style="display:none"></div>
-    <div class="row"><label>La tua squadra</label><select class="opt sel" id="sqA"></select></div>
-    <div class="row"><label>Avversaria</label><select class="opt sel" id="sqB"></select></div>
-    <details id="rosaBox"><summary>Rosa e statistiche</summary><div id="rosa"></div></details>
-    <div class="row"><label>Durata tempo</label>
-      <button class="opt" data-len="120">2 min</button><button class="opt on" data-len="180">3 min</button><button class="opt" data-len="300">5 min</button><button class="opt" data-len="480">8 min</button></div>
-    <div class="row"><label>Difficoltà</label>
-      <button class="opt" data-diff="0">Facile</button><button class="opt on" data-diff="1">Normale</button><button class="opt" data-diff="2">Difficile</button></div>
-    <div class="row"><label>Arbitro</label>
-      <button class="opt" data-arb="0.65">Permissivo</button><button class="opt on" data-arb="1">Normale</button><button class="opt" data-arb="1.4">Fiscale</button></div>
-    <div class="row"><label>Ritmo di gioco</label>
-      <button class="opt" data-spd="0.75">Lento</button><button class="opt on" data-spd="1">Normale</button><button class="opt" data-spd="1.25">Veloce</button></div>
-    <div class="row"><label>Telecamera</label>
-      <button class="opt" data-cam="0.85">Vicina</button><button class="opt on" data-cam="1">Normale</button><button class="opt" data-cam="1.22">Larga</button></div>
-    <div class="row"><label>Contatore FPS</label>
-      <button class="opt on" data-fps="0">No</button><button class="opt" data-fps="1">Sì</button></div>
-    <button class="go" id="goBtn">GIOCA</button>
-    <details id="ctrlBox"><summary>Comandi</summary>
-    <div class="ctrl">
-      <div><b>WASD / frecce</b> nuota</div>
-      <div><b>Shift</b> sprint (consuma resistenza)</div>
-      <div><b>Spazio</b> passaggio</div>
-      <div><b>Spazio in difesa (un tocco)</b> contrasto: provi a rubare palla. Riesce di più di lato o davanti e se la palla non è alzata; da dietro rischi fallo o espulsione</div>
-      <div><b>Spazio in difesa (tenuto)</b> fallo voluto: fermi l'azione (utile in controfuga), con rischio di espulsione o rigore</div>
-      <div><b>K (tieni premuto)</b> tiro: più tieni, più è forte</div>
-      <div><b>K un tocco</b> tiro di polso (rapido, sorprende il portiere)</div>
-      <div><b>K due volte veloce</b> finta · un altro tocco subito dopo: polso</div>
-      <div><b>K + cambio di palo</b> torsione: carica verso un palo, rilascia verso l'altro (o rilascia tenendo Shift)</div>
-      <div><b>K tenuto sul passaggio</b> tiro al volo appena arriva la palla</div>
-      <div><b>L</b> palombella</div>
-      <div><b>Q</b> cambia giocatore (in difesa)</div>
-      <div><b>1 2 3 4</b> chiama lo schema: attacco Arco/Entrata/Incrocio/Palla al boa · difesa A uomo/Zona/Pressing/Zona a M</div>
-      <div><b>E</b> in attacco: taglio del compagno · in difesa: raddoppio</div>
-      <div><b>Centroboa con palla</b>: E girata · K beduina · Spazio scarico</div>
-      <div><b>Lotta al centro</b>: tieni Shift per spingere (boa o suo marcatore)</div>
-      <div><b>T</b> time-out (2 a partita, solo con la palla): si recupera fiato</div>
-      <div><b>C</b> cambia telecamera · <b style="min-width:0">P / Esc</b> pausa</div>
-      <div style="margin-top:6px;opacity:.75">Controller: levetta sinistra, A passa/contrasto, B taglio/raddoppio, X tiro, Y palombella, LB cambia, RB/RT sprint, croce direzionale schemi, LT time-out, Back telecamera, Start pausa.<br>
-      Mirare: mentre tiri, tieni su/giù per scegliere il palo. Mentre passi, la direzione sceglie il compagno.</div>
+<div id="menu" data-vista="home">
+  <!-- HOME -->
+  <section class="vista" id="vHome">
+    <button type="button" class="m-icona m-angolo" data-va="opzioni" aria-label="Opzioni"><svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm8.4 4.6l1.8 1.4-2 3.4-2.1-.8a7.6 7.6 0 0 1-1.9 1.1l-.3 2.3h-3.9l-.4-2.3a7.6 7.6 0 0 1-1.9-1.1l-2.1.8-2-3.4 1.8-1.4a7.7 7.7 0 0 1 0-2.2L1.8 9.6l2-3.4 2.1.8a7.6 7.6 0 0 1 1.9-1.1l.4-2.3h3.9l.3 2.3c.7.3 1.3.6 1.9 1.1l2.1-.8 2 3.4-1.8 1.4c.1.7.1 1.5 0 2.2z" fill="currentColor"/></svg></button>
+    <div class="h-logo" id="logoHome"></div>
+    <div class="h-azioni">
+      <button type="button" class="m-cta" data-va="squadre"><span class="m-play"></span><span><b>PARTITA VELOCE</b><small>Scegli le squadre e gioca</small></span><i>›</i></button>
+      <button type="button" class="m-voce" data-va="comandi"><svg viewBox="0 0 24 24"><path d="M7 8h10a5 5 0 0 1 0 10c-1.6 0-2.6-1-3.4-2h-3.2c-.8 1-1.8 2-3.4 2a5 5 0 0 1 0-10z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7.5 11v4M5.5 13h4" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="12" r="1.2" fill="currentColor"/><circle cx="18" cy="14.5" r="1.2" fill="currentColor"/></svg><span><b>COMANDI</b><small>Impara le azioni di gioco</small></span><i>›</i></button>
     </div>
-    </details>
-  </div>
+    <div class="h-versione" id="sub">Prototipo v0.26</div>
+  </section>
+
+  <!-- PASSO 1: SQUADRE -->
+  <section class="vista" id="vSquadre">
+    <header class="m-testa"><button type="button" class="m-icona" data-indietro aria-label="Indietro">‹</button><h2>Nuova partita</h2><ol class="passi"><li class="on">Squadre</li><li>Impostazioni</li><li>Gioca</li></ol></header>
+    <div class="duello">
+      <div class="card-sq on" data-lato="0"><span class="cs-lab">LA TUA SQUADRA</span><button type="button" class="freccia sx" data-scorri="-1" aria-label="Precedente">‹</button><div class="cs-band"></div><b class="cs-nome"></b><span class="cs-rating"></span><button type="button" class="freccia dx" data-scorri="1" aria-label="Successiva">›</button></div>
+      <button type="button" class="scambia" id="scambia" aria-label="Scambia le squadre"><svg viewBox="0 0 24 24"><path d="M4 8h14l-3.5-3.5M20 16H6l3.5 3.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="card-sq" data-lato="1"><span class="cs-lab">AVVERSARIA</span><button type="button" class="freccia sx" data-scorri="-1" aria-label="Precedente">‹</button><div class="cs-band"></div><b class="cs-nome"></b><span class="cs-rating"></span><button type="button" class="freccia dx" data-scorri="1" aria-label="Successiva">›</button></div>
+    </div>
+    <div class="confronto" id="confronto"></div>
+    <div class="elenco-sq" id="elencoSq" aria-label="Tutte le squadre"></div>
+    <details id="rosaBox"><summary>Rosa e statistiche della tua squadra</summary><div id="rosa"></div></details>
+    <div class="m-fondo"><button type="button" class="m-cta corta" data-va="impostazioni"><span><b>CONTINUA</b></span><i>›</i></button></div>
+  </section>
+
+  <!-- PASSO 2: IMPOSTAZIONI DELLA PARTITA (facoltative) -->
+  <section class="vista" id="vImpostazioni">
+    <header class="m-testa"><button type="button" class="m-icona" data-indietro aria-label="Indietro">‹</button><h2>Impostazioni partita</h2><ol class="passi"><li class="fatto">Squadre</li><li class="on">Impostazioni</li><li>Gioca</li></ol></header>
+    <div class="riepilogo" id="riepilogo"></div>
+    <div class="imp">
+      <div class="riga"><label>Durata tempo</label><div class="seg"><button type="button" data-len="120">2′</button><button type="button" class="on" data-len="180">3′</button><button type="button" data-len="300">5′</button><button type="button" data-len="480">8′</button></div></div>
+      <div class="riga"><label>Difficoltà</label><div class="seg"><button type="button" data-diff="0">Facile</button><button type="button" class="on" data-diff="1">Normale</button><button type="button" data-diff="2">Difficile</button></div></div>
+      <div class="riga"><label>Arbitro</label><div class="seg"><button type="button" data-arb="0.65">Permissivo</button><button type="button" class="on" data-arb="1">Normale</button><button type="button" data-arb="1.4">Fiscale</button></div></div>
+      <div class="riga"><label>Ritmo di gioco</label><div class="seg"><button type="button" data-spd="0.75">Lento</button><button type="button" class="on" data-spd="1">Normale</button><button type="button" data-spd="1.25">Veloce</button></div></div>
+    </div>
+    <div class="m-fondo"><button type="button" class="m-cta corta" id="goBtn"><span class="m-play"></span><span><b>GIOCA</b></span></button></div>
+  </section>
+
+  <!-- COMANDI -->
+  <section class="vista" id="vComandi">
+    <header class="m-testa"><button type="button" class="m-icona" data-indietro aria-label="Indietro">‹</button><h2>Comandi di gioco</h2></header>
+    <ul class="comandi"><li><span class="ci"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg></span><div><b>Muovi</b><kbd>WASD / frecce</kbd><p>Trascina il joystick per nuotare. La direzione si aggiusta da sola verso la palla o l’avversario vicino.</p></div></li><li><span class="ci"><svg viewBox="0 0 24 24"><circle cx="15.5" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M2 8.5h5.5M3 12h5M2 15.5h5.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span><div><b>Tiro</b><kbd>K</kbd><p>Tieni premuto per caricare: più tieni, più è forte. Un tocco = tiro di polso, due tocchi = finta. Su/giù sceglie il palo; caricare verso un palo e rilasciare verso l’altro = torsione. Tenuto mentre arriva il passaggio = tiro al volo.</p></div></li><li><span class="ci"><svg viewBox="0 0 24 24"><path d="M4 16c4-7 10-9 15-8M15 4.5l4 3.5-4 3.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>Passa · Contrasto</b><kbd>Spazio</kbd><p>Con la palla: passaggio al compagno nella direzione in cui spingi. In difesa: un tocco = provi a rubare palla; tenuto = fallo voluto.</p></div></li><li><span class="ci"><svg viewBox="0 0 24 24"><path d="M3 18C6 6 16 4 21 15M17.5 14.5l3.5.8.7-3.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>Palombella</b><kbd>L</kbd><p>Tiro a parabola sopra il portiere.</p></div></li><li><span class="ci"><svg viewBox="0 0 24 24"><path d="M5 6l6 6-6 6M12 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>Sprint</b><kbd>Shift</kbd><p>Nuoti più veloce e consumi resistenza (su telefono un tocco lo accende e un altro lo spegne). Nella lotta al centro: spingi.</p></div></li><li><span class="ci"><svg viewBox="0 0 24 24"><path d="M19 9a7 7 0 0 0-12.5-2.5M5 15a7 7 0 0 0 12.5 2.5M6 3v4h4M18 21v-4h-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>Cambia</b><kbd>Q</kbd><p>Senza palla: controlli il compagno più vicino alla palla.</p></div></li><li><span class="ci"><svg viewBox="0 0 24 24"><circle cx="7" cy="16" r="2.6" fill="currentColor"/><path d="M9.5 13.5L19 4M14 4h5v5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 2.5"/></svg></span><div><b>Taglio · Raddoppio</b><kbd>E</kbd><p>In attacco: un compagno taglia verso la porta. In difesa: raddoppio sul portatore. Centroboa con palla nella lotta: girata.</p></div></li><li><span class="ci"><svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2.5" fill="currentColor"/><circle cx="18" cy="7" r="2.5" fill="currentColor"/><circle cx="12" cy="18" r="2.5" fill="currentColor"/><path d="M8 8.5l3 7M16 8.5l-3 7" stroke="currentColor" stroke-width="1.8" stroke-dasharray="2 2"/></svg></span><div><b>Schemi</b><kbd>1 2 3 4</kbd><p>Tocca lo schema in alto a sinistra. Attacco: Arco, Entrata, Incrocio, Palla al boa. Difesa: A uomo, Zona, Pressing, Zona a M.</p></div></li><li><span class="ci"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 8.5V13l3 2" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span><div><b>Time-out</b><kbd>T</kbd><p>2 a partita, solo quando la tua squadra ha la palla: si recupera fiato.</p></div></li><li><span class="ci"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg></span><div><b>Pausa ed eventi</b><kbd>P / Esc</kbd><p>In alto a destra: pausa e registro degli eventi della partita.</p></div></li></ul>
+    <p class="nota-pad">Controller: levetta sinistra muove · A passa/contrasto · X tiro · Y palombella · B taglio/raddoppio · LB cambia · RB/RT sprint · croce schemi · LT time-out · Start pausa.</p>
+  </section>
+
+  <!-- OPZIONI (generali e avanzate) -->
+  <section class="vista" id="vOpzioni">
+    <header class="m-testa"><button type="button" class="m-icona" data-indietro aria-label="Indietro">‹</button><h2>Opzioni</h2></header>
+    <div class="imp">
+      <div class="riga"><label>Telecamera</label><div class="seg"><button type="button" data-cam="0.85">Vicina</button><button type="button" class="on" data-cam="1">Normale</button><button type="button" data-cam="1.22">Larga</button></div></div>
+      <div class="riga avanzata"><label>Contatore FPS <small>per le prove di fluidità</small></label><div class="seg"><button type="button" class="on" data-fps="0">No</button><button type="button" data-fps="1">Sì</button></div></div>
+    </div>
+  </section>
+
+  <!-- PAUSA -->
+  <section class="vista" id="vPausa">
+    <div class="h-logo piccolo" id="logoPausa"></div>
+    <div class="pausa-punteggio" id="pausaPunteggio"></div>
+    <div class="h-azioni">
+      <button type="button" class="m-cta" id="riprendi"><span class="m-play"></span><span><b>RIPRENDI</b></span><i>›</i></button>
+      <button type="button" class="m-voce" data-va="comandi"><span><b>COMANDI</b></span><i>›</i></button>
+      <button type="button" class="m-voce" data-va="opzioni"><span><b>OPZIONI</b></span><i>›</i></button>
+    </div>
+  </section>
+
+  <!-- FINE PARTITA -->
+  <section class="vista" id="vFine">
+    <div class="h-logo piccolo" id="logoFine"></div>
+    <div id="final"></div>
+    <div class="h-azioni">
+      <button type="button" class="m-cta" id="rigioca"><span class="m-play"></span><span><b>RIGIOCA</b><small>Stesse squadre</small></span><i>›</i></button>
+      <button type="button" class="m-voce" data-va="squadre"><span><b>CAMBIA SQUADRE</b></span><i>›</i></button>
+    </div>
+  </section>
 </div>
 
 <script type="module" src="./src/main.js"></script>

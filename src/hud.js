@@ -31,7 +31,8 @@ export function updateHUD(){
     if(urg&&n>0&&n!==ultimoBip){ bip(n<=2?1320:880); }
     ultimoBip=urg?n:null; }
   if(ctrl){
-    $('pname').textContent='#'+ctrl.num+' '+ctrl.name+' · '+ctrl.role+(ctrl.sprinting?' · ⚡':'');
+    { const t=`#${ctrl.num} ${ctrl.name}<span class="ruolo"> · ${ctrl.role}</span>${ctrl.sprinting?' <span class="sp">⚡</span>':''}`;
+      if($('pname').innerHTML!==t) $('pname').innerHTML=t; }
     if(ctrl.scheda!==schedaVista){ schedaVista=ctrl.scheda; const s=ctrl.s; $('pstat').innerHTML=`<b>${ctrl.ovr}</b> · `+CHIAVE[ctrl.i].map(k=>`${STAT_NOMI[k].slice(0,3).toUpperCase()} ${s[k]}`).join(' · ')+` · mano ${ctrl.mano==='S'?'sinistra':'destra'}`; }
     $('stam').firstChild.style.width=(ctrl.stamina*100)+'%';
     $('stam').firstChild.style.background= ctrl.stamina>0.5?'#4ade80':ctrl.stamina>0.25?'#facc15':'#ef4444';
@@ -41,7 +42,7 @@ export function updateHUD(){
   const fe=$('fight');
   if(fight.active){
     fe.style.display='block';
-    $('fdef').textContent=fight.def.team.short+' #'+fight.def.num; $('fboa').textContent=fight.boa.team.short+' #'+fight.boa.num+' (boa)';
+    $('fdef').textContent=fight.def.team.short+' #'+fight.def.num; $('fboa').textContent=fight.boa.team.short+' #'+fight.boa.num+' boa';
     const v=fight.v, fb=$('fbar');
     fb.style.left=(v>=0?50:50+v*50)+'%'; fb.style.width=(Math.abs(v)*50)+'%';
     fb.style.background=v>=0?fight.boa.team.css:fight.def.team.css;

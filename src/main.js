@@ -28,10 +28,13 @@ document.addEventListener('visibilitychange',()=>{ frameMs=16; qT=0; lenti=0;
   if(document.hidden && ['play','stop','countdown'].includes(game.state)){ cronaca.chiudiRegistro(); togglePause(); } });
 // il gioco è solo in orizzontale: in verticale resta fermo sotto la schermata "Ruota il dispositivo" (stile.css) e riparte da
 // solo appena si gira il telefono
-const verticale=()=>innerHeight>innerWidth;
+// (il menu invece si usa anche in verticale: lì si continua a disegnare la piscina dietro il menu)
+const verticale=()=>innerHeight>innerWidth, menuEl=document.getElementById('menu');
 function loop(now){
   const raw=Math.min(0.1,(now-last)/1000); last=now;
-  if(verticale()){ requestAnimationFrame(loop); return; }
+  const inPartita=menuEl.style.display==='none';
+  document.body.classList.toggle('gioco',inPartita);
+  if(verticale()&&inPartita){ requestAnimationFrame(loop); return; }
   const dt=raw*SPEED;
   // un aggiornamento per fotogramma (suddiviso solo se il fotogramma è lungo): movimento continuo, senza scatti
   const n=Math.max(1,Math.ceil(dt/0.02));

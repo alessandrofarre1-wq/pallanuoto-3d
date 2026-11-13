@@ -67,6 +67,8 @@ function contenuto(n){
   else if(n.squadra) det.push(`<span class="chi">${pallino(n.squadra)}${n.squadra.short}</span>`);
   if(n.dettaglio) det.push(`<span class="det">${n.dettaglio}</span>`);
   const nome=n.tipo==='gol'?'GOL!':n.titolo;
+  // gol: anche il punteggio aggiornato (il tabellone intanto si illumina)
+  if(n.tipo==='gol') det.push(`<span class="esito">${teams[0].short} ${teams[0].score} – ${teams[1].score} ${teams[1].short}</span>`);
   return `<span class="ico">${ICONE[ICONA_DI[n.tipo]||'info']}</span><span class="tx"><b>${nome}</b>${det.join('')}</span><span class="cnt"></span>`;
 }
 function mostra(n){
@@ -148,8 +150,11 @@ export function aggiorna(){
   if((posT-=0.05)>0) return;                  // non salta di continuo da una parte all'altra
   // la prima posizione libera; se nessuna lo è (schermi molto bassi), quella che copre la cosa meno importante
   // se in ogni posizione coprirebbe la palla, la notifica si riduce a una riga (i dettagli restano nel registro)
+  // riduzione automatica: a gioco in corso, se la palla è vicina alla zona delle notifiche (in alto), la notifica è già
+  // compatta: una riga sola, senza dettagli
+  const pb=aSchermo(ball.x,ball.y||0.2,ball.z), vicina=game.state==='play'&&pb&&pb[1]<sotto+130;
   let meglio='', minimo=99;
-  for(const compatta of [false,true]){
+  for(const compatta of (vicina?[true]:[false,true])){
     el.classList.toggle('compatto',compatta);
     for(const p of ['','dx','sx']){
       metti(p); const c=copre(el.getBoundingClientRect());
