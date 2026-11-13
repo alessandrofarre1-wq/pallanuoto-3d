@@ -58,7 +58,7 @@ const controlla = (g, cosa) => {
 {
   const pg = await apri();
   await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 'USA'); H.game.autoplay = true; for (const t of H.teams) t.human = false;
-    document.querySelector('[data-len="300"]').click(); document.getElementById('goBtn').click();
+    window.__pallanuoto.imposta('len', '300'); document.getElementById('goBtn').click();
     window.__visti = []; H.cronaca.ascoltatori.push(tipo => window.__visti.push(tipo)); });
   const fatti = new Set(), cercati = ['fallo', 'possesso', 'parata', 'espulsione', 'gol', 'legno', 'rigore', 'fine'];
   for (let giro = 0; giro < 400 && fatti.size < cercati.length; giro++) {

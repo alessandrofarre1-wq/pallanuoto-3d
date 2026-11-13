@@ -31,8 +31,8 @@ for (let n = 1; n <= N; n++) {
     const H = window.__pallanuoto; H.renderer.render = () => {}; H.senzaCorpi = true;
     if (sq) H.scegliSquadre(...sq.split(','));
     H.game.autoplay = true; for (const t of H.teams) t.human = false;
-    const b = document.querySelector(`[data-len="${durata}"]`); if (b) b.click();
-    if (arb) document.querySelector(`[data-arb="${arb}"]`).click();
+    window.__pallanuoto.imposta('len', String(durata));
+    if (arb) window.__pallanuoto.imposta('arb', String(arb));
     document.getElementById('goBtn').click();
     // palla vagante: quanto resta ferma in acqua senza che nessuno ci vada (nessuno entro un metro e mezzo né in nuotata verso di lei)
     let f = 0, sola = 0, solaMax = 0, vag = 0, vagMax = 0; const B = H.ball;

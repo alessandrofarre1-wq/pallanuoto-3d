@@ -21,7 +21,7 @@ await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallan
 const esiti = await pg.evaluate(() => {
   const H = window.__pallanuoto, G = H.game, B = H.ball, R = H.regole, out = [];
   H.renderer.render = () => {}; H.senzaCorpi = true; G.autoplay = true; for (const t of H.teams) t.human = false;
-  document.querySelector('[data-len="480"]').click(); document.getElementById('goBtn').click();
+  window.__pallanuoto.imposta('len', '480'); document.getElementById('goBtn').click();
   const gioca = (max, fine) => { for (let i = 0; i < max && !fine(); i++) window.__step(1); return fine(); };
   const A = H.teams[0], Bq = H.teams[1];
   const fermi = () => { for (const p of H.allPlayers) { p.tackleCD = 9; p.decideT = 9; } };      // nessuno tira, passa o contrasta: si guarda solo il cronometro

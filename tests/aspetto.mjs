@@ -44,7 +44,7 @@ let ok = true; const nota = (bene, testo) => { console.log(`${bene ? 'OK ' : 'NO
   const pg = await apri({ width: 640, height: 360 }, false);
   const r = await pg.evaluate(() => {
     const H = window.__pallanuoto; H.scegliSquadre('ITA', 'USA'); H.game.autoplay = true; for (const t of H.teams) t.human = false;
-    document.querySelector('[data-len="120"]').click(); document.getElementById('goBtn').click();
+    window.__pallanuoto.imposta('len', '120'); document.getElementById('goBtn').click();
     // punti delle gambe (osso con il peso maggiore: coscia, gamba, piede) di ogni corpo, uno ogni tre
     const gambe = new Map(); let v = null;
     const puntiGambe = m => { if (gambe.has(m)) return gambe.get(m);
@@ -93,7 +93,7 @@ if (!SOLO_GIOCO) {
     const pg = await apri(sc.vp, !!sc.tel);
     const r = await pg.evaluate(({ f, chi, cam }) => {
       const H = window.__pallanuoto; H.scegliSquadre('ITA', 'USA'); H.game.autoplay = true; for (const t of H.teams) t.human = false;
-      document.querySelector('[data-len="120"]').click(); document.getElementById('goBtn').click();
+      window.__pallanuoto.imposta('len', '120'); document.getElementById('goBtn').click();
       window.__salta(f);
       if (chi) {
         const lista = H.allPlayers.filter(p => !p.isGK);

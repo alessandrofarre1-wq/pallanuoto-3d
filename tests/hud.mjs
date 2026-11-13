@@ -56,7 +56,7 @@ for (const [tel, vp] of Object.entries(TELEFONI)) {
   await pg.addInitScript(init); await pg.goto(server.resolvedUrls.local[0]);
   await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });
   // partita vera, Italia comandata (senza tocchi: si muovono i compagni e gli avversari), a un istante fisso
-  await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 'USA'); document.querySelector('[data-len="300"]').click(); document.getElementById('goBtn').click(); window.__salta(520); window.__vai(1); });
+  await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 'USA'); window.__pallanuoto.imposta('len', '300'); document.getElementById('goBtn').click(); window.__salta(520); window.__vai(1); });
   const stati = {};
   const scatta = async nome => { await pg.waitForTimeout(450); await pg.screenshot({ path: path.join(USCITA, `${tel}-${nome}.png`) }); stati[nome] = await pg.evaluate(() => window.__misura()); };
   await scatta('1-gioco-normale');

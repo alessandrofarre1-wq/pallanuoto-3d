@@ -24,8 +24,10 @@ const DISEGNI = {
 };
 // bandiera come SVG pronto da inserire nella pagina (rapporto 3:2, angoli arrotondati, bordo sottile per i colori chiari)
 let conta = 0;
-export function bandiera(codice, cls = 'band') {
+// rotonda = true: bandiera in un cerchio (come nel concept del menu), ritagliata al centro
+export function bandiera(codice, cls = 'band', rotonda = false) {
   const d = DISEGNI[codice]; if (!d) return `<span class="${cls}"></span>`;
   const id = `cb-${codice}-${++conta}`;      // nome interno unico per ogni bandiera disegnata
+  if (rotonda) return `<svg class="${cls} tonda" viewBox="8 -2 44 44" role="img" aria-label="${codice}"><clipPath id="${id}"><circle cx="30" cy="20" r="20"/></clipPath><g clip-path="url(#${id})">${d()}</g><circle cx="30" cy="20" r="20" fill="none" stroke="#ffffff" stroke-width="2.2"/><ellipse cx="25" cy="10" rx="11" ry="5" fill="#fff" opacity=".18"/></svg>`;
   return `<svg class="${cls}" viewBox="0 0 60 40" role="img" aria-label="${codice}"><clipPath id="${id}"><rect width="60" height="40" rx="5"/></clipPath><g clip-path="url(#${id})">${d()}</g><rect width="60" height="40" rx="5" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/></svg>`;
 }

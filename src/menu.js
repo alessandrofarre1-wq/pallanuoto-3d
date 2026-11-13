@@ -19,7 +19,7 @@ const leggi=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } 
 for(const id of ['logoHome','logoPausa','logoFine']) $(id).innerHTML=LOGO();
 
 // ---------- navigazione tra le schermate ----------
-const VISTE={ home:'vHome', squadre:'vSquadre', impostazioni:'vImpostazioni', comandi:'vComandi', opzioni:'vOpzioni', pausa:'vPausa', fine:'vFine' };
+const VISTE={ home:'vHome', squadre:'vSquadre', impostazioni:'vImpostazioni', comandi:'vComandi', info:'vInfo', opzioni:'vOpzioni', pausa:'vPausa', fine:'vFine' };
 const storia=[];
 export function vai(v,senzaStoria){
   const M=$('menu'), prima=M.dataset.vista;
@@ -28,7 +28,6 @@ export function vai(v,senzaStoria){
   for(const [k,id] of Object.entries(VISTE)) $(id).classList.toggle('on',k===v);
   M.scrollTop=0; $(VISTE[v]).scrollTop=0;
   if(v==='squadre') disegnaSquadre();
-  if(v==='impostazioni') disegnaRiepilogo();
 }
 function indietro(){ vai(storia.pop()||(game.state==='paused'?'pausa':game.state==='over'?'fine':'home'),true); }
 document.querySelectorAll('[data-va]').forEach(b=>b.addEventListener('click',()=>vai(b.dataset.va)));
@@ -42,10 +41,19 @@ function gruppo(attr,applica,chiave){
   for(const b of bottoni) b.onclick=()=>scegli(b.dataset[attr]);
   const v=chiave&&leggi(chiave); if(v&&bottoni.some(x=>x.dataset[attr]===v)) scegli(v);
 }
-gruppo('len',v=>setPeriodLen(+v),'pallanuoto-durata');
-gruppo('diff',v=>setDiff(+v),'pallanuoto-difficolta');
-gruppo('arb',v=>setArbitro(+v),'pallanuoto-arbitro');
-gruppo('spd',v=>setSpeed(+v),'pallanuoto-ritmo');
+// impostazioni della partita: menu a tendina (come nel concept), con i valori di prima
+const TENDINE={ len:['selLen',v=>setPeriodLen(+v),'pallanuoto-durata'], diff:['selDiff',v=>setDiff(+v),'pallanuoto-difficolta'],
+  arb:['selArb',v=>setArbitro(+v),'pallanuoto-arbitro'], spd:['selSpd',v=>setSpeed(+v),'pallanuoto-ritmo'] };
+// imposta('len','300'): sceglie un valore come farebbe il giocatore (lo usano anche le verifiche automatiche)
+export function imposta(nome,valore){
+  const [id,applica,chiave]=TENDINE[nome], sel=$(id);
+  if(![...sel.options].some(o=>o.value===String(valore))) return;
+  sel.value=String(valore); applica(sel.value); salva(chiave,sel.value);
+}
+for(const [nome,[id,applica]] of Object.entries(TENDINE)){
+  const sel=$(id); sel.onchange=()=>imposta(nome,sel.value);
+  const v=leggi(TENDINE[nome][2]); if(v) imposta(nome,v); else applica(sel.value);
+}
 gruppo('cam',v=>setCamZoom(+v),'pallanuoto-cam');
 gruppo('fps',v=>setFps(v==='1'),null);
 if(fpsIniziale()) document.querySelector('[data-fps="1"]').click();
@@ -73,14 +81,14 @@ function disegnaSquadre(){
   document.querySelectorAll('.card-sq').forEach(c=>{
     const l=+c.dataset.lato, q=sq(scelta[l]);
     c.classList.toggle('on',l===lato);
-    c.querySelector('.cs-band').innerHTML=bandiera(q.codice,'band grande');
+    c.querySelector('.cs-band').innerHTML=bandiera(q.codice,'band grande',true);
     c.querySelector('.cs-nome').textContent=q.nome;
     c.querySelector('.cs-rating').innerHTML=`Rating <b>${q.forza}</b>`;
   });
   const a=sq(scelta[0]), b=sq(scelta[1]), d=a.forza-b.forza;
   $('confronto').innerHTML=`<span class="cf-sig">${a.codice}</span><div class="cf-barra"><i style="width:${a.forza/(a.forza+b.forza)*100}%"></i></div><span class="cf-sig">${b.codice}</span>`+
     `<span class="cf-testo">${Math.abs(d)<=3?'Partita equilibrata':(d>0?a.nome:b.nome)+' favorita'+(Math.abs(d)>=10?' di molto':'')}</span>`;
-  $('elencoSq').innerHTML=squadre.map(q=>`<button type="button" class="es${q.codice===scelta[lato]?' on':''}${q.codice===scelta[1-lato]?' altra':''}" data-sq="${q.codice}">${bandiera(q.codice)}<span>${q.codice}</span></button>`).join('');
+  $('elencoSq').innerHTML=squadre.map(q=>`<button type="button" class="es${q.codice===scelta[lato]?' on':''}${q.codice===scelta[1-lato]?' altra':''}" data-sq="${q.codice}">${bandiera(q.codice,'band',true)}<span>${q.codice}</span></button>`).join('');
 }
 document.querySelectorAll('.card-sq').forEach(c=>{
   c.addEventListener('click',e=>{ const l=+c.dataset.lato;
@@ -92,10 +100,6 @@ document.querySelectorAll('.card-sq').forEach(c=>{
 });
 $('elencoSq').addEventListener('click',e=>{ const b=e.target.closest('[data-sq]'); if(b) metti(lato,b.dataset.sq); });
 $('scambia').onclick=()=>{ if(game.state==='menu'||game.state==='over') scegliSquadre(scelta[1],scelta[0]); };
-function disegnaRiepilogo(){
-  const a=sq(scelta[0]), b=sq(scelta[1]);
-  $('riepilogo').innerHTML=`${bandiera(a.codice)}<b>${a.nome}</b><span>contro</span><b>${b.nome}</b>${bandiera(b.codice)}`;
-}
 { let a='ITA', b='HUN'; const v=(leggi('pallanuoto-squadre')||'').split(','); if(v.length===2&&sq(v[0])&&sq(v[1])) [a,b]=v; scegliSquadre(a,b); }
 
 // ---------- avvio, pausa, fine ----------

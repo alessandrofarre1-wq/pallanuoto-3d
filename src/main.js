@@ -12,7 +12,7 @@ import './menu.js';
 import { SPEED } from './costanti.js';
 import { render } from './grafica/render.js';
 import { camera, dpr, renderer, setDpr } from './grafica/scena.js';
-import { scegliSquadre, togglePause } from './menu.js';
+import { imposta, scegliSquadre, togglePause } from './menu.js';
 import { modelloPronto } from './grafica/corpo.js';
 import { tickFps, updateHUD } from './hud.js';
 import * as cronaca from './cronaca.js';
@@ -55,7 +55,7 @@ function loop(now){
 // accesso per le verifiche automatiche (tests/verifica.mjs) e per il debug dalla console
 // "vista" permette alla verifica di mettere la telecamera dove vuole (primi piani): { pos:[x,y,z], look:[x,y,z], fov };
 // "senzaCorpi" ferma l'animazione degli scheletri (serve solo ad accelerare le partite simulate)
-window.__pallanuoto = { cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, palla:{ passoPalla, velocitaDiLancio }, regole:{ setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, prova:{ movePlayer, doShoot, valoriMotore }, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get modelloPronto(){ return modelloPronto; } };
+window.__pallanuoto = { imposta, cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, palla:{ passoPalla, velocitaDiLancio }, regole:{ setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, prova:{ movePlayer, doShoot, valoriMotore }, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get modelloPronto(){ return modelloPronto; } };
 // scena iniziale dietro al menu
 kickoff(); game.state='menu';
 requestAnimationFrame(loop);

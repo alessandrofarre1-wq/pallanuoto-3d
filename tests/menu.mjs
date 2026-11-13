@@ -43,6 +43,9 @@ for (const [tel, vp] of Object.entries(TELEFONI)) {
   const logo = await pg.evaluate(() => { const r = document.querySelector('#vHome .logo').getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height) }; });
   nota(logo.w >= 220, `home: logo largo ${logo.w} punti (leggibile)`);
   await foto(pg, `${tel}-1-home`);
+  nota(await pg.evaluate(() => { const i = document.querySelector('#vHome .eroe img'); return i && i.complete && i.naturalWidth > 0; }), 'home: giocatore in primo piano caricato');
+  await pg.tap('#vHome [data-va="info"]'); nota(await pg.evaluate(() => document.querySelectorAll('#vInfo li').length) >= 8, 'informazioni: regole e suggerimenti');
+  await foto(pg, `${tel}-7-informazioni`); await pg.tap('#vInfo [data-indietro]');
   // 2. squadre: Italia contro Ungheria (predefinite), tocchi contati
   let tocchi = 0; const tocca = async sel => { tocchi++; await pg.tap(sel); };
   await tocca('#vHome .m-cta');
@@ -57,12 +60,12 @@ for (const [tel, vp] of Object.entries(TELEFONI)) {
   // 3. impostazioni, poi indietro e avanti: le scelte restano
   await tocca('#vSquadre .m-cta');
   nota(await inVista(pg, '#goBtn'), 'impostazioni: GIOCA visibile senza scorrere');
-  await pg.tap('[data-len="300"]'); await pg.tap('[data-arb="1.4"]');
+  await pg.selectOption('#selLen', '300'); await pg.selectOption('#selArb', '1.4');
   await foto(pg, `${tel}-3-impostazioni`);
   await pg.tap('#vImpostazioni [data-indietro]'); const dopo = await pg.evaluate(() => [...document.querySelectorAll('.card-sq .cs-nome')].map(e => e.textContent));
   nota(dopo[0] === 'Italia' && dopo[1] === 'Ungheria', 'indietro: le squadre scelte restano');
   await pg.tap('#vSquadre .m-cta'); tocchi++;
-  const imp = await pg.evaluate(() => ({ len: document.querySelector('[data-len].on').dataset.len, arb: document.querySelector('[data-arb].on').dataset.arb }));
+  const imp = await pg.evaluate(() => ({ len: document.getElementById('selLen').value, arb: document.getElementById('selArb').value }));
   nota(imp.len === '300' && imp.arb === '1.4', 'indietro e avanti: le impostazioni restano');
   // 4. gioca
   await tocca('#goBtn');
