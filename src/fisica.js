@@ -24,7 +24,9 @@ export function movePlayer(p,dx,dz,sprint,dt){
   // e si riparte subito): circa un quarto di secondo per alzarsi, un decimo in più per distendersi.
   // Lo SPOSTAMENTO invece è lento e scivoloso: il corpo porta con sé la velocità anche quando smette di nuotare o si alza.
   const lunging=p.lunge>game.time;
-  const gesto=p.charging||(p.act&&!p.act.done&&p.act.kind!=='colonnello');
+  // muro (sezione 3): l'avversario vicino carica il tiro → ci si alza in verticale e lo si guarda in faccia, braccio alto
+  const hm=ball.holder, muroOra=!p.isGK&&hm&&hm.team!==p.team&&Math.hypot(hm.x-p.x,hm.z-p.z)<2&&(hm.charging||(hm.act&&!hm.act.done&&hm.act.kind!=='pass'&&hm.act.kind!=='fake'));
+  const gesto=p.charging||(p.act&&!p.act.done&&p.act.kind!=='colonnello')||muroOra;
   // chi sta per ricevere un passaggio si alza un attimo prima che la palla arrivi (e continua a scivolare)
   const riceve=ball.state==='flight'&&ball.kind==='pass'&&ball.target===p&&Math.hypot(ball.tx-ball.x,ball.tz-ball.z)<Math.hypot(ball.vx,ball.vz)*0.3;
   // inversione: per tornare indietro non si fa una curva a U distesi, ci si alza, si gira sul posto e si riparte
@@ -69,6 +71,7 @@ export function movePlayer(p,dx,dz,sprint,dt){
   if(p.act&&p.act.aim){ tfx=p.act.aim[0]-p.x; tfz=p.act.aim[1]-p.z; }
   else if(p.turnedUntil>game.time){ tfx=goalX(p.team)-p.x; tfz=-p.z; }
   else if(p.charging){ tfx=goalX(p.team)-p.x; tfz=-p.z; if(diSchiena(shotKind(p))){ tfx=-tfx; tfz=-tfz; } }
+  else if(muroOra){ tfx=hm.x-p.x; tfz=hm.z-p.z; }
   else if(swimming && !(p.isGK&&ball.state!=='held'&&!sprint)){ tfx=dx; tfz=dz; }
   else if(hold){
     tfx=goalX(p.team)-p.x; tfz=-p.z;
@@ -214,8 +217,9 @@ export function updateBall(dt){
         const hd=Math.hypot(p.x-ball.x,p.z-ball.z);
         if(p.team!==ball.lastTeam && !p.isGK && game.time>=p.stunUntil && hd<blockR(p) && (ball.kind!=='pass'||!ball.target||hd<Math.hypot(ball.target.x-ball.x,ball.target.z-ball.z)) && ball.flightT>0.12 && !ball.intercept.has(p)){
           ball.intercept.add(p);
-          // il muro copre il primo palo (quello dalla parte del tiratore) e lascia al portiere l'angolo lungo
-          const primoPalo=ball.kind==='shot'&&ball.shooter&&Math.sign(ball.crossZ||0)===Math.sign(ball.shooter.z||0);
+          // il muro copre un palo (muro.js: primo palo se il tiratore è di lato, lato del braccio di tiro se è centrale)
+          // e lascia l'altro al portiere
+          const primoPalo=ball.kind==='shot'&&ball.shooter&&Math.sign(ball.crossZ||0)===(ball.paloCoperto||0);
           // sulle diagonali (palo lontano) serve il braccio alto al momento giusto: dipende dalla Difesa; una finta appena
           // riuscita lo abbassa per un attimo; il polso non dà il tempo di alzarlo; chi tira più alto passa sopra
           const dif01=(p.s.dif-40)/59, braccioAlto=0.2+0.7*dif01;

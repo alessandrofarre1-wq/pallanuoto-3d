@@ -230,7 +230,7 @@ export function contrasto(d,c){
   if(d.excluded||game.time<d.stunUntil) return false;
   d.colpi=(d.colpi||[]).filter(t=>game.time-t<CONTRASTO.finestra); d.colpi.push(game.time);
   d.fintaC=game.time+0.35;                                     // la mano parte verso la palla (solo disegno)
-  if(d.colpi.length>=CONTRASTO.fallo){ d.colpi=[]; d.tackleCD=0; return tackle(d,c,{voluto:true}); }
+  if(d.colpi.length>=CONTRASTO.fallo){ d.colpi=[]; d.tackleCD=0; return tackle(d,c,{fallo:true}); }
   c.pressatoUntil=game.time+CONTRASTO.pressione; c.pressatoDa=d;
   return tackle(d,c,{soloRuba:true});
 }
@@ -264,7 +264,7 @@ export function tackle(d,c,o){
   const r=rnd();
   if(r<pRuba){ registraPallaRubata(d.team); giveBall(d); annuncia('possesso','Palla rubata!',{p:d}); return 'rubata'; }
   if(o.soloRuba) return 'disturbo';      // disturbo: niente fallo, solo pressione
-  if(r<pRuba+pFallo){ const g=grave(); if(g) return g; foul(d,c); return 'fallo'; }
+  if(o.fallo||r<pRuba+pFallo){ const g=grave(); if(g) return g; foul(d,c); return 'fallo'; }      // fallo: insistendo (contrasto) è sicuro
   // niente: l'attaccante copre la palla con il corpo e il difensore resta un attimo fuori tempo
   d.stunUntil=game.time+0.25;
   if(d===ctrl) annuncia('avviso','Palla protetta',{durata:0.8});

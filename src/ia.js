@@ -4,6 +4,7 @@ import { DEF_DOWN, FORM, FORM_UP, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp
 import { doFake, timeout } from './regole.js';
 import { annuncia as notifica } from './cronaca.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
+import { paloCoperto } from './muro.js';
 import { bestPassTarget, doPass, doShoot, laneClear, shotKind, situazioneTiro, startAct } from './tiri.js';
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 export function startCut(p){
@@ -119,7 +120,9 @@ export function markTarget(p){
     return { x:att.x+gx/gl*0.55, z:att.z+gz/gl*0.55 };
   }
   // il difensore reagisce con un piccolo ritardo ai movimenti del suo uomo
-  const ax=p.lagX, az=p.lagZ, dx=ogx-ax, dz=-az, l=Math.hypot(dx,dz)||1;
+  // contro chi ha la palla vicino alla porta ci si mette tra lui e il palo da coprire (muro.js), non tra lui e il centro
+  const conPalla=ball.holder===att&&Math.abs(ogx-att.x)<9, pz=conPalla?paloCoperto(att)*GW*0.55:0;
+  const ax=p.lagX, az=p.lagZ, dx=ogx-ax, dz=pz-az, l=Math.hypot(dx,dz)||1;
   let gap = ball.holder===att ? 0.85 : 1.0;
   // zona: ci si stacca verso il centroboa; chi marca il giocatore "lasciato" si stacca di più e resta staccato anche quando
   // quello ha la palla (gli si concede il tiro), gli altri restano più vicini al proprio uomo
@@ -128,7 +131,12 @@ export function markTarget(p){
   if(t.defPlay===2) gap = 0.8;                                                       // pressing
   // zona a M: due linee strette davanti alla porta (ali e punto bassi, mezzi più alti), braccia alte; lascia il tiro da lontano
   if(t.defPlay===3) gap = ball.holder===att ? (lasc?2.5:1.4) : Math.min(p.i===4||p.i===5?2.4:3.4,l*0.55);
-  return { x:ax+dx/l*gap, z:az+dz/l*gap };
+  // l'attaccante carica il tiro: si va incontro al tiratore con il braccio alto (a meno che non sia quello lasciato tirare)
+  const tira=conPalla&&!lasc&&(att.charging||(att.act&&!att.act.done&&att.act.kind!=='pass'&&att.act.kind!=='fake'));
+  // e ci si sposta di 30 cm verso il palo da coprire, così il braccio alzato sta davanti a quella traiettoria
+  const sp=conPalla&&!lasc?paloCoperto(att)*0.3:0;
+  if(tira) return { x:ax+dx/l*Math.min(gap,0.75), z:az+dz/l*Math.min(gap,0.75)+sp, sprint:true };
+  return { x:ax+dx/l*gap, z:az+dz/l*gap+sp };
 }
 export function blockR(p){ return ball.kind==='shot' && (p.team.defPlay===1 || p.team.defPlay===3 || p.team.players.some(q=>q.excluded)) ? (p.team.defPlay===3?1.0:0.85) : 0.6; }
 // Portiere. L'80% del lavoro è la posizione (docs/tecnica.md): sta sulla linea tra la palla e il centro della porta e la segue
@@ -159,7 +167,7 @@ export function gkTarget(p){
   }
   let z=postoPortiere(t,bx,bz);
   const h=ball.holder;
-  if(h&&h.team!==t&&Math.abs(h.x-ogx)<9){ const m=muroSu(h); if(m) z+=(h.z>=0?-1:1)*0.28; }      // con il muro sul primo palo, mezzo passo verso l'angolo lungo
+  if(h&&h.team!==t&&Math.abs(h.x-ogx)<9){ const m=muroSu(h); if(m) z-=paloCoperto(h)*0.28; }      // il muro copre un palo (muro.js): mezzo passo verso l'altro
   return { x:ogx+t.dir*0.7, z:clamp(z,-GW*0.85,GW*0.85), gk:true };
 }
 // steering behaviors: arrive + separation dai compagni + aggiramento degli avversari sulla traiettoria
