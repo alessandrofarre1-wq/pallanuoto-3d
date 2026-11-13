@@ -7,7 +7,8 @@ Stato: **solo analisi**. Nessuna riga del gioco è stata cambiata per questo rap
 
 - **[CODICE]** = verificato leggendo il codice (con file e funzione).
 - **[LOCALE]** = verificato sulla documentazione installata con il progetto (Rapier 0.21 in `node_modules`, Three.js 0.187) o sui documenti già raccolti nel repository (`docs/tattica.md`, `docs/tecnica.md`, dati della tesi Patumi in `CLAUDE.md`).
-- **[DA VERIFICARE]** = dato da fonte esterna che in questa sessione NON è stato possibile leggere: l'ambiente cloud blocca `pubmed.ncbi.nlm.nih.gov`, `pmc.ncbi.nlm.nih.gov`, `wwpra.org`, `rapier.rs` e `www.worldaquatics.com` (errore di rete «host non risolto»). Per verificarli serve aggiungere questi indirizzi alle impostazioni di rete dell'ambiente. **Nessun valore scientifico di quelle fonti è riportato qui come certo.**
+- **[FONTE]** = verificato su una fonte esterna, letta il 13 novembre 2026 dopo che Ale ha autorizzato gli indirizzi nell'ambiente cloud (citata per esteso al §3).
+- **[DA VERIFICARE]** = fonte non leggibile: i due studi su PubMed (22212254 e 25369278) sono protetti da un controllo anti-robot che non va aggirato; servono gli abstract (o i PDF) da Ale. **Nessun valore di quegli studi è riportato qui come certo.**
 - **[PROPOSTA]** = cosa suggerisco di fare.
 - **[IPOTESI]** = causa probabile, da confermare con una misura.
 - **[DA CALIBRARE]** = parametro da regolare guardando video reali o partite simulate.
@@ -44,7 +45,10 @@ Stato: **solo analisi**. Nessuna riga del gioco è stata cambiata per questo rap
 - [CODICE] Campo 25 m, porta 3×0,9 m, possesso 28 s, 18 s dopo espulsione/angolo/rimbalzo ripreso, espulsione 18 s con rientro anticipato, terzo fallo grave = cambio, rigore dai 5 m con gli altri sulla linea dei 6, area dei 2 m, tiro libero dentro/fuori dai 6, time-out 2 a squadra.
 - [CODICE] Il tempo di gioco scorre solo in `play` (le interruzioni `stop` lo fermano); il possesso si ferma dopo un tiro respinto finché qualcuno riprende palla.
 - [CODICE] Arbitraggio a probabilità (`tackle`, `ARBITRO`), tre livelli.
-- [DA VERIFICARE] Allineamento puntuale con il testo World Aquatics di febbraio 2026 e con le modifiche 2025 riassunte dalla WWPRA: non leggibili da qui. Il repository le aveva già usate come fonte nelle sessioni precedenti (vedi «Fonti indicate da Ale» in `CLAUDE.md`), ma questo rapporto non le ha ricontrollate.
+- [FONTE] Confronto con l'estratto delle regole World Aquatics di febbraio 2026 (versione 18.02.2026) e con il riepilogo WWPRA delle modifiche 2025:
+  - CONFORMI: possesso 28 s e ogni azzeramento a 28 (WWPRA; art. 9.8.1, 9.8.2.3); 18 s se la squadra che ha tirato riprende il rimbalzo (art. 9.8.2.2); dopo un'espulsione senza cambio di possesso il maggiore tra 18 s e il tempo rimasto (art. 9.9; nel codice `game.shot=Math.max(game.shot,SHOT_RESET)` in `exclude`); 18 s dopo tiro d'angolo e rigore senza cambio di possesso (art. 9.10.1-2); dopo un rimbalzo il cronometro si azzera e riparte solo quando qualcuno ha la palla (art. 9.8.2.1); due time-out a squadra con ripresa da metà campo (art. 5.1, 5.7.1).
+  - DIVERSI: il time-out dura **1 minuto** (art. 5.2), nel gioco è una pausa di 2,6 s (semplificazione voluta, da decidere con Ale se tenerla); la palla uscita lateralmente per un'azione voluta dei difensori o per una parata del portiere dà **18 s** all'attacco (art. 9.10.3): nel gioco è da verificare (`sideOut` in `regole.js` non distingue questi casi).
+  - Non ricontrollati in questa sessione: durata dell'espulsione e casi particolari (art. 10), area di porta.
 
 ### 1.6 Telecamera, comandi, HUD, prestazioni
 - [CODICE] Telecamera laterale con inseguimento morbido (`render.js`, `lerp` 2,5–3/s), zoom dal menu (`CAM_ZOOM`), allargamento nelle ripartenze (`camLargo`).
@@ -58,7 +62,7 @@ Stato: **solo analisi**. Nessuna riga del gioco è stata cambiata per questo rap
 | P1 | Parata, muro e intercetto decisi a probabilità, non dalla geometria di braccia e mani | [CODICE] `updateBall` | Esiti a volte incoerenti con ciò che si vede (palla «parata» lontano dalle mani, muro senza contatto); difficile calibrare con video |
 | P2 | Galleggiamento e attrito dell'acqua costruiti a mano (lineari ed esponenziali), non in funzione del volume immerso | [CODICE] `passoPalla` | Comportamento credibile ma non fisico; quota di galleggiamento («un terzo sotto») [IPOTESI] più bassa di quella di una palla vera, che con massa e raggio regolamentari galleggerebbe più alta |
 | P3 | Schizzo sull'acqua a soglia fissa (8,5 m/s, 21°) con coefficienti fissi | [CODICE] | Rimbalzi radenti tutti uguali; nessuna dipendenza continua da angolo e velocità |
-| P4 | Raggio di collisione 0,12 m e massa 0,43 kg: valori plausibili ma non confrontati con il regolamento in questa sessione | [CODICE] + [DA VERIFICARE] | Piccolo effetto su pali e traversa |
+| P4 | Raggio di collisione 0,12 m, più grande del regolamento (0,108–0,113 m); massa 0,43 kg conforme (400–450 g) | [CODICE] + [FONTE] | Piccolo effetto su pali e traversa |
 | P5 | Affollamento davanti alla porta | [CODICE] + [IPOTESI] | Leggibilità dell'azione; vedi §4 |
 | P6 | Corpi disegnati 1,45 volte più grandi del vero | [CODICE] `VIS` | [IPOTESI] Contribuisce molto alla sensazione di affollamento e copre le linee di passaggio |
 | P7 | Nessuna separazione tra avversari salvo l'aggiramento sulla traiettoria; nessun «ingombro» fisico tra giocatori | [CODICE] `steer` | Corpi che si compenetrano nelle mischie |
@@ -66,14 +70,15 @@ Stato: **solo analisi**. Nessuna riga del gioco è stata cambiata per questo rap
 | P9 | La difesa del computer parte sempre in pressing (`scegliDifesa` fisso) | [CODICE] | Varietà tattica limitata |
 | P10 | Tiri e gol per squadra ancora sopra una partita vera (42 tiri contro circa 28; già annotato in `CLAUDE.md`) | [LOCALE] | Ritmo poco realistico |
 | P11 | FPS e consumo su iPhone non misurati da qui | — | Rischio non quantificato |
+| P12 | Time-out di 2,6 s invece di 1 minuto; uscita laterale «voluta» dai difensori o parata fuori dal portiere senza i 18 s all'attacco | [CODICE] + [FONTE] | Regole: il primo è una semplificazione da confermare, il secondo da correggere |
 
 ## 3. Evidenze scientifiche e normative applicabili
 
 - [LOCALE] Tesi Patumi (PoliTo): velocità al rilascio dei professionisti 22,8 ± 2,4 m/s; perdita in aria da 13,3 a 12,2 m/s in 5 m (atlete); tempo di frustata 166–189 ms; gomito 147°–157°; rigori segnati 80,1% negli studi citati; precisione non correlata alla forza. Già applicati e misurati da `npm run dati-tesi`.
 - [DA VERIFICARE] Melchiorri et al. (PubMed 22212254) e lo studio sui livelli competitivi (PubMed 25369278): velocità di tiro e cinematica per livello. Da usare per **calibrare** la distribuzione delle velocità per bravura e i tempi di caricamento, non come valori fissi.
-- [DA VERIFICARE] Studio PMC10142048 sulle proprietà della palla in partita (superficie, presa, assorbimento d'acqua): utile per massa, attrito e rotazione, se riporta valori misurati.
-- [DA VERIFICARE] World Aquatics, febbraio 2026, e riepilogo WWPRA 2025: confronto articolo per articolo con §1.5.
-- [LOCALE] Rapier: il CCD si abilita per corpo (`setCcdEnabled`); la «soft CCD» (`setSoftCcdPrediction`) è pensata per oggetti sottili e moderatamente veloci e, con valori grandi, pesa sul broad-phase; restitution in [0,1] con regola di combinazione tra i due corpi (`setRestitutionCombineRule`).
+- [FONTE] Studio PMC10142048 («Influence of Surface Structure on Ball Properties during a Professional Water Polo Game»), che riporta il regolamento FINA: palla maschile da **400–450 g**, circonferenza **0,68–0,71 m** (raggio 0,108–0,113 m), pressione **90–97 kPa**; femminile 0,65–0,67 m e 48–55 kPa. Lo studio misura l'energia superficiale di due palloni (32,16 e 36,48 mJ/m²), non coefficienti di attrito o rimbalzo: per quelli restano parametri da calibrare. Nel gioco: massa 0,43 kg conforme; raggio di collisione 0,12 m un po' più grande del regolamento (proposta B5: 0,11 m).
+- [FONTE] World Aquatics, Competition Regulations versione febbraio 2026 (aggiornata il 18.02.2026; letto l'estratto della Parte Sesta) e riepilogo WWPRA del 9 maggio 2025: confronto al §1.5.
+- [FONTE] Rapier (guida «Rigid bodies», rapier.rs): ogni corpo dinamico veloce viene già controllato contro i corpi FISSI (pali, traversa, rete) senza bisogno di attivare nulla; il CCD esplicito (`setCcdEnabled`, il «proiettile») serve contro i corpi CINEMATICI e dinamici, cioè i corpi dei giocatori, ed è più costoso. Nel gioco la palla lo ha attivo: corretto. Due corpi entrambi con CCD possono ancora attraversarsi. [LOCALE] soft CCD (`setSoftCcdPrediction`) per oggetti moderatamente veloci; restitution in [0,1] con regola di combinazione (`setRestitutionCombineRule`).
 - [LOCALE] Tattica e tecnica moderne (`docs/tattica.md`, `docs/tecnica.md`): più lotta ai 2 metri e gol dal perimetro con le regole attuali; tempi in verticale e in orizzontale; posizionamento del portiere con il passaggio.
 
 ## 4. Affollamento davanti alla porta: cause
@@ -137,6 +142,6 @@ Stato: **solo analisi**. Nessuna riga del gioco è stata cambiata per questo rap
 ## 9. Cosa serve da Ale
 
 1. Approvare (o cambiare) le priorità e l'ordine delle PR del §6.
-2. Per verificare le fonti: aggiungere all'ambiente cloud gli indirizzi `pubmed.ncbi.nlm.nih.gov`, `pmc.ncbi.nlm.nih.gov`, `wwpra.org`, `rapier.rs`, `www.worldaquatics.com` (oppure mandare in chat i PDF).
+2. Indirizzi delle fonti: FATTO (autorizzati da Ale il 13 novembre 2026). Restano i due studi di PubMed: mandare in chat gli abstract o i PDF (il sito blocca i programmi).
 3. Misura FPS su iPhone con il contatore (D1).
 4. Se possibile, 2–3 video di riferimento: tiri a schizzo, palla che galleggia, azione davanti alla porta ripresa dall'alto.
