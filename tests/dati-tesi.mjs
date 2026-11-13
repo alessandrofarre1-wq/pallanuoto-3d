@@ -53,7 +53,7 @@ const r = (x, n = 1) => x.toFixed(n); let ok = true;
 const riga = (nome, valore, atteso, dentro) => { if (!dentro) ok = false; console.log(`${dentro ? '✓' : '✗'} ${nome}: ${valore}   (dato: ${atteso})`); };
 riga('Velocità della palla dopo 5 m, partendo da 13,3 m/s', r(R.arrivo, 2) + ' m/s', '12,2 m/s misurati nella tesi', Math.abs(R.arrivo - 12.2) < 0.25);
 const g = R.rigori, perc = 100 * g.gol / g.N;
-riga('Rigori segnati', `${r(perc)}% (${g.gol} su ${g.N})`, '80,1% negli studi citati dalla tesi', Math.abs(perc - 80.1) < 6);
+riga('Rigori segnati', `${r(perc)}% (${g.gol} su ${g.N})`, '80,1% negli studi citati dalla tesi; 75% ai Mondiali 2025 (127 su 169, World Aquatics)', perc > 70 && perc < 86);
 riga('Velocità al rilascio dei rigori', `${r(g.velMedia)} ± ${r(g.velDs)} m/s (da ${r(g.velMin)} a ${r(g.velMax)})`, 'professionisti 22,8 ± 2,4 m/s; semi-professionisti 18,4 ± 1,7', g.velMedia > 18 && g.velMedia < 25.5);
 riga('Tempo dal braccio caricato al rilascio', r(g.frusta * 1000, 0) + ' ms', 'professionisti 166 ms, semi-professionisti 189 ms', g.frusta > 0.16 && g.frusta < 0.195);
 console.log(ok ? '\n✓ Dati della tesi: il gioco è nella fascia attesa' : '\n✗ Dati della tesi: valori FUORI dalla fascia attesa');

@@ -48,7 +48,7 @@ export function applicaSquadre(codA,codB){
     // formazione scelta nella schermata Squadre (se c'è ed è valida)
     const F=formazioni[cod]; if(formazioneValida(R,F)) for(let i=0;i<7;i++) posto[i]=R.findIndex(g=>g.num===F[i]);
     // la panchina riparte da capo: tutti freschi, nessun gol, nessun fallo; in acqua i titolari
-    for(const g of R){ g.inAcqua=false; g.stamina=1; g.gol=0; g.pf=0; g.fuori=false; }
+    for(const g of R){ g.inAcqua=false; g.stamina=1; g.gol=0; g.tiriP=0; g.pf=0; g.fuori=false; }
     t.cambio=null; t.coda=[];
     for(const p of t.players){ p.scheda=null; vesti(p,R[posto[p.i]]); }
   });

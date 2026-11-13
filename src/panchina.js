@@ -48,11 +48,19 @@ export function suggerimento(p, escluse) {
   return g && (g.stamina ?? 1) >= PANCHINA.fresco && p.stamina < (p.excluded ? PANCHINA.stancoPozzetto : PANCHINA.stanco + 0.08) ? g : null;
 }
 // chiede un cambio volante (per la squadra del giocatore: dalla schermata Panchina in pausa)
-export function chiediCambio(t, p, g) {
+// subito = cambio al volo dal pulsante CAMBI (parte adesso); altrimenti (dalla pausa) si aspetta il primo momento utile
+export function chiediCambio(t, p, g, subito = false) {
   if (!p || !g || g.inAcqua || g.fuori || (g.ruolo === 0) !== p.isGK) return false;
   t.coda = (t.coda || []).filter(x => x.esce !== p && x.entra !== g);
-  t.coda.push({ esce: p, entra: g });
+  t.coda.push({ esce: p, entra: g, attesa: !subito });
   return true;
+}
+// primo momento utile per un cambio scelto in pausa (oltre a gol, time-out e intervalli, che lo rendono immediato):
+// chi esce non ha la palla, è lontano dall'azione e la sua squadra non sta difendendo vicino alla propria porta
+export function momentoUtile(t, p) {
+  if (ball.holder === p || dist(p, ball) < 6) return false;
+  if (game.possTeam === t) return true;
+  return Math.abs(ownGoalX(t) - ball.x) > 10;
 }
 export function annullaRichiesta(t, p) { t.coda = (t.coda || []).filter(x => x.esce !== p); }
 export function annullaCambio(t) {
@@ -109,7 +117,7 @@ export function aggiornaPanchina(dt, liberi = false) {
       const r = t.coda[0], valido = t.players.includes(r.esce) && !r.entra.inAcqua && !r.entra.fuori;
       if (!valido || (r.esce.excluded && r.esce.pf >= 3)) t.coda.shift();
       else if (r.esce.excluded) { if (r.esce.alPozzetto) { t.coda.shift(); cambioPozzetto(t, r.esce, r.entra); } }      // aspetta che arrivi al pozzetto
-      else { t.coda.shift(); inizia(t, r.esce, r.entra, liberi); }
+      else if (!r.attesa || liberi || momentoUtile(t, r.esce)) { t.coda.shift(); inizia(t, r.esce, r.entra, liberi); }      // dalla pausa: al primo momento utile
     }
     const C = t.cambio; if (!C) continue;
     const c = comparse[t.idx], p = C.esce, Z = zonaCambi(t);
@@ -136,3 +144,40 @@ export function aggiornaPanchina(dt, liberi = false) {
 }
 // dove deve andare chi sta uscendo (al posto del suo compito in campo)
 export function obiettivoUscita(p) { const Z = zonaCambi(p.team); return { x: Z.x, z: Z.z, sprint: true }; }
+
+// ---------- consigli per il giocatore (barra dei cambi e schermata Cambi e panchina) ----------
+// Tre motivi, con il più urgente per primo: è stanco; in panchina c'è chi adesso renderebbe di più (valutazione pesata
+// sulla stamina); sta giocando una partita storta (tanti tiri senza gol) o ha 2 falli gravi e rischia di uscire per sempre.
+export const RUOLI_BREVI = ['Portiere', 'Centroboa', 'Ala dx', 'Ala sx', 'Mezzo dx', 'Mezzo sx', 'Punto'];
+export const valoreAdesso = (ovr, stamina) => ovr * (0.8 + 0.2 * (stamina ?? 1));
+function migliorRiserva(t, p, usate) {
+  let best = null, bv = -1e9;
+  for (const g of t.rosa) {
+    if (g.inAcqua || g.fuori || usate.has(g) || (g.ruolo === 0) !== p.isGK) continue;
+    // stesso ruolo prima di tutto; poi lo stesso tipo (ala con ala, mezzo con mezzo, centroboa e punto tra loro); poi gli altri
+    const a = g.ruolo, b = p.scheda.ruolo, tipoR = r => r === 1 || r === 6 ? 'c' : r === 2 || r === 3 ? 'a' : 'm';
+    const v = valoreAdesso(g.ovr, g.stamina) + (a === b ? 12 : tipoR(a) === tipoR(b) ? 7 : 0);
+    if (v > bv) { bv = v; best = g; }
+  }
+  return best;
+}
+export function consigli(t, max = 3) {
+  const usate = new Set([...(t.coda || []).map(x => x.entra), ...(t.cambio ? [t.cambio.entra] : [])]);
+  const occupato = p => (t.coda || []).some(x => x.esce === p) || (t.cambio && t.cambio.esce === p);
+  const cand = [];
+  for (const p of t.players) {
+    if (p.isGK || !p.scheda || occupato(p) || (p.excluded && (p.pf >= 3 || !p.alPozzetto))) continue;
+    const g = migliorRiserva(t, p, usate); if (!g) continue;
+    const ora = valoreAdesso(p.ovr, p.stamina), dopo = valoreAdesso(g.ovr, g.stamina), sc = p.scheda;
+    let motivo = null, peso = 0;
+    if (p.stamina < 0.5 && dopo > ora - 4) { motivo = `stanco (${Math.round(p.stamina * 100)}%)`; peso = 60 + (0.5 - p.stamina) * 100; }
+    else if (p.pf >= 2) { motivo = '2 falli gravi: al terzo esce per sempre'; peso = 40; }
+    else if ((sc.tiriP || 0) >= 4 && !(sc.gol)) { motivo = `partita storta (0 gol su ${sc.tiriP} tiri)`; peso = 30; }
+    else if (dopo > ora + 3) { motivo = `in panchina c'è chi ora rende di più (${Math.round(dopo)} contro ${Math.round(ora)})`; peso = 10 + dopo - ora; }
+    if (motivo) cand.push({ p, g, motivo, peso });
+  }
+  cand.sort((a, b) => b.peso - a.peso);
+  const out = [], prese = new Set();
+  for (const c of cand) { let g = c.g; if (prese.has(g)) { g = migliorRiserva(t, c.p, new Set([...usate, ...prese])); if (!g) continue; } prese.add(g); out.push({ ...c, g }); if (out.length >= max) break; }
+  return out;
+}

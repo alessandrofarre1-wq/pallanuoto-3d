@@ -26,7 +26,7 @@ export function tipoDiTiro(p,ball){
   return 'perimetro';
 }
 // in più: tiri da oltre 8 metri, tiri senza nessun difensore tra chi tira e la porta (rigori esclusi)
-export function registraTiro(p,tipo){ const s=di(p.team); s.tiri++;
+export function registraTiro(p,tipo){ const s=di(p.team); s.tiri++; if(p.scheda) p.scheda.tiriP=(p.scheda.tiriP||0)+1;      // tiri del giocatore in questa partita (consigli dei cambi)
   const dPorta=Math.hypot(p.team.dir*12.5-p.x,p.z); ball.distTiro=dPorta; if(dPorta>8) s.tiriLontani++;
   if(tipo!=='rigore'&&difensoriDavanti(p)===0) s.tiriSoli++; s.tiriTipo[tipo]++; s.etaPossesso+=game.time-(game.possT||0); const g=p.act?p.act.kind:'altro'; s.gesti[g]=(s.gesti[g]||0)+1; }
 export function registraGol(t,ball){

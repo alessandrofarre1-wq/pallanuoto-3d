@@ -1,4 +1,4 @@
 {
-  "_come": "Mano dei giocatori. Chiave = sigla della squadra + numero di calottina (es. ITA-7). Valore: sinistra o destra. Chi non è qui è destro.",
+  "_come": "Correzioni della mano. Dalla v0.34 la mano viene dal database dei giocatori; qui si corregge chi è sbagliato o sconosciuto. Chiave = sigla della squadra + numero di calottina (es. ITA-7). Valore: sinistra o destra.",
   "_esempio": { "ITA-7": "sinistra" }
 }
