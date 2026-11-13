@@ -137,3 +137,6 @@ export function endMatch(){
     `<div class="fin-nota">${a>b?'Bella partita.':a<b?'Si riprova.':'Tutto da rifare.'}</div>`;
   setTimeout(()=>apriMenu('fine'),1500);
 }
+
+// versione del prototipo (da package.json, vedi vite.config.js): in home e in pausa, così si vede quando il gioco si aggiorna
+for(const el of document.querySelectorAll('#sub, .versione-pausa')) el.textContent='Prototipo v'+__VERSIONE__;
