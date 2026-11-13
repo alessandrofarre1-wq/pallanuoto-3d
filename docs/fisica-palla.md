@@ -70,3 +70,4 @@ https://claude.ai/artifact/4H7yZMi99DmYJVPEvsKeWp (13 novembre 2026). Qui il ria
 - Scena di prova: 8 riferimenti su 11 rispettati (prima del passo 3: 4). Lontani: schizzo radente (tiene l'83% della velocità orizzontale, fascia 50–80% senza fonte), rotazione (passo 4), palo (passo 5). L'energia persa cresce con l'angolo: 44% a 5°, 60% a 30°, 91% a 45° (forma di Lyu 2021).
 - Grafica: dallo stesso giorno gli effetti usano `rndGrafica` (`costanti.js`), un caso separato da quello del gioco: cambiare un effetto non cambia più le partite. Tolti i 420 numeri consumati a vuoto in `scena.js`.
 - Partite di prova: 58 gol su 225 tiri (26%), prima 63 su 211 (30%), nessun errore; nuovo riferimento.
+- `npm run bilancio` dopo il passo 3 (12 partite ITA–USA): gol 15,4; tiri 44,1; tiri in gol 34,8% (passo 2: 33,6%; prima del passo 2: 31,9%); nello specchio 74,3%; parate 17,4; superiorità trasformate 37,3%. Il gioco resta nella stessa fascia.

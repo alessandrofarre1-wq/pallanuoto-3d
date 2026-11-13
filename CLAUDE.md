@@ -105,6 +105,10 @@ Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili
 - Passi 4-7 da fare uno alla volta.
 - Ale preferisce cercare video su YouTube invece di filmare. Le 4 fonti bloccate le ha mandate lui in PDF (13/11/2026): lette tutte (ScienceDirect solo anteprima). Da qui YouTube non si scarica (sito non abilitato e controllo anti-robot, da non aggirare): chiedere link + secondo, screenshot o registrazioni dello schermo.
 
+## Corpi e acqua (approvato il 13 novembre 2026)
+- Tutto in `docs/corpi-acqua.md`. Ogni effetto d'acqua passa da `evento(...)` in `grafica/acqua-eventi.js`, con le regole di visibilità (`LIMITI`: zona protetta attorno alla palla, meno effetti nell'affollamento, tetti a gocce, opacità e durata). Non creare effetti fuori da lì e non usare `rnd` nella grafica (c'è `rndGrafica`).
+- `npm run acqua-effetti`: 10 scene con la misura della visibilità di palla e giocatore (con e senza effetti). Da rifare a ogni modifica degli effetti.
+
 ## Fonti indicate da Ale
 - World Aquatics Competition Regulations, parte pallanuoto (feb 2026): https://www.worldaquatics.com/rules/competition-regulations
 - Estratto regole 2026: https://www.bwpl.org/uploads/2/6/5/9/26598283/water_polo_rules_extract_from_2026-02-18_world-aquatics_cr-final.pdf

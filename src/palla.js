@@ -2,7 +2,7 @@
 // qui si aggiungono le forze che Rapier non conosce: resistenza dell'aria, effetto (palla che gira), acqua
 // (galleggiamento dal volume immerso, resistenza e portanza della parte immersa: de Mestre 2004). Le regole restano in fisica.js.
 import RAPIER from '@dimforge/rapier3d-compat';
-import { BRV, G, GH, GW, HL } from './costanti.js';
+import { G, GH, GW, HL } from './costanti.js';
 import { P } from './fisica-palla/parametri.js';
 
 await RAPIER.init();

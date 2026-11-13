@@ -177,7 +177,8 @@ export const contatti=(()=>{
           onde+=(1.0-smoothstep(0.0,0.05+0.04*k,abs(r-0.62-0.36*k)))*(1.0-k)*(1.0-k)*(0.55+0.45*sin(ang*4.0+vSeme+float(i)*2.0)); }
         // onda davanti a chi nuota
         float prua=smoothstep(0.15,0.75,d.x)*(1.0-smoothstep(0.0,0.16,abs(r-0.66)))*vV;
-        float a=(bordo*0.5+onde*0.28)*vF+prua*0.5;
+        // le increspature che si allargano ci sono solo quando il corpo si muove o si alza: da fermi resta il bordo (niente rumore)
+        float a=(bordo*0.5+onde*0.28*smoothstep(0.3,0.75,vF))*vF+prua*0.5;
         a*=1.0-smoothstep(0.92,1.0,r);
         gl_FragColor=vec4(1.0,1.0,1.0,clamp(a,0.0,0.7));
         #include <colorspace_fragment>
