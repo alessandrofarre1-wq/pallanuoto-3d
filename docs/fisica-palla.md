@@ -26,7 +26,7 @@ https://claude.ai/artifact/4H7yZMi99DmYJVPEvsKeWp (13 novembre 2026). Qui il ria
 ## Piano approvato (13 novembre 2026, «vai avanti»)
 1. **FATTO** — Strumenti senza cambiare il gioco (sotto).
 2. **FATTO** — Palla in aria: misure vere, inerzia del guscio, passo massimo 1/240 s, Cd e Magnus dai parametri, mira ricalibrata (sotto).
-3. Palla in acqua: volume immerso, Archimede, resistenza e portanza della parte immersa, massa aggiunta; via le regole «schizzo» e «tonfo».
+3. **FATTO** — Palla in acqua: volume immerso, Archimede, resistenza e portanza della parte immersa; via le regole «schizzo» e «tonfo» (sotto).
 4. Rotazione in acqua. 5. Urti (pali, bordi della vasca, palla respinta da mani e portiere). 6. Effetti grafici dagli eventi fisici, con un generatore casuale solo per la grafica. 7. Tiro a schizzo e bilanciamento con i video.
 
 ## Passo 1 — cosa c'è
@@ -61,3 +61,12 @@ https://claude.ai/artifact/4H7yZMi99DmYJVPEvsKeWp (13 novembre 2026). Qui il ria
 - `fisica-palla`: la prova «palo interno» ora controlla il passaggio della linea tra i pali (come decide il gol in partita). Trovato: dopo l'urto con l'interno del palo la palla perde quasi tutta la velocità in avanti e scivola lungo la linea (attrito palla–palo 0,4 in media): c'era già prima; da tarare nel passo 5.
 - Partite di prova (`npm run verifica`): 63 gol su 211 tiri (30%), prima 69 su 217 (32%); nessun errore. `dati-tesi`, `statistiche`, `azione` superati.
 - `npm run bilancio` (12 partite ITA–USA, 4×8 min, per squadra a partita), prima → dopo: gol 13,3 → 14,5; tiri 41,7 → 43,1; tiri in gol 31,9% → 33,6%; nello specchio 71,8% → 68,6%; parate 16,6 → 15,1; superiorità trasformate 32,6% → 36,9%; rigori segnati 78,8% → 71,4% (pochi rigori: poco significativo); vittorie 6–6 → 9–3. Con 12 partite differenze di questa misura stanno quasi tutte nel caso: il gioco resta nella stessa fascia.
+
+## Passo 3 — palla in acqua (13 novembre 2026, «manda avanti tutto»)
+- `passoPalla` (`palla.js`): con h = quanto affonda il punto più basso, a ogni passo da 1/240 s si applicano Archimede sul volume immerso (calotta sferica), resistenza quadratica sull'area efficace πah/2 (superficie bagnata 2πah con Cd/4, de Mestre) in forma implicita, portanza perpendicolare al moto e verso l'alto (de Mestre eq. 4–5), un piccolo freno lineare per le velocità basse e il calo della rotazione in acqua. Nessuna regola di rimbalzo: il rimbalzo nasce dalle forze.
+- Eventi: `impatto` (primo contatto dall'aria, con `radente` sotto i 25°) e `schizzo` (la palla riesce dall'acqua salendo); `esito.inAcqua`. In `fisica.js` la palla che esce dall'acqua fa uno schizzo (resta in volo, il portiere la legge peggio); quella che resta in acqua sotto i 4 m/s diventa vagante.
+- `QUOTA_GALLEGGIA` è calcolata dal volume che regge il peso: 3,7 cm sott'acqua (de Mestre).
+- Taratura sulle misure di de Mestre (`portanzaInUscita` 0,2, `massaAggiunta` 0): caduta da 1,5 m → affonda 13,2 cm, esce a 1,32 m/s, 0,146 s in acqua (misura 14 cm, 1,4 m/s, 0,145 s); obliquo 10,7/6,2 → esce a 6,22/1,44 m/s (misura 6,6/1,8). Con la massa aggiunta di Truscott e Techet (0,5) affonderebbe 34 cm: tenuta a 0.
+- Scena di prova: 8 riferimenti su 11 rispettati (prima del passo 3: 4). Lontani: schizzo radente (tiene l'83% della velocità orizzontale, fascia 50–80% senza fonte), rotazione (passo 4), palo (passo 5). L'energia persa cresce con l'angolo: 44% a 5°, 60% a 30°, 91% a 45° (forma di Lyu 2021).
+- Grafica: dallo stesso giorno gli effetti usano `rndGrafica` (`costanti.js`), un caso separato da quello del gioco: cambiare un effetto non cambia più le partite. Tolti i 420 numeri consumati a vuoto in `scena.js`.
+- Partite di prova: 58 gol su 225 tiri (26%), prima 63 su 211 (30%), nessun errore; nuovo riferimento.

@@ -100,7 +100,9 @@ Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili
 - Rapporto e riassunto in `docs/fisica-palla.md` (fonti, modello, piano in 7 passi, misure della palla di oggi). Base scientifica: de Mestre 2004 (palla da pallanuoto in acqua); pressione della palla 7,5–8,5 psi (regolamento 2025, NON 90–97 kPa).
 - Passo 1 FATTO (nessun cambiamento di gioco): parametri in `src/fisica-palla/parametri.js` (unità, fonte, intervallo, tipo; `IN_USO` e `PROPOSTI`), `diagnosi`/`energia` in `palla.js`, pannello `?fisica`, `npm run fisica-acqua` (11 scenari, in Node). Ogni nuovo numero della palla va in `parametri.js` con la sua fonte, mai scritto direttamente nel codice.
 - Passo 2 FATTO (13/11/2026, ok di Ale «Si»): palla in aria con misure vere (raggio 0,1106 m, 0,425 kg, inerzia di guscio 2/3·m·a²), passi di al massimo 1/240 s dentro `passoPalla`, Cd aria 0,42 ricavato dalla tesi (che riporta la velocità in valore assoluto: 13,3 → 12,2 m/s), mira con calo della rotazione. Le partite di prova sono cambiate: nuovo riferimento 63 gol su 211 tiri (30%). Dettagli e numeri in `docs/fisica-palla.md`.
-- Passi 3-7 da fare uno alla volta, con la prova di Ale.
+- Passo 3 FATTO (13/11/2026, «manda avanti tutto»): palla in acqua con le forze di de Mestre (Archimede sul volume immerso, resistenza e portanza della parte immersa), niente più regole «schizzo»/«tonfo»; eventi `impatto`/`schizzo`; tarata su caduta e obliquo di de Mestre. Partite di prova: 58 gol su 225 tiri. Dettagli in `docs/fisica-palla.md`.
+- CASO DELLA GRAFICA SEPARATO (13/11/2026): schiuma, spruzzi, pubblico e modello di riserva usano `rndGrafica` (`costanti.js`), MAI `rnd`. La regola «non consumare `rnd` nella grafica» ora vale così; i 420 numeri consumati a vuoto in `scena.js` sono stati tolti.
+- Passi 4-7 da fare uno alla volta.
 - Ale preferisce cercare video su YouTube invece di filmare. Le 4 fonti bloccate le ha mandate lui in PDF (13/11/2026): lette tutte (ScienceDirect solo anteprima). Da qui YouTube non si scarica (sito non abilitato e controllo anti-robot, da non aggirare): chiedere link + secondo, screenshot o registrazioni dello schermo.
 
 ## Fonti indicate da Ale

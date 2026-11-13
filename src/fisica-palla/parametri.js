@@ -28,20 +28,14 @@ export const IN_USO = {
   giriPassaggio:   { valore: 9,      unita: 'rad/s', tipo: 'da calibrare', fonte: 'nessuna misura' },
   giriTiro:        { valore: 20,     unita: 'rad/s', tipo: 'da calibrare', fonte: 'nessuna misura' },
   giriPalombella:  { valore: 34,     unita: 'rad/s', tipo: 'da calibrare', fonte: 'nessuna misura' },
-  // ---------- acqua (regole fisse di oggi, da sostituire nel passo 3) ----------
-  quotaAcqua:      { valore: 0.15,   unita: 'm',     tipo: 'da calibrare', fonte: 'BRV: sotto questa quota del centro la palla è «in acqua»' },
-  quotaGalleggia:  { valore: 0.05,   unita: 'm',     tipo: 'da calibrare', fonte: 'de Mestre 2004 dà 0,074 m (3,7 cm sott\'acqua con a = 0,11 m)' },
-  spintaMax:       { valore: 2.5,    unita: 'g',     tipo: 'da calibrare', fonte: 'nessuna: limite della molla che fa galleggiare' },
-  frenoOrizz:      { valore: 1.6,    unita: '1/s',   tipo: 'da calibrare', fonte: 'nessuna' },
-  frenoVert:       { valore: 7,      unita: '1/s',   tipo: 'da calibrare', fonte: 'nessuna' },
-  frenoRot:        { valore: 3,      unita: '1/s',   tipo: 'da calibrare', fonte: 'Truscott e Techet 2009: la rotazione si spegne in circa 0,3 s sott\'acqua (palla da biliardo)' },
-  schizzoVelMin:   { valore: 8.5,    unita: 'm/s',   tipo: 'da calibrare', fonte: 'nessuna' },
-  schizzoAngMax:   { valore: 21,     unita: '°',     tipo: 'da calibrare', fonte: 'nessuna; de Mestre misura un rimbalzo a 30°; θc = 18°/√SG (Johnson e Reid 1975, Hurd 2019, Lyu 2021) darebbe circa 66° per SG 0,075, fuori dal campo verificato' },
-  schizzoVert:     { valore: 0.55,   unita: '-',     tipo: 'da calibrare', fonte: 'nessuna' },
-  schizzoOrizz:    { valore: 0.84,   unita: '-',     tipo: 'da calibrare', fonte: 'nessuna' },
-  schizzoRot:      { valore: 0.5,    unita: '-',     tipo: 'da calibrare', fonte: 'nessuna' },
-  tonfoOrizz:      { valore: 0.45,   unita: '-',     tipo: 'da calibrare', fonte: 'nessuna' },
-  tonfoVert:       { valore: 0.35,   unita: '-',     tipo: 'da calibrare', fonte: 'nessuna' },
+  // ---------- acqua (passo 3, 13/11/2026): forze sulla parte immersa, de Mestre 2004; via le regole fisse «schizzo»/«tonfo» ----------
+  densitaAcqua:    { valore: 997,    unita: 'kg/m³', tipo: 'derivato',     fonte: 'acqua a 25–28 °C (regola: almeno 26 °C)', intervallo: [995, 998] },
+  cdAcqua:         { valore: 0.47,   unita: '-',     tipo: 'letteratura',  fonte: 'de Mestre 2004 (con la superficie bagnata 2πah e Cd/4); 0,4 per sfera immersa (Truscott e Techet, Mayme e Mungan)', intervallo: [0.4, 0.5] },
+  clSuCdAcqua:     { valore: 2,      unita: '-',     tipo: 'da calibrare', fonte: 'de Mestre 2004, tabella 1: con 2 torna la velocità orizzontale di uscita misurata', intervallo: [1, 2.4] },
+  portanzaInUscita:{ valore: 0.2,    unita: '-',     tipo: 'da calibrare', fonte: 'tarato (13/11/2026) sulle misure di de Mestre 2004: caduta 13,2 cm e 1,32 m/s (misura 14 cm, 1,4), obliquo 6,22/1,44 m/s (misura 6,6/1,8)', intervallo: [0.1, 1] },
+  massaAggiunta:   { valore: 0,      unita: '-',     tipo: 'da calibrare', fonte: 'tarato su de Mestre 2004 (che non la usa e verifica la profondità in vasca); con 0,5 (Truscott e Techet, sfera immersa) la palla affonderebbe 34 cm', intervallo: [0, 0.5] },
+  frenoLineare:    { valore: 0.6,    unita: '1/s',   tipo: 'da calibrare', fonte: 'nessuna: freno per le velocità basse (onde e superficie), tutta immersa; termine lineare come in Mayme e Mungan 2025' },
+  tempoRotAcqua:   { valore: 0.3,    unita: 's',     tipo: 'letteratura',  fonte: 'Truscott e Techet 2009 (palla da biliardo, S > 0,5)', intervallo: [0.2, 0.4] },
   // ---------- porte e corpi ----------
   raggioPalo:      { valore: 0.04,   unita: 'm',     tipo: 'da calibrare', fonte: 'nessuna' },
   rimbalzoPalo:    { valore: 0.62,   unita: '-',     tipo: 'da calibrare', fonte: 'nessuna' },
@@ -56,12 +50,6 @@ export const IN_USO = {
 
 export const PROPOSTI = {
   pressione:    { valore: 55,     unita: 'kPa',    tipo: 'misurato',     fonte: 'World Aquatics 20.4.3.3: 7,5–8,5 psi', intervallo: [52, 59] },
-  densitaAcqua: { valore: 997,    unita: 'kg/m³',  tipo: 'derivato',     fonte: 'acqua a 25–28 °C (regola: almeno 26 °C)', intervallo: [995, 998] },
-  cdAcqua:      { valore: 0.47,   unita: '-',      tipo: 'letteratura',  fonte: 'de Mestre 2004; 0,4 per sfera immersa (Truscott e Techet, Mayme e Mungan)', intervallo: [0.4, 0.5] },
-  clSuCdAcqua:  { valore: 2,      unita: '-',      tipo: 'da calibrare', fonte: 'de Mestre 2004, tabella 1', intervallo: [1, 2.4] },
-  // forma alternativa della spinta dell'acqua da confrontare in calibrazione: F = ½ ρw |U|² Sw sin(α + β) (Rosellini; Belden 2016; Hurd 2019)
-  massaAggiunta:{ valore: 0.5,    unita: '-',      tipo: 'da calibrare', fonte: 'Truscott e Techet 2009', intervallo: [0.2, 0.5] },
-  tempoRotAcqua:{ valore: 0.3,    unita: 's',      tipo: 'letteratura',  fonte: 'Truscott e Techet 2009 (palla da biliardo, S > 0,5)', intervallo: [0.2, 0.4] },
 };
 
 // valore semplice di un parametro in uso

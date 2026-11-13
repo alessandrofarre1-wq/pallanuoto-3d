@@ -1,6 +1,6 @@
 // Fisica della palla. Il motore Rapier muove la palla e calcola gli urti veri (pali, traversa, rete, corpi);
 // qui si aggiungono le forze che Rapier non conosce: resistenza dell'aria, effetto (palla che gira), acqua
-// (schizzo sui tiri tesi, tonfo, galleggiamento, attrito). Le regole (gol, fuori, parate) restano in fisica.js.
+// (galleggiamento dal volume immerso, resistenza e portanza della parte immersa: de Mestre 2004). Le regole restano in fisica.js.
 import RAPIER from '@dimforge/rapier3d-compat';
 import { BRV, G, GH, GW, HL } from './costanti.js';
 import { P } from './fisica-palla/parametri.js';
@@ -9,7 +9,10 @@ await RAPIER.init();
 
 // Tutti i numeri stanno in fisica-palla/parametri.js, con unità, fonte e intervallo.
 export const RAGGIO=P.raggioUrti;           // raggio della palla per gli urti (una palla vera misura circa 11 cm)
-export const QUOTA_GALLEGGIA=P.quotaGalleggia;   // altezza del centro quando la palla galleggia ferma
+const RHO_W=P.densitaAcqua;
+// altezza del centro quando la palla galleggia ferma: il volume immerso regge il peso (de Mestre: 3,7 cm sott'acqua)
+export const QUOTA_GALLEGGIA=(()=>{ let lo=0, hi=2*P.raggioUrti; for(let i=0;i<50;i++){ const z=(lo+hi)/2, V=Math.PI*z*z*(3*P.raggioUrti-z)/3;
+  if(RHO_W*V<P.massa) lo=z; else hi=z; } return P.raggioUrti-(lo+hi)/2; })();
 const MASSA=P.massa, SEZIONE=Math.PI*RAGGIO*RAGGIO;
 const INERZIA=P.inerzia*MASSA*RAGGIO*RAGGIO;      // palla cava: più vicina a un guscio (2/3·m·a²) che a una sfera piena
 // resistenza dell'aria: Cd dalla tesi Patumi (PoliTo 2018), la palla lascia la mano a 13,3 m/s e 5 metri dopo va a 12,2
@@ -81,7 +84,7 @@ function rotazioneDiLancio(vx,vz,giri,out){ const l=Math.hypot(vx,vz)||1; out[0]
 
 // ---------- diagnosi (pannello ?fisica e test): solo lettura, non cambia nulla del moto ----------
 // h = quanto affonda il punto più basso (con il raggio degli urti); volume immerso = calotta sferica (de Mestre 2004)
-export const diagnosi={ y:0, v:0, w:0, h:0, volume:0, inAcqua:false, aGalleggia:0, freni:[0,0,0],
+export const diagnosi={ y:0, v:0, w:0, h:0, volume:0, inAcqua:false, aGalleggia:0, freni:[0,0,0], forze:{ archimede:0, resistenza:0, portanza:0 },
   impatto:{ n:0, tipo:'', angolo:0, vOrizz:0, vVert:0, prima:0, dopo:0, rot:0 } };
 // energia meccanica (cinetica + rotazione + posizione rispetto al pelo dell'acqua), in joule
 export const energia=B=>0.5*MASSA*(B.vx*B.vx+B.vy*B.vy+B.vz*B.vz)+0.5*INERZIA*((B.wx||0)**2+(B.wy||0)**2+(B.wz||0)**2)+MASSA*G*B.y;
@@ -93,7 +96,8 @@ function aggiornaDiagnosi(B,inAcqua,aGalleggia,fo,fv,fr){
 
 // ---------- un passo di simulazione ----------
 // B = stato della palla (x,y,z,vx,vy,vz,wx,wy,wz); giocatori = elenco di {x,z,attivo}; restituisce cosa è successo
-const esito={ urti:[], acqua:null };
+const esito={ urti:[], acqua:null, inAcqua:false };
+const contatto={ attivo:false, hMax:0 };      // la palla sta toccando l'acqua (per gli eventi d'impatto e di uscita)
 // il gioco chiama una volta per fotogramma; qui il fotogramma si divide in passi di al massimo PASSO secondi
 export function passoPalla(B,dt,giocatori){
   esito.urti.length=0; esito.acqua=null;
@@ -107,36 +111,49 @@ function passoSingolo(B,dt,giocatori,primo){
   if(giocatori&&primo) for(let i=0;i<corpi.length;i++){ const g=giocatori[i], k=corpi[i], on=!!(g&&g.attivo);
     if(on!==k.attivo){ k.c.setEnabled(on); k.attivo=on; }
     if(on) k.b.setNextKinematicTranslation({x:g.x,y:P.quotaCorpo,z:g.z}); }
-  // aria ed effetto (in aria) oppure acqua (a contatto con la superficie)
+  // aria ed effetto, poi acqua sulla parte immersa (de Mestre 2004): non ci sono regole di rimbalzo, il rimbalzo nasce dalle forze
   let vx=B.vx, vy=B.vy, vz=B.vz, wx=B.wx||0, wy=B.wy||0, wz=B.wz||0;
-  const inAcqua=B.y<BRV;
-  let aGalleggia=0, fo=1, fv=1, fr=1;
-  if(!inAcqua){ aria(vx,vy,vz,wx,wy,wz,_a); vx+=_a[0]*dt; vy+=_a[1]*dt; vz+=_a[2]*dt; }
-  else {
-    // spinta di galleggiamento (equilibrio a QUOTA_GALLEGGIA) e attrito dell'acqua
-    const immersa=Math.min(P.spintaMax,(BRV-B.y)/(BRV-QUOTA_GALLEGGIA));
-    aGalleggia=G*immersa; vy+=aGalleggia*dt;
-    fo=Math.exp(-P.frenoOrizz*dt); fv=Math.exp(-P.frenoVert*dt); fr=Math.exp(-P.frenoRot*dt);
-    vx*=fo; vz*=fo; vy*=fv; wx*=fr; wy*=fr; wz*=fr;
+  aria(vx,vy,vz,wx,wy,wz,_a); vx+=_a[0]*dt; vy+=_a[1]*dt; vz+=_a[2]*dt;
+  const h=Math.min(2*RAGGIO,Math.max(0,RAGGIO-B.y));       // quanto affonda il punto più basso
+  const F=diagnosi.forze; F.archimede=0; F.resistenza=0; F.portanza=0;
+  if(h>0){
+    const V=Math.PI*h*h*(3*RAGGIO-h)/3;                   // volume immerso (calotta sferica)
+    const mTot=MASSA+P.massaAggiunta*RHO_W*V;              // massa aggiunta: l'acqua spostata insieme alla palla
+    const A=Math.PI*RAGGIO*h/2;                            // area efficace: superficie bagnata 2πah con Cd/4 (de Mestre)
+    const s=Math.hypot(vx,vy,vz), k=0.5*RHO_W*A/mTot;
+    // Archimede e peso divisi per la massa con l'acqua spostata (Rapier poi toglie g·dt: qui si aggiunge la differenza)
+    const aSu=(RHO_W*G*V-MASSA*G)/mTot+G;
+    vy+=aSu*dt;
+    // portanza: perpendicolare al moto, verso l'alto, proporzionale alla velocità orizzontale (de Mestre, eq. 4-5)
+    // in uscita (palla che risale) la scia d'aria dietro la palla riduce la portanza: parte da calibrare
+    const kl=k*P.cdAcqua*P.clSuCdAcqua*(vy>0?P.portanzaInUscita:1);
+    vx+=-kl*vy*vx*dt; vz+=-kl*vy*vz*dt; vy+=kl*(s*s-vy*vy)*dt;
+    // resistenza quadratica (implicita: non può invertire il moto) più una piccola parte lineare per le velocità basse
+    const kd=k*P.cdAcqua*s, f=1/(1+(kd+P.frenoLineare*h/(2*RAGGIO))*dt);
+    vx*=f; vy*=f; vz*=f;
+    // la rotazione si spegne in acqua (Truscott e Techet 2009: circa 0,3 s tutta sott'acqua)
+    const fr=Math.exp(-dt*(h/(2*RAGGIO))/P.tempoRotAcqua); wx*=fr; wy*=fr; wz*=fr;
+    F.archimede=RHO_W*G*V; F.resistenza=0.5*RHO_W*A*P.cdAcqua*s*s; F.portanza=0.5*RHO_W*A*P.cdAcqua*P.clSuCdAcqua*s*Math.hypot(vx,vz);
   }
   corpoPalla.setTranslation({x:B.x,y:B.y,z:B.z},true); corpoPalla.setLinvel({x:vx,y:vy,z:vz},true); corpoPalla.setAngvel({x:wx,y:wy,z:wz},true);
   mondo.timestep=dt; mondo.step(eventi);
   const p=corpoPalla.translation(), v=corpoPalla.linvel(), w=corpoPalla.angvel();
-  const yPrima=B.y;
+  const eraAcqua=contatto.attivo;
   B.x=p.x; B.y=p.y; B.z=p.z; B.vx=v.x; B.vy=v.y; B.vz=v.z; B.wx=w.x; B.wy=w.y; B.wz=w.z;
   eventi.drainCollisionEvents((h1,h2,inizia)=>{ if(!inizia) return; const altro=h1===urtoPalla.handle?h2:h1; esito.urti.push(cosa.get(altro)||'altro'); });
-  // arrivo sull'acqua dall'aria: schizzo (la palla tesa e veloce rimbalza) oppure tonfo
-  if(yPrima>=BRV && B.y<BRV && B.vy<0){
-    const vo=Math.hypot(B.vx,B.vz), angolo=Math.atan2(-B.vy,vo)*57.3, forza=Math.hypot(vo,B.vy);
-    const I=diagnosi.impatto, prima=energia(B); I.angolo=angolo; I.vOrizz=vo; I.vVert=-B.vy; I.rot=Math.hypot(B.wx,B.wy,B.wz);
-    if(vo>P.schizzoVelMin && angolo<P.schizzoAngMax){
-      B.y=BRV+0.005; B.vy=-B.vy*P.schizzoVert; B.vx*=P.schizzoOrizz; B.vz*=P.schizzoOrizz; B.wx*=P.schizzoRot; B.wz*=P.schizzoRot;
-      if(!esito.acqua) esito.acqua={ tipo:'schizzo', forza };
-    } else {
-      B.vx*=P.tonfoOrizz; B.vz*=P.tonfoOrizz; B.vy*=P.tonfoVert;
-      if(!esito.acqua) esito.acqua={ tipo:'tonfo', forza };
-    }
-    I.n++; I.tipo=esito.acqua.tipo; I.prima=prima; I.dopo=energia(B);
+  // eventi dell'acqua (per le regole e per la grafica): primo contatto dall'aria e uscita verso l'alto
+  const tocca=B.y<RAGGIO, I=diagnosi.impatto;
+  if(tocca && !eraAcqua){
+    contatto.attivo=true; contatto.hMax=0; const vo=Math.hypot(vx,vz);
+    I.angolo=Math.atan2(Math.max(0,-vy),vo)*57.3; I.vOrizz=vo; I.vVert=-vy; I.rot=Math.hypot(wx,wy,wz); I.prima=0.5*MASSA*(vx*vx+vy*vy+vz*vz); I.dopo=0; I.n++; I.tipo='impatto';
+    if(!esito.acqua && vy<-0.3) esito.acqua={ tipo:'impatto', forza:Math.hypot(vx,vy,vz), radente:I.angolo<25 };
   }
-  aggiornaDiagnosi(B,inAcqua,aGalleggia,fo,fv,fr);
+  if(tocca) contatto.hMax=Math.max(contatto.hMax,RAGGIO-B.y);
+  if(!tocca && eraAcqua){
+    contatto.attivo=false;
+    if(B.vy>0.3){ I.tipo='schizzo'; I.dopo=0.5*MASSA*(B.vx*B.vx+B.vy*B.vy+B.vz*B.vz);
+      if(!esito.acqua||esito.acqua.tipo!=='schizzo') esito.acqua={ tipo:'schizzo', forza:Math.hypot(B.vx,B.vy,B.vz), radente:true }; }
+  }
+  esito.inAcqua=tocca;
+  aggiornaDiagnosi(B,h>0,F.archimede/MASSA,1,1,1);
 }

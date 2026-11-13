@@ -52,14 +52,14 @@ const esiti = await pg.evaluate(() => {
   { const { B, fatti, storia } = lancia([6, 1.1, 0], [HL, 0.4, 0.5], 0.33, 20, 2.5, B => { if (B.x > HL) { B.vx *= Math.exp(-3 * dt); B.vz *= Math.exp(-3 * dt); } });      // come in partita: la rete smorza
     disegna('Gol: si ferma in rete', '#60a5fa', storia.filter(p => p.t < 1.5));
     prova('Gol: la palla resta nella rete', B.x > HL && B.x < HL + 0.8 && Math.abs(B.z) < GW && fatti.urti.includes('rete') && Math.hypot(B.vx, B.vz) < 0.5, `urti: ${[...new Set(fatti.urti)].join(', ')} · ferma a x=${r(B.x)} (linea ${HL}, fondo rete ${HL + 0.8}), velocità ${r(Math.hypot(B.vx, B.vz))} m/s`); }
-  // 6. tiro a schizzo: teso e veloce, rimbalza sull'acqua e prosegue
+  // 6. tiro a schizzo: teso e veloce, tocca l'acqua (impatto), ne esce (schizzo) e prosegue
   { const { fatti, storia } = lancia([4, 1.0, 0], [HL - 1.6, 0.15, 0.6], 0.36, 20, 0.7), dopo = storia.find(p => p.t > 0.42);
     disegna('Tiro a schizzo', '#facc15', storia);
-    prova('Tiro a schizzo: rimbalza sull\'acqua', fatti.acqua[0] === 'schizzo' && dopo.vy > 0 && dopo.vx > 8, `acqua: ${fatti.acqua.join(', ')} · dopo lo schizzo sale a ${r(dopo.vy)} m/s e avanza a ${r(dopo.vx)} m/s`); }
-  // 7. palombella: cade dall'alto, fa il tonfo e si ferma a galleggiare
+    prova('Tiro a schizzo: rimbalza sull\'acqua', fatti.acqua.includes('schizzo') && dopo.vy > 0 && dopo.vx > 8, `acqua: ${fatti.acqua.join(', ')} · dopo lo schizzo sale a ${r(dopo.vy)} m/s e avanza a ${r(dopo.vx)} m/s`); }
+  // 7. palombella: cade dall'alto, entra in acqua (può rimbalzare un poco, come misura de Mestre) e si ferma a galleggiare
   { const { B, fatti, storia } = lancia([2, 1.0, 0], [7, 0.15, 0], 1.3, 34, 6), alta = Math.max(...storia.map(p => p.y));
     disegna('Palombella', '#4ade80', storia.filter(p => p.t < 2.2));
-    prova('Palombella: tonfo e galleggia', fatti.acqua[0] === 'tonfo' && Math.abs(B.y - 0.05) < 0.02 && Math.hypot(B.vx, B.vz) < 0.2, `punto più alto ${r(alta)} m · acqua: ${fatti.acqua[0]} · alla fine quota ${r(B.y)} m, velocità ${r(Math.hypot(B.vx, B.vz))} m/s`); }
+    prova('Palombella: tonfo e galleggia', fatti.acqua[0] === 'impatto' && Math.abs(B.y - 0.074) < 0.02 && Math.hypot(B.vx, B.vz) < 0.2, `punto più alto ${r(alta)} m · acqua: ${fatti.acqua.join(', ')} · alla fine quota ${r(B.y)} m, velocità ${r(Math.hypot(B.vx, B.vz))} m/s`); }
   // 8. effetto: a parità di lancio, la palla che gira all'indietro arriva più in alto di quella che non gira
   { const L = velocitaDiLancio(0, 1, 0, 9, 0.5, 0, 0.6, 0), vola = w => { const B = { x: 0, y: 1, z: 0, vx: L.vx, vy: L.vy, vz: L.vz, wx: 0, wy: 0, wz: w }; for (let i = 0; i < 36; i++) passoPalla(B, dt, null); return B.y; };
     const senza = vola(0), con = vola(30);

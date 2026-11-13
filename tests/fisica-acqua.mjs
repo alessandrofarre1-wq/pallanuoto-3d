@@ -33,7 +33,7 @@ function segui(B0, durata, fps = 60, giocatori = null) {
     // primo contatto: la palla tocca il pelo dell'acqua o scatta una regola d'impatto; velocità di arrivo = quella prima del passo
     if (!primoContatto && (h > 0 || e.acqua) && !sotto) primoContatto = { t, vOrizz: vPrima[0], vVert: vPrima[1] };
     // uscita: la palla lascia l'acqua salendo; la regola «schizzo» di oggi la rimanda su prima che tocchi il pelo
-    if (primoContatto && !uscita && e.acqua && e.acqua.tipo === 'schizzo') uscita = { t, vOrizz: Math.hypot(B.vx, B.vz), vVert: B.vy, contatto: 0 };
+    if (primoContatto && !uscita && e.acqua && e.acqua.tipo === 'schizzo') uscita = { t, vOrizz: Math.hypot(B.vx, B.vz), vVert: B.vy, contatto: t - primoContatto.t };
     if (primoContatto && !uscita && h === 0 && B.vy > 0 && !eraInAria) uscita = { t, vOrizz: Math.hypot(B.vx, B.vz), vVert: B.vy, contatto: t - primoContatto.t };
     // in aria (prima di toccare l'acqua e senza urti) l'energia non può crescere
     const en = energia(B);
@@ -113,7 +113,7 @@ const impatto = (v, gradi, w = 0) => { const a = gradi * Math.PI / 180, vx = v *
   for (const q of s.storia) { if (Math.abs(q[2] - s.B.y) < 0.002) { if (ferma == null) ferma = q[0]; } else ferma = null; }
   const vFantasma = Math.abs(s.B.vy);
   if (vFantasma > 0.01) console.log(`    nota: a palla ferma la velocità verticale segnata resta ${f(vFantasma, 3)} m/s (gravità e galleggiamento si alternano a ogni passo)`);
-  riga(10, 'Palla sott\'acqua che risale', `sale fino a ${f(su, 3)} m (centro), ${su - r > 0 ? `salta ${f((su - r) * 100, 1)} cm fuori` : 'non esce dall\'acqua'}, ferma dopo ${f(ferma, 2)} s a ${f(s.B.y, 3)} m`, 'torna in superficie, salta fuori al massimo di qualche centimetro, si ferma al galleggiamento', ferma != null && su - r < 0.05);
+  riga(10, 'Palla sott\'acqua che risale', `sale fino a ${f(su, 3)} m (centro), ${su - r > 0 ? `salta ${f((su - r) * 100, 1)} cm fuori` : 'non esce dall\'acqua'}, ferma dopo ${f(ferma, 2)} s a ${f(s.B.y, 3)} m`, 'torna in superficie e si ferma al galleggiamento (quanto salta fuori: nessuna misura, da video)', ferma != null && Math.abs(s.B.y - QUOTA_GALLEGGIA) < 0.005);
   disegni.push({ n: 10, nome: 'Risale da −0,3 m', s, asse: 't' }); }
 
 // 11. energia persa e angolo d'impatto (Lyu, Yun e Wei 2021: l'energia persa cresce con l'angolo; sfera d'acciaio, solo la forma)

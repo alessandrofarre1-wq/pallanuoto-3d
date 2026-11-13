@@ -1,6 +1,6 @@
 // ================= RENDER =================
 import * as THREE from 'three';
-import { BRV, CAM_ZOOM, HL, clamp, rnd } from '../costanti.js';
+import { BRV, CAM_ZOOM, HL, clamp, rndGrafica } from '../costanti.js';
 import { updateRig } from './pose.js';
 import { animateWater, ball3d, camMode, camera, freccia, mirino, passMark, renderer, ring, scene, shadow, spawnFoam, updateFoam } from './scena.js';
 import { inp } from '../input.js';
@@ -21,7 +21,7 @@ export function render(dt,now){
   else { by=ball.y; ball3d.position.set(ball.x,ball.y,ball.z); }
   // spruzzo quando la palla tocca l'acqua: più forte arriva, più schiuma; nello schizzo la schiuma si allunga nella direzione del tiro
   if(ball.spruzzo){ const S=ball.spruzzo, n=Math.min(9,2+Math.round(S.forza*0.4)), vo=Math.hypot(ball.vx,ball.vz)||1; ball.spruzzo=null;
-    for(let i=0;i<n;i++){ const k=S.schizzo?i/n*0.9:0; spawnFoam(ball.x-ball.vx/vo*k+(rnd()-0.5)*0.35,ball.z-ball.vz/vo*k+(rnd()-0.5)*0.35,0.16+rnd()*0.14+S.forza*0.008,0.6+rnd()*0.4); } }
+    for(let i=0;i<n;i++){ const k=S.schizzo?i/n*0.9:0; spawnFoam(ball.x-ball.vx/vo*k+(rndGrafica()-0.5)*0.35,ball.z-ball.vz/vo*k+(rndGrafica()-0.5)*0.35,0.16+rndGrafica()*0.14+S.forza*0.008,0.6+rndGrafica()*0.4); } }
   prevBY=by;
   updateFoam(dt);
   // rotazione: in aria quella data dal tiro (e dagli urti); in acqua la palla rotola nella direzione in cui scivola; in mano gira poco

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 // Pose e animazioni: nuotata, posizione verticale, gesti di tiro e passaggio
-import { VIS, clamp, dist, rnd } from '../costanti.js';
+import { VIS, clamp, dist, rndGrafica } from '../costanti.js';
 import { aggiornaNumero, muoviCorpo } from './corpo.js';
 import { setSeg } from './modello.js';
 import { contatto, spawnFoam } from './scena.js';
@@ -245,10 +245,10 @@ export function updateRig(p,dt,t){
   // quasi fermi (bracciate sul posto) la scia è piccola e le scie laterali non partono.
   if(T.swim){ p.foamT=(p.foamT||0)-dt; if(p.foamT<=0){ p.foamT=0.09;
     const f=0.45+0.75*vel, ux=sp>0.3?p.vx/sp:p.fx, uz=sp>0.3?p.vz/sp:p.fz;
-    spawnFoam(p.x-ux*VIS*1.0+(rnd()-0.5)*0.2,p.z-uz*VIS*1.0+(rnd()-0.5)*0.2,(0.2+rnd()*0.1)*f,0.8,ux,uz);
-    spawnFoam(p.x+p.fx*VIS*0.5+(rnd()-0.5)*0.5,p.z+p.fz*VIS*0.5+(rnd()-0.5)*0.5,0.12*f,0.5);
+    spawnFoam(p.x-ux*VIS*1.0+(rndGrafica()-0.5)*0.2,p.z-uz*VIS*1.0+(rndGrafica()-0.5)*0.2,(0.2+rndGrafica()*0.1)*f,0.8,ux,uz);
+    spawnFoam(p.x+p.fx*VIS*0.5+(rndGrafica()-0.5)*0.5,p.z+p.fz*VIS*0.5+(rndGrafica()-0.5)*0.5,0.12*f,0.5);
     p.sciaV=!p.sciaV;
     if(p.sciaV&&vel>0.5) for(const l of [1,-1]){ const a=0.45*l, dx=ux*Math.cos(a)-uz*Math.sin(a), dz=ux*Math.sin(a)+uz*Math.cos(a);
       spawnFoam(p.x-ux*VIS*0.4-uz*l*0.22,p.z-uz*VIS*0.4+ux*l*0.22,0.11*f,0.8,dx,dz); } } }
-  else if(p.act&&p.act.kind!=='pass'&&p.act.kind!=='fake'&&!p.act.foam&&p.act.done){ p.act.foam=true; for(let i=0;i<4;i++) spawnFoam(p.x+(rnd()-0.5)*0.7,p.z+(rnd()-0.5)*0.7,0.25,0.9); }
+  else if(p.act&&p.act.kind!=='pass'&&p.act.kind!=='fake'&&!p.act.foam&&p.act.done){ p.act.foam=true; for(let i=0;i<4;i++) spawnFoam(p.x+(rndGrafica()-0.5)*0.7,p.z+(rndGrafica()-0.5)*0.7,0.25,0.9); }
 }
