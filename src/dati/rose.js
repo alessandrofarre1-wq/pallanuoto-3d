@@ -4,6 +4,7 @@
 // Nomi: per scelta di Ale (progetto gratuito e aperto) sono cognomi di giocatori che hanno vestito quelle nazionali, scritti
 // a memoria e NON verificati; numeri di calottina, ruoli e statistiche sono inventati. Da sostituire con rose e dati reali.
 import dati from './squadre.json';
+import MANI from './mancini.json';
 
 const NOMI={
   ESP:['Lorenzo','Granados','Munárriz','Sanahuja','Cabanas','Larumbe','Famera','Perrone','Tahull','Bustos','Valera','Asensio','Aguirre'],
@@ -58,13 +59,16 @@ export function rosa(codice){
   const ruoli=[0,1,2,3,4,5,6, 1,2,5,6,4, 0];
   const campioni=new Set([1+Math.floor(r()*6)]); if(r()<0.6) campioni.add(1+Math.floor(r()*6));
   const deboli=new Set([7+Math.floor(r()*5), 1+Math.floor(r()*6)].filter(k=>!campioni.has(k)));
-  const mancini=new Set([r()<0.75?4:2]); if(r()<0.35) mancini.add(2);      // i mancini giocano a destra (ala o mezzo destro)
+  // mano: solo dal file src/dati/mancini.json (chiave «ITA-7»), altrimenti destra; niente mancini a caso (scelta di Ale).
+  // I due numeri casuali che servivano a sceglierli si consumano lo stesso, così le statistiche delle rose non cambiano.
+  r(); r();
+  const mano=k=>MANI[`${codice}-${k+1}`]==='sinistra'?'S':'D';
   const out=ruoli.map((ruolo,k)=>{
     const riserva=k>=7, extra=(campioni.has(k)?8+r()*4:0)-(deboli.has(k)?7:0)-(riserva?4:0), P=PROFILO[ruolo], s={};
     for(const st of ['vel','res','pot','pre','pas','vis','dif','dis','frz']) s[st]=lim(base+P[st]+extra*(st==='dis'?0.3:1)+(r()-0.5)*9);
     const gk=ruolo===0?base+3+extra:base-28;
     for(const st of ['rif','pos','usc','rig']) s[st]=lim(gk+(r()-0.5)*9);
-    return { num:k+1, nome:nomi[k], ruolo, titolare:!riserva, mano:mancini.has(k)&&ruolo!==0?'S':'D', s, ovr:ovr(s,ruolo), campione:campioni.has(k) };
+    return { num:k+1, nome:nomi[k], ruolo, titolare:!riserva, mano:mano(k), s, ovr:ovr(s,ruolo), campione:campioni.has(k) };
   });
   return rose[codice]=out;
 }

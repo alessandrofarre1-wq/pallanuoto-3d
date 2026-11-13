@@ -5,6 +5,7 @@ import { closestTo, pallaVagante, startCut } from './ia.js';
 import { inp, pressed, released } from './input.js';
 import { fightOn, girata } from './lotta.js';
 import { contrasto, doFake } from './regole.js';
+import { aggiornaQte, tiroSpeciale } from './controfuga.js';
 import { ball, ctrl, fight, game, goalX, ownGoalX, setCtrl, teams } from './stato.js';
 import { diSchiena, doPass, doShoot, humanPassTarget, shotKind, startAct } from './tiri.js';
 export let tapT=-9, pendingQuick=null;   // doppio tocco = finta, tocco singolo = tiro rapido
@@ -59,6 +60,9 @@ export function humanControl(p,dt){
     if(p.pressatoUntil>game.time && !p.isGK){ p.charging=false; p.chargeT=0; p.voloPronto=false; pendingQuick=null;
       if(pressed('shoot')||pressed('lob')) annuncia('avviso','Sotto pressione',{dettaglio:'proteggi la palla o passa',durata:0.9});
       return; }
+    // controfuga: tasto a comparsa per lo schizzo o il colonnello (controfuga.js)
+    const qte=aggiornaQte(p);
+    if(qte && pressed('shoot')){ pendingQuick=null; p.charging=false; p.chargeT=0; tiroSpeciale(p,qte.tipo,aimZ); return; }
     if(pressed('lob')&&!p.isGK){ pendingQuick=null; startAct(p,'lob',0.12,()=>doShoot(p,0.4,true,aimZ)); return; }
     // tiro al volo: TIRO tenuto premuto mentre il passaggio era in volo → si tira appena arriva la palla
     if(p.voloPronto && inp.shoot && ball.holdTime<0.2 && !p.isGK && !ftBlock){ p.voloPronto=false; p.charging=false; p.chargeT=0; startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,aimZ,{volo:true})); return; }
@@ -79,6 +83,7 @@ export function humanControl(p,dt){
       }
     }
   } else {
+    p.qte=null;
     p.charging=false; p.chargeT=0; pendingQuick=null;
     p.voloPronto = inp.shoot && ball.state==='flight' && ball.kind==='pass' && ball.target===p;
     const h=ball.holder;

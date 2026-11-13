@@ -19,7 +19,7 @@ export function movePlayer(p,dx,dz,sprint,dt){
   p.sprinting=canSprint;
   base*=0.6+0.4*p.stamina;
   if(hold) base*=0.85;
-  if(p.charging||(p.act&&!p.act.done&&p.act.kind!=='colonnello')) base*=0.35;
+  if(p.charging||(p.act&&!p.act.done&&p.act.kind!=='colonnello'&&p.act.kind!=='schizzo')) base*=0.35;
   // Corpo verticale ↔ orizzontale: il passaggio è rapido e frequentissimo (ci si alza per ricevere, passare, tirare, guardare,
   // e si riparte subito): circa un quarto di secondo per alzarsi, un decimo in più per distendersi.
   // Lo SPOSTAMENTO invece è lento e scivoloso: il corpo porta con sé la velocità anche quando smette di nuotare o si alza.

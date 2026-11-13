@@ -35,6 +35,7 @@ jobs:
       - run: npm run sezione1 -- --no-build
       - run: npm run sezione2 -- --no-build
       - run: npm run sezione3 -- --no-build
+      - run: npm run sezione4 -- --no-build
       - run: npm run dati-tesi -- --no-build
       - run: npm run statistiche -- --no-build
       - run: npm run azione -- --no-build
