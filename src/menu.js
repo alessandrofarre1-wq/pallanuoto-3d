@@ -70,17 +70,20 @@ let lato=0;                                   // quale card cambia toccando una 
 // i cambi nella pallanuoto sono illimitati). Tocca un posto e poi un giocatore della panchina (o un altro posto) per scambiarli.
 const POSTI=['Portiere','Centroboa','Ala destra','Ala sinistra','Mezzo destro','Mezzo sinistro','Punto'];
 let postoScelto=null;
-const scheda=(g,extra)=>`<span class="ov">${g.ovr}</span><b>${g.num} ${g.nome}${iconaMano(g.mano)}</b><br>${RUOLI[g.ruolo]}${extra||''}`+
+// dati dei tornei (dal database): gol/tiri e assist per chi gioca, parate per i portieri
+const datiTornei=g=>{ const d=g.dati; if(!d) return '<small class="fm-dati">nessun dato nei tornei</small>';
+  return `<small class="fm-dati">${d.partite} partite · ${d.parate!=null?`parate ${d.parate}/${d.tiriSubiti}`:`${d.gol}/${d.tiri} al tiro · ${d.assist} assist`}</small>`; };
+const scheda=(g,extra)=>`<span class="ov">${g.ovr}</span><b>${g.num} ${g.nome}${iconaMano(g.mano)}</b><br>${RUOLI[g.ruolo]}${extra||''}${datiTornei(g)}`+
   `<div class="st">${CHIAVE[g.ruolo].map(k=>`<span>${STAT_NOMI[k].slice(0,3).toUpperCase()} ${g.s[k]}</span>`).join('')}</div>`;
 function disegnaRosa(){
   const t=teams[0], R=t.rosa, inAcqua=t.players.map(p=>p.scheda);
   const riserve=R.filter(g=>!inAcqua.includes(g));
-  $('rosa').innerHTML=`<p class="fm-aiuto">${postoScelto===null?'Tocca un posto per cambiare chi parte in acqua.':`Scegli chi mettere come <b>${POSTI[postoScelto]}</b> (panchina o un altro posto).`}</p>`+
+  $('rosa').innerHTML=`<p class="fm-aiuto fm-fonte">Giocatori, numeri, ruoli e mano dalle convocazioni vere; valutazioni stimate dalle statistiche di Mondiali 2025, Europei 2026 e Coppa del Mondo 2026.</p><p class="fm-aiuto">${postoScelto===null?'Tocca un posto per cambiare chi parte in acqua.':`Scegli chi mettere come <b>${POSTI[postoScelto]}</b> (panchina o un altro posto).`}</p>`+
     `<div class="fm-titolo">In acqua</div>`+inAcqua.map((g,i)=>`<button type="button" class="fig fm${postoScelto===i?' scelto':''}${g.campione?' camp':''}" data-posto="${i}"><i class="fm-posto">${POSTI[i]}</i>${scheda(g)}</button>`).join('')+
     `<div class="fm-titolo">Panchina</div>`+riserve.map(g=>{ const ok=postoScelto!==null&&(g.ruolo===0)===(postoScelto===0);
       return `<button type="button" class="fig ris${ok?' puo':''}${g.campione?' camp':''}" data-riserva="${g.num}">${scheda(g)}</button>`; }).join('')+
     `<button type="button" class="fm-ripristina" id="fmRipristina">Formazione di partenza</button>`;
-  const salvaF=F=>{ formazioni[t.codice]=F; salva('pallanuoto-formazione-'+t.codice,F.join(',')); postoScelto=null; applicaSquadre(scelta[0],scelta[1]); aggiornaTabellone(); disegnaRosa(); };
+  const salvaF=F=>{ formazioni[t.codice]=F; salva('pallanuoto-formazione2-'+t.codice,F.join(',')); postoScelto=null; applicaSquadre(scelta[0],scelta[1]); aggiornaTabellone(); disegnaRosa(); };
   const attuale=()=>t.players.map(p=>p.scheda.num);
   $('rosa').querySelectorAll('[data-posto]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.posto;
     if(postoScelto===null||postoScelto===i){ postoScelto=postoScelto===i?null:i; disegnaRosa(); return; }
@@ -88,10 +91,10 @@ function disegnaRosa(){
     if(formazioneValida(R,F)) salvaF(F); else { postoScelto=i; disegnaRosa(); } });
   $('rosa').querySelectorAll('[data-riserva]').forEach(b=>b.onclick=()=>{ if(postoScelto===null) return;
     const F=attuale(); F[postoScelto]=+b.dataset.riserva; if(formazioneValida(R,F)) salvaF(F); });
-  $('fmRipristina').onclick=()=>{ delete formazioni[t.codice]; salva('pallanuoto-formazione-'+t.codice,''); postoScelto=null; applicaSquadre(scelta[0],scelta[1]); disegnaRosa(); };
+  $('fmRipristina').onclick=()=>{ delete formazioni[t.codice]; salva('pallanuoto-formazione2-'+t.codice,''); postoScelto=null; applicaSquadre(scelta[0],scelta[1]); disegnaRosa(); };
 }
 // formazioni ricordate dalle volte precedenti
-for(const q of squadre){ const v=leggi('pallanuoto-formazione-'+q.codice); if(v) formazioni[q.codice]=v.split(',').map(Number); }
+for(const q of squadre){ const v=leggi('pallanuoto-formazione2-'+q.codice); if(v) formazioni[q.codice]=v.split(',').map(Number); }
 const sq=c=>squadre.find(q=>q.codice===c);
 export function scegliSquadre(a,b){
   if(a===b) b=squadre.find(q=>q.codice!==a).codice;

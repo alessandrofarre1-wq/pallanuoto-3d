@@ -21,16 +21,16 @@ await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallan
 let ok = true; const prova = (bene, testo) => { console.log(`${bene ? '✓' : '✗'} ${testo}`); if (!bene) ok = false; };
 
 // ---------- mano dal file: nessun mancino a caso ----------
-const mani = await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 'HUN'); return H.teams.flatMap(t => t.rosa.map(g => g.mano)); });
-prova(mani.every(m => m === 'D'), `senza voci nel file src/dati/mancini.json tutti destri (${mani.filter(m => m === 'S').length} mancini su ${mani.length})`);
+const mani = await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 'HUN'); return H.teams.flatMap(t => t.rosa.map(g => ({ m: g.mano, db: g.manoNota ? null : g.mano }))); });
+prova(mani.every(x => x.db === null ? x.m === 'D' : x.m === x.db), `mano dal database (${mani.filter(x => x.m === 'S').length} mancini su ${mani.length}; sconosciuta = destra)`);
 
 // ---------- un mancino titolare a sinistra va a destra; icona nella rosa ----------
 const lin = await pg.evaluate(() => {
-  const H = window.__pallanuoto, R = H.teams[0].rosa; R[3].mano = 'S';      // n. 4, ala sinistra
+  const H = window.__pallanuoto, R = H.teams[0].rosa; R[3].mano = 'S'; R[2].mano = 'D';      // l'ala sinistra diventa mancina
   H.scegliSquadre('ITA', 'HUN');
-  return { ala: H.teams[0].players[2].num, mano: H.teams[0].players[2].mano, altro: H.teams[0].players[3].num };
+  return { ala: H.teams[0].players[2].num, mano: H.teams[0].players[2].mano, altro: H.teams[0].players[3].num, atteso: R[3].num, attesoAltro: R[2].num };
 });
-prova(lin.ala === 4 && lin.mano === 'S' && lin.altro === 3, `mancino n. 4 spostato all'ala destra (al posto 2 c'è il n. ${lin.ala}, al posto 3 il n. ${lin.altro})`);
+prova(lin.ala === lin.atteso && lin.mano === 'S' && lin.altro === lin.attesoAltro, `mancino all'ala sinistra spostato all'ala destra (al posto 2 c'è il n. ${lin.ala}, al posto 3 il n. ${lin.altro})`);
 
 await pg.evaluate(() => { const H = window.__pallanuoto; H.imposta('len', '480'); document.getElementById('goBtn').click(); window.__salta(400); });
 

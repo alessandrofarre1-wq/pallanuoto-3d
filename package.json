@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.33.0",
+  "version": "0.34.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -29,6 +29,7 @@
     "sezione5": "node tests/sezione5.mjs",
     "sezione6": "node tests/sezione6.mjs",
     "vetrina-cambi": "node tests/vetrina-cambi.mjs",
+    "rose-db": "node strumenti/rose-dal-database.mjs dati-sorgente/database-giocatori.json",
     "mani": "node tests/mani.mjs",
     "dati-tesi": "node tests/dati-tesi.mjs",
     "bilancio": "node tests/bilancio.mjs",

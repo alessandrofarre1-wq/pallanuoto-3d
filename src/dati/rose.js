@@ -1,10 +1,11 @@
 // Rose delle 16 nazionali: 13 giocatori per squadra (1 = portiere, 2-7 titolari di movimento, 8-12 riserve, 13 secondo portiere)
 // con le statistiche in scala 40-99 come in FIFA, generate dalla forza della squadra (src/dati/squadre.json).
 // Le rose sono sempre le stesse a ogni avvio: il caso usato qui dipende solo dal codice della squadra.
-// Nomi: per scelta di Ale (progetto gratuito e aperto) sono cognomi di giocatori che hanno vestito quelle nazionali, scritti
-// a memoria e NON verificati; numeri di calottina, ruoli e statistiche sono inventati. Da sostituire con rose e dati reali.
+// Dalla v0.34 le rose vengono dal database di Ale (src/dati/rose-db.json, vedi strumenti/rose-dal-database.mjs): giocatori,
+// numeri, ruoli e mano veri, statistiche stimate dai tornei. Il generatore qui sotto resta solo per una squadra senza dati.
 import dati from './squadre.json';
 import MANI from './mancini.json';
+import DB from './rose-db.json';
 
 const NOMI={
   ESP:['Lorenzo','Granados','Munárriz','Sanahuja','Cabanas','Larumbe','Famera','Perrone','Tahull','Bustos','Valera','Asensio','Aguirre'],
@@ -54,6 +55,12 @@ export function ovr(s,ruolo){ const w=PESI[ruolo]; let a=0,b=0; for(const k in w
 const rose={};
 export function rosa(codice){
   if(rose[codice]) return rose[codice];
+  // ROSE VERE (v0.34): giocatori, numeri, ruoli e mano dal database di Ale, statistiche calcolate dai tornei con
+  // strumenti/rose-dal-database.mjs. Le voci di src/dati/mancini.json correggono la mano (chiave «ITA-7»).
+  if(DB.rose[codice]) return rose[codice]=DB.rose[codice].map(g=>{
+    const m=MANI[`${codice}-${g.num}`], mano=m==='sinistra'?'S':m==='destra'?'D':g.mano;
+    return { ...g, mano, s:{ ...g.s }, ovr:ovr(g.s,g.ruolo) };
+  });
   const sq=dati.squadre.find(x=>x.codice===codice), r=generatore(codice), base=57+(sq.forza-60)*0.72 /* da 57 di media (forza 60) a 80 (forza 92): differenze nette ma non schiaccianti */, nomi=NOMI[codice];
   // ordine dei numeri: 1 portiere, 2 centroboa, 3-4 ali, 5-6 mezzi, 7 punto, 8-12 riserve (un ruolo ciascuna), 13 secondo portiere
   const ruoli=[0,1,2,3,4,5,6, 1,2,5,6,4, 0];

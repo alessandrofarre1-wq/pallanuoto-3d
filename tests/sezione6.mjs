@@ -39,7 +39,7 @@ const viaggio = await pg.evaluate(() => {
   const H = window.__pallanuoto, T = H.teams[0], d = T.players[4], P = { x: -12.5 * T.dir + T.dir * 0.6, z: -11 };
   const d0 = Math.hypot(d.x - P.x, d.z - P.z), stati = new Set(); let t = 0;
   const r = { inizio: d0 };
-  for (let i = 0; i < 60 * 17 && !d.alPozzetto; i++) { window.__salta(1); stati.add(H.game.state); t = i / 60; d.exclUntil = H.game.time + 30; }
+  const gkO = H.teams[1].players[0]; for (let i = 0; i < 60 * 17 && !d.alPozzetto; i++) { if (H.ball.holder !== gkO) H.regole.giveBall(gkO); H.ball.holdTime = 0; gkO.decideT = 99; gkO.act = null; window.__salta(1); stati.add(H.game.state); t = i / 60; d.exclUntil = H.game.time + 30; }
   r.dopo = Math.hypot(d.x - P.x, d.z - P.z); r.arrivato = d.alPozzetto; r.tempo = t; r.z = d.z; r.visibile = d.mesh.g.visible; r.stati = [...stati];
   // recupero nel pozzetto
   H.game.autoplay = false; T.human = true;      // qui niente cambi automatici: si misura solo il recupero

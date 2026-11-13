@@ -52,13 +52,15 @@ prova(vista.coda.length === 1, `cambio programmato con un tocco: ${vista.coda.jo
 // ---------- cambio volante: chi esce va alla zona, cinque, scambio, il gioco non si ferma ----------
 const volante = await pg.evaluate(() => {
   const H = window.__pallanuoto, t = H.teams[0], p = t.players[4], entra = t.coda[0].entra.num, esce = p.num;
-  document.getElementById('riprendi').click(); window.__salta(200);
+  document.getElementById('riprendi').click(); H.game.cambiLiberi = false;
+  const gkO = H.teams[1].players[0], ferma = () => { if (H.ball.holder !== gkO) H.regole.giveBall(gkO); H.ball.holdTime = 0; gkO.decideT = 99; gkO.act = null; };      // niente gol durante la prova
+  for (let i = 0; i < 200; i++) { ferma(); window.__salta(1); }
   const r = { fermato: false, comparsaVista: false, cinque: false, fasi: [], tempo: 0 };
   for (let i = 0; i < 60 * 25 && (t.cambio || (t.coda && t.coda.length)); i++) {
     if (H.game.state !== 'play' && H.game.state !== 'stop') r.fermato = true;
     if (t.cambio) { if (!r.fasi.includes(t.cambio.fase)) r.fasi.push(t.cambio.fase); }
     if (p.cinqueUntil > H.game.time) r.cinque = true;
-    window.__salta(1); r.tempo = i / 60;
+    ferma(); window.__salta(1); r.tempo = i / 60;
   }
   window.__salta(240);
   r.ora = p.num; r.entra = entra; r.esce = esce; r.vecchioInAcqua = t.rosa.find(g => g.num === esce).inAcqua; r.nuovoInAcqua = t.rosa.find(g => g.num === entra).inAcqua;

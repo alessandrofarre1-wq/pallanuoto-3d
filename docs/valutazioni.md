@@ -1,5 +1,30 @@
 # Come calcolare le valutazioni dei giocatori reali
 
+## DALLA v0.34: database di Ale (13 novembre 2026) — metodo in uso
+Fonte: `waterpolo_database` mandato da Ale (World Aquatics, Microplus, Omega): convocazioni, mano dominante, altezza, nascita e statistiche dei tornei con la nazionale (Mondiali Singapore 2025, Europei Belgrado 2026, Coppa del Mondo 2026 divisioni 1-2 e finali). Nel repository c'è solo l'estratto delle 16 nazionali del gioco (`dati-sorgente/database-giocatori.json`); il calcolo si rifà con `node strumenti/rose-dal-database.mjs dati-sorgente/database-giocatori.json` (o con il file completo `waterpolo.json`) e scrive `src/dati/rose-db.json`, che il gioco legge (`rosa` in `src/dati/rose.js`).
+
+1. **Rosa**: la convocazione più recente con almeno 13 giocatori; 2 portieri (i più impiegati) e gli 11 giocatori di movimento con più minuti. Numeri di calottina, ruolo, mano, altezza e nascita veri (Cina: numeri mancanti, assegnati in ordine; cognomi uguali nella stessa squadra con l'iniziale o il nome).
+2. **Ruolo nel gioco**: Goalkeeper → portiere; Centre Forward → centroboa; Centre Back/Defender/Point → punto (nel gioco è il marcatore del centroboa); Right/Left Wing → ala destra/sinistra; Wing e Driver → ala o mezzo, lato secondo la mano (mancino a destra).
+3. **Titolari**: il miglior portiere e, posto per posto, il più forte del ruolo giusto (poi del ruolo più simile). Ale li cambia nella schermata Squadre.
+4. **Forza della squadra**: resta quella del ranking (`squadre.json`, media da circa 57 a 80). Le statistiche dei tornei decidono chi è più forte DENTRO la squadra: ogni voce viene ricentrata sulla media della squadra, così il bilanciamento tra nazionali non cambia.
+5. **Dati → statistiche** (per 32 minuti, confrontati con la media di tutti i giocatori di movimento delle 16 nazionali; chi ha giocato poco viene tirato verso la media in proporzione ai minuti):
+   - Precisione = percentuale al tiro (con 12 tiri «di prudenza» alla media);
+   - Potenza = gol e tiri a partita; Visione = assist; Passaggio = assist meno palle perse;
+   - Difesa = palle rubate e tiri murati; Disciplina = espulsioni commesse («18C» al centro + «18F» in campo, o le sigle CP/FP/DS/M6/CS del rapporto dei Mondiali) e falli da rigore («P»);
+   - Velocità = gol in controfuga e sprint vinti; Resistenza = minuti giocati a partita;
+   - Forza = gol dal centro e altezza (centroboa e difensori), solo altezza per gli altri;
+   - Portieri: Riflessi e Posizione = percentuale di parate (20 tiri «di prudenza»); Rigori = parate sui rigori; Uscita = parate in controfuga.
+   - Verificato sui dati: «18C» è più alto per i difensori del centroboa (2,3 ogni 32 minuti) che per i centroboa (1,1): sono espulsioni COMMESSE, al centro e in campo.
+6. **Età** e capitano come sotto (punto 5).
+7. **Mano**: dal database (13 mancini su 208; 26 sconosciute = destra). Correzioni in `src/dati/mancini.json` (chiave «ITA-7»).
+8. **Limiti** (dal README del database): sono osservazioni, non misure ufficiali di bravura; non ci sono velocità di nuoto o di tiro individuali né passaggi riusciti; dati dei club non collegati. Nel gioco sono STIME, correggibili.
+9. Nota sui dati: un giocatore croato risulta «KARLO Babic» (nome e cognome forse invertiti nella fonte): lasciato com'è, da verificare con Ale.
+
+---
+
+## Metodo precedente (v0.16-v0.33, rose generate): resta come riferimento
+
+
 Dati di partenza: `src/dati/rose-reali.json` (rose vere, ruolo, età, club, premi, statistiche dei tornei) e `src/dati/squadre.json` (forza delle squadre).
 Non esistono statistiche pubbliche complete per ogni giocatore: le valutazioni sono STIME costruite con questo metodo, trasparente e modificabile. Ale può correggere a mano qualunque giocatore (file di correzioni, vedi in fondo).
 

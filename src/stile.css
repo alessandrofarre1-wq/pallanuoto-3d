@@ -496,3 +496,5 @@ body.touch #tCambi{right:calc(94px + var(--sr))}
 #rosa .fig.puo{outline:1px dashed var(--h-oro,#f5c542)}
 #rosa .fm-posto{display:block;font-style:normal;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--h-oro,#f5c542)}
 #rosa .fm-ripristina{grid-column:1/-1;justify-self:start;margin-top:6px;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer}
+#rosa .fm-dati{display:block;font-size:11px;color:#9fc3ef;margin-top:2px}
+#rosa .fm-fonte{font-size:11px;color:#9fc3ef}
