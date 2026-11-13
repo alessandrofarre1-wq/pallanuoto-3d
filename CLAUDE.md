@@ -2,7 +2,8 @@
 
 Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Proprietario: Ale, ex nuotatore agonista, non programmatore: spiega le scelte in italiano semplice, senza gergo tecnico, e chiedi conferma prima di cambiamenti grossi di direzione.
 
-## Stato attuale (v0.26, novembre 2026)
+## Stato attuale (v0.27, novembre 2026)
+- VERSIONI (richiesta di Ale, 13/11/2026): ogni pull request alza la versione del prototipo di 0.01 e la scrive nel titolo della PR («v0.28: …»). Una sola fonte: `version` in `package.json` (letta da `vite.config.js` come `__VERSIONE__`); il gioco la mostra in home e in pausa («Prototipo v0.27»), così Ale vede quando il gioco si è aggiornato. v0.27 = fisica della palla passi 1-5 e corpi in acqua (PR 21, unita) più il numero di versione nel gioco (PR 22).
 - NOME DEL GIOCO (decisione di Ale): **WATERPOLO 7**. Nome visibile ovunque (titolo, metadati, menu, cartelloni); repository, indirizzo pubblico e identificativi tecnici restano «pallanuoto-3d». Il logo (`src/logo.js`) è una PROPOSTA in attesa del giudizio di Ale.
 - v0.26 = nuovo percorso pre-partita (home, squadre, impostazioni, comandi, opzioni, pausa, fine) e seconda parte della riprogettazione dell'HUD. Dettagli in "Menu WATERPOLO 7 (v0.26)" e "Riprogettazione HUD (v0.25)". Rapporto tecnico e roadmap in `docs/audit-roadmap.md` (solo analisi: si implementa dopo l'ok di Ale).
 - v0.25 = riprogettazione dell'HUD con la leggibilità della partita come priorità assoluta (design system, tabellone, espulsione; poi notifiche, comandi touch, pannello, schemi). Dettagli in "Riprogettazione HUD (v0.25)".
@@ -108,6 +109,12 @@ Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili
 ## Corpi e acqua (approvato il 13 novembre 2026)
 - Tutto in `docs/corpi-acqua.md`. Ogni effetto d'acqua passa da `evento(...)` in `grafica/acqua-eventi.js`, con le regole di visibilità (`LIMITI`: zona protetta attorno alla palla, meno effetti nell'affollamento, tetti a gocce, opacità e durata). Non creare effetti fuori da lì e non usare `rnd` nella grafica (c'è `rndGrafica`).
 - `npm run acqua-effetti`: 10 scene con la misura della visibilità di palla e giocatore (con e senza effetti). Da rifare a ogni modifica degli effetti.
+
+## Cosa resta da fare (13 novembre 2026)
+- Palla: passo 7 (mira del tiro a schizzo che simula il rimbalzo, bilanciamento, taratura con video); palla respinta da mani e portiere come urto vero (oggi decisa dalle regole); valori senza misura da tarare: portanza in acqua, attrito della rotazione, rimbalzo sui pali.
+- Corpi e acqua: nuoto con andature più distinte, recupero del portiere dopo la parata, eventuale griglia d'onde, taratura sugli screenshot di Ale; 99 oggetti disegnati nei primi secondi della partita (causa da cercare).
+- In attesa di Ale: prova su iPhone con il contatore FPS, giudizio sul logo (proposta), ok sul piano di `docs/audit-roadmap.md`, studi PubMed 22212254 e 25369278, Takahashi 2003 e Oliveira 2015 completi.
+- Bilanciamento: tiri per squadra (circa 44) ancora lontani dai 28 di una partita vera.
 
 ## Fonti indicate da Ale
 - World Aquatics Competition Regulations, parte pallanuoto (feb 2026): https://www.worldaquatics.com/rules/competition-regulations

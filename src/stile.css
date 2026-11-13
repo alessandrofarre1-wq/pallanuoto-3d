@@ -383,6 +383,7 @@ body.touch #fps b{font-size:12px}
   #vHome .h-logo .logo{width:min(40vw,360px)}
   #vHome .h-azioni{grid-area:azioni;align-self:start;margin-top:10px;gap:9px}
   #vHome .h-versione{grid-area:versione;justify-self:center;margin:0}
+  #vPausa .versione-pausa{grid-column:1/-1;justify-self:center;margin:0}
   .m-cta{min-height:56px} .m-cta b{font-size:19px} .m-cta small{font-size:12px}
   .m-voce{min-height:50px} .m-voce b{font-size:17px} .m-voce small{font-size:12px} .m-voce svg{width:28px;height:28px}
   .m-testa{margin-bottom:2px} .passi{margin-bottom:8px}
