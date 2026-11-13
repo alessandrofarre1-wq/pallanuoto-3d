@@ -11,6 +11,8 @@ import { RUOLI, CHIAVE, STAT_NOMI, squadre } from './dati/rose.js';
 import { bandiera } from './dati/bandiere.js';
 import { LOGO } from './logo.js';
 import { applicaSquadre } from './giocatori.js';
+import { annullaCambio } from './panchina.js';
+import { azzeraScelta, disegnaPanchina } from './panchinaVista.js';
 import { kickoff } from './regole.js';
 import { allPlayers, game, teams } from './stato.js';
 import { iconaMano } from './mano.js';
@@ -20,7 +22,7 @@ const leggi=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } 
 for(const id of ['logoHome','logoPausa','logoFine']) $(id).innerHTML=LOGO();
 
 // ---------- navigazione tra le schermate ----------
-const VISTE={ home:'vHome', squadre:'vSquadre', impostazioni:'vImpostazioni', comandi:'vComandi', info:'vInfo', opzioni:'vOpzioni', pausa:'vPausa', fine:'vFine' };
+const VISTE={ home:'vHome', squadre:'vSquadre', impostazioni:'vImpostazioni', comandi:'vComandi', info:'vInfo', opzioni:'vOpzioni', pausa:'vPausa', panchina:'vPanchina', fine:'vFine' };
 const storia=[];
 export function vai(v,senzaStoria){
   const M=$('menu'), prima=M.dataset.vista;
@@ -29,6 +31,8 @@ export function vai(v,senzaStoria){
   for(const [k,id] of Object.entries(VISTE)) $(id).classList.toggle('on',k===v);
   M.scrollTop=0; $(VISTE[v]).scrollTop=0;
   if(v==='squadre') disegnaSquadre();
+  if(v==='panchina') disegnaPanchina();
+  else azzeraScelta();
 }
 function indietro(){ vai(storia.pop()||(game.state==='paused'?'pausa':game.state==='over'?'fine':'home'),true); }
 document.querySelectorAll('[data-va]').forEach(b=>b.addEventListener('click',()=>vai(b.dataset.va)));
@@ -124,6 +128,8 @@ export function togglePause(){
   apriMenu('pausa');
 }
 export function newMatch(){
+  for(const t of teams) annullaCambio(t);
+  applicaSquadre(teams[0].codice,teams[1].codice);      // si riparte con i titolari, panchina fresca
   teams[0].score=teams[1].score=0; game.period=1; game.clock=PERIOD_LEN; game.time=0;
   for(const p of allPlayers){ p.stamina=1; p.excluded=false; p.pf=0; p.cut=null; }
   for(const t of teams){ t.atkPlay=0; t.defPlay=2; t.lasciato=null; t.cross=false; t.timeouts=2; t.vuoleTimeout=false; t.parzialeSubito=0; t.espulsioniT=[]; t.setteAnnunciato=false; t.fugaFino=0; }

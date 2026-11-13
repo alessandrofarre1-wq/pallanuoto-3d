@@ -105,6 +105,7 @@ export function computePose(p,dt,t){
   // palla vicina: portiere pronto, gomiti piegati e larghi, mani avanti all'altezza delle spalle con i palmi verso il tiratore
   else if(p.isGK&&!hold&&vicinaGK>0.02){ hR=mix3(hR,add3(vSR,[0.24,0.10,0.24]),vicinaGK); hL=mix3(hL,add3(vSL,[0.24,0.10,-0.24]),vicinaGK);
     hintR=[-0.2,-1,0.7]; hintL=[-0.2,-1,-0.7]; nR=mix3(nR,[1,-0.1,0.15],vicinaGK); nL=mix3(nL,[1,-0.1,-0.15],vicinaGK); }
+  else if(p.cinqueUntil>game.time){ hR=add3(vSR,[0.30,0.52,0.06]); hintR=[0,-0.3,1]; nR=[1,0.1,0]; lift+=0.05; }      // cambio: il «cinque» con il compagno
   else if(muro||abbocca||(defUp&&!(p.fintaC>game.time))){
     // braccio dalla parte del palo da coprire (muro.js); alto a murare quando l'avversario tira, a metà quando lo marca
     const alto=muro||abbocca, su=alto?[0.16,0.74,0.08]:[0.28,0.34,0.05];

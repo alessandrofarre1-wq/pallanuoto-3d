@@ -12,6 +12,7 @@ import { areaFoul, callPlay, contrasto, deadBall, giveBall, kickoff, latoContras
 import { difensoriDavanti } from './statistiche.js';
 import { allPlayers, ball, ctrl, game, goalX, other, setCtrl, teams } from './stato.js';
 import { doShoot, startAct, updateActs } from './tiri.js';
+import { aggiornaPanchina, obiettivoUscita } from './panchina.js';
 export const CONTR_AI={ ritmo:1.5, insiste:2.0, fallo:0.2, indisciplina:0.4 };      // contrasto del computer (sezione 2)
 export function update(dt){
   pollInput();
@@ -21,14 +22,16 @@ export function update(dt){
     game.timer-=dt;
     const n=Math.ceil(game.timer);
     if(n>0&&n!==game.contoVisto){ game.contoVisto=n; annuncia('conto',`${game.period}° tempo · ${n}`,{durata:0.9}); }
+    aggiornaPanchina(dt,true);      // tra i tempi i cambi sono liberi
     if(game.timer<=0){ game.state='play'; game.contoVisto=0; whistle(0.5); annuncia('ripresa','Via!',{dettaglio:`inizio ${game.period}° tempo`,durata:1}); }
     return;
   }
   if(game.state==='stop'){
+    aggiornaPanchina(dt,!!game.cambiLiberi);      // dopo un gol o nel time-out i cambi si fanno subito; su un fallo il cambio volante continua
     for(const p of allPlayers){ p.vx*=0.9; p.vz*=0.9; }
     if(ball.state==='dead') updateBall(dt);
     game.timer-=dt;
-    if(game.timer<=0){ const f=game.after; game.after=null; game.state='play'; if(f) f(); }
+    if(game.timer<=0){ const f=game.after; game.after=null; game.state='play'; game.cambiLiberi=false; if(f) f(); }
     return;
   }
   // --- gioco attivo ---
@@ -79,6 +82,7 @@ export function update(dt){
     t.nextDrive=game.time+(t.atkPlay===1?4.5:10+rnd()*5);
   }
   for(const t of teams) aggiornaDifesa(t,dt);
+  aggiornaPanchina(dt);      // stamina delle riserve e cambi volanti (panchina.js)
   updateCtrl();
   for(const p of allPlayers){
     if(p.excluded) continue;
@@ -98,6 +102,7 @@ export function update(dt){
     if(ball.holder===p && !p.team.human){ aiCarrier(p,dt); tg=p.target; }
     else tg=aiTarget(p);
     if(ball.holder===p && p.team.human && p!==ctrl){ aiCarrier(p,dt); tg=p.target; }
+    if(p.uscendo && ball.holder!==p) tg=obiettivoUscita(p);      // cambio volante: va alla zona dei cambi
     if(!tg){ movePlayer(p,0,0,false,dt); continue; }
     const dx=tg.x-p.x, dz=tg.z-p.z, d=Math.hypot(dx,dz);
     let mx=0,mz=0; if(d>0.12){ const s=Math.min(1,d/0.8); mx=dx/d*s; mz=dz/d*s; }
