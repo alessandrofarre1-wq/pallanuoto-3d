@@ -20,11 +20,15 @@ for(const t of teams) Object.assign(t,{atkPlay:0,defPlay:2,cross:false,doubleP:n
 const BIANCA={ cal:0xf4f4f4, css:'#f4f4f4', testo:'#111' }, BLU={ cal:0x1d3f8f, css:'#1d3f8f', testo:'#fff' };
 // mette un giocatore della rosa nel corpo p (titolare all'inizio, riserva quando entra un cambio)
 export function vesti(p,g){
-  const t=p.team;
-  p.num=g.num; p.name=g.nome; p.s=g.s; p.st=valoriMotore(g.s); p.ovr=g.ovr; p.mano=g.mano; p.scheda=g;
+  if(p.scheda&&p.scheda!==g) p.scheda.inAcqua=false;
+  p.num=g.num; p.name=g.nome; p.s=g.s; p.st=valoriMotore(g.s); p.ovr=g.ovr; p.mano=g.mano; p.scheda=g; g.inAcqua=true;
+  colora(p.mesh,p.team,p.isGK,p.num);
+}
+// solo l'aspetto (calottina, costume, numero): serve anche per chi entra o esce con un cambio (panchina.js)
+export function colora(mesh,t,isGK,num){
   const C=t.calottina;
-  coloraGiocatore(p.mesh,{ costume:t.costume, calottina:p.isGK?0xd62828:C.cal, paraorecchie:p.isGK?0xf2f2ee:(C===BIANCA?t.costume:0xf2f2ee), testo:p.isGK?'#fff':C.testo,
-    disco:p.isGK?'#d62828':C.css, discoTesto:p.isGK?'#fff':C.testo },p.num);
+  coloraGiocatore(mesh,{ costume:t.costume, calottina:isGK?0xd62828:C.cal, paraorecchie:isGK?0xf2f2ee:(C===BIANCA?t.costume:0xf2f2ee), testo:isGK?'#fff':C.testo,
+    disco:isGK?'#d62828':C.css, discoTesto:isGK?'#fff':C.testo },num);
 }
 export function applicaSquadre(codA,codB){
   [codA,codB].forEach((cod,k)=>{
@@ -34,15 +38,18 @@ export function applicaSquadre(codA,codB){
     // un mancino titolare gioca sul lato destro (ala destra = 2, mezzo destro = 4): se sta a sinistra si scambia con il destro
     const posto=[0,1,2,3,4,5,6];
     for(const [dx,sx] of [[2,3],[4,5]]) if(R[sx].mano==='S'&&R[dx].mano!=='S'){ posto[dx]=sx; posto[sx]=dx; }
-    for(const p of t.players) vesti(p,R[posto[p.i]]);
+    // la panchina riparte da capo: tutti freschi, nessun gol, nessun fallo; in acqua i titolari
+    for(const g of R){ g.inAcqua=false; g.stamina=1; g.gol=0; g.pf=0; g.fuori=false; }
+    t.cambio=null; t.coda=[];
+    for(const p of t.players){ p.scheda=null; vesti(p,R[posto[p.i]]); }
   });
 }
 // prossima riserva per il ruolo di chi esce (portiere per portiere), tra quelle non ancora entrate
-export function riservaPer(p){
-  const t=p.team, libere=t.rosa.filter(g=>!g.titolare&&!t.usciti.has(g.num)&&(g.ruolo===0)===p.isGK);
-  const g=libere.find(x=>x.ruolo===p.i)||libere[0]||null;
-  if(g) t.usciti.add(g.num);
-  return g;
+// la riserva migliore per il posto di p (portiere per portiere): stesso ruolo se c'è, poi la più fresca
+export function riservaPer(p,escluse){
+  const t=p.team, libere=t.rosa.filter(g=>!g.inAcqua&&!g.fuori&&(g.ruolo===0)===p.isGK&&!(escluse&&escluse.has(g)));
+  libere.sort((a,b)=>((b.ruolo===p.i)-(a.ruolo===p.i))||((b.stamina??1)-(a.stamina??1)));
+  return libere[0]||null;
 }
 applicaSquadre('ITA','HUN');
 setCtrl(teams[0].players[6]);

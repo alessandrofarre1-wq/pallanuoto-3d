@@ -7,6 +7,7 @@ import { animateWater, ball3d, camMode, camera, freccia, mirino, passMark, rende
 import { inp } from '../input.js';
 import { allPlayers, ball, ctrl, game, teams } from '../stato.js';
 import { humanPassTarget } from '../tiri.js';
+import { comparseVisibili } from '../panchina.js';
 export const camPos=new THREE.Vector3(0,10.5,16), camLook=new THREE.Vector3(), _cv=new THREE.Vector3();
 export let prevBY=BRV;
 let camLargo=0;
@@ -16,6 +17,7 @@ export function render(dt,now){
   const t=now*0.001;
   animateWater(t);
   for(const p of allPlayers) updateRig(p,dt,t);
+  for(const c of comparseVisibili()) updateRig(c,dt,t);      // chi entra o esce con un cambio
   // palla
   const h=ball.holder; let by;
   if(ball.state==='held'&&h&&h.ballW){ const w=h.ballVistaW||h.ballW; by=Math.max(BRV,w[1]); ball3d.position.set(w[0],by,w[2]); }

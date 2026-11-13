@@ -2,6 +2,7 @@
 import { chiLasciare, passaAZona, scegliDifesa, setteControSei } from './ia.js';
 import { elevazione } from './tiri.js';
 import { riservaPer, vesti } from './giocatori.js';
+import { annullaCambio } from './panchina.js';
 import { registraEspulsione, registraFallo, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
 import { whistle } from './audio.js';
 import { autoSwitch, resetTap } from './controllo.js';
@@ -73,8 +74,9 @@ export function reenter(p,keepPos){
 }
 export function substitute(p){   // terzo fallo personale: entra un cambio dalla panchina (art. 16.2)
   const t=p.team, g=riservaPer(p); t.subs++;
-  p.pf=0; p.stamina=1;
-  if(g) vesti(p,g);
+  if(t.cambio&&t.cambio.esce===p) annullaCambio(t);
+  if(p.scheda){ p.scheda.fuori=true; p.scheda.pf=p.pf; p.scheda.stamina=p.stamina; }
+  if(g){ vesti(p,g); p.pf=g.pf||0; p.stamina=g.stamina??1; } else { p.pf=0; p.stamina=1; }
 }
 export function cornerThrow(att){   // art. 13
   whistle(0.25); annuncia('ripresa',"Tiro d'angolo",{squadra:att});
@@ -136,7 +138,7 @@ export function areaFoul(q){      // art. 8.2.8: attaccante nell'area di porta d
 }
 export function timeout(t){       // art. 5: due time-out a squadra, solo in possesso di palla; si riparte da metà campo
   if(t.timeouts<=0||game.state!=='play'||game.penalty||game.possTeam!==t||!ball.holder||ball.holder.team!==t) return false;
-  t.timeouts--; whistle(0.7); registraTimeout(t);
+  t.timeouts--; whistle(0.7); registraTimeout(t); game.cambiLiberi=true;      // nel time-out i cambi sono liberi
   annuncia('timeout','Time-out',{squadra:t,dettaglio:`${t.name} · ne resta${t.timeouts===1?'':'no'} ${t.timeouts}`});
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0;
   deadBall(2.6,()=>{
@@ -159,7 +161,8 @@ export function callPlay(i){
   else if(i<4){ t.defPlay=i; t.lasciato=null; annuncia('avviso',`Difesa: ${DEFN[i]}`); }
 }
 export function goalScored(t){
-  t.score++; whistle(0.6); rumble(350,1); registraGol(t,ball);
+  t.score++; whistle(0.6); rumble(350,1); registraGol(t,ball); game.cambiLiberi=true;      // dopo un gol i cambi sono liberi
+  if(ball.shooter&&ball.shooter.team===t&&ball.shooter.scheda) ball.shooter.scheda.gol=(ball.shooter.scheda.gol||0)+1;      // gol del giocatore (panchina)
   // parziale: tre gol subiti di fila fanno chiamare il time-out all'allenatore del computer
   { const sub=other(t); t.parzialeSubito=0; sub.parzialeSubito=(sub.parzialeSubito||0)+1; if(sub.parzialeSubito>=3) sub.vuoleTimeout=true; }
   annuncia('gol','Gol',{p:ball.shooter,squadra:t});

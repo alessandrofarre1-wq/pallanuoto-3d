@@ -66,7 +66,7 @@ export function shotKind(p){
 export function bestPassTarget(p){
   let best=null, bs=-1e9; const sup=manUp(p.team);
   for(const m of p.team.players){
-    if(m===p||m.excluded||(m.isGK&&!setteControSei(p.team))) continue;
+    if(m===p||m.excluded||m.uscendo||(m.isGK&&!setteControSei(p.team))) continue;
     const d=dist(p,m); if(d<2) continue;
     const dg=Math.hypot(goalX(p.team)-m.x,m.z);
     let s=Math.min(openness(m),3)*1.3 - dg*0.15 + (laneClear(p,m.x,m.z,p.team)?1.2:-2.5) - d*0.04;
@@ -93,7 +93,7 @@ export function humanPassTarget(p,ix,iz){
   if(il<0.3) return bestPassTarget(p);
   let best=null, bs=-1e9;
   for(const m of p.team.players){
-    if(m===p||m.excluded) continue;
+    if(m===p||m.excluded||m.uscendo) continue;
     const dx=m.x-p.x, dz=m.z-p.z, d=Math.hypot(dx,dz)||1;
     const c=(dx*ix+dz*iz)/(d*il); if(c<0.35) continue;
     const s=c*4 - d*0.07 + (laneClear(p,m.x,m.z,p.team)?0.5:0);

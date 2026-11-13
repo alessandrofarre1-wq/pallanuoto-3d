@@ -21,7 +21,7 @@ export function autoSwitch(pt){
 let cambioManualeT=-9;
 export function piuVicinoAllaPalla(t,escluso){
   let best=null,bd=1e9;
-  for(const m of t.players){ if(m===escluso||m.excluded||m.isGK) continue; const d=dist(m,ball);
+  for(const m of t.players){ if(m===escluso||m.excluded||m.isGK||m.uscendo) continue; const d=dist(m,ball);
     if(d<bd-1e-6||(Math.abs(d-bd)<=1e-6&&best&&Math.abs(m.x-ownGoalX(t))<Math.abs(best.x-ownGoalX(t)))){ bd=d; best=m; } }
   return best;
 }
