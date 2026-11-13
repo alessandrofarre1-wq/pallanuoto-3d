@@ -1,0 +1,4 @@
+{
+  "_come": "Mano dei giocatori. Chiave = sigla della squadra + numero di calottina (es. ITA-7). Valore: sinistra o destra. Chi non è qui è destro.",
+  "_esempio": { "ITA-7": "sinistra" }
+}

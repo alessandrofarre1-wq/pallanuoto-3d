@@ -31,7 +31,10 @@ export function applicaSquadre(codA,codB){
     const t=teams[k], sq=squadra(cod), R=rosa(cod);
     Object.assign(t,{ codice:cod, name:sq.nome, short:cod, forza:sq.forza, costume:parseInt(sq.costume.slice(1),16), calottina:k===0?BIANCA:BLU, rosa:R, subs:0, usciti:new Set() });
     t.css=t.calottina.css; t.color=t.calottina.cal;
-    for(const p of t.players) vesti(p,R[p.i]);
+    // un mancino titolare gioca sul lato destro (ala destra = 2, mezzo destro = 4): se sta a sinistra si scambia con il destro
+    const posto=[0,1,2,3,4,5,6];
+    for(const [dx,sx] of [[2,3],[4,5]]) if(R[sx].mano==='S'&&R[dx].mano!=='S'){ posto[dx]=sx; posto[sx]=dx; }
+    for(const p of t.players) vesti(p,R[posto[p.i]]);
   });
 }
 // prossima riserva per il ruolo di chi esce (portiere per portiere), tra quelle non ancora entrate

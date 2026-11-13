@@ -424,3 +424,17 @@ body.touch #fps b{font-size:12px}
 .fig .st{display:flex;gap:6px;margin-top:3px;font-variant-numeric:tabular-nums}
 .fig .st span{background:rgba(0,0,0,.25);border-radius:4px;padding:1px 4px}
 .fig.camp{border-color:#facc15}
+
+/* mancino (sezione 4): icona della mano sinistra accanto al nome */
+.manc{display:inline-block;vertical-align:-0.15em;margin-left:.3em;color:var(--h-oro);width:1.05em;height:1.05em}
+/* tasto a comparsa in controfuga (sezione 4): oro = azione richiesta. Con tastiera e controller una pillola in basso;
+   sul telefono si illumina il pulsante TIRO con «Premi!» */
+#qte{position:fixed;left:50%;bottom:calc(var(--sb,0px) + 14px);transform:translateX(-50%) scale(.9);opacity:0;pointer-events:none;
+  background:var(--h-oro);color:#0b1e3a;font-weight:900;font-size:15px;letter-spacing:.02em;padding:7px 16px;border-radius:999px;
+  box-shadow:0 0 0 3px rgba(255,200,60,.35),0 4px 14px rgba(0,0,0,.35);transition:opacity .18s,transform .18s;z-index:30;white-space:nowrap}
+#qte.on{opacity:1;transform:translateX(-50%) scale(1);animation:qteBatte .5s ease-in-out infinite alternate}
+#qte small{font-weight:700;opacity:.8;margin-left:.4em}
+@keyframes qteBatte{to{box-shadow:0 0 0 7px rgba(255,200,60,.15),0 4px 14px rgba(0,0,0,.35)}}
+body.touch #qte{display:none}
+.tb.premi{border-color:var(--h-oro)!important;background:rgba(255,200,60,.28)!important;box-shadow:0 0 0 3px var(--h-oro),0 0 18px rgba(255,200,60,.6);animation:qteBatte .5s ease-in-out infinite alternate}
+.tb.premi small{color:var(--h-oro);font-weight:900}

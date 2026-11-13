@@ -5,6 +5,7 @@ import { doFake, timeout } from './regole.js';
 import { annuncia as notifica } from './cronaca.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
 import { paloCoperto } from './muro.js';
+import { aiControfuga } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, laneClear, shotKind, situazioneTiro, startAct } from './tiri.js';
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 export function startCut(p){
@@ -283,6 +284,7 @@ export function aiCarrier(p,dt){
   const dGoal=Math.hypot(gx-p.x,p.z);
   p.target={x:slot.x+t.dir*0.8, z:slot.z, sprint: Math.abs(p.x-slot.x)>6};
   if(p.act) return;
+  if(aiControfuga(p,dt)) return;      // controfuga: schizzo o colonnello
   // in superiorità: tiro al volo appena ricevuto il passaggio
   if((p.alVolo||p.i===1||p.i===6) && ball.holdTime<0.15 && manUp(t) && dGoal<7.5 && !(p.freeThrow&&Math.abs(gx-p.x)<6)){ p.alVolo=false; startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,null,{volo:true})); return; }
   p.decideT-=dt;

@@ -36,7 +36,10 @@ export const THROW={
   sciarpa:{K:[0.30,0.02,0.18],R:[-0.16,0.36,-0.30],F:[-0.34,0.22,-0.34],lift:0.16,tw0:-0.25,tw1:0.95,ind:0}, // spalle alla porta: il braccio attraversa il corpo, colpo di polso
   polso:{K:[0.02,0.46,0.10],R:[0.30,0.52,0.02],F:[0.36,0.30,-0.10],lift:0.14,tw0:-0.12,tw1:0.18,ind:0.15},     // tiro di solo polso: quasi senza caricare
   torsione:{K:[-0.34,0.44,0.06],R:[0.36,0.50,-0.20],F:[0.36,-0.02,-0.38],lift:0.30,tw0:-1.05,tw1:0.95,ind:1},   // busto verso il primo palo, chiusura in diagonale
-  colonnello:{K:[-0.25,0.25,0.10],R:[0.50,0.30,0.0],F:[0.55,-0.10,-0.05],lift:0,tw0:0,tw1:0,ind:0}        // tiro in nuotata
+  // controfuga (sezione 4). Colonnello: la mano forte prende la palla dall'acqua, la porta vicino alla spalla e la spinge avanti.
+  colonnello:{K:[0.06,0.30,0.16],R:[0.52,0.34,0.04],F:[0.58,0.16,-0.04],lift:0.04,tw0:-0.2,tw1:0.1,ind:0},
+  // Schizzo (gesto di Ale): disteso, la mano forte parte indietro a pelo d'acqua e colpisce la palla di schiaffo
+  schizzo:{K:[-0.26,0.02,0.34],R:[0.46,-0.04,0.04],F:[0.56,0.02,-0.18],lift:0,tw0:-0.35,tw1:0.25,ind:0}
 };
 const PALLA_DAVANTI=[0.62,0.08,0];     // in nuotata la palla si spinge davanti alla testa, tra le braccia
 export function computePose(p,dt,t){
@@ -107,6 +110,7 @@ export function computePose(p,dt,t){
   else if(hold&&!th){ hR=add3(vSR,HOLD); hintR=[-0.3,-0.6,1]; J.ballHand=true; }
   if(presa>0.01){ const v=[pallaL[0]-vSR[0],pallaL[1]-vSR[1],pallaL[2]-vSR[2]], l=Math.hypot(v[0],v[1],v[2])||1, m=Math.min(1,0.55/l); hR=mix3(hR,add3(vSR,[v[0]*m,Math.max(0.1,v[1]*m),v[2]*m]),presa); hintR=[0,-0.4,1]; }
   if(th){ hL=[vSL[0]+0.36,-0.03,vSL[2]-0.10]; hintL=[0,-1,-0.4]; }      // il braccio libero fa appoggio sull'acqua (a pelo d'acqua)
+  const schizzo=th===THROW.schizzo;
   if(fight.active && !th){
     // braccia vive nella lotta: il difensore spinge a mani alterne sulla schiena e sul fianco del centroboa; il centroboa rema
     // dietro di sé per tenere la posizione (la mano con la palla non cambia: da lì parte il tiro)
@@ -164,10 +168,21 @@ export function computePose(p,dt,t){
     if(th===THROW.shot){ const ang=(146.7+10.8*clamp((p.st.sht-0.7)/0.3,0,1))*Math.PI/180, d=Math.sqrt(L1*L1+L2*L2-2*L1*L2*Math.cos(ang))/Math.hypot(R[0],R[1],R[2]); R=[R[0]*d,R[1]*d,R[2]*d]; }
     let off=mix3(HOLD,th.K,c); off=mix3(off,R,w); off=mix3(off,th.F,f);
     hR=add3(J.sR,off); hintR=[-0.4,-0.6,1];
+    // schizzo: la mano debole tiene la palla a pelo d'acqua davanti al corpo finché la mano forte non la colpisce
+    if(schizzo&&w<1){ hL=add3(J.sL,[0.44,-0.10,0.22]); hintL=[0,-1,-0.4]; }
     if(hold && !(act&&act.done&&act.kind!=='fake')) J.ballHand=true;
   }
   [J.eR,J.hR]=ik(J.sR,hR,L1,L2,hintR); [J.eL,J.hL]=ik(J.sL,hL,L1,L2,hintL);
+  // MANCINI (sezione 4): con la palla e nei gesti la posa è quella del destro vista allo specchio (destra e sinistra
+  // scambiate), quindi la palla sta e parte dalla mano sinistra
+  if(p.mano==='S' && (hold||th)) specchia(J);
   return J;
+}
+const COPPIE=[['sR','sL'],['eR','eL'],['hR','hL'],['kR','kL'],['fR','fL']];
+function specchia(J){
+  for(const [a,b] of COPPIE){ const t=J[a]; J[a]=J[b]; J[b]=t; }
+  for(const k of ['hip','chest','head','sL','sR','eL','eR','hL','hR','kL','kR','fL','fR']) if(J[k]) J[k]=[J[k][0],J[k][1],-J[k][2]];
+  J.manoS=true;
 }
 //</POSE>
 export const JK=['hip','chest','head','sL','sR','eL','eR','hL','hR','kL','kR','fL','fR'];
@@ -217,15 +232,16 @@ export function updateRig(p,dt,t){
   R.spr.position.set(Jv.head[0],Jv.head[1]+0.3,Jv.head[2]);
   // posizione della palla in mano / davanti al nuotatore (coordinate mondo)
   let l=null;
-  if(T.ballHand){ l=[J.hR[0]+0.02,J.hR[1]+0.13,J.hR[2]]; if(T.ballDavanti>0) l=mix3(l,PALLA_DAVANTI,T.ballDavanti); }
+  const mh=T.manoS?J.hL:J.hR;      // mancino: palla nella mano sinistra
+  if(T.ballHand){ l=[mh[0]+0.02,mh[1]+0.13,mh[2]]; if(T.ballDavanti>0) l=mix3(l,PALLA_DAVANTI,T.ballDavanti); }
   if(l){ const c=p.fx, sn=-p.fz; p.ballW=[p.x+VIS*(l[0]*c+l[2]*sn), VIS*l[1], p.z+VIS*(-l[0]*sn+l[2]*c)]; } else p.ballW=null;
   // solo per il disegno: il pallanuotista ha braccia di lunghezza diversa da quelle di pose.js, quindi la palla tenuta in
   // mano viene spostata di quanto la sua mano vera dista da quella prevista. p.ballW (usato dal gioco per i lanci) non cambia:
   // il gioco non dipende dal disegno.
   p.ballVistaW=null;
   if(l && R.corpo && R.corpo.ossa.manoD && !(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){
-    const c=p.fx, sn=-p.fz, h=Jv.hR, k=1-(T.ballDavanti||0);
-    R.corpo.ossa.manoD.getWorldPosition(_mano);
+    const c=p.fx, sn=-p.fz, h=T.manoS?Jv.hL:Jv.hR, k=1-(T.ballDavanti||0);
+    (T.manoS&&R.corpo.ossa.manoS?R.corpo.ossa.manoS:R.corpo.ossa.manoD).getWorldPosition(_mano);
     const hx=p.x+VIS*(h[0]*c+h[2]*sn), hy=VIS*h[1], hz=p.z+VIS*(-h[0]*sn+h[2]*c);
     p.ballVistaW=[p.ballW[0]+(_mano.x-hx)*k, p.ballW[1]+(_mano.y-hy)*k, p.ballW[2]+(_mano.z-hz)*k];
     // in nuotata con palla la si disegna appena davanti al viso, appoggiata sull'acqua tra le braccia (nel gioco resta più avanti)

@@ -13,6 +13,7 @@ import { LOGO } from './logo.js';
 import { applicaSquadre } from './giocatori.js';
 import { kickoff } from './regole.js';
 import { allPlayers, game, teams } from './stato.js';
+import { iconaMano } from './mano.js';
 
 const salva=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){ /* senza memoria si va avanti lo stesso */ } };
 const leggi=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } };
@@ -62,7 +63,7 @@ if(fpsIniziale()) document.querySelector('[data-fps="1"]').click();
 const scelta=['ITA','HUN'];
 let lato=0;                                   // quale card cambia toccando una squadra dell'elenco
 function disegnaRosa(){
-  $('rosa').innerHTML=teams[0].rosa.map(g=>`<div class="fig${g.titolare?'':' ris'}${g.campione?' camp':''}"><span class="ov">${g.ovr}</span><b>${g.num} ${g.nome}</b><br>${RUOLI[g.ruolo]}${g.titolare?'':' (riserva)'} · ${g.mano==='S'?'mancino':'destro'}`+
+  $('rosa').innerHTML=teams[0].rosa.map(g=>`<div class="fig${g.titolare?'':' ris'}${g.campione?' camp':''}"><span class="ov">${g.ovr}</span><b>${g.num} ${g.nome}${iconaMano(g.mano)}</b><br>${RUOLI[g.ruolo]}${g.titolare?'':' (riserva)'} · ${g.mano==='S'?'mancino':'destro'}`+
     `<div class="st">${CHIAVE[g.ruolo].map(k=>`<span>${STAT_NOMI[k].slice(0,3).toUpperCase()} ${g.s[k]}</span>`).join('')}</div></div>`).join('');
 }
 const sq=c=>squadre.find(q=>q.codice===c);

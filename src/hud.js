@@ -5,6 +5,7 @@ import { ATK, DEFN } from './costanti.js';
 import { bip } from './audio.js';
 import { aggiorna as aggiornaCronaca } from './cronaca.js';
 import { ctrl, fight, game, teams } from './stato.js';
+import { iconaMano } from './mano.js';
 export const $ = id => document.getElementById(id);
 let tacKey='', schedaVista=null, ultimoBip=null;
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
@@ -30,8 +31,13 @@ export function updateHUD(){
     el.textContent=n===null?'—':n; el.classList.toggle('urg',urg);
     if(urg&&n>0&&n!==ultimoBip){ bip(n<=2?1320:880); }
     ultimoBip=urg?n:null; }
+  // tasto a comparsa in controfuga (controfuga.js): pillola con il tasto, oppure pulsante TIRO illuminato sul telefono
+  { const q=ctrl&&ctrl.qte&&game.state==='play'?ctrl.qte:null, el=$('qte'), b=document.querySelector('.tb[data-b="shoot"]');
+    const t=q?`Premi TIRO<small>(K) · ${q.tipo==="schizzo"?"tiro a schizzo":"colonnello"}</small>`:"";
+    if(el.dataset.t!==t){ el.dataset.t=t; el.innerHTML=t; el.classList.toggle('on',!!q); }
+    if(b){ const on=!!q; if(b.classList.contains('premi')!==on){ b.classList.toggle('premi',on); const s=b.querySelector('small'); if(s) s.textContent=on?'Premi!':'2× finta'; } } }
   if(ctrl){
-    { const t=`#${ctrl.num} ${ctrl.name}<span class="ruolo"> · ${ctrl.role}</span>${ctrl.sprinting?' <span class="sp">⚡</span>':''}`;
+    { const t=`#${ctrl.num} ${ctrl.name}${iconaMano(ctrl.mano)}<span class="ruolo"> · ${ctrl.role}</span>${ctrl.sprinting?' <span class="sp">⚡</span>':''}`;
       if($('pname').innerHTML!==t) $('pname').innerHTML=t; }
     if(ctrl.scheda!==schedaVista){ schedaVista=ctrl.scheda; const s=ctrl.s; $('pstat').innerHTML=`<b>${ctrl.ovr}</b> · `+CHIAVE[ctrl.i].map(k=>`${STAT_NOMI[k].slice(0,3).toUpperCase()} ${s[k]}`).join(' · ')+` · mano ${ctrl.mano==='S'?'sinistra':'destra'}`; }
     $('stam').firstChild.style.width=(ctrl.stamina*100)+'%';

@@ -1,6 +1,6 @@
 // ================= PASSAGGI E TIRI =================
 import { registraTiro, tipoDiTiro } from './statistiche.js';
-import { ALZATA, BRV, clamp, dist, gauss, rnd } from './costanti.js';
+import { ALZATA, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, postoPortiere, setteControSei, startCut } from './ia.js';
 import { velocitaDiLancio } from './palla.js';
 import { paloCoperto } from './muro.js';
@@ -13,7 +13,7 @@ export function startAct(p,kind,wind,fn,aim){
   if(!aim) aim = diSchiena(kind) ? [2*p.x-gx,2*p.z] : [gx,0];
   // chi sta ancora nuotando disteso deve prima raddrizzarsi: piccolo ritardo (non per il colonnello, che si tira in nuotata)
   // (il gesto parte anche mentre il corpo sta ancora scivolando: si aspetta solo il tempo di alzarsi)
-  if(kind!=='colonnello') wind+=(kind==='pass'?0.4:1)*ALZATA*(p.oriz||0);
+  if(kind!=='colonnello'&&kind!=='schizzo') wind+=(kind==='pass'?0.4:1)*ALZATA*(p.oriz||0);
   // "frusta" = tempo dal braccio caricato al rilascio. Dati riportati nella tesi Patumi (Melchiorri 2015): 166 ms per i
   // professionisti, 189 ms per i semi-professionisti: chi tira meglio rilascia prima. Passaggio e finta sono gesti più corti.
   const frusta = kind==='pass'||kind==='fake' ? 0.09 : kind==='polso' ? 0.11 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
@@ -60,7 +60,7 @@ export function shotKind(p){
   // centroboa spalle alla porta: beduina (braccio che gira all'esterno) oppure sciarpa (braccio che attraversa il corpo,
   // come per mettersi una sciarpa); il centroboa alterna i due gesti
   if(p.i===1 && !(p.turnedUntil>game.time) && Math.hypot(goalX(p.team)-p.x,p.z)<4.5) return (p.tiriDiSchiena||0)%2 ? 'sciarpa' : 'beduina';
-  if(Math.hypot(p.vx,p.vz)>1.3 && (p.oriz||0)>0.5) return 'colonnello';      // solo in piena nuotata (chi scivola da verticale tira normale)
+  // colonnello e schizzo: solo in controfuga, con il tasto a comparsa (controfuga.js)
   return 'shot';
 }
 export function bestPassTarget(p){
@@ -161,21 +161,20 @@ export function doShoot(p,power,lob,aimZ,o){
   az+=gauss()*errBase*mano*(0.45+d*0.09); ay+=gauss()*errBase*mano*0.35;
   // Velocità al rilascio (dati riportati nella tesi): professionisti 22,8 ± 2,4 m/s a tutta forza. La bravura al tiro sposta
   // il massimo tra circa 20 e 25 m/s; il tiro classico è il più veloce.
-  const vMax=(22.8+(p.s.pot-75)*0.16)*(classico?1:tipo==='colonnello'?0.9:0.85);      // Potenza: da circa 20 (60) a 25 m/s (90)
+  const vMax=(22.8+(p.s.pot-75)*0.16)*(classico?1:tipo==='colonnello'?0.9:tipo==='schizzo'?0.82:0.85);      // Potenza: da circa 20 (60) a 25 m/s (90)
   const spd = lob ? 4.5+d*0.15 : vMax*(0.5+0.5*power)*(0.75+0.25*p.stamina)*(o.torsione?0.92:1);
-  // tiro a schizzo: la palla rimbalza sull'acqua poco prima della porta (più difficile da leggere per il portiere)
-  const dxg=Math.abs(gx-p.x);
-  if(!lob && power>0.55 && dxg>4 && game.penalty!==p && rnd()<0.28){
-    const k=1.4/dxg;
-    launch(p,gx-t.dir*1.4,BRV,az+(p.z-az)*k,d*(1-k)/spd,'shot'); ball.skip=true;
-  } else launch(p,gx,ay,az,d/spd,'shot');
+  // tiro a schizzo (sezione 4): schiaffo dalla superficie, palla bassa e tesa (sostituisce il vecchio tiro che rimbalzava
+  // apposta prima della porta)
+  if(o.speciale==='schizzo') ay=clamp(0.12+(ay-0.15)*0.45,0.08,0.5);
+  launch(p,gx,ay,az,d/spd,'shot');
+  if(o.speciale==='schizzo') ball.y=Math.min(ball.y,0.32);      // parte dal pelo dell'acqua
   ball.shotPower=lob?0.3:power; ball.lob=lob; ball.crossZ=az; ball.paloCoperto=paloCoperto(p); ball.rigore=game.penalty===p;
   ball.tipoTiro=tipoAzione; registraTiro(p,tipoAzione);
   // dove si trova il portiere nel momento in cui parte il tiro: è da qui che dipende soprattutto la parata
   ball.gkZ0=gk.z; ball.gkFuoriPosto=Math.abs(gk.z-postoPortiere(gk.team,p.x,p.z));
   // sorpresa per portiere e muro: il polso parte senza caricare (ancora di più dopo una finta); con la torsione il portiere
   // si sposta verso il primo palo e la palla va sull'altro
-  ball.sorpresa = o.polso ? (o.dopoFinta?0.26:0.15) : o.torsione ? 0.08 : o.volo ? 0.06 : 0;
+  ball.sorpresa = o.polso ? (o.dopoFinta?0.26:0.15) : o.torsione ? 0.08 : o.volo ? 0.06 : o.speciale==='schizzo' ? 0.14 : o.speciale==='colonnello' ? 0.1 : 0;
   ball.elevazione=elev;
   // per il portiere: tiro da lontano o da poco angolo = più tempo e meno porta; tiro "da fermo" con tutti piazzati = facile da
   // leggere; tiro subito dopo un cambio di lato della palla = portiere ancora in viaggio
