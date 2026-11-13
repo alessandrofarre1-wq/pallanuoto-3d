@@ -1,13 +1,13 @@
 // Punto d'ingresso: carica i moduli nell'ordine giusto e fa girare il ciclo di gioco
 import { movePlayer } from './fisica.js';
-import { doShoot } from './tiri.js';
+import { doShoot, startAct } from './tiri.js';
 import { valoriMotore } from './dati/rose.js';
 import { squadreStat } from './statistiche.js';
 import './stile.css';
 import './grafica/scena.js';
 import './giocatori.js';
 import './hud.js';
-import './input.js';
+import * as input from './input.js';
 import './menu.js';
 import { SPEED } from './costanti.js';
 import { render } from './grafica/render.js';
@@ -21,7 +21,7 @@ import { diagnosi, passoPalla, velocitaDiLancio } from './palla.js';
 import { aggiornaPannelloFisica } from './fisica-palla/pannello.js';
 import { update } from './partita.js';
 import { cornerThrow, exclude, foul, giveBall, goalScored, kickoff, penalty, setupPenalty, tackle, timeout } from './regole.js';
-import { allPlayers, ball, ctrl, fight, game, teams } from './stato.js';
+import { allPlayers, ball, ctrl, fight, game, setCtrl, teams } from './stato.js';
 
 let last=performance.now(), frameMs=16, qT=0, hudT=1, lenti=0;
 // tornando da un'altra app i primi fotogrammi sono lunghi: non devono contare come "dispositivo lento"
@@ -58,7 +58,7 @@ function loop(now){
 // accesso per le verifiche automatiche (tests/verifica.mjs) e per il debug dalla console
 // "vista" permette alla verifica di mettere la telecamera dove vuole (primi piani): { pos:[x,y,z], look:[x,y,z], fov };
 // "senzaCorpi" ferma l'animazione degli scheletri (serve solo ad accelerare le partite simulate)
-window.__pallanuoto = { imposta, cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, palla:{ passoPalla, velocitaDiLancio, diagnosi }, effetti:{ gocce:gocceMesh, schiuma, contatti, LIMITI, gocceAttive }, __ridisegna:()=>renderer.render(scene,camera), regole:{ setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, prova:{ movePlayer, doShoot, valoriMotore }, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get modelloPronto(){ return modelloPronto; } };
+window.__pallanuoto = { imposta, cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, palla:{ passoPalla, velocitaDiLancio, diagnosi }, effetti:{ gocce:gocceMesh, schiuma, contatti, LIMITI, gocceAttive }, __ridisegna:()=>renderer.render(scene,camera), regole:{ setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, prova:{ movePlayer, doShoot, startAct, valoriMotore }, __setCtrl:setCtrl, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get inp(){ return input.inp; }, get modelloPronto(){ return modelloPronto; } };
 // scena iniziale dietro al menu
 kickoff(); game.state='menu';
 requestAnimationFrame(loop);

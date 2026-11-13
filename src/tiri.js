@@ -6,6 +6,8 @@ import { velocitaDiLancio } from './palla.js';
 import { P } from './fisica-palla/parametri.js';
 import { allPlayers, ball, fight, game, goalX, other, setCtrl, teams } from './stato.js';
 export function startAct(p,kind,wind,fn,aim){
+  // sotto pressione (contrasto di disturbo) non si tira: si può solo passare o proteggere la palla; il rigore no
+  if(kind!=='pass'&&kind!=='fake'&&p.pressatoUntil>game.time&&game.penalty!==p) return false;
   const gx=goalX(p.team);
   if(!aim) aim = diSchiena(kind) ? [2*p.x-gx,2*p.z] : [gx,0];
   // chi sta ancora nuotando disteso deve prima raddrizzarsi: piccolo ritardo (non per il colonnello, che si tira in nuotata)

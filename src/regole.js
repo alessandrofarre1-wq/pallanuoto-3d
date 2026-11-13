@@ -221,6 +221,19 @@ function probabileGol(d,c){
 }
 // o.voluto = CONTRASTO tenuto premuto: fallo semplice cercato apposta per fermare l'azione (scelta tattica normale)
 // Esiti: 'rubata', 'niente' (l'attaccante la protegge), 'fallo', 'espulsione', 'rigore'; false se il contrasto non parte.
+// CONTRASTO A TRE LIVELLI (richiesta di Ale, stile NBA 2K), uguale per il giocatore e per il computer:
+//  1-2 pressioni = DISTURBO: il difensore finge di entrare; l'attaccante sotto pressione non può tirare per circa un secondo e si
+//      gira a proteggere la palla (di spalle al difensore); resta una piccola probabilità di rubarla (contrasto pulito);
+//  3 pressioni in 1,5 s = il difensore INSISTE e commette fallo (con il rischio di espulsione o rigore del fallo voluto).
+export const CONTRASTO={ finestra:1.5, fallo:3, pressione:1.1 };
+export function contrasto(d,c){
+  if(d.excluded||game.time<d.stunUntil) return false;
+  d.colpi=(d.colpi||[]).filter(t=>game.time-t<CONTRASTO.finestra); d.colpi.push(game.time);
+  d.fintaC=game.time+0.35;                                     // la mano parte verso la palla (solo disegno)
+  if(d.colpi.length>=CONTRASTO.fallo){ d.colpi=[]; d.tackleCD=0; return tackle(d,c,{voluto:true}); }
+  c.pressatoUntil=game.time+CONTRASTO.pressione; c.pressatoDa=d;
+  return tackle(d,c,{soloRuba:true});
+}
 export function tackle(d,c,o){
   o=o||{};
   if(d.tackleCD>0||d.excluded||game.time<d.stunUntil) return false;
@@ -250,6 +263,7 @@ export function tackle(d,c,o){
   const pFallo=clamp(0.27*(lato==='dietro'?1.9:lato==='lato'?1:0.75)*(palla==='alzata'?1.6:1)*(0.6+0.4*fDis)*(press?1.2:1),0.05,0.7);
   const r=rnd();
   if(r<pRuba){ registraPallaRubata(d.team); giveBall(d); annuncia('possesso','Palla rubata!',{p:d}); return 'rubata'; }
+  if(o.soloRuba) return 'disturbo';      // disturbo: niente fallo, solo pressione
   if(r<pRuba+pFallo){ const g=grave(); if(g) return g; foul(d,c); return 'fallo'; }
   // niente: l'attaccante copre la palla con il corpo e il difensore resta un attimo fuori tempo
   d.stunUntil=game.time+0.25;

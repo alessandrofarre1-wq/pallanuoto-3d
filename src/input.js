@@ -15,6 +15,17 @@ addEventListener('keydown',e=>{
 addEventListener('keyup',e=>{ keys[e.code]=false; });
 addEventListener('blur',()=>{ for(const k in keys) keys[k]=false; });
 export const touch={x:0,z:0,btn:{}}; let sprintBtn=null;
+// SPRINT A TOCCHI (richiesta di Ale): lo scatto dura finché si continua a premere ripetutamente. Ogni tocco allunga lo scatto;
+// più tocchi nell'ultimo secondo, più dura ognuno (da 0,3 a 0,9 s). Smettendo di premere si torna alla velocità normale.
+// Vale per tastiera, controller e telefono; lo scatto consuma stamina come prima (in movePlayer).
+export const SPRINT={ base:0.3, perTocco:0.12, max:0.9, finestra:1.0 };
+let sprintGrezzo=false, tocchiSprint=[], sprintFino=-9;
+export function aggiornaSprint(premuto,t){
+  if(premuto&&!sprintGrezzo){ tocchiSprint=tocchiSprint.filter(x=>t-x<SPRINT.finestra); tocchiSprint.push(t);
+    sprintFino=Math.max(sprintFino,t+Math.min(SPRINT.max,SPRINT.base+SPRINT.perTocco*(tocchiSprint.length-1))); }
+  sprintGrezzo=premuto;
+  return t<sprintFino;
+}
 export let inp={x:0,z:0}, prev={x:0,z:0}, padStart=false;
 export function pollInput(){
   prev=inp;
@@ -35,9 +46,10 @@ export function pollInput(){
     if(b(9)&&!padStart){ padStart=true; togglePause(); } if(!b(9)) padStart=false;
     break;
   }
-  if(touch.btn.sprint && ctrl && ctrl.stamina<0.06){ touch.btn.sprint=false; if(sprintBtn) sprintBtn.classList.remove('on'); }
   n.x+=touch.x; n.z+=touch.z;
   for(const k of ['sprint','pass','shoot','lob','sw','cam','cmd','to']) if(touch.btn[k]) n[k]=true;
+  n.sprint=aggiornaSprint(n.sprint,game.time)&&!(ctrl&&ctrl.stamina<0.06);
+  if(sprintBtn) sprintBtn.classList.toggle('scatto',n.sprint);
   const l=Math.hypot(n.x,n.z); if(l>1){ n.x/=l; n.z/=l; }
   // telecamera "dietro": su = verso la porta avversaria (+x), destra = +z
   if(camMode()===1){ const wx=-n.z, wz=n.x; n.x=wx; n.z=wz; }
@@ -77,10 +89,7 @@ if('ontouchstart' in window || navigator.maxTouchPoints>0) document.body.classLi
   $('tac').addEventListener('pointerdown',e=>{ if(e.target.closest('[data-apri]')){ e.preventDefault(); apriSchemi(); return; } const c=e.target.closest('[data-i]'); if(c&&game.state==='play'){ e.preventDefault(); callPlay(+c.dataset.i); apriSchemi(false); } });
   document.querySelectorAll('.tb').forEach(b=>{
     const k=b.dataset.b;
-    if(k==='sprint'){   // su touch lo sprint è un interruttore: un tocco lo accende, un altro lo spegne
-      b.addEventListener('touchstart',e=>{ e.preventDefault(); touch.btn.sprint=!touch.btn.sprint; b.classList.toggle('on',touch.btn.sprint); },{passive:false});
-      sprintBtn=b; return;
-    }
+    if(k==='sprint') sprintBtn=b;      // sprint a tocchi: il pulsante resta acceso (classe «scatto») finché lo scatto dura
     b.addEventListener('touchstart',e=>{ e.preventDefault(); touch.btn[k]=true; b.classList.add('on'); },{passive:false});
     const up=e=>{ e.preventDefault(); touch.btn[k]=false; b.classList.remove('on'); };
     b.addEventListener('touchend',up,{passive:false}); b.addEventListener('touchcancel',up,{passive:false});
@@ -89,8 +98,8 @@ if('ontouchstart' in window || navigator.maxTouchPoints>0) document.body.classLi
 }
 // registro degli eventi: mentre è aperto il gioco è fermo e i comandi touch vengono rilasciati (niente pulsanti rimasti premuti)
 {
-  const apri=e=>{ e.preventDefault(); for(const k in touch.btn) if(k!=='sprint') touch.btn[k]=false; touch.x=touch.z=0;
-    document.querySelectorAll('.tb.on').forEach(b=>{ if(b.dataset.b!=='sprint') b.classList.remove('on'); }); apriRegistro(); };
+  const apri=e=>{ e.preventDefault(); for(const k in touch.btn) touch.btn[k]=false; touch.x=touch.z=0;
+    document.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on')); apriRegistro(); };
   $('tLog').addEventListener('click',apri); $('tLog').addEventListener('touchstart',apri,{passive:false});
   const chiudi=e=>{ e.preventDefault(); chiudiRegistro(); };
   $('regChiudi').addEventListener('click',chiudi); $('regChiudi').addEventListener('touchend',chiudi,{passive:false});
