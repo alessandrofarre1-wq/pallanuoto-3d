@@ -11,12 +11,14 @@ import './input.js';
 import './menu.js';
 import { SPEED } from './costanti.js';
 import { render } from './grafica/render.js';
-import { camera, dpr, renderer, setDpr } from './grafica/scena.js';
+import { camera, contatti, dpr, renderer, scene, schiuma, setDpr } from './grafica/scena.js';
+import { LIMITI, gocceAttive, gocceMesh } from './grafica/acqua-eventi.js';
 import { imposta, scegliSquadre, togglePause } from './menu.js';
 import { modelloPronto } from './grafica/corpo.js';
 import { tickFps, updateHUD } from './hud.js';
 import * as cronaca from './cronaca.js';
-import { passoPalla, velocitaDiLancio } from './palla.js';
+import { diagnosi, passoPalla, velocitaDiLancio } from './palla.js';
+import { aggiornaPannelloFisica } from './fisica-palla/pannello.js';
 import { update } from './partita.js';
 import { cornerThrow, exclude, foul, giveBall, goalScored, kickoff, penalty, setupPenalty, tackle, timeout } from './regole.js';
 import { allPlayers, ball, ctrl, fight, game, teams } from './stato.js';
@@ -39,6 +41,7 @@ function loop(now){
   // un aggiornamento per fotogramma (suddiviso solo se il fotogramma è lungo): movimento continuo, senza scatti
   const n=Math.max(1,Math.ceil(dt/0.02));
   try{ for(let i=0;i<n;i++) update(dt/n); }catch(e){ console.error(e); }
+  aggiornaPannelloFisica(raw);
   // qualità adattiva: se il dispositivo fatica si abbassa la risoluzione di disegno
   frameMs+=(raw*1000-frameMs)*0.05; qT+=raw;
   // si taglia solo dopo due controlli lenti di fila (4 secondi), non per un singolo scatto
@@ -55,7 +58,7 @@ function loop(now){
 // accesso per le verifiche automatiche (tests/verifica.mjs) e per il debug dalla console
 // "vista" permette alla verifica di mettere la telecamera dove vuole (primi piani): { pos:[x,y,z], look:[x,y,z], fov };
 // "senzaCorpi" ferma l'animazione degli scheletri (serve solo ad accelerare le partite simulate)
-window.__pallanuoto = { imposta, cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, palla:{ passoPalla, velocitaDiLancio }, regole:{ setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, prova:{ movePlayer, doShoot, valoriMotore }, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get modelloPronto(){ return modelloPronto; } };
+window.__pallanuoto = { imposta, cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, palla:{ passoPalla, velocitaDiLancio, diagnosi }, effetti:{ gocce:gocceMesh, schiuma, contatti, LIMITI, gocceAttive }, __ridisegna:()=>renderer.render(scene,camera), regole:{ setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, prova:{ movePlayer, doShoot, valoriMotore }, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get modelloPronto(){ return modelloPronto; } };
 // scena iniziale dietro al menu
 kickoff(); game.state='menu';
 requestAnimationFrame(loop);

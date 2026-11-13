@@ -183,11 +183,14 @@ export function muoviCorpo(R,J,T,dt){
   C.fase+=dt*(5.2+6.5*sforzo)*(1+0.6*curva*(1-e));
   const amp=(0.85+0.45*sforzo)*(1+0.3*curva*(1-e));
   for(const lato of [1,-1]){
-    const f=C.fase+(lato>0?0:Math.PI), cs=Math.cos(f), sn=Math.sin(f);
+    // gambe sfasate di mezzo ciclo (Kawai 2026); la spinta in fuori (ginocchio che si estende) è più rapida del rientro:
+    // la fase scorre più veloce nella prima metà del giro
+    const f0=C.fase+(lato>0?0:Math.PI), f=f0+0.35*Math.sin(f0), cs=Math.cos(f), sn=Math.sin(f);
     const coscia=lato>0?O.cosciaD:O.cosciaS, gamba=lato>0?O.gambaD:O.gambaS, piede=lato>0?O.piedeD:O.piedeS, puntaP=lato>0?O.puntaD:O.puntaS;
     const gin=lato>0?J.kR:J.kL, pie=lato>0?J.fR:J.fL;
     // coscia: da verticali avanti e in fuori, quasi seduti, con il ginocchio che disegna un piccolo cerchio
-    _d.copy(_av).multiplyScalar(0.70).addScaledVector(_de,lato*(0.50+0.10*sn)).addScaledVector(_su,-0.48-0.09*cs).normalize();
+    // anca flessa e aperta, di più quando serve più spinta (Oliveira 2015: flessione e abduzione dell'anca danno forza verticale)
+    _d.copy(_av).multiplyScalar(0.70+0.10*sforzo).addScaledVector(_de,lato*(0.56+0.10*sforzo+0.10*sn)).addScaledVector(_su,-0.48-0.09*cs).normalize();
     if(e>0.001){ dirMondo(J.hip,gin,_d2); _d.lerp(_d2,e).normalize(); }
     if(qGambe) _d.applyQuaternion(qGambe);
     sottoIlPelo(coscia,gamba,_d,0.10);
@@ -198,8 +201,13 @@ export function muoviCorpo(R,J,T,dt){
     if(qGambe) _d.applyQuaternion(_qy.setFromAxisAngle(SU,pg.gambe*1.25));      // la gamba sotto il ginocchio resta ancora un po' più indietro: coda leggermente piegata
     sottoIlPelo(gamba,piede,_d,0.12);
     punta(gamba,piede,_d);
-    // in battuta il piede si distende in linea con la gamba
-    if(puntaP&&e>0.05) punta(piede,puntaP,_d,e*0.8);
+    // in battuta il piede si distende in linea con la gamba; nella bicicletta il piede resta quasi orizzontale e si inclina
+    // durante la spinta in fuori (angolo d'attacco, Kawai 2026), così spinge l'acqua verso il basso
+    if(puntaP){
+      if(e<0.95){ _d2.copy(_av).multiplyScalar(0.55).addScaledVector(_de,lato*0.55).addScaledVector(_su,-0.18-0.22*Math.max(0,sn)).normalize();
+        punta(piede,puntaP,_d2,(1-e)*0.6); }
+      if(e>0.05) punta(piede,puntaP,_d,e*0.8);
+    }
   }
   // --- braccia: gomito e mano dove li mette pose.js ---
   punta(O.bracD,O.avamD,dirMondo(J.sR,J.eR,_d)); punta(O.avamD,O.manoD,dirMondo(J.eR,J.hR,_d));

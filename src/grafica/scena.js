@@ -1,6 +1,6 @@
 // Scena 3D: piscina, acqua, schiuma, corde, porte, palla, telecamera
 import * as THREE from 'three';
-import { BRV, GH, GW, HL, HW, rnd } from '../costanti.js';
+import { BRV, GH, GW, HL, HW, rndGrafica } from '../costanti.js';
 import { game } from '../stato.js';
 import { sottAcqua, tempoAcqua } from './sottacqua.js';
 // ================= SCENA =================
@@ -57,17 +57,14 @@ box(0.4,0.08,PZ*2,0xffffff,-PX-0.2,0.32,0); box(0.4,0.08,PZ*2,0xffffff,PX+0.2,0.
   const crowd=canvasTex(1024,256,(x,w,h)=>{ x.fillStyle='#22324d'; x.fillRect(0,0,w,h);
     const cc=['#e11d48','#2563eb','#f8fafc','#facc15','#16a34a','#f97316','#94a3b8','#0ea5e9'];
     for(let r=0;r<9;r++){ x.fillStyle='rgba(0,0,0,.25)'; x.fillRect(0,r*28+22,w,6);
-      for(let i=0;i<120;i++){ if(rnd()<0.2) continue; const px=i*8.6+rnd()*3, py=r*28+12;
-        x.fillStyle=cc[Math.floor(rnd()*cc.length)]; x.fillRect(px-3,py,6,10);
+      for(let i=0;i<120;i++){ if(rndGrafica()<0.2) continue; const px=i*8.6+rndGrafica()*3, py=r*28+12;
+        x.fillStyle=cc[Math.floor(rndGrafica()*cc.length)]; x.fillRect(px-3,py,6,10);
         x.fillStyle='#e0b090'; x.beginPath(); x.arc(px,py-2,2.6,0,7); x.fill(); } } });
   const st=new THREE.Mesh(new THREE.PlaneGeometry(PX*2+14,7),new THREE.MeshLambertMaterial({map:crowd}));
   st.position.set(0,3.6,-PZ-8.5); st.rotation.x=-0.55; scene.add(st);
   box(PX*2+14,1.2,0.4,0x1b2d4a,0,0.6,-PZ-5.4);
   box(PX*2+14,0.3,1.5,0x9aa7b8,0,7.3,-PZ-11.6);
 }
-// Fino alla v0.21 qui si disegnava l'immagine dell'acqua semplice della grafica realistica, che consumava 420 numeri del caso
-// del gioco al caricamento. Si consumano ancora, così le partite simulate restano identiche a quelle di prima (verifica).
-for(let i=0;i<420;i++) rnd();
 // acqua: superficie azzurro-turchese con sfumature morbide che si muovono piano, piccole onde disegnate dalla luce (un rilievo
 // finto: chiaro dove l'onda guarda il sole, appena più scuro dietro), increspature corte e spezzate solo a macchie, piccoli
 // riflessi irregolari che si accendono e si spengono. Guardata di taglio (lontano) l'acqua riflette di più il cielo e lascia
@@ -180,7 +177,8 @@ export const contatti=(()=>{
           onde+=(1.0-smoothstep(0.0,0.05+0.04*k,abs(r-0.62-0.36*k)))*(1.0-k)*(1.0-k)*(0.55+0.45*sin(ang*4.0+vSeme+float(i)*2.0)); }
         // onda davanti a chi nuota
         float prua=smoothstep(0.15,0.75,d.x)*(1.0-smoothstep(0.0,0.16,abs(r-0.66)))*vV;
-        float a=(bordo*0.5+onde*0.28)*vF+prua*0.5;
+        // le increspature che si allargano ci sono solo quando il corpo si muove o si alza: da fermi resta il bordo (niente rumore)
+        float a=(bordo*0.5+onde*0.28*smoothstep(0.3,0.75,vF))*vF+prua*0.5;
         a*=1.0-smoothstep(0.92,1.0,r);
         gl_FragColor=vec4(1.0,1.0,1.0,clamp(a,0.0,0.7));
         #include <colorspace_fragment>

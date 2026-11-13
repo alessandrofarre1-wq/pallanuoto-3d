@@ -107,7 +107,7 @@ function passo(dt,corpiAttivi){
   for(let i=0;i<allPlayers.length;i++){ const p=allPlayers[i], g=_giocatori[i]||(_giocatori[i]={x:0,z:0,attivo:false});
     g.x=p.x; g.z=p.z; g.attivo=corpiAttivi&&!p.excluded&&p!==ball.shooter; }
   const e=passoPalla(ball,dt,_giocatori);
-  if(e.acqua) ball.spruzzo={ forza:e.acqua.forza, schizzo:e.acqua.tipo==='schizzo' };      // lo disegna render.js
+  if(e.acqua) ball.spruzzo={ forza:e.acqua.forza, schizzo:e.acqua.tipo==='schizzo'||e.acqua.radente };      // lo disegna render.js
   return e;
 }
 // la palla ha passato la linea di porta in questo passo? (px = posizione prima del passo)
@@ -210,11 +210,10 @@ export function updateBall(dt){
         if(ball.kind==='pass' && p===ball.target && hd<0.85 && ball.flightT>0.15){ giveBall(p); return; }
       }
     }
-    // acqua: lo schizzo tiene la palla in volo (il portiere la legge peggio), il tonfo la lascia a galleggiare
-    if(e.acqua){
-      if(e.acqua.tipo==='schizzo' && (ball.schizzi=(ball.schizzi||0)+1)<=2){ if(ball.kind==='shot') ball.skipped=true; }
-      else { ball.state='free'; ball.pickupCD=0.1; }
-    } else if(ball.y<BRV && ball.vy<=0.5 && ball.flightT>0.1){ ball.state='free'; ball.pickupCD=0.1; }
+    // acqua (palla.js calcola le forze; qui solo la regola): la palla che esce dall'acqua dopo averla toccata ha fatto uno
+    // schizzo e resta in volo (il portiere la legge peggio); quella che resta in acqua e rallenta diventa vagante
+    if(e.acqua && e.acqua.tipo==='schizzo'){ if((ball.schizzi=(ball.schizzi||0)+1)<=2 && ball.kind==='shot') ball.skipped=true; }
+    else if(e.inAcqua && ball.vy<=0.5 && ball.flightT>0.1 && Math.hypot(ball.vx,ball.vz)<4){ ball.state='free'; ball.pickupCD=0.1; }
     if(ball.state==='flight' && Math.abs(ball.z)>HW+0.2){ sideOut(); return; }
     if(ball.state==='flight' && Math.abs(ball.x)>HL+1.2){ ball.state='free'; ball.vx*=0.2; ball.vz*=0.2; }
   }

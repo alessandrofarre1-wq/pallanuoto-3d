@@ -1,8 +1,9 @@
 // ================= RENDER =================
 import * as THREE from 'three';
-import { BRV, CAM_ZOOM, HL, clamp, rnd } from '../costanti.js';
+import { BRV, CAM_ZOOM, HL, clamp } from '../costanti.js';
 import { updateRig } from './pose.js';
-import { animateWater, ball3d, camMode, camera, freccia, mirino, passMark, renderer, ring, scene, shadow, spawnFoam, updateFoam } from './scena.js';
+import { aggiornaGocce, aggiornaVisibilita, evento } from './acqua-eventi.js';
+import { animateWater, ball3d, camMode, camera, freccia, mirino, passMark, renderer, ring, scene, shadow, updateFoam } from './scena.js';
 import { inp } from '../input.js';
 import { allPlayers, ball, ctrl, game, teams } from '../stato.js';
 import { humanPassTarget } from '../tiri.js';
@@ -19,11 +20,10 @@ export function render(dt,now){
   const h=ball.holder; let by;
   if(ball.state==='held'&&h&&h.ballW){ const w=h.ballVistaW||h.ballW; by=Math.max(BRV,w[1]); ball3d.position.set(w[0],by,w[2]); }
   else { by=ball.y; ball3d.position.set(ball.x,ball.y,ball.z); }
-  // spruzzo quando la palla tocca l'acqua: più forte arriva, più schiuma; nello schizzo la schiuma si allunga nella direzione del tiro
-  if(ball.spruzzo){ const S=ball.spruzzo, n=Math.min(9,2+Math.round(S.forza*0.4)), vo=Math.hypot(ball.vx,ball.vz)||1; ball.spruzzo=null;
-    for(let i=0;i<n;i++){ const k=S.schizzo?i/n*0.9:0; spawnFoam(ball.x-ball.vx/vo*k+(rnd()-0.5)*0.35,ball.z-ball.vz/vo*k+(rnd()-0.5)*0.35,0.16+rnd()*0.14+S.forza*0.008,0.6+rnd()*0.4); } }
+  // palla che tocca l'acqua: evento «palla» (gocce e schiuma in proporzione all'impatto; radente = spruzzo allungato in avanti)
+  if(ball.spruzzo){ const S=ball.spruzzo; ball.spruzzo=null; evento('palla',ball.x,0,ball.z,clamp(S.forza/16,0.15,1),ball.vx,ball.vz,!!S.schizzo); }
   prevBY=by;
-  updateFoam(dt);
+  aggiornaVisibilita(); updateFoam(dt); aggiornaGocce(dt);
   // rotazione: in aria quella data dal tiro (e dagli urti); in acqua la palla rotola nella direzione in cui scivola; in mano gira poco
   if(ball.state==='held') _wv.set(0,0,0);
   else if(ball.y<BRV) _wv.set(ball.vz,0,-ball.vx).multiplyScalar(4);

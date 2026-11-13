@@ -1,7 +1,7 @@
 // Modello 3D del giocatore (cilindri e sfere) e numero di calottina
 import * as THREE from 'three';
 import { aggiornaColori, attaccaCorpo } from './corpo.js';
-import { VIS, rnd } from '../costanti.js';
+import { VIS, rndGrafica } from '../costanti.js';
 import { scene } from './scena.js';
 export function numberTexture(n,bg,fg){
   const c=document.createElement('canvas'); c.width=c.height=64; const x=c.getContext('2d');
@@ -18,7 +18,7 @@ export function setSeg(m,a,b){
 }
 export function makePlayerMesh(num,team){
   const g=new THREE.Group();
-  const skin=new THREE.MeshPhongMaterial({color:SKIN[Math.floor(rnd()*SKIN.length)],shininess:55,specular:0x555555});
+  const skin=new THREE.MeshPhongMaterial({color:SKIN[Math.floor(rndGrafica()*SKIN.length)],shininess:55,specular:0x555555});
   const suit=new THREE.MeshPhongMaterial({color:0x0b2a6f,shininess:30});
   const capM=new THREE.MeshPhongMaterial({color:0xf4f4f4,shininess:40});
   const cyl=(rt,rb)=>{ const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,1,7),skin); g.add(m); return m; };

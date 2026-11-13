@@ -31,6 +31,7 @@ jobs:
       # lì gli screenshot si guardano soltanto, mentre le partite simulate devono passare
       - run: npm run verifica -- --screenshot-non-bloccanti
       - run: npm run fisica-palla -- --no-build
+      - run: npm run fisica-acqua
       - run: npm run dati-tesi -- --no-build
       - run: npm run statistiche -- --no-build
       - run: npm run azione -- --no-build

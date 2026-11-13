@@ -3,6 +3,7 @@ import { registraTiro, tipoDiTiro } from './statistiche.js';
 import { ALZATA, BRV, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, postoPortiere, setteControSei, startCut } from './ia.js';
 import { velocitaDiLancio } from './palla.js';
+import { P } from './fisica-palla/parametri.js';
 import { allPlayers, ball, fight, game, goalX, other, setCtrl, teams } from './stato.js';
 export function startAct(p,kind,wind,fn,aim){
   const gx=goalX(p.team);
@@ -31,7 +32,7 @@ export function launch(p,tx,ty,tz,t,kind){
   if(p.ballW){ ball.x=p.ballW[0]; ball.y=Math.max(0.3,p.ballW[1]); ball.z=p.ballW[2]; }
   else { ball.x=p.x+p.fx*0.25; ball.z=p.z+p.fz*0.25; ball.y=1.0; }
   // velocità e rotazione di partenza: la palla gira all'indietro (di più nella palombella) e la mira tiene conto dell'aria
-  const giri = kind==='pass' ? 9 : ty>0.55 ? 34 : 20;
+  const giri = kind==='pass' ? P.giriPassaggio : ty>0.55 ? P.giriPalombella : P.giriTiro;
   const L=velocitaDiLancio(ball.x,ball.y,ball.z,tx,ty,tz,t,giri);
   ball.vx=L.vx; ball.vy=L.vy; ball.vz=L.vz; ball.wx=L.wx; ball.wy=L.wy; ball.wz=L.wz;
   ball.flightT=0; ball.intercept=new Set(); ball.saveChecked=false; ball.pickupCD=0.3;

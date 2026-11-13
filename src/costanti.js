@@ -30,6 +30,9 @@ export const DIFF_GK = () => [0.8,1,1.12][DIFF_I];
 
 // il caso del gioco; la verifica automatica può sostituirlo con uno ripetibile (window.__rnd)
 export const rnd = window.__rnd || Math.random;
+// caso SOLO per la grafica (schiuma, spruzzi, pubblico): separato da quello del gioco, così cambiare un effetto non cambia mai
+// le partite. Seme fisso (sempre gli stessi disegni); i test possono sostituirlo con window.__rndGrafica.
+export const rndGrafica = window.__rndGrafica || (()=>{ let a=0x5EED7; return ()=>{ a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; })();
 export const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
 export const dist = (a,b) => Math.hypot(a.x-b.x, a.z-b.z);
 export function gauss(){ let u=0,v=0; while(!u)u=rnd(); while(!v)v=rnd(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }

@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 // Pose e animazioni: nuotata, posizione verticale, gesti di tiro e passaggio
-import { VIS, clamp, dist, rnd } from '../costanti.js';
+import { VIS, clamp, dist, rndGrafica } from '../costanti.js';
 import { aggiornaNumero, muoviCorpo } from './corpo.js';
 import { setSeg } from './modello.js';
 import { contatto, spawnFoam } from './scena.js';
+import { evento } from './acqua-eventi.js';
 import { allPlayers, ball, fight, game } from '../stato.js';
 import { shotKind } from '../tiri.js';
 //<POSE>
@@ -58,13 +59,14 @@ export function computePose(p,dt,t){
   // quanto la palla è vicina alla porta di questo portiere: 0 oltre metà campo, 1 dentro i 7 metri
   const vicinaGK = p.isGK ? ease(clamp((13-Math.abs(ball.x-(-12.5*p.team.dir)))/6,0,1)) : 0;
   const gkSave = p.isGK && ball.state==='flight' && ball.kind==='shot' && ball.shooter && ball.shooter.team!==p.team;
+  p.parataIn=gkSave;      // per l'evento «parata» (solo disegno)
   const defUp = !hold && !p.isGK && h && h.team!==p.team && dist(p,h)<1.7;
   const muro = defUp && (h.charging || (h.act && !h.act.done && h.act.kind!=='pass'));      // l'avversario sta tirando: braccio alto a murare
   const abbocca = p.biteUntil>game.time;
   let lz=0, ly=0, arrivo=0;
   if(th){ lift+=th.lift*(0.8+0.2*p.stamina)*c*(1-0.8*f); tw=(th.tw0*c*(1-wb)+th.tw1*wb)*(1-f); }      // chi è stanco esce meno dall'acqua
   else if(gkSave){
-    lz=clamp((ball.crossZ-p.z)*Math.sign(p.fx||1),-1.25,1.25)/VIS; ly=clamp(ball.y,0.25,1.25)/VIS;      // dove passerà la palla, nel sistema del portiere
+    lz=clamp((ball.crossZ-p.z)*Math.sign(p.fx||1),-1.25,1.25)/VIS; ly=clamp(ball.y,0.25,1.5)/VIS;      // mani fino a 1,5 m (salto con la mano tesa: 1,56 ± 0,09 m, Zinner 2015)      // dove passerà la palla, nel sistema del portiere
     arrivo=ease(clamp(ball.flightT/0.22,0,1)); lean=clamp(lz/0.7,-1,1); lift+=0.34;
   }
   else if(p.isGK) lift+=0.10*vicinaGK-0.03*(1-vicinaGK);      // palla lontana: basso, rema e guarda; palla vicina: alto, pronto
@@ -87,7 +89,8 @@ export function computePose(p,dt,t){
   let hL=add3(vSL,[0.27-0.06*Math.sin(eg),-0.14-lift*0.6,-0.07-0.09*Math.cos(eg)]), hintL=[0,-1,-0.6];
   if(gkSave){
     // braccia larghe e alte, poi ci si allunga verso la palla: due mani se arriva vicino al corpo, una se è laterale
-    const due=Math.abs(lz)<0.3, lR=add3(vSR,[0.14,0.34,0.36]), lL=add3(vSL,[0.14,0.34,-0.36]);
+    // parata alta (palla sopra 1 m): due braccia sopra la testa anche se è un po' laterale
+    const due=Math.abs(lz)<0.3||(ly*VIS>1.0&&Math.abs(lz)<0.6), lR=add3(vSR,[0.14,0.34,0.36]), lL=add3(vSL,[0.14,0.34,-0.36]);
     hR = lz>=0||due ? mix3(lR,[0.24,ly,lz+(due?0.09:0)],arrivo) : lR;
     hL = lz<0||due ? mix3(lL,[0.24,ly,lz-(due?0.09:0)],arrivo) : lL;
     hintR=[0,-0.3,1]; hintL=[0,-0.3,-1];
@@ -230,25 +233,34 @@ export function updateRig(p,dt,t){
   const sp=Math.hypot(p.vx,p.vz), vel=clamp(sp/1.6,0,1), e=T.oriz||0, c=p.fx, sn=-p.fz;
   { const mx=(Jv.sL[0]+Jv.sR[0])/2*(1-e)+(Jv.head[0]+Jv.chest[0])/2*e, mz=(Jv.sL[2]+Jv.sR[2])/2*(1-e)+(Jv.head[2]+Jv.chest[2])/2*e;
     const i=p.iContatto??(p.iContatto=allPlayers.indexOf(p)), sforzo=clamp((J.chest[1]+0.06)/0.26,0,1);
-    const forza=(1-e)*(0.3+0.4*sforzo+0.3*vel)+e*(0.3+0.6*vel);
+    const forza=(1-e)*(0.22+0.5*sforzo+0.3*vel)+e*(0.3+0.6*vel);
     contatto(i,p.x+VIS*(mx*c+mz*sn),p.z+VIS*(-mx*sn+mz*c),R.g.rotation.y,0.5+0.12*e,0.5-0.08*e,R.g.visible?forza:0,R.g.visible?e*vel:0); }
   // spruzzo quando una mano rientra in acqua (bracciata, appoggio del braccio libero nel tiro): solo disegno, niente caso
   if(R.corpo && R.corpo.ossa.manoD && !(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){
     const Y=p.maniY||(p.maniY=[0,0]);
     [R.corpo.ossa.manoD,R.corpo.ossa.manoS].forEach((o,k)=>{ o.getWorldPosition(_mano);
-      if(Y[k]>0.04&&_mano.y<=0.04) spawnFoam(_mano.x,_mano.z,T.swim?0.11:0.09,0.45);
+      if(Y[k]>0.04&&_mano.y<=0.04) evento(T.swim?'bracciata':'appoggio',_mano.x,0,_mano.z,T.swim?clamp(0.3+sp/2.4,0.3,1):0.4,p.vx,p.vz);
       Y[k]=_mano.y; });
   }
-  // schiuma: scia dietro (allungata nel verso del nuoto) e increspatura davanti, più grandi se si va veloci; ogni due colpi due
-  // scie laterali che si aprono a V dai fianchi. I numeri del caso usati sono gli stessi di prima (le partite non cambiano).
-  // La scia segue la direzione in cui il corpo si sposta davvero (in curva o scivolando di lato non è quella in cui guarda);
-  // quasi fermi (bracciate sul posto) la scia è piccola e le scie laterali non partono.
-  if(T.swim){ p.foamT=(p.foamT||0)-dt; if(p.foamT<=0){ p.foamT=0.09;
-    const f=0.45+0.75*vel, ux=sp>0.3?p.vx/sp:p.fx, uz=sp>0.3?p.vz/sp:p.fz;
-    spawnFoam(p.x-ux*VIS*1.0+(rnd()-0.5)*0.2,p.z-uz*VIS*1.0+(rnd()-0.5)*0.2,(0.2+rnd()*0.1)*f,0.8,ux,uz);
-    spawnFoam(p.x+p.fx*VIS*0.5+(rnd()-0.5)*0.5,p.z+p.fz*VIS*0.5+(rnd()-0.5)*0.5,0.12*f,0.5);
+  // scia: nasce ogni 0,28 m percorsi (non a tempo), dietro il corpo e allungata nel verso in cui ci si sposta davvero; più grande
+  // se si va veloci; ogni due scie, oltre metà velocità, due scie laterali che si aprono a V dai fianchi. L'onda davanti la fa il
+  // contatto (scena.js). Solo disegno: rndGrafica.
+  if(T.swim && sp>0.3){ p.sciaD=(p.sciaD||0)+sp*dt; if(p.sciaD>=0.28){ p.sciaD=0;
+    const f=0.45+0.75*vel, ux=p.vx/sp, uz=p.vz/sp;
+    spawnFoam(p.x-ux*VIS*1.0+(rndGrafica()-0.5)*0.2,p.z-uz*VIS*1.0+(rndGrafica()-0.5)*0.2,(0.2+rndGrafica()*0.1)*f,0.8,ux,uz);
     p.sciaV=!p.sciaV;
     if(p.sciaV&&vel>0.5) for(const l of [1,-1]){ const a=0.45*l, dx=ux*Math.cos(a)-uz*Math.sin(a), dz=ux*Math.sin(a)+uz*Math.cos(a);
       spawnFoam(p.x-ux*VIS*0.4-uz*l*0.22,p.z-uz*VIS*0.4+ux*l*0.22,0.11*f,0.8,dx,dz); } } }
-  else if(p.act&&p.act.kind!=='pass'&&p.act.kind!=='fake'&&!p.act.foam&&p.act.done){ p.act.foam=true; for(let i=0;i<4;i++) spawnFoam(p.x+(rnd()-0.5)*0.7,p.z+(rnd()-0.5)*0.7,0.25,0.9); }
+  // elevazione e ricaduta del busto (tiro, parata, muro): dalla velocità con cui il petto sale o scende
+  { const yP=VIS*J.chest[1], vy=p.pettoY===undefined?0:(yP-p.pettoY)/Math.max(dt,1e-3); p.pettoY=yP;
+    if(vy>0.9&&!p.salito){ p.salito=true; evento('elevazione',p.x,0,p.z,clamp(vy/2.2,0.2,1)); }
+    else if(vy<-0.9&&p.salito){ p.salito=false; evento('ricaduta',p.x+p.fx*0.2,0,p.z+p.fz*0.2,clamp(-vy/2,0.2,1)); }
+    else if(Math.abs(vy)<0.1&&yP<0.05) p.salito=false; }
+  // lotta al centro: acqua mossa tra i due corpi
+  if(fight.active&&p===fight.boa){ p.lottaT=(p.lottaT||0)-dt; if(p.lottaT<=0){ p.lottaT=0.35; const d=fight.def;
+    evento('lotta',(p.x+d.x)/2,0,(p.z+d.z)/2,0.6); } }
+  // parata: quando la palla arriva al portiere che si è allungato, nel punto delle sue mani
+  if(p.isGK&&p.parataIn&&!p.parataFatta&&ball.state==='flight'&&ball.kind==='shot'&&Math.hypot(ball.x-p.x,ball.z-p.z)<1.4){ p.parataFatta=true;
+    const m=R.corpo&&R.corpo.ossa.manoD?R.corpo.ossa.manoD.getWorldPosition(_mano):_mano.set(p.x,0.6,p.z); evento('parata',m.x,m.y,m.z,1); }
+  if(!p.parataIn) p.parataFatta=false;
 }
