@@ -30,6 +30,13 @@ export function colora(mesh,t,isGK,num){
   coloraGiocatore(mesh,{ costume:t.costume, calottina:isGK?0xd62828:C.cal, paraorecchie:isGK?0xf2f2ee:(C===BIANCA?t.costume:0xf2f2ee), testo:isGK?'#fff':C.testo,
     disco:isGK?'#d62828':C.css, discoTesto:isGK?'#fff':C.testo },num);
 }
+// formazione scelta dal giocatore nella schermata Squadre: per ogni nazionale i numeri dei 7 in acqua, posto per posto
+// (0 portiere, 1 centroboa, 2 ala destra, 3 ala sinistra, 4 mezzo destro, 5 mezzo sinistro, 6 punto)
+export const formazioni={};
+export function formazioneValida(R,F){
+  if(!Array.isArray(F)||F.length!==7||new Set(F).size!==7) return false;
+  return F.every((n,i)=>{ const g=R.find(x=>x.num===n); return g&&((g.ruolo===0)===(i===0)); });
+}
 export function applicaSquadre(codA,codB){
   [codA,codB].forEach((cod,k)=>{
     const t=teams[k], sq=squadra(cod), R=rosa(cod);
@@ -38,6 +45,8 @@ export function applicaSquadre(codA,codB){
     // un mancino titolare gioca sul lato destro (ala destra = 2, mezzo destro = 4): se sta a sinistra si scambia con il destro
     const posto=[0,1,2,3,4,5,6];
     for(const [dx,sx] of [[2,3],[4,5]]) if(R[sx].mano==='S'&&R[dx].mano!=='S'){ posto[dx]=sx; posto[sx]=dx; }
+    // formazione scelta nella schermata Squadre (se c'è ed è valida)
+    const F=formazioni[cod]; if(formazioneValida(R,F)) for(let i=0;i<7;i++) posto[i]=R.findIndex(g=>g.num===F[i]);
     // la panchina riparte da capo: tutti freschi, nessun gol, nessun fallo; in acqua i titolari
     for(const g of R){ g.inAcqua=false; g.stamina=1; g.gol=0; g.pf=0; g.fuori=false; }
     t.cambio=null; t.coda=[];

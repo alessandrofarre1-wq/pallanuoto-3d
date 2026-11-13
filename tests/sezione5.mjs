@@ -96,6 +96,50 @@ const ai = await pg.evaluate(() => {
 });
 prova(ai.cambi >= 2, `il computer cambia chi è stanco: ${ai.cambi} cambi in 6 minuti di gioco (stamina media in acqua ${Math.round(ai.media * 100)}%, minima ${Math.round(ai.minima * 100)}%)`);
 
+// ---------- cambi durante il gioco, senza pausa: pulsante CAMBI e tasto B ----------
+const live = await pg.evaluate(() => {
+  const H = window.__pallanuoto, t = H.teams[0];
+  H.game.autoplay = false; t.human = true; H.teams[1].human = false; H.game.state = 'play'; H.game.after = null; H.game.clock = 300; H.game.penalty = null;
+  t.coda = []; t.cambio = null;
+  for (const g of t.rosa) if (!g.inAcqua) g.stamina = 1;
+  t.players[5].stamina = 0.25;
+  const t0 = H.game.time;
+  document.getElementById('tCambi').click(); window.__salta(30);
+  const box = document.getElementById('cambiBox'), r = { aperta: box.classList.contains('on'), statoAperta: H.game.state, avanza: H.game.time - t0 > 0.4 };
+  const cons = box.querySelector('.cr-cons'); r.consiglio = cons ? cons.textContent.trim() : '';
+  // scelta manuale: chi esce, poi chi entra
+  box.querySelector('[data-campo="3"]').click();
+  const ris = box.querySelector('[data-riserva]'); r.riserve = box.querySelectorAll('[data-riserva]').length;
+  const entra = ris ? +ris.dataset.riserva : null; if (ris) ris.click();
+  r.richiesta = (t.coda || []).map(x => `${x.esce.num}->${x.entra.num}`).concat(t.cambio ? [`${t.cambio.esce.num}->${t.cambio.entra.num}`] : []);
+  window.__salta(60); r.partito = !!t.cambio || !(t.coda && t.coda.length); r.statoDopo = H.game.state;
+  window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyB' })); window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyB' }));
+  r.chiusaConB = !box.classList.contains('on');
+  r.entra = entra;
+  return r;
+});
+prova(live.aperta && live.avanza && live.statoAperta !== 'paused', `pulsante CAMBI: la barra si apre e la partita continua (stato ${live.statoAperta})`);
+prova(/→/.test(live.consiglio), `cambio consigliato nella barra: «${live.consiglio}»`);
+prova(live.riserve > 0 && live.richiesta.length > 0 && live.partito, `scelta manuale durante il gioco: ${live.richiesta.join(', ')} (cambio volante partito)`);
+prova(live.chiusaConB, 'il tasto B apre e chiude la barra');
+
+// ---------- formazione scelta nella schermata Squadre ----------
+const form = await pg.evaluate(() => {
+  const H = window.__pallanuoto, t = H.teams[0];
+  H.game.state = 'menu'; H.scegliSquadre('ITA', 'HUN');
+  document.querySelector('[data-va="squadre"]') && document.querySelector('[data-va="squadre"]').click();
+  const box = document.getElementById('rosaBox'); box.open = true;
+  const prima = t.players[2].num;
+  document.querySelector('#rosa [data-posto="2"]').click();
+  const ris = [...document.querySelectorAll('#rosa [data-riserva]')].find(b => b.classList.contains('puo'));
+  const scelto = +ris.dataset.riserva; ris.click();
+  const dopo = t.players[2].num;
+  H.imposta('len', '480'); document.getElementById('goBtn').click(); window.__salta(5);
+  return { prima, scelto, dopo, inPartita: t.players[2].num, postiInAcqua: document.querySelectorAll('#rosa [data-posto]').length };
+});
+prova(form.postiInAcqua === 7, 'schermata Squadre: i 7 posti in acqua con la panchina sotto');
+prova(form.dopo === form.scelto && form.inPartita === form.scelto, `formazione scelta: all'ala destra #${form.scelto} al posto di #${form.prima}, ed è lui a partire in acqua`);
+
 if (process.argv.includes('--foto')) {
   const foto = await pg.evaluate(async () => {
     const H = window.__pallanuoto, t = H.teams[1], p = t.players[3];

@@ -145,7 +145,7 @@ body.touch #tLog{right:calc(52px + var(--sr))}
 #ruota span{opacity:.7;font-size:14px}
 @keyframes gira{0%,25%{transform:rotate(0)}55%,85%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
 /* con il menu aperto l'interfaccia di gioco non si vede (si intravede solo la piscina) */
-body:not(.gioco) :is(#hud,#tac,#player,#cronaca,#tLog,#touch,#fight){visibility:hidden}
+body:not(.gioco) :is(#hud,#tac,#player,#cronaca,#tLog,#tCambi,#cambiBox,#touch,#fight){visibility:hidden}
 /* solo durante la partita: il menu si usa anche in verticale */
 @media (orientation:portrait){ body.gioco #ruota{display:flex} }
 
@@ -468,3 +468,31 @@ body.touch #qte{display:none}
 .pc-x{background:none;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;margin-left:6px;cursor:pointer}
 .pc-nota{font-size:12px;color:var(--h-tenue);margin:6px 2px 0}
 @media (max-width:720px){ .pc-g{grid-template-columns:28px minmax(0,1.5fr) 96px auto} .pc-stat{display:none} }
+
+/* cambi durante il gioco (pulsante CAMBI, tasto B): il gioco non si ferma */
+#tCambi{position:fixed;top:calc(8px + var(--st));right:calc(52px + var(--sr));height:36px;padding:0 9px;border-radius:var(--h-r);background:var(--h-bg);border:1px solid var(--h-linea);z-index:8;display:flex;align-items:center;gap:4px;color:var(--h-testo);box-shadow:var(--h-ombra);cursor:pointer;font:800 11px system-ui}
+#tCambi svg{width:18px;height:18px}
+body.touch #tCambi{right:calc(94px + var(--sr))}
+#cambiBox{position:fixed;left:50%;bottom:calc(8px + var(--sb));transform:translateX(-50%);max-width:min(560px,calc(100vw - 300px));display:none;flex-direction:column;gap:5px;
+  background:rgba(10,28,58,.88);border:1px solid var(--h-linea);border-radius:12px;padding:8px 34px 8px 10px;z-index:12;box-shadow:var(--h-ombra);color:#fff;font:600 12px system-ui}
+#cambiBox.on{display:flex}
+.cr-riga{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.cr-riga b{color:var(--h-oro);margin-right:2px}
+.cr-g,.cr-cons{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:8px;padding:5px 7px;font:700 12px system-ui;cursor:pointer}
+.cr-cons{background:rgba(255,200,60,.2);border-color:var(--h-oro)}
+.cr-g.no{opacity:.4}
+.cr-g em{font-style:normal;font-size:10px;color:#fca5a5}
+.cr-bar{display:inline-block;width:26px;height:5px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden}
+.cr-bar i{display:block;height:100%;background:#4ade80}.cr-bar.medio i{background:#facc15}.cr-bar.stanco i{background:#ef4444}
+.cr-corso span{color:#cfe3ff}.cr-corso button{background:none;border:0;color:#fff;cursor:pointer}
+.cr-chiudi{position:absolute;right:6px;top:6px;background:none;border:0;color:#fff;font-size:15px;cursor:pointer}
+@media (max-width:720px){ #cambiBox{max-width:calc(100vw - 230px)} }
+
+/* formazione nella schermata Squadre */
+#rosa .fm-aiuto{grid-column:1/-1;margin:2px 0 4px;font-size:13px;color:#cfe3ff}
+#rosa .fm-titolo{grid-column:1/-1;font:800 12px system-ui;text-transform:uppercase;letter-spacing:.06em;color:var(--h-oro,#f5c542);margin-top:6px}
+#rosa button.fig{font:inherit;color:inherit;text-align:left;cursor:pointer}
+#rosa .fig.scelto{outline:2px solid var(--h-oro,#f5c542)}
+#rosa .fig.puo{outline:1px dashed var(--h-oro,#f5c542)}
+#rosa .fm-posto{display:block;font-style:normal;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--h-oro,#f5c542)}
+#rosa .fm-ripristina{grid-column:1/-1;justify-self:start;margin-top:6px;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer}
