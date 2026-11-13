@@ -26,6 +26,7 @@
     "sezione2": "node tests/sezione2.mjs",
     "sezione3": "node tests/sezione3.mjs",
     "sezione4": "node tests/sezione4.mjs",
+    "mani": "node tests/mani.mjs",
     "dati-tesi": "node tests/dati-tesi.mjs",
     "bilancio": "node tests/bilancio.mjs",
     "statistiche": "node tests/statistiche.mjs",

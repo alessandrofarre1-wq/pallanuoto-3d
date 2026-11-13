@@ -140,6 +140,52 @@ function orienta(osso,qMondo,peso){
   osso.parent.getWorldQuaternion(_qp); _q.copy(qMondo).premultiply(_qp.invert());
   osso.quaternion.slerp(_q,peso);
 }
+// ---------- braccia naturali (polso e avambraccio che ruotano) ----------
+// Lo scheletro del pallanuotista è in posa a T con i palmi verso il basso e le ossa senza rotazioni di riposo. Ogni osso del
+// braccio si orienta con DUE direzioni, non una: l'asse dell'osso e un riferimento attorno all'asse. Così:
+// - braccio e avambraccio tengono il cardine del gomito perpendicolare al piano spalla-gomito-mano (il gomito si piega come
+//   un gomito vero, senza torsioni a caso);
+// - il palmo guarda dove chiede pose.js (T.nR/T.nL: sotto la palla, verso il tiratore, indietro nella bracciata...): la
+//   rotazione si divide a metà tra avambraccio e polso, come nel braccio umano, ed è limitata a ±120°;
+// - il polso è appena piegato verso il palmo (mano a coppa, come quando si rema).
+const _R=new THREE.Vector3(), _X=new THREE.Vector3(), _ml=new THREE.Matrix4(), _mw=new THREE.Matrix4(), _qa=new THREE.Quaternion();
+const _cg=new THREE.Vector3(), _pn=new THREE.Vector3(), _pt=new THREE.Vector3(), _fd=new THREE.Vector3(), _hw=new THREE.Vector3();
+const POLSO_FLEX=0.22, ROT_MAX=2.1;
+// orienta l'osso perché il suo asse (aLoc, nel suo sistema) vada su asseW e il riferimento rLoc vada verso rifW (nel mondo)
+function allinea(osso,aLoc,rLoc,asseW,rifW){
+  _R.copy(rifW).addScaledVector(asseW,-rifW.dot(asseW)); if(_R.lengthSq()<1e-8) return; _R.normalize();
+  _X.crossVectors(asseW,_R); _mw.makeBasis(asseW,_R,_X);
+  _ml.makeBasis(aLoc,rLoc,_X.crossVectors(aLoc,rLoc)); _ml.transpose();
+  _qa.setFromRotationMatrix(_mw.multiply(_ml));
+  osso.parent.getWorldQuaternion(_qp); osso.quaternion.copy(_qa).premultiply(_qp.invert());
+}
+// riferimenti nel sistema di ciascun osso, misurati una volta sulla posa di riposo (lato: 1 destro, -1 sinistro)
+function preparaBraccio(C,brac,avam,mano,lato){
+  const r=C.radice; r.updateMatrixWorld(true); const qr=r.getWorldQuaternion(new THREE.Quaternion());
+  const loc=(osso,vModello)=>vModello.clone().applyQuaternion(qr).applyQuaternion(osso.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize();
+  const asse=(osso,figlio)=>{ const a=osso.getWorldPosition(new THREE.Vector3()), b=figlio.getWorldPosition(new THREE.Vector3()); return b.sub(a).applyQuaternion(osso.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize(); };
+  const cardine=new THREE.Vector3(0,lato,0), palmo=new THREE.Vector3(0,-1,0);      // posa a T, palmi in giù
+  const dita=mano.children[0]?asse(mano,mano.children[0]):asse(avam,mano);
+  return { brac:{ a:asse(brac,avam), r:loc(brac,cardine) }, avam:{ a:asse(avam,mano), r:loc(avam,cardine) }, mano:{ a:dita, r:loc(mano,palmo) }, cardine:new THREE.Vector3(0,lato,0) };
+}
+function braccio(C,brac,avam,mano,S,E,H,palmoLoc,lato,dirMondo){
+  if(!C.bracci) C.bracci={};
+  const B=C.bracci[lato]||(C.bracci[lato]=preparaBraccio(C,brac,avam,mano,lato));
+  const su=dirMondo(S,E,new THREE.Vector3()), giu=dirMondo(E,H,new THREE.Vector3());
+  // cardine del gomito: perpendicolare a braccio e avambraccio; a braccio quasi teso si tiene l'ultimo valido
+  _cg.crossVectors(su,giu); if(_cg.lengthSq()>4e-3) B.cardine.copy(_cg.normalize()); else _cg.copy(B.cardine);
+  allinea(brac,B.brac.a,B.brac.r,su,_cg);
+  // palmo «neutro» (senza rotazione dell'avambraccio) e palmo voluto: l'angolo tra i due, attorno all'avambraccio
+  _pn.copy(_cg).multiplyScalar(-lato);
+  if(palmoLoc){ _pt.set(palmoLoc[0],palmoLoc[1],palmoLoc[2]).applyQuaternion(_qg); _pt.addScaledVector(giu,-_pt.dot(giu)); }
+  let ang=0;
+  if(palmoLoc&&_pt.lengthSq()>1e-4){ _pt.normalize(); ang=Math.atan2(_X.crossVectors(_pn,_pt).dot(giu),_pn.dot(_pt)); ang=Math.max(-ROT_MAX,Math.min(ROT_MAX,ang)); }
+  _hw.copy(_cg).applyAxisAngle(giu,ang*0.5); allinea(avam,B.avam.a,B.avam.r,giu,_hw);
+  // mano: palmo ruotato dell'angolo intero (l'altra metà la fa il polso); dita appena piegate verso il palmo (mano a coppa)
+  _pn.applyAxisAngle(giu,ang);
+  _fd.copy(giu).addScaledVector(_pn,Math.tan(POLSO_FLEX)).normalize();
+  allinea(mano,B.mano.a,B.mano.r,_fd,_pn);
+}
 // J = giunture (smussate) nel sistema del giocatore: x avanti, y su, z a destra.
 // T = posa richiesta: T.oriz dice quanto il corpo è disteso (0 = verticale, 1 = orizzontale in nuotata).
 export function muoviCorpo(R,J,T,dt){
@@ -209,9 +255,9 @@ export function muoviCorpo(R,J,T,dt){
       if(e>0.05) punta(piede,puntaP,_d,e*0.8);
     }
   }
-  // --- braccia: gomito e mano dove li mette pose.js ---
-  punta(O.bracD,O.avamD,dirMondo(J.sR,J.eR,_d)); punta(O.avamD,O.manoD,dirMondo(J.eR,J.hR,_d));
-  punta(O.bracS,O.avamS,dirMondo(J.sL,J.eL,_d)); punta(O.avamS,O.manoS,dirMondo(J.eL,J.hL,_d));
+  // --- braccia: gomito e mano dove li mette pose.js; gomito che si piega come un cardine, avambraccio e polso che ruotano ---
+  braccio(C,O.bracD,O.avamD,O.manoD,J.sR,J.eR,J.hR,T.nR,1,dirMondo);
+  braccio(C,O.bracS,O.avamS,O.manoS,J.sL,J.eL,J.hL,T.nL,-1,dirMondo);
   // --- testa alta e ferma, che guarda avanti: sia da fermi sia in nuotata ---
   _qr.copy(_qg).multiply(ROT_MODELLO);
   orienta(O.collo,_qr,0.5); orienta(O.testa,_qr,0.9);
