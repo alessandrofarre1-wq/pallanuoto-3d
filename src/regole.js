@@ -235,8 +235,9 @@ export function contrasto(d,c){
   return tackle(d,c,{soloRuba:true});
 }
 // Da dove nascono le espulsioni (indicazione di Ale, 13/11/2026): circa il 70% dalla lotta tra centroboa e marcatore,
-// il resto da falli tattici (fermare una controfuga) o da interventi irruenti. Moltiplicatori della probabilità:
-export const ESPULSIONI={ centro:6, contrasto:0.12 };
+// il resto da falli tattici (fermare una controfuga) o da interventi irruenti. Tarati sui Mondiali 2025 (World Aquatics, uomini):
+// circa 11 espulsioni per squadra a partita, 66% dal centroboa. Moltiplicatori della probabilità:
+export const ESPULSIONI={ centro:7, contrasto:0.24 };
 export function tackle(d,c,o){
   o=o||{};
   if(d.tackleCD>0||d.excluded||game.time<d.stunUntil) return false;
