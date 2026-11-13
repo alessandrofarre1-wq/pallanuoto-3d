@@ -35,14 +35,18 @@ const PALO=P.raggioPalo, PROF=P.profRete;
 for(const s of [1,-1]){
   const x=s*HL, alto=GH+PALO;
   for(const z of [-GW-PALO,GW+PALO])
-    fisso(RAPIER.ColliderDesc.capsule((alto+0.3)/2,PALO).setTranslation(x,(alto-0.3)/2,z).setRestitution(P.rimbalzoPalo).setFriction(P.attritoPalo),'palo');
-  fisso(RAPIER.ColliderDesc.capsule(GW+PALO,PALO).setTranslation(x,alto,0).setRotation({x:Math.SQRT1_2,y:0,z:0,w:Math.SQRT1_2}).setRestitution(P.rimbalzoPalo).setFriction(P.attritoPalo),'traversa');
+    fisso(RAPIER.ColliderDesc.capsule((alto+0.3)/2,PALO).setTranslation(x,(alto-0.3)/2,z).setRestitution(P.rimbalzoPalo).setFriction(P.attritoPalo).setFrictionCombineRule(RAPIER.CoefficientCombineRule.Min),'palo');
+  fisso(RAPIER.ColliderDesc.capsule(GW+PALO,PALO).setTranslation(x,alto,0).setRotation({x:Math.SQRT1_2,y:0,z:0,w:Math.SQRT1_2}).setRestitution(P.rimbalzoPalo).setFriction(P.attritoPalo).setFrictionCombineRule(RAPIER.CoefficientCombineRule.Min),'traversa');
   // rete: fondo, tetto e fianchi; trattiene la palla quasi senza rimbalzo
   const rete=d=>fisso(d.setRestitution(P.rimbalzoRete).setRestitutionCombineRule(RAPIER.CoefficientCombineRule.Min).setFriction(1),'rete');
   rete(RAPIER.ColliderDesc.cuboid(0.03,(alto+0.3)/2,GW+PALO).setTranslation(x+s*PROF,(alto-0.3)/2,0));
   rete(RAPIER.ColliderDesc.cuboid(PROF/2,0.03,GW+PALO).setTranslation(x+s*PROF/2,alto+0.02,0));
   for(const z of [-GW-PALO*2,GW+PALO*2]) rete(RAPIER.ColliderDesc.cuboid(PROF/2-0.06,(alto+0.3)/2,0.03).setTranslation(x+s*(PROF/2+0.06),(alto-0.3)/2,z));
 }
+
+// ---------- bordi della vasca (passo 5): la palla vagante rimbalza sulle pareti invece di uscire dalla piscina ----------
+for(const [x,z,lx,lz] of [[0,P.vascaZ+0.15,P.vascaX,0.15],[0,-P.vascaZ-0.15,P.vascaX,0.15],[P.vascaX+0.15,0,0.15,P.vascaZ],[-P.vascaX-0.15,0,0.15,P.vascaZ]])
+  fisso(RAPIER.ColliderDesc.cuboid(lx,0.5,lz).setTranslation(x,0,z).setRestitution(P.rimbalzoBordo).setFriction(0.3),'bordo');
 
 // ---------- corpi dei giocatori: testa e spalle fuori dall'acqua fanno rimbalzare la palla vagante ----------
 const corpi=[];
@@ -131,6 +135,15 @@ function passoSingolo(B,dt,giocatori,primo){
     // resistenza quadratica (implicita: non può invertire il moto) più una piccola parte lineare per le velocità basse
     const kd=k*P.cdAcqua*s, f=1/(1+(kd+P.frenoLineare*h/(2*RAGGIO))*dt);
     vx*=f; vy*=f; vz*=f;
+    // rotazione a contatto (passo 4): il punto più basso della palla striscia sull'acqua; l'attrito frena quello strisciamento
+    // e scambia rotazione e velocità: una palla che gira in avanti (il fondo va indietro) perde meno velocità di una che gira
+    // all'indietro (Truscott e Techet 2009, Zhang 2022: la rotazione conta anche nello schizzo; i numeri sono da calibrare)
+    // solo la parte dello strisciamento dovuta alla rotazione (ω × (0,−a,0)): quella dovuta all'avanzamento è già nella resistenza
+    { const cx=wz*RAGGIO, cz=-wx*RAGGIO;
+      const ct=P.attritoRotAcqua*(h/(2*RAGGIO))*dt, fx=-cx*ct, fz=-cz*ct;       // variazione di velocità (frazione dello strisciamento)
+      vx+=fx; vz+=fz;
+      // la stessa forza sul fondo della palla la fa girare: Δω = r × m·Δv / I con r = (0,−a,0), cioè (−a·m·Δvz, 0, a·m·Δvx)/I
+      const kI=MASSA*RAGGIO/INERZIA; wx+=-kI*fz; wz+=kI*fx; }
     // la rotazione si spegne in acqua (Truscott e Techet 2009: circa 0,3 s tutta sott'acqua)
     const fr=Math.exp(-dt*(h/(2*RAGGIO))/P.tempoRotAcqua); wx*=fr; wy*=fr; wz*=fr;
     F.archimede=RHO_W*G*V; F.resistenza=0.5*RHO_W*A*P.cdAcqua*s*s; F.portanza=0.5*RHO_W*A*P.cdAcqua*P.clSuCdAcqua*s*Math.hypot(vx,vz);

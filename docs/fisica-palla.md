@@ -27,7 +27,7 @@ https://claude.ai/artifact/4H7yZMi99DmYJVPEvsKeWp (13 novembre 2026). Qui il ria
 1. **FATTO** — Strumenti senza cambiare il gioco (sotto).
 2. **FATTO** — Palla in aria: misure vere, inerzia del guscio, passo massimo 1/240 s, Cd e Magnus dai parametri, mira ricalibrata (sotto).
 3. **FATTO** — Palla in acqua: volume immerso, Archimede, resistenza e portanza della parte immersa; via le regole «schizzo» e «tonfo» (sotto).
-4. Rotazione in acqua. 5. Urti (pali, bordi della vasca, palla respinta da mani e portiere). 6. Effetti grafici dagli eventi fisici, con un generatore casuale solo per la grafica. 7. Tiro a schizzo e bilanciamento con i video.
+4. **FATTO** — Rotazione in acqua. 5. **FATTO in parte** — Urti: pali e bordi della vasca (la palla respinta da mani e portiere resta decisa come prima). 6. Effetti grafici dagli eventi fisici, con un generatore casuale solo per la grafica. 7. Tiro a schizzo e bilanciamento con i video.
 
 ## Passo 1 — cosa c'è
 - `src/fisica-palla/parametri.js`: tutti i numeri della palla con unità, fonte, intervallo e tipo (misurato / derivato / letteratura / da calibrare). `IN_USO` = valori di oggi (letti da `palla.js` e `tiri.js`), `PROPOSTI` = nuovo modello, non ancora usati.
@@ -71,3 +71,10 @@ https://claude.ai/artifact/4H7yZMi99DmYJVPEvsKeWp (13 novembre 2026). Qui il ria
 - Grafica: dallo stesso giorno gli effetti usano `rndGrafica` (`costanti.js`), un caso separato da quello del gioco: cambiare un effetto non cambia più le partite. Tolti i 420 numeri consumati a vuoto in `scena.js`.
 - Partite di prova: 58 gol su 225 tiri (26%), prima 63 su 211 (30%), nessun errore; nuovo riferimento.
 - `npm run bilancio` dopo il passo 3 (12 partite ITA–USA): gol 15,4; tiri 44,1; tiri in gol 34,8% (passo 2: 33,6%; prima del passo 2: 31,9%); nello specchio 74,3%; parate 17,4; superiorità trasformate 37,3%. Il gioco resta nella stessa fascia.
+
+## Passi 4 e 5 — rotazione in acqua e urti (13 novembre 2026)
+- Rotazione a contatto: il fondo della palla che striscia sull'acqua per effetto della rotazione viene frenato (`attritoRotAcqua` 20 1/s, pesato da quanto la palla è immersa) e la stessa forza fa girare la palla (Δω = r × m·Δv / I). Si usa solo lo strisciamento dovuto alla rotazione: quello dovuto all'avanzamento è già nella resistenza di de Mestre. Effetto: a 16 m/s e 12°, con 30 rad/s, la palla che gira in avanti esce a 12,81 m/s, senza rotazione 12,78, all'indietro 12,75. Verso giusto, entità da calibrare (nessuna misura nelle fonti).
+- Pali e traversa: attrito 0,1 con la regola «il più basso» (prima 0,4 in media): dall'interno del palo la palla conserva più velocità in avanti.
+- Bordi della vasca: quattro pareti fisse (rimbalzo 0,4) attorno alla vasca disegnata; il «fuori» resta deciso dalle regole.
+- Non fatto: la palla respinta da mani e portiere resta decisa dalle regole di prima (cambiarla tocca il bilanciamento delle parate).
+- Scena di prova: 10 riferimenti su 11 (resta lontano solo lo schizzo radente, fascia 50–80% senza fonte). Partite di prova: 67 gol su 220 tiri (30%), nessun errore.
