@@ -12,7 +12,8 @@ import { colora, riservaPer, vesti } from './giocatori.js';
 import { makePlayerMesh } from './grafica/modello.js';
 import { valoriMotore } from './dati/rose.js';
 import { ball, ctrl, game, ownGoalX, setCtrl, teams } from './stato.js';
-export const PANCHINA = { recupero: 0.025, stanco: 0.42, fresco: 0.7, controllo: 2, pausaComputer: 55, stancoComputer: 0.34, velBordo: 0.9, cinque: 0.5, distZona: 3.2 };
+import { puntoPozzetto } from './pozzetto.js';
+export const PANCHINA = { recupero: 0.025, stanco: 0.42, fresco: 0.7, controllo: 2, pausaComputer: 55, stancoComputer: 0.34, stancoPozzetto: 0.8, velBordo: 0.9, cinque: 0.5, distZona: 3.2 };
 // punti della propria metà (lato lontano dalla telecamera): A = dietro la linea di porta, dove compare chi entra;
 // Z = zona dei cambi lungo il bordo
 export const puntoIngresso = t => ({ x: ownGoalX(t) - t.dir * 0.4, z: -HW + 0.35 });
@@ -41,9 +42,10 @@ function vaVerso(c, punto, dt) {
 
 // la riserva più adatta per far rifiatare p: stesso ruolo se possibile, la più fresca
 export function suggerimento(p, escluse) {
-  if (p.isGK || p.excluded || !p.scheda) return null;
+  if (p.isGK || !p.scheda || (p.excluded && (!p.alPozzetto || p.pf >= 3))) return null;
   const g = riservaPer(p, escluse);
-  return g && (g.stamina ?? 1) >= PANCHINA.fresco && p.stamina < PANCHINA.stanco + 0.08 ? g : null;
+  // l'espulso nel pozzetto si cambia più volentieri: non costa nulla (niente cinque, la squadra è già in inferiorità)
+  return g && (g.stamina ?? 1) >= PANCHINA.fresco && p.stamina < (p.excluded ? PANCHINA.stancoPozzetto : PANCHINA.stanco + 0.08) ? g : null;
 }
 // chiede un cambio volante (per la squadra del giocatore: dalla schermata Panchina in pausa)
 export function chiediCambio(t, p, g) {
@@ -58,12 +60,19 @@ export function annullaCambio(t) {
   C.esce.uscendo = false; nascondi(comparse[t.idx]); t.cambio = null;
 }
 // scambio vero e proprio: chi esce lascia la sua stamina e i suoi falli alla scheda, chi entra prende quelli della sua
-function scambia(t, p, g) {
+function scambia(t, p, g, dalPozzetto) {
   const vecchio = p.scheda;
   vecchio.stamina = p.stamina; vecchio.pf = p.pf;
   vesti(p, g); p.stamina = g.stamina ?? 1; p.pf = g.pf || 0; p.uscendo = false; p.cut = null; p.act = null; p.charging = false;
-  annuncia('info', 'Cambio', { squadra: t, dettaglio: `entra #${g.num} ${g.nome}, esce #${vecchio.num}`, durata: 1.6 });
+  annuncia('info', 'Cambio', { squadra: t, dettaglio: `entra #${g.num} ${g.nome}, esce #${vecchio.num}${dalPozzetto ? ' · dal pozzetto' : ''}`, durata: 1.6 });
   return vecchio;
+}
+// cambio dal pozzetto (sezione 6): l'espulso esce dall'acqua e il compagno entra lì, senza cinque; l'espulsione continua
+// (chi entra rientra in campo quando finisce)
+function cambioPozzetto(t, p, g) {
+  const vecchio = scambia(t, p, g, true), c = comparse[t.idx], P = puntoPozzetto(t);
+  mostra(c, vecchio, { x: P.x - t.dir * 0.5, z: P.z - 0.3 });
+  t.cambio = { esce: p, entra: g, fase: 'pozzetto', t0: game.time };
 }
 function inizia(t, p, g, liberi) {
   if (liberi) { scambia(t, p, g); return; }      // dopo un gol, nel time-out e tra i tempi il cambio è libero e immediato
@@ -74,13 +83,18 @@ function inizia(t, p, g, liberi) {
 }
 // il computer cambia chi è stanco quando è lontano dalla palla e non la sta giocando
 function cambiDelComputer(t) {
-  if (t.cambio || (t.coda && t.coda.length) || game.time < (t.prossimoControllo || 0)) return;
+  // l'espulso arrivato al pozzetto si valuta subito (il cambio da lì non costa nulla); gli altri a intervalli
+  const inPozzetto = t.players.some(p => p.excluded && p.alPozzetto && p.pf < 3 && !p.valutatoPozzetto);
+  if (t.cambio || (t.coda && t.coda.length) || (!inPozzetto && game.time < (t.prossimoControllo || 0))) return;
+  for (const p of t.players) if (p.excluded && p.alPozzetto) p.valutatoPozzetto = true;
   t.prossimoControllo = game.time + PANCHINA.controllo;
   let best = null;
   for (const p of t.players) {
-    if (p.isGK || p.excluded || ball.holder === p || dist(p, ball) < 5 || p.stamina > PANCHINA.stancoComputer) continue;
+    const pozzetto = p.excluded && p.alPozzetto && p.pf < 3;      // dal pozzetto il cambio non costa nulla
+    if (p.isGK || (p.excluded && !pozzetto) || ball.holder === p || (!pozzetto && dist(p, ball) < 5) || p.stamina > (pozzetto ? PANCHINA.stancoPozzetto : PANCHINA.stancoComputer)) continue;
     const g = suggerimento(p); if (!g) continue;
-    if (!best || p.stamina < best.p.stamina) best = { p, g };
+    if (!best || pozzetto || p.stamina < best.p.stamina) best = { p, g };
+    if (pozzetto) break;
   }
   // un cambio alla volta, con almeno PANCHINA.pausaComputer secondi tra uno e l'altro (come una panchina vera)
   if (best) { t.coda = [{ esce: best.p, entra: best.g }]; t.prossimoControllo = game.time + PANCHINA.pausaComputer; }
@@ -92,11 +106,17 @@ export function aggiornaPanchina(dt, liberi = false) {
     for (const g of t.rosa) if (!g.inAcqua) g.stamina = Math.min(1, (g.stamina ?? 1) + dt * PANCHINA.recupero);
     if (!t.human || game.autoplay) cambiDelComputer(t);
     if (!t.cambio && t.coda && t.coda.length) {
-      const r = t.coda.shift();
-      if (t.players.includes(r.esce) && !r.esce.excluded && !r.entra.inAcqua && !r.entra.fuori) inizia(t, r.esce, r.entra, liberi);
+      const r = t.coda[0], valido = t.players.includes(r.esce) && !r.entra.inAcqua && !r.entra.fuori;
+      if (!valido || (r.esce.excluded && r.esce.pf >= 3)) t.coda.shift();
+      else if (r.esce.excluded) { if (r.esce.alPozzetto) { t.coda.shift(); cambioPozzetto(t, r.esce, r.entra); } }      // aspetta che arrivi al pozzetto
+      else { t.coda.shift(); inizia(t, r.esce, r.entra, liberi); }
     }
     const C = t.cambio; if (!C) continue;
     const c = comparse[t.idx], p = C.esce, Z = zonaCambi(t);
+    if (C.fase === 'pozzetto') {      // chi è uscito dal pozzetto resta un attimo a bordo vasca e sparisce
+      if (game.time - C.t0 > 1.4 || game.state !== 'play') { nascondi(c); t.cambio = null; }
+      continue;
+    }
     if (p.excluded) { annullaCambio(t); continue; }
     if (liberi && C.fase === 'esce') { scambia(t, p, C.entra); annullaCambio(t); continue; }
     if (C.fase === 'esce') {

@@ -6,6 +6,7 @@ import { bip } from './audio.js';
 import { aggiorna as aggiornaCronaca } from './cronaca.js';
 import { ctrl, fight, game, teams } from './stato.js';
 import { iconaMano } from './mano.js';
+import { disegnaCambi } from './panchinaVista.js';
 export const $ = id => document.getElementById(id);
 let tacKey='', schedaVista=null, ultimoBip=null;
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
@@ -23,6 +24,7 @@ export function aggiornaTabellone(){
 aggiornaTabellone();
 export function fmt(s){ s=Math.max(0,Math.ceil(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
 export function updateHUD(){
+  disegnaCambi(false);      // barra dei cambi aperta: stamina aggiornata ogni mezzo secondo
   $('scA').textContent=teams[0].score; $('scB').textContent=teams[1].score;
   $('period').textContent=game.period+'°T';
   $('clock').textContent=fmt(game.clock);

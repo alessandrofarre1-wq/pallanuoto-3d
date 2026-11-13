@@ -41,6 +41,8 @@
   <div class="bar" id="power"><div></div></div>
 </div>
 <!-- registro degli eventi: si apre dal pulsante accanto alla pausa; mentre è aperto il gioco è fermo -->
+<div id="tCambi" title="Cambi (tasto B)" role="button" aria-label="Cambi"><svg viewBox="0 0 24 24"><path d="M5 9h12.5l-3-3M19 15H6.5l3 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><b>CAMBI</b></div>
+<div id="cambiBox" aria-live="polite"></div>
 <div id="tLog" title="Eventi della partita"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8 8.5h8M8 12h8M8 15.5h5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></div>
 <div id="registro"><div class="rcard"><div class="rtit"><b>Eventi della partita</b><span id="regChiudi">✕</span></div><ul id="regLista"></ul></div></div>
 <!-- il gioco è solo in orizzontale: in verticale si chiede di ruotare il telefono (il gioco resta fermo) -->
@@ -89,7 +91,7 @@
     </div>
     <div class="elenco-sq" id="elencoSq" aria-label="Tutte le squadre"></div>
     <div class="confronto" id="confronto"></div>
-    <details id="rosaBox"><summary>Rosa e statistiche della tua squadra</summary><div id="rosa"></div></details>
+    <details id="rosaBox"><summary>Formazione: scegli i 7 in acqua</summary><div id="rosa"></div></details>
     <div class="m-fondo"><button type="button" class="m-cta corta" data-va="impostazioni"><span><b>Continua</b></span><i>›</i></button></div>
   </section>
 

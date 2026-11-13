@@ -10,7 +10,7 @@ import { $, aggiornaTabellone, fpsIniziale, setFps } from './hud.js';
 import { RUOLI, CHIAVE, STAT_NOMI, squadre } from './dati/rose.js';
 import { bandiera } from './dati/bandiere.js';
 import { LOGO } from './logo.js';
-import { applicaSquadre } from './giocatori.js';
+import { applicaSquadre, formazioneValida, formazioni } from './giocatori.js';
 import { annullaCambio } from './panchina.js';
 import { azzeraScelta, disegnaPanchina } from './panchinaVista.js';
 import { kickoff } from './regole.js';
@@ -66,10 +66,32 @@ if(fpsIniziale()) document.querySelector('[data-fps="1"]').click();
 // ---------- squadre ----------
 const scelta=['ITA','HUN'];
 let lato=0;                                   // quale card cambia toccando una squadra dell'elenco
+// FORMAZIONE: i 7 che partono in acqua, scelti qui (si possono cambiare quante volte si vuole anche durante la partita:
+// i cambi nella pallanuoto sono illimitati). Tocca un posto e poi un giocatore della panchina (o un altro posto) per scambiarli.
+const POSTI=['Portiere','Centroboa','Ala destra','Ala sinistra','Mezzo destro','Mezzo sinistro','Punto'];
+let postoScelto=null;
+const scheda=(g,extra)=>`<span class="ov">${g.ovr}</span><b>${g.num} ${g.nome}${iconaMano(g.mano)}</b><br>${RUOLI[g.ruolo]}${extra||''}`+
+  `<div class="st">${CHIAVE[g.ruolo].map(k=>`<span>${STAT_NOMI[k].slice(0,3).toUpperCase()} ${g.s[k]}</span>`).join('')}</div>`;
 function disegnaRosa(){
-  $('rosa').innerHTML=teams[0].rosa.map(g=>`<div class="fig${g.titolare?'':' ris'}${g.campione?' camp':''}"><span class="ov">${g.ovr}</span><b>${g.num} ${g.nome}${iconaMano(g.mano)}</b><br>${RUOLI[g.ruolo]}${g.titolare?'':' (riserva)'} · ${g.mano==='S'?'mancino':'destro'}`+
-    `<div class="st">${CHIAVE[g.ruolo].map(k=>`<span>${STAT_NOMI[k].slice(0,3).toUpperCase()} ${g.s[k]}</span>`).join('')}</div></div>`).join('');
+  const t=teams[0], R=t.rosa, inAcqua=t.players.map(p=>p.scheda);
+  const riserve=R.filter(g=>!inAcqua.includes(g));
+  $('rosa').innerHTML=`<p class="fm-aiuto">${postoScelto===null?'Tocca un posto per cambiare chi parte in acqua.':`Scegli chi mettere come <b>${POSTI[postoScelto]}</b> (panchina o un altro posto).`}</p>`+
+    `<div class="fm-titolo">In acqua</div>`+inAcqua.map((g,i)=>`<button type="button" class="fig fm${postoScelto===i?' scelto':''}${g.campione?' camp':''}" data-posto="${i}"><i class="fm-posto">${POSTI[i]}</i>${scheda(g)}</button>`).join('')+
+    `<div class="fm-titolo">Panchina</div>`+riserve.map(g=>{ const ok=postoScelto!==null&&(g.ruolo===0)===(postoScelto===0);
+      return `<button type="button" class="fig ris${ok?' puo':''}${g.campione?' camp':''}" data-riserva="${g.num}">${scheda(g)}</button>`; }).join('')+
+    `<button type="button" class="fm-ripristina" id="fmRipristina">Formazione di partenza</button>`;
+  const salvaF=F=>{ formazioni[t.codice]=F; salva('pallanuoto-formazione-'+t.codice,F.join(',')); postoScelto=null; applicaSquadre(scelta[0],scelta[1]); aggiornaTabellone(); disegnaRosa(); };
+  const attuale=()=>t.players.map(p=>p.scheda.num);
+  $('rosa').querySelectorAll('[data-posto]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.posto;
+    if(postoScelto===null||postoScelto===i){ postoScelto=postoScelto===i?null:i; disegnaRosa(); return; }
+    const F=attuale(); [F[postoScelto],F[i]]=[F[i],F[postoScelto]];          // scambio tra due posti (il portiere resta portiere)
+    if(formazioneValida(R,F)) salvaF(F); else { postoScelto=i; disegnaRosa(); } });
+  $('rosa').querySelectorAll('[data-riserva]').forEach(b=>b.onclick=()=>{ if(postoScelto===null) return;
+    const F=attuale(); F[postoScelto]=+b.dataset.riserva; if(formazioneValida(R,F)) salvaF(F); });
+  $('fmRipristina').onclick=()=>{ delete formazioni[t.codice]; salva('pallanuoto-formazione-'+t.codice,''); postoScelto=null; applicaSquadre(scelta[0],scelta[1]); disegnaRosa(); };
 }
+// formazioni ricordate dalle volte precedenti
+for(const q of squadre){ const v=leggi('pallanuoto-formazione-'+q.codice); if(v) formazioni[q.codice]=v.split(',').map(Number); }
 const sq=c=>squadre.find(q=>q.codice===c);
 export function scegliSquadre(a,b){
   if(a===b) b=squadre.find(q=>q.codice!==a).codice;

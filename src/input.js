@@ -6,10 +6,12 @@ import { togglePause } from './menu.js';
 import { apriRegistro, chiudiRegistro, registroAperto } from './cronaca.js';
 import { callPlay } from './regole.js';
 import { ctrl, game } from './stato.js';
+import { apriCambi } from './panchinaVista.js';
 export const keys={};
 addEventListener('keydown',e=>{
   keys[e.code]=true;
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) e.preventDefault();
+  if(e.code==='KeyB' && !e.repeat && ['play','stop','countdown'].includes(game.state)) apriCambi();      // cambi durante il gioco
   if((e.code==='Escape'||e.code==='KeyP') && !e.repeat){ if(registroAperto()) chiudiRegistro(); else togglePause(); }
 });
 addEventListener('keyup',e=>{ keys[e.code]=false; });
@@ -101,6 +103,9 @@ if('ontouchstart' in window || navigator.maxTouchPoints>0) document.body.classLi
   const apri=e=>{ e.preventDefault(); for(const k in touch.btn) touch.btn[k]=false; touch.x=touch.z=0;
     document.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on')); apriRegistro(); };
   $('tLog').addEventListener('click',apri); $('tLog').addEventListener('touchstart',apri,{passive:false});
+  // cambi durante il gioco: la barra si apre e chiude senza fermare la partita
+  const cambi=e=>{ e.preventDefault(); apriCambi(); };
+  $('tCambi').addEventListener('click',cambi); $('tCambi').addEventListener('touchstart',cambi,{passive:false});
   const chiudi=e=>{ e.preventDefault(); chiudiRegistro(); };
   $('regChiudi').addEventListener('click',chiudi); $('regChiudi').addEventListener('touchend',chiudi,{passive:false});
   $('registro').addEventListener('click',e=>{ if(e.target===$('registro')) chiudiRegistro(); });
