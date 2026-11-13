@@ -48,11 +48,19 @@ export function suggerimento(p, escluse) {
   return g && (g.stamina ?? 1) >= PANCHINA.fresco && p.stamina < (p.excluded ? PANCHINA.stancoPozzetto : PANCHINA.stanco + 0.08) ? g : null;
 }
 // chiede un cambio volante (per la squadra del giocatore: dalla schermata Panchina in pausa)
-export function chiediCambio(t, p, g) {
+// subito = cambio al volo dal pulsante CAMBI (parte adesso); altrimenti (dalla pausa) si aspetta il primo momento utile
+export function chiediCambio(t, p, g, subito = false) {
   if (!p || !g || g.inAcqua || g.fuori || (g.ruolo === 0) !== p.isGK) return false;
   t.coda = (t.coda || []).filter(x => x.esce !== p && x.entra !== g);
-  t.coda.push({ esce: p, entra: g });
+  t.coda.push({ esce: p, entra: g, attesa: !subito });
   return true;
+}
+// primo momento utile per un cambio scelto in pausa (oltre a gol, time-out e intervalli, che lo rendono immediato):
+// chi esce non ha la palla, è lontano dall'azione e la sua squadra non sta difendendo vicino alla propria porta
+export function momentoUtile(t, p) {
+  if (ball.holder === p || dist(p, ball) < 6) return false;
+  if (game.possTeam === t) return true;
+  return Math.abs(ownGoalX(t) - ball.x) > 10;
 }
 export function annullaRichiesta(t, p) { t.coda = (t.coda || []).filter(x => x.esce !== p); }
 export function annullaCambio(t) {
@@ -109,7 +117,7 @@ export function aggiornaPanchina(dt, liberi = false) {
       const r = t.coda[0], valido = t.players.includes(r.esce) && !r.entra.inAcqua && !r.entra.fuori;
       if (!valido || (r.esce.excluded && r.esce.pf >= 3)) t.coda.shift();
       else if (r.esce.excluded) { if (r.esce.alPozzetto) { t.coda.shift(); cambioPozzetto(t, r.esce, r.entra); } }      // aspetta che arrivi al pozzetto
-      else { t.coda.shift(); inizia(t, r.esce, r.entra, liberi); }
+      else if (!r.attesa || liberi || momentoUtile(t, r.esce)) { t.coda.shift(); inizia(t, r.esce, r.entra, liberi); }      // dalla pausa: al primo momento utile
     }
     const C = t.cambio; if (!C) continue;
     const c = comparse[t.idx], p = C.esce, Z = zonaCambi(t);

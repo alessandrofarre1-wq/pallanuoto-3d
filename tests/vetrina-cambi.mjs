@@ -23,13 +23,13 @@ await pg.waitForTimeout(500);
 await pg.evaluate(() => document.getElementById('rosaBox').scrollIntoView());
 await pg.waitForTimeout(300);
 await pg.screenshot({ path: path.join(ROOT, 'docs/immagini/formazione.png') });
-// barra dei cambi in partita
+// pulsante del cambio consigliato in partita
 await pg.evaluate(() => { document.querySelector('#rosa [data-posto="2"]').click(); const H = window.__pallanuoto; H.imposta('len', '480'); document.getElementById('goBtn').click(); window.__salta(900); H.teams[0].players[5].stamina = 0.22; H.teams[0].players[3].stamina = 0.35; H.teams[0].players[4].pf = 2; });
-await pg.evaluate(() => { document.getElementById('tCambi').click(); window.__salta(2); window.__raf(performance.now() + 16); });
+await pg.evaluate(() => { window.__salta(40); window.__raf(performance.now() + 16); });
 await pg.waitForTimeout(400);
 await pg.screenshot({ path: path.join(ROOT, 'docs/immagini/cambi-in-gioco.png') });
 // menu di pausa e schermata «Cambi e panchina»
-await pg.evaluate(() => { document.getElementById('cambiBox').classList.remove('on'); const H = window.__pallanuoto; H.teams[0].players[1].scheda.tiriP = 5; H.teams[0].players[1].scheda.gol = 0; H.pausa(); });
+await pg.evaluate(() => { const H = window.__pallanuoto; H.teams[0].players[1].scheda.tiriP = 5; H.teams[0].players[1].scheda.gol = 0; H.pausa(); });
 await pg.waitForTimeout(600);
 await pg.screenshot({ path: path.join(ROOT, 'docs/immagini/pausa.png') });
 await pg.evaluate(() => document.getElementById('vaiPanchina').click());

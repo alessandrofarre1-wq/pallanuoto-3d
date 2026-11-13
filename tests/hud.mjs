@@ -26,7 +26,7 @@ const init = () => {
   // misure dell'interfaccia: elementi visibili, copertura, sovrapposizioni, cose del gioco coperte
   window.__misura = () => {
     const H = window.__pallanuoto, W = innerWidth, Hh = innerHeight;
-    const SEL = ['#hud', '#hud .esp > *', '#cronaca', '#tac', '#player', '#tLog', '#tPause', '.tb', '#joy', '#fight'];
+    const SEL = ['#hud', '#hud .esp > *', '#cronaca', '#tac', '#player', '#tLog', '#tPause', '#tCambi', '.tb', '#joy', '#fight'];
     const el = [];
     for (const s of SEL) for (const e of document.querySelectorAll(s)) {
       const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < 0.05) continue;

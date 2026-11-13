@@ -470,9 +470,9 @@ body.touch #qte{display:none}
 @media (max-width:720px){ .pc-g{grid-template-columns:28px minmax(0,1.5fr) 96px auto} .pc-stat{display:none} }
 
 /* cambi durante il gioco (pulsante CAMBI, tasto B): il gioco non si ferma */
-#tCambi{position:fixed;top:calc(8px + var(--st));right:calc(52px + var(--sr));height:36px;padding:0 9px;border-radius:var(--h-r);background:var(--h-bg);border:1px solid var(--h-linea);z-index:8;display:flex;align-items:center;gap:4px;color:var(--h-testo);box-shadow:var(--h-ombra);cursor:pointer;font:800 11px system-ui}
+/* CAMBI: sotto la colonna pausa/T.O., lontano dal tabellone (tempo e secondi dell'azione sempre visibili) */
+#tCambi{position:fixed;top:calc(104px + var(--st));right:calc(10px + var(--sr));height:36px;padding:0 9px;border-radius:var(--h-r);background:var(--h-bg);border:1px solid var(--h-linea);z-index:8;display:flex;align-items:center;gap:4px;color:var(--h-testo);box-shadow:var(--h-ombra);cursor:pointer;font:800 11px system-ui}
 #tCambi svg{width:18px;height:18px}
-body.touch #tCambi{right:calc(94px + var(--sr))}
 #cambiBox{position:fixed;left:50%;bottom:calc(8px + var(--sb));transform:translateX(-50%);max-width:min(560px,calc(100vw - 300px));display:none;flex-direction:column;gap:5px;
   background:rgba(10,28,58,.88);border:1px solid var(--h-linea);border-radius:12px;padding:8px 34px 8px 10px;z-index:12;box-shadow:var(--h-ombra);color:#fff;font:600 12px system-ui}
 #cambiBox.on{display:flex}
@@ -522,3 +522,12 @@ body.touch #tCambi{right:calc(94px + var(--sr))}
 .cr-nome{font-size:12px}.cr-info{font-size:10.5px}
 .cr-consigli{gap:4px}.cr-consigli .cr-cons{padding:3px 8px}
 .pc-cons strong{color:#fff}
+/* pulsante CAMBI: mostra il cambio consigliato (oro) e lo esegue con un tocco */
+#tCambi{max-width:min(300px,34vw)}
+#tCambi .tc-testo{display:flex;flex-direction:column;line-height:1.1;min-width:0}
+#tCambi .tc-testo small{font:700 9.5px system-ui;color:#cfe3ff;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tCambi .tc-testo b{font:800 12px system-ui;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tCambi .tc-testo i{font-style:normal;color:var(--h-oro);font-weight:800}
+#tCambi[data-stato="consiglio"]{border-color:var(--h-oro);box-shadow:0 0 0 2px rgba(255,200,60,.45),var(--h-ombra)}
+#tCambi[data-stato="consiglio"] .tc-testo small{color:var(--h-oro)}
+#tCambi[data-stato="vuoto"]{opacity:.7}
