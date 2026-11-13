@@ -52,7 +52,7 @@ export function computePose(p,dt,t){
     w=ease(clamp((tt-0.25*fr)/(0.75*fr),0,1)); f=clamp((tt-fr)/0.3,0,1); }
   else if(p.charging){ const k=shotKind(p); th=THROW[k==='beduina'||k==='sciarpa'?k:'shot']; c=clamp(p.chargeT/0.5,0,1); }
   // quanto il corpo è disteso (lo decide la fisica: fisica.js): 0 verticale, 1 orizzontale. Tutto sfuma tra le due pose.
-  const o=p.excluded?0:(p.oriz||0), e=ease(o);
+  const o=p.excluded&&p.alPozzetto?0:(p.oriz||0), e=ease(o);      // l'espulso nuota fino al pozzetto, poi aspetta in verticale
   const frena=(p.orizPrec||0)>o+1e-6 ? Math.sin(Math.PI*o) : 0; p.orizPrec=o;      // sta tornando verticale: remata di freno
   if(o>0.02) p.phase+=dt*(3.2+sp*1.9);
   const bob=Math.sin(t*2.2+p.uid)*0.02, eg=t*5.5+p.uid;
@@ -224,7 +224,7 @@ export function updateRig(p,dt,t){
   const segui=(k,tau,max)=>{ let d=S[k]-ry; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI;
     if(Math.abs(d)>2.2) d=0;                                   // spostamento improvviso (ripresa del gioco): niente piega
     d*=Math.exp(-dt/tau); d=clamp(d,-max,max); S[k]=ry+d; return d; };
-  const disteso=p.excluded?0:(p.oriz||0), forza=0.45+0.55*clamp(Math.hypot(p.vx,p.vz)/1.4,0,1);
+  const disteso=p.excluded&&p.alPozzetto?0:(p.oriz||0), forza=0.45+0.55*clamp(Math.hypot(p.vx,p.vz)/1.4,0,1);
   const dPet=segui('petto',0.07,0.3), dBac=segui('bacino',0.17+0.05*disteso,0.42+0.3*disteso), dGam=segui('gambe',0.3+0.1*disteso,0.6+0.5*disteso);
   p.piega={ petto:dPet*forza, bacino:dBac*forza, gambe:dGam*forza };
   p.curva=clamp(dBac*forza/0.5,-1,1);                          // > 0 = sta girando a destra

@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.32.0",
+  "version": "0.33.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -27,6 +27,7 @@
     "sezione3": "node tests/sezione3.mjs",
     "sezione4": "node tests/sezione4.mjs",
     "sezione5": "node tests/sezione5.mjs",
+    "sezione6": "node tests/sezione6.mjs",
     "mani": "node tests/mani.mjs",
     "dati-tesi": "node tests/dati-tesi.mjs",
     "bilancio": "node tests/bilancio.mjs",

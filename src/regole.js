@@ -3,6 +3,7 @@ import { chiLasciare, passaAZona, scegliDifesa, setteControSei } from './ia.js';
 import { elevazione } from './tiri.js';
 import { riservaPer, vesti } from './giocatori.js';
 import { annullaCambio } from './panchina.js';
+import { sceltaRientro } from './pozzetto.js';
 import { registraEspulsione, registraFallo, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
 import { whistle } from './audio.js';
 import { autoSwitch, resetTap } from './controllo.js';
@@ -51,7 +52,7 @@ export function giveBall(p){
     game.possTeam=p.team; game.shot=SHOT_CLOCK;
     game.passaggi=0; game.cambiLato=0;      // passaggi e cambi di lato di questa azione (per le statistiche)
     for(const q of allPlayers) q.cut=null;
-    for(const q of p.team.players) if(q.excluded) reenter(q);          // art. 9.3c
+    for(const q of p.team.players) if(q.excluded){ if(q.alPozzetto) reenter(q); else q.puoRientrare=true; }      // art. 9.3c: rientra dal pozzetto (appena ci arriva)
     game.possT=game.time;
     // le squadre guidate dal computer scelgono lo schema a ogni cambio di possesso
     const att=p.team, dif=other(att);
@@ -67,10 +68,11 @@ export function giveBall(p){
   if(p.team!==teams[0]) autoSwitch(p);
 }
 export function reenter(p,keepPos){
-  p.excluded=false;
+  p.excluded=false; p.alPozzetto=false; p.puoRientrare=false;
   if(p.pf>=3) substitute(p);
-  if(!keepPos){ p.x=ownGoalX(p.team)+p.team.dir*0.8; p.z=-HW+0.5; p.vx=p.vz=0; }
+  if(!keepPos){ p.x=ownGoalX(p.team)+p.team.dir*0.8; p.z=-HW+0.5; p.vx=p.vz=0; }      // dal pozzetto, appena dentro il campo
   p.lagX=p.x; p.lagZ=p.z;
+  sceltaRientro(p);
 }
 export function substitute(p){   // terzo fallo personale: entra un cambio dalla panchina (art. 16.2)
   const t=p.team, g=riservaPer(p); t.subs++;
@@ -186,8 +188,9 @@ export function exclude(d,c,motivo,origine){      // c e motivo: solo per la not
   whistle(0.5); d.pf++; rumble(220,0.8); registraEspulsione(d,origine);
   // tre espulsioni subite in due minuti: time-out per ridare calma e attenzione in marcatura
   { const T=d.team; T.espulsioniT=(T.espulsioniT||[]).filter(x=>game.time-x<120); T.espulsioniT.push(game.time); if(T.espulsioniT.length>=3){ T.vuoleTimeout=true; T.espulsioniT=[]; } }
-  d.excluded=true; d.exclUntil=game.time+EXCL_TIME; d.vx=d.vz=0; d.charging=false; d.cut=null;
-  d.x=ownGoalX(d.team)+d.team.dir*0.6; d.z=-HW-1.0;
+  // l'espulso non sparisce: nuota fino al pozzetto (angolo lontano dalla giuria, vicino alla propria porta) mentre si gioca;
+  // rientra solo da lì (pozzetto.js)
+  d.excluded=true; d.exclUntil=game.time+EXCL_TIME; d.charging=false; d.cut=null; d.act=null; d.alPozzetto=false; d.puoRientrare=false; d.valutatoPozzetto=false;
   { const inCampo=t=>t.players.filter(q=>!q.excluded&&!q.isGK).length, a=inCampo(other(d.team)), b=inCampo(d.team);
     annuncia('espulsione','Espulsione',{p:d,dettaglio:[c?`fallo su ${c.team.short} #${c.num}`:motivo||'', a>b?`${other(d.team).short} in superiorità ${a} c ${b}`:'',
       d.pf>=3?'3° fallo grave: definitiva':`${EXCL_TIME}"`].filter(Boolean).join(' · ')}); }

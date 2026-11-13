@@ -13,6 +13,7 @@ import { difensoriDavanti } from './statistiche.js';
 import { allPlayers, ball, ctrl, game, goalX, other, setCtrl, teams } from './stato.js';
 import { doShoot, startAct, updateActs } from './tiri.js';
 import { aggiornaPanchina, obiettivoUscita } from './panchina.js';
+import { obiettivoEspulso, obiettivoRientro, recuperoPozzetto } from './pozzetto.js';
 export const CONTR_AI={ ritmo:1.5, insiste:2.0, fallo:0.2, indisciplina:0.4 };      // contrasto del computer (sezione 2)
 export function update(dt){
   pollInput();
@@ -61,7 +62,13 @@ export function update(dt){
   if(game.possTeam && !ball.afterShot) game.shot-=dt;     // dopo un tiro respinto il cronometro riparte solo quando qualcuno riprende palla
   if(pressed('to')) { timeout(teams[0]); if(game.state!=='play') return; }
   // rientro espulsi
-  for(const p of allPlayers) if(p.excluded && game.time>=p.exclUntil){ reenter(p); annuncia('info','Rientro',{p,dettaglio:'fine espulsione'}); }
+  // espulsi: nuotano al pozzetto, lì recuperano; rientrano solo dal pozzetto (fine del tempo o palla riconquistata)
+  for(const p of allPlayers) if(p.excluded){
+    const o=obiettivoEspulso(p);
+    if(o){ const dx=o.x-p.x, dz=o.z-p.z, d=Math.hypot(dx,dz)||1; movePlayer(p,dx/d,dz/d,o.sprint,dt); }
+    else { movePlayer(p,0,0,false,dt); p.fx=0; p.fz=1; recuperoPozzetto(p,dt); }
+    if(p.alPozzetto && (game.time>=p.exclUntil || p.puoRientrare)){ const presto=game.time<p.exclUntil; reenter(p); annuncia('info','Rientro',{p,dettaglio:presto?'palla riconquistata':'fine espulsione'}); }
+  }
   // ritardo di reazione dei marcatori
   for(const p of allPlayers){
     if(p.excluded||game.time<p.stunUntil) continue;      // chi ha abboccato a una finta resta indietro
@@ -103,6 +110,7 @@ export function update(dt){
     else tg=aiTarget(p);
     if(ball.holder===p && p.team.human && p!==ctrl){ aiCarrier(p,dt); tg=p.target; }
     if(p.uscendo && ball.holder!==p) tg=obiettivoUscita(p);      // cambio volante: va alla zona dei cambi
+    { const r=obiettivoRientro(p); if(r) tg=r; }      // appena rientrato dal pozzetto: controfuga o difesa sul portatore
     if(!tg){ movePlayer(p,0,0,false,dt); continue; }
     const dx=tg.x-p.x, dz=tg.z-p.z, d=Math.hypot(dx,dz);
     let mx=0,mz=0; if(d>0.12){ const s=Math.min(1,d/0.8); mx=dx/d*s; mz=dz/d*s; }

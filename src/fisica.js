@@ -65,7 +65,8 @@ export function movePlayer(p,dx,dz,sprint,dt){
   if(p.contactT>0) p.stamina-=dt*0.02;
   p.stamina=clamp(p.stamina,0,1);
   p.x+=p.vx*dt; p.z+=p.vz*dt;
-  p.x=clamp(p.x,-HL+0.25,HL-0.25); p.z=clamp(p.z,-HW+0.25,HW-0.25);
+  // l'espulso nuota fino al pozzetto, fuori dal campo di gioco (sezione 6): può uscire dalle corde fino al bordo della vasca
+  if(p.excluded){ p.x=clamp(p.x,-HL-1,HL+1); p.z=clamp(p.z,-HW-1.6,HW-0.25); } else { p.x=clamp(p.x,-HL+0.25,HL-0.25); p.z=clamp(p.z,-HW+0.25,HW-0.25); }
   if(p.isGK && !setteControSei(p.team)){ const og=ownGoalX(p.team); p.x = p.team.dir>0 ? clamp(p.x,og+0.3,0) : clamp(p.x,0,og-0.3); }      // il portiere resta nella sua metà, tranne nel 7 contro 6
   let tfx=p.fx, tfz=p.fz;
   if(p.act&&p.act.aim){ tfx=p.act.aim[0]-p.x; tfz=p.act.aim[1]-p.z; }
