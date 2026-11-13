@@ -11,6 +11,12 @@ import { closestTo } from './ia.js';
 import { rumble } from './input.js';
 import { allPlayers, ball, ctrl, game, goalX, other, ownGoalX, setCtrl, teams } from './stato.js';
 export function deadBall(t,fn){ game.state='stop'; game.timer=t; game.after=fn||null; }
+// gioco fermo per palla fuori: se la palla si sta ancora muovendo (tiro fuori, deviazione del portiere, rimbalzo sul palo)
+// continua il suo volo con la fisica vera finché non riparte il gioco, così si vede uscire; se è quasi ferma, si ferma
+function fermaOVola(){
+  ball.state='dead'; ball.inUscita=Math.hypot(ball.vx,ball.vy,ball.vz)>1.5;
+  if(!ball.inUscita){ ball.vx=ball.vy=ball.vz=0; }
+}
 export function kickoff(){
   // sprint d'inizio tempo: tutti sulla propria linea di porta, palla a metà campo
   for(const t of teams) for(const p of t.players){
@@ -18,7 +24,7 @@ export function kickoff(){
     p.excluded=false; p.vx=p.vz=0; p.charging=false; p.cut=null; p.act=null;
     p.x=ownGoalX(t)+t.dir*(p.isGK?0.6:0.3); p.z=KICK_Z[p.i]*t.dir; p.fx=t.dir; p.fz=0;
   }
-  ball.state='free'; ball.holder=null; ball.x=0; ball.z=0; ball.y=BRV; ball.vx=ball.vy=ball.vz=0; ball.pickupCD=0; ball.lastTeam=null;
+  ball.state='free'; ball.inUscita=false; ball.holder=null; ball.x=0; ball.z=0; ball.y=BRV; ball.vx=ball.vy=ball.vz=0; ball.pickupCD=0; ball.lastTeam=null;
   game.possTeam=null; game.shot=SHOT_CLOCK; game.penalty=null;
   setCtrl(teams[0].players[6]);
   game.state='countdown'; game.timer=3;
@@ -34,7 +40,7 @@ export function placeHalves(){
 }
 export function giveBall(p){
   const changed = game.possTeam!==p.team, daPassaggio = ball.kind==='pass' && ball.state==='flight' && !changed;
-  ball.state='held'; ball.holder=p; ball.holdTime=0; ball.kind=null; ball.target=null; ball.lastTeam=p.team;
+  ball.state='held'; ball.inUscita=false; ball.toccoDifesa=null; ball.ignora=null; ball.holder=p; ball.holdTime=0; ball.kind=null; ball.target=null; ball.lastTeam=p.team;
   // quando e come è arrivata la palla: un tiro subito dopo un passaggio che ha cambiato lato trova il portiere fuori posto
   p.ricevutoT=game.time; p.ricevutoCambio=!!ball.cambioLato; p.ricevutoPassaggio=daPassaggio; if(!daPassaggio) p.ricevutoCambio=false;
   p.decideT=0.4+rnd()*0.4; p.alVolo=rnd()<(ball.cambioLato?0.8:0.4); ball.cambioLato=false; p.cut=null; p.act=null; p.fakeCount=0; p.fakeUsed=false; p.shootNext=false; p.fakeUntil=0;
@@ -73,8 +79,8 @@ export function substitute(p){   // terzo fallo personale: entra un cambio dalla
 export function cornerThrow(att){   // art. 13
   whistle(0.25); annuncia('ripresa',"Tiro d'angolo",{squadra:att});
   const side=ball.z>=0?1:-1;
-  ball.state='dead'; ball.vx=ball.vy=ball.vz=0; ball.y=BRV; ball.afterShot=false;
-  deadBall(1.1,()=>{
+  fermaOVola(); ball.afterShot=false;
+  deadBall(ball.inUscita?1.4:1.1,()=>{
     const wi = side*att.dir>0 ? 2 : 3;
     const w = att.players.find(q=>!q.excluded&&q.i===wi) || closestTo(att,ball);
     w.x=goalX(att)-att.dir*2; w.z=side*(HW-0.5); w.vx=w.vz=0;
@@ -110,8 +116,17 @@ export function setupPenalty(t){    // tiro dai 5 metri; tutti gli altri sulla l
 export function sideOut(){        // art. 12: palla uscita lateralmente, tiro libero agli avversari di chi l'ha toccata per ultimo
   const t = ball.lastTeam ? other(ball.lastTeam) : teams[0], side=ball.z>=0?1:-1, x=clamp(ball.x,-HL+1,HL-1);
   whistle(0.22); annuncia('ripresa','Palla fuori',{squadra:t,dettaglio:`rimessa ${t.short}`});
-  ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.x=x; ball.z=side*(HW-0.3); ball.y=BRV; ball.afterShot=false;
-  deadBall(0.9,()=>{ const r=closestTo(t,ball)||t.players[6]; r.x=x; r.z=side*(HW-0.7); r.vx=r.vz=0; giveBall(r); r.freeThrow=true; });
+  ball.holder=null; fermaOVola(); if(!ball.inUscita){ ball.x=x; ball.z=side*(HW-0.3); ball.y=BRV; } ball.afterShot=false;
+  deadBall(ball.inUscita?1.3:0.9,()=>{ const r=closestTo(t,ball)||t.players[6]; r.x=x; r.z=side*(HW-0.7); r.vx=r.vz=0; giveBall(r); r.freeThrow=true; });
+}
+// Sfondamento (fallo in attacco, art. 8): chi ha la palla nuota dritto addosso a un difensore fermo o che arretra.
+// Come lo sfondamento del basket: palla alla difesa, tiro libero dal punto del contatto.
+export function sfondamento(c,d){
+  whistle(0.22); registraFallo(c.team);
+  annuncia('fallo','Fallo in attacco',{p:c,dettaglio:'nuota addosso al difensore'});
+  c.stunUntil=game.time+0.6; c.vx*=0.2; c.vz*=0.2;
+  ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.y=BRV; ball.x=c.x; ball.z=c.z;
+  deadBall(0.9,()=>{ if(d.excluded) d=closestTo(d.team,ball); giveBall(d); d.freeThrow=true; });
 }
 export function areaFoul(q){      // art. 8.2.8: attaccante nell'area di porta davanti alla linea della palla
   const def=other(q.team);
@@ -161,8 +176,8 @@ export function goalScored(t){
 }
 export function goalThrow(defTeam,text){
   whistle(0.25); annuncia('ripresa',text||'Rimessa dal portiere',{squadra:defTeam});
-  ball.state='dead'; ball.vx=ball.vy=ball.vz=0; ball.y=BRV; ball.x=clamp(ball.x,-HL-0.5,HL+0.5);
-  deadBall(1.0,()=>{ giveBall(defTeam.players[0]); });
+  fermaOVola(); if(!ball.inUscita){ ball.y=BRV; ball.x=clamp(ball.x,-HL-0.5,HL+0.5); }
+  deadBall(ball.inUscita?1.4:1.0,()=>{ giveBall(defTeam.players[0]); });
 }
 export function exclude(d,c,motivo){      // c (chi ha subito il fallo) e motivo: solo per la notifica
   whistle(0.5); d.pf++; rumble(220,0.8); registraEspulsione(d);

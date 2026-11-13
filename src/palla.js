@@ -46,7 +46,7 @@ for(const s of [1,-1]){
 
 // ---------- bordi della vasca (passo 5): la palla vagante rimbalza sulle pareti invece di uscire dalla piscina ----------
 for(const [x,z,lx,lz] of [[0,P.vascaZ+0.15,P.vascaX,0.15],[0,-P.vascaZ-0.15,P.vascaX,0.15],[P.vascaX+0.15,0,0.15,P.vascaZ],[-P.vascaX-0.15,0,0.15,P.vascaZ]])
-  fisso(RAPIER.ColliderDesc.cuboid(lx,0.5,lz).setTranslation(x,0,z).setRestitution(P.rimbalzoBordo).setFriction(0.3),'bordo');
+  fisso(RAPIER.ColliderDesc.cuboid(lx,3,lz).setTranslation(x,2,z).setRestitution(P.rimbalzoBordo).setFriction(0.3),'bordo');      // alte 5 m sopra l'acqua: la palla non vola oltre il bordo e non sparisce
 
 // ---------- corpi dei giocatori: testa e spalle fuori dall'acqua fanno rimbalzare la palla vagante ----------
 const corpi=[];

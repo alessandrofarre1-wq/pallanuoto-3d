@@ -5,7 +5,7 @@ import { closestTo, pallaVagante, startCut } from './ia.js';
 import { inp, pressed, released } from './input.js';
 import { fightOn, girata } from './lotta.js';
 import { doFake, tackle } from './regole.js';
-import { ball, ctrl, fight, game, goalX, setCtrl, teams } from './stato.js';
+import { ball, ctrl, fight, game, goalX, ownGoalX, setCtrl, teams } from './stato.js';
 import { diSchiena, doPass, doShoot, humanPassTarget, shotKind, startAct } from './tiri.js';
 export let tapT=-9, pendingQuick=null;   // doppio tocco = finta, tocco singolo = tiro rapido
 export function resetTap(){ tapT=-9; pendingQuick=null; }
@@ -13,12 +13,24 @@ export function autoSwitch(pt){
   const c=closestTo(teams[0],pt);
   if(c) setCtrl(c);
 }
+// CAMBIA: il controllo passa sempre al compagno più vicino alla palla, escluso quello già controllato, il portiere e chi è
+// fuori dal gioco (espulso). Si gestisce qui, a ogni fotogramma, così funziona anche se il giocatore controllato sta facendo
+// un gesto o è rimasto indietro dopo una finta. A parità di distanza vince il più vicino alla propria porta.
+// Dopo un cambio a mano il cambio automatico sulla palla vagante aspetta 1,5 s, altrimenti annullerebbe la scelta.
+let cambioManualeT=-9;
+export function piuVicinoAllaPalla(t,escluso){
+  let best=null,bd=1e9;
+  for(const m of t.players){ if(m===escluso||m.excluded||m.isGK) continue; const d=dist(m,ball);
+    if(d<bd-1e-6||(Math.abs(d-bd)<=1e-6&&best&&Math.abs(m.x-ownGoalX(t))<Math.abs(best.x-ownGoalX(t)))){ bd=d; best=m; } }
+  return best;
+}
 export function updateCtrl(){
   if(game.autoplay) return;
   const ht=teams[0];
   if(ball.holder&&ball.holder.team===ht){ setCtrl(ball.holder); return; }
+  if(pressed('sw')){ const best=piuVicinoAllaPalla(ht,ctrl); if(best){ setCtrl(best); cambioManualeT=game.time; return; } }
   if(ctrl.excluded) autoSwitch(ball);
-  if(ball.state==='free'&&ctrl!==closestTo(ht,ball)&&dist(ctrl,ball)>3) autoSwitch(ball);
+  if(ball.state==='free'&&game.time-cambioManualeT>1.5&&ctrl!==closestTo(ht,ball)&&dist(ctrl,ball)>3) autoSwitch(ball);
 }
 export function humanControl(p,dt){
   const hasBall = ball.holder===p;
@@ -36,11 +48,6 @@ export function humanControl(p,dt){
       for(const m of p.team.players){ if(m===p||m.excluded||m.isGK||MARK[m.i]===ball.holder.i) continue; const d=dist(m,ball.holder); if(d<bd){bd=d;b=m;} }
       if(b){ p.team.doubleP=b; p.team.doubleUntil=game.time+3.5; annuncia('avviso','Raddoppio!'); }
     }
-  }
-  if(pressed('sw') && !hasBall){
-    let best=null,bd=1e9;
-    for(const m of p.team.players){ if(m===p||m.excluded||m.isGK) continue; const d=dist(m,ball); if(d<bd){bd=d;best=m;} }
-    if(best){ setCtrl(best); return; }
   }
   if(hasBall){
     const aimZ=Math.abs(inp.z)>0.3?inp.z:null;
