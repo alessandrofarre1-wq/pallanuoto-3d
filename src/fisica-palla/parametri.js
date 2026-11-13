@@ -32,7 +32,7 @@ export const IN_USO = {
   frenoVert:       { valore: 7,      unita: '1/s',   tipo: 'da calibrare', fonte: 'nessuna' },
   frenoRot:        { valore: 3,      unita: '1/s',   tipo: 'da calibrare', fonte: 'Truscott e Techet 2009: la rotazione si spegne in circa 0,3 s sott\'acqua (palla da biliardo)' },
   schizzoVelMin:   { valore: 8.5,    unita: 'm/s',   tipo: 'da calibrare', fonte: 'nessuna' },
-  schizzoAngMax:   { valore: 21,     unita: '°',     tipo: 'da calibrare', fonte: 'nessuna; de Mestre misura un rimbalzo a 30°' },
+  schizzoAngMax:   { valore: 21,     unita: '°',     tipo: 'da calibrare', fonte: 'nessuna; de Mestre misura un rimbalzo a 30°; θc = 18°/√SG (Johnson e Reid 1975, Hurd 2019, Lyu 2021) darebbe circa 66° per SG 0,075, fuori dal campo verificato' },
   schizzoVert:     { valore: 0.55,   unita: '-',     tipo: 'da calibrare', fonte: 'nessuna' },
   schizzoOrizz:    { valore: 0.84,   unita: '-',     tipo: 'da calibrare', fonte: 'nessuna' },
   schizzoRot:      { valore: 0.5,    unita: '-',     tipo: 'da calibrare', fonte: 'nessuna' },
@@ -61,6 +61,7 @@ export const PROPOSTI = {
   cMagnus:      { valore: 0.75,   unita: '-',      tipo: 'da calibrare', fonte: 'CL = c·S (Bearman e Harvey, citati da Truscott e Techet)', intervallo: [0.5, 1] },
   cdAcqua:      { valore: 0.47,   unita: '-',      tipo: 'letteratura',  fonte: 'de Mestre 2004; 0,4 per sfera immersa (Truscott e Techet, Mayme e Mungan)', intervallo: [0.4, 0.5] },
   clSuCdAcqua:  { valore: 2,      unita: '-',      tipo: 'da calibrare', fonte: 'de Mestre 2004, tabella 1', intervallo: [1, 2.4] },
+  // forma alternativa della spinta dell'acqua da confrontare in calibrazione: F = ½ ρw |U|² Sw sin(α + β) (Rosellini; Belden 2016; Hurd 2019)
   massaAggiunta:{ valore: 0.5,    unita: '-',      tipo: 'da calibrare', fonte: 'Truscott e Techet 2009', intervallo: [0.2, 0.5] },
   tempoRotAcqua:{ valore: 0.3,    unita: 's',      tipo: 'letteratura',  fonte: 'Truscott e Techet 2009 (palla da biliardo, S > 0,5)', intervallo: [0.2, 0.4] },
   passo:        { valore: 1 / 240, unita: 's',     tipo: 'derivato',     fonte: 'stabilità del calcolo all\'impatto' },

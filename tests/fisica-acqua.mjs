@@ -114,6 +114,13 @@ const impatto = (v, gradi, w = 0) => { const a = gradi * Math.PI / 180, vx = v *
   riga(10, 'Palla sott\'acqua che risale', `sale fino a ${f(su, 3)} m (centro), ${su - r > 0 ? `salta ${f((su - r) * 100, 1)} cm fuori` : 'non esce dall\'acqua'}, ferma dopo ${f(ferma, 2)} s a ${f(s.B.y, 3)} m`, 'torna in superficie, salta fuori al massimo di qualche centimetro, si ferma al galleggiamento', ferma != null && su - r < 0.05);
   disegni.push({ n: 10, nome: 'Risale da −0,3 m', s, asse: 't' }); }
 
+// 11. energia persa e angolo d'impatto (Lyu, Yun e Wei 2021: l'energia persa cresce con l'angolo; sfera d'acciaio, solo la forma)
+{ const angoli = [5, 10, 20, 30, 45], perse = angoli.map(g => { const s = segui(impatto(14, g), 1.2), pc = s.primoContatto, u = s.uscita;
+    if (!pc || !u) return null; const prima = pc.vOrizz ** 2 + pc.vVert ** 2, dopo = u.vOrizz ** 2 + u.vVert ** 2; return 1 - dopo / prima; });
+  const cresce = perse.every((x, i) => x != null && (i === 0 || x >= perse[i - 1]));
+  riga(11, "Energia persa e angolo (14 m/s)", angoli.map((g, i) => `${g}°: ${perse[i] == null ? 'non esce' : f(perse[i] * 100, 0) + '%'}`).join(', '),
+    "l'energia persa cresce con l'angolo (Lyu 2021, forma; θc = 18°/√SG)", cresce); }
+
 // ---------- controlli generali ----------
 // stesso passo ripetuto due volte = stessi numeri; scarto tra 30, 60 e 120 passi al secondo
 { const a = segui(impatto(18, 10), 1.5), b = segui(impatto(18, 10), 1.5);

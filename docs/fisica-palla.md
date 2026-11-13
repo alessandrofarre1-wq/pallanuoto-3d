@@ -3,7 +3,7 @@
 Rapporto completo (fonti, controllo della fisica attuale, modello matematico, parametri, test, rischi):
 https://claude.ai/artifact/4H7yZMi99DmYJVPEvsKeWp (13 novembre 2026). Qui il riassunto che serve per lavorare.
 
-## Fonti lette (8 su 12)
+## Fonti lette (12 su 12; ScienceDirect solo anteprima)
 - **World Aquatics, Competition Regulations 2025, art. 20.4.3**: massa 400–450 g; circonferenza 0,68–0,71 m (raggio 0,108–0,113 m); pressione **7,5–8,5 psi (circa 52–59 kPa)** per gli uomini.
 - **de Mestre 2004, «Bouncing a water polo ball»** (atti 7M&CS, p. 143): la base del modello. Palla a = 0,11 m, m = 0,425 kg.
   - Galleggia con 3,7 cm sott'acqua (calotta sferica, verificato in vasca).
@@ -16,7 +16,12 @@ https://claude.ai/artifact/4H7yZMi99DmYJVPEvsKeWp (13 novembre 2026). Qui il ria
 - **NASA, Drag of a sphere** e **Mayme e Mungan 2025**: un tiro a 20 m/s è nella zona del crollo della resistenza (Reynolds ≈ 2,9·10⁵), quindi il Cd in aria è incerto (0,3–0,47).
 - **Gabor et al. 2023** (PMC10142048): solo superficie della palla. ATTENZIONE: la pressione 90–97 kPa che riporta è sbagliata (vale il regolamento).
 - **Rapier**, documentazione JavaScript: forze, impulsi, massa e inerzia esplicite, smorzamento, CCD.
-- Bloccate dalla lettura automatica (non aggirate): MDPI 2026, Springer 2021, Scientific Reports 2019, ScienceDirect 2022. Ale le sta recuperando.
+- Mandate da Ale come PDF (13/11/2026; i siti bloccavano la lettura automatica):
+  - **Hurd et al. 2019** (Sci. Rep.): angolo critico **θc = 18°/√SG** (de Jonquières 1883); forza dell'acqua F = ½ ρw |U|² Sw sin(α + β) (Rosellini, Belden); «water walking» solo per sfere morbide (G/ρwU² < 0,02, β < 20°): non riguarda la palla gonfia (stima 0,14 a 20 m/s).
+  - **Lyu, Yun e Wei 2021** (J. Marine Sci. Appl.): sfera d'acciaio da 7 mm a 57–59 m/s; confine v1 = 17,5·θ1 − 45,5; angolo massimo 6,5° (conferma θc = 18°/√SG); energia persa che cresce con l'angolo, oltre metà sopra 3°. Solo la forma vale per noi.
+  - **Gabor et al. 2026** (Appl. Sci. 16, 6686): angolo di contatto molto diverso tra marche (Malmsten 135–155°, Mikasa Test Ball 111°, Mikasa 47–67° lungo i solchi, Kap 7 circa 58°). Niente rimbalzi né peso dell'acqua: solo ipotesi qualitative (i solchi rendono più casuale la palla dopo lo schizzo).
+  - **Zhang, Ren e Zhao 2022** (Ocean Eng.): solo anteprima (testo a pagamento). La rotazione dà effetto Magnus anche nello schizzo; nessun numero.
+- Per la palla da pallanuoto (SG 0,075) la formula darebbe θc ≈ 66°, ma è fuori dal campo verificato: conta il comportamento del modello di de Mestre, controllato con i test.
 
 ## Piano approvato (13 novembre 2026, «vai avanti»)
 1. **FATTO** — Strumenti senza cambiare il gioco (sotto).
@@ -28,7 +33,7 @@ https://claude.ai/artifact/4H7yZMi99DmYJVPEvsKeWp (13 novembre 2026). Qui il ria
 - `src/fisica-palla/parametri.js`: tutti i numeri della palla con unità, fonte, intervallo e tipo (misurato / derivato / letteratura / da calibrare). `IN_USO` = valori di oggi (letti da `palla.js` e `tiri.js`), `PROPOSTI` = nuovo modello, non ancora usati.
 - `diagnosi` ed `energia` in `palla.js`: solo lettura (altezza, immersione e volume immerso, forze, freni, ultimo impatto con angolo ed energia prima/dopo).
 - Pannello `?fisica` nell'indirizzo (`src/fisica-palla/pannello.js`), immagine `docs/immagini/pannello-fisica.png`.
-- `npm run fisica-acqua` (`tests/fisica-acqua.mjs`, in Node senza browser, anche nei controlli automatici): i 10 scenari del rapporto con i riferimenti, traiettorie in `tests/screenshot/fisica-acqua.svg`. Fallisce solo per comportamenti impossibili (numeri non validi, palla che attraversa palo o traversa, energia che cresce in aria, due giri uguali con risultati diversi).
+- `npm run fisica-acqua` (`tests/fisica-acqua.mjs`, in Node senza browser, anche nei controlli automatici): gli 11 scenari del rapporto con i riferimenti, traiettorie in `tests/screenshot/fisica-acqua.svg`. Fallisce solo per comportamenti impossibili (numeri non validi, palla che attraversa palo o traversa, energia che cresce in aria, due giri uguali con risultati diversi).
 - Partita simulata identica (`npm run aspetto -- --confronta=`), `fisica-palla` e `dati-tesi` superati.
 
 ## La palla di oggi misurata (passo 1)
@@ -44,5 +49,6 @@ https://claude.ai/artifact/4H7yZMi99DmYJVPEvsKeWp (13 novembre 2026). Qui il ria
 | 8. Con rotazione | la rotazione non cambia l'uscita | in avanti > nessuna > indietro |
 | 9. Palo | 31% dell'energia (atteso 37%), 0 attraversamenti su 1000 | rimbalzo² ± 5% |
 | 10. Risale da −0,3 m | non esce, ferma dopo 1,3 s | risale e si ferma ✓ |
+| 11. Energia persa e angolo (14 m/s) | 5°: 31%, 10°: 32%, da 20° non esce più | cresce con l'angolo (Lyu 2021) |
 - Scarto tra 30, 60 e 120 passi al secondo: 0,7%.
 - Trovato: a palla ferma in acqua la velocità verticale segnata resta 0,06 m/s (gravità di Rapier e galleggiamento si alternano a ogni passo); la palla però non si muove.

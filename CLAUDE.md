@@ -98,9 +98,9 @@ Cose da NON copiare: è un pre-alpha senza interfaccia, senza avversari visibili
 
 ## Fisica della palla con l'acqua (piano approvato il 13 novembre 2026)
 - Rapporto e riassunto in `docs/fisica-palla.md` (fonti, modello, piano in 7 passi, misure della palla di oggi). Base scientifica: de Mestre 2004 (palla da pallanuoto in acqua); pressione della palla 7,5–8,5 psi (regolamento 2025, NON 90–97 kPa).
-- Passo 1 FATTO (nessun cambiamento di gioco): parametri in `src/fisica-palla/parametri.js` (unità, fonte, intervallo, tipo; `IN_USO` e `PROPOSTI`), `diagnosi`/`energia` in `palla.js`, pannello `?fisica`, `npm run fisica-acqua` (10 scenari, in Node). Ogni nuovo numero della palla va in `parametri.js` con la sua fonte, mai scritto direttamente nel codice.
+- Passo 1 FATTO (nessun cambiamento di gioco): parametri in `src/fisica-palla/parametri.js` (unità, fonte, intervallo, tipo; `IN_USO` e `PROPOSTI`), `diagnosi`/`energia` in `palla.js`, pannello `?fisica`, `npm run fisica-acqua` (11 scenari, in Node). Ogni nuovo numero della palla va in `parametri.js` con la sua fonte, mai scritto direttamente nel codice.
 - Passi 2-7 da fare uno alla volta, con la prova di Ale. Dal passo 2 le partite di prova cambiano (nuovo riferimento in una PR chiara).
-- Ale preferisce cercare video su YouTube invece di filmare. Da qui YouTube non si scarica (sito non abilitato e controllo anti-robot, da non aggirare): chiedere link + secondo, screenshot o registrazioni dello schermo.
+- Ale preferisce cercare video su YouTube invece di filmare. Le 4 fonti bloccate le ha mandate lui in PDF (13/11/2026): lette tutte (ScienceDirect solo anteprima). Da qui YouTube non si scarica (sito non abilitato e controllo anti-robot, da non aggirare): chiedere link + secondo, screenshot o registrazioni dello schermo.
 
 ## Fonti indicate da Ale
 - World Aquatics Competition Regulations, parte pallanuoto (feb 2026): https://www.worldaquatics.com/rules/competition-regulations
