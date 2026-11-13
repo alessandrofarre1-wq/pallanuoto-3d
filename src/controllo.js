@@ -4,7 +4,7 @@ import { annuncia } from './cronaca.js';
 import { closestTo, pallaVagante, startCut } from './ia.js';
 import { inp, pressed, released } from './input.js';
 import { fightOn, girata } from './lotta.js';
-import { doFake, tackle } from './regole.js';
+import { contrasto, doFake } from './regole.js';
 import { ball, ctrl, fight, game, goalX, ownGoalX, setCtrl, teams } from './stato.js';
 import { diSchiena, doPass, doShoot, humanPassTarget, shotKind, startAct } from './tiri.js';
 export let tapT=-9, pendingQuick=null;   // doppio tocco = finta, tocco singolo = tiro rapido
@@ -55,6 +55,10 @@ export function humanControl(p,dt){
     if(pressed('pass')){ pendingQuick=null; const m=humanPassTarget(p,inp.x,inp.z); if(m) startAct(p,'pass',0.05,()=>doPass(p,m),[m.x,m.z]); return; }
     if(ftBlock && (pressed('lob')||pressed('shoot'))){ annuncia('avviso','Tiro libero dentro i 6 metri',{dettaglio:'devi passare o uscire oltre i 6',durata:1.6}); return; }
     if(ftBlock){ p.charging=false; p.chargeT=0; pendingQuick=null; }
+    // sotto pressione non si tira: si passa o ci si allontana proteggendo la palla
+    if(p.pressatoUntil>game.time && !p.isGK){ p.charging=false; p.chargeT=0; p.voloPronto=false; pendingQuick=null;
+      if(pressed('shoot')||pressed('lob')) annuncia('avviso','Sotto pressione',{dettaglio:'proteggi la palla o passa',durata:0.9});
+      return; }
     if(pressed('lob')&&!p.isGK){ pendingQuick=null; startAct(p,'lob',0.12,()=>doShoot(p,0.4,true,aimZ)); return; }
     // tiro al volo: TIRO tenuto premuto mentre il passaggio era in volo → si tira appena arriva la palla
     if(p.voloPronto && inp.shoot && ball.holdTime<0.2 && !p.isGK && !ftBlock){ p.voloPronto=false; p.charging=false; p.chargeT=0; startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,aimZ,{volo:true})); return; }
@@ -80,19 +84,12 @@ export function humanControl(p,dt){
     const h=ball.holder;
     if(pressed('pass') && h && fightOn(p,h)){ p.aggrT=game.time+0.8; annuncia('avviso','Trattieni il centroboa…',{durata:0.7}); }
     else {
-      // CONTRASTO: un tocco = provare a rubare palla; tenuto premuto (un terzo di secondo) = fallo voluto per fermare l'azione
-      if(pressed('pass')) p.contrDa=game.time;
-      if(p.contrDa!=null){
-        const tenuto=inp.pass && game.time-p.contrDa>=0.33;
-        if(tenuto||released('pass')||!inp.pass){
-          p.contrDa=null;
-          if(h && h.team!==p.team && !h.isGK){
-            const d=dist(p,h);
-            if(d<=1.35){ if(tackle(p,h,{voluto:tenuto})===false) annuncia('avviso','Contrasto: aspetta un attimo',{durata:0.7}); }
-            else if(d<3.5){ p.lunge=game.time+1.3; p.lungeVoluto=tenuto; }      // slancio verso il portatore, il contrasto parte appena arriva
-            else annuncia('avviso','Troppo lontano',{durata:0.7});
-          }
-        }
+      // CONTRASTO a tre livelli (vedi contrasto in regole.js): 1-2 pressioni = disturbo, la terza ravvicinata = fallo
+      if(pressed('pass') && h && h.team!==p.team && !h.isGK){
+        const d=dist(p,h);
+        if(d<=1.35) contrasto(p,h);
+        else if(d<3.5){ p.lunge=game.time+1.3; }      // slancio verso il portatore: il disturbo parte appena arriva
+        else annuncia('avviso','Troppo lontano',{durata:0.7});
       }
     }
   }

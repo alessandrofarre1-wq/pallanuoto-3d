@@ -196,6 +196,7 @@ body.touch #touch{display:block}
 .tb.sec small{display:none}
 .tb.on{background:var(--h-oro);border-color:var(--h-oro);color:#0b1d33;transform:scale(.94)}
 .tb.on small{color:rgba(11,29,51,.7)}
+.tb.scatto{border-color:var(--h-oro);box-shadow:0 0 0 2px var(--h-oro)}      /* sprint a tocchi: acceso finché lo scatto dura */
 body.touch .tb[data-b="shoot"]{right:calc(16px + var(--sr));bottom:calc(66px + var(--sb))}
 body.touch .tb[data-b="pass"]{right:calc(88px + var(--sr));bottom:calc(14px + var(--sb))}
 body.touch .tb[data-b="sprint"]{right:calc(22px + var(--sr));bottom:calc(12px + var(--sb))}

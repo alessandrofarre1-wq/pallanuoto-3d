@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.28.0",
+  "version": "0.29.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -23,6 +23,7 @@
     "fisica-acqua": "node tests/fisica-acqua.mjs",
     "acqua-effetti": "node tests/acqua-effetti.mjs",
     "sezione1": "node tests/sezione1.mjs",
+    "sezione2": "node tests/sezione2.mjs",
     "dati-tesi": "node tests/dati-tesi.mjs",
     "bilancio": "node tests/bilancio.mjs",
     "statistiche": "node tests/statistiche.mjs",

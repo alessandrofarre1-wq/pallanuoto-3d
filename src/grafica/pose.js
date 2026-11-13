@@ -96,6 +96,7 @@ export function computePose(p,dt,t){
     hintR=[0,-0.3,1]; hintL=[0,-0.3,-1];
   }
   else if(p.isGK&&!hold&&vicinaGK>0.02){ hR=mix3(hR,add3(vSR,[0.15,0.05,0.42]),vicinaGK); hL=mix3(hL,add3(vSL,[0.15,0.05,-0.42]),vicinaGK); }      // palla vicina: braccia larghe a pelo d'acqua, pronte a uscire
+  else if(p.fintaC>game.time&&!hold){ hR=add3(vSR,[0.50,0.04,-0.04]); hintR=[0,-0.6,1]; }      // contrasto di disturbo: la mano parte verso la palla
   else if(muro||abbocca){ hR=add3(vSR,[0.20,0.56,-0.04]); hintR=[0,-0.2,1]; }
   else if(defUp){ hR=add3(vSR,[0.28,0.30,-0.02]); hintR=[0,-0.4,1]; }
   else if(hold&&!th){ hR=add3(vSR,HOLD); hintR=[-0.3,-0.6,1]; J.ballHand=true; }

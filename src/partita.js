@@ -8,7 +8,7 @@ import { aggiornaDifesa, pos01, rif01, aiCarrier, aiTarget, closestTo, manUp, st
 import { inp, pollInput, pressed, released } from './input.js';
 import { fightOn, updateFight } from './lotta.js';
 import { endMatch } from './menu.js';
-import { areaFoul, callPlay, deadBall, giveBall, kickoff, latoContrasto, pallaEsposta, reenter, tackle, timeout } from './regole.js';
+import { areaFoul, callPlay, contrasto, deadBall, giveBall, kickoff, latoContrasto, pallaEsposta, reenter, tackle, timeout } from './regole.js';
 import { difensoriDavanti } from './statistiche.js';
 import { allPlayers, ball, ctrl, game, goalX, other, setCtrl, teams } from './stato.js';
 import { doShoot, startAct, updateActs } from './tiri.js';
@@ -88,7 +88,7 @@ export function update(dt){
       const h=ball.holder;
       if(p.lunge>game.time && h && h.team!==p.team){
         const dx=h.x-p.x, dz=h.z-p.z, d=Math.hypot(dx,dz)||1;
-        if(d<=1.3){ p.lunge=0; tackle(p,h,{voluto:p.lungeVoluto}); if(game.state!=='play') return; }
+        if(d<=1.3){ p.lunge=0; contrasto(p,h); if(game.state!=='play') return; }
         movePlayer(p,dx/d,dz/d,true,dt);
       } else { p.lunge=0; const g=aiutoGuida(p,inp.x,inp.z); movePlayer(p,g[0],g[1],inp.sprint,dt); }
       continue;
@@ -121,12 +121,21 @@ export function update(dt){
         if(fuga && rnd()<dt*(1.2+1.2*(p.s.dif-40)/59)) tackle(p,c,{voluto:true});
         else {
           const voglia=(lato==='dietro'?0.25+0.9*(1-dis):1)*(palla==='alzata'?0.3+0.8*(1-dis):palla==='palleggio'?1.4:1);
-          if(rnd()<dt*1.5*voglia*(p.team.defPlay===2?1.2:1)) tackle(p,c);
+          // stessa regola del giocatore: disturbo a tocchi; il terzo tocco ravvicinato è fallo, e il computer insiste di rado
+          // (di più chi ha poca Disciplina)
+          const recenti=(p.colpi||[]).filter(t=>game.time-t<1.5).length;
+          if(rnd()<dt*1.5*voglia*(p.team.defPlay===2?1.2:1) && (recenti<2 || rnd()<0.08+0.35*(1-dis))) contrasto(p,c);
         }
       }
       if(game.state!=='play') return;
     }
   }
+  // chi è sotto pressione si gira a proteggere la palla: di spalle al difensore (corpo tra palla e avversario)
+  { const h=ball.holder;
+    if(h && h.pressatoUntil>game.time && h.pressatoDa && Math.hypot(h.vx,h.vz)<1.0){
+      const d=h.pressatoDa, ax=h.x-d.x, az=h.z-d.z, l=Math.hypot(ax,az)||1, k=Math.min(1,dt*6);
+      h.fx+=(ax/l-h.fx)*k; h.fz+=(az/l-h.fz)*k; const m=Math.hypot(h.fx,h.fz)||1; h.fx/=m; h.fz/=m;
+    } }
   separate();
   updateFight(dt);
   if(game.state!=='play') return;
