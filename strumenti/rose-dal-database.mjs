@@ -25,6 +25,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = process.argv[2];
 if (!src) { console.error('Uso: node strumenti/rose-dal-database.mjs <waterpolo.json>'); process.exit(1); }
 const DB = JSON.parse(fs.readFileSync(src, 'utf8'));
+// correzioni dei nomi indicate da Ale (nella fonte nome e cognome sono invertiti)
+const NOMI_CORRETTI = { 'KARLO Babic': 'BABIC Karlo' };
+for (const t of ['players', 'rosters', 'player_event_statistics']) for (const r of DB[t] || []) if (NOMI_CORRETTI[r.name]) r.name = NOMI_CORRETTI[r.name];
 const SQ = JSON.parse(fs.readFileSync(path.join(ROOT, 'src/dati/squadre.json'), 'utf8')).squadre;
 const CODICI = SQ.map(s => s.codice);
 const OGGI = new Date('2026-11-13');

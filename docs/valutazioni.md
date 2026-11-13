@@ -18,7 +18,7 @@ Fonte: `waterpolo_database` mandato da Ale (World Aquatics, Microplus, Omega): c
 6. **Età** e capitano come sotto (punto 5).
 7. **Mano**: dal database (13 mancini su 208; 26 sconosciute = destra). Correzioni in `src/dati/mancini.json` (chiave «ITA-7»).
 8. **Limiti** (dal README del database): sono osservazioni, non misure ufficiali di bravura; non ci sono velocità di nuoto o di tiro individuali né passaggi riusciti; dati dei club non collegati. Nel gioco sono STIME, correggibili.
-9. Nota sui dati: un giocatore croato risulta «KARLO Babic» (nome e cognome forse invertiti nella fonte): lasciato com'è, da verificare con Ale.
+9. Correzioni dei nomi (indicate da Ale) in `NOMI_CORRETTI` nello strumento: «KARLO Babic» della fonte è Karlo Babić (Croazia, n. 8).
 
 ---
 
