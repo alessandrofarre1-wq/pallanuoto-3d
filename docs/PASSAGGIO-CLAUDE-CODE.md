@@ -1,91 +1,60 @@
-# Passaggio a Claude Code — WATERPOLO 7
+# Passaggio a Claude Code — WATERPOLO 7 v0.40
 
-Consegna: [PR 34 — v0.39](https://github.com/alessandrofarre1-wq/pallanuoto-3d/pull/34), aperta il 14 novembre 2026. Non unita e non pubblicata durante questa sessione.
-
-## Prompt pronto da copiare
+La v0.40 implementa i tornei nel gioco. Il precedente passaggio v0.39, che li descriveva come proposte, è sostituito da questo documento.
 
 ```text
-Continua il progetto GitHub alessandrofarre1-wq/pallanuoto-3d per Ale.
-Leggi prima CLAUDE.md (soprattutto lo stato più recente), questo documento,
-docs/gameplay-prossimi-passi.md e docs/proposte/tornei-menu-arena.md.
-Non chiedere ad Ale di rispiegare il progetto o le richieste già documentate.
-La bozza home/torneo/pausa è conservata anche in
-docs/proposte/menu-concept.html, con tre anteprime PNG nella stessa cartella.
+Continua alessandrofarre1-wq/pallanuoto-3d per Ale. Leggi prima lo stato
+più recente in CLAUDE.md e docs/verifiche-v040.md. Controlla stato remoto,
+branch codex/v040-tornei-menu-gameplay e relativa PR prima di lavorare:
+potrebbe essere già stata unita. Non duplicare il lavoro e non pubblicare
+direttamente su main. Non chiedere ad Ale di rispiegare queste richieste.
 
-Prima di modificare file, controlla lo stato remoto e locale: la PR 33/v0.38
-è già stata unita a main. La consegna successiva è sul branch
-codex/v039-cambi-proposte-handoff, PR34; verifica se è aperta o già unita.
-Non duplicare le modifiche e non pubblicare direttamente su main.
+Già implementato nella v0.40:
+- Partita singola, Mondiali e Europei dalla nuova home.
+- Tornei: nazionale, sorteggio per fasce salvato, calendario, classifiche WA,
+  simulazioni delle altre gare, eliminazione e bronzo opzionale.
+- Mondiali: formula Singapore 2025, vincitrice in 6/7 gare; Europei: formula
+  Belgrado 2026, seconda fase con scontri fra qualificate riportati,
+  semifinali/finale senza quarti, vincitrice in 8 gare.
+- Otto nuove rose ufficiali (nomi/cuffie/ruoli generali/mano).
+  Forza, rating e assegnazione ai sette posti sono stime dichiarate.
+  Le sedici rose precedenti sono identiche; generatore riproducibile 24 rose.
+- Rigori finali giocabili nei tornei: cinque tiratori, anticipo, oltranza,
+  comando TIRO e fisica veri, gol separati dal risultato regolamentare.
+- Home/pausa/tattiche/centro torneo, coppe distinte, medaglie, cerimonia
+  illustrata saltabile e bacheca con percorsi persistenti.
+- Campagna salvata FRA le gare. Uscendo a metà gara la conferma avverte
+  che la gara ricomincia: NON c'è ripresa esatta della palla a metà azione.
+- Buffer passaggio/palombella negli ultimi 200 ms del gesto, destinatario
+  umano stabile, appoggi brevi dei compagni e AI rapida sui vantaggi reali.
+- Arena leggera: porte 3x0,90 m/pali 80 mm/rete profonda 0,80 m dal
+  riferimento di Ale, gradoni/pubblico/accessi/panchine/bordo e corde.
+  Il GLB originale resta conservato, non caricato nella partita.
 
-Priorità di Ale: il gameplay è macchinoso e non invoglia a rigiocare.
-Rivedere comandi, AI dei compagni senza palla e AI avversaria.
-Parti dalle cinque ipotesi nel piano gameplay, riproducile e misura.
-Proponi e realizza una prima iterazione circoscritta su risposta dei comandi
-e linee di passaggio offerte dai compagni; confronta prima/dopo con stessi
-semi e scene touch. Non cambiare tutta la simulazione in un colpo.
-Non promettere che il problema del divertimento sia risolto da test automatici.
+Vincoli invariabili di Ale:
+- Ogni PR aumenta la versione di 0.01 e aggiorna CLAUDE.md: cambiamenti,
+  file, numeri realmente misurati, cosa non è fatto. Segnala ogni decisione
+  precedente modificata.
+- iPhone SEMPRE meno di 100 chiamate e 150.000 triangoli, anche durante
+  due cambi simultanei. Nessuna deroga autorizzata.
+- Prima della PR: npm run lint, npm run verifica, npm run aspetto;
+  risultati effettivi nella descrizione, mai chiamare PASS una prova fallita.
+- Stile cartoon, camera unica, SPEED=1; sprint a tocchi è una decisione
+  di Ale, non cambiarlo di nascosto. Riflesso completo solo alta,
+  ombra dell'espulso presente, palla senza cerchio nero, tiro al rilascio.
+- CAMBI resta basso centro, fondo trasparente, area di tocco 44 px.
+- Prova cambi all'equilibrio con scene e semi ripetibili. I test automatici
+  non dimostrano piacere di gioco o 60 FPS su iPhone fisico.
 
-Fatto nella v0.39: CAMBI in basso al centro, fondo semitrasparente, area
-di tocco 44px; barra lotta al centroboa alzata per non sovrapporsi.
-La v0.39 NON implementa tornei, nuova home/pausa, arena o nuova AI:
-queste parti sono proposte documentate da discutere, con priorità al gameplay.
+Non rifare analisi già implementate come se fossero ancora da iniziare.
+Parti dai risultati in docs/verifiche-v040.md e dai feedback reali di Ale.
+Lavori successivi eventuali: bilanciamento dopo prova su iPhone, salvataggio
+preciso dentro la gara, cerimonia con corpi 3D, scelta manuale ordine dei
+rigoristi e portiere. Questi ultimi non sono già realizzati.
 
-Richieste e vincoli di Ale:
-- A ogni PR alza la versione di 0.01 e aggiorna CLAUDE.md con versione,
-  cambiamenti, file, numeri realmente misurati e ciò che non è fatto.
-- iPhone: strettamente meno di 100 oggetti/chiamate e meno di 150.000
-  triangoli, anche con due cambi simultanei. Ale ha rifiutato le deroghe.
-  Se una soluzione supera i limiti, correggila; non consegnarla come conforme.
-- Prima di aprire la PR esegui npm run lint, npm run verifica e
-  npm run aspetto. Scrivi esiti effettivi e limiti nella descrizione.
-  Non chiamare PASS una verifica fallita e non rigenerare screenshot alla cieca.
-- Segnala esplicitamente ogni decisione di CLAUDE.md che proponi di cambiare.
-- Mantieni ritmo unico SPEED=1 e camera televisiva unica: non ripristinare
-  le scelte lenta/media/veloce o vicina/normale/larga.
-- Riflesso completo solo in alta; ombra dell'espulso presente; palla senza
-  cerchio nero; carica MAX a 0,9 s, tiro al rilascio e gesti potenti/speciali.
-- Lo sprint a tocchi è una scelta precedente di Ale: una sua modifica va
-  dichiarata esplicitamente. Non confondere 'più giocabile' con SPEED più alto.
-- Gioco su iPhone in orizzontale; controlla Safari piccolo, safe area e comandi.
-
-Proposte già verificate da conservare:
-- Mondiali maschili: formula Singapore2025, 16 squadre/4 gironi;
-  prime ai quarti, seconde-terze allo spareggio, poi quarti/semi/finale.
-  Campione in 6 o 7 gare. Tutte le 16 squadre esistono nel gioco.
-- Europei maschili: formula Belgrado2026, 16 squadre/4 gironi;
-  prime3 → due gruppi da6 (A+C, B+D), riportando risultati soltanto fra
-  qualificate; 3 nuove partite, prime2 alle semifinali, poi finale.
-  Nessun quarto di finale; campione in8 gare. Mancano 8 rose nazionali.
-- Scegli nazionale, sorteggio casuale per fasce ufficiali salvato una volta,
-  giochi le tue gare e simuli le altre; uscita all'eliminazione, eventuale
-  bronzo giocabile/simulabile. Servono serie di rigori e classifiche complete.
-- Due coppe distinte, premiazione finale breve e saltabile, bacheca permanente.
-- Home/pausa ispirate a EA SPORTS FC26 mantenendo identità WATERPOLO7.
-  Salvataggio completo da pausa è lavoro nuovo, non confonderlo con pausa
-  esistente. Nessuna promessa di ripresa esatta finché non implementata/testata.
-- Arena: prima porte e corde, poi bordi e tribune su gradoni. Acqua già curata.
-- La porta GLB inviata ha 46.086tri e3 texture4K: non inserirla originale.
-  Richiede proporzioni corrette (vano3x0,90m, pali75–80mm) e ricostruzione
-  leggera, obiettivo400–500tri/porta e texture≤1024 da verificare in scena.
-  Due copie originali darebbero una stima di240.456tri totali, fuori limite.
-  Il file originale è conservato in dati-sorgente/modelli/porta-fornita.glb,
-  fuori dal caricamento del gioco; anteprima in docs/proposte/porta-riferimento.png.
-  Non dipendere dai percorsi /tmp degli allegati di una sessione precedente.
-
-Continuità: mantieni questo documento aggiornato con commit/branch/PR,
-controlli completati e prossimo passo concreto. Se si avvicina il limite
-di sessione, salva, committa e spingi il branch su GitHub prima di iniziare
-un nuovo blocco. Dichiara prima il perimetro concreto della prossima PR;
-non promettere durate o consumi di credito che non puoi osservare.
-Consegna una PR e un passaggio riprendibile. Nessun merge o deploy senza
-istruzione di Ale. Non inviare messaggi ad altre persone.
+Sviluppa per blocchi concreti; salva, committa e spingi il branch prima
+di un nuovo blocco lungo. Non promettere durate o crediti residui che
+non puoi osservare. Nessun merge/deploy senza istruzione di Ale.
 ```
 
-## Stato persistente della consegna
-
-- Base: `origin/main` al commit `01a1265` (merge PR 33, v0.38).
-- Branch: `codex/v039-cambi-proposte-handoff`, versione 0.39.0.
-- Modifica al gioco: `src/stile.css`, posizione/trasparenza CAMBI e posizione barra lotta.
-- Documenti: proposta completa con fonti ufficiali, analisi preliminare gameplay, questo prompt.
-- Verifiche completate: lint (0 errori, warning gx preesistente); sei partite terminate; dopo ispezione e aggiornamento dei quattro riferimenti modificati da CAMBI, `npm run verifica -- --partite=0` PASS (13 controlli, cinque immagini identiche). `npm run aspetto -- --no-build` PASS. HUD su tre iPhone/tre scene e CAMBI+lotta su 12 combinazioni viewport/margini: nessuna sovrapposizione. Budget 97 oggetti/148.380 triangoli con due cambi simultanei su due iPhone. Dettagli in `docs/verifiche-v039.md`. PR34 aperta dopo i controlli, collegamento in testa al documento.
-- Non fatto: revisione effettiva gameplay/AI; tornei; rose mancanti; rigori finali; nuovi menu; salvataggi completi; premi; integrazione porta e arena; prova su iPhone fisico.
+Punti di ingresso: `tornei.js` (campagna), `menu.js` (flusso e storage), `rigoriFinali.js`/`regole.js`/`partita.js` (serie), `grafica/arena.js` (ambiente), `controllo.js`/`ia.js`/`tiri.js` (gameplay), tutti in `src/`. La bozza HTML v0.39 è storica; la home vera è in `index.html`/`src/stile.css`.

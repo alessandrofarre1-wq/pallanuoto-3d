@@ -1,5 +1,6 @@
 // Scene ripetibili: comandi anticipati, passaggi leggibili, linee di appoggio e vantaggi AI.
-// --prima carica i tre moduli dal commit HEAD per misurare le stesse scene prima della correzione.
+// --prima carica i tre moduli dalla v0.39 per misurare le stesse scene prima della correzione.
+// --riferimento=<commit> permette di scegliere un'altra base, senza dipendere dal nuovo HEAD.
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
@@ -8,8 +9,9 @@ import { chromium } from 'playwright';
 import { createServer } from 'vite';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const prima=process.argv.includes('--prima');
+const riferimento=process.argv.find(a=>a.startsWith('--riferimento='))?.slice('--riferimento='.length)||'0998d8942c357d719ddf14fb3874c19786d0e556';
 const originali=new Map();
-if(prima) for(const f of ['controllo','tiri','ia']) originali.set(path.join(root,'src',f+'.js'),execFileSync('git',['show','HEAD:src/'+f+'.js'],{cwd:root,encoding:'utf8'}));
+if(prima) for(const f of ['controllo','tiri','ia']) originali.set(path.join(root,'src',f+'.js'),execFileSync('git',['show',riferimento+':src/'+f+'.js'],{cwd:root,encoding:'utf8'}));
 const server=await createServer({root,logLevel:'warn',server:{host:'127.0.0.1',port:4374,strictPort:true},
   plugins:[{name:'gameplay-prima',enforce:'pre',load:id=>originali.get(id)}]});
 await server.listen();

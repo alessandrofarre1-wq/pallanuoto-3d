@@ -44,17 +44,19 @@ try{
     H.game.torneoMatch={id:'test-rigori',tipo:'mondiali',nazionale:H.teams[0].codice};
     H.game.rigoriFinali=null; H.game.autoplay=false; H.teams[0].human=true;
     H.teams[0].score=H.teams[1].score=7;
-    for(const p of H.allPlayers){p.excluded=false;p.pf=0;p.act=null;p.charging=false;p.stamina=.73;}
+    for(const p of H.allPlayers){p.excluded=false;p.pf=0;p.act=null;p.charging=false;p.stamina=.73;p.fakeUntil=p.fakedUntil=p.turnedUntil=p.pressatoUntil=p.fintaFino=900;}
     H.regole.giveBall(H.teams[0].players[6]); window.__step(1);
     const s=H.game.rigoriFinali;
     // Test dei tiri dell'umano per primi, poi il normale ordine alternato resta invariato.
     s.primo=s.turno=0;
     window.__step(122);
     return {fase:s.fase,tiratori:s.tiratori,clock:H.game.clock,time:H.game.time,shot:H.game.shot,
-      num:H.game.penalty?.num,score:H.teams.map(t=>t.score)};
+      num:H.game.penalty?.num,score:H.teams.map(t=>t.score),residui:H.allPlayers.some(p=>p.fakeUntil||p.fakedUntil||p.turnedUntil||p.pressatoUntil||p.fintaFino),stamina:H.allPlayers.map(p=>p.stamina)};
   });
   assert.equal(avvio.fase,'tiro'); assert.equal(avvio.clock,0); assert.deepEqual(avvio.score,[7,7]);
   assert.ok(avvio.tiratori.every(t=>t.length===5&&new Set(t.map(p=>p.num)).size===5),'cinque nomi eleggibili diversi');
+  assert.equal(avvio.residui,false,'le finte e la pressione dei regolamentari non restano permanenti nei rigori');
+  assert.ok(avvio.stamina.every(s=>s<.74),'il passaggio ai rigori non ricarica le energie');
   const reale=await page.evaluate(()=>{
     const H=window.__pallanuoto,s=H.game.rigoriFinali,p=H.game.penalty;
     window.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyK'})); window.__step(55);

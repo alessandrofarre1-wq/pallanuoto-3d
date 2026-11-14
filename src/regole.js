@@ -131,6 +131,17 @@ export function setupPenalty(t,tiratore){    // tiro dai 5 metri; tutti gli altr
   if(t.human){ setCtrl(s); annuncia('avviso','Rigore: tieni premuto TIRO e rilascia',{p:s,durata:2}); }
 }
 
+function azzeraGestiRigori(){
+  resetTap();
+  // Il tempo della partita resta fermo nella serie: i vantaggi di una finta precedente
+  // non devono quindi sopravvivere a tutti i rigori. Falli e stanchezza restano quelli reali.
+  for(const p of allPlayers) Object.assign(p,{
+    vx:0,vz:0,cut:null,act:null,charging:false,chargeT:0,qte:null,qteDopo:0,
+    fakeUntil:0,fakedUntil:0,turnedUntil:0,pressatoUntil:0,fintaFino:0,biteUntil:0,
+    pressatoDa:null,aggrT:0,lunge:0,perno:false,fakeUsed:false,fakeCount:0,voloPronto:false,
+    effettoTiro:null,tiroVista:null,appoggio:null,
+  });
+}
 export function avviaRigoriFinali(){
   const tiratori=teams.map(t=>{
     annullaCambio(t); t.coda=[];
@@ -149,7 +160,7 @@ export function avviaRigoriFinali(){
   game.rigoriFinali=creaSerieRigori(tiratori,rnd()<0.5?0:1);
   game.clock=0; game.penalty=null; game.penT=0; game.after=null; game.cambiLiberi=false; game.state='play';
   fight.active=false;
-  for(const p of allPlayers){ p.vx=p.vz=0; p.cut=null; p.act=null; p.charging=false; p.chargeT=0; }
+  azzeraGestiRigori();
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.inRete=false; ball.inUscita=false;
   annuncia('rigore','Serie di rigori',{dettaglio:'Cinque tiri per squadra, poi oltranza · TIRO per caricare e rilasciare',durata:2});
 }
@@ -157,6 +168,7 @@ export function avviaRigoriFinali(){
 export function preparaProssimoRigoreFinale(){
   const tiro=preparaTiroSerie(game.rigoriFinali); if(!tiro) return;
   const t=teams[tiro.squadra], p=t.players.find(q=>q.num===tiro.num&&!q.isGK);
+  azzeraGestiRigori();
   setupPenalty(t,p); game.state='play'; game.after=null;
   annuncia('rigore',`Rigore ${tiro.indice}${tiro.indice>5?' · oltranza':''}`,{
     p,dettaglio:`${p.name} · serie ${game.rigoriFinali.gol[0]} – ${game.rigoriFinali.gol[1]}`,durata:2});

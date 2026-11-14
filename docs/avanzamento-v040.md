@@ -2,7 +2,7 @@
 
 Ale ha chiarito che la v0.39 aveva consegnato soprattutto documenti, mentre si aspettava cambiamenti nel gioco. La v0.40 porta nel gioco i seguenti blocchi; questo documento è il punto di ripresa durante il lavoro, non una dichiarazione di completamento.
 
-Branch: `codex/v040-tornei-menu-gameplay`, base `0998d89` (PR34/v0.39 già unita).
+Branch: `codex/v040-tornei-menu-gameplay`, base `0998d89` (PR34/v0.39 già unita). **Implementazione completata e verifiche chiuse**: il rapporto definitivo è [verifiche-v040.md](verifiche-v040.md), il passaggio aggiornato è [PASSAGGIO-CLAUDE-CODE.md](PASSAGGIO-CLAUDE-CODE.md). Le voci sotto descrivono la ripartizione iniziale del lavoro, superata dai risultati del rapporto.
 
 - Motore Mondiali/Europei, sorteggio, calendario, classifiche, simulazioni e salvataggio della campagna: in implementazione in `src/tornei.js`.
 - Home, scelta modalità/nazionale, centro torneo, pausa, fine, coppe/bacheca e premiazione integrate: in implementazione in `src/menu.js`, `index.html`, `src/stile.css`.

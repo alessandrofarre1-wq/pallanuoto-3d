@@ -1,5 +1,7 @@
 # WATERPOLO 7 — proposta tornei, menu e arena
 
+Documento storico della proposta v0.39. La v0.40 ne implementa i blocchi principali nel gioco: lo stato attuale, le prove e i limiti effettivi sono in [verifiche v0.40](../verifiche-v040.md). La bozza HTML e le immagini di questa cartella restano riferimenti di progetto, non lo stato corrente dell'applicazione.
+
 Proposta del 14 novembre 2026 per Ale, raccolta nella PR v0.39 insieme al solo spostamento del pulsante CAMBI. Tornei, nuova home/pausa e nuova arena restano proposte da discutere. La bozza delle schermate usa dati di esempio: non rappresenta un torneo salvato realmente. Il modello della porta originale resta invariato.
 
 **Direzione proposta.** Affiancare a Partita singola due campagne complete, Mondiali ed Europei, con le rispettive formule reali. Dare al gioco una presentazione sportiva più decisa e un ambiente da competizione internazionale, mantenendo stile cartoon e fluidità su iPhone.

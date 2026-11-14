@@ -1,0 +1,58 @@
+{
+  "comando": "node strumenti/misura-fluidita.mjs --foto",
+  "nota": "Conteggi Chromium software, non FPS su hardware Apple",
+  "misure": [
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "dpr": 1.5,
+      "calls": 67,
+      "triangles": 148430,
+      "samples": [
+        {
+          "frame": 55,
+          "calls": 63,
+          "triangles": 142318,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 56,
+          "calls": 67,
+          "triangles": 148430,
+          "points": 0,
+          "lines": 0
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "dpr": 1.5,
+      "calls": 67,
+      "triangles": 148430,
+      "samples": [
+        {
+          "frame": 55,
+          "calls": 63,
+          "triangles": 142318,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 56,
+          "calls": 67,
+          "triangles": 148430,
+          "points": 0,
+          "lines": 0
+        }
+      ]
+    }
+  ]
+}
