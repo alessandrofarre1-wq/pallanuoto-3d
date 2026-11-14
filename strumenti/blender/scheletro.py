@@ -171,19 +171,29 @@ def interno_bocca(d):
             fuori = (v.co - p).dot(n)
             if fuori > -0.006: v.co = v.co - n * (fuori + 0.006)
     # denti: archi che seguono la curva della bocca, appena dietro le labbra (2 = sopra, 3 = sotto: seguono la mandibola)
-    # denti: due file larghe quanto la bocca, curve come la linea delle labbra (agli angoli salgono appena), con le estremità
-    # arrotondate; appena dietro le labbra (2 = sopra, 3 = sotto: questi seguono la mandibola)
-    def fila(zbordo, alt, verso, tipo, ritira):
-        N = 16; riga = []
-        for k in range(N + 1):
-            t = -1 + 2 * k / N; x = cx + t * (w * 0.92); y = -0.0875 + 0.026 * t * t + ritira
-            h = alt * math.sqrt(max(0.0, 1 - t ** 8))                 # estremità arrotondate
-            zb_ = zbordo + 0.0025 * t * t                              # il bordo dei denti segue la curva del sorriso
-            a0 = bm.verts.new((x, y, zb_)); a1 = bm.verts.new((x, y, zb_ + verso * max(h, 0.0005))); segna(a0, tipo); segna(a1, tipo); riga.append((a0, a1))
-        for k in range(N):
-            (a0, a1), (b0, b1) = riga[k], riga[k + 1]; bm.faces.new((a0, b0, b1, a1))
-    fila(zb - 0.0075, 0.0115, 1, 2.0, 0.0)          # denti di sopra: dal bordo in su
-    fila(zb - 0.0035, 0.0090, -1, 3.0, 0.0015)      # denti di sotto: dal bordo in giù
+    # denti: denti SINGOLI (non una barra), sulla curva dell'arcata, INCLINATI come quelli veri (quelli di sopra con la punta in
+    # avanti e la radice indietro, quelli di sotto al contrario) e SFALSATI di mezzo dente tra sopra e sotto; i centrali più alti,
+    # quelli ai lati più bassi e più indietro; bordo arrotondato. 2 = sopra, 3 = sotto (seguono la mandibola).
+    def fila(zbordo, verso, tipo, n, sfasa, ritira):
+        larg = 2 * w * 0.92 / n; gap = larg * 0.08
+        for k in range(n):
+            t0 = -1 + 2 * (k + sfasa) / n; t1 = t0 + 2 / n
+            if t1 <= -1.0001 or t0 >= 1.0001: continue
+            t0 = max(-1.0, t0); t1 = min(1.0, t1); tm = (t0 + t1) / 2
+            alt = (0.0105 if verso > 0 else 0.0085) * (1 - 0.45 * tm * tm)      # i centrali più alti
+            def punto(t, frazione):
+                # frazione 0 = bordo (punta del dente), 1 = radice; inclinazione: la radice sta 4 mm più indietro
+                x = cx + t * w * 0.92; y = -0.0875 + 0.026 * t * t + ritira + 0.004 * frazione
+                z = zbordo + 0.0025 * t * t + verso * alt * frazione
+                return Vector((x, y, z))
+            g0 = t0 + (t1 - t0) * gap / larg; g1 = t1 - (t1 - t0) * gap / larg
+            punta = [punto(g0, 0.18), punto(g0 + (g1 - g0) * 0.25, 0.02), punto(tm, 0.0), punto(g1 - (g1 - g0) * 0.25, 0.02), punto(g1, 0.18)]
+            radice = [punto(g1, 1.0), punto(g0, 1.0)]
+            vv = [bm.verts.new(p_) for p_ in punta + radice]
+            for v in vv: segna(v, tipo)
+            bm.faces.new(vv if verso > 0 else list(reversed(vv)))
+    fila(zb - 0.0075, 1, 2.0, 8, 0.0, 0.0)          # 8 denti di sopra: dal bordo in su
+    fila(zb - 0.0035, -1, 3.0, 8, 0.5, 0.0015)      # denti di sotto, sfalsati di mezzo dente: dal bordo in giù
     bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if len(f.verts) > 3])
     bm.to_mesh(me); bm.free(); me.update()
 def espressioni(d, alta):

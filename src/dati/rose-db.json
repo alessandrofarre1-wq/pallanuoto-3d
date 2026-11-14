@@ -4,6 +4,7 @@
  "rose": {
   "ESP": [
    {
+    "id": "p_e59f08c78abd4a7b",
     "num": 1,
     "nome": "Aguirre",
     "nomeIntero": "Unai Aguirre",
@@ -13,6 +14,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 192,
+    "peso": null,
     "nascita": "2002-07-14",
     "capitano": false,
     "s": {
@@ -44,6 +46,7 @@
     "campione": true
    },
    {
+    "id": "p_87777865c790988e",
     "num": 9,
     "nome": "Tahull",
     "nomeIntero": "Roger Tahull",
@@ -53,6 +56,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 196,
+    "peso": 104,
     "nascita": "1997-05-11",
     "capitano": true,
     "s": {
@@ -64,7 +68,7 @@
      "vis": 78,
      "dif": 78,
      "dis": 79,
-     "frz": 94,
+     "frz": 96,
      "rif": 52,
      "pos": 52,
      "usc": 52,
@@ -88,6 +92,7 @@
     "campione": true
    },
    {
+    "id": "p_12e6248c9051a9c5",
     "num": 10,
     "nome": "Valera",
     "nomeIntero": "Fran Valera",
@@ -97,6 +102,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 191,
+    "peso": null,
     "nascita": "1999-03-21",
     "capitano": false,
     "s": {
@@ -131,6 +137,7 @@
     "posto": 2
    },
    {
+    "id": "p_b20c96ce3a568f96",
     "num": 11,
     "nome": "Biel",
     "nomeIntero": "Unai Biel",
@@ -140,6 +147,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": null,
     "nascita": "2002-11-19",
     "capitano": false,
     "s": {
@@ -174,6 +182,7 @@
     "posto": 3
    },
    {
+    "id": "p_775776bd5d8fde8a",
     "num": 4,
     "nome": "Sanahuja",
     "nomeIntero": "Bernat Sanahuja",
@@ -183,6 +192,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 192,
+    "peso": 86,
     "nascita": "2000-10-21",
     "capitano": false,
     "s": {
@@ -194,7 +204,7 @@
      "vis": 84,
      "dif": 82,
      "dis": 81,
-     "frz": 80,
+     "frz": 79,
      "rif": 52,
      "pos": 52,
      "usc": 52,
@@ -217,6 +227,7 @@
     "posto": 4
    },
    {
+    "id": "p_56318a0bc3b20a7d",
     "num": 8,
     "nome": "Cabanas",
     "nomeIntero": "Sergi Cabanas",
@@ -226,6 +237,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 191,
+    "peso": 88,
     "nascita": "1996-02-10",
     "capitano": false,
     "s": {
@@ -260,6 +272,7 @@
     "posto": 5
    },
    {
+    "id": "p_c31d5a8d106baa71",
     "num": 7,
     "nome": "Daura",
     "nomeIntero": "Pol Daura",
@@ -269,6 +282,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 190,
+    "peso": 82,
     "nascita": "2002-10-03",
     "capitano": false,
     "s": {
@@ -280,13 +294,13 @@
      "vis": 87,
      "dif": 87,
      "dis": 80,
-     "frz": 83,
+     "frz": 80,
      "rif": 52,
      "pos": 52,
      "usc": 52,
      "rig": 52
     },
-    "ovr": 86,
+    "ovr": 85,
     "dati": {
      "tornei": 2,
      "partite": 7,
@@ -303,6 +317,7 @@
     "posto": 6
    },
    {
+    "id": "p_5d92ae0cf4340e4d",
     "num": 5,
     "nome": "De Toro",
     "nomeIntero": "Miguel De Toro",
@@ -312,6 +327,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 202,
+    "peso": null,
     "nascita": "1993-08-16",
     "capitano": false,
     "s": {
@@ -346,6 +362,52 @@
     "posto": null
    },
    {
+    "id": "p_b9db9825f90c93e2",
+    "num": 12,
+    "nome": "Bustos",
+    "nomeIntero": "Alejandro Bustos",
+    "nomeCompleto": "BUSTOS Alejandro",
+    "ruolo": 1,
+    "ruoloVero": "Centre Forward",
+    "mano": "D",
+    "manoNota": null,
+    "altezza": 194,
+    "peso": 105,
+    "nascita": "1997-03-17",
+    "capitano": false,
+    "s": {
+     "vel": 70,
+     "res": 81,
+     "pot": 79,
+     "pre": 81,
+     "pas": 76,
+     "vis": 78,
+     "dif": 79,
+     "dis": 77,
+     "frz": 93,
+     "rif": 52,
+     "pos": 52,
+     "usc": 52,
+     "rig": 52
+    },
+    "ovr": 85,
+    "dati": {
+     "tornei": 3,
+     "partite": 14,
+     "minuti": 200,
+     "gol": 6,
+     "tiri": 16,
+     "assist": 3,
+     "rubate": 7,
+     "murati": 4,
+     "espulsioni": 17
+    },
+    "convocazione": "wc2026_finals",
+    "titolare": false,
+    "posto": null
+   },
+   {
+    "id": "p_b1ebc5878a0753c6",
     "num": 6,
     "nome": "Bonet",
     "nomeIntero": "Josep Bonet",
@@ -355,6 +417,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 188,
+    "peso": null,
     "nascita": "2003-05-16",
     "capitano": false,
     "s": {
@@ -389,6 +452,7 @@
     "posto": null
    },
    {
+    "id": "p_da7a57a727a8a2a6",
     "num": 14,
     "nome": "Casabella",
     "nomeIntero": "Max Casabella",
@@ -398,6 +462,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 192,
+    "peso": null,
     "nascita": "2002-09-23",
     "capitano": false,
     "s": {
@@ -432,49 +497,7 @@
     "posto": null
    },
    {
-    "num": 12,
-    "nome": "Bustos",
-    "nomeIntero": "Alejandro Bustos",
-    "nomeCompleto": "BUSTOS Alejandro",
-    "ruolo": 1,
-    "ruoloVero": "Centre Forward",
-    "mano": "D",
-    "manoNota": null,
-    "altezza": 194,
-    "nascita": "1997-03-17",
-    "capitano": false,
-    "s": {
-     "vel": 70,
-     "res": 81,
-     "pot": 79,
-     "pre": 81,
-     "pas": 76,
-     "vis": 78,
-     "dif": 79,
-     "dis": 77,
-     "frz": 91,
-     "rif": 52,
-     "pos": 52,
-     "usc": 52,
-     "rig": 52
-    },
-    "ovr": 84,
-    "dati": {
-     "tornei": 3,
-     "partite": 14,
-     "minuti": 200,
-     "gol": 6,
-     "tiri": 16,
-     "assist": 3,
-     "rubate": 7,
-     "murati": 4,
-     "espulsioni": 17
-    },
-    "convocazione": "wc2026_finals",
-    "titolare": false,
-    "posto": null
-   },
-   {
+    "id": "p_72c40a98157aa82d",
     "num": 3,
     "nome": "Valls",
     "nomeIntero": "Marc Valls",
@@ -484,6 +507,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 188,
+    "peso": null,
     "nascita": "2003-06-24",
     "capitano": false,
     "s": {
@@ -518,6 +542,7 @@
     "posto": null
    },
    {
+    "id": "p_ff99ac23b3a10a2b",
     "num": 13,
     "nome": "Garcia",
     "nomeIntero": "Didac Garcia",
@@ -527,6 +552,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 197,
+    "peso": null,
     "nascita": "2005-07-17",
     "capitano": false,
     "s": {
@@ -559,6 +585,7 @@
   ],
   "HUN": [
    {
+    "id": "p_556d816c7152b27a",
     "num": 1,
     "nome": "Csoma",
     "nomeIntero": "Kristof Csoma",
@@ -568,6 +595,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 195,
+    "peso": 101,
     "nascita": "1992-01-26",
     "capitano": false,
     "s": {
@@ -598,49 +626,53 @@
     "posto": 0
    },
    {
-    "num": 7,
-    "nome": "Fekete",
-    "nomeIntero": "Gergo Janos Fekete",
-    "nomeCompleto": "FEKETE Gergo Janos",
+    "id": "p_c43d17308ec9eeac",
+    "num": 9,
+    "nome": "Kovacs",
+    "nomeIntero": "Peter Kovacs",
+    "nomeCompleto": "KOVACS Peter",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
     "mano": "D",
     "manoNota": null,
-    "altezza": 193,
-    "nascita": "2000-06-24",
+    "altezza": 200,
+    "peso": 99,
+    "nascita": "1991-05-16",
     "capitano": false,
     "s": {
-     "vel": 69,
-     "res": 81,
-     "pot": 84,
-     "pre": 80,
-     "pas": 75,
-     "vis": 77,
-     "dif": 74,
-     "dis": 76,
-     "frz": 88,
+     "vel": 62,
+     "res": 73,
+     "pot": 80,
+     "pre": 82,
+     "pas": 74,
+     "vis": 81,
+     "dif": 75,
+     "dis": 79,
+     "frz": 94,
      "rif": 51,
      "pos": 51,
      "usc": 51,
      "rig": 51
     },
-    "ovr": 84,
+    "ovr": 85,
     "dati": {
-     "tornei": 4,
-     "partite": 23,
-     "minuti": 425,
-     "gol": 39,
-     "tiri": 94,
-     "assist": 7,
-     "rubate": 6,
-     "murati": 6,
-     "espulsioni": 26
+     "tornei": 3,
+     "partite": 18,
+     "minuti": 208,
+     "gol": 13,
+     "tiri": 27,
+     "assist": 2,
+     "rubate": 3,
+     "murati": 4,
+     "espulsioni": 11
     },
     "convocazione": "wc2026_finals",
     "titolare": true,
-    "posto": 1
+    "posto": 1,
+    "campione": true
    },
    {
+    "id": "p_03529c53b86d944b",
     "num": 2,
     "nome": "Burian",
     "nomeIntero": "Gergely Zoltan Burian",
@@ -650,6 +682,7 @@
     "mano": "S",
     "manoNota": null,
     "altezza": 195,
+    "peso": null,
     "nascita": "1998-03-12",
     "capitano": false,
     "s": {
@@ -684,6 +717,7 @@
     "posto": 2
    },
    {
+    "id": "p_332d9585a71119cd",
     "num": 3,
     "nome": "Manhercz",
     "nomeIntero": "Krisztian Manhercz",
@@ -693,6 +727,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 191,
+    "peso": 98,
     "nascita": "1997-02-06",
     "capitano": true,
     "s": {
@@ -728,6 +763,7 @@
     "campione": true
    },
    {
+    "id": "p_4955d61c5b5148b0",
     "num": 4,
     "nome": "Nagy Akos",
     "nomeIntero": "Akos Nagy",
@@ -737,6 +773,7 @@
     "mano": "S",
     "manoNota": null,
     "altezza": 190,
+    "peso": 94,
     "nascita": "2004-04-15",
     "capitano": false,
     "s": {
@@ -748,7 +785,7 @@
      "vis": 87,
      "dif": 77,
      "dis": 78,
-     "frz": 79,
+     "frz": 78,
      "rif": 51,
      "pos": 51,
      "usc": 51,
@@ -768,10 +805,10 @@
     },
     "convocazione": "wc2026_finals",
     "titolare": true,
-    "posto": 4,
-    "campione": true
+    "posto": 4
    },
    {
+    "id": "p_9efc4284b6e6032e",
     "num": 10,
     "nome": "Vigvari",
     "nomeIntero": "Vendel Csaba Vigvari",
@@ -781,6 +818,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 189,
+    "peso": null,
     "nascita": "2001-09-10",
     "capitano": false,
     "s": {
@@ -815,6 +853,7 @@
     "posto": 5
    },
    {
+    "id": "p_e16a3d29cfdbd18f",
     "num": 6,
     "nome": "Nagy Adam",
     "nomeIntero": "Adam Nagy",
@@ -824,6 +863,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 195,
+    "peso": 100,
     "nascita": "1998-05-19",
     "capitano": false,
     "s": {
@@ -835,7 +875,7 @@
      "vis": 88,
      "dif": 85,
      "dis": 79,
-     "frz": 83,
+     "frz": 84,
      "rif": 51,
      "pos": 51,
      "usc": 51,
@@ -858,6 +898,7 @@
     "posto": 6
    },
    {
+    "id": "p_53fc3cd4935ff8b9",
     "num": 11,
     "nome": "Jansik",
     "nomeIntero": "Szilard Jansik",
@@ -867,6 +908,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 194,
+    "peso": 95,
     "nascita": "1994-04-06",
     "capitano": false,
     "s": {
@@ -901,49 +943,52 @@
     "posto": null
    },
    {
-    "num": 9,
-    "nome": "Kovacs",
-    "nomeIntero": "Peter Kovacs",
-    "nomeCompleto": "KOVACS Peter",
+    "id": "p_1ba073e2345d6c81",
+    "num": 7,
+    "nome": "Fekete",
+    "nomeIntero": "Gergo Janos Fekete",
+    "nomeCompleto": "FEKETE Gergo Janos",
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
     "mano": "D",
     "manoNota": null,
-    "altezza": 200,
-    "nascita": "1991-05-16",
+    "altezza": 193,
+    "peso": 95,
+    "nascita": "2000-06-24",
     "capitano": false,
     "s": {
-     "vel": 62,
-     "res": 73,
-     "pot": 80,
-     "pre": 82,
-     "pas": 74,
-     "vis": 81,
-     "dif": 75,
-     "dis": 79,
-     "frz": 93,
+     "vel": 69,
+     "res": 81,
+     "pot": 84,
+     "pre": 80,
+     "pas": 75,
+     "vis": 77,
+     "dif": 74,
+     "dis": 76,
+     "frz": 87,
      "rif": 51,
      "pos": 51,
      "usc": 51,
      "rig": 51
     },
-    "ovr": 84,
+    "ovr": 83,
     "dati": {
-     "tornei": 3,
-     "partite": 18,
-     "minuti": 208,
-     "gol": 13,
-     "tiri": 27,
-     "assist": 2,
-     "rubate": 3,
-     "murati": 4,
-     "espulsioni": 11
+     "tornei": 4,
+     "partite": 23,
+     "minuti": 425,
+     "gol": 39,
+     "tiri": 94,
+     "assist": 7,
+     "rubate": 6,
+     "murati": 6,
+     "espulsioni": 26
     },
     "convocazione": "wc2026_finals",
     "titolare": false,
     "posto": null
    },
    {
+    "id": "p_ed86b62fe160b08d",
     "num": 14,
     "nome": "Vismeg",
     "nomeIntero": "Zsombor Vismeg",
@@ -953,6 +998,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 191,
+    "peso": 91,
     "nascita": "2003-03-14",
     "capitano": false,
     "s": {
@@ -964,7 +1010,7 @@
      "vis": 85,
      "dif": 81,
      "dis": 76,
-     "frz": 83,
+     "frz": 82,
      "rif": 51,
      "pos": 51,
      "usc": 51,
@@ -987,6 +1033,7 @@
     "posto": null
    },
    {
+    "id": "p_8becf09b9d85192f",
     "num": 5,
     "nome": "Varga",
     "nomeIntero": "Vince Varga",
@@ -996,6 +1043,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 201,
+    "peso": 94,
     "nascita": "2005-08-16",
     "capitano": false,
     "s": {
@@ -1030,6 +1078,7 @@
     "posto": null
    },
    {
+    "id": "p_6dfdfd7aae3fed38",
     "num": 15,
     "nome": "Szalai",
     "nomeIntero": "Peter Szalai",
@@ -1039,6 +1088,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 196,
+    "peso": null,
     "nascita": "2004-03-16",
     "capitano": false,
     "s": {
@@ -1050,7 +1100,7 @@
      "vis": 78,
      "dif": 77,
      "dis": 76,
-     "frz": 80,
+     "frz": 79,
      "rif": 51,
      "pos": 51,
      "usc": 51,
@@ -1073,6 +1123,7 @@
     "posto": null
    },
    {
+    "id": "p_39283141f30c8d60",
     "num": 13,
     "nome": "Gyapjas",
     "nomeIntero": "Viktor Gyapjas",
@@ -1082,6 +1133,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 185,
+    "peso": null,
     "nascita": "2004-06-02",
     "capitano": false,
     "s": {
@@ -1114,6 +1166,7 @@
   ],
   "GRE": [
    {
+    "id": "p_c6fadbd9695bb305",
     "num": 13,
     "nome": "Andreadis",
     "nomeIntero": "Emmanouil Andreadis",
@@ -1123,6 +1176,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 187,
+    "peso": null,
     "nascita": "2002-06-12",
     "capitano": false,
     "s": {
@@ -1153,6 +1207,7 @@
     "posto": 0
    },
    {
+    "id": "p_8f29a81a0e2b466f",
     "num": 10,
     "nome": "Kakaris",
     "nomeIntero": "Konstantinos Kakaris",
@@ -1162,6 +1217,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 198,
+    "peso": null,
     "nascita": "1999-07-02",
     "capitano": false,
     "s": {
@@ -1197,6 +1253,7 @@
     "campione": true
    },
    {
+    "id": "p_6b267d9890d9aabb",
     "num": 8,
     "nome": "Kalogeropoulos",
     "nomeIntero": "Efstathios Kalogeropoulos",
@@ -1206,6 +1263,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 187,
+    "peso": null,
     "nascita": "2001-06-28",
     "capitano": false,
     "s": {
@@ -1240,6 +1298,7 @@
     "posto": 2
    },
    {
+    "id": "p_dfe22f3626decfc7",
     "num": 4,
     "nome": "Gkiouvetsis",
     "nomeIntero": "Konstantinos Gkiouvetsis",
@@ -1249,6 +1308,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": null,
     "nascita": "1999-11-19",
     "capitano": false,
     "s": {
@@ -1283,6 +1343,7 @@
     "posto": 3
    },
    {
+    "id": "p_5fed519ac41d4101",
     "num": 6,
     "nome": "Papanastasiou",
     "nomeIntero": "Alexandros Papanastasiou",
@@ -1292,6 +1353,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 188,
+    "peso": 77,
     "nascita": "1999-02-12",
     "capitano": false,
     "s": {
@@ -1303,7 +1365,7 @@
      "vis": 81,
      "dif": 75,
      "dis": 79,
-     "frz": 76,
+     "frz": 74,
      "rif": 49,
      "pos": 49,
      "usc": 49,
@@ -1326,6 +1388,7 @@
     "posto": 4
    },
    {
+    "id": "p_8dc281d2fb36208a",
     "num": 7,
     "nome": "Pouros",
     "nomeIntero": "Evangelos Pouros",
@@ -1335,6 +1398,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 197,
+    "peso": null,
     "nascita": "2003-08-27",
     "capitano": false,
     "s": {
@@ -1346,7 +1410,7 @@
      "vis": 78,
      "dif": 76,
      "dis": 77,
-     "frz": 78,
+     "frz": 77,
      "rif": 49,
      "pos": 49,
      "usc": 49,
@@ -1369,6 +1433,7 @@
     "posto": 5
    },
    {
+    "id": "p_217acd669f4030a2",
     "num": 3,
     "nome": "Skoumpakis",
     "nomeIntero": "Dimitrios Skoumpakis",
@@ -1378,6 +1443,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 202,
+    "peso": 110,
     "nascita": "1998-12-18",
     "capitano": false,
     "s": {
@@ -1389,7 +1455,7 @@
      "vis": 87,
      "dif": 88,
      "dis": 77,
-     "frz": 83,
+     "frz": 86,
      "rif": 49,
      "pos": 49,
      "usc": 49,
@@ -1413,6 +1479,52 @@
     "campione": true
    },
    {
+    "id": "p_7f24aaad7b4ffe63",
+    "num": 11,
+    "nome": "Nikolaidis",
+    "nomeIntero": "Dimitrios Nikolaidis",
+    "nomeCompleto": "NIKOLAIDIS Dimitrios",
+    "ruolo": 1,
+    "ruoloVero": "Centre Forward",
+    "mano": "D",
+    "manoNota": null,
+    "altezza": 194,
+    "peso": 100,
+    "nascita": "1999-06-10",
+    "capitano": false,
+    "s": {
+     "vel": 68,
+     "res": 75,
+     "pot": 80,
+     "pre": 82,
+     "pas": 70,
+     "vis": 74,
+     "dif": 75,
+     "dis": 76,
+     "frz": 93,
+     "rif": 49,
+     "pos": 49,
+     "usc": 49,
+     "rig": 49
+    },
+    "ovr": 85,
+    "dati": {
+     "tornei": 4,
+     "partite": 23,
+     "minuti": 259,
+     "gol": 20,
+     "tiri": 35,
+     "assist": 0,
+     "rubate": 8,
+     "murati": 6,
+     "espulsioni": 6
+    },
+    "convocazione": "wc2026_finals",
+    "titolare": false,
+    "posto": null
+   },
+   {
+    "id": "p_c53c8a0d35291453",
     "num": 5,
     "nome": "Argyropoulos",
     "nomeIntero": "Stylianos Argyropoulos",
@@ -1422,6 +1534,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 186,
+    "peso": 96,
     "nascita": "1996-08-02",
     "capitano": true,
     "s": {
@@ -1456,49 +1569,7 @@
     "posto": null
    },
    {
-    "num": 11,
-    "nome": "Nikolaidis",
-    "nomeIntero": "Dimitrios Nikolaidis",
-    "nomeCompleto": "NIKOLAIDIS Dimitrios",
-    "ruolo": 1,
-    "ruoloVero": "Centre Forward",
-    "mano": "D",
-    "manoNota": null,
-    "altezza": 194,
-    "nascita": "1999-06-10",
-    "capitano": false,
-    "s": {
-     "vel": 68,
-     "res": 75,
-     "pot": 80,
-     "pre": 82,
-     "pas": 70,
-     "vis": 74,
-     "dif": 75,
-     "dis": 76,
-     "frz": 92,
-     "rif": 49,
-     "pos": 49,
-     "usc": 49,
-     "rig": 49
-    },
-    "ovr": 84,
-    "dati": {
-     "tornei": 4,
-     "partite": 23,
-     "minuti": 259,
-     "gol": 20,
-     "tiri": 35,
-     "assist": 0,
-     "rubate": 8,
-     "murati": 6,
-     "espulsioni": 6
-    },
-    "convocazione": "wc2026_finals",
-    "titolare": false,
-    "posto": null
-   },
-   {
+    "id": "p_1de63d7a9f44cede",
     "num": 9,
     "nome": "Alafragkis",
     "nomeIntero": "Ioannis Alafragkis",
@@ -1508,6 +1579,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": null,
     "nascita": "1999-06-23",
     "capitano": false,
     "s": {
@@ -1542,6 +1614,7 @@
     "posto": null
    },
    {
+    "id": "p_ebc35c1c7a5b31e8",
     "num": 14,
     "nome": "Spachits",
     "nomeIntero": "Semir Spachits",
@@ -1551,6 +1624,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 190,
+    "peso": null,
     "nascita": "2005-11-18",
     "capitano": false,
     "s": {
@@ -1585,6 +1659,7 @@
     "posto": null
    },
    {
+    "id": "p_96aa375c388ea32d",
     "num": 2,
     "nome": "Chalyvopoulos",
     "nomeIntero": "Aristeidis Chalyvopoulos",
@@ -1594,6 +1669,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 181,
+    "peso": null,
     "nascita": "2002-03-20",
     "capitano": false,
     "s": {
@@ -1628,6 +1704,7 @@
     "posto": null
    },
    {
+    "id": "p_018271557d6df5aa",
     "num": 1,
     "nome": "Tzortzatos",
     "nomeIntero": "Panagiotis Tzortzatos",
@@ -1637,6 +1714,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 183,
+    "peso": null,
     "nascita": "1992-05-11",
     "capitano": false,
     "s": {
@@ -1669,6 +1747,7 @@
   ],
   "SRB": [
    {
+    "id": "p_e27584be6ece2e22",
     "num": 1,
     "nome": "Misovic",
     "nomeIntero": "Vladimir Misovic",
@@ -1678,6 +1757,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": null,
     "nascita": "2001-09-15",
     "capitano": false,
     "s": {
@@ -1708,6 +1788,7 @@
     "posto": 0
    },
    {
+    "id": "p_67e9c436e2391fb2",
     "num": 5,
     "nome": "Lazic",
     "nomeIntero": "Dorde Lazic",
@@ -1717,6 +1798,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 195,
+    "peso": null,
     "nascita": "1996-05-19",
     "capitano": false,
     "s": {
@@ -1752,6 +1834,7 @@
     "campione": true
    },
    {
+    "id": "p_343a5d5c92ebfa1d",
     "num": 14,
     "nome": "Martinovic",
     "nomeIntero": "Vasilije Martinovic",
@@ -1761,6 +1844,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 188,
+    "peso": null,
     "nascita": "2003-01-13",
     "capitano": false,
     "s": {
@@ -1795,6 +1879,7 @@
     "posto": 2
    },
    {
+    "id": "p_aa2475b54c29cde4",
     "num": 8,
     "nome": "Jaksic N.",
     "nomeIntero": "Nikola Jaksic",
@@ -1804,6 +1889,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 197,
+    "peso": 89,
     "nascita": "1997-01-17",
     "capitano": false,
     "s": {
@@ -1838,6 +1924,7 @@
     "posto": 3
    },
    {
+    "id": "p_ba5942279a9b08eb",
     "num": 4,
     "nome": "Lukic",
     "nomeIntero": "Nikola Lukic",
@@ -1847,6 +1934,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 187,
+    "peso": 76,
     "nascita": "1998-04-14",
     "capitano": false,
     "s": {
@@ -1858,7 +1946,7 @@
      "vis": 79,
      "dif": 78,
      "dis": 77,
-     "frz": 75,
+     "frz": 74,
      "rif": 48,
      "pos": 48,
      "usc": 48,
@@ -1881,6 +1969,7 @@
     "posto": 4
    },
    {
+    "id": "p_4e17408a940eb513",
     "num": 10,
     "nome": "Gladovic",
     "nomeIntero": "Luka Gladovic",
@@ -1890,6 +1979,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 190,
+    "peso": null,
     "nascita": "2006-10-31",
     "capitano": false,
     "s": {
@@ -1924,6 +2014,7 @@
     "posto": 5
    },
    {
+    "id": "p_6b0d33954dd408fd",
     "num": 11,
     "nome": "Jaksic P.",
     "nomeIntero": "Petar Jaksic",
@@ -1933,6 +2024,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": null,
     "nascita": "2001-07-20",
     "capitano": false,
     "s": {
@@ -1968,6 +2060,52 @@
     "campione": true
    },
    {
+    "id": "p_338a553868800bfb",
+    "num": 9,
+    "nome": "Murisic",
+    "nomeIntero": "Nikola Murisic",
+    "nomeCompleto": "MURISIC Nikola",
+    "ruolo": 1,
+    "ruoloVero": "Centre Forward",
+    "mano": "D",
+    "manoNota": null,
+    "altezza": 188,
+    "peso": null,
+    "nascita": "1992-08-16",
+    "capitano": false,
+    "s": {
+     "vel": 63,
+     "res": 71,
+     "pot": 82,
+     "pre": 81,
+     "pas": 69,
+     "vis": 77,
+     "dif": 69,
+     "dis": 73,
+     "frz": 88,
+     "rif": 48,
+     "pos": 48,
+     "usc": 48,
+     "rig": 48
+    },
+    "ovr": 82,
+    "dati": {
+     "tornei": 2,
+     "partite": 9,
+     "minuti": 89,
+     "gol": 12,
+     "tiri": 21,
+     "assist": 0,
+     "rubate": 0,
+     "murati": 0,
+     "espulsioni": 5
+    },
+    "convocazione": "wc2026_div1",
+    "titolare": false,
+    "posto": null
+   },
+   {
+    "id": "p_a94cdb0779510375",
     "num": 7,
     "nome": "Trtovic",
     "nomeIntero": "Dusan Trtovic",
@@ -1977,6 +2115,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 196,
+    "peso": null,
     "nascita": "2001-11-30",
     "capitano": false,
     "s": {
@@ -2011,49 +2150,7 @@
     "posto": null
    },
    {
-    "num": 9,
-    "nome": "Murisic",
-    "nomeIntero": "Nikola Murisic",
-    "nomeCompleto": "MURISIC Nikola",
-    "ruolo": 1,
-    "ruoloVero": "Centre Forward",
-    "mano": "D",
-    "manoNota": null,
-    "altezza": 188,
-    "nascita": "1992-08-16",
-    "capitano": false,
-    "s": {
-     "vel": 63,
-     "res": 71,
-     "pot": 82,
-     "pre": 81,
-     "pas": 69,
-     "vis": 77,
-     "dif": 69,
-     "dis": 73,
-     "frz": 87,
-     "rif": 48,
-     "pos": 48,
-     "usc": 48,
-     "rig": 48
-    },
-    "ovr": 81,
-    "dati": {
-     "tornei": 2,
-     "partite": 9,
-     "minuti": 89,
-     "gol": 12,
-     "tiri": 21,
-     "assist": 0,
-     "rubate": 0,
-     "murati": 0,
-     "espulsioni": 5
-    },
-    "convocazione": "wc2026_div1",
-    "titolare": false,
-    "posto": null
-   },
-   {
+    "id": "p_e6fcac8aeffe60dc",
     "num": 12,
     "nome": "Dimitrijevic",
     "nomeIntero": "Marko Dimitrijevic",
@@ -2063,6 +2160,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 194,
+    "peso": null,
     "nascita": "2004-04-03",
     "capitano": false,
     "s": {
@@ -2097,6 +2195,7 @@
     "posto": null
    },
    {
+    "id": "p_df4bf5b5e7e8d7bb",
     "num": 6,
     "nome": "Milojevic",
     "nomeIntero": "Vuk Milojevic",
@@ -2106,6 +2205,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 196,
+    "peso": null,
     "nascita": "2002-09-14",
     "capitano": false,
     "s": {
@@ -2140,6 +2240,7 @@
     "posto": null
    },
    {
+    "id": "p_cd2613528c07bb13",
     "num": 3,
     "nome": "Stanojevic",
     "nomeIntero": "Nemanja Stanojevic",
@@ -2149,6 +2250,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": null,
     "nascita": "2001-03-18",
     "capitano": false,
     "s": {
@@ -2160,7 +2262,7 @@
      "vis": 76,
      "dif": 76,
      "dis": 74,
-     "frz": 76,
+     "frz": 77,
      "rif": 48,
      "pos": 48,
      "usc": 48,
@@ -2183,6 +2285,7 @@
     "posto": null
    },
    {
+    "id": "p_ac25a666b769108c",
     "num": 13,
     "nome": "Glusac",
     "nomeIntero": "Milan Glusac",
@@ -2192,6 +2295,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 194,
+    "peso": null,
     "nascita": "2002-09-30",
     "capitano": false,
     "s": {
@@ -2224,6 +2328,7 @@
   ],
   "CRO": [
    {
+    "id": "p_634d0f404ba7964c",
     "num": 1,
     "nome": "Cubranic",
     "nomeIntero": "Mauro Ivan Cubranic",
@@ -2233,6 +2338,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 199,
+    "peso": null,
     "nascita": "2005-03-11",
     "capitano": true,
     "s": {
@@ -2263,6 +2369,7 @@
     "posto": 0
    },
    {
+    "id": "p_b5832a190e95c2e3",
     "num": 2,
     "nome": "Dragosevic",
     "nomeIntero": "Karlo Dragosevic",
@@ -2272,6 +2379,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 189,
+    "peso": null,
     "nascita": "2006-03-15",
     "capitano": false,
     "s": {
@@ -2306,6 +2414,7 @@
     "posto": 1
    },
    {
+    "id": "p_09abd2024bbd6919",
     "num": 4,
     "nome": "Susic",
     "nomeIntero": "Maro Susic",
@@ -2315,6 +2424,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 190,
+    "peso": null,
     "nascita": "2007-11-16",
     "capitano": false,
     "s": {
@@ -2350,6 +2460,7 @@
     "campione": true
    },
    {
+    "id": "p_52659044050fef28",
     "num": 12,
     "nome": "Pavlic",
     "nomeIntero": "Vlaho Pavlic",
@@ -2359,6 +2470,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 195,
+    "peso": null,
     "nascita": "2005-01-22",
     "capitano": false,
     "s": {
@@ -2394,6 +2506,7 @@
     "campione": true
    },
    {
+    "id": "p_81254f230b0ce3f7",
     "num": 10,
     "nome": "Brubnjak",
     "nomeIntero": "Tin Brubnjak",
@@ -2403,6 +2516,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 181,
+    "peso": null,
     "nascita": "2001-02-20",
     "capitano": false,
     "s": {
@@ -2437,6 +2551,7 @@
     "posto": 4
    },
    {
+    "id": "p_ccbe95665b8bae96",
     "num": 15,
     "nome": "Dragas",
     "nomeIntero": "Nardo Dragas",
@@ -2446,6 +2561,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 190,
+    "peso": null,
     "nascita": "2008-09-26",
     "capitano": false,
     "s": {
@@ -2480,6 +2596,7 @@
     "posto": 5
    },
    {
+    "id": "p_2ed037e8d47b593b",
     "num": 8,
     "nome": "Babic",
     "nomeIntero": "Karlo Babic",
@@ -2489,6 +2606,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 199,
+    "peso": null,
     "nascita": "2002-05-24",
     "capitano": false,
     "s": {
@@ -2523,6 +2641,7 @@
     "posto": 6
    },
    {
+    "id": "p_7c9992c3ccb52da5",
     "num": 14,
     "nome": "Dobric",
     "nomeIntero": "Fran Dobric",
@@ -2532,6 +2651,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 187,
+    "peso": null,
     "nascita": "2007-09-20",
     "capitano": false,
     "s": {
@@ -2566,6 +2686,7 @@
     "posto": null
    },
    {
+    "id": "p_6ded73de02867a1d",
     "num": 5,
     "nome": "Burburan",
     "nomeIntero": "Gabrijel Burburan",
@@ -2575,6 +2696,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 185,
+    "peso": null,
     "nascita": "2006-06-21",
     "capitano": false,
     "s": {
@@ -2609,6 +2731,7 @@
     "posto": null
    },
    {
+    "id": "p_f3e57d0062f6877e",
     "num": 9,
     "nome": "Zilic",
     "nomeIntero": "Sime Zilic",
@@ -2618,6 +2741,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 205,
+    "peso": null,
     "nascita": "2006-03-13",
     "capitano": false,
     "s": {
@@ -2652,6 +2776,7 @@
     "posto": null
    },
    {
+    "id": "p_24d5a5e68fef806c",
     "num": 11,
     "nome": "Toncinic",
     "nomeIntero": "Viktor Toncinic",
@@ -2661,6 +2786,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 198,
+    "peso": null,
     "nascita": "2007-02-22",
     "capitano": false,
     "s": {
@@ -2695,6 +2821,7 @@
     "posto": null
    },
    {
+    "id": "p_00f62a22a816410f",
     "num": 6,
     "nome": "Curkovic",
     "nomeIntero": "Mislav Curkovic",
@@ -2704,6 +2831,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 200,
+    "peso": null,
     "nascita": "2006-11-05",
     "capitano": false,
     "s": {
@@ -2738,6 +2866,7 @@
     "posto": null
    },
    {
+    "id": "p_d817d1fb12bec1f3",
     "num": 13,
     "nome": "Batos",
     "nomeIntero": "Nikola Batos",
@@ -2747,6 +2876,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 185,
+    "peso": null,
     "nascita": "2008-06-26",
     "capitano": false,
     "s": {
@@ -2779,6 +2909,7 @@
   ],
   "MNE": [
    {
+    "id": "p_6ea4f8edf5826612",
     "num": 1,
     "nome": "Durovic",
     "nomeIntero": "Darko Durovic",
@@ -2788,6 +2919,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 195,
+    "peso": null,
     "nascita": "2000-04-29",
     "capitano": false,
     "s": {
@@ -2818,6 +2950,7 @@
     "posto": 0
    },
    {
+    "id": "p_47663eeded415291",
     "num": 9,
     "nome": "Perkovic",
     "nomeIntero": "Miroslav Perkovic",
@@ -2827,6 +2960,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 194,
+    "peso": 111,
     "nascita": "2001-03-15",
     "capitano": true,
     "s": {
@@ -2838,13 +2972,13 @@
      "vis": 69,
      "dif": 68,
      "dis": 72,
-     "frz": 86,
+     "frz": 89,
      "rif": 45,
      "pos": 45,
      "usc": 45,
      "rig": 45
     },
-    "ovr": 78,
+    "ovr": 80,
     "dati": {
      "tornei": 4,
      "partite": 22,
@@ -2862,6 +2996,7 @@
     "campione": true
    },
    {
+    "id": "p_16ff95aeeca76e1e",
     "num": 14,
     "nome": "Stupar",
     "nomeIntero": "Danilo Stupar",
@@ -2871,6 +3006,7 @@
     "mano": "S",
     "manoNota": null,
     "altezza": 198,
+    "peso": null,
     "nascita": "2007-04-09",
     "capitano": false,
     "s": {
@@ -2882,7 +3018,7 @@
      "vis": 73,
      "dif": 76,
      "dis": 71,
-     "frz": 68,
+     "frz": 67,
      "rif": 45,
      "pos": 45,
      "usc": 45,
@@ -2905,6 +3041,7 @@
     "posto": 2
    },
    {
+    "id": "p_1c262d6472cdb9af",
     "num": 15,
     "nome": "Gojkovic",
     "nomeIntero": "Strahinja Gojkovic",
@@ -2914,6 +3051,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 191,
+    "peso": null,
     "nascita": "2007-03-15",
     "capitano": false,
     "s": {
@@ -2948,6 +3086,7 @@
     "posto": 3
    },
    {
+    "id": "p_eaf72a9493c234fa",
     "num": 7,
     "nome": "Ukropina",
     "nomeIntero": "Aleksa Ukropina",
@@ -2957,6 +3096,7 @@
     "mano": "S",
     "manoNota": null,
     "altezza": 193,
+    "peso": null,
     "nascita": "1998-09-28",
     "capitano": false,
     "s": {
@@ -2991,6 +3131,7 @@
     "posto": 4
    },
    {
+    "id": "p_cf7788460cb3500b",
     "num": 8,
     "nome": "Vuckovic",
     "nomeIntero": "Balsa Vuckovic",
@@ -3000,6 +3141,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 194,
+    "peso": null,
     "nascita": "2005-04-14",
     "capitano": false,
     "s": {
@@ -3034,6 +3176,7 @@
     "posto": 5
    },
    {
+    "id": "p_89b96d2e916ce1a9",
     "num": 2,
     "nome": "Vujovic",
     "nomeIntero": "Jovan Vujovic",
@@ -3043,6 +3186,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 190,
+    "peso": 89,
     "nascita": "2003-01-20",
     "capitano": false,
     "s": {
@@ -3054,7 +3198,7 @@
      "vis": 82,
      "dif": 79,
      "dis": 70,
-     "frz": 77,
+     "frz": 75,
      "rif": 45,
      "pos": 45,
      "usc": 45,
@@ -3078,6 +3222,7 @@
     "campione": true
    },
    {
+    "id": "p_4a24281484882e0d",
     "num": 3,
     "nome": "Radovic D.",
     "nomeIntero": "Duro Radovic",
@@ -3087,6 +3232,7 @@
     "mano": "S",
     "manoNota": null,
     "altezza": 191,
+    "peso": null,
     "nascita": "1999-02-20",
     "capitano": false,
     "s": {
@@ -3121,49 +3267,7 @@
     "posto": null
    },
    {
-    "num": 5,
-    "nome": "Macic",
-    "nomeIntero": "Aljosa Macic",
-    "nomeCompleto": "MACIC Aljosa",
-    "ruolo": 6,
-    "ruoloVero": "Centre Back",
-    "mano": "D",
-    "manoNota": null,
-    "altezza": 190,
-    "nascita": "2000-10-31",
-    "capitano": false,
-    "s": {
-     "vel": 70,
-     "res": 72,
-     "pot": 73,
-     "pre": 75,
-     "pas": 78,
-     "vis": 78,
-     "dif": 79,
-     "dis": 69,
-     "frz": 77,
-     "rif": 45,
-     "pos": 45,
-     "usc": 45,
-     "rig": 45
-    },
-    "ovr": 78,
-    "dati": {
-     "tornei": 4,
-     "partite": 23,
-     "minuti": 271,
-     "gol": 25,
-     "tiri": 43,
-     "assist": 2,
-     "rubate": 8,
-     "murati": 5,
-     "espulsioni": 44
-    },
-    "convocazione": "wc2026_finals",
-    "titolare": false,
-    "posto": null
-   },
-   {
+    "id": "p_843b196b3d2d5620",
     "num": 10,
     "nome": "Spaic",
     "nomeIntero": "Vladan Spaic",
@@ -3173,6 +3277,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 186,
+    "peso": 103,
     "nascita": "1997-06-18",
     "capitano": false,
     "s": {
@@ -3184,7 +3289,7 @@
      "vis": 68,
      "dif": 68,
      "dis": 71,
-     "frz": 84,
+     "frz": 85,
      "rif": 45,
      "pos": 45,
      "usc": 45,
@@ -3207,6 +3312,52 @@
     "posto": null
    },
    {
+    "id": "p_5e3af4c12dd6cff3",
+    "num": 5,
+    "nome": "Macic",
+    "nomeIntero": "Aljosa Macic",
+    "nomeCompleto": "MACIC Aljosa",
+    "ruolo": 6,
+    "ruoloVero": "Centre Back",
+    "mano": "D",
+    "manoNota": null,
+    "altezza": 190,
+    "peso": 90,
+    "nascita": "2000-10-31",
+    "capitano": false,
+    "s": {
+     "vel": 70,
+     "res": 72,
+     "pot": 73,
+     "pre": 75,
+     "pas": 78,
+     "vis": 78,
+     "dif": 79,
+     "dis": 69,
+     "frz": 75,
+     "rif": 45,
+     "pos": 45,
+     "usc": 45,
+     "rig": 45
+    },
+    "ovr": 77,
+    "dati": {
+     "tornei": 4,
+     "partite": 23,
+     "minuti": 271,
+     "gol": 25,
+     "tiri": 43,
+     "assist": 2,
+     "rubate": 8,
+     "murati": 5,
+     "espulsioni": 44
+    },
+    "convocazione": "wc2026_finals",
+    "titolare": false,
+    "posto": null
+   },
+   {
+    "id": "p_2b26c9e345bd1625",
     "num": 11,
     "nome": "Matkovic",
     "nomeIntero": "Dusan Matkovic",
@@ -3216,6 +3367,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 188,
+    "peso": 95,
     "nascita": "1999-02-01",
     "capitano": false,
     "s": {
@@ -3250,6 +3402,7 @@
     "posto": null
    },
    {
+    "id": "p_52f127447d09e4d8",
     "num": 12,
     "nome": "Radovic V.",
     "nomeIntero": "Vasilije Radovic",
@@ -3259,6 +3412,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 192,
+    "peso": 89,
     "nascita": "2003-05-12",
     "capitano": false,
     "s": {
@@ -3270,7 +3424,7 @@
      "vis": 74,
      "dif": 72,
      "dis": 73,
-     "frz": 74,
+     "frz": 73,
      "rif": 45,
      "pos": 45,
      "usc": 45,
@@ -3293,6 +3447,7 @@
     "posto": null
    },
    {
+    "id": "p_a4c010e1256cb830",
     "num": 13,
     "nome": "Radovic I.",
     "nomeIntero": "Ilija Radovic",
@@ -3302,6 +3457,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 185,
+    "peso": null,
     "nascita": "2003-03-11",
     "capitano": false,
     "s": {
@@ -3334,6 +3490,7 @@
   ],
   "ITA": [
    {
+    "id": "p_d08b6b54507b0d09",
     "num": 13,
     "nome": "Nicosia",
     "nomeIntero": "Gianmarco Nicosia",
@@ -3343,6 +3500,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 198,
+    "peso": null,
     "nascita": "1998-02-12",
     "capitano": false,
     "s": {
@@ -3373,6 +3531,7 @@
     "posto": 0
    },
    {
+    "id": "p_8ffeda23a9878d1a",
     "num": 8,
     "nome": "Gianazza",
     "nomeIntero": "Tommaso Gianazza",
@@ -3382,6 +3541,13 @@
     "mano": "S",
     "manoNota": null,
     "altezza": 194,
+    "peso": 103,
+    "aspetto": {
+     "capelli": "castano",
+     "taglio": "corto",
+     "barba": "barba_leggera",
+     "fonte": "verificata_da_ritratto"
+    },
     "nascita": "2002-07-21",
     "capitano": false,
     "s": {
@@ -3393,7 +3559,7 @@
      "vis": 67,
      "dif": 66,
      "dis": 70,
-     "frz": 84,
+     "frz": 85,
      "rif": 43,
      "pos": 43,
      "usc": 43,
@@ -3416,6 +3582,7 @@
     "posto": 1
    },
    {
+    "id": "p_1d4c42c35a972e70",
     "num": 12,
     "nome": "Carnesecchi",
     "nomeIntero": "Alessandro Carnesecchi",
@@ -3425,6 +3592,13 @@
     "mano": "S",
     "manoNota": null,
     "altezza": 189,
+    "peso": 100,
+    "aspetto": {
+     "capelli": "castano",
+     "taglio": "medio_riccio",
+     "barba": "barba_leggera",
+     "fonte": "verificata_da_ritratto"
+    },
     "nascita": "2002-06-18",
     "capitano": false,
     "s": {
@@ -3436,7 +3610,7 @@
      "vis": 73,
      "dif": 75,
      "dis": 72,
-     "frz": 64,
+     "frz": 65,
      "rif": 43,
      "pos": 43,
      "usc": 43,
@@ -3459,6 +3633,7 @@
     "posto": 2
    },
    {
+    "id": "p_da2c30aeb9fd636e",
     "num": 14,
     "nome": "Alesiani",
     "nomeIntero": "Jacopo Alesiani",
@@ -3468,6 +3643,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": 78,
+    "aspetto": {
+     "capelli": "castano_scuro",
+     "taglio": "corto",
+     "barba": "barba_corta",
+     "fonte": "verificata_da_ritratto"
+    },
     "nascita": "1996-06-18",
     "capitano": false,
     "s": {
@@ -3479,7 +3661,7 @@
      "vis": 72,
      "dif": 68,
      "dis": 74,
-     "frz": 65,
+     "frz": 63,
      "rif": 43,
      "pos": 43,
      "usc": 43,
@@ -3502,6 +3684,7 @@
     "posto": 3
    },
    {
+    "id": "p_561579055dfadae9",
     "num": 5,
     "nome": "Ferrero",
     "nomeIntero": "Filippo Ferrero",
@@ -3511,6 +3694,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 180,
+    "peso": 85,
+    "aspetto": {
+     "capelli": "castano",
+     "taglio": "corto",
+     "barba": "nessuna",
+     "fonte": "verificata_da_ritratto"
+    },
     "nascita": "2002-07-31",
     "capitano": false,
     "s": {
@@ -3522,7 +3712,7 @@
      "vis": 75,
      "dif": 70,
      "dis": 73,
-     "frz": 70,
+     "frz": 69,
      "rif": 43,
      "pos": 43,
      "usc": 43,
@@ -3545,6 +3735,7 @@
     "posto": 4
    },
    {
+    "id": "p_fce4dfe9b86b47cc",
     "num": 4,
     "nome": "Cannella",
     "nomeIntero": "Giacomo Cannella",
@@ -3554,6 +3745,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 184,
+    "peso": null,
     "nascita": "1997-02-12",
     "capitano": false,
     "s": {
@@ -3565,7 +3757,7 @@
      "vis": 71,
      "dif": 68,
      "dis": 72,
-     "frz": 71,
+     "frz": 70,
      "rif": 43,
      "pos": 43,
      "usc": 43,
@@ -3588,6 +3780,7 @@
     "posto": 5
    },
    {
+    "id": "p_cd8b769afef1996b",
     "num": 9,
     "nome": "Iocchi Gratta",
     "nomeIntero": "Matteo Iocchi Gratta",
@@ -3597,6 +3790,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 195,
+    "peso": 107,
+    "aspetto": {
+     "capelli": "castano_scuro",
+     "taglio": "corto",
+     "barba": "nessuna",
+     "fonte": "verificata_da_ritratto"
+    },
     "nascita": "2002-09-01",
     "capitano": false,
     "s": {
@@ -3608,7 +3808,7 @@
      "vis": 79,
      "dif": 80,
      "dis": 72,
-     "frz": 76,
+     "frz": 78,
      "rif": 43,
      "pos": 43,
      "usc": 43,
@@ -3632,6 +3832,7 @@
     "campione": true
    },
    {
+    "id": "p_891f06ffbf6bf958",
     "num": 11,
     "nome": "Condemi",
     "nomeIntero": "Francesco Condemi",
@@ -3641,6 +3842,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 190,
+    "peso": 78,
+    "aspetto": {
+     "capelli": "castano_scuro",
+     "taglio": "corto",
+     "barba": "nessuna",
+     "fonte": "verificata_da_ritratto"
+    },
     "nascita": "2003-12-23",
     "capitano": false,
     "s": {
@@ -3652,7 +3860,7 @@
      "vis": 79,
      "dif": 81,
      "dis": 74,
-     "frz": 76,
+     "frz": 74,
      "rif": 43,
      "pos": 43,
      "usc": 43,
@@ -3676,6 +3884,7 @@
     "campione": true
    },
    {
+    "id": "p_976bc572133f1e67",
     "num": 7,
     "nome": "Dolce",
     "nomeIntero": "Vincenzo Dolce",
@@ -3685,6 +3894,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 195,
+    "peso": 94,
+    "aspetto": {
+     "capelli": "castano_scuro",
+     "taglio": "corto",
+     "barba": "barba_leggera",
+     "fonte": "verificata_da_ritratto"
+    },
     "nascita": "1995-05-11",
     "capitano": false,
     "s": {
@@ -3696,7 +3912,7 @@
      "vis": 83,
      "dif": 73,
      "dis": 72,
-     "frz": 76,
+     "frz": 75,
      "rif": 43,
      "pos": 43,
      "usc": 43,
@@ -3719,49 +3935,7 @@
     "posto": null
    },
    {
-    "num": 3,
-    "nome": "Guerrato",
-    "nomeIntero": "Stefano Guerrato",
-    "nomeCompleto": "GUERRATO Stefano",
-    "ruolo": 6,
-    "ruoloVero": "Centre Back",
-    "mano": "D",
-    "manoNota": null,
-    "altezza": 190,
-    "nascita": "1997-10-02",
-    "capitano": false,
-    "s": {
-     "vel": 68,
-     "res": 68,
-     "pot": 70,
-     "pre": 71,
-     "pas": 76,
-     "vis": 76,
-     "dif": 77,
-     "dis": 68,
-     "frz": 75,
-     "rif": 43,
-     "pos": 43,
-     "usc": 43,
-     "rig": 43
-    },
-    "ovr": 76,
-    "dati": {
-     "tornei": 2,
-     "partite": 8,
-     "minuti": 77,
-     "gol": 6,
-     "tiri": 13,
-     "assist": 0,
-     "rubate": 3,
-     "murati": 2,
-     "espulsioni": 18
-    },
-    "convocazione": "wc2026_finals",
-    "titolare": false,
-    "posto": null
-   },
-   {
+    "id": "p_9430f3c79ba2b5c2",
     "num": 10,
     "nome": "Del Basso",
     "nomeIntero": "Mario Del Basso",
@@ -3771,6 +3945,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 189,
+    "peso": 105,
+    "aspetto": {
+     "capelli": "castano",
+     "taglio": "corto_mosso",
+     "barba": "barba_leggera",
+     "fonte": "verificata_da_ritratto"
+    },
     "nascita": "1998-11-14",
     "capitano": false,
     "s": {
@@ -3782,13 +3963,13 @@
      "vis": 68,
      "dif": 68,
      "dis": 63,
-     "frz": 81,
+     "frz": 83,
      "rif": 43,
      "pos": 43,
      "usc": 43,
      "rig": 43
     },
-    "ovr": 75,
+    "ovr": 76,
     "dati": {
      "tornei": 4,
      "partite": 19,
@@ -3805,6 +3986,52 @@
     "posto": null
    },
    {
+    "id": "p_df8cbd03374547a7",
+    "num": 3,
+    "nome": "Guerrato",
+    "nomeIntero": "Stefano Guerrato",
+    "nomeCompleto": "GUERRATO Stefano",
+    "ruolo": 6,
+    "ruoloVero": "Centre Back",
+    "mano": "D",
+    "manoNota": null,
+    "altezza": 190,
+    "peso": null,
+    "nascita": "1997-10-02",
+    "capitano": false,
+    "s": {
+     "vel": 68,
+     "res": 68,
+     "pot": 70,
+     "pre": 71,
+     "pas": 76,
+     "vis": 76,
+     "dif": 77,
+     "dis": 68,
+     "frz": 74,
+     "rif": 43,
+     "pos": 43,
+     "usc": 43,
+     "rig": 43
+    },
+    "ovr": 75,
+    "dati": {
+     "tornei": 2,
+     "partite": 8,
+     "minuti": 77,
+     "gol": 6,
+     "tiri": 13,
+     "assist": 0,
+     "rubate": 3,
+     "murati": 2,
+     "espulsioni": 18
+    },
+    "convocazione": "wc2026_finals",
+    "titolare": false,
+    "posto": null
+   },
+   {
+    "id": "p_1b8e7dda0094582f",
     "num": 15,
     "nome": "Balzarini",
     "nomeIntero": "Alessandro Balzarini",
@@ -3814,6 +4041,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 187,
+    "peso": 99,
+    "aspetto": {
+     "capelli": "castano",
+     "taglio": "corto",
+     "barba": "nessuna",
+     "fonte": "verificata_da_ritratto"
+    },
     "nascita": "2003-11-28",
     "capitano": false,
     "s": {
@@ -3848,6 +4082,7 @@
     "posto": null
    },
    {
+    "id": "p_cd41d775fa55c267",
     "num": 1,
     "nome": "Del Lungo",
     "nomeIntero": "Marco Del Lungo",
@@ -3857,6 +4092,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 190,
+    "peso": 100,
+    "aspetto": {
+     "capelli": "castano_scuro",
+     "taglio": "corto",
+     "barba": "barba_leggera",
+     "fonte": "verificata_da_ritratto"
+    },
     "nascita": "1990-03-01",
     "capitano": true,
     "s": {
@@ -3889,6 +4131,7 @@
   ],
   "USA": [
    {
+    "id": "p_e90a0ecd728e9b97",
     "num": 1,
     "nome": "Weinberg",
     "nomeIntero": "Adrian Weinberg",
@@ -3898,6 +4141,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 195,
+    "peso": 95.3,
+    "aspetto": {
+     "capelli": "nero",
+     "taglio": "medio_liscio",
+     "barba": "nessuna",
+     "fonte": "verificata"
+    },
     "nascita": "2001-11-25",
     "capitano": false,
     "s": {
@@ -3928,6 +4178,7 @@
     "posto": 0
    },
    {
+    "id": "p_104c36befc8c8c0b",
     "num": 15,
     "nome": "Brown",
     "nomeIntero": "Dom Brown",
@@ -3937,6 +4188,13 @@
     "mano": "S",
     "manoNota": null,
     "altezza": 198,
+    "peso": 104.3,
+    "aspetto": {
+     "capelli": "castano",
+     "taglio": "corto_mosso",
+     "barba": "nessuna",
+     "fonte": "verificata"
+    },
     "nascita": "2005-03-22",
     "capitano": false,
     "s": {
@@ -3948,13 +4206,13 @@
      "vis": 69,
      "dif": 64,
      "dis": 66,
-     "frz": 84,
+     "frz": 86,
      "rif": 41,
      "pos": 41,
      "usc": 41,
      "rig": 41
     },
-    "ovr": 75,
+    "ovr": 76,
     "dati": {
      "tornei": 2,
      "partite": 11,
@@ -3972,6 +4230,7 @@
     "campione": true
    },
    {
+    "id": "p_3eb412b319d8b9e0",
     "num": 7,
     "nome": "Liechty",
     "nomeIntero": "Ben Liechty",
@@ -3981,6 +4240,7 @@
     "mano": "S",
     "manoNota": null,
     "altezza": 193,
+    "peso": null,
     "nascita": "2005-08-22",
     "capitano": false,
     "s": {
@@ -3992,7 +4252,7 @@
      "vis": 69,
      "dif": 69,
      "dis": 72,
-     "frz": 63,
+     "frz": 62,
      "rif": 41,
      "pos": 41,
      "usc": 41,
@@ -4015,6 +4275,7 @@
     "posto": 2
    },
    {
+    "id": "p_f1030d407e7891ca",
     "num": 10,
     "nome": "Dodd C.",
     "nomeIntero": "Chase Dodd",
@@ -4024,6 +4285,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 190,
+    "peso": 104.3,
+    "aspetto": {
+     "capelli": "biondo",
+     "taglio": "corto",
+     "barba": "nessuna",
+     "fonte": "verificata"
+    },
     "nascita": "2003-04-05",
     "capitano": false,
     "s": {
@@ -4035,7 +4303,7 @@
      "vis": 69,
      "dif": 67,
      "dis": 70,
-     "frz": 62,
+     "frz": 63,
      "rif": 41,
      "pos": 41,
      "usc": 41,
@@ -4058,6 +4326,7 @@
     "posto": 3
    },
    {
+    "id": "p_88ab83c3d76e7cb1",
     "num": 4,
     "nome": "Saveljic",
     "nomeIntero": "Nicolas Saveljic",
@@ -4067,6 +4336,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 196,
+    "peso": null,
+    "aspetto": {
+     "capelli": "castano_scuro",
+     "taglio": "corto",
+     "barba": "barba_corta",
+     "fonte": "verificata"
+    },
     "nascita": "1998-09-12",
     "capitano": false,
     "s": {
@@ -4101,6 +4377,7 @@
     "posto": 4
    },
    {
+    "id": "p_19e37b0951327d97",
     "num": 11,
     "nome": "Dodd R.",
     "nomeIntero": "Ryder Dodd",
@@ -4110,6 +4387,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 182,
+    "peso": null,
+    "aspetto": {
+     "capelli": "biondo_scuro",
+     "taglio": "medio_mosso",
+     "barba": "nessuna",
+     "fonte": "verificata"
+    },
     "nascita": "2006-01-19",
     "capitano": false,
     "s": {
@@ -4144,6 +4428,7 @@
     "posto": 5
    },
    {
+    "id": "p_c4b5f2337141aa27",
     "num": 8,
     "nome": "Nelson",
     "nomeIntero": "Luke James Nelson",
@@ -4153,6 +4438,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 198,
+    "peso": null,
     "nascita": "2005-01-22",
     "capitano": false,
     "s": {
@@ -4188,6 +4474,7 @@
     "campione": true
    },
    {
+    "id": "p_9a1a5f1a21620817",
     "num": 2,
     "nome": "Larsen",
     "nomeIntero": "Jack Larsen",
@@ -4197,6 +4484,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 200,
+    "peso": null,
+    "aspetto": {
+     "capelli": "castano_chiaro",
+     "taglio": "corto",
+     "barba": "nessuna",
+     "fonte": "verificata"
+    },
     "nascita": "2001-08-23",
     "capitano": false,
     "s": {
@@ -4231,6 +4525,7 @@
     "posto": null
    },
    {
+    "id": "p_5eb6c3a567b401a7",
     "num": 12,
     "nome": "Irving",
     "nomeIntero": "Max Irving",
@@ -4240,6 +4535,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 192,
+    "peso": 86.2,
+    "aspetto": {
+     "capelli": "castano_scuro",
+     "taglio": "corto",
+     "barba": "barba_corta",
+     "fonte": "verificata"
+    },
     "nascita": "1995-05-21",
     "capitano": false,
     "s": {
@@ -4251,7 +4553,7 @@
      "vis": 71,
      "dif": 69,
      "dis": 70,
-     "frz": 62,
+     "frz": 61,
      "rif": 41,
      "pos": 41,
      "usc": 41,
@@ -4274,6 +4576,7 @@
     "posto": null
    },
    {
+    "id": "p_5427e7f90c60156e",
     "num": 3,
     "nome": "Vavic",
     "nomeIntero": "Marko Vavic",
@@ -4283,6 +4586,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 195,
+    "peso": 95.3,
+    "aspetto": {
+     "capelli": "castano_chiaro",
+     "taglio": "corto",
+     "barba": "barba_leggera",
+     "fonte": "verificata"
+    },
     "nascita": "1999-04-25",
     "capitano": false,
     "s": {
@@ -4317,6 +4627,7 @@
     "posto": null
    },
    {
+    "id": "p_6de09632932c6ec1",
     "num": 5,
     "nome": "Daube",
     "nomeIntero": "Hannes Daube",
@@ -4326,6 +4637,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 198,
+    "peso": 102.1,
+    "aspetto": {
+     "capelli": "biondo_scuro",
+     "taglio": "corto",
+     "barba": "nessuna",
+     "fonte": "verificata"
+    },
     "nascita": "2000-01-05",
     "capitano": false,
     "s": {
@@ -4337,7 +4655,7 @@
      "vis": 69,
      "dif": 69,
      "dis": 70,
-     "frz": 63,
+     "frz": 64,
      "rif": 41,
      "pos": 41,
      "usc": 41,
@@ -4360,6 +4678,7 @@
     "posto": null
    },
    {
+    "id": "p_bac455eb2dc7de6f",
     "num": 14,
     "nome": "Ohl",
     "nomeIntero": "Ryan Ohl",
@@ -4369,6 +4688,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": 88.5,
+    "aspetto": {
+     "capelli": "castano_chiaro",
+     "taglio": "medio_mosso",
+     "barba": "nessuna",
+     "fonte": "verificata"
+    },
     "nascita": "2005-04-29",
     "capitano": false,
     "s": {
@@ -4380,7 +4706,7 @@
      "vis": 71,
      "dif": 71,
      "dis": 69,
-     "frz": 63,
+     "frz": 62,
      "rif": 41,
      "pos": 41,
      "usc": 41,
@@ -4403,6 +4729,7 @@
     "posto": null
    },
    {
+    "id": "p_d5ba7d565a850667",
     "num": 13,
     "nome": "Mills",
     "nomeIntero": "Charlie Mills",
@@ -4412,6 +4739,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 195,
+    "peso": null,
     "nascita": "2005-02-18",
     "capitano": false,
     "s": {
@@ -4444,6 +4772,7 @@
   ],
   "JPN": [
    {
+    "id": "p_e98a75bfcb11b246",
     "num": 1,
     "nome": "Nishimura",
     "nomeIntero": "Towa Nishimura",
@@ -4452,7 +4781,8 @@
     "ruoloVero": "Goalkeeper",
     "mano": "D",
     "manoNota": "sconosciuta",
-    "altezza": null,
+    "altezza": 182,
+    "peso": null,
     "nascita": "1998-03-31",
     "capitano": false,
     "s": {
@@ -4483,6 +4813,7 @@
     "posto": 0
    },
    {
+    "id": "p_e38440b515d194f7",
     "num": 12,
     "nome": "Araki",
     "nomeIntero": "Kenta Araki",
@@ -4490,8 +4821,9 @@
     "ruolo": 1,
     "ruoloVero": "Centre Forward",
     "mano": "D",
-    "manoNota": "sconosciuta",
-    "altezza": null,
+    "manoNota": "file di Ale",
+    "altezza": 186,
+    "peso": null,
     "nascita": "1995-04-06",
     "capitano": false,
     "s": {
@@ -4526,6 +4858,7 @@
     "posto": 1
    },
    {
+    "id": "p_febd7f7aa1012e26",
     "num": 10,
     "nome": "Inaba",
     "nomeIntero": "Yusuke Inaba",
@@ -4533,8 +4866,9 @@
     "ruolo": 5,
     "ruoloVero": "Driver",
     "mano": "D",
-    "manoNota": "sconosciuta",
-    "altezza": null,
+    "manoNota": "file di Ale",
+    "altezza": 180,
+    "peso": null,
     "nascita": "2000-04-11",
     "capitano": true,
     "s": {
@@ -4570,6 +4904,7 @@
     "campione": true
    },
    {
+    "id": "p_0ef59c441dd15d9e",
     "num": 7,
     "nome": "Date",
     "nomeIntero": "Kiyomu Date",
@@ -4577,8 +4912,9 @@
     "ruolo": 5,
     "ruoloVero": "Driver",
     "mano": "D",
-    "manoNota": "sconosciuta",
-    "altezza": null,
+    "manoNota": "file di Ale",
+    "altezza": 174,
+    "peso": 75,
     "nascita": "1997-04-09",
     "capitano": false,
     "s": {
@@ -4590,7 +4926,7 @@
      "vis": 69,
      "dif": 65,
      "dis": 69,
-     "frz": 69,
+     "frz": 68,
      "rif": 40,
      "pos": 40,
      "usc": 40,
@@ -4613,6 +4949,7 @@
     "posto": 3
    },
    {
+    "id": "p_f018e3e9a7e9bac4",
     "num": 5,
     "nome": "Ura",
     "nomeIntero": "Enishi Ura",
@@ -4622,6 +4959,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": null,
+    "peso": null,
     "nascita": "2005-01-20",
     "capitano": false,
     "s": {
@@ -4633,7 +4971,7 @@
      "vis": 70,
      "dif": 66,
      "dis": 68,
-     "frz": 69,
+     "frz": 71,
      "rif": 40,
      "pos": 40,
      "usc": 40,
@@ -4656,6 +4994,7 @@
     "posto": 4
    },
    {
+    "id": "p_f7149cbfaa7031ce",
     "num": 3,
     "nome": "Watanabe",
     "nomeIntero": "Taiyo Watanabe",
@@ -4663,8 +5002,9 @@
     "ruolo": 5,
     "ruoloVero": "Driver",
     "mano": "D",
-    "manoNota": "sconosciuta",
-    "altezza": null,
+    "manoNota": "file di Ale",
+    "altezza": 179,
+    "peso": 79,
     "nascita": "2001-10-04",
     "capitano": false,
     "s": {
@@ -4676,7 +5016,7 @@
      "vis": 68,
      "dif": 66,
      "dis": 68,
-     "frz": 69,
+     "frz": 68,
      "rif": 40,
      "pos": 40,
      "usc": 40,
@@ -4699,6 +5039,7 @@
     "posto": 5
    },
    {
+    "id": "p_86b145723434ed83",
     "num": 9,
     "nome": "Nitta",
     "nomeIntero": "Ikkei Nitta",
@@ -4707,7 +5048,8 @@
     "ruoloVero": "Centre Back",
     "mano": "D",
     "manoNota": "sconosciuta",
-    "altezza": null,
+    "altezza": 177,
+    "peso": null,
     "nascita": "1998-04-23",
     "capitano": false,
     "s": {
@@ -4719,7 +5061,7 @@
      "vis": 76,
      "dif": 76,
      "dis": 67,
-     "frz": 73,
+     "frz": 71,
      "rif": 40,
      "pos": 40,
      "usc": 40,
@@ -4743,6 +5085,7 @@
     "campione": true
    },
    {
+    "id": "p_a681e2cf6ee9be6f",
     "num": 8,
     "nome": "Takata",
     "nomeIntero": "Mitsuru Takata",
@@ -4750,8 +5093,9 @@
     "ruolo": 6,
     "ruoloVero": "Centre Back",
     "mano": "D",
-    "manoNota": "sconosciuta",
-    "altezza": null,
+    "manoNota": "file di Ale",
+    "altezza": 182,
+    "peso": null,
     "nascita": "1995-12-08",
     "capitano": false,
     "s": {
@@ -4763,7 +5107,7 @@
      "vis": 75,
      "dif": 73,
      "dis": 68,
-     "frz": 72,
+     "frz": 71,
      "rif": 40,
      "pos": 40,
      "usc": 40,
@@ -4786,6 +5130,7 @@
     "posto": null
    },
    {
+    "id": "p_2a64a4b53730da58",
     "num": 11,
     "nome": "Suzuki",
     "nomeIntero": "Toi Suzuki",
@@ -4793,8 +5138,9 @@
     "ruolo": 5,
     "ruoloVero": "Driver",
     "mano": "D",
-    "manoNota": "sconosciuta",
-    "altezza": null,
+    "manoNota": "file di Ale",
+    "altezza": 185,
+    "peso": null,
     "nascita": "1999-10-20",
     "capitano": false,
     "s": {
@@ -4806,7 +5152,7 @@
      "vis": 68,
      "dif": 65,
      "dis": 67,
-     "frz": 69,
+     "frz": 70,
      "rif": 40,
      "pos": 40,
      "usc": 40,
@@ -4829,6 +5175,7 @@
     "posto": null
    },
    {
+    "id": "p_48a22aa12c9c91b3",
     "num": 2,
     "nome": "Adachi",
     "nomeIntero": "Seiya Adachi",
@@ -4836,8 +5183,9 @@
     "ruolo": 5,
     "ruoloVero": "Driver",
     "mano": "D",
-    "manoNota": "sconosciuta",
+    "manoNota": "file di Ale",
     "altezza": 172,
+    "peso": 67,
     "nascita": "1995-06-24",
     "capitano": false,
     "s": {
@@ -4872,6 +5220,7 @@
     "posto": null
    },
    {
+    "id": "p_6268e938ae9e5b25",
     "num": 4,
     "nome": "Ogihara",
     "nomeIntero": "Daichi Ogihara",
@@ -4880,7 +5229,8 @@
     "ruoloVero": "Driver",
     "mano": "D",
     "manoNota": "sconosciuta",
-    "altezza": null,
+    "altezza": 179,
+    "peso": null,
     "nascita": "2003-03-17",
     "capitano": false,
     "s": {
@@ -4915,6 +5265,7 @@
     "posto": null
    },
    {
+    "id": "p_3c24f6be35fc31b4",
     "num": 14,
     "nome": "Lowrey",
     "nomeIntero": "Jun Lowrey",
@@ -4924,6 +5275,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": null,
+    "peso": null,
     "nascita": "2005-06-05",
     "capitano": false,
     "s": {
@@ -4935,7 +5287,7 @@
      "vis": 69,
      "dif": 69,
      "dis": 68,
-     "frz": 69,
+     "frz": 71,
      "rif": 40,
      "pos": 40,
      "usc": 40,
@@ -4958,6 +5310,7 @@
     "posto": null
    },
    {
+    "id": "p_fd2f189a45c5fbe1",
     "num": 13,
     "nome": "Sasano",
     "nomeIntero": "Ren Sasano",
@@ -4967,6 +5320,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": null,
+    "peso": null,
     "nascita": "2001-06-13",
     "capitano": false,
     "s": {
@@ -4999,6 +5353,7 @@
   ],
   "ROU": [
    {
+    "id": "p_9cef7ba6c9eb6b32",
     "num": 13,
     "nome": "Gavris",
     "nomeIntero": "Raul-Ioan Gavris",
@@ -5008,6 +5363,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 185,
+    "peso": null,
     "nascita": "1998-02-09",
     "capitano": false,
     "s": {
@@ -5038,6 +5394,7 @@
     "posto": 0
    },
    {
+    "id": "p_62d78c6bdfeeadc9",
     "num": 12,
     "nome": "Vancsik",
     "nomeIntero": "Levente Vancsik",
@@ -5047,6 +5404,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 202,
+    "peso": 126,
+    "aspetto": {
+     "capelli": "castano_scuro",
+     "taglio": "molto_corto",
+     "barba": "nessuna",
+     "fonte": "verificata"
+    },
     "nascita": "1994-07-12",
     "capitano": false,
     "s": {
@@ -5058,13 +5422,13 @@
      "vis": 66,
      "dif": 61,
      "dis": 64,
-     "frz": 83,
+     "frz": 86,
      "rif": 40,
      "pos": 40,
      "usc": 40,
      "rig": 40
     },
-    "ovr": 74,
+    "ovr": 76,
     "dati": {
      "tornei": 3,
      "partite": 19,
@@ -5082,6 +5446,7 @@
     "campione": true
    },
    {
+    "id": "p_b8348ea48bcd6e42",
     "num": 5,
     "nome": "Neamtu",
     "nomeIntero": "Andrei Neamtu",
@@ -5091,6 +5456,13 @@
     "mano": "S",
     "manoNota": null,
     "altezza": 186,
+    "peso": 90,
+    "aspetto": {
+     "capelli": "castano_scuro",
+     "taglio": "corto",
+     "barba": "barba_leggera",
+     "fonte": "verificata"
+    },
     "nascita": "2004-04-06",
     "capitano": false,
     "s": {
@@ -5125,6 +5497,7 @@
     "posto": 2
    },
    {
+    "id": "p_22be79c9b47304f2",
     "num": 6,
     "nome": "Prioteasa",
     "nomeIntero": "Andrei Prioteasa",
@@ -5134,6 +5507,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 183,
+    "peso": 76,
+    "aspetto": {
+     "capelli": "castano_scuro",
+     "taglio": "corto",
+     "barba": "nessuna",
+     "fonte": "verificata"
+    },
     "nascita": "1996-04-03",
     "capitano": false,
     "s": {
@@ -5145,7 +5525,7 @@
      "vis": 69,
      "dif": 65,
      "dis": 69,
-     "frz": 60,
+     "frz": 59,
      "rif": 40,
      "pos": 40,
      "usc": 40,
@@ -5168,6 +5548,7 @@
     "posto": 3
    },
    {
+    "id": "p_21028072bd67e55d",
     "num": 10,
     "nome": "Georgescu",
     "nomeIntero": "Vlad-Luca Georgescu",
@@ -5177,6 +5558,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 182,
+    "peso": 76,
+    "aspetto": {
+     "capelli": "castano",
+     "taglio": "corto",
+     "barba": "nessuna",
+     "fonte": "verificata"
+    },
     "nascita": "1999-03-31",
     "capitano": false,
     "s": {
@@ -5188,7 +5576,7 @@
      "vis": 70,
      "dif": 67,
      "dis": 69,
-     "frz": 67,
+     "frz": 66,
      "rif": 40,
      "pos": 40,
      "usc": 40,
@@ -5211,6 +5599,7 @@
     "posto": 4
    },
    {
+    "id": "p_cf44493b5e2650c5",
     "num": 2,
     "nome": "Belenyesi",
     "nomeIntero": "David Belenyesi",
@@ -5220,6 +5609,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 183,
+    "peso": 85,
+    "aspetto": {
+     "capelli": "castano_chiaro",
+     "taglio": "corto_mosso",
+     "barba": "barba_corta",
+     "fonte": "verificata"
+    },
     "nascita": "2003-04-21",
     "capitano": false,
     "s": {
@@ -5231,7 +5627,7 @@
      "vis": 69,
      "dif": 65,
      "dis": 67,
-     "frz": 67,
+     "frz": 66,
      "rif": 40,
      "pos": 40,
      "usc": 40,
@@ -5254,6 +5650,7 @@
     "posto": 5
    },
    {
+    "id": "p_3f1554907db7c4aa",
     "num": 8,
     "nome": "Oanta",
     "nomeIntero": "Nicolae Oanta",
@@ -5263,6 +5660,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": 105,
+    "aspetto": {
+     "capelli": "castano",
+     "taglio": "corto",
+     "barba": "nessuna",
+     "fonte": "verificata"
+    },
     "nascita": "1990-08-14",
     "capitano": false,
     "s": {
@@ -5274,7 +5678,7 @@
      "vis": 79,
      "dif": 70,
      "dis": 67,
-     "frz": 72,
+     "frz": 74,
      "rif": 40,
      "pos": 40,
      "usc": 40,
@@ -5298,6 +5702,7 @@
     "campione": true
    },
    {
+    "id": "p_93f9fe5d66db8d51",
     "num": 11,
     "nome": "Iudean",
     "nomeIntero": "Francesco Iudean",
@@ -5307,6 +5712,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 187,
+    "peso": 90,
+    "aspetto": {
+     "capelli": "castano_scuro",
+     "taglio": "corto",
+     "barba": "barba_corta",
+     "fonte": "verificata"
+    },
     "nascita": "2001-09-28",
     "capitano": false,
     "s": {
@@ -5341,6 +5753,7 @@
     "posto": null
    },
    {
+    "id": "p_1403f7c0aea2a348",
     "num": 7,
     "nome": "Tepelus",
     "nomeIntero": "Andrei Tepelus",
@@ -5350,6 +5763,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 191,
+    "peso": 76,
+    "aspetto": {
+     "capelli": "castano",
+     "taglio": "corto",
+     "barba": "nessuna",
+     "fonte": "verificata"
+    },
     "nascita": "2005-02-09",
     "capitano": false,
     "s": {
@@ -5361,13 +5781,13 @@
      "vis": 74,
      "dif": 76,
      "dis": 64,
-     "frz": 71,
+     "frz": 69,
      "rif": 40,
      "pos": 40,
      "usc": 40,
      "rig": 40
     },
-    "ovr": 73,
+    "ovr": 72,
     "dati": {
      "tornei": 3,
      "partite": 20,
@@ -5384,6 +5804,7 @@
     "posto": null
    },
    {
+    "id": "p_0bac8c4bf80ed9b7",
     "num": 3,
     "nome": "Lutescu",
     "nomeIntero": "Matei Lutescu",
@@ -5393,6 +5814,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 186,
+    "peso": 83,
+    "aspetto": {
+     "capelli": "castano_scuro",
+     "taglio": "corto",
+     "barba": "nessuna",
+     "fonte": "verificata"
+    },
     "nascita": "2002-06-05",
     "capitano": false,
     "s": {
@@ -5404,7 +5832,7 @@
      "vis": 74,
      "dif": 74,
      "dis": 67,
-     "frz": 71,
+     "frz": 69,
      "rif": 40,
      "pos": 40,
      "usc": 40,
@@ -5427,6 +5855,7 @@
     "posto": null
    },
    {
+    "id": "p_a1455046488092ea",
     "num": 14,
     "nome": "Luncan",
     "nomeIntero": "Iosif-Darian Luncan",
@@ -5436,6 +5865,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 190,
+    "peso": null,
     "nascita": "2002-09-20",
     "capitano": false,
     "s": {
@@ -5470,6 +5900,7 @@
     "posto": null
    },
    {
+    "id": "p_a0c1e574c250d03f",
     "num": 4,
     "nome": "Oltean",
     "nomeIntero": "Sebastian Oltean",
@@ -5479,6 +5910,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 179,
+    "peso": null,
     "nascita": "2001-09-03",
     "capitano": false,
     "s": {
@@ -5513,6 +5945,7 @@
     "posto": null
    },
    {
+    "id": "p_f13d9ec6b2d47e21",
     "num": 1,
     "nome": "Tic",
     "nomeIntero": "Marius-Florin Tic",
@@ -5522,6 +5955,13 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 191,
+    "peso": 100,
+    "aspetto": {
+     "capelli": "castano_scuro",
+     "taglio": "corto",
+     "barba": "barba_leggera",
+     "fonte": "verificata"
+    },
     "nascita": "1996-09-09",
     "capitano": false,
     "s": {
@@ -5554,6 +5994,7 @@
   ],
   "CAN": [
    {
+    "id": "p_010c95005b8d44e0",
     "num": 13,
     "nome": "Radenovic",
     "nomeIntero": "Milan Radenovic",
@@ -5563,6 +6004,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 200,
+    "peso": null,
     "nascita": "1993-08-24",
     "capitano": false,
     "s": {
@@ -5593,6 +6035,7 @@
     "posto": 0
    },
    {
+    "id": "p_6777bb4dfa3d00d4",
     "num": 3,
     "nome": "Djerkovic",
     "nomeIntero": "Bogdan Djerkovic",
@@ -5602,6 +6045,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 198,
+    "peso": null,
     "nascita": "2000-11-16",
     "capitano": false,
     "s": {
@@ -5637,6 +6081,7 @@
     "campione": true
    },
    {
+    "id": "p_754a73a594f06f51",
     "num": 12,
     "nome": "D'Souza",
     "nomeIntero": "Reuel D'Souza",
@@ -5646,6 +6091,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": null,
     "nascita": "1999-03-10",
     "capitano": false,
     "s": {
@@ -5680,6 +6126,7 @@
     "posto": 2
    },
    {
+    "id": "p_d576f406dba9509c",
     "num": 7,
     "nome": "Pozaric",
     "nomeIntero": "Roko Pozaric",
@@ -5689,6 +6136,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 194,
+    "peso": null,
     "nascita": "2002-04-11",
     "capitano": false,
     "s": {
@@ -5723,6 +6171,7 @@
     "posto": 3
    },
    {
+    "id": "p_38a167868a150815",
     "num": 4,
     "nome": "Cote",
     "nomeIntero": "Jeremie Cote",
@@ -5732,6 +6181,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 1,
+    "peso": null,
     "nascita": "2000-01-04",
     "capitano": false,
     "s": {
@@ -5766,6 +6216,7 @@
     "posto": 4
    },
    {
+    "id": "p_4f005f63a7b1f37b",
     "num": 5,
     "nome": "Gerakoudis",
     "nomeIntero": "Nikos Gerakoudis",
@@ -5775,6 +6226,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 180,
+    "peso": null,
     "nascita": "1995-07-24",
     "capitano": false,
     "s": {
@@ -5809,6 +6261,7 @@
     "posto": 5
    },
    {
+    "id": "p_65a2fa9ea2c95e46",
     "num": 10,
     "nome": "Merrill",
     "nomeIntero": "Jack Merrill",
@@ -5818,6 +6271,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": null,
     "nascita": "2003-12-24",
     "capitano": false,
     "s": {
@@ -5853,6 +6307,7 @@
     "campione": true
    },
    {
+    "id": "p_1ad4503fe2927ded",
     "num": 11,
     "nome": "O'Donnell",
     "nomeIntero": "Jason O'Donnell",
@@ -5862,6 +6317,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": null,
     "nascita": "2001-12-06",
     "capitano": false,
     "s": {
@@ -5896,6 +6352,7 @@
     "posto": null
    },
    {
+    "id": "p_2eb25a1d2e9205b6",
     "num": 9,
     "nome": "Gardijan",
     "nomeIntero": "Aleksa Gardijan",
@@ -5905,6 +6362,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 188,
+    "peso": null,
     "nascita": "1997-10-21",
     "capitano": false,
     "s": {
@@ -5939,6 +6397,7 @@
     "posto": null
    },
    {
+    "id": "p_3f1264aa7b32e903",
     "num": 2,
     "nome": "Radulovic",
     "nomeIntero": "Nikola Vuk Radulovic",
@@ -5948,6 +6407,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 189,
+    "peso": null,
     "nascita": "2004-12-19",
     "capitano": false,
     "s": {
@@ -5982,6 +6442,7 @@
     "posto": null
    },
    {
+    "id": "p_96c1014ad8c620b7",
     "num": 8,
     "nome": "Tanasijevic",
     "nomeIntero": "Bor Tanasijevic",
@@ -5991,6 +6452,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 186,
+    "peso": null,
     "nascita": "2001-02-25",
     "capitano": false,
     "s": {
@@ -6025,6 +6487,7 @@
     "posto": null
    },
    {
+    "id": "p_db7eab0f9140a688",
     "num": 15,
     "nome": "Hachem",
     "nomeIntero": "Leo Hachem",
@@ -6034,6 +6497,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 183,
+    "peso": null,
     "nascita": "2005-01-26",
     "capitano": false,
     "s": {
@@ -6068,6 +6532,7 @@
     "posto": null
    },
    {
+    "id": "p_468a69c6314ed9f2",
     "num": 1,
     "nome": "Mcknight",
     "nomeIntero": "Brody Mcknight",
@@ -6077,6 +6542,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 195,
+    "peso": null,
     "nascita": "2001-05-29",
     "capitano": false,
     "s": {
@@ -6109,6 +6575,7 @@
   ],
   "BRA": [
    {
+    "id": "p_b126bd837fa9127b",
     "num": 13,
     "nome": "Fernandes",
     "nomeIntero": "Joao Pedro Fernandes",
@@ -6118,6 +6585,7 @@
     "mano": "S",
     "manoNota": null,
     "altezza": 198,
+    "peso": null,
     "nascita": "2000-03-16",
     "capitano": false,
     "s": {
@@ -6149,6 +6617,7 @@
     "campione": true
    },
    {
+    "id": "p_b398c1e871b584e4",
     "num": 12,
     "nome": "Silva",
     "nomeIntero": "Luis Ricardo Silva",
@@ -6158,6 +6627,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 185,
+    "peso": null,
     "nascita": "1998-03-24",
     "capitano": false,
     "s": {
@@ -6192,6 +6662,7 @@
     "posto": 1
    },
    {
+    "id": "p_bb35a59a8e8bcb5c",
     "num": 7,
     "nome": "Vergara R.",
     "nomeIntero": "Rafael Vergara",
@@ -6201,6 +6672,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 185,
+    "peso": null,
     "nascita": "1999-04-27",
     "capitano": false,
     "s": {
@@ -6236,6 +6708,7 @@
     "campione": true
    },
    {
+    "id": "p_7dd4042d171be96a",
     "num": 6,
     "nome": "Oliveira",
     "nomeIntero": "Paulo Ricardo Oliveira",
@@ -6245,6 +6718,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 180,
+    "peso": null,
     "nascita": "2004-02-27",
     "capitano": false,
     "s": {
@@ -6279,6 +6753,7 @@
     "posto": 3
    },
    {
+    "id": "p_510a90870b97d7bc",
     "num": 10,
     "nome": "Andrade",
     "nomeIntero": "Lucas Andrade",
@@ -6288,6 +6763,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 182,
+    "peso": null,
     "nascita": "1996-08-05",
     "capitano": false,
     "s": {
@@ -6322,6 +6798,7 @@
     "posto": 4
    },
    {
+    "id": "p_8bb5d5f5e6aa1fd3",
     "num": 8,
     "nome": "Vergara P.",
     "nomeIntero": "Pedro Vergara",
@@ -6331,6 +6808,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 192,
+    "peso": null,
     "nascita": "1996-05-29",
     "capitano": false,
     "s": {
@@ -6365,6 +6843,7 @@
     "posto": 5
    },
    {
+    "id": "p_2aeea1477c9db63e",
     "num": 2,
     "nome": "Cabral",
     "nomeIntero": "Logan Cabral",
@@ -6374,6 +6853,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 184,
+    "peso": null,
     "nascita": "1994-09-27",
     "capitano": false,
     "s": {
@@ -6408,6 +6888,7 @@
     "posto": 6
    },
    {
+    "id": "p_a73db8bd16af560d",
     "num": 3,
     "nome": "Da Silva",
     "nomeIntero": "Gabriel Da Silva",
@@ -6417,6 +6898,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 186,
+    "peso": null,
     "nascita": "1997-12-22",
     "capitano": false,
     "s": {
@@ -6451,6 +6933,7 @@
     "posto": null
    },
    {
+    "id": "p_96bfd66b280cdd23",
     "num": 9,
     "nome": "Nardaci Jr",
     "nomeIntero": "Alipio Nardaci Jr",
@@ -6460,6 +6943,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 188,
+    "peso": null,
     "nascita": "2002-04-09",
     "capitano": false,
     "s": {
@@ -6494,6 +6978,7 @@
     "posto": null
    },
    {
+    "id": "p_685ef5b2d80cc43f",
     "num": 11,
     "nome": "Guimaraes",
     "nomeIntero": "Gustavo Guimaraes",
@@ -6503,6 +6988,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 186,
+    "peso": null,
     "nascita": "1994-01-24",
     "capitano": false,
     "s": {
@@ -6537,6 +7023,7 @@
     "posto": null
    },
    {
+    "id": "p_53bce24c77c73d98",
     "num": 5,
     "nome": "Wulfhorst",
     "nomeIntero": "Lucas Wulfhorst",
@@ -6546,6 +7033,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 182,
+    "peso": null,
     "nascita": "2006-09-30",
     "capitano": false,
     "s": {
@@ -6580,6 +7068,7 @@
     "posto": null
    },
    {
+    "id": "p_ffc8d7b46056f240",
     "num": 4,
     "nome": "Coutinho",
     "nomeIntero": "Gustavo Coutinho",
@@ -6589,6 +7078,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 184,
+    "peso": null,
     "nascita": "1991-12-11",
     "capitano": false,
     "s": {
@@ -6623,6 +7113,7 @@
     "posto": null
    },
    {
+    "id": "p_f042b5bef8146a51",
     "num": 1,
     "nome": "Silveira",
     "nomeIntero": "Joao Gabriel Silveira",
@@ -6632,6 +7123,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 190,
+    "peso": null,
     "nascita": "2001-11-06",
     "capitano": false,
     "s": {
@@ -6664,6 +7156,7 @@
   ],
   "AUS": [
    {
+    "id": "p_2861fb3cbf41be4b",
     "num": 1,
     "nome": "Porter",
     "nomeIntero": "Nic Porter",
@@ -6673,6 +7166,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 201,
+    "peso": null,
     "nascita": "1998-06-23",
     "capitano": false,
     "s": {
@@ -6703,6 +7197,7 @@
     "posto": 0
    },
    {
+    "id": "p_eb5c1c27c1cf1694",
     "num": 4,
     "nome": "Constantin-Bicari",
     "nomeIntero": "Nicolas Constantin-Bicari",
@@ -6712,6 +7207,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": null,
     "nascita": "1991-12-05",
     "capitano": false,
     "s": {
@@ -6747,6 +7243,7 @@
     "campione": true
    },
    {
+    "id": "p_0336799073597f39",
     "num": 8,
     "nome": "Mercep",
     "nomeIntero": "Jacob Mercep",
@@ -6756,6 +7253,7 @@
     "mano": "S",
     "manoNota": null,
     "altezza": 186,
+    "peso": 76,
     "nascita": "1998-02-08",
     "capitano": false,
     "s": {
@@ -6767,7 +7265,7 @@
      "vis": 64,
      "dif": 61,
      "dis": 65,
-     "frz": 54,
+     "frz": 52,
      "rif": 40,
      "pos": 40,
      "usc": 40,
@@ -6790,6 +7288,7 @@
     "posto": 2
    },
    {
+    "id": "p_1df3ac844f56fc61",
     "num": 9,
     "nome": "Byrnes",
     "nomeIntero": "Matthew Byrnes",
@@ -6799,6 +7298,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 187,
+    "peso": null,
     "nascita": "2001-08-30",
     "capitano": false,
     "s": {
@@ -6833,6 +7333,7 @@
     "posto": 3
    },
    {
+    "id": "p_e4171852bdcdd2e8",
     "num": 12,
     "nome": "Edwards",
     "nomeIntero": "Blake Edwards",
@@ -6842,6 +7343,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 186,
+    "peso": null,
     "nascita": "1992-02-14",
     "capitano": false,
     "s": {
@@ -6876,6 +7378,7 @@
     "posto": 4
    },
    {
+    "id": "p_2c5000d098b94fca",
     "num": 14,
     "nome": "Schuler",
     "nomeIntero": "Loui Schuler",
@@ -6885,6 +7388,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 194,
+    "peso": null,
     "nascita": "2002-03-20",
     "capitano": false,
     "s": {
@@ -6919,6 +7423,7 @@
     "posto": 5
    },
    {
+    "id": "p_1aa59485a6445150",
     "num": 10,
     "nome": "Berehulak",
     "nomeIntero": "Marcus Berehulak",
@@ -6928,6 +7433,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 201,
+    "peso": null,
     "nascita": "2003-03-15",
     "capitano": false,
     "s": {
@@ -6963,6 +7469,7 @@
     "campione": true
    },
    {
+    "id": "p_1552b172e2208c00",
     "num": 5,
     "nome": "Power",
     "nomeIntero": "Nathan Power",
@@ -6972,6 +7479,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 200,
+    "peso": 97,
     "nascita": "1993-02-13",
     "capitano": true,
     "s": {
@@ -7006,6 +7514,7 @@
     "posto": null
    },
    {
+    "id": "p_c6116fe4b2e6fe84",
     "num": 7,
     "nome": "Negus",
     "nomeIntero": "Charlie Negus",
@@ -7015,6 +7524,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 187,
+    "peso": null,
     "nascita": "1999-06-10",
     "capitano": false,
     "s": {
@@ -7049,6 +7559,7 @@
     "posto": null
    },
    {
+    "id": "p_5a31f8e40e8183c1",
     "num": 2,
     "nome": "Lambie",
     "nomeIntero": "Angus Lambie",
@@ -7058,6 +7569,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 191,
+    "peso": null,
     "nascita": "1996-06-20",
     "capitano": false,
     "s": {
@@ -7092,6 +7604,7 @@
     "posto": null
    },
    {
+    "id": "p_e1cb8ae60defd2a9",
     "num": 11,
     "nome": "Putt",
     "nomeIntero": "Timothy Putt",
@@ -7101,6 +7614,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 198,
+    "peso": null,
     "nascita": "1998-11-06",
     "capitano": false,
     "s": {
@@ -7135,6 +7649,7 @@
     "posto": null
    },
    {
+    "id": "p_8d9e966a07f5b7ea",
     "num": 3,
     "nome": "Maksimovic",
     "nomeIntero": "Milos Maksimovic",
@@ -7144,6 +7659,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 189,
+    "peso": null,
     "nascita": "1994-01-25",
     "capitano": false,
     "s": {
@@ -7178,6 +7694,7 @@
     "posto": null
    },
    {
+    "id": "p_0b4e2afb696e4951",
     "num": 13,
     "nome": "Barker",
     "nomeIntero": "Laurence Barker",
@@ -7187,6 +7704,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 201,
+    "peso": null,
     "nascita": "2003-11-10",
     "capitano": false,
     "s": {
@@ -7219,6 +7737,7 @@
   ],
   "CHN": [
    {
+    "id": "p_170e54cba4d310c4",
     "num": 1,
     "nome": "Wu",
     "nomeIntero": "Honghui Wu",
@@ -7228,6 +7747,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": 196,
+    "peso": null,
     "nascita": "1990-04-10",
     "capitano": false,
     "s": {
@@ -7259,6 +7779,7 @@
     "numStimato": true
    },
    {
+    "id": "p_5d09c31fbd5d8d6e",
     "num": 2,
     "nome": "Liu Z.",
     "nomeIntero": "Zhilong Liu",
@@ -7268,6 +7789,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": 195,
+    "peso": null,
     "nascita": "2000-02-25",
     "capitano": false,
     "s": {
@@ -7304,6 +7826,7 @@
     "campione": true
    },
    {
+    "id": "p_74a8f73a786a73af",
     "num": 3,
     "nome": "Chen",
     "nomeIntero": "Zhongxian Chen",
@@ -7313,6 +7836,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": 194,
+    "peso": null,
     "nascita": "1996-06-12",
     "capitano": false,
     "s": {
@@ -7349,6 +7873,7 @@
     "campione": true
    },
    {
+    "id": "p_90e383c2a4ec8512",
     "num": 4,
     "nome": "Li",
     "nomeIntero": "Diheng Li",
@@ -7358,6 +7883,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": 185,
+    "peso": null,
     "nascita": "2006-04-25",
     "capitano": false,
     "s": {
@@ -7393,6 +7919,7 @@
     "numStimato": true
    },
    {
+    "id": "p_1e7b4d459502922b",
     "num": 5,
     "nome": "Cai",
     "nomeIntero": "Yuhao Cai",
@@ -7402,6 +7929,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": 185,
+    "peso": null,
     "nascita": "2005-11-03",
     "capitano": false,
     "s": {
@@ -7437,6 +7965,7 @@
     "numStimato": true
    },
    {
+    "id": "p_26727436c0b53a1a",
     "num": 6,
     "nome": "Ouyang",
     "nomeIntero": "Haiyuan Ouyang",
@@ -7446,6 +7975,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": 187,
+    "peso": null,
     "nascita": "2006-02-07",
     "capitano": false,
     "s": {
@@ -7481,6 +8011,7 @@
     "numStimato": true
    },
    {
+    "id": "p_ae0110ecb4e826d0",
     "num": 7,
     "nome": "Liu Y.",
     "nomeIntero": "Yu Liu",
@@ -7490,6 +8021,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": 198,
+    "peso": null,
     "nascita": "1994-10-18",
     "capitano": false,
     "s": {
@@ -7525,6 +8057,7 @@
     "numStimato": true
    },
    {
+    "id": "p_6db51163156a290b",
     "num": 8,
     "nome": "Shen",
     "nomeIntero": "Dingsong Shen",
@@ -7534,6 +8067,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": 196,
+    "peso": null,
     "nascita": "1998-12-26",
     "capitano": false,
     "s": {
@@ -7569,6 +8103,7 @@
     "numStimato": true
    },
    {
+    "id": "p_441885eacf32a2b0",
     "num": 9,
     "nome": "Lyu",
     "nomeIntero": "Zikang Lyu",
@@ -7578,6 +8113,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": 191,
+    "peso": null,
     "nascita": "2003-11-06",
     "capitano": false,
     "s": {
@@ -7613,6 +8149,7 @@
     "numStimato": true
    },
    {
+    "id": "p_f2269d1710864ada",
     "num": 10,
     "nome": "He",
     "nomeIntero": "Xingmeng He",
@@ -7622,6 +8159,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": 189,
+    "peso": null,
     "nascita": "2000-06-18",
     "capitano": false,
     "s": {
@@ -7657,6 +8195,7 @@
     "numStimato": true
    },
    {
+    "id": "p_71b97107fed4315f",
     "num": 11,
     "nome": "Zhu",
     "nomeIntero": "Beile Zhu",
@@ -7666,6 +8205,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": 186,
+    "peso": null,
     "nascita": "2002-05-16",
     "capitano": false,
     "s": {
@@ -7701,6 +8241,7 @@
     "numStimato": true
    },
    {
+    "id": "p_2dda4ea3ac8f1b59",
     "num": 12,
     "nome": "Yang",
     "nomeIntero": "Shanglin Yang",
@@ -7710,6 +8251,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": 195,
+    "peso": null,
     "nascita": "2003-06-06",
     "capitano": false,
     "s": {
@@ -7745,6 +8287,7 @@
     "numStimato": true
    },
    {
+    "id": "p_f6f8ca1ae0a2592a",
     "num": 13,
     "nome": "Liang",
     "nomeIntero": "Zhiwei Liang",
@@ -7754,6 +8297,7 @@
     "mano": "D",
     "manoNota": "sconosciuta",
     "altezza": 193,
+    "peso": null,
     "nascita": "1992-10-15",
     "capitano": false,
     "s": {
@@ -7787,6 +8331,7 @@
   ],
   "SGP": [
    {
+    "id": "p_1377487b1bd06270",
     "num": 1,
     "nome": "Lee D.",
     "nomeIntero": "Darren Jit An Lee",
@@ -7796,6 +8341,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 175,
+    "peso": null,
     "nascita": "1998-09-16",
     "capitano": false,
     "s": {
@@ -7826,6 +8372,7 @@
     "posto": 0
    },
    {
+    "id": "p_8c5c1a32f99a09c7",
     "num": 2,
     "nome": "Chan",
     "nomeIntero": "Derek Wen Kai Chan",
@@ -7835,6 +8382,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 190,
+    "peso": null,
     "nascita": "2004-05-06",
     "capitano": false,
     "s": {
@@ -7870,6 +8418,7 @@
     "campione": true
    },
    {
+    "id": "p_425a722d48d4e6dc",
     "num": 7,
     "nome": "Low",
     "nomeIntero": "Gabriel Low",
@@ -7879,6 +8428,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 184,
+    "peso": null,
     "nascita": "2009-02-08",
     "capitano": false,
     "s": {
@@ -7913,6 +8463,7 @@
     "posto": 2
    },
    {
+    "id": "p_fb6bd435a0fc410d",
     "num": 4,
     "nome": "Goh W.",
     "nomeIntero": "Wen Zhe Goh",
@@ -7922,6 +8473,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 180,
+    "peso": null,
     "nascita": "2002-09-14",
     "capitano": false,
     "s": {
@@ -7957,6 +8509,7 @@
     "campione": true
    },
    {
+    "id": "p_2a298a67ba692890",
     "num": 9,
     "nome": "Rajandra",
     "nomeIntero": "Sanjiv Rajandra",
@@ -7966,6 +8519,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 171,
+    "peso": null,
     "nascita": "2002-05-06",
     "capitano": false,
     "s": {
@@ -8000,6 +8554,7 @@
     "posto": 4
    },
    {
+    "id": "p_4bbe33aecb814d95",
     "num": 14,
     "nome": "Lee C.",
     "nomeIntero": "Cheng Kang Lee",
@@ -8009,6 +8564,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 174,
+    "peso": null,
     "nascita": "1996-02-04",
     "capitano": false,
     "s": {
@@ -8043,6 +8599,7 @@
     "posto": 5
    },
    {
+    "id": "p_74cd6db67015819b",
     "num": 10,
     "nome": "Lee Isaac",
     "nomeIntero": "Isaac Lee",
@@ -8052,6 +8609,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 178,
+    "peso": null,
     "nascita": "2005-03-18",
     "capitano": false,
     "s": {
@@ -8086,6 +8644,7 @@
     "posto": 6
    },
    {
+    "id": "p_20087016be4f441a",
     "num": 8,
     "nome": "Saik",
     "nomeIntero": "Justin Kin Yan Saik",
@@ -8095,6 +8654,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 179,
+    "peso": null,
     "nascita": "2008-10-20",
     "capitano": false,
     "s": {
@@ -8129,6 +8689,7 @@
     "posto": null
    },
    {
+    "id": "p_adfcd936da6bce84",
     "num": 3,
     "nome": "Fong",
     "nomeIntero": "Wai Chun Fong",
@@ -8138,6 +8699,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 187,
+    "peso": null,
     "nascita": "2000-12-22",
     "capitano": false,
     "s": {
@@ -8172,6 +8734,7 @@
     "posto": null
    },
    {
+    "id": "p_cde1140f1dcd2ff5",
     "num": 15,
     "nome": "Goh M.",
     "nomeIntero": "Matthias Goh",
@@ -8181,6 +8744,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 175,
+    "peso": null,
     "nascita": "2008-05-16",
     "capitano": false,
     "s": {
@@ -8215,6 +8779,7 @@
     "posto": null
    },
    {
+    "id": "p_92761be627bfbfc5",
     "num": 11,
     "nome": "Wong",
     "nomeIntero": "Hong Kai Wong",
@@ -8224,6 +8789,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 172,
+    "peso": null,
     "nascita": "2005-08-02",
     "capitano": false,
     "s": {
@@ -8258,6 +8824,7 @@
     "posto": null
    },
    {
+    "id": "p_e1de56d419931dfb",
     "num": 12,
     "nome": "Lok",
     "nomeIntero": "Shaunn Blasius Jun Jie Lok",
@@ -8267,6 +8834,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 172,
+    "peso": null,
     "nascita": "2004-09-07",
     "capitano": false,
     "s": {
@@ -8301,6 +8869,7 @@
     "posto": null
    },
    {
+    "id": "p_291a57eaa26a832c",
     "num": 13,
     "nome": "Lee Ivaac",
     "nomeIntero": "Ivaac Lee",
@@ -8310,6 +8879,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": null,
     "nascita": "2007-01-05",
     "capitano": false,
     "s": {
@@ -8342,6 +8912,7 @@
   ],
   "RSA": [
    {
+    "id": "p_541e677997788a31",
     "num": 13,
     "nome": "Smith",
     "nomeIntero": "Matthew Smith",
@@ -8351,6 +8922,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 201,
+    "peso": null,
     "nascita": "2004-05-18",
     "capitano": false,
     "s": {
@@ -8382,6 +8954,7 @@
     "campione": true
    },
    {
+    "id": "p_a19406d005cbe834",
     "num": 10,
     "nome": "Strydom",
     "nomeIntero": "Corbett Strydom",
@@ -8391,6 +8964,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 187,
+    "peso": null,
     "nascita": "2002-03-15",
     "capitano": false,
     "s": {
@@ -8426,6 +9000,7 @@
     "campione": true
    },
    {
+    "id": "p_e1194aa179b64ca8",
     "num": 11,
     "nome": "Neser",
     "nomeIntero": "Matthew Neser",
@@ -8435,6 +9010,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 182,
+    "peso": null,
     "nascita": "2001-11-16",
     "capitano": false,
     "s": {
@@ -8469,6 +9045,7 @@
     "posto": 2
    },
    {
+    "id": "p_d149bac98b23a5d4",
     "num": 4,
     "nome": "Welton",
     "nomeIntero": "Jensen Welton",
@@ -8478,6 +9055,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 188,
+    "peso": null,
     "nascita": "2006-09-04",
     "capitano": false,
     "s": {
@@ -8512,6 +9090,7 @@
     "posto": 3
    },
    {
+    "id": "p_2bee4d303c1343f2",
     "num": 12,
     "nome": "Grimett",
     "nomeIntero": "Tristan Grimett",
@@ -8521,6 +9100,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 188,
+    "peso": null,
     "nascita": "2005-05-27",
     "capitano": false,
     "s": {
@@ -8555,6 +9135,7 @@
     "posto": 4
    },
    {
+    "id": "p_c0f8bd33d085eb0f",
     "num": 8,
     "nome": "Van Rooyen",
     "nomeIntero": "Keenan Van Rooyen",
@@ -8564,6 +9145,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 193,
+    "peso": null,
     "nascita": "1997-03-18",
     "capitano": false,
     "s": {
@@ -8598,6 +9180,7 @@
     "posto": 5
    },
    {
+    "id": "p_574a0d0ec8e93bed",
     "num": 5,
     "nome": "Flinn",
     "nomeIntero": "Connor Flinn",
@@ -8607,6 +9190,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 184,
+    "peso": null,
     "nascita": "2005-04-06",
     "capitano": false,
     "s": {
@@ -8641,6 +9225,7 @@
     "posto": 6
    },
    {
+    "id": "p_53e4db1313598d24",
     "num": 14,
     "nome": "Seiler",
     "nomeIntero": "Taylor Seiler",
@@ -8650,6 +9235,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 195,
+    "peso": null,
     "nascita": "2008-08-04",
     "capitano": false,
     "s": {
@@ -8684,6 +9270,7 @@
     "posto": null
    },
    {
+    "id": "p_6436b15b824119c6",
     "num": 6,
     "nome": "Kuperus",
     "nomeIntero": "Calvin Kuperus",
@@ -8693,6 +9280,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 198,
+    "peso": null,
     "nascita": "2001-03-23",
     "capitano": false,
     "s": {
@@ -8727,6 +9315,7 @@
     "posto": null
    },
    {
+    "id": "p_c30cd4171426d9b1",
     "num": 9,
     "nome": "Macleod",
     "nomeIntero": "Ethan Macleod",
@@ -8736,6 +9325,7 @@
     "mano": "S",
     "manoNota": null,
     "altezza": 182,
+    "peso": null,
     "nascita": "2004-06-25",
     "capitano": false,
     "s": {
@@ -8770,6 +9360,7 @@
     "posto": null
    },
    {
+    "id": "p_cfce32f8ca8546c9",
     "num": 7,
     "nome": "Johnson",
     "nomeIntero": "David Johnson",
@@ -8779,6 +9370,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 189,
+    "peso": null,
     "nascita": "2005-08-13",
     "capitano": false,
     "s": {
@@ -8813,6 +9405,7 @@
     "posto": null
    },
    {
+    "id": "p_7e6e2526a3a01391",
     "num": 3,
     "nome": "Bungane",
     "nomeIntero": "Manqoba Bungane",
@@ -8822,6 +9415,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 195,
+    "peso": null,
     "nascita": "2003-01-10",
     "capitano": false,
     "s": {
@@ -8856,6 +9450,7 @@
     "posto": null
    },
    {
+    "id": "p_3447b25f7fd221d2",
     "num": 1,
     "nome": "Rajak",
     "nomeIntero": "Luka Rajak",
@@ -8865,6 +9460,7 @@
     "mano": "D",
     "manoNota": null,
     "altezza": 196,
+    "peso": null,
     "nascita": "2004-01-26",
     "capitano": false,
     "s": {

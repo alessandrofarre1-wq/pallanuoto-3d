@@ -107,14 +107,39 @@ function scegli(cod) {
   const ev = eventi.find(e => conv.filter(r => r.event_id === e).length >= 13) || eventi[0];
   return { ev, lista: conv.filter(r => r.event_id === ev) };
 }
+// DATI FISICI E ASPETTO dal file di Ale (dati-sorgente/aspetto-giocatori.json, 239 giocatori con fonti): altezza, peso, mano,
+// capelli e barba osservati da foto ufficiali. Collegati per nazionale + nome (normalizzato); i valori nulli restano sconosciuti.
+const FIS = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'dati-sorgente/aspetto-giocatori.json'), 'utf8')).records; } catch { return []; } })();
+const norm = t => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim();
+const FISi = new Map(FIS.map(r => [r.nazionale + '|' + norm(r.nome), r]));
+const collegati = { trovati: 0, mani: 0, disaccordi: [], altezze: 0, pesi: 0, aspetto: 0, mancanti: [] };
+function datiFisici(cod, nomeDb) {
+  const intero = norm(nomeIntero(nomeDb)); let r = FISi.get(cod + '|' + intero);
+  if (!r) {      // stesso cognome (unico nella nazionale) e stessa iniziale del nome
+    const cog = norm(cognome(nomeDb)), np = intero.split(' ')[0] || '';
+    const c = FIS.filter(x => x.nazionale === cod && norm(x.nome).includes(cog) && norm(x.nome)[0] === np[0]);
+    if (c.length === 1) r = c[0];
+  }
+  return r || null;
+}
 const tutti = [];
 for (const cod of CODICI) {
   const { ev, lista } = scegli(cod);
   for (const r of lista) {
     const S = somma.get(r.player_id) || null, A = anag.get(r.player_id) || {};
     const pos = (A.roles && A.roles[0]) || r.position || '';
-    const mano = r.hand || A.dominant_hand || null;
-    tutti.push({ cod, ev, r, S, pos, t: tipo(r.position || pos), mano, min: S ? S.sec / 60 : 0 });
+    let mano = r.hand || A.dominant_hand || null, manoFonte = mano ? 'database' : null;
+    const F = datiFisici(cod, r.name);
+    if (F) {
+      collegati.trovati++;
+      const mf = F.manoDominante === 'sinistra' ? 'L' : F.manoDominante === 'destra' ? 'R' : null;
+      if (mf && !mano) { mano = mf; manoFonte = 'file di Ale'; collegati.mani++; }
+      else if (mf && mano && mf !== mano) collegati.disaccordi.push(`${cod} ${r.name}: database ${mano}, file ${mf}`);
+    } else collegati.mancanti.push(cod + ' ' + r.name);
+    const altezza = r.height_cm || (F && F.altezzaCm) || null, peso = (F && F.pesoKg) || null;
+    if (!r.height_cm && F && F.altezzaCm) collegati.altezze++;
+    if (peso) collegati.pesi++;
+    tutti.push({ cod, ev, r, S, pos, t: tipo(r.position || pos), mano, manoFonte, F, altezza, peso, min: S ? S.sec / 60 : 0 });
   }
 }
 // medie e dispersioni per gruppo (portieri / movimento) sulle sole righe con almeno 60 minuti
@@ -159,10 +184,11 @@ for (const sq of SQ) {
   const diff = x => {
     if (x.t === 'gk') { const zp = zPar(x); return { rif: zp * 6, pos: zp * 4, rig: zPS(x) * 5, usc: (x.S && x.S.tirCA ? clamp((x.S.parCA / x.S.tirCA - 0.2) / 0.2, -1, 1) * 3 : 0) }; }
     const zG = zRate(x, 'G'), zT = zRate(x, 'T'), zA = zRate(x, 'AS'), zS = zRate(x, 'ST'), zB = zRate(x, 'BL'), zTO = zRate(x, 'TO'), zE = zRate(x, 'ESP'), zR = zRate(x, 'RIG'), zCA = zRate(x, 'CA'), zC = zRate(x, 'C');
-    const alto = x.r.height_cm ? clamp((x.r.height_cm - 192) / 6, -1.5, 1.5) : 0;
+    const alto = x.altezza ? clamp((x.altezza - 192) / 6, -1.5, 1.5) : 0;
+    const pesante = x.peso ? clamp((x.peso - 95) / 9, -1.5, 1.5) : 0;      // peso dal file di Ale (dove c'è): conta nella lotta al centro
     const centrale = x.t === 'boa' || x.t === 'dif';
     return { pre: zConv(x) * 5, pot: zG * 3 + zT * 1.5, vis: zA * 3.5, pas: zA * 2.5 - zTO * 1.5, dif: zS * 2.5 + zB * 2.5, dis: -(zE * 2.5 + zR * 1.5),
-      vel: zCA * 2 + zSprint(x) * 3, res: zMin(x) * 3, frz: (centrale ? zC * 2.5 + alto * 2 : alto * 1) };
+      vel: zCA * 2 + zSprint(x) * 3, res: zMin(x) * 3, frz: (centrale ? zC * 2.5 + alto * 2 + pesante * 2 : alto * 1 + pesante * 1) };
   };
   const tutti13 = [...gk, ...mov];
   const D = tutti13.map(diff);
@@ -187,8 +213,14 @@ for (const sq of SQ) {
     for (const k in s) s[k] = lim(s[k]);
     const S = x.S, dati = S ? (x.t === 'gk' ? { tornei: new Set(S.eventi).size, partite: S.partite, parate: S.par, tiriSubiti: S.tir, minuti: Math.round(x.min) }
       : { tornei: new Set(S.eventi).size, partite: S.partite, minuti: Math.round(x.min), gol: S.G, tiri: S.T, assist: S.AS, rubate: S.ST, murati: S.BL, espulsioni: S.ESP }) : null;
-    return { num: x.r.cap_number, nome: cognome(x.r.name), nomeIntero: nomeIntero(x.r.name), nomeCompleto: x.r.name, ruolo, ruoloVero: x.r.position || x.pos || null,
-      mano: x.mano === 'L' ? 'S' : 'D', manoNota: x.mano ? null : 'sconosciuta', altezza: x.r.height_cm || null, nascita: x.r.birth_date || null, capitano: !!x.r.captain,
+    // aspetto DOCUMENTATO (solo valori verificati, con la fonte); quelli mancanti si generano nel gioco (src/aspetto.js)
+    const F = x.F, aspetto = {};
+    if (F) for (const [k, q] of [['capelliColore', 'capelli'], ['capelliTaglio', 'taglio'], ['barba', 'barba'], ['carnagione', 'pelle'], ['occhi', 'occhi']])
+      if (F[k]) aspetto[q] = F[k];
+    if (Object.keys(aspetto).length) { aspetto.fonte = (F.verificaFotografica && F.verificaFotografica.stato) || 'file di Ale'; collegati.aspetto++; }
+    return { id: x.r.player_id, num: x.r.cap_number, nome: cognome(x.r.name), nomeIntero: nomeIntero(x.r.name), nomeCompleto: x.r.name, ruolo, ruoloVero: x.r.position || x.pos || null,
+      mano: x.mano === 'L' ? 'S' : 'D', manoNota: x.mano ? (x.manoFonte === 'database' ? null : x.manoFonte) : 'sconosciuta', altezza: x.altezza || null, peso: x.peso || null,
+      ...(Object.keys(aspetto).length ? { aspetto } : {}), nascita: x.r.birth_date || null, capitano: !!x.r.captain,
       s, ovr: ovr(s, ruolo), dati, convocazione: x.ev };
   });
   // titolari: il miglior portiere e, posto per posto, il più forte disponibile del ruolo giusto (poi chi gli somiglia di più)
@@ -220,4 +252,5 @@ for (const sq of SQ) {
 }
 fs.writeFileSync(path.join(ROOT, 'src/dati/rose-db.json'), JSON.stringify({ fonte: estratto.fonte, metodo: 'strumenti/rose-dal-database.mjs; docs/valutazioni.md', rose }, null, 1));
 console.log(riassunto.join('\n'));
-console.log('\nmani: ' + Object.values(rose).flat().filter(g => g.mano === 'S').length + ' mancini, ' + Object.values(rose).flat().filter(g => g.manoNota).length + ' sconosciute su ' + Object.values(rose).flat().length);
+console.log('\nfile di Ale: ' + collegati.trovati + ' giocatori collegati; mani prese dal file ' + collegati.mani + '; altezze ' + collegati.altezze + '; pesi ' + collegati.pesi + '; con aspetto documentato ' + collegati.aspetto + '\n  disaccordi sulla mano (resta il database): ' + (collegati.disaccordi.join('; ') || 'nessuno') + '\n  non trovati nel file: ' + collegati.mancanti.length);
+console.log('\nmani: ' + Object.values(rose).flat().filter(g => g.mano === 'S').length + ' mancini, ' + Object.values(rose).flat().filter(g => g.manoNota === 'sconosciuta').length + ' sconosciute su ' + Object.values(rose).flat().length);
