@@ -164,8 +164,8 @@ body:not(.gioco) :is(#hud,#tac,#player,#cronaca,#tLog,#tCambi,#cambiBox,#touch,#
 .et{color:var(--h-tenue);font-size:10.5px;margin-top:3px}
 #pstat{font-size:11px;color:var(--h-tenue);margin-top:2px;font-variant-numeric:tabular-nums}
 #pstat b{color:var(--h-oro)}
-/* lotta al centro: barra piccola in basso al centro, tra joystick e pulsanti */
-#fight{position:fixed;left:50%;bottom:calc(10px + var(--sb));transform:translateX(-50%);width:210px;background:var(--h-bg);border:1px solid var(--h-linea);border-radius:var(--h-r);padding:4px 9px 6px;font-size:10.5px;font-weight:700;z-index:6;pointer-events:none;display:none;box-shadow:var(--h-ombra)}
+/* lotta al centro: sopra CAMBI, senza sovrapporsi ai comandi laterali */
+#fight{position:fixed;left:calc((100vw + var(--sl) - var(--sr))/2);bottom:calc(62px + var(--sb));transform:translateX(-50%);width:min(210px,calc(100vw - 440px - var(--sl) - var(--sr)));background:var(--h-bg);border:1px solid var(--h-linea);border-radius:var(--h-r);padding:4px 9px 6px;font-size:10.5px;font-weight:700;z-index:6;pointer-events:none;display:none;box-shadow:var(--h-ombra)}
 #fight .fl{display:flex;justify-content:space-between;gap:6px;margin-bottom:4px;color:var(--h-tenue)}
 #fight .fl b{color:var(--h-testo);letter-spacing:.06em;font-size:9.5px;text-transform:uppercase}
 #fight .fb{position:relative;height:6px;border-radius:3px;background:rgba(255,255,255,.16);overflow:hidden}
@@ -471,9 +471,9 @@ body.touch #qte{display:none}
 @media (max-width:720px){ .pc-g{grid-template-columns:28px minmax(0,1.5fr) 96px auto} .pc-stat{display:none} }
 
 /* cambi durante il gioco (pulsante CAMBI, tasto B): il gioco non si ferma */
-/* CAMBI: sotto la colonna pausa/T.O., lontano dal tabellone (tempo e secondi dell'azione sempre visibili) */
-#tCambi{position:fixed;top:calc(76px + var(--st));right:calc(100px + var(--sr));height:36px;padding:0 9px;border-radius:var(--h-r);background:var(--h-bg);border:1px solid var(--h-linea);z-index:8;display:flex;align-items:center;gap:4px;color:var(--h-testo);box-shadow:var(--h-ombra);cursor:pointer;font:800 11px system-ui}
-#tCambi svg{width:18px;height:18px}
+/* CAMBI: in basso al centro, fondo trasparente e testo pieno; area di tocco di 44 px. */
+#tCambi{position:fixed;left:calc((100vw + var(--sl) - var(--sr))/2);bottom:calc(8px + var(--sb));transform:translateX(-50%);height:44px;padding:0 10px;border-radius:var(--h-r);background:rgba(12,27,48,.52);border:1px solid var(--h-linea);z-index:8;display:flex;align-items:center;gap:5px;color:var(--h-testo);box-shadow:var(--h-ombra);cursor:pointer;font:800 11px system-ui}
+#tCambi svg{width:18px;height:18px;flex:none}
 #cambiBox{position:fixed;left:50%;bottom:calc(8px + var(--sb));transform:translateX(-50%);max-width:min(560px,calc(100vw - 300px));display:none;flex-direction:column;gap:5px;
   background:rgba(10,28,58,.88);border:1px solid var(--h-linea);border-radius:12px;padding:8px 34px 8px 10px;z-index:12;box-shadow:var(--h-ombra);color:#fff;font:600 12px system-ui}
 #cambiBox.on{display:flex}
@@ -524,16 +524,14 @@ body.touch #qte{display:none}
 .cr-consigli{gap:4px}.cr-consigli .cr-cons{padding:3px 8px}
 .pc-cons strong{color:#fff}
 /* pulsante CAMBI: mostra il cambio consigliato (oro) e lo esegue con un tocco */
-#tCambi{max-width:min(300px,34vw)}
+#tCambi{max-width:min(300px,calc(100vw - 440px - var(--sl) - var(--sr)))}
 #tCambi .tc-testo{display:flex;flex-direction:column;line-height:1.1;min-width:0}
 #tCambi .tc-testo small{font:700 9.5px system-ui;color:#cfe3ff;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #tCambi .tc-testo b{font:800 12px system-ui;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #tCambi .tc-testo i{font-style:normal;color:var(--h-oro);font-weight:800}
 #tCambi[data-stato="consiglio"]{border-color:var(--h-oro);box-shadow:0 0 0 2px rgba(255,200,60,.45),var(--h-ombra)}
 #tCambi[data-stato="consiglio"] .tc-testo small{color:var(--h-oro)}
-#tCambi[data-stato="vuoto"]{opacity:.7}
 /* consiglio non urgente (partita storta, in panchina c'è chi rende di più): visibile ma senza oro */
-#tCambi[data-stato="proposta"]{opacity:.85}
 
 /* Potenza accanto al comando TIRO, visibile durante la carica. */
 .carica-potenza{display:none;position:absolute;left:-3px;right:-3px;top:-12px;height:7px;border-radius:4px;background:var(--h-bg-forte);border:1px solid var(--h-linea);overflow:hidden;pointer-events:none}

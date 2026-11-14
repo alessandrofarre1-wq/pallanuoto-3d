@@ -1,0 +1,21 @@
+# Gameplay — priorità e passaggio alla prossima iterazione
+
+Richiesta di Ale: «il gameplay è un po' macchinoso [...] in questo momento non mi sta venendo voglia di rigiocare una partita». Rivedere sia l'avversario sia i compagni che non hanno il pallone. È la priorità prima dello sviluppo dei tornei. La v0.39 non modifica la simulazione: raccoglie l'analisi e sposta CAMBI in basso al centro, con fondo semitrasparente.
+
+Le seguenti sono ipotesi fondate nella lettura del codice, non problemi dimostrati da una nuova prova touch. Non vanno trasformate tutte insieme in modifiche senza confronto.
+
+| Punto | Evidenza nel codice | Primo intervento da valutare | Come verificarlo |
+|---|---|---|---|
+| Risposta del movimento | `src/fisica.js:20`: energia, palla, gesto, postura e contatto moltiplicano le penalità; durante carica/gesto la velocità scende al 35%. `:43`: accelerazione e inversione aggiungono inerzia. | Isolare la penalità che rende lento il recupero del controllo, mantenendo il ritmo generale e il comportamento in acqua. | A energia e situazione identiche: tempo al 90% della velocità, distanza prima dell'inversione e uscita dal contatto. Una penalità alla volta. |
+| Comandi ignorati durante un gesto | `src/controllo.js:43`: ritorno anticipato durante un'azione; passaggio e palombella leggono la nuova pressione senza coda dell'intenzione. | Breve memoria del comando valido premuto vicino alla fine del gesto. | Pressione anticipata → una sola azione al primo istante consentito, senza ripetizioni, tiri illegali o passaggi involontari. |
+| Compagni senza palla poco disponibili | `src/ia.js:25–39`: bersagli da formazioni e piccola oscillazione; in superiorità ci si ferma al posto assegnato. I tagli esistono ma dipendono da comando o condizioni dopo passaggio (`src/tiri.js:116`). | Smarcamenti brevi per aprire una linea, sostegno al portatore e riempimento dello spazio lasciato libero, preservando ruoli e ampiezza. | Linee di passaggio disponibili, affollamenti e necessità di chiamare manualmente ogni taglio nelle stesse scene. |
+| Avversario che aspetta | `src/ia.js:290,321`: decisioni ogni 0,30–0,65 s; passaggio ordinario anche legato a 2,5–5 s di possesso, con ulteriori soglie di pazienza. | Agire quando si apre un vantaggio reale: pressione, compagno libero, tiro utile. | Tempo occasione→azione, possessi senza avanzamento, tiri costruiti e palle perse; il solo punteggio non misura la qualità dell'AI. |
+| Passaggio e controllo poco prevedibili | `src/tiri.js:91,115`: senza direzione la scelta include casualità legata alla visione; cono direzionale ampio; controllo trasferito al lancio. | Rendere stabile e leggibile il ricevente previsto; verificare la continuità tra lancio, volo e ricezione. | Sequenze touch ripetibili: destinatario atteso/effettivo, perdita di guida durante il volo e possibilità di continuare subito l'azione. |
+
+**Prima iterazione consigliata:** comando memorizzato brevemente e compagni che offrono una linea di passaggio. Prima riprodurre e misurare, poi applicare una modifica circoscritta e confrontare. Non riscrivere insieme fisica, portiere, probabilità e tutti gli schemi.
+
+Preparare scene ripetibili di uscita dalla difesa, costruzione a metà campo, attacco schierato, superiorità, passaggio dopo una finta e contropiede. Confrontare stessa squadra, stesso seme e stessi comandi. Dopo le verifiche automatiche serve una prova su iPhone reale per giudicare piacere, leggibilità e risposta: i conteggi in Chromium non dimostrano la sensazione di gioco né 60 FPS Apple.
+
+**Decisioni da preservare o segnalare esplicitamente:** velocità unica `SPEED=1`, camera unica, stile cartoon, regole attuali, limiti iPhone anche durante i doppi cambi. Lo sprint a tocchi ripetuti è una scelta attribuita ad Ale in `src/input.js:20`: non convertirlo di nascosto in un comando diverso. Se viene proposta una revisione di questa scelta, segnalarla chiaramente in CLAUDE.md e nella PR.
+
+**Criterio di completamento:** il comando desiderato viene recepito al primo momento lecito; il portatore dispone di alternative comprensibili; compagni e avversari reagiscono a situazioni di gioco, con ruoli e regole riconoscibili. I numeri aiutano a confrontare, ma il giudizio di Ale dopo una partita resta decisivo.
