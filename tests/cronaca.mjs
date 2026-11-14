@@ -24,7 +24,7 @@ const init = () => {
   window.__salta = n => { const R = window.__pallanuoto.renderer; if (!window.__dis) window.__dis = R.render; R.render = () => {}; for (let i = 0; i < n; i++) { window.__frame++; window.__raf(window.__frame * 1000 / 60); } R.render = window.__dis; };
   window.__vai = n => { window.__salta(n - 1); window.__frame++; window.__raf(window.__frame * 1000 / 60); };
   // controllo della notifica a schermo: una sola, visibile, fuori dal centro, non sopra palla, porte, giocatore controllato
-  // sel: '#hud .ex.nuova' per l'espulsione (linguetta sotto la squadra), altrimenti lo spazio delle notifiche
+  // sel: '#espulsioni .ex.nuova' per l'espulsione (linguetta sotto la squadra), altrimenti lo spazio delle notifiche
   window.__guarda = (sel) => {
     const H = window.__pallanuoto, el = (sel ? document.querySelector(sel) : null) || document.getElementById('cronaca'), r = el.getBoundingClientRect(), W = innerWidth, Hh = innerHeight;
     const vis = sel ? el.matches(sel) : el.classList.contains('vis');
@@ -33,7 +33,7 @@ const init = () => {
     const sopra = Object.entries(punti).filter(([, q]) => q && q[0] > r.left && q[0] < r.right && q[1] > r.top && q[1] < r.bottom).map(([k]) => k);
     const centro = r.bottom > Hh * 0.42 && r.top < Hh * 0.62 && r.left < W * 0.6 && r.right > W * 0.4;
     const tx = el.querySelector('b') || el.querySelector('.chi'), fs = tx ? parseFloat(getComputedStyle(tx).fontSize) : 0;
-    return { vis, tipo: sel ? 'espulsione' : (el.className.match(/t-(\w+)/) || [])[1] || '', testo: el.innerText.replace(/\s+/g, ' ').trim(), sopra, centro, fs, alto: Math.round(r.top), basso: Math.round(r.bottom), pos: el.classList.contains('sx') ? 'sinistra' : el.classList.contains('dx') ? 'destra' : 'centro', stato: [...document.querySelectorAll('#hud .esp')].map(e => e.innerText).join(' ').replace(/\s+/g, ' ').trim(), sup: [...document.querySelectorAll('.piu.on')].map(e => e.textContent).join(' ') };
+    return { vis, tipo: sel ? 'espulsione' : (el.className.match(/t-(\w+)/) || [])[1] || '', testo: el.innerText.replace(/\s+/g, ' ').trim(), sopra, centro, fs, alto: Math.round(r.top), basso: Math.round(r.bottom), pos: el.classList.contains('sx') ? 'sinistra' : el.classList.contains('dx') ? 'destra' : 'centro', stato: [...document.querySelectorAll('#espulsioni .esp')].map(e => e.innerText).join(' ').replace(/\s+/g, ' ').trim(), sup: [...document.querySelectorAll('.piu.on')].map(e => e.textContent).join(' ') };
   };
 };
 async function apri(vp = { width: 844, height: 390 }) {
@@ -67,7 +67,7 @@ const controlla = (g, cosa) => {
     if (t.fine) break;
     if (!cercati.includes(t.tipo) || fatti.has(t.tipo)) continue;
     fatti.add(t.tipo);
-    const g = await pg.evaluate(sel => { window.__vai(14); return window.__guarda(sel); }, t.tipo === 'espulsione' ? '#hud .ex.nuova' : '');
+    const g = await pg.evaluate(sel => { window.__vai(14); return window.__guarda(sel); }, t.tipo === 'espulsione' ? '#espulsioni .ex.nuova' : '');
     controlla(g, `partita, ${t.tipo}`);
     await foto(pg, `partita-${t.tipo}`);
   }
@@ -90,15 +90,15 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
   const dopo = await pg.evaluate(() => { window.__salta(130); return window.__guarda(); }); nota(!dopo.vis, '1. fallo: sparisce dopo circa 2 secondi'); }
 // 2. espulsione e indicatore con tempo
 { await pg.evaluate(() => window.__salta(90));
-  const g = await pg.evaluate(() => { const H = window.__pallanuoto, { c, d } = window.__attori(); H.regole.exclude(d, c); window.__vai(12); return window.__guarda('#hud .ex.nuova'); });
-  controlla(g, '2. espulsione'); nota(/fallo su/.test(g.testo) && /\d c \d/.test(g.sup), `2. espulsione: chi ha subito il fallo e superiorità («${g.testo}» · «${g.sup}»)`); await foto(pg, 'scenario-2-espulsione');
+  const g = await pg.evaluate(() => { const H = window.__pallanuoto, { c, d } = window.__attori(); H.regole.exclude(d, c); window.__vai(12); const r=window.__guarda('#espulsioni .ex.nuova'); r.atteso={num:d.num,nome:d.name,squadra:d.team.short}; return r; });
+  controlla(g, '2. espulsione'); nota(g.testo.includes('#'+g.atteso.num)&&g.testo.includes(g.atteso.nome)&&g.testo.includes(g.atteso.squadra)&&/\d c \d/.test(g.sup), `2. espulsione: squadra, numero, nome e superiorità («${g.testo}» · «${g.sup}»)`); await foto(pg, 'scenario-2-espulsione');
   // l'espulso resta fuori anche se la sua squadra riprende palla (qui conta solo l'indicatore, non il rientro anticipato)
   const s1 = await pg.evaluate(() => { const H = window.__pallanuoto, e = H.allPlayers.find(q => q.excluded); window.__esp = e;
     for (let i = 0; i < 200; i++) { window.__salta(1); if (!e.excluded) { e.excluded = true; e.exclUntil = H.game.time + 12; } } window.__vai(1); return window.__guarda(); });
-  nota(!/Espulsione/i.test(s1.stato), '2. espulsione: la linguetta si richiude (resta piccola, con il tempo)');
+  nota(s1.stato.includes(g.atteso.nome), '2. espulsione: il nome resta visibile dopo il primo avviso');
   const s2 = await pg.evaluate(() => { const H = window.__pallanuoto, e = window.__esp; for (let i = 0; i < 120; i++) { window.__salta(1); if (!e.excluded) { e.excluded = true; e.exclUntil = H.game.time + 10; } } window.__vai(1); return window.__guarda(); });
-  nota(/#\d+ ?\d:\d\d/.test(s1.stato) && s1.stato !== s2.stato && /\d c \d/.test(s1.sup), `2. indicatore persistente con tempo che scende: «${s1.stato}» → «${s2.stato}», superiorità «${s1.sup}»`);
-  const sovrapp = await pg.evaluate(() => { const b = document.getElementById('shotclock').getBoundingClientRect(); return [...document.querySelectorAll('#hud .esp > *')].some(e => { const a = e.getBoundingClientRect(); return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom); }); });
+  nota(/#\d+/.test(s1.stato) && /\d:\d\d/.test(s1.stato) && s1.stato.includes(g.atteso.nome) && s1.stato !== s2.stato && /\d c \d/.test(s1.sup), `2. indicatore persistente con tempo che scende: «${s1.stato}» → «${s2.stato}», superiorità «${s1.sup}»`);
+  const sovrapp = await pg.evaluate(() => { const b = document.getElementById('shotclock').getBoundingClientRect(); return [...document.querySelectorAll('#espulsioni .esp > *')].some(e => { const a = e.getBoundingClientRect(); return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom); }); });
   nota(!sovrapp, '2. indicatore non sopra il tempo per l\'azione'); await foto(pg, 'scenario-2-indicatore'); }
 // 3. rigore
 { const g = await pg.evaluate(() => { const H = window.__pallanuoto, { c, d } = window.__attori(); H.regole.penalty(d, c); window.__vai(12); return window.__guarda(); });
@@ -122,7 +122,7 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
 { const seq = await pg.evaluate(() => { const H = window.__pallanuoto, C = H.cronaca, { c, d } = window.__attori(); C.svuota();
     C.annuncia('avviso', 'Raddoppio!'); H.regole.foul(d, c); C.annuncia('parata', 'Parata!', { p: H.teams[1].players[0] }); H.regole.exclude(d, c);
     const visti = []; let n = 0; for (let i = 0; i < 360; i++) { window.__salta(1); const el = document.getElementById('cronaca'); if (el.classList.contains('vis')) { const t = (el.className.match(/t-(\w+)/) || [])[1]; if (visti[visti.length - 1] !== t) visti.push(t); }
-      n = Math.max(n, document.querySelectorAll('.cr.vis').length); if (i === 5) window.__tab = !!document.querySelector('#hud .ex.nuova'); } return { visti, n, tab: window.__tab }; });
+      n = Math.max(n, document.querySelectorAll('.cr.vis').length); if (i === 5) window.__tab = !!document.querySelector('#espulsioni .ex.nuova'); } return { visti, n, tab: window.__tab }; });
   nota(seq.n === 1, '6. mai più di una notifica a schermo');
   nota(seq.tab && seq.visti[0] === 'fallo', `6. l'espulsione apre la sua linguetta sotto la squadra, il resto passa in ordine di importanza: ${seq.visti.join(' → ')}`); }
 // 7. registro
@@ -157,7 +157,7 @@ await pg.context().close();
 { const p2 = await apri({ width: 667, height: 300 });
   const g = await p2.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 'USA'); document.getElementById('goBtn').click(); window.__salta(300);
     const { c, d } = (() => { const B = H.ball, c = B.holder || H.teams[0].players[6]; const d = (c.team === H.teams[0] ? H.teams[1] : H.teams[0]).players[3]; return { c, d }; })();
-    H.regole.exclude(d, c); window.__vai(12); return window.__guarda('#hud .ex.nuova'); });
+    H.regole.exclude(d, c); window.__vai(12); const r=window.__guarda('#espulsioni .ex.nuova'); r.atteso={num:d.num,nome:d.name,squadra:d.team.short}; return r; });
   // qui lo schermo è così basso che nessuna posizione è sempre libera: basta che la palla resti scoperta
   nota(g.vis && !g.centro && !g.sopra.includes('palla') && g.fs >= 13, `iPhone piccolo con barre di Safari, espulsione: leggibile, fuori dal centro, palla scoperta (${g.pos}${g.sopra.length ? ', copre ' + g.sopra.join(', ') : ''})`);
   await foto(p2, 'iphone-piccolo-espulsione'); await p2.context().close(); }

@@ -16,7 +16,7 @@ export const active = p => !p.excluded;
 // ================= STATO =================
 export const ball = {x:0,y:BRV,z:0,vx:0,vy:0,vz:0,state:'free',holder:null,kind:null,target:null,shooter:null,lastTeam:null,
               afterShot:false,flightT:0,intercept:new Set(),saveChecked:false,pickupCD:0,holdTime:0,shotPower:0,lob:false,crossZ:0};
-export const game = {state:'menu',period:1,clock:180,shot:SHOT_CLOCK,time:0,timer:0,after:null,possTeam:null,camMode:0,prevState:null,penalty:null,penT:0,autoplay:false,possT:0};
+export const game = {state:'menu',period:1,clock:180,shot:SHOT_CLOCK,time:0,timer:0,after:null,possTeam:null,prevState:null,penalty:null,penT:0,autoplay:false,possT:0};
 export let ctrl = null;         // giocatore controllato dall'umano
 export function setCtrl(p){ ctrl = game.autoplay ? null : p; }      // in "computer contro computer" nessuno è controllato
 // lotta al centro (centroboa contro il suo marcatore)

@@ -36,7 +36,8 @@
     "statistiche": "node tests/statistiche.mjs",
     "vetrina": "node tests/vetrina.mjs",
     "verifica:aggiorna": "node tests/verifica.mjs --no-legacy --aggiorna",
-    "qualita": "node tests/qualita.mjs"
+    "qualita": "node tests/qualita.mjs",
+    "regia-tiro": "node tests/regia-tiro.mjs"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",

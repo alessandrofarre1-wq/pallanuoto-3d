@@ -216,6 +216,26 @@ function posturaVista(p,J,e){
   for(const k of BASSI){ const q=J[k], v=V[k], dx=q[0]-cx, dy=q[1]-cy; v[0]=cx+dx*ca-dy*sa; v[1]=cy+dx*sa+dy*ca+su; }
   return V;
 }
+// Accento del gesto soltanto nel disegno: le giunture J usate per il
+// rilascio fisico della palla restano identiche. Nessun fermo o rallentamento.
+function enfatizzaTiro(p,J){
+  const a=p.act; if(!a||a.kind==='pass'||a.kind==='fake') return J;
+  const speciale=['beduina','sciarpa','schizzo','colonnello'].includes(a.kind);
+  if(!speciale && !(a.potenza>=0.98)) return J;
+  const fase=clamp((a.t-a.wind)/((a.frusta||0.18)+0.36),0,1);
+  const k=Math.sin(Math.PI*fase)*(speciale?1:0.8);
+  if(k<0.001) return J;
+  const V=p.tiroVista||(p.tiroVista={});
+  for(const key of JK){const q=J[key],v=V[key]||(V[key]=[0,0,0]);v[0]=q[0];v[1]=q[1];v[2]=q[2];}
+  const ang=(a.kind==='beduina'?-0.2:a.kind==='schizzo'?0.08:0.14)*k*(p.mano==='S'?-1:1), c=Math.cos(ang),s=Math.sin(ang), h=V.hip;
+  for(const key of ['chest','head','sL','sR','eL','eR','hL','hR']){
+    const v=V[key],dx=v[0]-h[0],dz=v[2]-h[2];
+    v[0]=h[0]+dx*c-dz*s+(a.kind==='colonnello'?0.045*k:0);
+    v[2]=h[2]+dx*s+dz*c;
+    if(!speciale) v[1]+=0.025*k;
+  }
+  return V;
+}
 export function updateRig(p,dt,t){
   const R=p.mesh;
   // CORPO CHE SI PIEGA. La direzione del giocatore (p.fx, p.fz) è quella di testa e spalle; petto, bacino e gambe la seguono
@@ -238,7 +258,7 @@ export function updateRig(p,dt,t){
     for(const key of ['nR','nL']){ const a=N[key], b=T[key]; a[0]+=(b[0]-a[0])*kp; a[1]+=(b[1]-a[1])*kp; a[2]+=(b[2]-a[2])*kp; }
     T.nR=N.nR; T.nL=N.nL; }
   R.g.position.set(p.x,0,p.z); R.g.rotation.y=Math.atan2(-p.fz,p.fx);
-  const Jv=posturaVista(p,J,T.oriz||0);
+  const Jv=enfatizzaTiro(p,posturaVista(p,J,T.oriz||0));
   if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)) muoviCorpo(R,Jv,T,dt); }
   else {
     setSeg(R.torso,J.hip,J.chest); R.chest.position.set(J.chest[0],J.chest[1],J.chest[2]); R.pelvis.position.set(J.hip[0],J.hip[1],J.hip[2]);
@@ -259,7 +279,8 @@ export function updateRig(p,dt,t){
   // il gioco non dipende dal disegno.
   p.ballVistaW=null;
   if(l && R.corpo && R.corpo.ossa.manoD && !(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){
-    const c=p.fx, sn=-p.fz, h=T.manoS?Jv.hL:Jv.hR, k=1-(T.ballDavanti||0);
+    const riferimento=Jv===p.tiroVista?J:Jv;
+    const c=p.fx, sn=-p.fz, h=T.manoS?riferimento.hL:riferimento.hR, k=1-(T.ballDavanti||0);
     (T.manoS&&R.corpo.ossa.manoS?R.corpo.ossa.manoS:R.corpo.ossa.manoD).getWorldPosition(_mano);
     const hx=p.x+VIS*(h[0]*c+h[2]*sn), hy=VIS*h[1], hz=p.z+VIS*(-h[0]*sn+h[2]*c);
     p.ballVistaW=[p.ballW[0]+(_mano.x-hx)*k, p.ballW[1]+(_mano.y-hy)*k, p.ballW[2]+(_mano.z-hz)*k];

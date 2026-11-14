@@ -5,7 +5,7 @@
 // Il menu si usa sia in verticale sia in orizzontale; la partita solo in orizzontale (main.js, stile.css).
 import { azzeraStatistiche } from './statistiche.js';
 import { initAudio } from './audio.js';
-import { PERIOD_LEN, setCamZoom, setArbitro, setDiff, setPeriodLen, setSpeed } from './costanti.js';
+import { PERIOD_LEN, setArbitro, setDiff, setPeriodLen } from './costanti.js';
 import { $, aggiornaTabellone, fpsIniziale, setFps } from './hud.js';
 import { RUOLI, CHIAVE, STAT_NOMI, squadre } from './dati/rose.js';
 import { bandiera } from './dati/bandiere.js';
@@ -48,9 +48,10 @@ function gruppo(attr,applica,chiave){
 }
 // impostazioni della partita: menu a tendina (come nel concept), con i valori di prima
 const TENDINE={ len:['selLen',v=>setPeriodLen(+v),'pallanuoto-durata'], diff:['selDiff',v=>setDiff(+v),'pallanuoto-difficolta'],
-  arb:['selArb',v=>setArbitro(+v),'pallanuoto-arbitro'], spd:['selSpd',v=>setSpeed(+v),'pallanuoto-ritmo'] };
+  arb:['selArb',v=>setArbitro(+v),'pallanuoto-arbitro'] };
 // imposta('len','300'): sceglie un valore come farebbe il giocatore (lo usano anche le verifiche automatiche)
 export function imposta(nome,valore){
+  if(!TENDINE[nome]) return;
   const [id,applica,chiave]=TENDINE[nome], sel=$(id);
   if(![...sel.options].some(o=>o.value===String(valore))) return;
   sel.value=String(valore); applica(sel.value); salva(chiave,sel.value);
@@ -59,7 +60,6 @@ for(const [nome,[id,applica]] of Object.entries(TENDINE)){
   const sel=$(id); sel.onchange=()=>imposta(nome,sel.value);
   const v=leggi(TENDINE[nome][2]); if(v) imposta(nome,v); else applica(sel.value);
 }
-gruppo('cam',v=>setCamZoom(+v),'pallanuoto-cam');
 gruppo('fps',v=>setFps(v==='1'),null);
 if(fpsIniziale()) document.querySelector('[data-fps="1"]').click();
 

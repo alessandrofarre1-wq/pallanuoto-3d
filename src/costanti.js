@@ -24,7 +24,9 @@ export const ATK = ['Arco','Entrata','Incrocio','Palla al boa'], DEFN = ['A uomo
 // il punto marca il centroboa (e viceversa)
 export const MARK = [0,6,3,2,5,4,1];
 export const KICK_Z = [0,2.5,7.5,-7.5,5,-5,-2.5];   // corsia di ogni ruolo allo sprint iniziale
-export let PERIOD_LEN = 180, DIFF_I = 1, SPEED = 1;
+export let PERIOD_LEN = 180, DIFF_I = 1;
+// Ritmo unico, misurato in tempo reale (decisione di Ale, 14/11/2026).
+export const SPEED=1;
 export const DIFF = () => [0.7,1,1.3][DIFF_I];
 export const DIFF_GK = () => [0.8,1,1.12][DIFF_I];
 
@@ -38,13 +40,9 @@ export const dist = (a,b) => Math.hypot(a.x-b.x, a.z-b.z);
 export function gauss(){ let u=0,v=0; while(!u)u=rnd(); while(!v)v=rnd(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
 export function setPeriodLen(v){ PERIOD_LEN=v; }
 export function setDiff(v){ DIFF_I=v; }
-export function setSpeed(v){ SPEED=v; }
 // Severità dell'arbitro, scelta a inizio partita: sposta il confine tra contatto lecito, fallo ed espulsione, soprattutto ai 2 metri.
 // 0,65 = permissivo (lascia giocare), 1 = normale, 1,4 = fiscale
 export let ARBITRO=1;
 export function setArbitro(v){ ARBITRO=v; }
 // Tempo per passare dal nuoto alla posizione verticale (secondi); per distendersi ci vuole un decimo in più. Scelto da Ale: 0,25.
 export const ALZATA=0.25;
-// Telecamera scelta dal menu: 0,85 vicina, 1 normale, 1,22 larga
-export let CAM_ZOOM=1;
-export function setCamZoom(v){ CAM_ZOOM=v; }

@@ -1,5 +1,5 @@
 // ================= INPUT =================
-import { camMode, renderer } from './grafica/scena.js';
+import { camera, renderer } from './grafica/scena.js';
 import { $, apriSchemi } from './hud.js';
 import { annuncia } from './cronaca.js';
 import { togglePause } from './menu.js';
@@ -31,10 +31,10 @@ export function aggiornaSprint(premuto,t){
 export let inp={x:0,z:0}, prev={x:0,z:0}, padStart=false;
 export function pollInput(){
   prev=inp;
-  const n={x:0,z:0,sprint:false,pass:false,shoot:false,lob:false,sw:false,cam:false,cmd:false,p1:false,p2:false,p3:false,p4:false,to:false};
+  const n={x:0,z:0,sprint:false,pass:false,shoot:false,lob:false,sw:false,cmd:false,p1:false,p2:false,p3:false,p4:false,to:false};
   if(keys.KeyA||keys.ArrowLeft) n.x-=1; if(keys.KeyD||keys.ArrowRight) n.x+=1;
   if(keys.KeyW||keys.ArrowUp) n.z-=1;   if(keys.KeyS||keys.ArrowDown) n.z+=1;
-  n.sprint=!!(keys.ShiftLeft||keys.ShiftRight); n.pass=!!keys.Space; n.shoot=!!keys.KeyK; n.lob=!!keys.KeyL; n.sw=!!keys.KeyQ; n.cam=!!keys.KeyC; n.cmd=!!keys.KeyE; n.to=!!keys.KeyT;
+  n.sprint=!!(keys.ShiftLeft||keys.ShiftRight); n.pass=!!keys.Space; n.shoot=!!keys.KeyK; n.lob=!!keys.KeyL; n.sw=!!keys.KeyQ; n.cmd=!!keys.KeyE; n.to=!!keys.KeyT;
   n.p1=!!keys.Digit1; n.p2=!!keys.Digit2; n.p3=!!keys.Digit3; n.p4=!!keys.Digit4;
   const pads=navigator.getGamepads?navigator.getGamepads():[];
   for(const gp of pads){
@@ -44,17 +44,20 @@ export function pollInput(){
     if(am>0.18){ const k=Math.min(1,(am-0.18)/0.72)/am; n.x+=ax*k; n.z+=az*k; }   // zona morta radiale, risposta progressiva
     const b=i=>gp.buttons[i]&&gp.buttons[i].pressed;
     if(b(12))n.p1=true; if(b(15))n.p2=true; if(b(13))n.p3=true; if(b(14))n.p4=true; if(b(1))n.cmd=true; if(b(6))n.to=true;
-    if(b(0))n.pass=true; if(b(2))n.shoot=true; if(b(3))n.lob=true; if(b(4))n.sw=true; if(b(5)||b(7))n.sprint=true; if(b(8))n.cam=true;
+    if(b(0))n.pass=true; if(b(2))n.shoot=true; if(b(3))n.lob=true; if(b(4))n.sw=true; if(b(5)||b(7))n.sprint=true;
     if(b(9)&&!padStart){ padStart=true; togglePause(); } if(!b(9)) padStart=false;
     break;
   }
   n.x+=touch.x; n.z+=touch.z;
-  for(const k of ['sprint','pass','shoot','lob','sw','cam','cmd','to']) if(touch.btn[k]) n[k]=true;
+  for(const k of ['sprint','pass','shoot','lob','sw','cmd','to']) if(touch.btn[k]) n[k]=true;
   n.sprint=aggiornaSprint(n.sprint,game.time)&&!(ctrl&&ctrl.stamina<0.06);
   if(sprintBtn) sprintBtn.classList.toggle('scatto',n.sprint);
   const l=Math.hypot(n.x,n.z); if(l>1){ n.x/=l; n.z/=l; }
-  // telecamera "dietro": su = verso la porta avversaria (+x), destra = +z
-  if(camMode()===1){ const wx=-n.z, wz=n.x; n.x=wx; n.z=wz; }
+  // Joystick e frecce seguono il piano dello schermo anche quando la
+  // telecamera ruota dolcemente verso una delle porte.
+  const e=camera.matrixWorld.elements, lCamera=Math.hypot(e[0],e[2])||1;
+  const rx=e[0]/lCamera, rz=e[2]/lCamera, x=n.x, z=n.z;
+  n.x=x*rx-z*rz; n.z=x*rz+z*rx;
   inp=n;
 }
 addEventListener('gamepadconnected',()=>annuncia('avviso','Controller collegato',{durata:1.5}));

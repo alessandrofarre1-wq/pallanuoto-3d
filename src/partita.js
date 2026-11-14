@@ -17,7 +17,6 @@ import { obiettivoEspulso, obiettivoRientro, recuperoPozzetto } from './pozzetto
 export const CONTR_AI={ ritmo:1.5, insiste:2.0, fallo:0.2, indisciplina:0.4 };      // contrasto del computer (sezione 2)
 export function update(dt){
   pollInput();
-  if(pressed('cam')) game.camMode=1-game.camMode;
   if(game.state==='menu'||game.state==='paused'||game.state==='over') return;
   if(game.state==='countdown'){
     game.timer-=dt;
@@ -48,8 +47,8 @@ export function update(dt){
       for(const p of allPlayers) if(!p.excluded) movePlayer(p,0,0,false,dt);
       if(s.team.human){
         setCtrl(s);
-        if(inp.shoot){ s.charging=true; s.chargeT+=dt; }
-        if(!s.act&&((s.charging&&(released('shoot')||s.chargeT>1.4))||game.penT>7)){
+        if(inp.shoot){ s.charging=true; s.chargeT=Math.min(0.9,s.chargeT+dt); }
+        if(!s.act&&((s.charging&&released('shoot'))||game.penT>7)){
           const pw=clamp(s.chargeT/0.9,0.5,1), az=Math.abs(inp.z)>0.3?inp.z:null;
           startAct(s,'shot',0,()=>doShoot(s,pw,false,az));
         }

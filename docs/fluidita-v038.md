@@ -51,9 +51,12 @@ Le soglie e le affermazioni verificate restano esplicite nei test.
 
 Su indicazione esplicita di Ale, il riflesso della v0.37 non è sempre acceso;
 la qualità ora recupera dettaglio dopo un periodo stabile. Sono stati ridotti
-i soli corpi aggiuntivi dei cambi per restare nel budget. Regole, ritmo,
-comandi e fisica non cambiano.
+i soli corpi aggiuntivi dei cambi per restare nel budget. Le successive richieste di Ale su regia unica, ritmo unico, interfaccia e
+carica del tiro sono descritte in `regia-tiro-v038.md`. Le traiettorie e le
+probabilità del tiro non ricevono bonus dalle nuove animazioni.
 
 Resta necessaria una prova su iPhone reale per valutare FPS e resa visiva:
 i tempi del rendering software e le simulazioni non dimostrano 60 fps sul
 telefono. Nessuna pubblicazione su main in questa PR prima della revisione.
+
+Per le scelte aggiunte dopo il video, vedere `regia-tiro-v038.md`.

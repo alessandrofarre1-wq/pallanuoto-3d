@@ -2,7 +2,6 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { BRV, GH, GW, HL, HW, rndGrafica } from '../costanti.js';
-import { game } from '../stato.js';
 import { sottAcqua, tempoAcqua } from './sottacqua.js';
 import { creaSuperficie } from './superficie.js';
 import { illuminaArena, creaOmbreAcqua } from './illuminazione.js';
@@ -208,7 +207,7 @@ makeGoal(1); makeGoal(-1);
 // palla + ombra + anello del giocatore controllato
 // Palla da pallanuoto gialla e blu come nel concept: 18 spicchi a gruppi di tre (la striscia di mezzo di ogni spicchio è blu),
 // separati da solchi scuri, con la buccia a puntini. Disegno calcolato punto per punto sulla sfera, così i solchi sono curve
-// esatte e non si deformano ai poli. Un po' più grande del vero (1,3) e con un contorno scuro, per leggerla anche da lontano.
+// esatte e non si deformano ai poli. Un po' più grande del vero (1,3), per leggerla anche da lontano.
 export const ball3d = (()=>{
   const W=1024, H=512, tela=document.createElement('canvas'); tela.width=W; tela.height=H;
   const xg=tela.getContext('2d'), ig=xg.createImageData(W,H);
@@ -236,8 +235,6 @@ export const ball3d = (()=>{
   xg.putImageData(ig,0,0);
   const tg=new THREE.CanvasTexture(tela); tg.colorSpace=THREE.SRGBColorSpace; tg.anisotropy=4;
   const m=new THREE.Mesh(new THREE.SphereGeometry(BRV,32,24),sottAcqua(new THREE.MeshPhysicalMaterial({map:tg,roughness:0.4,metalness:0,clearcoat:0.65,clearcoatRoughness:0.22,envMapIntensity:0.6})));
-  // contorno scuro: una sfera nera appena più larga vista da dentro
-  m.add(new THREE.Mesh(new THREE.SphereGeometry(BRV*1.13,16,12),new THREE.MeshBasicMaterial({color:0x10182a,side:THREE.BackSide})));
   m.scale.setScalar(1.3);
   return m;
 })();
@@ -259,5 +256,4 @@ export const mirino = new THREE.Sprite(new THREE.SpriteMaterial({depthTest:false
 mirino.scale.set(0.8,0.8,1); mirino.renderOrder=6; mirino.visible=false; scene.add(mirino);
 export const passMark = new THREE.Mesh(new THREE.TorusGeometry(0.4,0.035,6,24),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.6}));
 passMark.rotation.x=Math.PI/2; scene.add(passMark);
-export const camMode = () => camera.aspect<1 ? 1 : game.camMode;   // in verticale si usa sempre la vista dalla porta
 export function setDpr(v){ dpr=v; }

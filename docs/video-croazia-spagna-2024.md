@@ -67,3 +67,7 @@ analisi non modifica velocità, regole, animazioni o tempi della partita**.
 
 Le regole del gioco restano quelle attuali già decise con Ale; il riferimento
 video del 2024 serve a studiare ritmo e gesti, non sostituisce il regolamento.
+
+Aggiornamento richiesto da Ale: regia e ritmo unici, indicatore di carica e
+accenti dei tiri sono ora implementati; dettagli in `regia-tiro-v038.md`.
+I tempi dell’esultanza e della ripresa dopo il gol restano da valutare.
