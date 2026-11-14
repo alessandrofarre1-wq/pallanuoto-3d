@@ -1,5 +1,7 @@
 # Passaggio a Claude Code — WATERPOLO 7
 
+Consegna: [PR 34 — v0.39](https://github.com/alessandrofarre1-wq/pallanuoto-3d/pull/34), aperta il 14 novembre 2026. Non unita e non pubblicata durante questa sessione.
+
 ## Prompt pronto da copiare
 
 ```text
@@ -12,7 +14,7 @@ docs/proposte/menu-concept.html, con tre anteprime PNG nella stessa cartella.
 
 Prima di modificare file, controlla lo stato remoto e locale: la PR 33/v0.38
 è già stata unita a main. La consegna successiva è sul branch
-codex/v039-cambi-proposte-handoff; verifica se la sua PR è aperta o già unita.
+codex/v039-cambi-proposte-handoff, PR34; verifica se è aperta o già unita.
 Non duplicare le modifiche e non pubblicare direttamente su main.
 
 Priorità di Ale: il gameplay è macchinoso e non invoglia a rigiocare.
@@ -85,5 +87,5 @@ istruzione di Ale. Non inviare messaggi ad altre persone.
 - Branch: `codex/v039-cambi-proposte-handoff`, versione 0.39.0.
 - Modifica al gioco: `src/stile.css`, posizione/trasparenza CAMBI e posizione barra lotta.
 - Documenti: proposta completa con fonti ufficiali, analisi preliminare gameplay, questo prompt.
-- Verifiche completate: lint (0 errori, warning gx preesistente); sei partite terminate; dopo ispezione e aggiornamento dei quattro riferimenti modificati da CAMBI, `npm run verifica -- --partite=0` PASS (13 controlli, cinque immagini identiche). `npm run aspetto -- --no-build` PASS. HUD su tre iPhone/tre scene e CAMBI+lotta su 12 combinazioni viewport/margini: nessuna sovrapposizione. Budget 97 oggetti/148.380 triangoli con due cambi simultanei su due iPhone. Dettagli in `docs/verifiche-v039.md`. PR in apertura dopo i controlli; collegamento da aggiungere alla consegna.
+- Verifiche completate: lint (0 errori, warning gx preesistente); sei partite terminate; dopo ispezione e aggiornamento dei quattro riferimenti modificati da CAMBI, `npm run verifica -- --partite=0` PASS (13 controlli, cinque immagini identiche). `npm run aspetto -- --no-build` PASS. HUD su tre iPhone/tre scene e CAMBI+lotta su 12 combinazioni viewport/margini: nessuna sovrapposizione. Budget 97 oggetti/148.380 triangoli con due cambi simultanei su due iPhone. Dettagli in `docs/verifiche-v039.md`. PR34 aperta dopo i controlli, collegamento in testa al documento.
 - Non fatto: revisione effettiva gameplay/AI; tornei; rose mancanti; rigori finali; nuovi menu; salvataggi completi; premi; integrazione porta e arena; prova su iPhone fisico.
