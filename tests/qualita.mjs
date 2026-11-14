@@ -1,0 +1,35 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import { createHash } from 'node:crypto';
+import * as THREE from 'three';
+import { creaOmbreAcqua } from '../src/grafica/illuminazione.js';
+import { creaQualitaAdattiva } from '../src/grafica/qualita.js';
+const q=creaQualitaAdattiva(1.5);
+let dpr=1.5;
+function frame(ms,attiva=true){ dpr=q.aggiorna(ms,attiva,dpr); }
+function secondi(n,ms=1000/60){ for(let i=0;i<Math.ceil(n*1000/ms);i++) frame(ms); }
+secondi(5); assert.equal(dpr,1.5,'60 fps conserva il dettaglio');
+frame(40); secondi(3); assert.equal(dpr,1.5,'uno scatto isolato non riduce la qualità');
+for(let i=0;i<180;i++) frame(i%6===0?30:16.67);
+assert.ok(dpr<1.5,'gli scatti ripetuti attivano la riduzione');
+secondi(30,33.33); assert.equal(dpr,1,'limite inferiore');
+secondi(13); assert.equal(dpr,1.125,'recupero graduale dopo stabilità');
+for(let i=0;i<180;i++) frame(33.33,false);
+assert.equal(dpr,1.125,'il menu non cambia la qualità');
+q.reset(); frame(5000); secondi(1); assert.equal(dpr,1.125,'ritorno da altra app escluso');
+secondi(65); assert.equal(dpr,1.5,'recupero fino al dettaglio iniziale');
+const piccolo=creaQualitaAdattiva(0.8);
+assert.equal(piccolo.aggiorna(16,true,0.8),0.8,'rispetta dispositivi sotto DPR 1');
+const scene=new THREE.Scene(), aggiornaOmbre=creaOmbreAcqua(scene);
+const g={excluded:true,mesh:{g:{visible:true}},oriz:0,x:1,z:2,fx:1,fz:0};
+aggiornaOmbre([g]);
+const matrice=new THREE.Matrix4(); scene.children[0].getMatrixAt(0,matrice);
+assert.ok(matrice.elements[0]>0,'ombra presente per espulso visibile');
+g.mesh.g.visible=false; aggiornaOmbre([g]); scene.children[0].getMatrixAt(0,matrice);
+assert.equal(matrice.elements[0],0,'nessuna ombra per corpo nascosto');
+const modello=fs.readFileSync(new URL('../src/grafica/modelli/pallanuotista.glb',import.meta.url));
+const riserva=JSON.parse(fs.readFileSync(new URL('../src/grafica/modelli/riserva-indici.json',import.meta.url)));
+assert.equal(riserva.sha256,createHash('sha256').update(modello).digest('hex'),'indici riserva aggiornati al modello originale');
+assert.ok(riserva.triangoli<=2800 && riserva.indici.length===riserva.triangoli*3,'budget della riserva');
+assert.ok(riserva.indici.every(i=>Number.isInteger(i)&&i>=0&&i<riserva.vertici),'indici riserva validi');
+console.log('Qualità, ombra e modello riserva: 13 controlli superati');

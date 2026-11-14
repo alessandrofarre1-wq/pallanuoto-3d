@@ -17,7 +17,7 @@ export function startAct(p,kind,wind,fn,aim){
   // "frusta" = tempo dal braccio caricato al rilascio. Dati riportati nella tesi Patumi (Melchiorri 2015): 166 ms per i
   // professionisti, 189 ms per i semi-professionisti: chi tira meglio rilascia prima. Passaggio e finta sono gesti più corti.
   const frusta = kind==='pass'||kind==='fake' ? 0.09 : kind==='polso' ? 0.11 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
-  p.act={t:0,kind,wind,frusta,fn,aim,done:false}; p.charging=false; p.chargeT=0;
+  p.act={t:0,kind,wind,frusta,fn,aim,done:false,potenza:p.charging?Math.min(1,p.chargeT/0.9):0}; p.charging=false; p.chargeT=0;
   if(diSchiena(kind)) p.tiriDiSchiena=(p.tiriDiSchiena||0)+1;
 }
 // tiri del centroboa spalle alla porta
@@ -166,6 +166,8 @@ export function doShoot(p,power,lob,aimZ,o){
   // tiro a schizzo (sezione 4): schiaffo dalla superficie, palla bassa e tesa (sostituisce il vecchio tiro che rimbalzava
   // apposta prima della porta)
   if(o.speciale==='schizzo') ay=clamp(0.12+(ay-0.15)*0.45,0.08,0.5);
+  if(p.act) p.act.potenza=power;
+  p.effettoTiro={tipo,forza:power,inizio:game.time};
   launch(p,gx,ay,az,d/spd,'shot');
   if(o.speciale==='schizzo') ball.y=Math.min(ball.y,0.32);      // parte dal pelo dell'acqua
   ball.shotPower=lob?0.3:power; ball.lob=lob; ball.crossZ=az; ball.paloCoperto=paloCoperto(p); ball.rigore=game.penalty===p;

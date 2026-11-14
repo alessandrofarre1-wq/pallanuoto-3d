@@ -35,7 +35,7 @@ export function creaOmbreAcqua(scene){
   return giocatori=>{
     ombre.count=Math.min(giocatori.length,24);
     for(let i=0;i<ombre.count;i++){
-      const g=giocatori[i], visibile=!g.excluded&&g.mesh.g.visible, o=g.oriz||0;
+      const g=giocatori[i], visibile=g.mesh.g.visible, o=g.oriz||0;
       q.setFromAxisAngle(su,Math.atan2(-g.fz,g.fx));
       s.set(visibile?0.45+0.65*o:0,1,visibile?0.38:0);
       m.compose(p.set(g.x-0.15*g.fx*o,-0.025,g.z-0.15*g.fz*o),q,s);

@@ -103,8 +103,8 @@ if (!SOLO_GIOCO) {
       window.__vai(2);
       const inf = H.renderer.info.render; return { calls: inf.calls, tri: inf.triangles };
     }, { f: sc.f, chi: sc.chi, cam: sc.cam ? sc.cam.toString() : '' });
-    await pg.screenshot({ path: path.join(USCITA, sc.nome + '.png') });
-    costi.push(`${sc.nome}: ${r.calls} oggetti disegnati, ${Math.round(r.tri / 1000)} mila triangoli`);
+    await pg.screenshot({ path: path.join(USCITA, sc.nome + '.png'), timeout:120000 });
+    costi.push(`${sc.nome}: ${r.calls} oggetti disegnati, ${r.tri} triangoli`);
     if (pg.errori.length) nota(false, `errori in ${sc.nome}: ${pg.errori.slice(0, 2).join(' | ')}`);
     await pg.context().close();
   }

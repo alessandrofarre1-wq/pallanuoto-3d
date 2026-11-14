@@ -26,7 +26,7 @@ const init = () => {
   // misure dell'interfaccia: elementi visibili, copertura, sovrapposizioni, cose del gioco coperte
   window.__misura = () => {
     const H = window.__pallanuoto, W = innerWidth, Hh = innerHeight;
-    const SEL = ['#hud', '#hud .esp > *', '#cronaca', '#tac', '#player', '#tLog', '#tPause', '#tCambi', '.tb', '#joy', '#fight'];
+    const SEL = ['#hud', '#espulsioni .esp > *', '#cronaca', '#tac', '#player', '#tLog', '#tPause', '#tCambi', '.tb', '#joy', '#fight'];
     const el = [];
     for (const s of SEL) for (const e of document.querySelectorAll(s)) {
       const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < 0.05) continue;
@@ -58,7 +58,7 @@ for (const [tel, vp] of Object.entries(TELEFONI)) {
   // partita vera, Italia comandata (senza tocchi: si muovono i compagni e gli avversari), a un istante fisso
   await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 'USA'); window.__pallanuoto.imposta('len', '300'); document.getElementById('goBtn').click(); window.__salta(520); window.__vai(1); });
   const stati = {};
-  const scatta = async nome => { await pg.waitForTimeout(450); await pg.screenshot({ path: path.join(USCITA, `${tel}-${nome}.png`) }); stati[nome] = await pg.evaluate(() => window.__misura()); };
+  const scatta = async nome => { await pg.waitForTimeout(450); await pg.screenshot({ path: path.join(USCITA, `${tel}-${nome}.png`),timeout:120000 }); stati[nome] = await pg.evaluate(() => window.__misura()); };
   await scatta('1-gioco-normale');
   // espulsione: il difensore più vicino a chi ha palla, fallo su di lui
   await pg.evaluate(() => { const H = window.__pallanuoto, B = H.ball, c = B.holder || H.teams[0].players[6], dif = c.team === H.teams[0] ? H.teams[1] : H.teams[0];

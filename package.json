@@ -1,14 +1,14 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.37.0",
+  "version": "0.38.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint src tests strumenti",
-    "verifica": "node tests/verifica.mjs --no-legacy",
+    "verifica": "node tests/qualita.mjs && node tests/verifica.mjs --no-legacy",
     "verifica:legacy": "node tests/verifica.mjs",
     "primi-piani": "node tests/primi-piani.mjs",
     "sequenze": "node tests/sequenze.mjs",
@@ -35,7 +35,9 @@
     "bilancio": "node tests/bilancio.mjs",
     "statistiche": "node tests/statistiche.mjs",
     "vetrina": "node tests/vetrina.mjs",
-    "verifica:aggiorna": "node tests/verifica.mjs --no-legacy --aggiorna"
+    "verifica:aggiorna": "node tests/verifica.mjs --no-legacy --aggiorna",
+    "qualita": "node tests/qualita.mjs",
+    "regia-tiro": "node tests/regia-tiro.mjs"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",

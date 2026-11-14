@@ -1,7 +1,7 @@
 // Scena 3D: piscina, acqua, schiuma, corde, porte, palla, telecamera
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { BRV, GH, GW, HL, HW, rndGrafica } from '../costanti.js';
-import { game } from '../stato.js';
 import { sottAcqua, tempoAcqua } from './sottacqua.js';
 import { creaSuperficie } from './superficie.js';
 import { illuminaArena, creaOmbreAcqua } from './illuminazione.js';
@@ -162,7 +162,7 @@ export function contatto(i,x,z,ang,lungo,largo,forza,vel){
 }
 // corde di delimitazione con i colori delle zone
 {
-  const geo=new THREE.SphereGeometry(0.09,6,5);
+  const geo=new THREE.SphereGeometry(0.09,6,3);
   const cols={w:0xffffff,r:0xe11d2a,y:0xfacc15,g:0x22c55e}, pts={w:[],r:[],y:[],g:[]};
   for(const zs of [-HW-0.2,HW+0.2]) for(let x=-HL;x<=HL+0.01;x+=0.3){ const ax=HL-Math.abs(x); pts[ax<2?'r':ax<6?'y':'g'].push([x,zs]); }
   for(const xs of [-HL-0.6,HL+0.6]) for(let z=-HW;z<=HW;z+=0.3) pts.w.push([xs,z]);
@@ -173,7 +173,13 @@ export function contatto(i,x,z,ang,lungo,largo,forza,vel){
     im.instanceMatrix.needsUpdate=true; scene.add(im);
   }
   const mk=[[HL,0xffffff],[HL-2,0xe11d2a],[HL-5,0xe11d2a],[HL-6,0xfacc15],[0,0xffffff],[-HL,0xffffff],[-HL+2,0xe11d2a],[-HL+5,0xe11d2a],[-HL+6,0xfacc15]];
-  for(const [x,c] of mk) for(const zs of [-PZ-0.6,PZ+0.6]) box(0.35,0.06,0.9,c,x,0.34,zs);
+  // Stessi 18 segni e colori, inviati insieme anziché come 18 oggetti.
+  const segni=new THREE.InstancedMesh(new THREE.BoxGeometry(0.35,0.06,0.9),new THREE.MeshLambertMaterial({color:0xffffff}),mk.length*2);
+  let segno=0;
+  for(const [x,c] of mk) for(const zs of [-PZ-0.6,PZ+0.6]){
+    segni.setMatrixAt(segno,mtx.makeTranslation(x,0.34,zs)); segni.setColorAt(segno++,new THREE.Color(c));
+  }
+  scene.add(segni);
 }
 // porte
 export function makeGoal(sign){
@@ -186,6 +192,14 @@ export function makeGoal(sign){
   const top=new THREE.Mesh(new THREE.PlaneGeometry(0.8,GW*2,3,12),netMat); top.rotation.x=-Math.PI/2; top.position.set(sign*0.4,GH,0); g.add(top);
   for(const z of [-GW,GW]){ const sd=new THREE.Mesh(new THREE.PlaneGeometry(0.8,H,4,8),netMat); sd.position.set(sign*0.4,H/2-0.3,z); g.add(sd); }
   const flo=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.14,GW*2+0.5),sottAcqua(new THREE.MeshLambertMaterial({color:0xf4f4f4}))); flo.position.set(sign*0.45,-0.02,0); g.add(flo);
+  // Pali e rete mantengono le stesse facce: si accorpano soltanto le
+  // chiamate di disegno (3 pali → 1, 4 pannelli di rete → 1 per porta).
+  for(const materiale of [mat,netMat]){
+    const pezzi=g.children.filter(p=>p.material===materiale), geometrie=[];
+    for(const p of pezzi){ p.updateMatrix(); geometrie.push(p.geometry.clone().applyMatrix4(p.matrix)); g.remove(p); p.geometry.dispose(); }
+    const unita=mergeGeometries(geometrie); geometrie.forEach(geo=>geo.dispose());
+    g.add(new THREE.Mesh(unita,materiale));
+  }
   g.position.set(sign*HL,0,0); scene.add(g);
 }
 makeGoal(1); makeGoal(-1);
@@ -193,7 +207,7 @@ makeGoal(1); makeGoal(-1);
 // palla + ombra + anello del giocatore controllato
 // Palla da pallanuoto gialla e blu come nel concept: 18 spicchi a gruppi di tre (la striscia di mezzo di ogni spicchio è blu),
 // separati da solchi scuri, con la buccia a puntini. Disegno calcolato punto per punto sulla sfera, così i solchi sono curve
-// esatte e non si deformano ai poli. Un po' più grande del vero (1,3) e con un contorno scuro, per leggerla anche da lontano.
+// esatte e non si deformano ai poli. Un po' più grande del vero (1,3), per leggerla anche da lontano.
 export const ball3d = (()=>{
   const W=1024, H=512, tela=document.createElement('canvas'); tela.width=W; tela.height=H;
   const xg=tela.getContext('2d'), ig=xg.createImageData(W,H);
@@ -221,8 +235,6 @@ export const ball3d = (()=>{
   xg.putImageData(ig,0,0);
   const tg=new THREE.CanvasTexture(tela); tg.colorSpace=THREE.SRGBColorSpace; tg.anisotropy=4;
   const m=new THREE.Mesh(new THREE.SphereGeometry(BRV,32,24),sottAcqua(new THREE.MeshPhysicalMaterial({map:tg,roughness:0.4,metalness:0,clearcoat:0.65,clearcoatRoughness:0.22,envMapIntensity:0.6})));
-  // contorno scuro: una sfera nera appena più larga vista da dentro
-  m.add(new THREE.Mesh(new THREE.SphereGeometry(BRV*1.13,16,12),new THREE.MeshBasicMaterial({color:0x10182a,side:THREE.BackSide})));
   m.scale.setScalar(1.3);
   return m;
 })();
@@ -244,5 +256,4 @@ export const mirino = new THREE.Sprite(new THREE.SpriteMaterial({depthTest:false
 mirino.scale.set(0.8,0.8,1); mirino.renderOrder=6; mirino.visible=false; scene.add(mirino);
 export const passMark = new THREE.Mesh(new THREE.TorusGeometry(0.4,0.035,6,24),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.6}));
 passMark.rotation.x=Math.PI/2; scene.add(passMark);
-export const camMode = () => camera.aspect<1 ? 1 : game.camMode;   // in verticale si usa sempre la vista dalla porta
 export function setDpr(v){ dpr=v; }

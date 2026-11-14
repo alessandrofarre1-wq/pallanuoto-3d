@@ -21,7 +21,7 @@ export const zonaCambi = t => ({ x: ownGoalX(t) + t.dir * PANCHINA.distZona, z: 
 
 // chi entra o esce: un corpo in più per squadra, visibile solo durante il cambio
 const comparse = teams.map((t, k) => {
-  const m = makePlayerMesh(20 + k, t); m.g.visible = false;
+  const m = makePlayerMesh(20 + k, t, true); m.g.visible = false;
   return { uid: 900 + k, team: t, i: 9, isGK: false, mesh: m, x: 0, z: 0, vx: 0, vz: 0, fx: 1, fz: 0, oriz: 0, stamina: 1, phase: 0,
     act: null, excluded: false, pf: 0, mano: 'D', num: 0, s: null, st: null, comparsa: true, visibile: false };
 });

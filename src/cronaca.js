@@ -99,7 +99,7 @@ export function tick(dt){
 }
 
 // ---------- espulsioni e superiorità: linguette appese sotto la squadra interessata (tabellone) ----------
-// Appena fischiata, la linguetta dell'espulso si apre per DURATA.espulsione secondi con nome e su chi ha fatto fallo; poi si
+// Appena fischiata si evidenzia la riga; numero, nome e timer restano visibili. In precedenza si
 // richiude e resta piccola: numero, tempo che manca e una barra che si accorcia. Sotto la squadra con l'uomo in più compare
 // il distintivo oro «6 c 5» nel tabellone. Nessun banner al centro: il gioco intanto continua.
 const fresche=new Map();
@@ -113,7 +113,7 @@ function aggiornaStato(){
     for(const p of t.players) if(p.excluded){
       const resta=Math.max(0,p.exclUntil-game.time), f=fresche.get(p), def=p.pf>=3;
       h+=`<span class="ex${f?' nuova':''}" style="--p:${def?100:Math.round(Math.min(1,resta/EXCL_TIME)*100)}%">`
-        +`<span class="r1">${USCITA_SVG}<span class="lab">Espulsione</span><span class="chi">#${p.num} <small>${p.name}</small></span><span class="t">${def?'def.':fmt(resta)}</span></span>`
+        +`<span class="r1">${USCITA_SVG}<span class="sq-ex">${t.short}</span><span class="lab">Espulsione</span><span class="chi">#${p.num} <small>${p.name}</small></span><span class="t">${def?'def.':fmt(resta)}</span></span>`
         +(f&&f.det?`<span class="det">${f.det}</span>`:'')+'</span>';
     }
     const mia=k===0?a:b, altra=k===0?b:a, piu=$(k===0?'piuA':'piuB'), sup=mia>altra?`${mia} c ${altra}`:'';
@@ -132,6 +132,12 @@ function copre(r){
   for(const s of [1,-1]) for(const dz of [-1.5,0,1.5]) punti.push([aSchermo(s*HL,0.5,dz),1]);
   const m=18; let peso=0;
   for(const [q,w] of punti) if(q&&q[0]>r.left-m&&q[0]<r.right+m&&q[1]>r.top-m&&q[1]<r.bottom+m) peso=Math.max(peso,w);
+  // Anche i pannelli e i comandi restano distinti dalle notifiche.
+  for(const id of ['hud','tac','player','tCambi','tLog','tPause']){
+    const el=$(id); if(!el.getClientRects().length) continue;
+    const q=el.getBoundingClientRect();
+    if(r.left<q.right&&r.right>q.left&&r.top<q.bottom&&r.bottom>q.top) peso=Math.max(peso,0.5);
+  }
   return peso;
 }
 let posT=0;
@@ -140,10 +146,10 @@ export function aggiorna(){
   aggiornaStato();
   // posizione verticale: sotto il tabellone e sotto gli indicatori delle espulsioni
   // al centro e a destra: sotto il tabellone (e sotto gli espulsi); a sinistra: sotto gli schemi, che stanno in alto a sinistra
-  const el=$('cronaca'), tac=$('tac').getBoundingClientRect();
+  const el=$('cronaca');
   let sotto=$('hud').getBoundingClientRect().bottom;
   for(const id of ['espA','espB']) if($(id).childElementCount) sotto=Math.max(sotto,$(id).getBoundingClientRect().bottom);
-  sotto+=6; const alto={ '':sotto, dx:sotto, sx:Math.max(sotto,tac.bottom+6) };
+  sotto+=6; const alto={ '':sotto, dx:sotto, sx:sotto };
   const metti=p=>{ el.classList.remove('sx','dx'); if(p) el.classList.add(p); el.style.top=alto[p]+'px'; };
   metti(pos);
   if(!visibile||game.state==='menu') return;

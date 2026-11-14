@@ -67,8 +67,8 @@ export function humanControl(p,dt){
     // tiro al volo: TIRO tenuto premuto mentre il passaggio era in volo → si tira appena arriva la palla
     if(p.voloPronto && inp.shoot && ball.holdTime<0.2 && !p.isGK && !ftBlock){ p.voloPronto=false; p.charging=false; p.chargeT=0; startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,aimZ,{volo:true})); return; }
     p.voloPronto=false;
-    if(inp.shoot&&!p.isGK){ if(!p.charging) p.mira0=0; p.charging=true; p.chargeT+=dt; if(!p.mira0&&aimZ!=null) p.mira0=Math.sign(aimZ); }
-    if(p.charging&&(released('shoot')||p.chargeT>1.4)){
+    if(inp.shoot&&!p.isGK){ if(!p.charging) p.mira0=0; p.charging=true; p.chargeT=Math.min(0.9,p.chargeT+dt); if(!p.mira0&&aimZ!=null) p.mira0=Math.sign(aimZ); }
+    if(p.charging&&released('shoot')){
       if(p.chargeT<0.2){
         // tocco breve: tiro di polso, subito (un secondo tocco rapido lo trasforma in finta; dopo una finta il polso sorprende di più)
         p.charging=false; p.chargeT=0; tapT=game.time;

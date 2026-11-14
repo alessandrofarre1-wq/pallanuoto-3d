@@ -18,7 +18,10 @@ const init = () => {
   let a = 5; window.__rnd = () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   performance.now = () => 0; window.__frame = 0;
   window.requestAnimationFrame = cb => { window.__raf = cb; return 1; };
-  window.__vai = n => { for (let i = 0; i < n; i++) { window.__frame++; window.__raf(window.__frame * 1000 / 60); } };
+  window.__vai = n => { const R=window.__pallanuoto.renderer,draw=R.render; R.render=()=>{};
+    try{for(let i=0;i<n-1;i++){window.__frame++;window.__raf(window.__frame*1000/60);}}finally{R.render=draw;}
+    if(n>0){window.__frame++;window.__raf(window.__frame*1000/60);}
+  };
 };
 let ok = true; const nota = (bene, testo) => { console.log(`${bene ? 'OK ' : 'NO '} ${testo}`); if (!bene) ok = false; };
 async function apri(vp) {

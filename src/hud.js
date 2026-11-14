@@ -4,7 +4,7 @@ import { dpr, renderer } from './grafica/scena.js';
 import { ATK, DEFN } from './costanti.js';
 import { bip } from './audio.js';
 import { aggiorna as aggiornaCronaca } from './cronaca.js';
-import { ctrl, fight, game, teams } from './stato.js';
+import { ball, ctrl, fight, game, teams } from './stato.js';
 import { iconaMano } from './mano.js';
 import { aggiornaPulsanteCambi } from './panchinaVista.js';
 export const $ = id => document.getElementById(id);
@@ -45,6 +45,18 @@ export function updateHUD(){
     $('stam').firstChild.style.width=(ctrl.stamina*100)+'%';
     $('stam').firstChild.style.background= ctrl.stamina>0.5?'#4ade80':ctrl.stamina>0.25?'#facc15':'#ef4444';
     $('power').firstChild.style.width=(ctrl.charging?Math.min(1,ctrl.chargeT/0.9)*100:0)+'%';
+  }
+  { const btn=document.querySelector('.tb[data-b="shoot"]'), carica=!!(ctrl&&ctrl.charging&&ball.holder===ctrl), pot=carica?Math.min(1,ctrl.chargeT/0.9):0;
+    const max=carica&&pot>=1, recente=ctrl&&ctrl.effettoTiro&&game.time-ctrl.effettoTiro.inizio>=0&&game.time-ctrl.effettoTiro.inizio<0.65?ctrl.effettoTiro:null;
+    const nomi={beduina:'BEDUINA',sciarpa:'SCIARPA',schizzo:'SCHIZZO',colonnello:'COLONNELLO'};
+    btn.classList.toggle('caricando',carica); btn.classList.toggle('massimo',max);
+    const riempimento=pot*100+'%'; if(btn.style.getPropertyValue('--potenza')!==riempimento) btn.style.setProperty('--potenza',riempimento);
+    const etichetta=$('power').previousElementSibling, testoPotenza=carica?(max?'Potenza tiro · MAX — rilascia':'Potenza tiro · '+Math.round(pot*100)+'%'):'Potenza tiro';
+    if(etichetta.textContent!==testoPotenza) etichetta.textContent=testoPotenza;
+    const label=carica?(max?'MAX':Math.round(pot*100)+'%'):recente&&(nomi[recente.tipo]||recente.forza>=0.98)?(nomi[recente.tipo]||'POTENTE'):ctrl&&ctrl.qte?'Premi!':'2× finta';
+    const small=btn.querySelector('small'); if(small.textContent!==label) small.textContent=label;
+    const aria=carica?(max?'Tiro alla massima potenza: rilascia':'Potenza tiro '+Math.round(pot*100)+'%'):'Tiro';
+    if(btn.getAttribute('aria-label')!==aria) btn.setAttribute('aria-label',aria);
   }
   aggiornaCronaca();
   const fe=$('fight');

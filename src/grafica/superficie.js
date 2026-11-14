@@ -4,7 +4,8 @@ import * as THREE from 'three';
 import { Reflector } from 'three/addons/objects/Reflector.js';
 
 export function creaSuperficie(larghezza, profondita, tempo){
-  const geometria=new THREE.PlaneGeometry(larghezza,profondita,100,80);
+  const telefono='ontouchstart' in window || navigator.maxTouchPoints>0;
+  const geometria=new THREE.PlaneGeometry(larghezza,profondita,telefono?32:100,telefono?24:80);
   geometria.rotateX(-Math.PI/2);
   const specchio=new Reflector(new THREE.PlaneGeometry(larghezza,profondita),{
     textureWidth:384,textureHeight:192,multisample:0,clipBias:0.003,
@@ -13,7 +14,7 @@ export function creaSuperficie(larghezza, profondita, tempo){
   const inversa=specchio.matrixWorld.clone().invert(), matrice=new THREE.Matrix4();
   const materiale=new THREE.ShaderMaterial({
     transparent:true, depthWrite:false,
-    uniforms:{ uTempo:tempo, uRiflesso:{value:specchio.getRenderTarget().texture}, uMatrice:{value:matrice}, uConRiflesso:{value:1} },
+    uniforms:{ uTempo:tempo, uRiflesso:{value:specchio.getRenderTarget().texture}, uMatrice:{value:matrice}, uConRiflesso:{value:0} },
     vertexShader:`
       uniform float uTempo;
       uniform mat4 uMatrice;
@@ -72,6 +73,9 @@ export function creaSuperficie(larghezza, profondita, tempo){
   superficie.renderOrder=-1;
   // Un riflesso a risoluzione contenuta. Non include gli indicatori sopra le teste.
   superficie.onBeforeRender=(renderer,scene,camera)=>{
+    // Alta = DPR almeno 1,75. Su iPhone il massimo è 1,50: resta il
+    // riflesso dell'ambiente, senza un secondo disegno di tutti i corpi.
+    materiale.uniforms.uConRiflesso.value=renderer.getPixelRatio()>=1.75?1:0;
     if(!materiale.uniforms.uConRiflesso.value) return;
     const riflesso=specchio.getReflectionCamera(camera); riflesso.layers.set(0);
     superficie.visible=false;
