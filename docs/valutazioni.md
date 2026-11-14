@@ -12,11 +12,12 @@ Fonte: `waterpolo_database` mandato da Ale (World Aquatics, Microplus, Omega): c
    - Potenza = gol e tiri a partita; Visione = assist; Passaggio = assist meno palle perse;
    - Difesa = palle rubate e tiri murati; Disciplina = espulsioni commesse («18C» al centro + «18F» in campo, o le sigle CP/FP/DS/M6/CS del rapporto dei Mondiali) e falli da rigore («P»);
    - Velocità = gol in controfuga e sprint vinti; Resistenza = minuti giocati a partita;
-   - Forza = gol dal centro e altezza (centroboa e difensori), solo altezza per gli altri;
+   - Forza = gol dal centro, altezza e PESO (dalla v0.36, dal file di Ale) per centroboa e difensori; altezza e peso, con peso minore, per gli altri;
    - Portieri: Riflessi e Posizione = percentuale di parate (20 tiri «di prudenza»); Rigori = parate sui rigori; Uscita = parate in controfuga.
    - Verificato sui dati: «18C» è più alto per i difensori del centroboa (2,3 ogni 32 minuti) che per i centroboa (1,1): sono espulsioni COMMESSE, al centro e in campo.
 6. **Età** e capitano come sotto (punto 5).
-7. **Mano**: dal database (13 mancini su 208; 26 sconosciute = destra). Correzioni in `src/dati/mancini.json` (chiave «ITA-7»).
+7. **Mano**: dal database (13 mancini su 208); dalla v0.36, se il database non la conosce, dal file di Ale (`dati-sorgente/aspetto-giocatori.json`): 7 mani in più, ne restano 19 sconosciute (= destra). In caso di disaccordo vale il database (oggi un caso: Tommaso Gianazza, mancino per il database, destro per il file: da verificare con Ale). Correzioni in `src/dati/mancini.json` (chiave «ITA-7»).
+10. **Dati fisici (v0.36)**: dal file di Ale (239 schede con fonti) altezza (se manca nel database) e peso; 129 giocatori in rosa collegati per nazionale + nome, 59 con il peso. Peso: 95 kg = media, ±9 kg = un passo.
 8. **Limiti** (dal README del database): sono osservazioni, non misure ufficiali di bravura; non ci sono velocità di nuoto o di tiro individuali né passaggi riusciti; dati dei club non collegati. Nel gioco sono STIME, correggibili.
 9. Correzioni dei nomi (indicate da Ale) in `NOMI_CORRETTI` nello strumento: «KARLO Babic» della fonte è Karlo Babić (Croazia, n. 8).
 

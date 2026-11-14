@@ -1,6 +1,10 @@
 # Aspetto dei giocatori dal database — audit e piano (13 novembre 2026)
 
-Stato: **PIANO IN ATTESA DELL'OK DI ALE**. Nessuna modifica al codice finché non viene approvato.
+Stato: **FATTO nella v0.36** (ok di Ale; decisioni: foto ufficiali ammesse per capelli e barba; pelle e capelli mancanti scelti
+per nazionalità; occhi salvati ma non disegnati; dove ci sono altezza e peso veri si usano quelli). Realizzazione: `src/aspetto.js`
+(profilo, generatore con seme = id + versione, doppioni nella squadra), dati documentati in `src/dati/rose-db.json` (campo `aspetto`
+con la fonte, `altezza`, `peso`, `id`), disegno in `src/grafica/corpo.js` (`applicaAspetto`). Con il modello v2 i capelli non si
+vedono (sotto la cuffia): il loro colore dà il colore a sopracciglia e barba. Il testo qui sotto è il piano originale.
 Richiesta di Ale: varianti estetiche dello stesso pallanuotista (modello originale, niente personaggi nuovi), associate in modo
 stabile ai giocatori del database, distinguendo i dati documentati da quelli generati per il disegno.
 
