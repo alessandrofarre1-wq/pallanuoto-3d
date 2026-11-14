@@ -22,13 +22,13 @@ const BIANCA={ cal:0xf4f4f4, css:'#f4f4f4', testo:'#111' }, BLU={ cal:0x1d3f8f, 
 export function vesti(p,g){
   if(p.scheda&&p.scheda!==g) p.scheda.inAcqua=false;
   p.num=g.num; p.name=g.nome; p.s=g.s; p.st=valoriMotore(g.s); p.ovr=g.ovr; p.mano=g.mano; p.scheda=g; g.inAcqua=true;
-  colora(p.mesh,p.team,p.isGK,p.num);
+  colora(p.mesh,p.team,p.isGK,p.num,g);
 }
-// solo l'aspetto (calottina, costume, numero): serve anche per chi entra o esce con un cambio (panchina.js)
-export function colora(mesh,t,isGK,num){
+// solo l'aspetto (calottina, costume, numero e profilo visivo del giocatore, src/aspetto.js): serve anche per chi entra o esce con un cambio (panchina.js)
+export function colora(mesh,t,isGK,num,scheda){
   const C=t.calottina;
   coloraGiocatore(mesh,{ costume:t.costume, calottina:isGK?0xd62828:C.cal, paraorecchie:isGK?0xf2f2ee:(C===BIANCA?t.costume:0xf2f2ee), testo:isGK?'#fff':C.testo,
-    disco:isGK?'#d62828':C.css, discoTesto:isGK?'#fff':C.testo },num);
+    disco:isGK?'#d62828':C.css, discoTesto:isGK?'#fff':C.testo },num,scheda&&scheda.profilo);
 }
 // formazione scelta dal giocatore nella schermata Squadre: per ogni nazionale i numeri dei 7 in acqua, posto per posto
 // (0 portiere, 1 centroboa, 2 ala destra, 3 ala sinistra, 4 mezzo destro, 5 mezzo sinistro, 6 punto)

@@ -6,6 +6,7 @@
 import dati from './squadre.json';
 import MANI from './mancini.json';
 import DB from './rose-db.json';
+import { profiliSquadra } from '../aspetto.js';
 
 const NOMI={
   ESP:['Lorenzo','Granados','Munárriz','Sanahuja','Cabanas','Larumbe','Famera','Perrone','Tahull','Bustos','Valera','Asensio','Aguirre'],
@@ -57,10 +58,11 @@ export function rosa(codice){
   if(rose[codice]) return rose[codice];
   // ROSE VERE (v0.34): giocatori, numeri, ruoli e mano dal database di Ale, statistiche calcolate dai tornei con
   // strumenti/rose-dal-database.mjs. Le voci di src/dati/mancini.json correggono la mano (chiave «ITA-7»).
-  if(DB.rose[codice]) return rose[codice]=DB.rose[codice].map(g=>{
+  // ogni scheda riceve anche il suo profilo visivo stabile (src/aspetto.js: solo disegno)
+  if(DB.rose[codice]) return rose[codice]=profiliSquadra(DB.rose[codice].map(g=>{
     const m=MANI[`${codice}-${g.num}`], mano=m==='sinistra'?'S':m==='destra'?'D':g.mano;
     return { ...g, mano, s:{ ...g.s }, ovr:ovr(g.s,g.ruolo) };
-  });
+  }),codice);
   const sq=dati.squadre.find(x=>x.codice===codice), r=generatore(codice), base=57+(sq.forza-60)*0.72 /* da 57 di media (forza 60) a 80 (forza 92): differenze nette ma non schiaccianti */, nomi=NOMI[codice];
   // ordine dei numeri: 1 portiere, 2 centroboa, 3-4 ali, 5-6 mezzi, 7 punto, 8-12 riserve (un ruolo ciascuna), 13 secondo portiere
   const ruoli=[0,1,2,3,4,5,6, 1,2,5,6,4, 0];
@@ -77,7 +79,7 @@ export function rosa(codice){
     for(const st of ['rif','pos','usc','rig']) s[st]=lim(gk+(r()-0.5)*9);
     return { num:k+1, nome:nomi[k], ruolo, titolare:!riserva, mano:mano(k), s, ovr:ovr(s,ruolo), campione:campioni.has(k) };
   });
-  return rose[codice]=out;
+  return rose[codice]=profiliSquadra(out,codice);
 }
 export const squadre=dati.squadre;
 export const squadra=codice=>dati.squadre.find(x=>x.codice===codice);

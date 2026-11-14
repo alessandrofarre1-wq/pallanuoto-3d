@@ -28,7 +28,7 @@ const comparse = teams.map((t, k) => {
 export const comparseVisibili = () => comparse.filter(c => c.visibile);
 function mostra(c, g, punto) {
   c.num = g.num; c.name = g.nome; c.mano = g.mano; c.s = g.s; c.st = valoriMotore(g.s); c.x = punto.x; c.z = punto.z; c.vx = c.vz = 0;
-  colora(c.mesh, c.team, false, g.num); c.visibile = true; c.mesh.g.visible = true; c.J = null; c.palmi = null; c.spina = null;
+  colora(c.mesh, c.team, false, g.num, g); c.visibile = true; c.mesh.g.visible = true; c.J = null; c.palmi = null; c.spina = null;
 }
 function nascondi(c) { c.visibile = false; c.mesh.g.visible = false; }
 // si sposta lungo il bordo in verticale, tenendosi alla parete (niente tuffo)
