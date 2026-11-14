@@ -7,6 +7,8 @@ Continua il progetto GitHub alessandrofarre1-wq/pallanuoto-3d per Ale.
 Leggi prima CLAUDE.md (soprattutto lo stato più recente), questo documento,
 docs/gameplay-prossimi-passi.md e docs/proposte/tornei-menu-arena.md.
 Non chiedere ad Ale di rispiegare il progetto o le richieste già documentate.
+La bozza home/torneo/pausa è conservata anche in
+docs/proposte/menu-concept.html, con tre anteprime PNG nella stessa cartella.
 
 Prima di modificare file, controlla lo stato remoto e locale: la PR 33/v0.38
 è già stata unita a main. La consegna successiva è sul branch
@@ -70,7 +72,9 @@ Proposte già verificate da conservare:
 
 Continuità: mantieni questo documento aggiornato con commit/branch/PR,
 controlli completati e prossimo passo concreto. Se si avvicina il limite
-di sessione, salva e committa lo stato prima di iniziare un nuovo blocco.
+di sessione, salva, committa e spingi il branch su GitHub prima di iniziare
+un nuovo blocco. Dichiara prima il perimetro concreto della prossima PR;
+non promettere durate o consumi di credito che non puoi osservare.
 Consegna una PR e un passaggio riprendibile. Nessun merge o deploy senza
 istruzione di Ale. Non inviare messaggi ad altre persone.
 ```
@@ -81,5 +85,5 @@ istruzione di Ale. Non inviare messaggi ad altre persone.
 - Branch: `codex/v039-cambi-proposte-handoff`, versione 0.39.0.
 - Modifica al gioco: `src/stile.css`, posizione/trasparenza CAMBI e posizione barra lotta.
 - Documenti: proposta completa con fonti ufficiali, analisi preliminare gameplay, questo prompt.
-- Verifiche e PR: in preparazione; aggiornare qui con esiti e collegamento prima della consegna finale.
+- Verifiche completate finora: lint (0 errori, warning gx preesistente); HUD su tre iPhone/tre scene; CAMBI+lotta su 12 combinazioni viewport/margini; budget 97 oggetti/148.380 triangoli con due cambi simultanei su due iPhone. Verifica completa e aspetto in corso; PR ancora da aprire dopo questi controlli.
 - Non fatto: revisione effettiva gameplay/AI; tornei; rose mancanti; rigori finali; nuovi menu; salvataggi completi; premi; integrazione porta e arena; prova su iPhone fisico.

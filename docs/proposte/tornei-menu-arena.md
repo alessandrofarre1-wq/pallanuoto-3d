@@ -61,6 +61,8 @@ Il centro torneo riunisce prossima partita, classifica, calendario, risultati e 
 
 La bozza navigabile contiene home, un esempio di centro Europei e pausa. Le schede modalità aprono la scelta della nazionale e un esempio locale di girone; non avviano una partita vera. L'esempio del centro torneo resta Italia–Montenegro, indipendente dal sorteggio dimostrativo.
 
+Anteprime della direzione grafica: [home](home-concept.png), [centro torneo](torneo-concept.png), [pausa](pausa-concept.png). [Bozza navigabile locale](menu-concept.html), apribile nel browser dopo avere scaricato/clonato il repository. Sono proposte separate dal gioco attuale; il colore turchese è da discutere insieme allo stile, non una modifica già applicata all'HUD. Per confrontare il gioco vero, [CAMBI nella v0.39 su iPhone SE](cambi-v039-iphone-se.png).
+
 ## Pausa e salvataggi
 
 La schermata deve mostrare sempre competizione, nazionali, risultato, tempo e cronometro. **Riprendi** è l'azione principale; seguono formazione e cambi, tattiche, comandi/opzioni, salva e torna alla home. Le impostazioni non reintroducono scelta di velocità o telecamera.
