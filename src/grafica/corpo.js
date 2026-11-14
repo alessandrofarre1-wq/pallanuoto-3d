@@ -6,6 +6,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as clonaConScheletro } from 'three/addons/utils/SkeletonUtils.js';
 import FUMETTO from './modelli/pallanuotista.js';
 import { sottAcqua } from './sottacqua.js';
+import { preparaViso } from './espressioni.js';
 
 const SPALLE=0.40;                       // distanza tra le spalle nel sistema di pose.js: da qui si ricava la scala del modello
 const inAttesa=[];
@@ -80,7 +81,7 @@ function attaccaFumetto(R,colori,num,seme){
     for(const [k,n] of nomi) if(o.name===n){ K.ossa[k]=o; K.riposo[k]=o.quaternion.clone(); }
     if(FUMETTO.daAzzerare.includes(o.name)) K.azzera.push([o,o.quaternion.clone()]);
     if(/^spine_0[123]$/.test(o.name)) K.schiena.push(o);
-    if(o.isSkinnedMesh){ o.material=mat; o.frustumCulled=false; }
+    if(o.isSkinnedMesh){ o.material=mat; o.frustumCulled=false; K.viso=preparaViso(o); }      // espressioni, se il modello le ha
   });
   const tex=new THREE.CanvasTexture(Object.assign(document.createElement('canvas'),{width:128,height:128})); tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=4;
   K.texNum=tex;
@@ -141,7 +142,8 @@ function orienta(osso,qMondo,peso){
   osso.quaternion.slerp(_q,peso);
 }
 // ---------- braccia naturali (polso e avambraccio che ruotano) ----------
-// Lo scheletro del pallanuotista è in posa a T con i palmi verso il basso e le ossa senza rotazioni di riposo. Ogni osso del
+// Lo scheletro del pallanuotista è in posa a T con le ossa senza rotazioni di riposo; i palmi guardano dove dice il modello
+// (FUMETTO.palmoRiposo: in giù nel primo modello, in avanti nel modello v2). Ogni osso del
 // braccio si orienta con DUE direzioni, non una: l'asse dell'osso e un riferimento attorno all'asse. Così:
 // - braccio e avambraccio tengono il cardine del gomito perpendicolare al piano spalla-gomito-mano (il gomito si piega come
 //   un gomito vero, senza torsioni a caso);
@@ -164,7 +166,7 @@ function preparaBraccio(C,brac,avam,mano,lato){
   const r=C.radice; r.updateMatrixWorld(true); const qr=r.getWorldQuaternion(new THREE.Quaternion());
   const loc=(osso,vModello)=>vModello.clone().applyQuaternion(qr).applyQuaternion(osso.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize();
   const asse=(osso,figlio)=>{ const a=osso.getWorldPosition(new THREE.Vector3()), b=figlio.getWorldPosition(new THREE.Vector3()); return b.sub(a).applyQuaternion(osso.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize(); };
-  const cardine=new THREE.Vector3(0,lato,0), palmo=new THREE.Vector3(0,-1,0);      // posa a T, palmi in giù
+  const cardine=new THREE.Vector3(0,lato,0), palmo=new THREE.Vector3(...(FUMETTO.palmoRiposo||[0,-1,0]));      // posa a T
   const dita=mano.children[0]?asse(mano,mano.children[0]):asse(avam,mano);
   return { brac:{ a:asse(brac,avam), r:loc(brac,cardine) }, avam:{ a:asse(avam,mano), r:loc(avam,cardine) }, mano:{ a:dita, r:loc(mano,palmo) }, cardine:new THREE.Vector3(0,lato,0) };
 }

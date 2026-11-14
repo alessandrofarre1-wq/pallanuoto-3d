@@ -1,3 +1,4 @@
+# (versione per il modello v2 del 13/11/2026: soglie delle zone ritarate)
 # Prepara il personaggio per il gioco SENZA cambiarne il disegno. Uso: python -I prepara.py <model.glb originale> <cartella uscita>
 #  1) salda le cuciture (un solo guscio continuo: ombreggiatura e pesi dello scheletro più puliti); le coordinate delle immagini restano
 #  2) altezza 1,80 m, piedi a quota zero, centrato; trasformazioni applicate
@@ -25,12 +26,18 @@ W, Hh = img.size; px = img.pixels[:]
 uv = me.uv_layers.active.data
 zona = me.color_attributes.new(name='zona', type='BYTE_COLOR', domain='CORNER')
 conta = {'calottina': 0, 'costume': 0, 'bianco': 0, 'scuro': 0, 'pelle': 0}
+# regole per le zone: MODELLO v2 (13/11/2026, nessun capello sotto la cuffia; bianchi dell'immagine meno luminosi, fino a 0,62;
+# sopracciglia marroni). Misure in metri sul modello alto 1,80: occhi a quota 1,625-1,665 sul davanti, sopracciglia 1,665-1,70,
+# bordo della cuffia 1,70-1,72, decorazioni dipinte sulla cuffia (7 e righe) sopra 1,73.
+OCCHI = (1.622, 1.668); CIGLIA = (1.664, 1.705); DECORO = 1.732
 for li, l in enumerate(me.loops):
     u, v = uv[li].uv; x = min(W - 1, max(0, int(u * W))); y = min(Hh - 1, max(0, int(v * Hh))); i = (y * W + x) * 4
     r, g, b = px[i], px[i + 1], px[i + 2]; h, s, val = colorsys.rgb_to_hsv(r, g, b); co = me.vertices[l.vertex_index].co; z = co.z
+    davanti = co.y < -0.04 and abs(co.x) < 0.085
+    occhio = davanti and OCCHI[0] < z < OCCHI[1]
     if 0.52 < h < 0.75 and s > 0.35 and val > 0.2: c = (1, 0, 0, 1) if z > 0.75 * H else (0, 1, 0, 1); conta['calottina' if z > 0.75 * H else 'costume'] += 1
-    elif val > 0.8 and s < 0.18 and (z > 0.72 * H or 0.4 * H < z < 0.56 * H) and not (z > 0.8 * H and abs(co.x) < 0.075 and co.y < -0.02): c = (0, 0, 1, 1); conta['bianco'] += 1      # (non i denti e il bianco degli occhi: stanno sul davanti del viso)
-    elif val < 0.22 and z > 0.8 * H: c = (0, 0, 0, 1); conta['scuro'] += 1
+    elif s < 0.2 and val > 0.62 and not occhio and (z > 0.72 * H or 0.4 * H < z < 0.62 * H): c = (0, 0, 1, 1); conta['bianco'] += 1
+    elif davanti and CIGLIA[0] < z < CIGLIA[1] and val < 0.66 and (h < 0.15 or s < 0.3): c = (0, 0, 0, 1); conta['scuro'] += 1
     else: c = (1, 1, 1, 1); conta['pelle'] += 1
     zona.data[li].color = c
 # le stesse zone come dato per punto, esportabile nel .glb senza toccare i colori (un "colore per vertice" nel .glb moltiplica
@@ -48,7 +55,7 @@ for i, t in enumerate(somma): az.data[i].vector = (t[0] / t[4], t[1] / t[4], t[2
 # _numero = il 7 dipinto in bianco sulla calottina (sopra i paraorecchie) e sul costume: nel gioco viene coperto con il colore di fondo
 anu = me.attributes.new('_numero', 'FLOAT', 'POINT')
 for i, t in enumerate(somma):
-    z = me.vertices[i].co.z; anu.data[i].value = (t[2] / t[4]) if (z > 0.925 * H or z < 0.6 * H) else 0.0
+    z = me.vertices[i].co.z; anu.data[i].value = (t[2] / t[4]) if (z > DECORO or z < 0.62 * H) else 0.0
 info = {'punti_prima': prima, 'punti_dopo_saldatura': len(me.vertices), 'triangoli': len(me.polygons), 'scala_applicata': k, 'altezza_m': H, 'zone_angoli': conta}
 # immagini ridotte (le originali 4096 restano nel file di partenza)
 os.makedirs(out, exist_ok=True)

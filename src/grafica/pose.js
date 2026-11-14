@@ -8,6 +8,7 @@ import { evento } from './acqua-eventi.js';
 import { allPlayers, ball, fight, game } from '../stato.js';
 import { shotKind } from '../tiri.js';
 import { braccioMuro } from '../muro.js';
+import { visoGiocatore } from './espressioni.js';
 //<POSE>
 export const L1=0.30, L2=0.29;
 export function ik(S,H,l1,l2,hint){
@@ -303,4 +304,6 @@ export function updateRig(p,dt,t){
   if(p.isGK&&p.parataIn&&!p.parataFatta&&ball.state==='flight'&&ball.kind==='shot'&&Math.hypot(ball.x-p.x,ball.z-p.z)<1.4){ p.parataFatta=true;
     const m=R.corpo&&R.corpo.ossa.manoD?R.corpo.ossa.manoD.getWorldPosition(_mano):_mano.set(p.x,0.6,p.z); evento('parata',m.x,m.y,m.z,1); }
   if(!p.parataIn) p.parataFatta=false;
+  // espressione del viso (solo se il modello ha le forme del viso: vedi espressioni.js)
+  visoGiocatore(p,dt);
 }

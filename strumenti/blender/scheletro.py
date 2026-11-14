@@ -1,3 +1,4 @@
+# (modello v2 del 13/11/2026: stesse ossa; versione del gioco con espressioni del viso)
 # SCHELETRO DEFINITIVO del pallanuotista cartoon, compatibile con i movimenti calcolati dal gioco.
 # Uso: python -I scheletro.py <player_base.blend> <cartella uscita>
 # - Stesse ossa e stessi nomi degli atleti attuali del gioco (src/grafica/modelli/atleta.js): pelvis, spine_01-03, neck_01, head,
@@ -90,6 +91,94 @@ def esporta(nome, rapporto, lato):
                               export_skins=True, export_animations=False, export_def_bones=False, export_influence_nb=4, export_rest_position_armature=True)
     info[nome] = {'triangoli': len(d.data.polygons), 'kB': round(os.path.getsize(f) / 1024), 'immagini': lato}
     bpy.data.objects.remove(d)
+
+# IMMAGINE RIDIPINTA PER LA VERSIONE DEL GIOCO (modello v2). L'immagine del generatore è divisa in centinaia di pezzetti: ridotti i
+# triangoli, ogni triangolo grande ne attraversa diversi e il viso si rovina (sopracciglia a gradini, macchie). Qui la versione
+# ridotta riceve coordinate nuove (pezzi grandi e puliti; la testa con 5 volte lo spazio a parità di superficie, perché è ciò che si
+# vede) e il colore viene "cotto" dal modello completo con Cycles. Solo il colore: rilievo, metallo e ruvidezza non servono in partita.
+def cuoci(d, lato, zc):
+    import bmesh
+    me = d.data
+    uvn = me.uv_layers.new(name='gioco'); me.uv_layers.active = uvn
+    bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT')
+    bpy.ops.uv.smart_project(angle_limit=math.radians(60), island_margin=0.004, area_weight=0.0, correct_aspect=True, scale_to_bounds=False)
+    bm = bmesh.from_edit_mesh(me); uv = bm.loops.layers.uv['gioco']; bm.faces.ensure_lookup_table()
+    # isole: facce unite da lati con le stesse coordinate
+    par = list(range(len(bm.faces)))
+    def f(x):
+        while par[x] != x: par[x] = par[par[x]]; x = par[x]
+        return x
+    for e in bm.edges:
+        if len(e.link_faces) != 2: continue
+        a, b = e.link_faces
+        la = [l for l in a.loops if l.edge == e][0]; lb = [l for l in b.loops if l.edge == e][0]
+        if (la[uv].uv - lb.link_loop_next[uv].uv).length < 1e-6 and (la.link_loop_next[uv].uv - lb[uv].uv).length < 1e-6: par[f(a.index)] = f(b.index)
+    isole = {}
+    for fa in bm.faces: isole.setdefault(f(fa.index), []).append(fa)
+    for facce in isole.values():
+        if sum(1 for fa in facce if fa.calc_center_median().z > zc) * 2 < len(facce): continue
+        pts = [l[uv].uv.copy() for fa in facce for l in fa.loops]; c = sum(pts, Vector((0, 0))) / len(pts)
+        for fa in facce:
+            for l in fa.loops: l[uv].uv = c + (l[uv].uv - c) * 2.3      # area x 5,3
+    bmesh.update_edit_mesh(me)
+    bpy.ops.uv.select_all(action='SELECT'); bpy.ops.uv.pack_islands(rotate=True, margin=0.004)
+    bpy.ops.object.mode_set(mode='OBJECT')
+    img = bpy.data.images.new('colore_gioco', lato, lato, alpha=False)
+    mat = bpy.data.materials.new('pallanuotista_gioco'); mat.use_nodes = True; nt = mat.node_tree; p = nt.nodes['Principled BSDF']
+    t = nt.nodes.new('ShaderNodeTexImage'); t.image = img; nt.links.new(t.outputs['Color'], p.inputs['Base Color'])
+    p.inputs['Metallic'].default_value = 0.0; p.inputs['Roughness'].default_value = 0.62
+    nt.nodes.active = t
+    vecchio = d.data.materials[0]; d.data.materials.clear(); d.data.materials.append(mat)
+    sc = bpy.context.scene; sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = 4
+    bpy.ops.object.select_all(action='DESELECT'); o.select_set(True); d.select_set(True); bpy.context.view_layer.objects.active = d
+    bpy.ops.object.bake(type='DIFFUSE', pass_filter={'COLOR'}, use_selected_to_active=True, cage_extrusion=0.01, max_ray_distance=0.03, margin=6, uv_layer='gioco')
+    img.pack()
+    for l in list(me.uv_layers):
+        if l.name != 'gioco': me.uv_layers.remove(l)
+    bpy.ops.object.select_all(action='DESELECT'); d.select_set(True); bpy.context.view_layer.objects.active = d
+
+# ESPRESSIONI DEL VISO (modello v2): forme alternative della stessa mesh (shape key in Blender, morph target nel .glb), costruite
+# DOPO la riduzione dei triangoli (in Blender ridurre i triangoli cancella le shape key). Ogni forma sposta solo i punti del davanti
+# del viso (niente cuffia, paraorecchie, laccetti) con una caduta morbida attorno a un punto di riferimento misurato sul modello:
+# occhi a quota 1,654 m (x = ±0,035 dal centro del viso), sopracciglia 1,684, bocca 1,582 (angoli a ±0,034). Spostamenti di pochi
+# millimetri: espressioni sobrie, come chiede il concept (niente sorrisi larghi, niente denti, la bocca non si apre: non ha interno).
+VISO = {'cx': -0.004, 'occhi': 1.654, 'occhioX': 0.035, 'ciglia': 1.684, 'bocca': 1.582, 'angoloX': 0.034}
+def espressioni(d):
+    import math
+    me = d.data; az = me.attributes.get('_zona')
+    base = [v.co.copy() for v in me.vertices]
+    viso = [i for i, c in enumerate(base) if c.y < -0.03 and 1.52 < c.z < 1.712 and abs(c.x - VISO['cx']) < 0.1 and az.data[i].vector[0] < 0.5 and az.data[i].vector[2] < 0.5]
+    def g(c, x, z, sx, sz): return math.exp(-((c.x - x) ** 2) / (2 * sx * sx) - ((c.z - z) ** 2) / (2 * sz * sz))
+    cx, oz, ox, bz, mz, ax = VISO['cx'], VISO['occhi'], VISO['occhioX'], VISO['ciglia'], VISO['bocca'], VISO['angoloX']
+    def forma(c):
+        f = {}
+        sopra = 1.0 if c.z > oz + 0.012 else max(0.0, (c.z - oz) / 0.012)      # solo sopra la palpebra superiore
+        for lato in (1, -1):
+            xs = cx + lato * ox; dx = (c.x - cx) * lato      # dx > 0 verso l'esterno
+            w = g(c, xs, bz, 0.028, 0.012) * sopra
+            wi = g(c, cx + lato * 0.016, bz - 0.002, 0.014, 0.011) * sopra      # parte interna del sopracciglio
+            f.setdefault('sopracciglia_giu', Vector()).__iadd__(Vector((-lato * 0.0025 * wi, 0.0015 * w, -0.0045 * w - 0.002 * wi)))
+            f.setdefault('sopracciglia_su_interno', Vector()).__iadd__(Vector((0, 0, 0.005 * wi)))
+            sup = g(c, xs, oz + 0.010, 0.016, 0.004); inf = g(c, xs, oz - 0.012, 0.016, 0.004)      # palpebre
+            f.setdefault('occhi_stretti', Vector()).__iadd__(Vector((0, 0, -0.0022 * sup + 0.0026 * inf)))
+            a = g(c, cx + lato * ax, mz, 0.012, 0.009); gu = g(c, cx + lato * (ax + 0.012), mz + 0.02, 0.016, 0.014)      # angolo della bocca e guancia
+            f.setdefault('sorriso', Vector()).__iadd__(Vector((lato * 0.0025 * a, 0.0015 * a, 0.0045 * a + 0.0025 * gu)))
+            f.setdefault('bocca_giu', Vector()).__iadd__(Vector((0, 0.0008 * a, -0.0045 * a)))
+        lab = g(c, cx, mz, 0.03, 0.007)
+        f['labbra_strette'] = Vector((0, 0.0015 * lab, (mz - c.z) * 0.35 * lab))
+        return f
+    d.shape_key_add(name='Basis', from_mix=False)
+    nomi = ('sopracciglia_giu', 'sopracciglia_su_interno', 'occhi_stretti', 'sorriso', 'bocca_giu', 'labbra_strette')
+    chiavi = {n: d.shape_key_add(name=n, from_mix=False) for n in nomi}
+    for k in chiavi.values(): k.value = 0.0      # nel .glb il peso iniziale di ogni espressione dev'essere 0 (viso neutro)
+    toccati = {n: 0 for n in nomi}
+    for i in viso:
+        f = forma(base[i])
+        for n in nomi:
+            dv = f.get(n)
+            if dv is not None and dv.length > 2e-5: chiavi[n].data[i].co = base[i] + dv; toccati[n] += 1
+    return {n: toccati[n] for n in nomi}
+
 # versione PER IL GIOCO: testa e corpo ridotti SEPARATAMENTE (il viso, la cuffia e i paraorecchie sono ciò che si vede in partita
 # e hanno bisogno di più triangoli; il corpo è quasi tutto sott'acqua). Una sola immagine (il colore, 1024): rilievo, metallo e
 # ruvidezza non servono a distanza di gioco e pesano sul telefono.
@@ -106,17 +195,20 @@ def esporta_gioco(nome, triTesta, triCorpo, lato):
             pl.select = (pl.center.z > zc) == testa; n += pl.select
         bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.decimate(ratio=min(1, voluti / max(1, n)), use_vertex_group=False); bpy.ops.object.mode_set(mode='OBJECT')
     bpy.ops.object.mode_set(mode='WEIGHT_PAINT'); bpy.ops.object.vertex_group_limit_total(group_select_mode='ALL', limit=4); bpy.ops.object.vertex_group_normalize_all(lock_active=False); bpy.ops.object.mode_set(mode='OBJECT')
-    mat = d.data.materials[0].copy(); d.data.materials[0] = mat; nt = mat.node_tree; p = nt.nodes['Principled BSDF']
-    for nomeIng, val in (('Normal', None), ('Metallic', 0.0), ('Roughness', 0.62)):
-        for l in list(p.inputs[nomeIng].links): nt.links.remove(l)
-        if val is not None: p.inputs[nomeIng].default_value = val
-    ridotte(lato); Gi.select_set(True)
+    cuoci(d, lato, zc)
+    forme = espressioni(d)
+    Gi.select_set(True)
     f = os.path.join(out, nome + '.glb')
     bpy.ops.export_scene.gltf(filepath=f, export_format='GLB', use_selection=True, export_image_format='JPEG', export_jpeg_quality=88, export_yup=True, export_vertex_color='NONE', export_attributes=True, export_tangents=False,
-                              export_skins=True, export_animations=False, export_def_bones=False, export_influence_nb=4, export_rest_position_armature=True)
+                              export_skins=True, export_animations=False, export_def_bones=False, export_influence_nb=4, export_rest_position_armature=True,
+                              export_morph=True, export_morph_normal=False, export_try_sparse_sk=True)
+    info['espressioni'] = forme
     testa = sum(1 for pl in d.data.polygons if pl.center.z > zc)
     info[nome] = {'triangoli': len(d.data.polygons), 'di_cui_testa': testa, 'kB': round(os.path.getsize(f) / 1024), 'immagini': lato}
     bpy.data.objects.remove(d)
 esporta('player_rig_LOD0', 1.0, 2048); esporta('player_rig_LOD1', 0.30, 1024); esporta('player_rig_LOD2', 0.12, 1024); esporta('player_rig_LOD3', 0.05, 512)
-esporta_gioco('pallanuotista', 3200, 5300, 1024)
+esporta_gioco('pallanuotista', 6000, 4300, 1024)      # v2: più triangoli alla testa (espressioni), meno al corpo (quasi tutto sott'acqua)
+cap = [v.co for v in me.vertices if me.attributes['_zona'].data[v.index].vector[0] > 0.5 and v.co.z > 1.5]
+cc = Vector((sum(c.x for c in cap) / len(cap), sum(c.y for c in cap) / len(cap), sum(c.z for c in cap) / len(cap)))
+info['cuffia_centro_glb'] = [round(cc.x, 3), round(cc.z, 3), round(-cc.y, 3)]      # .glb: x = sinistra, y = su, z = avanti
 json.dump(info, open(os.path.join(out, 'scheletro.json'), 'w'), indent=1); print(json.dumps({k: v for k, v in info.items() if k.startswith('p')}))
