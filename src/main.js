@@ -13,7 +13,7 @@ import { chiediCambio, suggerimento } from './panchina.js';
 import './menu.js';
 import { SPEED } from './costanti.js';
 import { render } from './grafica/render.js';
-import { acqua, camera, contatti, dpr, renderer, scene, schiuma, setDpr } from './grafica/scena.js';
+import { camera, contatti, dpr, renderer, scene, schiuma, setDpr } from './grafica/scena.js';
 import { LIMITI, gocceAttive, gocceMesh } from './grafica/acqua-eventi.js';
 import { imposta, scegliSquadre, togglePause } from './menu.js';
 import { modelloPronto } from './grafica/corpo.js';
@@ -25,32 +25,30 @@ import { update } from './partita.js';
 import { cornerThrow, exclude, foul, giveBall, goalScored, kickoff, penalty, setupPenalty, tackle, timeout } from './regole.js';
 import { allPlayers, ball, ctrl, fight, game, setCtrl, teams } from './stato.js';
 
-let last=performance.now(), frameMs=16, qT=0, hudT=1, lenti=0;
+import { creaQualitaAdattiva } from './grafica/qualita.js';
+const qualita=creaQualitaAdattiva(dpr);
+let last=performance.now(), hudT=1;
 // tornando da un'altra app i primi fotogrammi sono lunghi: non devono contare come "dispositivo lento"
 // uscendo dall'app (o cambiando scheda) a partita in corso il gioco va in pausa: al ritorno si riprende dal menu
-document.addEventListener('visibilitychange',()=>{ frameMs=16; qT=0; lenti=0;
+document.addEventListener('visibilitychange',()=>{ qualita.reset(); last=performance.now();
   if(document.hidden && ['play','stop','countdown'].includes(game.state)){ cronaca.chiudiRegistro(); togglePause(); } });
 // il gioco è solo in orizzontale: in verticale resta fermo sotto la schermata "Ruota il dispositivo" (stile.css) e riparte da
 // solo appena si gira il telefono
 // (il menu invece si usa anche in verticale: lì si continua a disegnare la piscina dietro il menu)
 const verticale=()=>innerHeight>innerWidth, menuEl=document.getElementById('menu');
 function loop(now){
-  const raw=Math.min(0.1,(now-last)/1000); last=now;
+  const frameMs=now-last;
+  const raw=Math.min(0.1,frameMs/1000); last=now;
   const inPartita=menuEl.style.display==='none';
   document.body.classList.toggle('gioco',inPartita);
-  if(verticale()&&inPartita){ requestAnimationFrame(loop); return; }
+  if(verticale()&&inPartita){ qualita.reset(); requestAnimationFrame(loop); return; }
   const dt=raw*SPEED;
   // un aggiornamento per fotogramma (suddiviso solo se il fotogramma è lungo): movimento continuo, senza scatti
   const n=Math.max(1,Math.ceil(dt/0.02));
   try{ for(let i=0;i<n;i++) update(dt/n); }catch(e){ console.error(e); }
   aggiornaPannelloFisica(raw);
-  // Prima si esclude il riflesso aggiuntivo; solo dopo cala la risoluzione.
-  frameMs+=(raw*1000-frameMs)*0.05; qT+=raw;
-  // si taglia solo dopo due controlli lenti di fila (4 secondi), non per un singolo scatto
-  if(qT>2){ qT=0; if(frameMs<=21) lenti=0; else if(++lenti>=2){ lenti=0;
-    if(!acqua.userData.riduciQualita()&&dpr>1){ setDpr(Math.max(1,dpr-0.25)); renderer.setPixelRatio(dpr); }
-    frameMs=16;
-  } }
+  const nuovoDpr=qualita.aggiorna(frameMs,inPartita&&!document.hidden&&['play','stop','countdown'].includes(game.state),dpr);
+  if(nuovoDpr!==dpr){ setDpr(nuovoDpr); renderer.setPixelRatio(dpr); }
   cronaca.tick(dt);
   hudT+=raw; if(hudT>0.05){ hudT=0; updateHUD(); }
   render(dt,now);

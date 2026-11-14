@@ -200,10 +200,11 @@ function preparaBraccio(C,brac,avam,mano,lato){
   const dita=mano.children[0]?asse(mano,mano.children[0]):asse(avam,mano);
   return { brac:{ a:asse(brac,avam), r:loc(brac,cardine) }, avam:{ a:asse(avam,mano), r:loc(avam,cardine) }, mano:{ a:dita, r:loc(mano,palmo) }, cardine:new THREE.Vector3(0,lato,0) };
 }
+const _braccioSu=new THREE.Vector3(), _braccioGiu=new THREE.Vector3();
 function braccio(C,brac,avam,mano,S,E,H,palmoLoc,lato,dirMondo){
   if(!C.bracci) C.bracci={};
   const B=C.bracci[lato]||(C.bracci[lato]=preparaBraccio(C,brac,avam,mano,lato));
-  const su=dirMondo(S,E,new THREE.Vector3()), giu=dirMondo(E,H,new THREE.Vector3());
+  const su=dirMondo(S,E,_braccioSu), giu=dirMondo(E,H,_braccioGiu);
   // cardine del gomito: perpendicolare a braccio e avambraccio; a braccio quasi teso si tiene l'ultimo valido
   _cg.crossVectors(su,giu); if(_cg.lengthSq()>4e-3) B.cardine.copy(_cg.normalize()); else _cg.copy(B.cardine);
   allinea(brac,B.brac.a,B.brac.r,su,_cg);
