@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { BRV, CAM_ZOOM, HL, clamp } from '../costanti.js';
 import { updateRig } from './pose.js';
 import { aggiornaGocce, aggiornaVisibilita, evento } from './acqua-eventi.js';
-import { animateWater, ball3d, camMode, camera, freccia, mirino, passMark, renderer, ring, scene, shadow, updateFoam } from './scena.js';
+import { animateWater, aggiornaOmbreAcqua, ball3d, camMode, camera, freccia, mirino, passMark, renderer, ring, scene, shadow, updateFoam } from './scena.js';
 import { inp } from '../input.js';
 import { allPlayers, ball, ctrl, game, teams } from '../stato.js';
 import { humanPassTarget } from '../tiri.js';
@@ -83,6 +83,7 @@ export function render(dt,now){
   camera.position.copy(camPos); camera.lookAt(camLook);
   const V=window.__pallanuoto&&window.__pallanuoto.vista;
   if(V){ camera.position.set(V.pos[0],V.pos[1],V.pos[2]); camera.lookAt(V.look[0],V.look[1],V.look[2]); if(V.fov&&camera.fov!==V.fov){ camera.fov=V.fov; camera.updateProjectionMatrix(); } }
+  aggiornaOmbreAcqua(allPlayers);
   renderer.info.reset();
   renderer.render(scene,camera);
 }

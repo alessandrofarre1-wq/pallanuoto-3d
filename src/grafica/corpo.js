@@ -58,7 +58,12 @@ function attaccaFumetto(R,colori,num,seme){
   const K={ radice, scala:baseF.scala, ossa:{}, riposo:{}, azzera:[], schiena:[], fase:seme*1.7, num:-1, colori };
   // colori per giocatore: il blu dell'immagine diventa il colore di cuffia e costume (con le sue luci e ombre); il 7 dipinto
   // viene coperto; la pelle prende il tono del giocatore. Stesso programma per tutti (cambia solo il valore dei colori).
-  const mat=baseF.materiale.clone(); mat.roughness=0.62; mat.metalness=0;
+  const mat=new THREE.MeshPhysicalMaterial({
+    map:baseF.materiale.map, normalMap:baseF.materiale.normalMap,
+    color:baseF.materiale.color, side:baseF.materiale.side,
+    roughness:0.45, metalness:0, clearcoat:0.45, clearcoatRoughness:0.27,
+    envMapIntensity:0.65,
+  });
   const u={ uCal:{value:new THREE.Color()}, uCos:{value:new THREE.Color()}, uTono:{value:TONI[seme%TONI.length].clone()}, uLuce:{value:FUMETTO.luceBlu},
     uCapelli:{value:new THREE.Vector3(0.15,0.095,0.06)}, uBarba:{value:0}, uGonfia:{value:0} };      // aspetto del giocatore (src/aspetto.js)
   mat.onBeforeCompile=sh=>{ Object.assign(sh.uniforms,u);

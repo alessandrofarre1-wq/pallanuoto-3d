@@ -34,7 +34,7 @@ export function makePlayerMesh(num,team){
   const cap=new THREE.Mesh(new THREE.SphereGeometry(0.113,14,10,0,Math.PI*2,0,Math.PI*0.6),capM); cap.rotation.z=0.25; head.add(cap);
   g.add(head); R.head=head;
   const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:numberTexture(num,'#f2f2f2','#111'),depthTest:false,transparent:true}));
-  spr.scale.set(0.2,0.2,1); g.add(spr); R.spr=spr;
+  spr.layers.set(1); spr.scale.set(0.2,0.2,1); g.add(spr); R.spr=spr;
   // corpo con scheletro: quando il modello è caricato prende il posto di cilindri e sfere (che restano come riserva)
   R.vecchi=g.children.filter(c=>c!==spr);
   attaccaCorpo(R,{ costume:0x0b2a6f, calottina:0xf4f4f4, paraorecchie:0x0b2a6f, testo:'#111' },num,num+team.idx*7);
