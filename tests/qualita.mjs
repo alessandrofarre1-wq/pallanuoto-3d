@@ -1,4 +1,8 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import { createHash } from 'node:crypto';
+import * as THREE from 'three';
+import { creaOmbreAcqua } from '../src/grafica/illuminazione.js';
 import { creaQualitaAdattiva } from '../src/grafica/qualita.js';
 const q=creaQualitaAdattiva(1.5);
 let dpr=1.5;
@@ -16,4 +20,16 @@ q.reset(); frame(5000); secondi(1); assert.equal(dpr,1.125,'ritorno da altra app
 secondi(65); assert.equal(dpr,1.5,'recupero fino al dettaglio iniziale');
 const piccolo=creaQualitaAdattiva(0.8);
 assert.equal(piccolo.aggiorna(16,true,0.8),0.8,'rispetta dispositivi sotto DPR 1');
-console.log('Qualità adattiva: 8 controlli superati');
+const scene=new THREE.Scene(), aggiornaOmbre=creaOmbreAcqua(scene);
+const g={excluded:true,mesh:{g:{visible:true}},oriz:0,x:1,z:2,fx:1,fz:0};
+aggiornaOmbre([g]);
+const matrice=new THREE.Matrix4(); scene.children[0].getMatrixAt(0,matrice);
+assert.ok(matrice.elements[0]>0,'ombra presente per espulso visibile');
+g.mesh.g.visible=false; aggiornaOmbre([g]); scene.children[0].getMatrixAt(0,matrice);
+assert.equal(matrice.elements[0],0,'nessuna ombra per corpo nascosto');
+const modello=fs.readFileSync(new URL('../src/grafica/modelli/pallanuotista.glb',import.meta.url));
+const riserva=JSON.parse(fs.readFileSync(new URL('../src/grafica/modelli/riserva-indici.json',import.meta.url)));
+assert.equal(riserva.sha256,createHash('sha256').update(modello).digest('hex'),'indici riserva aggiornati al modello originale');
+assert.ok(riserva.triangoli<=2800 && riserva.indici.length===riserva.triangoli*3,'budget della riserva');
+assert.ok(riserva.indici.every(i=>Number.isInteger(i)&&i>=0&&i<riserva.vertici),'indici riserva validi');
+console.log('Qualità, ombra e modello riserva: 13 controlli superati');

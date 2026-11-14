@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as clonaConScheletro } from 'three/addons/utils/SkeletonUtils.js';
 import FUMETTO from './modelli/pallanuotista.js';
+import riservaIndici from './modelli/riserva-indici.json';
 import { sottAcqua } from './sottacqua.js';
 import { preparaViso } from './espressioni.js';
 import { valoriDisegno } from '../aspetto.js';
@@ -44,7 +45,9 @@ function preparaFumetto(scena){
     for(let j=0;j<N;j++) for(let i=0;i<N;i++){ const k=o0+j*(N+1)+i; I.push(k,k+1,k+N+1, k+1,k+N+2,k+N+1); }
   }
   const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(P,3)); g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2)); g.setIndex(I); g.computeVertexNormals();
-  baseF={ scena, scala:SPALLE/a.distanceTo(b)*FUMETTO.proporzione, materiale:maglia.material, numeroGeo:g };
+  if(maglia.geometry.attributes.position.count!==riservaIndici.vertici || maglia.geometry.index.count/3!==riservaIndici.triangoliOriginali) throw new Error('Rigenerare gli indici della riserva per il nuovo modello');
+  const geometriaRiserva=maglia.geometry.clone(); geometriaRiserva.setIndex(riservaIndici.indici);
+  baseF={ scena, geometriaRiserva, scala:SPALLE/a.distanceTo(b)*FUMETTO.proporzione, materiale:maglia.material, numeroGeo:g };
 }
 function numeroCuffia(tex,num,colore){
   const c=tex.image, x=c.getContext('2d'); x.clearRect(0,0,c.width,c.height);
@@ -104,7 +107,7 @@ function attaccaFumetto(R,colori,num,seme){
     for(const [k,n] of nomi) if(o.name===n){ K.ossa[k]=o; K.riposo[k]=o.quaternion.clone(); }
     if(FUMETTO.daAzzerare.includes(o.name)) K.azzera.push([o,o.quaternion.clone()]);
     if(/^spine_0[123]$/.test(o.name)) K.schiena.push(o);
-    if(o.isSkinnedMesh){ o.material=mat; o.frustumCulled=false; K.viso=preparaViso(o); }      // espressioni, se il modello le ha
+    if(o.isSkinnedMesh){ if(R.riserva) o.geometry=baseF.geometriaRiserva; o.material=mat; o.frustumCulled=false; K.viso=preparaViso(o); }      // espressioni, se il modello le ha
   });
   const tex=new THREE.CanvasTexture(Object.assign(document.createElement('canvas'),{width:128,height:128})); tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=4;
   K.texNum=tex;
