@@ -3,6 +3,8 @@ import * as THREE from 'three';
 import { BRV, GH, GW, HL, HW, rndGrafica } from '../costanti.js';
 import { game } from '../stato.js';
 import { sottAcqua, tempoAcqua } from './sottacqua.js';
+import { creaSuperficie } from './superficie.js';
+import { illuminaArena, creaOmbreAcqua } from './illuminazione.js';
 // ================= SCENA =================
 export const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.info.autoReset=false;   // il conteggio degli oggetti disegnati si azzera a mano una volta per fotogramma (render.js)
@@ -11,6 +13,8 @@ renderer.setPixelRatio(dpr);
 renderer.setSize(innerWidth,innerHeight);
 document.body.prepend(renderer.domElement);
 export const scene = new THREE.Scene();
+illuminaArena(renderer,scene);
+export const aggiornaOmbreAcqua=creaOmbreAcqua(scene);
 export function canvasTex(w,h,draw,rx,ry){
   const c=document.createElement('canvas'); c.width=w; c.height=h; draw(c.getContext('2d'),w,h);
   const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace;
@@ -20,10 +24,11 @@ export function canvasTex(w,h,draw,rx,ry){
 scene.background = canvasTex(16,256,(x,w,h)=>{ const g=x.createLinearGradient(0,0,0,h); g.addColorStop(0,'#2f7fd0'); g.addColorStop(0.6,'#a6d4f4'); g.addColorStop(1,'#e9f5fc'); x.fillStyle=g; x.fillRect(0,0,w,h); });
 scene.fog = new THREE.Fog(0xcfe6f5,70,170);
 export const camera = new THREE.PerspectiveCamera(innerWidth<innerHeight?62:40,innerWidth/innerHeight,0.1,300);
+camera.layers.enable(1);
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight; camera.fov=camera.aspect<1?62:40;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
 // intensità ritarate per Three.js moderno (colori calcolati in spazio lineare) in modo da restare come nella v0.9
-export const LUCE_CIELO=2.44, LUCE_SOLE=2.86;
-scene.add(new THREE.HemisphereLight(0xffffff,0x27385d,LUCE_CIELO));
+export const LUCE_CIELO=1.4, LUCE_SOLE=2.8;
+scene.add(new THREE.HemisphereLight(0xd9f3ff,0x16465b,LUCE_CIELO));
 export const sun = new THREE.DirectionalLight(0xfff3dc,LUCE_SOLE); sun.position.set(-10,30,14); scene.add(sun);
 
 export function box(w,h,d,mat,x,y,z){
@@ -36,13 +41,13 @@ export const tileDraw=(base,line)=>(x,w,h)=>{ x.fillStyle=base; x.fillRect(0,0,w
   for(let i=0;i<=w;i+=32){ x.beginPath(); x.moveTo(i,0); x.lineTo(i,h); x.stroke(); x.beginPath(); x.moveTo(0,i); x.lineTo(w,i); x.stroke(); } };
 // fondo, corsie e pareti prendono il colore dell'acqua secondo la profondità (sottacqua.js): piastrelle e righe si vedono, ma
 // attenuate come in una piscina vera; sul fondo si muovono giochi di luce leggeri
-box(PX*2,0.1,PZ*2,sottAcqua(new THREE.MeshBasicMaterial({map:canvasTex(256,256,tileDraw('#52baf2','rgba(255,255,255,.3)'),PX/2,PZ/2)}),{luci:'0.3'}),0,-DEPTH,0);
-{ const riga=sottAcqua(new THREE.MeshLambertMaterial({color:0x0d3566}),{luci:'0.18'}); for(let i=-4;i<=4;i++) box(PX*2-4,0.02,0.28,riga,0,-DEPTH+0.06,i*2.5); }
+box(PX*2,0.1,PZ*2,sottAcqua(new THREE.MeshBasicMaterial({map:canvasTex(256,256,tileDraw('#319fc2','rgba(220,250,255,.18)'),PX/2,PZ/2)}),{luci:'0.3'}),0,-DEPTH,0);
+{ const riga=sottAcqua(new THREE.MeshLambertMaterial({color:0x124658}),{luci:'0.18'}); for(let i=-4;i<=4;i++) box(PX*2-4,0.02,0.28,riga,0,-DEPTH+0.06,i*2.5); }
 export const wallMat=sottAcqua(new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#8fe0f7','rgba(255,255,255,.55)'),12,1)}));
 box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,-PZ-0.15); box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,PZ+0.15);
 box(0.3,DEPTH+0.3,PZ*2,wallMat,-PX-0.15,-DEPTH/2+0.15,0); box(0.3,DEPTH+0.3,PZ*2,wallMat,PX+0.15,-DEPTH/2+0.15,0);
 // bordo vasca
-export const deckMat=()=>new THREE.MeshLambertMaterial({map:canvasTex(128,128,tileDraw('#cbc2b0','rgba(110,100,85,.4)'),20,4)});
+export const deckMat=()=>new THREE.MeshLambertMaterial({map:canvasTex(128,128,tileDraw('#c5ccd0','rgba(60,85,100,.22)'),20,4)});
 box(PX*2+16,0.3,7,deckMat(),0,0.15,-PZ-3.8); box(PX*2+16,0.3,7,deckMat(),0,0.15,PZ+3.8);
 box(7,0.3,PZ*2+0.6,deckMat(),-PX-3.8,0.15,0); box(7,0.3,PZ*2+0.6,deckMat(),PX+3.8,0.15,0);
 box(PX*2+0.8,0.08,0.4,0xffffff,0,0.32,-PZ-0.2); box(PX*2+0.8,0.08,0.4,0xffffff,0,0.32,PZ+0.2);
@@ -65,48 +70,10 @@ box(0.4,0.08,PZ*2,0xffffff,-PX-0.2,0.32,0); box(0.4,0.08,PZ*2,0xffffff,PX+0.2,0.
   box(PX*2+14,1.2,0.4,0x1b2d4a,0,0.6,-PZ-5.4);
   box(PX*2+14,0.3,1.5,0x9aa7b8,0,7.3,-PZ-11.6);
 }
-// acqua: superficie azzurro-turchese con sfumature morbide che si muovono piano, piccole onde disegnate dalla luce (un rilievo
-// finto: chiaro dove l'onda guarda il sole, appena più scuro dietro), increspature corte e spezzate solo a macchie, piccoli
-// riflessi irregolari che si accendono e si spengono. Guardata di taglio (lontano) l'acqua riflette di più il cielo e lascia
-// vedere meno il fondo, come quella vera; guardata dall'alto è trasparente. I dettagli fini si spengono da lontano, dove
-// sfarfallerebbero. Un solo passaggio di disegno; ciò che sta sotto si colora da sé (sottacqua.js).
-export const acqua=new THREE.Mesh(new THREE.PlaneGeometry(PX*2,PZ*2).rotateX(-Math.PI/2),new THREE.ShaderMaterial({ transparent:true, depthWrite:false,
-  uniforms:{ uTempo:{value:0} },
-  vertexShader:`varying vec2 vP; void main(){ vP=position.xz; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
-  fragmentShader:`uniform float uTempo; varying vec2 vP;
-    float h(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
-    float n(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
-      return mix(mix(h(i),h(i+vec2(1.0,0.0)),f.x),mix(h(i+vec2(0.0,1.0)),h(i+vec2(1.0,1.0)),f.x),f.y); }
-    // piccole onde: due disegni che scorrono in direzioni diverse
-    float onda(vec2 p,float t){ return n(p*1.9+vec2(t*0.32,t*0.11))*0.6+n(p*3.3+vec2(-t*0.21,t*0.37)+3.1)*0.4; }
-    void main(){
-      float t=uTempo; vec2 p=vP;
-      float lontano=1.0-smoothstep(0.35,1.1,length(fwidth(p))*6.0);      // 1 vicino, 0 lontano
-      vec3 vista=normalize(cameraPosition-vec3(p.x,0.0,p.y));
-      float taglio=pow(1.0-clamp(vista.y,0.0,1.0),3.0);                  // 0 guardando dall'alto, 1 di taglio
-      // colore di fondo: azzurro più profondo e turchese più chiaro, a macchie larghe e morbide che scivolano lentamente
-      float g=n(p*0.13+vec2(t*0.020,-t*0.014))*0.62+n(p*0.37+vec2(-t*0.030,t*0.022))*0.38;
-      vec3 c=mix(vec3(0.06,0.62,0.84),vec3(0.30,0.85,0.90),smoothstep(0.22,0.82,g));
-      // piccole onde: rilievo finto, la luce viene da sinistra in alto (come il sole della scena)
-      float o0=onda(p,t), ox=onda(p+vec2(0.09,0.0),t), oz=onda(p+vec2(0.0,0.09),t);
-      float rilievo=clamp(((o0-ox)*0.8+(o0-oz)*0.5)*5.0,-1.0,1.0)*lontano;
-      c*=1.0+0.10*rilievo;
-      // increspature: creste corte e sottili (non strisce lunghe), solo a macchie che cambiano nel tempo, spezzate dalle onde
-      float zona=smoothstep(0.45,0.80,n(p*0.5+vec2(-t*0.05,t*0.04)+11.0));
-      float cresta=smoothstep(0.86,0.98,1.0-abs(o0*2.0-1.0))*smoothstep(0.35,0.65,ox);
-      c=mix(c,vec3(0.82,0.96,1.0),cresta*zona*0.35*lontano);
-      // riflessi piccoli e irregolari: due disegni che si muovono in direzioni diverse, si accendono solo dove coincidono
-      float r=n(p*4.3+vec2(t*0.55,-t*0.35))*n(p*2.9+vec2(-t*0.30,-t*0.48)+7.7);
-      float luce=smoothstep(0.58,0.78,r)*(0.35+0.65*zona)*lontano*(0.6+0.4*max(rilievo,0.0));
-      c=mix(c,vec3(1.0),luce*0.65);
-      // di taglio: più cielo riflesso e meno trasparenza
-      c=mix(c,vec3(0.50,0.84,0.95),taglio*0.35);
-      float a=0.27+0.20*cresta*zona*lontano+0.3*luce+0.22*taglio;
-      gl_FragColor=vec4(pow(c,vec3(2.2)),a);      // colori scritti in sRGB, convertiti per il disegno
-      #include <colorspace_fragment>
-    }` }));
-acqua.renderOrder=-1; scene.add(acqua);
-export function animateWater(t){ acqua.material.uniforms.uTempo.value=t; tempoAcqua.value=t; }
+// Onde e riflessi in un solo passaggio, sincronizzati con l'immersione dei corpi.
+export const acqua=creaSuperficie(PX*2,PZ*2,tempoAcqua);
+scene.add(acqua);
+export function animateWater(t){ tempoAcqua.value=t; }
 // schiuma: increspature e scie disegnate tutte insieme (un solo oggetto per la scheda grafica)
 const N_SCHIUMA=320;
 export const foams=[]; let foamI=0;
@@ -253,7 +220,7 @@ export const ball3d = (()=>{
     } }
   xg.putImageData(ig,0,0);
   const tg=new THREE.CanvasTexture(tela); tg.colorSpace=THREE.SRGBColorSpace; tg.anisotropy=4;
-  const m=new THREE.Mesh(new THREE.SphereGeometry(BRV,32,24),sottAcqua(new THREE.MeshLambertMaterial({map:tg,emissive:0x222222})));
+  const m=new THREE.Mesh(new THREE.SphereGeometry(BRV,32,24),sottAcqua(new THREE.MeshPhysicalMaterial({map:tg,roughness:0.4,metalness:0,clearcoat:0.65,clearcoatRoughness:0.22,envMapIntensity:0.6})));
   // contorno scuro: una sfera nera appena più larga vista da dentro
   m.add(new THREE.Mesh(new THREE.SphereGeometry(BRV*1.13,16,12),new THREE.MeshBasicMaterial({color:0x10182a,side:THREE.BackSide})));
   m.scale.setScalar(1.3);

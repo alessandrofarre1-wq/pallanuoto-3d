@@ -13,7 +13,7 @@ import { chiediCambio, suggerimento } from './panchina.js';
 import './menu.js';
 import { SPEED } from './costanti.js';
 import { render } from './grafica/render.js';
-import { camera, contatti, dpr, renderer, scene, schiuma, setDpr } from './grafica/scena.js';
+import { acqua, camera, contatti, dpr, renderer, scene, schiuma, setDpr } from './grafica/scena.js';
 import { LIMITI, gocceAttive, gocceMesh } from './grafica/acqua-eventi.js';
 import { imposta, scegliSquadre, togglePause } from './menu.js';
 import { modelloPronto } from './grafica/corpo.js';
@@ -44,11 +44,11 @@ function loop(now){
   const n=Math.max(1,Math.ceil(dt/0.02));
   try{ for(let i=0;i<n;i++) update(dt/n); }catch(e){ console.error(e); }
   aggiornaPannelloFisica(raw);
-  // qualità adattiva: se il dispositivo fatica si abbassa la risoluzione di disegno
+  // Prima si esclude il riflesso aggiuntivo; solo dopo cala la risoluzione.
   frameMs+=(raw*1000-frameMs)*0.05; qT+=raw;
   // si taglia solo dopo due controlli lenti di fila (4 secondi), non per un singolo scatto
   if(qT>2){ qT=0; if(frameMs<=21) lenti=0; else if(++lenti>=2){ lenti=0;
-    if(dpr>1){ setDpr(Math.max(1,dpr-0.25)); renderer.setPixelRatio(dpr); }
+    if(!acqua.userData.riduciQualita()&&dpr>1){ setDpr(Math.max(1,dpr-0.25)); renderer.setPixelRatio(dpr); }
     frameMs=16;
   } }
   cronaca.tick(dt);

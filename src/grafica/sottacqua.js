@@ -24,18 +24,22 @@ vec3 ondeggia(vec3 p, float forza){
 const FRAMMENTO=`
 vec3 sottAcqua(vec3 c, vec3 p, float bagnato, float luci){
   float y=p.y-pelo(p.xz);
-  float dentro=smoothstep(0.012,-0.05,y);                                  // fascia morbida fuori -> dentro
+  float dentro=(1.0-smoothstep(-0.05,0.012,y));                                  // fascia morbida fuori -> dentro
   float prof=max(0.0,-y);
-  float k=dentro*(0.10+0.62*(1.0-exp(-prof*1.1)));                         // quanto prende il colore dell'acqua
-  vec3 acqua=vec3(0.008,0.17,0.35)*(0.8+0.35*exp(-prof*0.8));              // blu dell'acqua (lineare): più chiaro vicino alla superficie
+  float k=dentro*(0.08+0.72*(1.0-exp(-prof*1.15)));                         // quanto prende il colore dell'acqua
+  vec3 acqua=vec3(0.008,0.15,0.21)*(0.8+0.35*exp(-prof*0.8));              // blu dell'acqua (lineare): più chiaro vicino alla superficie
   // più si scende, meno contrasto: il colore si appiattisce verso la sua luminosità media prima di sfumare nel blu
   c=mix(c,vec3(dot(c,vec3(0.3,0.55,0.15))),dentro*0.35*(1.0-exp(-prof*1.6)));
   vec3 r=mix(c*mix(vec3(1.0),vec3(0.90,0.97,1.0),dentro),acqua,k);
   // luce che tremola sotto la superficie: reticolo morbido e irregolare che si muove piano (sui corpi si spegne in profondità,
   // sul fondo resta: sono i giochi di luce della piscina, in versione disegnata e leggera)
-  vec2 q=p.xz*1.35+vec2(sin(p.z*0.9+uTempoAcqua*0.6),sin(p.x*0.8-uTempoAcqua*0.5))*0.9;
-  float tremo=abs(sin(q.x+uTempoAcqua*0.9)+sin(q.y*1.13-uTempoAcqua*0.7)+sin((q.x+q.y)*0.71+uTempoAcqua*0.5));
-  r*=1.0+luci*dentro*(1.0-smoothstep(0.0,0.55,tremo));
+  // Due famiglie di archi deformati: caustiche sottili, mai una griglia regolare.
+  vec2 q=p.xz*2.0;
+  q+=vec2(sin(q.y*0.8+uTempoAcqua*0.6),cos(q.x*0.7-uTempoAcqua*0.5))*0.65;
+  float archi=abs(sin(q.x+sin(q.y+uTempoAcqua*0.4)))
+              *abs(sin(q.y+sin(q.x-uTempoAcqua*0.35)));
+  float caustica=1.0-smoothstep(0.015,0.065+length(fwidth(q))*0.3,archi);
+  r*=1.0+luci*dentro*caustica*0.85;
   // linea chiara dove il corpo esce dall'acqua (pelle bagnata)
   float riga=1.0-smoothstep(0.0,0.028,abs(y+0.006));
   r+=vec3(0.55,0.75,0.85)*riga*0.32*bagnato;
