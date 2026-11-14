@@ -19,3 +19,11 @@ Questa consegna introduce funzionalità nel gioco. La PR comprende tornei, menu 
 **Decisioni modificate esplicitamente:** la singola modalità si estende a tre; home/pausa ridisegnate; formazione statica senza palla sostituita da piccoli appoggi situazionali; attese AI ridotte solo davanti a un vantaggio concreto. Camera unica, ritmo, sprint a tocchi, regole, probabilità del portiere, acqua e corpi restano quelli già concordati. I vecchi test che isolano l'AI impostano anche `reazioneT` insieme a `decideT`; gli assert non sono stati indeboliti.
 
 **Limiti effettivi:** il salvataggio è fra gare; uscire da una gara la fa ricominciare, con avviso esplicito. La cerimonia usa immagini e SVG, non corpi 3D nuovi. L'ordine dei cinque rigoristi è automatico e non esiste una scelta manuale del portiere. Forza/rating e assegnazione dei sette posti delle otto nuove rose sono stime, mentre nomi/numeri/ruoli generali/mano hanno fonte ufficiale. Mancano prova e giudizio di Ale su iPhone fisico: la sensazione di gioco non è certificata dai test.
+
+## Correzione del controllo GitHub sezione4
+
+La prima pipeline sul commit `1b79f72` si è fermata a sezione4: tutte le prove precedenti, inclusi tornei e rigori, erano passate. L'unico controllo fallito contava 0 schizzi/0 colonnelli in una partita libera di 500 s, che non garantiva occasioni eleggibili.
+
+È stata corretta anche la scelta di gioco: la ricezione con tiro rapido considerava soltanto i tiri ordinari, riducendo la finestra del tentativo speciale per fotogramma. Ora la decisione rapida può scegliere uno speciale lecito con peso 35%, mantenendo risposta immediata, tiro classico e limite computer di 6,5 m. Non sono modificati probabilità del portiere, gesto o forza del tiro.
+
+Il controllo verifica direttamente la decisione del portatore nelle due controfughe, il tiro classico alternativo e il divieto con distanza eccessiva, difensore davanti, tiro libero interno o pressione. Restano tutte le prove precedenti di mano, gesto, comando umano e tasto a comparsa. Il test è verificato anche contro il codice precedente per dimostrare che individua il difetto; il risultato della pipeline completa verrà registrato nella PR.

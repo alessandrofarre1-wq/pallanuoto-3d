@@ -12,7 +12,7 @@ const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--ena
 const pg = await browser.newPage({ viewport: { width: 852, height: 393 }, hasTouch: true });
 const errori = []; pg.on('pageerror', e => errori.push(e.message));
 await pg.addInitScript(() => {
-  let a = 17; window.__rnd = () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  let a = 17; window.__rnd = () => { if(typeof window.__casoAI==='number') return window.__casoAI; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   let now = 0; performance.now = () => now; window.requestAnimationFrame = cb => { window.__raf = cb; return 1; };
   window.__salta = n => { const R = window.__pallanuoto.renderer; if (!window.__dis) window.__dis = R.render; R.render = () => {}; for (let i = 0; i < n; i++) { now += 1000 / 60; window.__raf(now); } R.render = window.__dis; };
 });
@@ -96,14 +96,40 @@ prova(attesa.sparito, 'senza premere il tasto sparisce dopo un attimo');
 const marcato = await controfuga(7, false, true);
 prova(!marcato.comparso, `con un difensore davanti nessun tasto (${marcato.comparso ? 'comparso' : 'niente'})`);
 
-// ---------- il computer li usa ----------
+// ---------- il computer li usa anche quando decide di tirare subito ----------
+// Una partita libera non garantisce una controfuga eleggibile in 500 secondi.
+// Qui si usa la vera decisione del portatore: la stessa ricezione libera, in
+// nuotata, con e senza i vincoli che consentono schizzo e colonnello.
 const ai = await pg.evaluate(() => {
-  const H = window.__pallanuoto; H.game.autoplay = true; for (const t of H.teams) t.human = false;
-  const conta = { schizzo: 0, colonnello: 0 }, visti = new Set();
-  for (let k = 0; k < 3000; k++) { window.__salta(10); for (const p of H.allPlayers) if (p.act && (p.act.kind === 'schizzo' || p.act.kind === 'colonnello') && !visti.has(p.act)) { visti.add(p.act); conta[p.act.kind]++; } }
-  return conta;
+  const H=window.__pallanuoto, T=H.teams[1], O=H.teams[0], p=T.players[4], gx=12.5*T.dir;
+  H.game.autoplay=true; for(const t of H.teams) t.human=false;
+  const esegui=(d,vincolo,caso=.2)=>{
+    Object.assign(H.game,{state:'play',time:100,after:null,penalty:null,rigoriFinali:null,shot:28,possTeam:T,possT:99});
+    H.fight.active=false;
+    for(const q of H.allPlayers) Object.assign(q,{act:null,excluded:false,stunUntil:0,pressatoUntil:0,turnedUntil:0,freeThrow:false,cut:null,qte:null,qteDopo:0,appoggio:null,vx:0,vz:0,stamina:1});
+    p.x=gx-T.dir*d;p.z=0.1;p.fx=T.dir;p.fz=0;p.oriz=1;p.vx=T.dir*1.5;
+    for(const q of O.players){q.x=q.isGK?gx:p.x-T.dir*(3+q.i);q.z=q.isGK?0:q.i-3.5;}
+    for(const q of T.players) if(q!==p){q.x=p.x-T.dir*(4+q.i);q.z=q.i-3.5;}
+    H.regole.giveBall(p);H.ball.holdTime=.3;
+    Object.assign(p,{ricevutoPassaggio:true,ricevutoT:99.8,decideT:99,reazioneT:0});
+    if(vincolo==='difensore'){O.players[3].x=p.x+T.dir*1.5;O.players[3].z=p.z;}
+    if(vincolo==='libero') p.freeThrow=true;
+    if(vincolo==='pressione') p.pressatoUntil=101;
+    // .2 non attiva l'evento raro per fotogramma: prova la scelta al momento
+    // della decisione rapida, senza aspettare né congelare quel percorso AI.
+    window.__casoAI=caso;
+    H.prova.aiCarrier(p,1/60);
+    delete window.__casoAI;
+    return p.act?.kind||null;
+  };
+  return {schizzo:esegui(6.2),colonnello:esegui(4.2),classico:esegui(4.2,null,.8),lontano:esegui(6.8),
+    marcato:esegui(4.2,'difensore'),libero:esegui(4.2,'libero'),pressione:esegui(4.2,'pressione')};
 });
-prova(ai.schizzo + ai.colonnello > 0, `il computer in controfuga: ${ai.schizzo} schizzi e ${ai.colonnello} colonnelli in 500 s di gioco`);
+prova(ai.schizzo==='schizzo',`AI su ricezione libera a 6,2 m in nuotata: ${ai.schizzo}`);
+prova(ai.colonnello==='colonnello',`AI su ricezione libera a 4,2 m in nuotata: ${ai.colonnello}`);
+prova(ai.classico==='shot',`AI: il tiro classico resta disponibile nella stessa controfuga (${ai.classico})`);
+for(const [caso,tipo] of Object.entries({lontano:ai.lontano,marcato:ai.marcato,libero:ai.libero,pressione:ai.pressione}))
+  prova(tipo!=='schizzo'&&tipo!=='colonnello',`AI: nessuno speciale con vincolo ${caso} (${tipo||'nessun tiro'})`);
 
 if (process.argv.includes('--foto')) {
   // primi piani: mancino che carica il tiro e schizzo, visti di lato

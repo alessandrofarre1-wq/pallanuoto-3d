@@ -5,7 +5,7 @@ import { doFake, timeout } from './regole.js';
 import { annuncia as notifica } from './cronaca.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
 import { paloCoperto } from './muro.js';
-import { aiControfuga } from './controfuga.js';
+import { QTE, aiControfuga, occasioneControfuga, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, laneClear, openness, shotKind, situazioneTiro, startAct } from './tiri.js';
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 export function startCut(p){
@@ -331,7 +331,12 @@ export function aiCarrier(p,dt){
     const press=openness(p),sottoPressione=p.pressatoUntil>game.time;
     const sit=situazioneTiro(p),angolo=Math.abs(gx-p.x)/Math.max(0.1,dGoal);
     if(!ft&&!sottoPressione&&dGoal<7&&angolo>0.68&&sit.liberato&&sit.marcato<0.2&&laneClear(p,gx,0,t,0.7)){
-      aiShoot(p,0.55+rnd()*0.45,false); return;
+      // Il tiro rapido non deve consumare quasi sempre la controfuga prima che
+      // il controllo per fotogramma scelga uno speciale. La decisione resta immediata.
+      const speciale=dGoal<=QTE.maxComputer?occasioneControfuga(p):null;
+      if(speciale&&rnd()<0.35) tiroSpeciale(p,speciale,null);
+      else aiShoot(p,0.55+rnd()*0.45,false);
+      return;
     }
     const m=bestPassTarget(p,false);
     if(m&&laneClear(p,m.x,m.z,t)&&openness(m)>1.5){
