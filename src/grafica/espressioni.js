@@ -1,18 +1,25 @@
 // ESPRESSIONI DEL VISO (solo disegno: non tocca mai il gioco e non usa numeri casuali).
 // Il modello può avere delle forme alternative del viso (morph target, fatte in Blender: strumenti/blender/scheletro.py,
 // funzioni interno_bocca ed espressioni) e una bocca che si apre, con cavità e denti. Qui un piccolo controller mescola le forme
-// per ottenere sei espressioni, con passaggi morbidi e ritorno al viso neutro. Se il modello non ha le forme (o ne ha solo
+// per ottenere sette espressioni, con passaggi morbidi e ritorno al viso neutro. Se il modello non ha le forme (o ne ha solo
 // alcune) si usano solo quelle che il file .glb contiene davvero, lette al caricamento; senza forme non succede nulla.
 import { ball, game, fight, teams, goalX } from '../stato.js';
 
-// ricetta di ogni espressione: peso (0-1) di ciascuna forma del viso
+// ricetta di ogni espressione: peso (0-1) di ciascuna forma del viso. Come nel foglio delle espressioni del concept di Ale,
+// ogni espressione muove TUTTO il viso (sopracciglia, occhi, guance, naso, bocca, mento), non solo la bocca.
+// Forme: _d / _s = lato destro / sinistro del personaggio.
 export const ESPRESSIONI = {
-  focus:        { sopracciglia_giu: 0.5, occhi_stretti: 0.35, labbra_strette: 0.5 },                                          // concentrazione
-  effort:       { sopracciglia_giu: 0.85, occhi_stretti: 0.8, bocca_larga: 0.9, bocca_aperta: 0.1, naso_arricciato: 0.5 },    // sforzo: denti stretti
-  anger:        { sopracciglia_giu: 1, occhi_stretti: 0.7, naso_arricciato: 0.8, bocca_aperta: 0.4, bocca_larga: 0.6, bocca_giu: 0.5 },        // rabbia
-  euphoria:     { bocca_aperta: 1, bocca_larga: 0.5, sorriso: 0.7, sopracciglia_su: 1, occhi_spalancati: 0.5 },               // euforia: l'urlo del gol
-  celebrate:    { sorriso: 1, bocca_aperta: 0.12, sopracciglia_su: 0.35, occhi_stretti: 0.2 },                              // esultanza lieve
-  disappointed: { bocca_giu: 1, sopracciglia_su_interno: 1, occhi_stretti: 0.25 },                                          // delusione
+  focus:        { sopracciglia_giu: 0.75, sopracciglia_aggrottate: 0.35, occhi_stretti: 0.3, labbra_strette: 0.7, mento_su: 0.6, bocca_giu: 0.25 },     // determinato
+  effort:       { sopracciglia_aggrottate: 0.8, sopracciglia_giu: 0.3, occhi_stretti: 0.85, naso_arricciato: 0.6, guance_su: 0.6, labbro_su: 0.55,
+                  bocca_larga: 0.9, bocca_aperta: 0.06 },                                                                                         // sforzo: denti stretti
+  anger:        { sopracciglia_aggrottate: 1, sopracciglia_giu: 0.5, occhi_stretti: 0.55, naso_arricciato: 1, guance_su: 0.5, bocca_aperta: 1,
+                  labbro_su: 1, bocca_larga: 0.35, bocca_giu: 0.35 },                                                                            // rabbia: l'urlo
+  euphoria:     { bocca_aperta: 1, labbro_su: 0.7, bocca_larga: 0.55, sorriso_d: 0.85, sorriso_s: 0.85, guance_su: 0.9, sopracciglia_su: 1,
+                  occhi_stretti: 0.25 },                                                                                                          // euforia: l'urlo del gol
+  celebrate:    { sorriso_d: 1, sorriso_s: 1, guance_su: 0.8, labbro_su: 0.6, bocca_aperta: 0.4, bocca_larga: 0.6, sopracciglia_su: 0.55,
+                  occhi_stretti: 0.25 },                                                                                                          // sorriso largo
+  wink:         { occhio_chiuso_s: 1, sorriso_d: 1, sorriso_s: 0.25, guance_su: 0.4, sopracciglia_su: 0.3, labbro_su: 0.35, bocca_aperta: 0.1 },  // occhiolino
+  disappointed: { sopracciglia_su_interno: 1, bocca_giu: 1, mento_su: 0.6, occhio_chiuso_d: 0.2, occhio_chiuso_s: 0.2 },                         // delusione
 };
 const ENTRA = 7, ESCE = 4;      // velocità dei passaggi (per secondo): si entra un po' più in fretta di quanto si esca
 
@@ -71,7 +78,8 @@ function osserva(p) {
 
 // quale espressione adesso: prima i momenti, poi gli stati continui
 //  - sforzo: gesto di tiro o passaggio in corso (p.act), tiro in carica (p.charging), lotta al centro (fight), sprint (p.sprinting)
-//  - concentrazione: chi ha la palla, e il portiere quando la palla è a meno di 8 m dalla sua porta
+//  - occhiolino: chi ha appena fatto una finta riuscita (p.fakeUntil)
+//  - concentrazione (determinato): chi ha la palla, e il portiere quando la palla è a meno di 8 m dalla sua porta
 //  - dopo il gol, finché la partita non riprende: esultanza lieve per chi ha segnato, delusione per gli altri
 export function espressioneDi(p) {
   if (!p || !p.team) return [null, 0];
@@ -82,6 +90,7 @@ export function espressioneDi(p) {
     if (segnano) return segnano === p.team ? ['celebrate', 1] : ['disappointed', 0.6];
   }
   if (game.state !== 'play') return [null, 0];
+  if (p.fakeUntil > game.time) return ['wink', 1];      // finta riuscita (regole.js): occhiolino
   if ((p.act && !p.act.done) || p.charging) return ['effort', 1];
   if (fight.active && (fight.boa === p || fight.def === p)) return ['effort', 0.8];
   if (p.sprinting) return ['effort', 0.6];

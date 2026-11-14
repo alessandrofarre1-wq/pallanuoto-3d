@@ -160,19 +160,30 @@ def interno_bocca(d):
     def segna(v, tipo):      # dati scritti sul punto stesso (Blender riordina i punti al salvataggio: niente indici)
         v[lb] = tipo; v[lz] = (0, 0, 0); v[ls] = 0; v[ln] = 0; v[dl].clear(); v[dl][testa] = 1.0
     # cavità: ellissoide schiacciato dietro ai denti
-    r = bmesh.ops.create_uvsphere(bm, u_segments=16, v_segments=8, radius=1.0)
+    from mathutils.bvhtree import BVHTree
+    pelle = BVHTree.FromBMesh(bm)      # la superficie del corpo prima di aggiungere l'interno
+    r = bmesh.ops.create_uvsphere(bm, u_segments=20, v_segments=10, radius=1.0)
     for v in r['verts']:
-        v.co = Vector((cx + v.co.x * (w * 1.25), -0.047 + v.co.y * 0.020, zb - 0.010 + v.co.z * 0.024)); segna(v, 1.0)
+        v.co = Vector((cx + v.co.x * 0.060, -0.040 + v.co.y * 0.030, zb - 0.012 + v.co.z * 0.030)); segna(v, 1.0)
+        # la cavità resta sempre dentro la testa: se un punto è fuori o a meno di 6 mm dalla pelle, rientra
+        p, n, _, _ = pelle.find_nearest(v.co)
+        if p is not None:
+            fuori = (v.co - p).dot(n)
+            if fuori > -0.006: v.co = v.co - n * (fuori + 0.006)
     # denti: archi che seguono la curva della bocca, appena dietro le labbra (2 = sopra, 3 = sotto: seguono la mandibola)
-    def arco(z0, z1, tipo, ritira):
-        N = 12; riga = []
+    # denti: due file larghe quanto la bocca, curve come la linea delle labbra (agli angoli salgono appena), con le estremità
+    # arrotondate; appena dietro le labbra (2 = sopra, 3 = sotto: questi seguono la mandibola)
+    def fila(zbordo, alt, verso, tipo, ritira):
+        N = 16; riga = []
         for k in range(N + 1):
-            t = -1 + 2 * k / N; x = cx + t * (w * 0.80); y = -0.0865 + 0.013 * t * t + ritira
-            a0 = bm.verts.new((x, y, z0 - 0.0015 * t * t)); a1 = bm.verts.new((x, y, z1)); segna(a0, tipo); segna(a1, tipo); riga.append((a0, a1))
+            t = -1 + 2 * k / N; x = cx + t * (w * 0.92); y = -0.0875 + 0.026 * t * t + ritira
+            h = alt * math.sqrt(max(0.0, 1 - t ** 8))                 # estremità arrotondate
+            zb_ = zbordo + 0.0025 * t * t                              # il bordo dei denti segue la curva del sorriso
+            a0 = bm.verts.new((x, y, zb_)); a1 = bm.verts.new((x, y, zb_ + verso * max(h, 0.0005))); segna(a0, tipo); segna(a1, tipo); riga.append((a0, a1))
         for k in range(N):
             (a0, a1), (b0, b1) = riga[k], riga[k + 1]; bm.faces.new((a0, b0, b1, a1))
-    arco(zb - 0.0065, zb + 0.004, 2.0, 0.0)
-    arco(zb - 0.0135, zb - 0.0035, 3.0, 0.0015)
+    fila(zb - 0.0075, 0.0115, 1, 2.0, 0.0)          # denti di sopra: dal bordo in su
+    fila(zb - 0.0035, 0.0090, -1, 3.0, 0.0015)      # denti di sotto: dal bordo in giù
     bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if len(f.verts) > 3])
     bm.to_mesh(me); bm.free(); me.update()
 def espressioni(d, alta):
@@ -205,7 +216,7 @@ def espressioni(d, alta):
         for i in range(n):
             tipo = B[i].value
             if tipo > 0.5:      # interno della bocca: solo la mandibola, per denti di sotto e metà bassa della cavità
-                dv = viso.ruota_mandibola(base[i], 0.20) + Vector((0, -0.002, -0.003)) if (nome == 'bocca_aperta' and (tipo > 2.5 or (tipo < 1.5 and base[i].z < VISO['bocca'] - 0.008))) else Vector()
+                dv = viso.ruota_mandibola(base[i], viso.APERTURA) + Vector((0, -0.002, -0.004)) if (nome == 'bocca_aperta' and (tipo > 2.5 or (tipo < 1.5 and base[i].z < VISO['bocca'] - 0.008))) else Vector()
             else: dv = delta[nome][i]
             if dv.length > 2e-5: k.data[i].co = base[i] + dv; c += 1
         toccati[nome] = c

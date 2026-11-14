@@ -74,7 +74,7 @@ function attaccaFumetto(R,colori,num,seme){
           float pelle=(1.0-max(zc,zs))*(1.0-zb)*smoothstep(0.25,0.45,(mx-mn)/max(mx,0.001));
           diffuseColor.rgb=mix(c,c*uTono,pelle);
           // interno della bocca (modello v2, dato _bocca): 1 = cavità scura, 2-3 = denti
-          if(vBocca>1.5) diffuseColor.rgb=vec3(0.86,0.84,0.78); else if(vBocca>0.5) diffuseColor.rgb=vec3(0.09,0.02,0.025); }`); };
+          if(vBocca>1.5) diffuseColor.rgb=vec3(0.86,0.84,0.78); else if(vBocca>0.5 || !gl_FrontFacing) diffuseColor.rgb=vec3(0.09,0.02,0.025); }`); };      // l'interno della testa (visto dalla bocca aperta) è scuro
   // sott'acqua il corpo prende il colore dell'acqua secondo la profondità e ondeggia appena; linea bagnata sul pelo dell'acqua
   sottAcqua(mat,{ ondeggia:1, bagnato:1, chiave:'corpo' });
   K.u=u;

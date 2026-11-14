@@ -64,7 +64,7 @@ BOCCA = {'cx': -0.004, 'z': 1.556, 'mezza': 0.042}
 def linea(x):
     t = min(1.0, abs(x - BOCCA['cx']) / BOCCA['mezza']); return BOCCA['z'] + 0.0025 * t ** 2      # angoli appena più alti
 bm = bmesh.new(); bm.from_mesh(me)
-via = [f for f in bm.faces if abs(f.calc_center_median().x - BOCCA['cx']) < BOCCA['mezza'] * 0.97 and f.calc_center_median().y < -0.06
+via = [f for f in bm.faces if abs(f.calc_center_median().x - BOCCA['cx']) < BOCCA['mezza'] * 0.86 and f.calc_center_median().y < -0.06
        and abs(f.calc_center_median().z - linea(f.calc_center_median().x)) < 0.0009 * (1 - (abs(f.calc_center_median().x - BOCCA['cx']) / BOCCA['mezza']) ** 2) + 0.0003]
 bmesh.ops.delete(bm, geom=via, context='FACES')
 bordo = [v for v in bm.verts if v.is_boundary and abs(v.co.x - BOCCA['cx']) < BOCCA['mezza'] and v.co.y < -0.05 and abs(v.co.z - BOCCA['z']) < 0.006]
