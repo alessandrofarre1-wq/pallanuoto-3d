@@ -56,7 +56,22 @@ for i, t in enumerate(somma): az.data[i].vector = (t[0] / t[4], t[1] / t[4], t[2
 anu = me.attributes.new('_numero', 'FLOAT', 'POINT')
 for i, t in enumerate(somma):
     z = me.vertices[i].co.z; anu.data[i].value = (t[2] / t[4]) if (z > DECORO or z < 0.62 * H) else 0.0
-info = {'punti_prima': prima, 'punti_dopo_saldatura': len(me.vertices), 'triangoli': len(me.polygons), 'scala_applicata': k, 'altezza_m': H, 'zone_angoli': conta}
+# BOCCA APRIBILE (modello v2): nel modello la bocca è solo disegnata (piega di 1-2 mm). Si taglia una fessura sottilissima lungo la
+# linea delle labbra trovata nel disegno (quota 1,556 m, angoli a ±4,2 cm dal centro del viso, x = -0,004): si tolgono le facce del
+# davanti che la attraversano e i bordi del taglio vengono riportati sulla linea, così a riposo la bocca resta chiusa. L'interno
+# (cavità e denti) e le forme che la aprono si aggiungono nella versione del gioco (scheletro.py).
+BOCCA = {'cx': -0.004, 'z': 1.556, 'mezza': 0.042}
+def linea(x):
+    t = min(1.0, abs(x - BOCCA['cx']) / BOCCA['mezza']); return BOCCA['z'] + 0.0025 * t ** 2      # angoli appena più alti
+bm = bmesh.new(); bm.from_mesh(me)
+via = [f for f in bm.faces if abs(f.calc_center_median().x - BOCCA['cx']) < BOCCA['mezza'] * 0.97 and f.calc_center_median().y < -0.06
+       and abs(f.calc_center_median().z - linea(f.calc_center_median().x)) < 0.0009 * (1 - (abs(f.calc_center_median().x - BOCCA['cx']) / BOCCA['mezza']) ** 2) + 0.0003]
+bmesh.ops.delete(bm, geom=via, context='FACES')
+bordo = [v for v in bm.verts if v.is_boundary and abs(v.co.x - BOCCA['cx']) < BOCCA['mezza'] and v.co.y < -0.05 and abs(v.co.z - BOCCA['z']) < 0.006]
+for v in bordo: v.co.z = linea(v.co.x)
+bm.to_mesh(me); bm.free(); me.update()
+info_bocca = {'facce_tolte': len(via), 'punti_sul_bordo': len(bordo)}
+info = {'punti_prima': prima, 'punti_dopo_saldatura': len(me.vertices), 'triangoli': len(me.polygons), 'scala_applicata': k, 'altezza_m': H, 'zone_angoli': conta, 'bocca': info_bocca}
 # immagini ridotte (le originali 4096 restano nel file di partenza)
 os.makedirs(out, exist_ok=True)
 def ridotte(lato):

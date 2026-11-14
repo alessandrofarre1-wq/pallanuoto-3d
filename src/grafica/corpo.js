@@ -60,9 +60,9 @@ function attaccaFumetto(R,colori,num,seme){
   const mat=baseF.materiale.clone(); mat.roughness=0.62; mat.metalness=0;
   const u={ uCal:{value:new THREE.Color()}, uCos:{value:new THREE.Color()}, uTono:{value:TONI[seme%TONI.length]}, uLuce:{value:FUMETTO.luceBlu} };
   mat.onBeforeCompile=sh=>{ Object.assign(sh.uniforms,u);
-    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 _zona; attribute float _numero; varying vec3 vZona; varying float vNum; varying float vQuota;')
-      .replace('#include <begin_vertex>','#include <begin_vertex>\nvZona=_zona; vNum=_numero; vQuota=position.y;');
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uCal; uniform vec3 uCos; uniform vec3 uTono; uniform float uLuce; varying vec3 vZona; varying float vNum; varying float vQuota;')
+    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 _zona; attribute float _numero; attribute float _bocca; varying vec3 vZona; varying float vNum; varying float vQuota; varying float vBocca;')
+      .replace('#include <begin_vertex>','#include <begin_vertex>\nvZona=_zona; vNum=_numero; vQuota=position.y; vBocca=_bocca;');
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uCal; uniform vec3 uCos; uniform vec3 uTono; uniform float uLuce; varying vec3 vZona; varying float vNum; varying float vQuota; varying float vBocca;')
       .replace('#include <map_fragment>',`#include <map_fragment>
         { vec3 c=diffuseColor.rgb; float lum=dot(c,vec3(0.3,0.5,0.2)), mx=max(c.r,max(c.g,c.b)), mn=min(c.r,min(c.g,c.b));
           // dentro cuffia e costume tutto prende il colore di squadra: il blu tiene le sue luci e ombre, il 7 dipinto (bianco) e il
@@ -72,7 +72,9 @@ function attaccaFumetto(R,colori,num,seme){
           float zc=max(step(0.5,vZona.x),num*alto), zs=max(step(0.5,vZona.y),num*(1.0-alto));
           c=mix(c,uCal*ombra,max(blu,num)*zc); c=mix(c,uCos*ombra,max(blu,num)*zs);
           float pelle=(1.0-max(zc,zs))*(1.0-zb)*smoothstep(0.25,0.45,(mx-mn)/max(mx,0.001));
-          diffuseColor.rgb=mix(c,c*uTono,pelle); }`); };
+          diffuseColor.rgb=mix(c,c*uTono,pelle);
+          // interno della bocca (modello v2, dato _bocca): 1 = cavità scura, 2-3 = denti
+          if(vBocca>1.5) diffuseColor.rgb=vec3(0.86,0.84,0.78); else if(vBocca>0.5) diffuseColor.rgb=vec3(0.09,0.02,0.025); }`); };
   // sott'acqua il corpo prende il colore dell'acqua secondo la profondità e ondeggia appena; linea bagnata sul pelo dell'acqua
   sottAcqua(mat,{ ondeggia:1, bagnato:1, chiave:'corpo' });
   K.u=u;
