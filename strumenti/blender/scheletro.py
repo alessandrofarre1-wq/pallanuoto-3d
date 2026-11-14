@@ -94,7 +94,7 @@ def esporta(nome, rapporto, lato):
 
 # IMMAGINE RIDIPINTA PER LA VERSIONE DEL GIOCO (modello v2). L'immagine del generatore è divisa in centinaia di pezzetti: ridotti i
 # triangoli, ogni triangolo grande ne attraversa diversi e il viso si rovina (sopracciglia a gradini, macchie). Qui la versione
-# ridotta riceve coordinate nuove (pezzi grandi e puliti; la testa con 5 volte lo spazio a parità di superficie, perché è ciò che si
+# ridotta riceve coordinate nuove (pezzi grandi e puliti; il davanti del viso con 16 volte lo spazio a parità di superficie e il resto della testa 4 volte, perché è ciò che si
 # vede) e il colore viene "cotto" dal modello completo con Cycles. Solo il colore: rilievo, metallo e ruvidezza non servono in partita.
 def cuoci(d, lato, zc):
     import bmesh
@@ -115,11 +115,14 @@ def cuoci(d, lato, zc):
         if (la[uv].uv - lb.link_loop_next[uv].uv).length < 1e-6 and (la.link_loop_next[uv].uv - lb[uv].uv).length < 1e-6: par[f(a.index)] = f(b.index)
     isole = {}
     for fa in bm.faces: isole.setdefault(f(fa.index), []).append(fa)
+    def davanti(p): return p.y < -0.03 and 1.48 < p.z < 1.715 and abs(p.x - VISO['cx']) < 0.085
     for facce in isole.values():
         if sum(1 for fa in facce if fa.calc_center_median().z > zc) * 2 < len(facce): continue
+        viso_ = sum(1 for fa in facce if davanti(fa.calc_center_median())) * 2 >= len(facce)
+        k = 4.0 if viso_ else 2.0      # davanti del viso: area x 16 (occhi, sopracciglia, bocca nitidi); resto della testa x 4
         pts = [l[uv].uv.copy() for fa in facce for l in fa.loops]; c = sum(pts, Vector((0, 0))) / len(pts)
         for fa in facce:
-            for l in fa.loops: l[uv].uv = c + (l[uv].uv - c) * 2.3      # area x 5,3
+            for l in fa.loops: l[uv].uv = c + (l[uv].uv - c) * k
     bmesh.update_edit_mesh(me)
     bpy.ops.uv.select_all(action='SELECT'); bpy.ops.uv.pack_islands(rotate=True, margin=0.004)
     bpy.ops.object.mode_set(mode='OBJECT')
@@ -129,30 +132,26 @@ def cuoci(d, lato, zc):
     p.inputs['Metallic'].default_value = 0.0; p.inputs['Roughness'].default_value = 0.62
     nt.nodes.active = t
     vecchio = d.data.materials[0]; d.data.materials.clear(); d.data.materials.append(mat)
-    sc = bpy.context.scene; sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = 4
+    sc = bpy.context.scene; sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = 16
     bpy.ops.object.select_all(action='DESELECT'); o.select_set(True); d.select_set(True); bpy.context.view_layer.objects.active = d
-    bpy.ops.object.bake(type='DIFFUSE', pass_filter={'COLOR'}, use_selected_to_active=True, cage_extrusion=0.01, max_ray_distance=0.03, margin=6, uv_layer='gioco')
+    bpy.ops.object.bake(type='DIFFUSE', pass_filter={'COLOR'}, use_selected_to_active=True, cage_extrusion=0.006, max_ray_distance=0.015, margin=6, uv_layer='gioco')
     img.pack()
     for l in list(me.uv_layers):
         if l.name != 'gioco': me.uv_layers.remove(l)
     bpy.ops.object.select_all(action='DESELECT'); d.select_set(True); bpy.context.view_layer.objects.active = d
 
-# ESPRESSIONI DEL VISO (modello v2): forme alternative della stessa mesh (shape key in Blender, morph target nel .glb), costruite
-# DOPO la riduzione dei triangoli (in Blender ridurre i triangoli cancella le shape key). Punti di riferimento misurati sul modello
-# alto 1,80 (x = sinistra del personaggio, y = indietro, z = su; centro del viso x = -0,004):
-#   occhi a quota 1,654 (x = ±0,035), palpebra superiore 1,666, inferiore 1,642; sopracciglia 1,675-1,695 (da ±0,012 a ±0,075);
-#   naso: punta a 1,59, sotto a 1,575; LINEA DELLE LABBRA a 1,556 (dal disegno), angoli a ±0,042; mento a circa 1,49.
-# Le forme spostano solo il davanti del viso (niente cuffia, paraorecchie, laccetti), con cadute morbide; la mandibola gira attorno
-# a un cardine vicino alle orecchie. Ampiezze di alcuni millimetri fino a 1,5 cm (bocca aperta): servono espressioni leggibili.
-VISO = {'cx': -0.004, 'occhi': 1.654, 'occhioX': 0.035, 'palpSu': 1.666, 'palpGiu': 1.642, 'ciglia': 1.685, 'bocca': 1.556, 'angoloX': 0.042,
-        'naso': 1.585, 'cardine': (0.0, 1.60)}
-FORME = ('bocca_aperta', 'bocca_larga', 'sorriso', 'bocca_giu', 'labbra_strette', 'sopracciglia_giu', 'sopracciglia_su',
-         'sopracciglia_su_interno', 'occhi_stretti', 'occhi_spalancati', 'naso_arricciato')
+# ESPRESSIONI DEL VISO (modello v2): le forme si costruiscono sul modello COMPLETO con misure precise prese dal disegno
+# (strumenti/blender/viso.py: sopracciglia, ovale degli occhi, linea e angoli del taglio della bocca) e si trasferiscono sulla
+# versione leggera del gioco con un collegamento tra le due superfici (Surface Deform). L'interno della bocca (cavità e denti) si
+# aggiunge alla versione leggera e segue la mandibola con la stessa rotazione delle forme.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import viso
+VISO = {'cx': -0.004, 'bocca': 1.557, 'mezza': 0.040}      # aggiornati con le misure vere in esporta_gioco
 # INTERNO DELLA BOCCA: una cavità chiusa e due file di denti, dentro la testa dietro alle labbra, legati all'osso della testa.
-# Nessun materiale in più: il dato per punto _bocca (1 = cavità, 2 = denti) dice al disegno del gioco che colore dare (corpo.js).
+# Nessun materiale in più: il dato per punto _bocca (1 = cavità, 2 = denti sopra, 3 = denti sotto) dice al disegno che colore dare.
 def interno_bocca(d):
     import bmesh
-    me = d.data; cx, zb = VISO['cx'], VISO['bocca']
+    me = d.data; cx, zb, w = VISO['cx'], VISO['bocca'], VISO['mezza']
     if not me.attributes.get('_bocca'): me.attributes.new('_bocca', 'FLOAT', 'POINT')
     testa = d.vertex_groups['head'].index
     bm = bmesh.new(); bm.from_mesh(me)
@@ -160,94 +159,57 @@ def interno_bocca(d):
     dl = bm.verts.layers.deform.verify()
     def segna(v, tipo):      # dati scritti sul punto stesso (Blender riordina i punti al salvataggio: niente indici)
         v[lb] = tipo; v[lz] = (0, 0, 0); v[ls] = 0; v[ln] = 0; v[dl].clear(); v[dl][testa] = 1.0
-    # cavità: ellissoide schiacciato, dietro ai denti (davanti a 1,6 cm dalla superficie delle labbra)
-    r = bmesh.ops.create_uvsphere(bm, u_segments=14, v_segments=8, radius=1.0)
+    # cavità: ellissoide schiacciato dietro ai denti
+    r = bmesh.ops.create_uvsphere(bm, u_segments=16, v_segments=8, radius=1.0)
     for v in r['verts']:
-        v.co = Vector((cx + v.co.x * 0.040, -0.058 + v.co.y * 0.014, zb - 0.008 + v.co.z * 0.022)); segna(v, 1.0)
-    # denti: archi sottili che seguono la curva della bocca (2 = sopra, 3 = sotto: questi seguono la mandibola)
+        v.co = Vector((cx + v.co.x * (w * 1.25), -0.047 + v.co.y * 0.020, zb - 0.010 + v.co.z * 0.024)); segna(v, 1.0)
+    # denti: archi che seguono la curva della bocca, appena dietro le labbra (2 = sopra, 3 = sotto: seguono la mandibola)
     def arco(z0, z1, tipo, ritira):
-        N = 10; riga = []
+        N = 12; riga = []
         for k in range(N + 1):
-            t = -1 + 2 * k / N; x = cx + t * 0.033; y = -0.0875 + 0.014 * t * t + ritira
-            a0 = bm.verts.new((x, y, z0)); a1 = bm.verts.new((x, y, z1)); segna(a0, tipo); segna(a1, tipo); riga.append((a0, a1))
+            t = -1 + 2 * k / N; x = cx + t * (w * 0.80); y = -0.0865 + 0.013 * t * t + ritira
+            a0 = bm.verts.new((x, y, z0 - 0.0015 * t * t)); a1 = bm.verts.new((x, y, z1)); segna(a0, tipo); segna(a1, tipo); riga.append((a0, a1))
         for k in range(N):
             (a0, a1), (b0, b1) = riga[k], riga[k + 1]; bm.faces.new((a0, b0, b1, a1))
-    arco(zb - 0.0065, zb + 0.003, 2.0, 0.0)
-    arco(zb - 0.013, zb - 0.0045, 3.0, 0.0015)
+    arco(zb - 0.0065, zb + 0.004, 2.0, 0.0)
+    arco(zb - 0.0135, zb - 0.0035, 3.0, 0.0015)
     bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if len(f.verts) > 3])
     bm.to_mesh(me); bm.free(); me.update()
-    B = me.attributes['_bocca'].data
-    return {'cavita': [i for i in range(len(me.vertices)) if 0.5 < B[i].value < 1.5],
-            'denti_giu': [i for i in range(len(me.vertices)) if B[i].value > 2.5]}
-def espressioni(d, interno):
-    import math
-    me = d.data; az = me.attributes.get('_zona'); ab = me.attributes.get('_bocca')
-    base = [v.co.copy() for v in me.vertices]
-    cx, oz, ox, bz, ax = VISO['cx'], VISO['occhi'], VISO['occhioX'], VISO['bocca'], VISO['angoloX']
-    cy, cz = VISO['cardine']
-    giuDenti = set(interno['denti_giu']); cav = set(interno['cavita'])
-    # da che parte della bocca sta ogni punto: vicino al taglio i bordi delle due labbra hanno la stessa quota, quindi decide la
-    # media delle facce attorno (sotto la linea = labbro inferiore, che segue la mandibola)
-    import bmesh
-    bm = bmesh.new(); bm.from_mesh(me); bm.verts.ensure_lookup_table()
-    labbroGiu = {}
-    for v in bm.verts:
-        if abs(v.co.z - bz) < 0.004 and abs(v.co.x - cx) < ax + 0.004 and v.co.y < -0.05 and v.link_faces:
-            labbroGiu[v.index] = sum(f.calc_center_median().z for f in v.link_faces) / len(v.link_faces) < bz
-    bm.free()
-    viso = [i for i, c in enumerate(base) if c.y < -0.025 and 1.47 < c.z < 1.72 and abs(c.x - cx) < 0.095
-            and az.data[i].vector[0] < 0.5 and az.data[i].vector[2] < 0.5 and (ab is None or ab.data[i].value < 0.5)]
-    def g(c, x, z, sx, sz): return math.exp(-((c.x - x) ** 2) / (2 * sx * sx) - ((c.z - z) ** 2) / (2 * sz * sz))
-    def liscio(a, b, t): t = max(0.0, min(1.0, (t - a) / (b - a))); return t * t * (3 - 2 * t)
-    def ruota(c, ang):      # mandibola: rotazione attorno all'asse x passante per il cardine (y, z)
-        y, z = c.y - cy, c.z - cz; co, si = math.cos(ang), math.sin(ang)
-        return Vector((0, (y * co - z * si) - y, (y * si + z * co) - z))
-    def forma(c, dente=False, i=-1):
-        f = {}; dx = c.x - cx; ad = abs(dx); s = 1 if dx >= 0 else -1
-        # --- bocca ---
-        sotto = (1.0 if labbroGiu[i] else 0.0) if i in labbroGiu else 1.0 - liscio(bz - 0.006, bz - 0.0005, c.z)      # labbro inferiore e mento
-        lat = 1.0 - liscio(0.045, 0.085, ad)                                # la mandibola si muove meno verso le guance
-        alto = liscio(1.455, 1.50, c.z)                                     # e niente collo
-        mand = 1.0 if dente else sotto * lat * alto
-        # vicino alla bocca le labbra restano attaccate agli angoli: apertura a ovale, non a fessura dritta
-        vicino = math.exp(-((c.z - bz) / 0.011) ** 2) if not dente else 0.0
-        angoli = max(0.0, 1 - (ad / (ax + 0.003)) ** 2) ** 1.3      # apertura a ovale
-        mand *= 1 - vicino * (1 - angoli)
-        f['bocca_aperta'] = (ruota(c, 0.19 * mand) + Vector((0, -0.003 * mand, -0.006 * mand))
-                             + Vector((0, -0.001 * (1 - sotto) * angoli, 0.0035 * angoli * math.exp(-((c.z - bz - 0.002) / 0.006) ** 2) * (1 - sotto))))      # il labbro di sopra sale appena, di più al centro
-        ang = g(c, cx + s * ax, bz, 0.013, 0.010)                           # zona dell'angolo della bocca
-        lab = g(c, cx, bz, 0.032, 0.008)                                    # labbra
-        f['bocca_larga'] = Vector((s * 0.010 * ang, 0.004 * ang, 0)) + Vector((0, 0, 0.0025 * lab * (1 if c.z > bz else -1)))
-        guancia = g(c, cx + s * 0.050, bz + 0.026, 0.020, 0.016)
-        f['sorriso'] = Vector((s * 0.006 * ang, 0.004 * ang, 0.010 * ang + 0.007 * guancia)) + Vector((0, -0.0025 * guancia, 0))
-        f['bocca_giu'] = Vector((0, 0.0015 * ang, -0.010 * ang)) + Vector((0, -0.003 * g(c, cx, bz - 0.03, 0.02, 0.012), 0.004 * g(c, cx, bz - 0.03, 0.02, 0.012)))
-        f['labbra_strette'] = Vector((-s * 0.004 * ang, -0.003 * lab, (bz - c.z) * 0.6 * lab))
-        # --- sopracciglia (solo sopra la palpebra superiore) ---
-        sopra = liscio(VISO['palpSu'] - 0.002, VISO['palpSu'] + 0.008, c.z) * (1 - liscio(1.698, 1.710, c.z))
-        cigl = g(c, cx + s * 0.044, VISO['ciglia'], 0.030, 0.013) * sopra
-        inte = g(c, cx + s * 0.014, VISO['ciglia'] - 0.002, 0.014, 0.012) * sopra
-        f['sopracciglia_giu'] = Vector((-s * 0.006 * inte, -0.003 * cigl, -0.009 * cigl - 0.006 * inte))
-        f['sopracciglia_su'] = Vector((0, 0.001 * cigl, 0.010 * cigl + 0.002 * g(c, cx, VISO['ciglia'] + 0.02, 0.05, 0.015)))
-        f['sopracciglia_su_interno'] = Vector((s * 0.002 * inte, 0, 0.011 * inte))
-        # --- occhi ---
-        su = g(c, cx + s * ox, VISO['palpSu'], 0.017, 0.004); giu = g(c, cx + s * ox, VISO['palpGiu'], 0.017, 0.004)
-        zig = g(c, cx + s * (ox + 0.006), VISO['palpGiu'] - 0.014, 0.02, 0.008)
-        f['occhi_stretti'] = Vector((0, 0, -0.0045 * su + 0.005 * giu + 0.003 * zig))
-        f['occhi_spalancati'] = Vector((0, 0, 0.0035 * su - 0.0025 * giu))
-        # --- naso arricciato (rabbia): ali del naso su, pelle tra le sopracciglia giù ---
-        ali = g(c, cx + s * 0.016, VISO['naso'] - 0.005, 0.010, 0.010); rad = g(c, cx, VISO['naso'] + 0.03, 0.012, 0.012)
-        f['naso_arricciato'] = Vector((0, -0.0015 * ali, 0.006 * ali + 0.0025 * rad))
-        return f
+def espressioni(d, alta):
+    """Forme sul modello completo (copia senza scheletro), trasferite sulla versione leggera."""
+    M = viso.riferimenti(alta); fatte = viso.forme(alta, M)
+    me = d.data; n = len(me.vertices)
+    m = d.modifiers.new('viso', 'SURFACE_DEFORM'); m.target = alta
+    bpy.ops.object.select_all(action='DESELECT'); bpy.context.view_layer.objects.active = d; d.select_set(True)
+    bpy.ops.object.modifier_move_to_index(modifier=m.name, index=0)
+    for altro in d.modifiers:
+        if altro != m: altro.show_viewport = False
+    bpy.ops.object.surfacedeform_bind(modifier=m.name)
+    kb = alta.data.shape_keys.key_blocks
+    def posizioni():
+        bpy.context.view_layer.update(); dg = bpy.context.evaluated_depsgraph_get(); ev = d.evaluated_get(dg); t = ev.to_mesh()
+        P = [v.co.copy() for v in t.vertices]; ev.to_mesh_clear(); return P
+    for k in kb[1:]: k.value = 0.0
+    zero = posizioni(); delta = {}
+    for nome in viso.FORME:
+        for k in kb[1:]: k.value = 1.0 if k.name == nome else 0.0
+        P = posizioni(); delta[nome] = [P[i] - zero[i] for i in range(n)]
+    for k in kb[1:]: k.value = 0.0
+    d.modifiers.remove(m)
+    for altro in d.modifiers: altro.show_viewport = True
+    base = [v.co.copy() for v in me.vertices]; B = me.attributes['_bocca'].data
     d.shape_key_add(name='Basis', from_mix=False)
-    chiavi = {n: d.shape_key_add(name=n, from_mix=False) for n in FORME}
-    for k in chiavi.values(): k.value = 0.0      # nel .glb il peso iniziale di ogni espressione dev'essere 0 (viso neutro)
-    toccati = {n: 0 for n in FORME}
-    for i in viso + sorted(giuDenti | cav):
-        f = forma(base[i], dente=(i in giuDenti or i in cav), i=i)
-        if i in giuDenti or i in cav: f = {'bocca_aperta': f['bocca_aperta']} if (i in giuDenti or base[i].z < bz - 0.006) else {}      # denti di sotto e metà bassa della cavità seguono la mandibola
-        for n, dv in f.items():
-            if dv.length > 2e-5: chiavi[n].data[i].co = base[i] + dv; toccati[n] += 1
-    return toccati
+    toccati = {}
+    for nome in viso.FORME:
+        k = d.shape_key_add(name=nome, from_mix=False); k.value = 0.0; c = 0
+        for i in range(n):
+            tipo = B[i].value
+            if tipo > 0.5:      # interno della bocca: solo la mandibola, per denti di sotto e metà bassa della cavità
+                dv = viso.ruota_mandibola(base[i], 0.20) + Vector((0, -0.002, -0.003)) if (nome == 'bocca_aperta' and (tipo > 2.5 or (tipo < 1.5 and base[i].z < VISO['bocca'] - 0.008))) else Vector()
+            else: dv = delta[nome][i]
+            if dv.length > 2e-5: k.data[i].co = base[i] + dv; c += 1
+        toccati[nome] = c
+    return {'punti_modello_completo': fatte, 'punti_versione_gioco': toccati}
 
 # versione PER IL GIOCO: testa e corpo ridotti SEPARATAMENTE (il viso, la cuffia e i paraorecchie sono ciò che si vede in partita
 # e hanno bisogno di più triangoli; il corpo è quasi tutto sott'acqua). Una sola immagine (il colore, 1024): rilievo, metallo e
@@ -269,8 +231,14 @@ def esporta_gioco(nome, triViso, triTesta, triCorpo, lato):
         bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.decimate(ratio=min(1, voluti / max(1, n)), use_vertex_group=False); bpy.ops.object.mode_set(mode='OBJECT')
     bpy.ops.object.mode_set(mode='WEIGHT_PAINT'); bpy.ops.object.vertex_group_limit_total(group_select_mode='ALL', limit=4); bpy.ops.object.vertex_group_normalize_all(lock_active=False); bpy.ops.object.mode_set(mode='OBJECT')
     cuoci(d, lato, zc)
-    interno = interno_bocca(d)
-    forme = espressioni(d, interno)
+    # misure vere della bocca (bordo del taglio) per piazzare cavità e denti; copia completa senza scheletro per le forme
+    alta = o.copy(); alta.data = o.data.copy(); alta.name = 'viso_alta'; bpy.context.scene.collection.objects.link(alta)
+    alta.parent = None; alta.matrix_world = o.matrix_world.copy()
+    while alta.modifiers: alta.modifiers.remove(alta.modifiers[0])
+    Mb = viso.riferimenti(alta)['bocca']; VISO.update({'cx': Mb['cx'], 'bocca': Mb['z'], 'mezza': Mb['mezza']})
+    interno_bocca(d)
+    forme = espressioni(d, alta)
+    bpy.data.objects.remove(alta)
     Gi.select_set(True)
     f = os.path.join(out, nome + '.glb')
     bpy.ops.export_scene.gltf(filepath=f, export_format='GLB', use_selection=True, export_image_format='JPEG', export_jpeg_quality=88, export_yup=True, export_vertex_color='NONE', export_attributes=True, export_tangents=False,
@@ -281,7 +249,7 @@ def esporta_gioco(nome, triViso, triTesta, triCorpo, lato):
     info[nome] = {'triangoli': len(d.data.polygons), 'di_cui_testa': testa, 'kB': round(os.path.getsize(f) / 1024), 'immagini': lato}
     bpy.data.objects.remove(d)
 esporta('player_rig_LOD0', 1.0, 2048); esporta('player_rig_LOD1', 0.30, 1024); esporta('player_rig_LOD2', 0.12, 1024); esporta('player_rig_LOD3', 0.05, 512)
-esporta_gioco('pallanuotista', 3400, 2800, 4300, 1024)      # v2: più triangoli alla testa (espressioni), meno al corpo (quasi tutto sott'acqua)
+esporta_gioco('pallanuotista', 4400, 2500, 3700, 1024)      # v2: più triangoli alla testa (espressioni), meno al corpo (quasi tutto sott'acqua)
 cap = [v.co for v in me.vertices if me.attributes['_zona'].data[v.index].vector[0] > 0.5 and v.co.z > 1.5]
 cc = Vector((sum(c.x for c in cap) / len(cap), sum(c.y for c in cap) / len(cap), sum(c.z for c in cap) / len(cap)))
 info['cuffia_centro_glb'] = [round(cc.x, 3), round(cc.z, 3), round(-cc.y, 3)]      # .glb: x = sinistra, y = su, z = avanti

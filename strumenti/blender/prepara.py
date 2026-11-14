@@ -77,7 +77,7 @@ os.makedirs(out, exist_ok=True)
 def ridotte(lato):
     for i in bpy.data.images:
         if i.size[0] > lato: i.scale(lato, lato)
-ridotte(2048)
+# il file .blend tiene l'immagine ORIGINALE (4096): la versione del gioco si ricuoce da lì (più nitida); i .glb si riducono qui sotto
 for i in bpy.data.images:
     if i.size[0]: i.pack()
 bpy.ops.wm.save_as_mainfile(filepath=os.path.join(out, 'player_base.blend'), compress=True)

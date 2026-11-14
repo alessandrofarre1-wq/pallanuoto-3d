@@ -7,12 +7,12 @@ import { ball, game, fight, teams, goalX } from '../stato.js';
 
 // ricetta di ogni espressione: peso (0-1) di ciascuna forma del viso
 export const ESPRESSIONI = {
-  focus:        { sopracciglia_giu: 0.45, occhi_stretti: 0.35, labbra_strette: 0.35 },                                        // concentrazione
-  effort:       { sopracciglia_giu: 0.8, occhi_stretti: 0.75, bocca_larga: 0.8, bocca_aperta: 0.12, naso_arricciato: 0.4 },   // sforzo: denti stretti
-  anger:        { sopracciglia_giu: 1, occhi_stretti: 0.5, naso_arricciato: 0.7, bocca_aperta: 0.45, bocca_larga: 0.5, bocca_giu: 0.35 },      // rabbia
-  euphoria:     { bocca_aperta: 1, bocca_larga: 0.6, sorriso: 0.6, sopracciglia_su: 0.8, occhi_spalancati: 0.3 },             // euforia: l'urlo del gol
-  celebrate:    { sorriso: 0.9, bocca_aperta: 0.15, sopracciglia_su: 0.3 },                                                  // esultanza lieve
-  disappointed: { bocca_giu: 1, sopracciglia_su_interno: 1, occhi_stretti: 0.2 },                                            // delusione
+  focus:        { sopracciglia_giu: 0.5, occhi_stretti: 0.35, labbra_strette: 0.5 },                                          // concentrazione
+  effort:       { sopracciglia_giu: 0.85, occhi_stretti: 0.8, bocca_larga: 0.9, bocca_aperta: 0.1, naso_arricciato: 0.5 },    // sforzo: denti stretti
+  anger:        { sopracciglia_giu: 1, occhi_stretti: 0.7, naso_arricciato: 0.8, bocca_aperta: 0.4, bocca_larga: 0.6, bocca_giu: 0.5 },        // rabbia
+  euphoria:     { bocca_aperta: 1, bocca_larga: 0.5, sorriso: 0.7, sopracciglia_su: 1, occhi_spalancati: 0.5 },               // euforia: l'urlo del gol
+  celebrate:    { sorriso: 1, bocca_aperta: 0.12, sopracciglia_su: 0.35, occhi_stretti: 0.2 },                              // esultanza lieve
+  disappointed: { bocca_giu: 1, sopracciglia_su_interno: 1, occhi_stretti: 0.25 },                                          // delusione
 };
 const ENTRA = 7, ESCE = 4;      // velocità dei passaggi (per secondo): si entra un po' più in fretta di quanto si esca
 
