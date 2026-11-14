@@ -53,7 +53,7 @@ prova(vista.coda.length === 1, `cambio programmato con un tocco: ${vista.coda.jo
 const volante = await pg.evaluate(() => {
   const H = window.__pallanuoto, t = H.teams[0], p = t.players[4], entra = t.coda[0].entra.num, esce = p.num;
   document.getElementById('riprendi').click(); H.game.cambiLiberi = false;
-  const gkO = H.teams[1].players[0], ferma = () => { if (H.ball.holder !== gkO) H.regole.giveBall(gkO); H.ball.holdTime = 0; gkO.decideT = 99; gkO.act = null; };      // niente gol durante la prova
+  const gkO = H.teams[1].players[0], ferma = () => { if (H.ball.holder !== gkO) H.regole.giveBall(gkO); H.ball.holdTime = 0; gkO.decideT = 99; gkO.reazioneT = 99; gkO.act = null; };      // niente gol durante la prova
   for (let i = 0; i < 200; i++) { ferma(); window.__salta(1); }
   const r = { fermato: false, comparsaVista: false, cinque: false, fasi: [], tempo: 0 };
   for (let i = 0; i < 60 * 25 && (t.cambio || (t.coda && t.coda.length)); i++) {
@@ -107,7 +107,7 @@ const live = await pg.evaluate(() => {
   for (const p of t.players) p.stamina = 1;
   for (const g of t.rosa) { g.pf = 0; g.tiriP = 0; g.gol = 0; }
   for (const p of t.players) { if (p.scheda) { p.scheda.pf = 0; p.scheda.tiriP = 0; } p.pf = 0; }
-  const gk = t.players[0], tieni = () => { if (H.ball.holder !== gk) H.regole.giveBall(gk); gk.decideT = 99; gk.act = null; H.ball.holdTime = 0; };
+  const gk = t.players[0], tieni = () => { if (H.ball.holder !== gk) H.regole.giveBall(gk); gk.decideT = 99; gk.reazioneT = 99; gk.act = null; H.ball.holdTime = 0; };
   for (let i = 0; i < 40; i++) { tieni(); window.__salta(1); }
   const b = document.getElementById('tCambi'), r = { vuoto: b.dataset.stato, testoVuoto: b.textContent.trim() };
   t.players[5].stamina = 0.2; for (let i = 0; i < 40; i++) { tieni(); window.__salta(1); }
@@ -130,13 +130,13 @@ const attesa = await pg.evaluate(() => {
   const g = t.rosa.find(x => !x.inAcqua && !x.fuori && x.ruolo !== 0); const esce = p.num;
   // l'avversario attacca vicino alla nostra porta e chi deve uscire è vicino alla palla: non è il momento
   const h = O.players[4], gx = -12.5 * t.dir;
-  const tieni = () => { h.x = gx + t.dir * 5; h.z = 1; h.vx = h.vz = 0; if (H.ball.holder !== h) H.regole.giveBall(h); h.decideT = 99; h.act = null; H.ball.holdTime = 0; p.x = h.x + t.dir * 1.5; p.z = 1; };
+  const tieni = () => { h.x = gx + t.dir * 5; h.z = 1; h.vx = h.vz = 0; if (H.ball.holder !== h) H.regole.giveBall(h); h.decideT = 99; h.reazioneT = 99; h.act = null; H.ball.holdTime = 0; p.x = h.x + t.dir * 1.5; p.z = 1; };
   H.pausa(); H.panchina.chiediCambio(t, p, g); H.pausa();
   for (let i = 0; i < 120; i++) { tieni(); window.__salta(1); }
   const r = { aspetta: !t.cambio && (t.coda || []).length === 1 && p.num === esce };
   // l'azione si sposta: la palla passa a noi (momento utile)
   H.regole.giveBall(t.players[0]);
-  let partito = false; for (let i = 0; i < 60 * 20 && p.num === esce; i++) { if (t.cambio) partito = true; const gk = t.players[0]; if (H.ball.holder !== gk) H.regole.giveBall(gk); gk.decideT = 99; H.ball.holdTime = 0; window.__salta(1); }
+  let partito = false; for (let i = 0; i < 60 * 20 && p.num === esce; i++) { if (t.cambio) partito = true; const gk = t.players[0]; if (H.ball.holder !== gk) H.regole.giveBall(gk); gk.decideT = 99; gk.reazioneT = 99; H.ball.holdTime = 0; window.__salta(1); }
   r.partito = partito; r.fatto = p.num === g.num;
   return r;
 });

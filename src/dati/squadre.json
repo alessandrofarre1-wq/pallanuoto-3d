@@ -1,8 +1,9 @@
 {
-  "_nota": "Squadre nazionali maschili. Ordine e forza dalla classifica finale dei Mondiali World Aquatics di Singapore 2025. Calottine: ogni squadra ha un set bianco e uno scuro, il portiere sempre rosso (regolamento). Il colore della calottina scura è una proposta basata sui colori nazionali, tranne dove calottinaScuraVerificata è true: Ale (esperto) conferma o corregge. Nomi dei giocatori: inventati, coerenti con la nazionalità (niente nomi di atleti reali, che nei giochi richiedono licenza).",
+  "_nota": "Nazionali maschili: 16 dei Mondiali World Aquatics Singapore 2025 piu 8 degli Europei Belgrado 2026. Le prime 16 mantengono ordine e forza precedenti; per le aggiunte forza stimata e posizioneEuropei2026 esplicita. Nomi e convocazioni reali, da database di Ale o rapporto ufficiale European Aquatics/Microplus (dati-sorgente/europei-2026-aggiunte.json); statistiche di gioco stimate, non valutazioni ufficiali. Calottine: bianca/scura e portiere rosso; colori scuri proposti salvo calottinaScuraVerificata=true.",
   "fonti": [
     "https://en.wikipedia.org/wiki/Water_polo_at_the_2025_World_Aquatics_Championships_%E2%80%93_Men%27s_tournament",
-    "https://en.wikipedia.org/wiki/Rules_of_water_polo"
+    "https://en.wikipedia.org/wiki/Rules_of_water_polo",
+    "https://ea.microplustimingservices.com/EWPC2026_Belgrade/assets/export/EWPC/pdf/WPOMTEAM7-------------------------_33%204.0.pdf"
   ],
   "squadre": [
     {
@@ -284,6 +285,162 @@
       },
       "calottinaScuraVerificata": false,
       "costume": "#007749"
+    },
+    {
+      "codice": "FRA",
+      "nome": "Francia",
+      "posizioneMondiali2025": null,
+      "posizioneEuropei2026": 9,
+      "forza": 72,
+      "forzaStimata": true,
+      "coloriBandiera": [
+        "#002395",
+        "#FFFFFF",
+        "#ED2939"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#002395",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#002395"
+    },
+    {
+      "codice": "GEO",
+      "nome": "Georgia",
+      "posizioneMondiali2025": null,
+      "posizioneEuropei2026": 10,
+      "forza": 70,
+      "forzaStimata": true,
+      "coloriBandiera": [
+        "#FFFFFF",
+        "#FF0000"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#BE151F",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#BE151F"
+    },
+    {
+      "codice": "NED",
+      "nome": "Paesi Bassi",
+      "posizioneMondiali2025": null,
+      "posizioneEuropei2026": 11,
+      "forza": 69,
+      "forzaStimata": true,
+      "coloriBandiera": [
+        "#AE1C28",
+        "#FFFFFF",
+        "#21468B"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#F36C21",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#F36C21"
+    },
+    {
+      "codice": "SVK",
+      "nome": "Slovacchia",
+      "posizioneMondiali2025": null,
+      "posizioneEuropei2026": 14,
+      "forza": 63,
+      "forzaStimata": true,
+      "coloriBandiera": [
+        "#FFFFFF",
+        "#0B4EA2",
+        "#EE1C25"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#0B4EA2",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#0B4EA2"
+    },
+    {
+      "codice": "SLO",
+      "nome": "Slovenia",
+      "posizioneMondiali2025": null,
+      "posizioneEuropei2026": 15,
+      "forza": 61,
+      "forzaStimata": true,
+      "coloriBandiera": [
+        "#FFFFFF",
+        "#005DA4",
+        "#ED1C24"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#005DA4",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#005DA4"
+    },
+    {
+      "codice": "TUR",
+      "nome": "Turchia",
+      "posizioneMondiali2025": null,
+      "posizioneEuropei2026": 12,
+      "forza": 66,
+      "forzaStimata": true,
+      "coloriBandiera": [
+        "#E30A17",
+        "#FFFFFF"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#E30A17",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#E30A17"
+    },
+    {
+      "codice": "MLT",
+      "nome": "Malta",
+      "posizioneMondiali2025": null,
+      "posizioneEuropei2026": 13,
+      "forza": 64,
+      "forzaStimata": true,
+      "coloriBandiera": [
+        "#FFFFFF",
+        "#CF142B"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#CF142B",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#CF142B"
+    },
+    {
+      "codice": "ISR",
+      "nome": "Israele",
+      "posizioneMondiali2025": null,
+      "posizioneEuropei2026": 16,
+      "forza": 60,
+      "forzaStimata": true,
+      "coloriBandiera": [
+        "#FFFFFF",
+        "#0038B8"
+      ],
+      "calottine": {
+        "bianca": "#F4F4F4",
+        "scura": "#0038B8",
+        "portiere": "#D62828"
+      },
+      "calottinaScuraVerificata": false,
+      "costume": "#0038B8"
     }
   ]
 }

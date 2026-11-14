@@ -1,8 +1,10 @@
-// Rose delle 16 nazionali: 13 giocatori per squadra (1 = portiere, 2-7 titolari di movimento, 8-12 riserve, 13 secondo portiere)
+// Rose delle 24 nazionali: 13 giocatori per squadra, ordinati per i sette posti titolari e poi le riserve.
 // con le statistiche in scala 40-99 come in FIFA, generate dalla forza della squadra (src/dati/squadre.json).
 // Le rose sono sempre le stesse a ogni avvio: il caso usato qui dipende solo dal codice della squadra.
 // Dalla v0.34 le rose vengono dal database di Ale (src/dati/rose-db.json, vedi strumenti/rose-dal-database.mjs): giocatori,
-// numeri, ruoli e mano veri, statistiche stimate dai tornei. Il generatore qui sotto resta solo per una squadra senza dati.
+// numeri, ruoli e mano veri, statistiche stimate dai tornei. Le otto aggiunte degli Europei 2026 usano il rapporto ufficiale
+// European Aquatics / Microplus; le loro statistiche sono stime per squadra/ruolo, dichiarate in ogni scheda e nei dati fonte.
+// Il generatore qui sotto resta soltanto per le vecchie squadre senza dati: non crea nomi per nuove nazionali.
 import dati from './squadre.json';
 import MANI from './mancini.json';
 import DB from './rose-db.json';
@@ -63,7 +65,9 @@ export function rosa(codice){
     const m=MANI[`${codice}-${g.num}`], mano=m==='sinistra'?'S':m==='destra'?'D':g.mano;
     return { ...g, mano, s:{ ...g.s }, ovr:ovr(g.s,g.ruolo) };
   }),codice);
-  const sq=dati.squadre.find(x=>x.codice===codice), r=generatore(codice), base=57+(sq.forza-60)*0.72 /* da 57 di media (forza 60) a 80 (forza 92): differenze nette ma non schiaccianti */, nomi=NOMI[codice];
+  const sq=dati.squadre.find(x=>x.codice===codice), nomi=NOMI[codice];
+  if(!sq||!nomi) throw new Error(`Rosa verificata non disponibile per ${codice}`);
+  const r=generatore(codice), base=57+(sq.forza-60)*0.72; // da 57 (forza 60) a 80 (forza 92)
   // ordine dei numeri: 1 portiere, 2 centroboa, 3-4 ali, 5-6 mezzi, 7 punto, 8-12 riserve (un ruolo ciascuna), 13 secondo portiere
   const ruoli=[0,1,2,3,4,5,6, 1,2,5,6,4, 0];
   const campioni=new Set([1+Math.floor(r()*6)]); if(r()<0.6) campioni.add(1+Math.floor(r()*6));

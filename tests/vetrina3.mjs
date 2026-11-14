@@ -105,7 +105,7 @@ if (fare('zona')) {
       const prima = H.teams[0].defPlay; window.__vai(1); return { prima, shot: H.game.shot.toFixed(0) }; });
     await pg.screenshot({ path: path.join(USCITA, `_z-${vista}-1.png`) });
     const dopo = await pg.evaluate(() => { const H = window.__pallanuoto; window.__tasti(['Digit4']); window.__salta(2); window.__tasti([]);
-      for (let i = 0; i < 100; i++) { H.game.shot = Math.max(H.game.shot, 8); for (const q of H.allPlayers) { q.decideT = 9; q.tackleCD = 9; } window.__salta(1); }
+      for (let i = 0; i < 100; i++) { H.game.shot = Math.max(H.game.shot, 8); for (const q of H.allPlayers) { q.decideT = 9; q.reazioneT = 9; q.tackleCD = 9; } window.__salta(1); }
       window.__vai(1); const l = H.teams[0].lasciato; return { difesa: H.teams[0].defPlay, lasciato: l ? `#${l.num} ${l.name} (${l.role}, mano ${l.mano === 'S' ? 'sinistra' : 'destra'}, potenza ${l.s.pot}, precisione ${l.s.pre})` : '-' }; });
     await pg.screenshot({ path: path.join(USCITA, `_z-${vista}-2.png`) });
     console.log(`zona a M (${vista}): difesa prima ${info.prima} (2 = pressing) a ${info.shot} s dalla fine dell'azione; dopo ${dopo.difesa} (3 = zona a M); lasciato: ${dopo.lasciato}`);

@@ -8,16 +8,50 @@ import { aggiornaDifesa, pos01, rif01, aiCarrier, aiTarget, closestTo, manUp, st
 import { inp, pollInput, pressed, released } from './input.js';
 import { fightOn, updateFight } from './lotta.js';
 import { endMatch } from './menu.js';
-import { areaFoul, callPlay, contrasto, deadBall, giveBall, kickoff, latoContrasto, pallaEsposta, reenter, tackle, timeout } from './regole.js';
+import { areaFoul, avviaRigoriFinali, callPlay, concludiRigoreFinale, contrasto, deadBall, giveBall, kickoff, latoContrasto, pallaEsposta, preparaProssimoRigoreFinale, reenter, tackle, timeout } from './regole.js';
 import { difensoriDavanti } from './statistiche.js';
 import { allPlayers, ball, ctrl, game, goalX, other, setCtrl, teams } from './stato.js';
 import { doShoot, startAct, updateActs } from './tiri.js';
 import { aggiornaPanchina, obiettivoUscita } from './panchina.js';
 import { obiettivoEspulso, obiettivoRientro, recuperoPozzetto } from './pozzetto.js';
 export const CONTR_AI={ ritmo:1.5, insiste:2.0, fallo:0.2, indisciplina:0.4 };      // contrasto del computer (sezione 2)
+export function aggiornaRigoriFinali(dt){
+  const serie=game.rigoriFinali;
+  if(serie.fase==='attesa'){
+    if(ball.state==='dead') updateBall(dt);
+    serie.attesa-=dt;
+    if(serie.attesa<=0){ if(serie.terminati) endMatch(); else preparaProssimoRigoreFinale(); }
+    return;
+  }
+  const s=game.penalty;
+  if(!s){ concludiRigoreFinale(false,'fuori'); return; }
+  serie.tempoTiro+=dt; game.penT=serie.tempoTiro;
+  updateActs(dt);
+  if(serie.fase!=='tiro') return;
+  // Solo il gesto e il volo della palla avanzano: cronometri, espulsioni, cambi e recupero restano fermi.
+  for(const p of allPlayers){ p.vx=p.vz=0; p.oriz=Math.max(0,(p.oriz||0)-dt/0.25); }
+  if(ball.holder===s){
+    if(s.team.human&&!game.autoplay){
+      setCtrl(s);
+      if(inp.shoot){ s.charging=true; s.chargeT=Math.min(0.9,s.chargeT+dt); }
+      if(!s.act&&s.charging&&released('shoot')){
+        const pw=clamp(s.chargeT/0.9,0.5,1), az=Math.abs(inp.z)>0.3?inp.z:null;
+        startAct(s,'shot',0,()=>doShoot(s,pw,false,az));
+      }
+      if((!s.act&&game.penT>=7)||game.penT>=7.5){ concludiRigoreFinale(false,'tempo'); return; }
+    } else if(game.penT>1.3&&!s.act) startAct(s,'shot',0.3,()=>doShoot(s,0.8+rnd()*0.2,false,null));
+  }
+  updateBall(dt);
+  if(serie.fase!=='tiro') return;
+  // Lascia valido il palo-gol e una deviazione diretta in rete; chiude solo quando la palla torna verso il campo.
+  if((ball.kind==='rebound'&&ball.vx*s.team.dir<0&&Math.abs(ball.x)<Math.abs(goalX(s.team))-0.2)||
+    (ball.state==='free'&&Math.hypot(ball.vx,ball.vz)<1)||game.penT>=11)
+    concludiRigoreFinale(false,ball.saveChecked?'parata':'fuori');
+}
 export function update(dt){
   pollInput();
   if(game.state==='menu'||game.state==='paused'||game.state==='over') return;
+  if(game.rigoriFinali){ aggiornaRigoriFinali(dt); return; }
   if(game.state==='countdown'){
     game.timer-=dt;
     const n=Math.ceil(game.timer);
@@ -184,6 +218,7 @@ export function update(dt){
       annuncia('fine',`Fine ${game.period}° tempo`,{dettaglio:`${teams[0].short} ${teams[0].score} - ${teams[1].score} ${teams[1].short}`});
       ball.state='dead';
       deadBall(2.5,()=>{ game.period++; game.clock=PERIOD_LEN; kickoff(); });
-    } else endMatch();
+    } else if(game.torneoMatch&&teams[0].score===teams[1].score) avviaRigoriFinali();
+    else endMatch();
   }
 }

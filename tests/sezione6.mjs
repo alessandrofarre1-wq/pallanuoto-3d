@@ -39,11 +39,11 @@ const viaggio = await pg.evaluate(() => {
   const H = window.__pallanuoto, T = H.teams[0], d = T.players[4], P = { x: -12.5 * T.dir + T.dir * 0.6, z: -11 };
   const d0 = Math.hypot(d.x - P.x, d.z - P.z), stati = new Set(); let t = 0;
   const r = { inizio: d0 };
-  const gkO = H.teams[1].players[0]; for (let i = 0; i < 60 * 17 && !d.alPozzetto; i++) { if (H.ball.holder !== gkO) H.regole.giveBall(gkO); H.ball.holdTime = 0; gkO.decideT = 99; gkO.act = null; window.__salta(1); stati.add(H.game.state); t = i / 60; d.exclUntil = H.game.time + 30; }
+  const gkO = H.teams[1].players[0]; for (let i = 0; i < 60 * 17 && !d.alPozzetto; i++) { if (H.ball.holder !== gkO) H.regole.giveBall(gkO); H.ball.holdTime = 0; gkO.decideT = 99; gkO.reazioneT = 99; gkO.act = null; window.__salta(1); stati.add(H.game.state); t = i / 60; d.exclUntil = H.game.time + 30; }
   r.dopo = Math.hypot(d.x - P.x, d.z - P.z); r.arrivato = d.alPozzetto; r.tempo = t; r.z = d.z; r.visibile = d.mesh.g.visible; r.stati = [...stati];
   // recupero nel pozzetto
   H.game.autoplay = false; T.human = true;      // qui niente cambi automatici: si misura solo il recupero
-  d.stamina = 0.3; const st = {}; const gk = H.teams[1].players[0]; for (let i = 0; i < 300; i++) { if (H.ball.holder !== gk) H.regole.giveBall(gk); H.ball.holdTime = 0; gk.decideT = 99; window.__salta(1); st[H.game.state] = (st[H.game.state] || 0) + 1; } r.stamina = d.stamina; r.ancoraEspulso = d.excluded;
+  d.stamina = 0.3; const st = {}; const gk = H.teams[1].players[0]; for (let i = 0; i < 300; i++) { if (H.ball.holder !== gk) H.regole.giveBall(gk); H.ball.holdTime = 0; gk.decideT = 99; gk.reazioneT = 99; window.__salta(1); st[H.game.state] = (st[H.game.state] || 0) + 1; } r.stamina = d.stamina; r.ancoraEspulso = d.excluded;
   H.game.autoplay = true; T.human = false;
   return r;
 });
@@ -76,9 +76,9 @@ const rientroDa = (conPalla) => pg.evaluate((conPalla) => {
   if (!conPalla) { h.x = gx + T.dir * 6; h.z = -3; }
   H.regole.giveBall(h);
   d.excluded = true; d.alPozzetto = true; d.puoRientrare = false; d.x = gx + T.dir * 0.6; d.z = -11; d.vx = d.vz = 0; d.stamina = 1; d.exclUntil = H.game.time + 0.05;
-  for (let i = 0; i < 10 && d.excluded; i++) { if (H.ball.holder !== h) H.regole.giveBall(h); h.decideT = 99; h.act = null; window.__salta(1); }
+  for (let i = 0; i < 10 && d.excluded; i++) { if (H.ball.holder !== h) H.regole.giveBall(h); h.decideT = 99; h.reazioneT = 99; h.act = null; window.__salta(1); }
   const r = { rientrato: !d.excluded, modo: d.rientro && d.rientro.modo, x0: d.x, d0: Math.hypot(d.x - h.x, d.z - h.z) };
-  for (let i = 0; i < 90; i++) { if (!conPalla) { h.x = gx + T.dir * 6; h.z = -3; h.vx = h.vz = 0; } if (H.ball.holder !== h) H.regole.giveBall(h); h.decideT = 99; h.act = null; window.__salta(1); }
+  for (let i = 0; i < 90; i++) { if (!conPalla) { h.x = gx + T.dir * 6; h.z = -3; h.vx = h.vz = 0; } if (H.ball.holder !== h) H.regole.giveBall(h); h.decideT = 99; h.reazioneT = 99; h.act = null; window.__salta(1); }
   r.avanti = (d.x - r.x0) * T.dir; r.d1 = Math.hypot(d.x - h.x, d.z - h.z);
   return r;
 }, conPalla);

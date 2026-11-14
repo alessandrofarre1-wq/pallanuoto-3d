@@ -31,7 +31,7 @@ for (const [, caso] of CASI) {
   await pg.evaluate(caso => {
     const H = window.__pallanuoto, B = H.ball, A = H.teams[0], D = H.teams[1], gk = D.players[0], gx = 12.5 * A.dir;
     H.game.state = 'play'; H.game.after = null; H.fight.active = false;
-    for (const q of H.allPlayers) { q.act = null; q.excluded = false; q.charging = false; q.decideT = 99; q.x = -gx * 0.5 + q.i; q.z = (q.team === A ? 5 : -5); q.vx = q.vz = 0; q.oriz = 0; }
+    for (const q of H.allPlayers) { q.act = null; q.excluded = false; q.charging = false; q.decideT = 99; q.reazioneT = 99; q.x = -gx * 0.5 + q.i; q.z = (q.team === A ? 5 : -5); q.vx = q.vz = 0; q.oriz = 0; }
     const att = A.players[4], dif = D.players[MARK(att.i)];
     function MARK(i) { return [0, 6, 3, 2, 5, 4, 1][i]; }
     let cam, fuoco;

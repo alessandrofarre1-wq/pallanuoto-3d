@@ -47,7 +47,7 @@ const lato = await pg.evaluate(() => {
   for (const mano of ['D', 'S']) {
     const p = H.teams[1].players[4]; p.mano = mano; H.regole.giveBall(p); H.game.state = 'play'; H.game.after = null;
     const misura = () => { const w = p.ballW; return w ? (w[0] - p.x) * (-p.fz) + (w[2] - p.z) * p.fx : NaN; };
-    for (let i = 0; i < 40; i++) { p.decideT = 99; p.vx = p.vz = 0; p.oriz = 0; if (B.holder !== p) H.regole.giveBall(p); window.__salta(1); }
+    for (let i = 0; i < 40; i++) { p.decideT = 99; p.reazioneT = 99; p.vx = p.vz = 0; p.oriz = 0; if (B.holder !== p) H.regole.giveBall(p); window.__salta(1); }
     out[mano] = { ferma: misura() };
     p.act = { kind: 'shot', t: 0, wind: 99, frusta: 0.17, done: false, fn: () => {} };
     for (let i = 0; i < 30; i++) { p.act.t = Math.min(p.act.t, 0.3); window.__salta(1); }
@@ -115,7 +115,7 @@ if (process.argv.includes('--foto')) {
       p.mano = caso === 'mancino' ? 'S' : 'D'; H.regole.giveBall(p);
       const spec = caso === 'schizzo' || caso === 'colonnello';
       for (let i = 0; i < 60; i++) {
-        p.x = gx - T.dir * 7; p.z = 2; p.fx = T.dir; p.fz = 0; p.vx = spec ? T.dir * 1.4 : 0; p.vz = 0; p.decideT = 99; if (spec) p.oriz = 1;
+        p.x = gx - T.dir * 7; p.z = 2; p.fx = T.dir; p.fz = 0; p.vx = spec ? T.dir * 1.4 : 0; p.vz = 0; p.decideT = 99; p.reazioneT = 99; if (spec) p.oriz = 1;
         if (B.holder !== p) H.regole.giveBall(p);
         p.act = i < 20 ? null : (p.act || { kind: spec ? caso : 'shot', t: 0, wind: spec ? 0.05 : 99, frusta: 0.17, done: false, fn: () => {} });
         if (p.act) p.act.t = Math.min(p.act.t, spec ? 0.12 : 0.3);

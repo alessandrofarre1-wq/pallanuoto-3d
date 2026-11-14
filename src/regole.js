@@ -11,7 +11,9 @@ import { ARBITRO, ATK, BRV, DEFN, DIFF, EXCL_TIME, FORM, HL, HW, KICK_Z, SHOT_CL
 import { annuncia } from './cronaca.js';
 import { closestTo } from './ia.js';
 import { rumble } from './input.js';
-import { allPlayers, ball, ctrl, game, goalX, other, ownGoalX, setCtrl, teams } from './stato.js';
+import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, setCtrl, teams } from './stato.js';
+import { creaSerieRigori, preparaRigoreFinale as preparaTiroSerie, registraRigoreFinale } from './rigoriFinali.js';
+const serieAttiva = () => game.rigoriFinali && !game.rigoriFinali.terminati;
 export function deadBall(t,fn){ game.state='stop'; game.timer=t; game.after=fn||null; }
 // gioco fermo per palla fuori: se la palla si sta ancora muovendo (tiro fuori, deviazione del portiere, rimbalzo sul palo)
 // continua il suo volo con la fisica vera finché non riparte il gioco, così si vede uscire; se è quasi ferma, si ferma
@@ -41,6 +43,14 @@ export function placeHalves(){
   }
 }
 export function giveBall(p){
+  if(serieAttiva() && game.rigoriFinali.fase==='tiro' && game.rigoriFinali.tiro){
+    if(p.team.idx!==game.rigoriFinali.tiro.squadra || p.num!==game.rigoriFinali.tiro.num || ball.daTiro){
+      concludiRigoreFinale(false,p.isGK?'parata':'respinta'); return;
+    }
+    ball.state='held'; ball.holder=p; ball.holdTime=0; ball.kind=null; ball.target=null; ball.lastTeam=p.team;
+    ball.afterShot=false; ball.inUscita=false; ball.inRete=false; ball.toccoDifesa=null; ball.ignora=null;
+    game.possTeam=p.team; resetTap(); return;
+  }
   const changed = game.possTeam!==p.team, daPassaggio = ball.kind==='pass' && ball.state==='flight' && !changed;
   ball.state='held'; ball.inUscita=false; ball.toccoDifesa=null; ball.ignora=null; ball.holder=p; ball.holdTime=0; ball.kind=null; ball.target=null; ball.lastTeam=p.team;
   // quando e come è arrivata la palla: un tiro subito dopo un passaggio che ha cambiato lato trova il portiere fuori posto
@@ -81,6 +91,7 @@ export function substitute(p){   // terzo fallo personale: entra un cambio dalla
   if(g){ vesti(p,g); p.pf=g.pf||0; p.stamina=g.stamina??1; } else { p.pf=0; p.stamina=1; }
 }
 export function cornerThrow(att){   // art. 13
+  if(serieAttiva()){ concludiRigoreFinale(false,'parata'); return; }
   whistle(0.25); annuncia('ripresa',"Tiro d'angolo",{squadra:att});
   const side=ball.z>=0?1:-1;
   fermaOVola(); ball.afterShot=false;
@@ -98,9 +109,10 @@ export function penalty(d,c,motivo){       // art. 10.2 (motivo: solo per la not
   const t=c.team;
   deadBall(1.8,()=>{ if(d.pf>=3) substitute(d); setupPenalty(t); });
 }
-export function setupPenalty(t){    // tiro dai 5 metri; tutti gli altri sulla linea dei 6 metri, ad almeno 3 metri da chi tira
+export function setupPenalty(t,tiratore){    // tiro dai 5 metri; tutti gli altri sulla linea dei 6 metri, ad almeno 3 metri da chi tira
   const gx=goalX(t), ot=other(t);
-  let s=null; for(const q of t.players){ if(q.excluded||q.isGK) continue; if(!s||q.st.sht>s.st.sht) s=q; }
+  let s=tiratore||null; if(!s) for(const q of t.players){ if(q.excluded||q.isGK) continue; if(!s||q.st.sht>s.st.sht) s=q; }
+  if(!s) return;
   // posti sulla linea dei 6 metri: a 3 metri di lato da chi tira (cioè a più di 3 metri di distanza) e poi ogni 95 cm,
   // alternando difensori e attaccanti; ognuno va sul lato in cui si trova già
   const fila=[], dif=ot.players.filter(q=>!q.excluded&&!q.isGK), att=t.players.filter(q=>!q.excluded&&!q.isGK&&q!==s);
@@ -114,10 +126,57 @@ export function setupPenalty(t){    // tiro dai 5 metri; tutti gli altri sulla l
     else if(q===ot.players[0]){ q.x=gx-t.dir*0.4; q.z=0; }
   }
   for(const lato of [1,-1]) lati[lato].forEach((q,k)=>{ q.x=gx-t.dir*6; q.z=lato*(3+0.95*k); q.fx=t.dir; q.fz=0; q.lagX=q.x; q.lagZ=q.z; });
+  ball.daTiro=false;
   giveBall(s); game.possTeam=t; game.penalty=s; game.penT=0;
   if(t.human){ setCtrl(s); annuncia('avviso','Rigore: tieni premuto TIRO e rilascia',{p:s,durata:2}); }
 }
+
+export function avviaRigoriFinali(){
+  const tiratori=teams.map(t=>{
+    annullaCambio(t); t.coda=[];
+    for(const p of t.players) if(p.scheda) { p.scheda.pf=p.pf; p.scheda.stamina=p.stamina; }
+    const candidati=t.players.filter(p=>!p.isGK&&!p.excluded&&p.pf<3&&!p.scheda?.fuori);
+    // Se un'espulsione era ancora in corso, si possono scegliere riserve eleggibili usando i corpi già presenti.
+    for(const p of t.players.filter(p=>!p.isGK&&!candidati.includes(p))){
+      if(candidati.length>=5) break;
+      const g=t.rosa?.filter(q=>q.ruolo!==0&&!q.inAcqua&&!q.fuori&&(q.pf||0)<3)
+        .sort((a,b)=>(b.s.pre+b.s.pot)-(a.s.pre+a.s.pot))[0];
+      if(g){ vesti(p,g); p.pf=g.pf||0; p.stamina=g.stamina??1; p.excluded=false; candidati.push(p); }
+      else if(p.pf<3&&!p.scheda?.fuori){ p.excluded=false; candidati.push(p); } // fine tempo: termina l'espulsione temporanea
+    }
+    return candidati.sort((a,b)=>b.st.sht-a.st.sht||a.num-b.num).slice(0,5).map(p=>({num:p.num,nome:p.name}));
+  });
+  game.rigoriFinali=creaSerieRigori(tiratori,rnd()<0.5?0:1);
+  game.clock=0; game.penalty=null; game.penT=0; game.after=null; game.cambiLiberi=false; game.state='play';
+  fight.active=false;
+  for(const p of allPlayers){ p.vx=p.vz=0; p.cut=null; p.act=null; p.charging=false; p.chargeT=0; }
+  ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.inRete=false; ball.inUscita=false;
+  annuncia('rigore','Serie di rigori',{dettaglio:'Cinque tiri per squadra, poi oltranza · TIRO per caricare e rilasciare',durata:2});
+}
+
+export function preparaProssimoRigoreFinale(){
+  const tiro=preparaTiroSerie(game.rigoriFinali); if(!tiro) return;
+  const t=teams[tiro.squadra], p=t.players.find(q=>q.num===tiro.num&&!q.isGK);
+  setupPenalty(t,p); game.state='play'; game.after=null;
+  annuncia('rigore',`Rigore ${tiro.indice}${tiro.indice>5?' · oltranza':''}`,{
+    p,dettaglio:`${p.name} · serie ${game.rigoriFinali.gol[0]} – ${game.rigoriFinali.gol[1]}`,durata:2});
+}
+
+export function concludiRigoreFinale(gol,esito){
+  const serie=game.rigoriFinali;
+  if(!serie || !registraRigoreFinale(serie,gol,esito)) return false;
+  const tiro=serie.tentativi.at(-1), p=teams[tiro.squadra].players.find(q=>q.num===tiro.num);
+  game.penalty=null; game.after=null; game.state='play';
+  ball.state='dead'; ball.holder=null; ball.inUscita=false;
+  if(!gol){ ball.vx=ball.vy=ball.vz=0; ball.inRete=false; }
+  for(const q of allPlayers){ q.act=null; q.charging=false; q.chargeT=0; }
+  whistle(gol?0.35:0.18);
+  annuncia('rigore',gol?'Gol ai rigori':esito==='tempo'?'Rigore non eseguito':'Rigore non trasformato',{
+    p,dettaglio:`${esito==='tempo'?'Sette secondi scaduti · ':''}serie ${serie.gol[0]} – ${serie.gol[1]}${serie.terminati?' · vince '+teams[serie.vincitore].short:''}`,durata:1.8});
+  return true;
+}
 export function sideOut(){        // art. 12: palla uscita lateralmente, tiro libero agli avversari di chi l'ha toccata per ultimo
+  if(serieAttiva()){ concludiRigoreFinale(false,'fuori'); return; }
   const t = ball.lastTeam ? other(ball.lastTeam) : teams[0], side=ball.z>=0?1:-1, x=clamp(ball.x,-HL+1,HL-1);
   whistle(0.22); annuncia('ripresa','Palla fuori',{squadra:t,dettaglio:`rimessa ${t.short}`});
   ball.holder=null; fermaOVola(); if(!ball.inUscita){ ball.x=x; ball.z=side*(HW-0.3); ball.y=BRV; } ball.afterShot=false;
@@ -163,6 +222,7 @@ export function callPlay(i){
   else if(i<4){ t.defPlay=i; t.lasciato=null; annuncia('avviso',`Difesa: ${DEFN[i]}`); }
 }
 export function goalScored(t){
+  if(serieAttiva()){ concludiRigoreFinale(true,'gol'); return; }
   t.score++; whistle(0.6); rumble(350,1); registraGol(t,ball); game.cambiLiberi=true;      // dopo un gol i cambi sono liberi
   if(ball.shooter&&ball.shooter.team===t&&ball.shooter.scheda) ball.shooter.scheda.gol=(ball.shooter.scheda.gol||0)+1;      // gol del giocatore (panchina)
   // parziale: tre gol subiti di fila fanno chiamare il time-out all'allenatore del computer
@@ -180,6 +240,7 @@ export function goalScored(t){
   });
 }
 export function goalThrow(defTeam,text){
+  if(serieAttiva()){ concludiRigoreFinale(false,'fuori'); return; }
   whistle(0.25); annuncia('ripresa',text||'Rimessa dal portiere',{squadra:defTeam});
   fermaOVola(); if(!ball.inUscita){ ball.y=BRV; ball.x=clamp(ball.x,-HL-0.5,HL+0.5); }
   deadBall(ball.inUscita?1.4:1.0,()=>{ giveBall(defTeam.players[0]); });
