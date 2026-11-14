@@ -85,5 +85,5 @@ istruzione di Ale. Non inviare messaggi ad altre persone.
 - Branch: `codex/v039-cambi-proposte-handoff`, versione 0.39.0.
 - Modifica al gioco: `src/stile.css`, posizione/trasparenza CAMBI e posizione barra lotta.
 - Documenti: proposta completa con fonti ufficiali, analisi preliminare gameplay, questo prompt.
-- Verifiche completate finora: lint (0 errori, warning gx preesistente); HUD su tre iPhone/tre scene; CAMBI+lotta su 12 combinazioni viewport/margini; budget 97 oggetti/148.380 triangoli con due cambi simultanei su due iPhone. Verifica completa e aspetto in corso; PR ancora da aprire dopo questi controlli.
+- Verifiche completate: lint (0 errori, warning gx preesistente); sei partite terminate; dopo ispezione e aggiornamento dei quattro riferimenti modificati da CAMBI, `npm run verifica -- --partite=0` PASS (13 controlli, cinque immagini identiche). `npm run aspetto -- --no-build` PASS. HUD su tre iPhone/tre scene e CAMBI+lotta su 12 combinazioni viewport/margini: nessuna sovrapposizione. Budget 97 oggetti/148.380 triangoli con due cambi simultanei su due iPhone. Dettagli in `docs/verifiche-v039.md`. PR in apertura dopo i controlli; collegamento da aggiungere alla consegna.
 - Non fatto: revisione effettiva gameplay/AI; tornei; rose mancanti; rigori finali; nuovi menu; salvataggi completi; premi; integrazione porta e arena; prova su iPhone fisico.
