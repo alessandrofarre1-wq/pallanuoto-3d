@@ -42,8 +42,8 @@ export function makePlayerMesh(num,team){
   return R;
 }
 // colori e numero di un giocatore (cambiano con la nazionale scelta e con le sostituzioni)
-export function coloraGiocatore(R,c,num){
+export function coloraGiocatore(R,c,num,profilo){
   R.suit.color.setHex(c.costume); R.capM.color.setHex(c.calottina);
   R.spr.material.map=numberTexture(num,c.disco,c.discoTesto); R.spr.material.needsUpdate=true;
-  aggiornaColori(R,c,num);
+  aggiornaColori(R,c,num,profilo);
 }

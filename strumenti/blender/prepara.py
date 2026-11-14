@@ -1,3 +1,4 @@
+# (versione per il modello v2 del 13/11/2026: soglie delle zone ritarate)
 # Prepara il personaggio per il gioco SENZA cambiarne il disegno. Uso: python -I prepara.py <model.glb originale> <cartella uscita>
 #  1) salda le cuciture (un solo guscio continuo: ombreggiatura e pesi dello scheletro più puliti); le coordinate delle immagini restano
 #  2) altezza 1,80 m, piedi a quota zero, centrato; trasformazioni applicate
@@ -25,12 +26,18 @@ W, Hh = img.size; px = img.pixels[:]
 uv = me.uv_layers.active.data
 zona = me.color_attributes.new(name='zona', type='BYTE_COLOR', domain='CORNER')
 conta = {'calottina': 0, 'costume': 0, 'bianco': 0, 'scuro': 0, 'pelle': 0}
+# regole per le zone: MODELLO v2 (13/11/2026, nessun capello sotto la cuffia; bianchi dell'immagine meno luminosi, fino a 0,62;
+# sopracciglia marroni). Misure in metri sul modello alto 1,80: occhi a quota 1,625-1,665 sul davanti, sopracciglia 1,665-1,70,
+# bordo della cuffia 1,70-1,72, decorazioni dipinte sulla cuffia (7 e righe) sopra 1,73.
+OCCHI = (1.622, 1.668); CIGLIA = (1.664, 1.705); DECORO = 1.732
 for li, l in enumerate(me.loops):
     u, v = uv[li].uv; x = min(W - 1, max(0, int(u * W))); y = min(Hh - 1, max(0, int(v * Hh))); i = (y * W + x) * 4
     r, g, b = px[i], px[i + 1], px[i + 2]; h, s, val = colorsys.rgb_to_hsv(r, g, b); co = me.vertices[l.vertex_index].co; z = co.z
+    davanti = co.y < -0.04 and abs(co.x) < 0.085
+    occhio = davanti and OCCHI[0] < z < OCCHI[1]
     if 0.52 < h < 0.75 and s > 0.35 and val > 0.2: c = (1, 0, 0, 1) if z > 0.75 * H else (0, 1, 0, 1); conta['calottina' if z > 0.75 * H else 'costume'] += 1
-    elif val > 0.8 and s < 0.18 and (z > 0.72 * H or 0.4 * H < z < 0.56 * H) and not (z > 0.8 * H and abs(co.x) < 0.075 and co.y < -0.02): c = (0, 0, 1, 1); conta['bianco'] += 1      # (non i denti e il bianco degli occhi: stanno sul davanti del viso)
-    elif val < 0.22 and z > 0.8 * H: c = (0, 0, 0, 1); conta['scuro'] += 1
+    elif s < 0.2 and val > 0.62 and not occhio and (z > 0.72 * H or 0.4 * H < z < 0.62 * H): c = (0, 0, 1, 1); conta['bianco'] += 1
+    elif davanti and CIGLIA[0] < z < CIGLIA[1] and val < 0.66 and (h < 0.15 or s < 0.3): c = (0, 0, 0, 1); conta['scuro'] += 1
     else: c = (1, 1, 1, 1); conta['pelle'] += 1
     zona.data[li].color = c
 # le stesse zone come dato per punto, esportabile nel .glb senza toccare i colori (un "colore per vertice" nel .glb moltiplica
@@ -48,14 +55,29 @@ for i, t in enumerate(somma): az.data[i].vector = (t[0] / t[4], t[1] / t[4], t[2
 # _numero = il 7 dipinto in bianco sulla calottina (sopra i paraorecchie) e sul costume: nel gioco viene coperto con il colore di fondo
 anu = me.attributes.new('_numero', 'FLOAT', 'POINT')
 for i, t in enumerate(somma):
-    z = me.vertices[i].co.z; anu.data[i].value = (t[2] / t[4]) if (z > 0.925 * H or z < 0.6 * H) else 0.0
-info = {'punti_prima': prima, 'punti_dopo_saldatura': len(me.vertices), 'triangoli': len(me.polygons), 'scala_applicata': k, 'altezza_m': H, 'zone_angoli': conta}
+    z = me.vertices[i].co.z; anu.data[i].value = (t[2] / t[4]) if (z > DECORO or z < 0.62 * H) else 0.0
+# BOCCA APRIBILE (modello v2): nel modello la bocca è solo disegnata (piega di 1-2 mm). Si taglia una fessura sottilissima lungo la
+# linea delle labbra trovata nel disegno (quota 1,556 m, angoli a ±4,2 cm dal centro del viso, x = -0,004): si tolgono le facce del
+# davanti che la attraversano e i bordi del taglio vengono riportati sulla linea, così a riposo la bocca resta chiusa. L'interno
+# (cavità e denti) e le forme che la aprono si aggiungono nella versione del gioco (scheletro.py).
+BOCCA = {'cx': -0.004, 'z': 1.556, 'mezza': 0.042}
+def linea(x):
+    t = min(1.0, abs(x - BOCCA['cx']) / BOCCA['mezza']); return BOCCA['z'] + 0.0025 * t ** 2      # angoli appena più alti
+bm = bmesh.new(); bm.from_mesh(me)
+via = [f for f in bm.faces if abs(f.calc_center_median().x - BOCCA['cx']) < BOCCA['mezza'] * 0.86 and f.calc_center_median().y < -0.06
+       and abs(f.calc_center_median().z - linea(f.calc_center_median().x)) < 0.0009 * (1 - (abs(f.calc_center_median().x - BOCCA['cx']) / BOCCA['mezza']) ** 2) + 0.0003]
+bmesh.ops.delete(bm, geom=via, context='FACES')
+bordo = [v for v in bm.verts if v.is_boundary and abs(v.co.x - BOCCA['cx']) < BOCCA['mezza'] and v.co.y < -0.05 and abs(v.co.z - BOCCA['z']) < 0.006]
+for v in bordo: v.co.z = linea(v.co.x)
+bm.to_mesh(me); bm.free(); me.update()
+info_bocca = {'facce_tolte': len(via), 'punti_sul_bordo': len(bordo)}
+info = {'punti_prima': prima, 'punti_dopo_saldatura': len(me.vertices), 'triangoli': len(me.polygons), 'scala_applicata': k, 'altezza_m': H, 'zone_angoli': conta, 'bocca': info_bocca}
 # immagini ridotte (le originali 4096 restano nel file di partenza)
 os.makedirs(out, exist_ok=True)
 def ridotte(lato):
     for i in bpy.data.images:
         if i.size[0] > lato: i.scale(lato, lato)
-ridotte(2048)
+# il file .blend tiene l'immagine ORIGINALE (4096): la versione del gioco si ricuoce da lì (più nitida); i .glb si riducono qui sotto
 for i in bpy.data.images:
     if i.size[0]: i.pack()
 bpy.ops.wm.save_as_mainfile(filepath=os.path.join(out, 'player_base.blend'), compress=True)

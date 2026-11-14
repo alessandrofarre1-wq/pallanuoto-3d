@@ -1,3 +1,4 @@
+# (modello v2 del 13/11/2026: stesse ossa; versione del gioco con espressioni del viso)
 # SCHELETRO DEFINITIVO del pallanuotista cartoon, compatibile con i movimenti calcolati dal gioco.
 # Uso: python -I scheletro.py <player_base.blend> <cartella uscita>
 # - Stesse ossa e stessi nomi degli atleti attuali del gioco (src/grafica/modelli/atleta.js): pelvis, spine_01-03, neck_01, head,
@@ -90,33 +91,187 @@ def esporta(nome, rapporto, lato):
                               export_skins=True, export_animations=False, export_def_bones=False, export_influence_nb=4, export_rest_position_armature=True)
     info[nome] = {'triangoli': len(d.data.polygons), 'kB': round(os.path.getsize(f) / 1024), 'immagini': lato}
     bpy.data.objects.remove(d)
+
+# IMMAGINE RIDIPINTA PER LA VERSIONE DEL GIOCO (modello v2). L'immagine del generatore è divisa in centinaia di pezzetti: ridotti i
+# triangoli, ogni triangolo grande ne attraversa diversi e il viso si rovina (sopracciglia a gradini, macchie). Qui la versione
+# ridotta riceve coordinate nuove (pezzi grandi e puliti; il davanti del viso con 16 volte lo spazio a parità di superficie e il resto della testa 4 volte, perché è ciò che si
+# vede) e il colore viene "cotto" dal modello completo con Cycles. Solo il colore: rilievo, metallo e ruvidezza non servono in partita.
+def cuoci(d, lato, zc):
+    import bmesh
+    me = d.data
+    uvn = me.uv_layers.new(name='gioco'); me.uv_layers.active = uvn
+    bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT')
+    bpy.ops.uv.smart_project(angle_limit=math.radians(60), island_margin=0.004, area_weight=0.0, correct_aspect=True, scale_to_bounds=False)
+    bm = bmesh.from_edit_mesh(me); uv = bm.loops.layers.uv['gioco']; bm.faces.ensure_lookup_table()
+    # isole: facce unite da lati con le stesse coordinate
+    par = list(range(len(bm.faces)))
+    def f(x):
+        while par[x] != x: par[x] = par[par[x]]; x = par[x]
+        return x
+    for e in bm.edges:
+        if len(e.link_faces) != 2: continue
+        a, b = e.link_faces
+        la = [l for l in a.loops if l.edge == e][0]; lb = [l for l in b.loops if l.edge == e][0]
+        if (la[uv].uv - lb.link_loop_next[uv].uv).length < 1e-6 and (la.link_loop_next[uv].uv - lb[uv].uv).length < 1e-6: par[f(a.index)] = f(b.index)
+    isole = {}
+    for fa in bm.faces: isole.setdefault(f(fa.index), []).append(fa)
+    def davanti(p): return p.y < -0.03 and 1.48 < p.z < 1.715 and abs(p.x - VISO['cx']) < 0.085
+    for facce in isole.values():
+        if sum(1 for fa in facce if fa.calc_center_median().z > zc) * 2 < len(facce): continue
+        viso_ = sum(1 for fa in facce if davanti(fa.calc_center_median())) * 2 >= len(facce)
+        k = 4.0 if viso_ else 2.0      # davanti del viso: area x 16 (occhi, sopracciglia, bocca nitidi); resto della testa x 4
+        pts = [l[uv].uv.copy() for fa in facce for l in fa.loops]; c = sum(pts, Vector((0, 0))) / len(pts)
+        for fa in facce:
+            for l in fa.loops: l[uv].uv = c + (l[uv].uv - c) * k
+    bmesh.update_edit_mesh(me)
+    bpy.ops.uv.select_all(action='SELECT'); bpy.ops.uv.pack_islands(rotate=True, margin=0.004)
+    bpy.ops.object.mode_set(mode='OBJECT')
+    img = bpy.data.images.new('colore_gioco', lato, lato, alpha=False)
+    mat = bpy.data.materials.new('pallanuotista_gioco'); mat.use_nodes = True; nt = mat.node_tree; p = nt.nodes['Principled BSDF']
+    t = nt.nodes.new('ShaderNodeTexImage'); t.image = img; nt.links.new(t.outputs['Color'], p.inputs['Base Color'])
+    p.inputs['Metallic'].default_value = 0.0; p.inputs['Roughness'].default_value = 0.62
+    nt.nodes.active = t
+    vecchio = d.data.materials[0]; d.data.materials.clear(); d.data.materials.append(mat)
+    sc = bpy.context.scene; sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = 16
+    bpy.ops.object.select_all(action='DESELECT'); o.select_set(True); d.select_set(True); bpy.context.view_layer.objects.active = d
+    bpy.ops.object.bake(type='DIFFUSE', pass_filter={'COLOR'}, use_selected_to_active=True, cage_extrusion=0.006, max_ray_distance=0.015, margin=6, uv_layer='gioco')
+    img.pack()
+    for l in list(me.uv_layers):
+        if l.name != 'gioco': me.uv_layers.remove(l)
+    bpy.ops.object.select_all(action='DESELECT'); d.select_set(True); bpy.context.view_layer.objects.active = d
+
+# ESPRESSIONI DEL VISO (modello v2): le forme si costruiscono sul modello COMPLETO con misure precise prese dal disegno
+# (strumenti/blender/viso.py: sopracciglia, ovale degli occhi, linea e angoli del taglio della bocca) e si trasferiscono sulla
+# versione leggera del gioco con un collegamento tra le due superfici (Surface Deform). L'interno della bocca (cavità e denti) si
+# aggiunge alla versione leggera e segue la mandibola con la stessa rotazione delle forme.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import viso
+VISO = {'cx': -0.004, 'bocca': 1.557, 'mezza': 0.040}      # aggiornati con le misure vere in esporta_gioco
+# INTERNO DELLA BOCCA: una cavità chiusa e due file di denti, dentro la testa dietro alle labbra, legati all'osso della testa.
+# Nessun materiale in più: il dato per punto _bocca (1 = cavità, 2 = denti sopra, 3 = denti sotto) dice al disegno che colore dare.
+def interno_bocca(d):
+    import bmesh
+    me = d.data; cx, zb, w = VISO['cx'], VISO['bocca'], VISO['mezza']
+    if not me.attributes.get('_bocca'): me.attributes.new('_bocca', 'FLOAT', 'POINT')
+    testa = d.vertex_groups['head'].index
+    bm = bmesh.new(); bm.from_mesh(me)
+    lb = bm.verts.layers.float['_bocca']; lz = bm.verts.layers.float_vector['_zona']; ls = bm.verts.layers.float['_scuro']; ln = bm.verts.layers.float['_numero']
+    dl = bm.verts.layers.deform.verify()
+    def segna(v, tipo):      # dati scritti sul punto stesso (Blender riordina i punti al salvataggio: niente indici)
+        v[lb] = tipo; v[lz] = (0, 0, 0); v[ls] = 0; v[ln] = 0; v[dl].clear(); v[dl][testa] = 1.0
+    # cavità: ellissoide schiacciato dietro ai denti
+    from mathutils.bvhtree import BVHTree
+    pelle = BVHTree.FromBMesh(bm)      # la superficie del corpo prima di aggiungere l'interno
+    r = bmesh.ops.create_uvsphere(bm, u_segments=20, v_segments=10, radius=1.0)
+    for v in r['verts']:
+        v.co = Vector((cx + v.co.x * 0.060, -0.040 + v.co.y * 0.030, zb - 0.012 + v.co.z * 0.030)); segna(v, 1.0)
+        # la cavità resta sempre dentro la testa: se un punto è fuori o a meno di 6 mm dalla pelle, rientra
+        p, n, _, _ = pelle.find_nearest(v.co)
+        if p is not None:
+            fuori = (v.co - p).dot(n)
+            if fuori > -0.006: v.co = v.co - n * (fuori + 0.006)
+    # denti: archi che seguono la curva della bocca, appena dietro le labbra (2 = sopra, 3 = sotto: seguono la mandibola)
+    # denti: denti SINGOLI (non una barra), sulla curva dell'arcata, INCLINATI come quelli veri (quelli di sopra con la punta in
+    # avanti e la radice indietro, quelli di sotto al contrario) e SFALSATI di mezzo dente tra sopra e sotto; i centrali più alti,
+    # quelli ai lati più bassi e più indietro; bordo arrotondato. 2 = sopra, 3 = sotto (seguono la mandibola).
+    def fila(zbordo, verso, tipo, n, sfasa, ritira):
+        larg = 2 * w * 0.92 / n; gap = larg * 0.08
+        for k in range(n):
+            t0 = -1 + 2 * (k + sfasa) / n; t1 = t0 + 2 / n
+            if t1 <= -1.0001 or t0 >= 1.0001: continue
+            t0 = max(-1.0, t0); t1 = min(1.0, t1); tm = (t0 + t1) / 2
+            alt = (0.0105 if verso > 0 else 0.0085) * (1 - 0.45 * tm * tm)      # i centrali più alti
+            def punto(t, frazione):
+                # frazione 0 = bordo (punta del dente), 1 = radice; inclinazione: la radice sta 4 mm più indietro
+                x = cx + t * w * 0.92; y = -0.0875 + 0.026 * t * t + ritira + 0.004 * frazione
+                z = zbordo + 0.0025 * t * t + verso * alt * frazione
+                return Vector((x, y, z))
+            g0 = t0 + (t1 - t0) * gap / larg; g1 = t1 - (t1 - t0) * gap / larg
+            punta = [punto(g0, 0.18), punto(g0 + (g1 - g0) * 0.25, 0.02), punto(tm, 0.0), punto(g1 - (g1 - g0) * 0.25, 0.02), punto(g1, 0.18)]
+            radice = [punto(g1, 1.0), punto(g0, 1.0)]
+            vv = [bm.verts.new(p_) for p_ in punta + radice]
+            for v in vv: segna(v, tipo)
+            bm.faces.new(vv if verso > 0 else list(reversed(vv)))
+    fila(zb - 0.0075, 1, 2.0, 8, 0.0, 0.0)          # 8 denti di sopra: dal bordo in su
+    fila(zb - 0.0035, -1, 3.0, 8, 0.5, 0.0015)      # denti di sotto, sfalsati di mezzo dente: dal bordo in giù
+    bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if len(f.verts) > 3])
+    bm.to_mesh(me); bm.free(); me.update()
+def espressioni(d, alta):
+    """Forme sul modello completo (copia senza scheletro), trasferite sulla versione leggera."""
+    M = viso.riferimenti(alta); fatte = viso.forme(alta, M)
+    me = d.data; n = len(me.vertices)
+    m = d.modifiers.new('viso', 'SURFACE_DEFORM'); m.target = alta
+    bpy.ops.object.select_all(action='DESELECT'); bpy.context.view_layer.objects.active = d; d.select_set(True)
+    bpy.ops.object.modifier_move_to_index(modifier=m.name, index=0)
+    for altro in d.modifiers:
+        if altro != m: altro.show_viewport = False
+    bpy.ops.object.surfacedeform_bind(modifier=m.name)
+    kb = alta.data.shape_keys.key_blocks
+    def posizioni():
+        bpy.context.view_layer.update(); dg = bpy.context.evaluated_depsgraph_get(); ev = d.evaluated_get(dg); t = ev.to_mesh()
+        P = [v.co.copy() for v in t.vertices]; ev.to_mesh_clear(); return P
+    for k in kb[1:]: k.value = 0.0
+    zero = posizioni(); delta = {}
+    for nome in viso.FORME:
+        for k in kb[1:]: k.value = 1.0 if k.name == nome else 0.0
+        P = posizioni(); delta[nome] = [P[i] - zero[i] for i in range(n)]
+    for k in kb[1:]: k.value = 0.0
+    d.modifiers.remove(m)
+    for altro in d.modifiers: altro.show_viewport = True
+    base = [v.co.copy() for v in me.vertices]; B = me.attributes['_bocca'].data
+    d.shape_key_add(name='Basis', from_mix=False)
+    toccati = {}
+    for nome in viso.FORME:
+        k = d.shape_key_add(name=nome, from_mix=False); k.value = 0.0; c = 0
+        for i in range(n):
+            tipo = B[i].value
+            if tipo > 0.5:      # interno della bocca: solo la mandibola, per denti di sotto e metà bassa della cavità
+                dv = viso.ruota_mandibola(base[i], viso.APERTURA) + Vector((0, -0.002, -0.004)) if (nome == 'bocca_aperta' and (tipo > 2.5 or (tipo < 1.5 and base[i].z < VISO['bocca'] - 0.008))) else Vector()
+            else: dv = delta[nome][i]
+            if dv.length > 2e-5: k.data[i].co = base[i] + dv; c += 1
+        toccati[nome] = c
+    return {'punti_modello_completo': fatte, 'punti_versione_gioco': toccati}
+
 # versione PER IL GIOCO: testa e corpo ridotti SEPARATAMENTE (il viso, la cuffia e i paraorecchie sono ciò che si vede in partita
 # e hanno bisogno di più triangoli; il corpo è quasi tutto sott'acqua). Una sola immagine (il colore, 1024): rilievo, metallo e
 # ruvidezza non servono a distanza di gioco e pesano sul telefono.
-def esporta_gioco(nome, triTesta, triCorpo, lato):
+def esporta_gioco(nome, triViso, triTesta, triCorpo, lato):
     import bmesh
     d = o.copy(); d.data = o.data.copy(); d.name = nome; bpy.context.scene.collection.objects.link(d)
     while d.data.color_attributes: d.data.color_attributes.remove(d.data.color_attributes[0])
     bpy.ops.object.select_all(action='DESELECT'); bpy.context.view_layer.objects.active = d; d.select_set(True)
     zc = G['neck_01'].z
-    for testa, voluti in ((True, triTesta), (False, triCorpo)):
+    def parte(c):      # 0 = davanti del viso (bocca, occhi, sopracciglia: più denso), 1 = resto della testa, 2 = corpo
+        if c.z <= zc: return 2
+        return 0 if (c.y < -0.03 and 1.48 < c.z < 1.715 and abs(c.x - VISO['cx']) < 0.085) else 1
+    for quale, voluti in ((0, triViso), (1, triTesta), (2, triCorpo)):
         bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='DESELECT'); bpy.ops.object.mode_set(mode='OBJECT')
         n = 0
         for pl in d.data.polygons:
-            pl.select = (pl.center.z > zc) == testa; n += pl.select
+            pl.select = parte(pl.center) == quale; n += pl.select
         bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.decimate(ratio=min(1, voluti / max(1, n)), use_vertex_group=False); bpy.ops.object.mode_set(mode='OBJECT')
     bpy.ops.object.mode_set(mode='WEIGHT_PAINT'); bpy.ops.object.vertex_group_limit_total(group_select_mode='ALL', limit=4); bpy.ops.object.vertex_group_normalize_all(lock_active=False); bpy.ops.object.mode_set(mode='OBJECT')
-    mat = d.data.materials[0].copy(); d.data.materials[0] = mat; nt = mat.node_tree; p = nt.nodes['Principled BSDF']
-    for nomeIng, val in (('Normal', None), ('Metallic', 0.0), ('Roughness', 0.62)):
-        for l in list(p.inputs[nomeIng].links): nt.links.remove(l)
-        if val is not None: p.inputs[nomeIng].default_value = val
-    ridotte(lato); Gi.select_set(True)
+    cuoci(d, lato, zc)
+    # misure vere della bocca (bordo del taglio) per piazzare cavità e denti; copia completa senza scheletro per le forme
+    alta = o.copy(); alta.data = o.data.copy(); alta.name = 'viso_alta'; bpy.context.scene.collection.objects.link(alta)
+    alta.parent = None; alta.matrix_world = o.matrix_world.copy()
+    while alta.modifiers: alta.modifiers.remove(alta.modifiers[0])
+    Mb = viso.riferimenti(alta)['bocca']; VISO.update({'cx': Mb['cx'], 'bocca': Mb['z'], 'mezza': Mb['mezza']})
+    interno_bocca(d)
+    forme = espressioni(d, alta)
+    bpy.data.objects.remove(alta)
+    Gi.select_set(True)
     f = os.path.join(out, nome + '.glb')
     bpy.ops.export_scene.gltf(filepath=f, export_format='GLB', use_selection=True, export_image_format='JPEG', export_jpeg_quality=88, export_yup=True, export_vertex_color='NONE', export_attributes=True, export_tangents=False,
-                              export_skins=True, export_animations=False, export_def_bones=False, export_influence_nb=4, export_rest_position_armature=True)
+                              export_skins=True, export_animations=False, export_def_bones=False, export_influence_nb=4, export_rest_position_armature=True,
+                              export_morph=True, export_morph_normal=False, export_try_sparse_sk=True)
+    info['espressioni'] = forme
     testa = sum(1 for pl in d.data.polygons if pl.center.z > zc)
     info[nome] = {'triangoli': len(d.data.polygons), 'di_cui_testa': testa, 'kB': round(os.path.getsize(f) / 1024), 'immagini': lato}
     bpy.data.objects.remove(d)
 esporta('player_rig_LOD0', 1.0, 2048); esporta('player_rig_LOD1', 0.30, 1024); esporta('player_rig_LOD2', 0.12, 1024); esporta('player_rig_LOD3', 0.05, 512)
-esporta_gioco('pallanuotista', 3200, 5300, 1024)
+esporta_gioco('pallanuotista', 4400, 2500, 3700, 1024)      # v2: più triangoli alla testa (espressioni), meno al corpo (quasi tutto sott'acqua)
+cap = [v.co for v in me.vertices if me.attributes['_zona'].data[v.index].vector[0] > 0.5 and v.co.z > 1.5]
+cc = Vector((sum(c.x for c in cap) / len(cap), sum(c.y for c in cap) / len(cap), sum(c.z for c in cap) / len(cap)))
+info['cuffia_centro_glb'] = [round(cc.x, 3), round(cc.z, 3), round(-cc.y, 3)]      # .glb: x = sinistra, y = su, z = avanti
 json.dump(info, open(os.path.join(out, 'scheletro.json'), 'w'), indent=1); print(json.dumps({k: v for k, v in info.items() if k.startswith('p')}))

@@ -6,6 +6,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as clonaConScheletro } from 'three/addons/utils/SkeletonUtils.js';
 import FUMETTO from './modelli/pallanuotista.js';
 import { sottAcqua } from './sottacqua.js';
+import { preparaViso } from './espressioni.js';
+import { valoriDisegno } from '../aspetto.js';
 
 const SPALLE=0.40;                       // distanza tra le spalle nel sistema di pose.js: da qui si ricava la scala del modello
 const inAttesa=[];
@@ -57,11 +59,14 @@ function attaccaFumetto(R,colori,num,seme){
   // colori per giocatore: il blu dell'immagine diventa il colore di cuffia e costume (con le sue luci e ombre); il 7 dipinto
   // viene coperto; la pelle prende il tono del giocatore. Stesso programma per tutti (cambia solo il valore dei colori).
   const mat=baseF.materiale.clone(); mat.roughness=0.62; mat.metalness=0;
-  const u={ uCal:{value:new THREE.Color()}, uCos:{value:new THREE.Color()}, uTono:{value:TONI[seme%TONI.length]}, uLuce:{value:FUMETTO.luceBlu} };
+  const u={ uCal:{value:new THREE.Color()}, uCos:{value:new THREE.Color()}, uTono:{value:TONI[seme%TONI.length].clone()}, uLuce:{value:FUMETTO.luceBlu},
+    uCapelli:{value:new THREE.Vector3(0.15,0.095,0.06)}, uBarba:{value:0}, uGonfia:{value:0} };      // aspetto del giocatore (src/aspetto.js)
   mat.onBeforeCompile=sh=>{ Object.assign(sh.uniforms,u);
-    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 _zona; attribute float _numero; varying vec3 vZona; varying float vNum; varying float vQuota;')
-      .replace('#include <begin_vertex>','#include <begin_vertex>\nvZona=_zona; vNum=_numero; vQuota=position.y;');
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uCal; uniform vec3 uCos; uniform vec3 uTono; uniform float uLuce; varying vec3 vZona; varying float vNum; varying float vQuota;')
+    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 _zona; attribute float _numero; attribute float _bocca; attribute float _scuro; uniform float uGonfia; varying vec3 vZona; varying float vNum; varying float vQuota; varying float vBocca; varying float vScuro; varying vec3 vRiposo;')
+      .replace('#include <begin_vertex>','#include <begin_vertex>\nvZona=_zona; vNum=_numero; vQuota=position.y; vBocca=_bocca; vScuro=_scuro; vRiposo=position;\n'
+        // corporatura: busto, braccia e gambe un po\' più pieni o più asciutti (non testa, mani e piedi)
+        +'{ float massa=(1.0-smoothstep(1.36,1.44,position.y))*smoothstep(0.08,0.22,position.y)*(1.0-smoothstep(0.55,0.70,abs(position.x))); transformed+=normal*uGonfia*massa; }');
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uCal; uniform vec3 uCos; uniform vec3 uTono; uniform float uLuce; uniform vec3 uCapelli; uniform float uBarba; varying vec3 vZona; varying float vNum; varying float vQuota; varying float vBocca; varying float vScuro; varying vec3 vRiposo;')
       .replace('#include <map_fragment>',`#include <map_fragment>
         { vec3 c=diffuseColor.rgb; float lum=dot(c,vec3(0.3,0.5,0.2)), mx=max(c.r,max(c.g,c.b)), mn=min(c.r,min(c.g,c.b));
           // dentro cuffia e costume tutto prende il colore di squadra: il blu tiene le sue luci e ombre, il 7 dipinto (bianco) e il
@@ -71,7 +76,21 @@ function attaccaFumetto(R,colori,num,seme){
           float zc=max(step(0.5,vZona.x),num*alto), zs=max(step(0.5,vZona.y),num*(1.0-alto));
           c=mix(c,uCal*ombra,max(blu,num)*zc); c=mix(c,uCos*ombra,max(blu,num)*zs);
           float pelle=(1.0-max(zc,zs))*(1.0-zb)*smoothstep(0.25,0.45,(mx-mn)/max(mx,0.001));
-          diffuseColor.rgb=mix(c,c*uTono,pelle); }`); };
+          diffuseColor.rgb=mix(c,c*uTono,pelle);
+          // sopracciglia del colore dei capelli del giocatore (sotto la cuffia i capelli non si vedono)
+          { float sc=smoothstep(0.3,0.7,vScuro); float l=dot(c,vec3(0.3,0.5,0.2)); diffuseColor.rgb=mix(diffuseColor.rgb,uCapelli*(0.55+1.6*l),sc*0.9); }
+          // barba (1 leggera, 2 corta, 3 piena): puntini scuri sulla pelle di mento, mascella e baffi, dalla posizione a riposo
+          if(uBarba>0.5){ vec3 q=vRiposo; float ax=abs(q.x+0.004);
+            float alto=mix(1.574,1.586,smoothstep(0.035,0.06,ax))*step(0.5,uBarba-1.0)+mix(1.571,1.556,smoothstep(0.03,0.05,ax))*(1.0-step(0.5,uBarba-1.0));
+            float zona=smoothstep(1.47,1.49,q.y)*(1.0-smoothstep(alto-0.004,alto,q.y))*step(0.0,q.z)*(1.0-smoothstep(0.075,0.09,ax));
+            zona*=1.0-(1.0-smoothstep(0.004,0.007,abs(q.y-1.556)))*(1.0-smoothstep(0.036,0.044,ax));      // non sulle labbra
+            zona*=1.0-(1.0-smoothstep(0.018,0.026,ax))*smoothstep(1.574,1.58,q.y);                       // non sul naso
+            float n=fract(sin(dot(floor(q*1100.0),vec3(12.9898,78.233,37.719)))*43758.5453);
+            float dens=uBarba<1.5?0.45:(uBarba<2.5?0.78:0.97), forza=uBarba<1.5?0.35:(uBarba<2.5?0.55:0.75);
+            float pelo=step(1.0-dens,n)*zona*pelle;
+            diffuseColor.rgb=mix(diffuseColor.rgb,uCapelli*0.7,pelo*forza); }
+          // interno della bocca (modello v2, dato _bocca): 1 = cavità scura, 2-3 = denti
+          if(vBocca>1.5) diffuseColor.rgb=vec3(0.86,0.84,0.78); else if(vBocca>0.5 || !gl_FrontFacing) diffuseColor.rgb=vec3(0.09,0.02,0.025); }`); };      // l'interno della testa (visto dalla bocca aperta) è scuro
   // sott'acqua il corpo prende il colore dell'acqua secondo la profondità e ondeggia appena; linea bagnata sul pelo dell'acqua
   sottAcqua(mat,{ ondeggia:1, bagnato:1, chiave:'corpo' });
   K.u=u;
@@ -80,7 +99,7 @@ function attaccaFumetto(R,colori,num,seme){
     for(const [k,n] of nomi) if(o.name===n){ K.ossa[k]=o; K.riposo[k]=o.quaternion.clone(); }
     if(FUMETTO.daAzzerare.includes(o.name)) K.azzera.push([o,o.quaternion.clone()]);
     if(/^spine_0[123]$/.test(o.name)) K.schiena.push(o);
-    if(o.isSkinnedMesh){ o.material=mat; o.frustumCulled=false; }
+    if(o.isSkinnedMesh){ o.material=mat; o.frustumCulled=false; K.viso=preparaViso(o); }      // espressioni, se il modello le ha
   });
   const tex=new THREE.CanvasTexture(Object.assign(document.createElement('canvas'),{width:128,height:128})); tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=4;
   K.texNum=tex;
@@ -99,11 +118,18 @@ export function attaccaCorpo(R,colori,num,seme){
   if(modelloPronto) crea(); else inAttesa.push(crea);
 }
 // cambia colori e numero (anche prima che il modello sia caricato: li trova pronti)
-export function aggiornaColori(R,colori,num){
-  R.coloriVoluti=colori; R.numVoluto=num;
+export function aggiornaColori(R,colori,num,profilo){
+  R.coloriVoluti=colori; R.numVoluto=num; if(profilo) R.profiloVoluto=profilo;
   const K=R.corpo; if(!K) return;
+  if(R.profiloVoluto) applicaAspetto(K,R.profiloVoluto);
   K.colori=colori; K.u.uCal.value.setHex(colori.calottina); K.u.uCos.value.setHex(colori.costume); K.num=-1;
   aggiornaNumero(R,num);
+}
+// aspetto del giocatore (src/aspetto.js): pelle, colore di sopracciglia e barba, corporatura, altezza. Solo disegno.
+function applicaAspetto(K,profilo){
+  const v=valoriDisegno(profilo);
+  K.u.uTono.value.set(...v.tono); K.u.uCapelli.value.set(...v.capelli); K.u.uBarba.value=v.barba; K.u.uGonfia.value=v.gonfia;
+  K.scala=baseF.scala*v.scala; K.radice.scale.setScalar(K.scala);      // più alto o più basso: le spalle restano dove le vuole pose.js
 }
 export function aggiornaNumero(R,num){
   const C=R.corpo; if(!C||C.num===num) return;
@@ -141,7 +167,8 @@ function orienta(osso,qMondo,peso){
   osso.quaternion.slerp(_q,peso);
 }
 // ---------- braccia naturali (polso e avambraccio che ruotano) ----------
-// Lo scheletro del pallanuotista è in posa a T con i palmi verso il basso e le ossa senza rotazioni di riposo. Ogni osso del
+// Lo scheletro del pallanuotista è in posa a T con le ossa senza rotazioni di riposo; i palmi guardano dove dice il modello
+// (FUMETTO.palmoRiposo: in giù nel primo modello, in avanti nel modello v2). Ogni osso del
 // braccio si orienta con DUE direzioni, non una: l'asse dell'osso e un riferimento attorno all'asse. Così:
 // - braccio e avambraccio tengono il cardine del gomito perpendicolare al piano spalla-gomito-mano (il gomito si piega come
 //   un gomito vero, senza torsioni a caso);
@@ -164,7 +191,7 @@ function preparaBraccio(C,brac,avam,mano,lato){
   const r=C.radice; r.updateMatrixWorld(true); const qr=r.getWorldQuaternion(new THREE.Quaternion());
   const loc=(osso,vModello)=>vModello.clone().applyQuaternion(qr).applyQuaternion(osso.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize();
   const asse=(osso,figlio)=>{ const a=osso.getWorldPosition(new THREE.Vector3()), b=figlio.getWorldPosition(new THREE.Vector3()); return b.sub(a).applyQuaternion(osso.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize(); };
-  const cardine=new THREE.Vector3(0,lato,0), palmo=new THREE.Vector3(0,-1,0);      // posa a T, palmi in giù
+  const cardine=new THREE.Vector3(0,lato,0), palmo=new THREE.Vector3(...(FUMETTO.palmoRiposo||[0,-1,0]));      // posa a T
   const dita=mano.children[0]?asse(mano,mano.children[0]):asse(avam,mano);
   return { brac:{ a:asse(brac,avam), r:loc(brac,cardine) }, avam:{ a:asse(avam,mano), r:loc(avam,cardine) }, mano:{ a:dita, r:loc(mano,palmo) }, cardine:new THREE.Vector3(0,lato,0) };
 }
