@@ -136,14 +136,18 @@ body.touch #tLog{right:calc(52px + var(--sr))}
 #regLista .vuoto{opacity:.7;justify-content:center;padding:18px}
 
 /* ---------- solo orizzontale: in verticale si chiede di ruotare il telefono ---------- */
-#ruota{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,#16407a,#0b1d33 70%);text-align:center}
+#ruota{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,transparent 72%,#07131d),radial-gradient(circle at 50% 40%,#16407a,#0b1d33 70%);text-align:center}
 #ruota .rbox{display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px}
 #ruota svg{width:92px;height:92px}
 #ruota .rtel{animation:gira 2.4s ease-in-out infinite}
 #ruota .rfreccia{position:absolute;width:120px;height:120px;margin-top:-14px;opacity:.9}
 #ruota b{font-size:20px;margin-top:22px}
 #ruota span{opacity:.7;font-size:14px}
-@keyframes gira{0%,25%{transform:rotate(0)}55%,85%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+/* il telefono gira nello stesso verso della freccia (orario) */
+@keyframes gira{0%,25%{transform:rotate(0)}55%,85%{transform:rotate(90deg)}100%{transform:rotate(0)}}
+/* app aggiunta alla Home (iOS 26): sotto la pagina c'è già la striscia della linea Home che WebKit non lascia disegnare; aggiungere
+   anche il margine sicuro raddoppiava il vuoto in fondo e faceva sembrare il menu spostato in alto */
+@media (display-mode:standalone){ #menu{--sb:0px} }
 /* con il menu aperto l'interfaccia di gioco non si vede (si intravede solo la piscina) */
 body:not(.gioco) :is(#hud,#tac,#player,#cronaca,#tLog,#tCambi,#cambiBox,#touch,#fight){visibility:hidden}
 /* solo durante la partita: il menu si usa anche in verticale */
