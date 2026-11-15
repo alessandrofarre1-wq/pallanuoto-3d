@@ -1,7 +1,8 @@
 // ================= PASSAGGI E TIRI =================
 import { registraTiro, tipoDiTiro } from './statistiche.js';
 import { ALZATA, clamp, dist, gauss, rnd } from './costanti.js';
-import { manUp, postoPortiere, setteControSei } from './ia.js';
+import { manUp, paloUomo, postoPortiere, setteControSei, viciniUomo } from './ia.js';
+import { faseUomo } from './uomo-in-piu.js';
 import { leggiCentro } from './centroboa.js';
 import { schemaSquadra, viciniPerimetro } from './schemi.js';
 import { velocitaDiLancio } from './palla.js';
@@ -94,12 +95,12 @@ export function bestPassTarget(p,variabile=true){
     if(m===p||m.excluded||m.uscendo||(m.isGK&&!setteControSei(p.team))) continue;
     const d=dist(p,m); if(d<1.2) continue;
     const dg=Math.hypot(gx-m.x,m.z),aperto=openness(m),risk=passLaneRisk(p,m),linea=laneClear(p,m.x,m.z,p.team,0.55);
-    const interno=(!sup&&m.i===1)||(sup&&(m.i===1||m.i===6));
+    const interno=(!sup&&m.i===1)||(sup&&paloUomo(m));
     if(interno){
       const def=other(p.team).players.filter(q=>!q.excluded&&!q.isGK).sort((a,b)=>dist(a,m)-dist(b,m))[0];
       if(!leggiCentro(m,def,p).ricevibile||!linea||risk>0.3) continue;
     }
-    const vicino=viciniPerimetro(p.i,m.i,sup),perimetro=!interno&&!p.isGK&&!(p.i===1||sup&&p.i===6);
+    const vicino=sup?viciniUomo(p.team,p.i,m.i):viciniPerimetro(p.i,m.i,false),perimetro=!interno&&!p.isGK&&!(sup?paloUomo(p):p.i===1);
     if(perimetro&&!vicino){
       const gk=other(p.team).players[0];
       const fuoriPosto=Math.abs(gk.z-postoPortiere(gk.team,m.x,m.z));
@@ -110,6 +111,8 @@ export function bestPassTarget(p,variabile=true){
     let s=Math.min(aperto,3)*1.2-dg*0.14-d*0.07-risk*6+(linea?0.8:-2.8);
     if(vicino) s+=schema.passaggi==='vicini'?2.4:schema.passaggi==='equilibrati'?1.7:1.25;
     if(interno) s+=1.6+(schema.id==='boa'&&!sup?0.8:0);
+    // uomo in più: la fase in corso dello schema chiamato indica a chi dare la palla
+    if(sup&&faseUomo(p.team)?.palla===m.i) s+=1.8;
     // Una ricezione che libera un tiro ravvicinato prevale sul semplice appoggio laterale.
     const occasione=aperto>2.1&&dg<8.5&&Math.abs(gx-m.x)/Math.max(0.1,dg)>0.5&&
       (dg<Math.hypot(gx-p.x,p.z)-1||sup&&Math.sign(m.z)!==Math.sign(p.z));

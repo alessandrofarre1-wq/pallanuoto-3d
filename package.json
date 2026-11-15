@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.43.0",
+  "version": "0.44.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,7 @@
     "verifica": "node tests/qualita.mjs && node tests/tornei.mjs && node tests/verifica.mjs --no-legacy",
     "verifica:legacy": "node tests/verifica.mjs",
     "occasioni": "node tests/occasioni.mjs",
+    "uomo": "node tests/uomo-in-piu.mjs",
     "primi-piani": "node tests/primi-piani.mjs",
     "sequenze": "node tests/sequenze.mjs",
     "azione": "node tests/azione.mjs",

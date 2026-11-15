@@ -102,7 +102,7 @@
     <div class="contenuto-torneo">
       <div class="torneo-intestazione"><div><p class="soprattitolo" id="torneoFase"></p><h1 class="titolo-sezione" id="torneoNazionale"></h1></div><div id="torneoCoppa" aria-hidden="true"></div></div>
       <div class="torneo-prossima" id="torneoProssima"></div>
-      <div class="torneo-azioni"><button type="button" class="m-cta corta" id="torneoGioca"><span class="m-play"></span><span><b>Gioca la prossima</b></span><i>›</i></button><button type="button" class="strategia-accesso" id="btStrategieTorneo"><span class="strategia-icona" aria-hidden="true">⌘</span><span><b>Strategie</b><small id="schemaTorneo">Prepara il piano partita</small></span><i aria-hidden="true">›</i></button><button type="button" class="azione-secondaria" id="simulaBronzo" hidden>Simula la finale per il bronzo</button></div>
+      <div class="torneo-azioni"><button type="button" class="m-cta corta" id="torneoGioca"><span class="m-play"></span><span><b>Gioca la prossima</b></span><i>›</i></button><button type="button" class="strategia-accesso" id="btStrategieTorneo"><span class="strategia-icona" aria-hidden="true">⌘</span><span><b>Strategie</b><small id="schemaTorneo">Prepara il piano partita</small></span><i aria-hidden="true">›</i></button><button type="button" class="strategia-accesso uomo-accesso" id="btUomoTorneo"><span class="strategia-icona" aria-hidden="true">6c5</span><span><b>Uomo in più</b><small id="uomoRiepTorneo">I tuoi 3 schemi</small></span><i aria-hidden="true">›</i></button><button type="button" class="azione-secondaria" id="simulaBronzo" hidden>Simula la finale per il bronzo</button></div>
       <p class="nota-torneo" id="torneoNota" aria-live="polite"></p>
       <div class="torneo-percorso" id="torneoPercorso"></div>
       <div class="torneo-colonne"><section><h3 class="etichetta-sezione">Gironi e classifiche</h3><div id="torneoGruppi" class="torneo-gruppi"></div></section><section><h3 class="etichetta-sezione">Calendario e risultati</h3><div id="torneoCalendario" class="torneo-calendario"></div></section></div>
@@ -126,7 +126,7 @@
     <div class="elenco-sq" id="elencoSq" aria-label="Tutte le squadre"></div>
     <div class="confronto" id="confronto"></div>
     <details id="rosaBox"><summary>Formazione: scegli i 7 in acqua</summary><div id="rosa"></div></details>
-    <div class="m-fondo con-strategie"><button type="button" class="strategia-accesso" id="btStrategieSquadre"><span class="strategia-icona" aria-hidden="true">⌘</span><span><b>Strategie</b><small id="schemaSquadre">Prepara il piano partita</small></span><i aria-hidden="true">›</i></button><button type="button" class="m-cta corta" data-va="impostazioni"><span><b>Continua</b></span><i>›</i></button></div>
+    <div class="m-fondo con-strategie"><button type="button" class="strategia-accesso" id="btStrategieSquadre"><span class="strategia-icona" aria-hidden="true">⌘</span><span><b>Strategie</b><small id="schemaSquadre">Prepara il piano partita</small></span><i aria-hidden="true">›</i></button><button type="button" class="strategia-accesso uomo-accesso" id="btUomoSquadre"><span class="strategia-icona" aria-hidden="true">6c5</span><span><b>Uomo in più</b><small id="uomoRiepSquadre">I tuoi 3 schemi</small></span><i aria-hidden="true">›</i></button><button type="button" class="m-cta corta" data-va="impostazioni"><span><b>Continua</b></span><i>›</i></button></div>
   </section>
 
   <!-- PASSO 2: IMPOSTAZIONI DELLA PARTITA (facoltative) -->
@@ -134,7 +134,7 @@
     <header class="m-testa"><button type="button" class="m-icona" data-indietro aria-label="Indietro">‹</button><h2>Impostazioni partita</h2></header>
     <ol class="passi"><li class="fatto"><i>✓</i><span>Squadre</span></li><li class="on"><i>2</i><span>Impostazioni</span></li><li class=""><i>3</i><span>Gioca</span></li></ol>
     <div class="imp"><div class="riga"><span class="ri"><svg viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 9.5v4l2.6 1.6M9.5 3h5M12 3v3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span><label for="selLen">Durata tempo</label><span class="tendina"><select id="selLen"><option value="120">2 min</option><option value="180" selected>3 min</option><option value="300">5 min</option><option value="480">8 min</option></select></span></div><div class="riga"><span class="ri"><svg viewBox="0 0 24 24"><rect x="4" y="13" width="3.6" height="7" rx="1" fill="currentColor"/><rect x="10.2" y="9" width="3.6" height="11" rx="1" fill="currentColor"/><rect x="16.4" y="4" width="3.6" height="16" rx="1" fill="currentColor"/></svg></span><label for="selDiff">Difficoltà IA</label><span class="tendina"><select id="selDiff"><option value="0">Facile</option><option value="1" selected>Normale</option><option value="2">Difficile</option></select></span></div><div class="riga"><span class="ri"><svg viewBox="0 0 24 24"><path d="M2.5 11.5a6.5 6.5 0 0 0 13 1.2h5.3V8.3H9.3A6.5 6.5 0 0 0 2.5 11.5z" fill="currentColor"/><circle cx="9" cy="12" r="2.2" fill="#0b2a55"/></svg></span><label for="selArb">Arbitro</label><span class="tendina"><select id="selArb"><option value="0.65">Permissivo</option><option value="1" selected>Normale</option><option value="1.4">Fiscale</option></select></span></div></div>
-    <div class="m-fondo con-strategie"><button type="button" class="strategia-accesso" id="btStrategieImpostazioni"><span class="strategia-icona" aria-hidden="true">⌘</span><span><b>Strategie</b><small id="schemaImpostazioni">Prepara il piano partita</small></span><i aria-hidden="true">›</i></button><button type="button" class="m-cta corta" id="goBtn"><span class="m-play"></span><span><b>Gioca</b></span></button></div>
+    <div class="m-fondo con-strategie"><button type="button" class="strategia-accesso" id="btStrategieImpostazioni"><span class="strategia-icona" aria-hidden="true">⌘</span><span><b>Strategie</b><small id="schemaImpostazioni">Prepara il piano partita</small></span><i aria-hidden="true">›</i></button><button type="button" class="strategia-accesso uomo-accesso" id="btUomoImpostazioni"><span class="strategia-icona" aria-hidden="true">6c5</span><span><b>Uomo in più</b><small id="uomoRiepImpostazioni">I tuoi 3 schemi</small></span><i aria-hidden="true">›</i></button><button type="button" class="m-cta corta" id="goBtn"><span class="m-play"></span><span><b>Gioca</b></span></button></div>
   </section>
 
   <!-- STRATEGIE: i posti modificati qui vengono usati dai compagni in partita. -->
@@ -144,7 +144,7 @@
       <div class="schema-barra">
         <label class="schema-campo schema-preset">Piano di partenza<select id="schemaPreset" aria-describedby="schemaDescrizione"></select></label>
         <label class="schema-campo schema-nome">Nome della strategia<input id="schemaNome" type="text" maxlength="40" autocomplete="off" spellcheck="false"></label>
-        <button type="button" class="azione-secondaria" id="schemaNuova">＋ Nuova</button><button type="button" class="azione-secondaria" id="schemaRipristina" title="Ripristina la strategia salvata">Ripristina</button>
+        <button type="button" class="azione-secondaria" id="schemaNuova">＋ Nuova</button><button type="button" class="azione-secondaria" id="schemaRipristina" title="Ripristina la strategia salvata">Ripristina</button><button type="button" class="azione-secondaria" id="btUomoStrategie">6c5 · Schemi uomo in più ›</button>
       </div>
       <div class="schema-riga-nota"><p id="schemaDescrizione"></p><span id="schemaStato"></span></div>
       <p id="schemaMessaggio" class="schema-messaggio" role="status" aria-live="polite" hidden></p>
@@ -165,6 +165,38 @@
         <section class="schema-difesa" aria-labelledby="schemaDifesaTitolo"><p class="soprattitolo">DIFESA</p><h3 id="schemaDifesaTitolo">Proteggi il centro.</h3><label class="schema-campo">Sistema difensivo<select id="schemaDifesa"></select></label><fieldset class="schema-aiuti"><legend>Ruoli autorizzati all’aiuto</legend><div id="schemaAiuti"></div></fieldset><p class="schema-spiegazione">I ruoli selezionati aiutano sul centroboa quando è ricevibile e tornano sul proprio uomo al cambio della palla.</p></section>
       </div>
       <p class="schema-persistenza">Salva per usare questo piano dalla prossima partita, anche nei tornei. Si conserva in questo browser; l’avversaria sceglie la propria strategia.</p>
+    </div>
+  </section>
+
+  <!-- UOMO IN PIÙ (v0.44): scelta di massimo 3 schemi e creazione di schemi a fasi -->
+  <section class="vista" id="vUomo" aria-labelledby="uomoTitolo">
+    <header class="m-testa schema-testa"><button type="button" class="m-icona" id="uomoIndietro" aria-label="Torna indietro">‹</button><div><p class="soprattitolo">PREPARAZIONE PARTITA · 6 CONTRO 5</p><h2 id="uomoTitolo">Uomo in più</h2></div></header>
+    <div id="uomoElenco">
+      <p class="uomo-intro">Scegli fino a <b>3 schemi</b>. In partita, quando gli avversari hanno un espulso, compaiono in alto: li chiami con un tocco (o con i tasti 1, 2, 3; il 4 torna al 4-2 base) e i compagni si muovono fase dopo fase.</p>
+      <div id="uomoScelti" class="uomo-scelti" aria-label="Schemi scelti"></div>
+      <div class="uomo-azioni"><button type="button" class="m-cta corta" id="uomoNuovo"><span><b>＋ Crea uno schema</b></span></button></div>
+      <div id="uomoLista" class="uomo-lista"></div>
+      <p class="schema-persistenza">Schemi della libreria tratti da C. Mistrangelo, «Pali in superiorità numerica» (Area Tecnica, Rari Nantes Savona). I tuoi schemi e la scelta restano in questo browser.</p>
+    </div>
+    <div id="uomoCrea" hidden>
+      <div class="uomo-crea-barra">
+        <label class="schema-campo uomo-nome">Nome dello schema<input id="uomoNome" type="text" maxlength="36" autocomplete="off" spellcheck="false"></label><label class="schema-campo uomo-sigla">Sigla in partita<input id="uomoSigla" type="text" maxlength="10" autocomplete="off" spellcheck="false" placeholder="es. 4-2 sx"></label>
+        <div class="schema-fasi uomo-fasi" id="uomoFasi" role="tablist" aria-label="Fasi dello schema"></div>
+        <button type="button" class="azione-secondaria" id="uomoAggiungiFase">＋ Fase</button><button type="button" class="azione-secondaria" id="uomoTogliFase">− Fase</button>
+      </div>
+      <div class="uomo-crea-griglia">
+        <div class="uomo-lavagna"><svg id="uomoPiscina" viewBox="0 0 600 350" role="group" aria-label="Lavagna: trascina i sei posti della fase"></svg>
+          <p class="schema-aiuto-lavagna">Trascina i giocatori (porta in alto). In giallo i pali; i cerchi tratteggiati sono la fase prima, le frecce il movimento.</p></div>
+        <div class="uomo-crea-lato">
+          <p class="uomo-ruolo" id="uomoRuolo"></p>
+          <label class="schema-campo">Durata della fase<select id="uomoDurata"></select></label>
+          <p class="schema-spiegazione" id="uomoDurataNota"></p>
+          <label class="schema-campo">Palla a<select id="uomoPalla"></select></label>
+          <p class="schema-spiegazione">I compagni cercano di dare la palla a questo giocatore durante la fase.</p>
+          <p id="uomoMessaggio" class="schema-messaggio" role="status" aria-live="polite" hidden></p>
+          <div class="uomo-bottoni"><button type="button" class="m-cta corta" id="uomoSalva"><span><b>Salva schema</b></span></button><button type="button" class="azione-secondaria" id="uomoAnnulla">Annulla</button></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -215,6 +247,7 @@
     <div class="pausa-punteggio" id="pausaPunteggio"></div>
     <div class="h-azioni">
       <button type="button" class="m-cta" id="riprendi"><span class="m-play"></span><span><b>Riprendi</b></span><i>›</i></button>
+      <button type="button" class="m-voce" id="vaiRegistro"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 8.5h8M8 12h8M8 15.5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span><b>Eventi della partita</b><small>gol, falli, espulsioni, cambi</small></span><i>›</i></button>
       <button type="button" class="m-voce" data-va="panchina" id="vaiPanchina"><svg viewBox="0 0 24 24"><circle cx="8" cy="7.5" r="2.6" fill="currentColor"/><circle cx="16" cy="7.5" r="2.6" fill="currentColor"/><path d="M3.5 15.5c0-2.4 2-4 4.5-4s4.5 1.6 4.5 4M11.5 15.5c0-2.4 2-4 4.5-4s4.5 1.6 4.5 4M2.5 17.5h19M5 17.5v3M19 17.5v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span><b>Cambi e panchina</b><small>chi è stanco, chi entra</small></span><i>›</i></button>
       <button type="button" class="m-voce" data-va="tattiche"><span class="modo-num">↗</span><span><b>Tattiche</b><small>Prepara attacco e difesa</small></span><i>›</i></button>
       <button type="button" class="m-voce" data-va="comandi"><svg viewBox="0 0 24 24"><path d="M7 7.5h10a5.5 5.5 0 0 1 0 11c-1.8 0-2.8-1-3.6-2.1h-2.8C9.8 17.5 8.8 18.5 7 18.5a5.5 5.5 0 0 1 0-11z" fill="currentColor"/><path d="M7.5 10.5v4M5.5 12.5h4" stroke="#0b2a55" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="11.5" r="1.2" fill="#0b2a55"/><circle cx="18" cy="14" r="1.2" fill="#0b2a55"/></svg><span><b>Comandi</b></span><i>›</i></button>

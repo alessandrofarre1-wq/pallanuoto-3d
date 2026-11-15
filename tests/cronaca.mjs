@@ -96,6 +96,13 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
   const s1 = await pg.evaluate(() => { const H = window.__pallanuoto, e = H.allPlayers.find(q => q.excluded); window.__esp = e;
     for (let i = 0; i < 200; i++) { window.__salta(1); if (!e.excluded) { e.excluded = true; e.exclUntil = H.game.time + 12; } } window.__vai(1); return window.__guarda(); });
   nota(s1.stato.includes(g.atteso.nome), '2. espulsione: il nome resta visibile dopo il primo avviso');
+  // niente sfarfallio (segnalazione di Ale, v0.44): il riquadro dell'espulso è sempre lo stesso, si aggiornano solo tempo e barra
+  const fermo = await pg.evaluate(() => { const H = window.__pallanuoto, e = window.__esp, box = document.querySelector('#espulsioni .ex'); let cambi = 0;
+    const oss = new MutationObserver(l => { for (const m of l) if (m.type === 'childList' && [...m.removedNodes].some(n => n.nodeType === 1 && n.classList.contains('ex'))) cambi++; });
+    oss.observe(document.getElementById('espulsioni'), { childList: true, subtree: true });
+    for (let i = 0; i < 60; i++) { window.__vai(1); if (!e.excluded) { e.excluded = true; e.exclUntil = H.game.time + 10; } }
+    const r = { stesso: document.querySelector('#espulsioni .ex') === box, cambi }; oss.disconnect(); return r; });
+  nota(fermo.stesso && fermo.cambi === 0, `2. espulsione: il riquadro non viene ricostruito in 60 fotogrammi (stesso elemento: ${fermo.stesso}, ricostruzioni: ${fermo.cambi})`);
   const s2 = await pg.evaluate(() => { const H = window.__pallanuoto, e = window.__esp; for (let i = 0; i < 120; i++) { window.__salta(1); if (!e.excluded) { e.excluded = true; e.exclUntil = H.game.time + 10; } } window.__vai(1); return window.__guarda(); });
   nota(/#\d+/.test(s1.stato) && /\d:\d\d/.test(s1.stato) && s1.stato.includes(g.atteso.nome) && s1.stato !== s2.stato && /\d c \d/.test(s1.sup), `2. indicatore persistente con tempo che scende: «${s1.stato}» → «${s2.stato}», superiorità «${s1.sup}»`);
   const sovrapp = await pg.evaluate(() => { const b = document.getElementById('shotclock').getBoundingClientRect(); return [...document.querySelectorAll('#espulsioni .esp > *')].some(e => { const a = e.getBoundingClientRect(); return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom); }); });
@@ -126,8 +133,10 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
   nota(seq.n === 1, '6. mai più di una notifica a schermo');
   nota(seq.tab && seq.visti[0] === 'fallo', `6. l'espulsione apre la sua linguetta sotto la squadra, il resto passa in ordine di importanza: ${seq.visti.join(' → ')}`); }
 // 7. registro
-{ const r = await pg.evaluate(() => { const H = window.__pallanuoto; H.game.state = 'play'; const t0 = H.game.clock; return { t0 }; });
-  await pg.tap('#tLog'); await pg.evaluate(() => window.__vai(2));
+// dalla v0.44 il registro si apre dal menu di pausa (scelta di Ale): pausa → «Eventi della partita»
+{ const r = await pg.evaluate(() => { const H = window.__pallanuoto; H.game.state = 'play'; const t0 = H.game.clock; return { t0, logVisibile: getComputedStyle(document.getElementById('tLog')).display !== 'none' }; });
+  nota(!r.logVisibile, '7. il pulsante del registro non è più a schermo durante il gioco');
+  await pg.tap('#tPause'); await pg.evaluate(() => window.__vai(2)); await pg.tap('#vaiRegistro'); await pg.evaluate(() => window.__vai(2));
   const g = await pg.evaluate(t0 => { const H = window.__pallanuoto; window.__salta(60); window.__vai(1); const el = document.getElementById('registro');
     return { aperto: el.classList.contains('vis'), voci: el.querySelectorAll('li').length, fermo: H.game.clock === t0 || H.game.state === 'paused', stato: H.game.state, ordine: [...el.querySelectorAll('.tm')].map(x => x.textContent) }; }, r.t0);
   nota(g.aperto && g.voci > 3, `7. registro aperto: ${g.voci} eventi (${g.ordine.slice(0, 3).join(', ')} …)`); nota(g.stato === 'paused', '7. gioco fermo mentre il registro è aperto');
@@ -135,8 +144,10 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
   // un tocco sul campo mentre il registro è aperto non muove il giocatore
   await pg.touchscreen.tap(200, 300); const mosso = await pg.evaluate(() => { const H = window.__pallanuoto; return H.ctrl ? Math.hypot(H.ctrl.vx, H.ctrl.vz) : 0; });
   nota(mosso < 0.01 || g.stato === 'paused', '7. i tocchi sul registro non arrivano ai comandi');
-  await pg.tap('#regChiudi'); const ch = await pg.evaluate(() => { window.__vai(2); return { aperto: document.getElementById('registro').classList.contains('vis'), stato: window.__pallanuoto.game.state }; });
-  nota(!ch.aperto && ch.stato !== 'paused', `7. registro chiuso, il gioco riprende (${ch.stato})`); }
+  await pg.tap('#regChiudi'); const ch = await pg.evaluate(() => { window.__vai(2); return { aperto: document.getElementById('registro').classList.contains('vis'), stato: window.__pallanuoto.game.state, pausa: document.getElementById('vPausa').getBoundingClientRect().height > 0 }; });
+  nota(!ch.aperto && ch.stato === 'paused' && ch.pausa, `7. registro chiuso: si torna al menu di pausa (${ch.stato})`);
+  await pg.evaluate(() => window.__pallanuoto.pausa()); const rip = await pg.evaluate(() => { window.__vai(2); return window.__pallanuoto.game.state; });
+  nota(rip !== 'paused', `7. Riprendi: il gioco riparte (${rip})`); }
 // 8. rotazione e ritorno all'app
 { await pg.setViewportSize({ width: 390, height: 844 });
   const v = await pg.evaluate(() => { const H = window.__pallanuoto, t0 = H.game.clock; window.__salta(120); return { ruota: getComputedStyle(document.getElementById('ruota')).display, fermo: H.game.clock === t0 }; });

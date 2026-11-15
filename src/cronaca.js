@@ -104,21 +104,32 @@ export function tick(dt){
 // il distintivo oro «6 c 5» nel tabellone. Nessun banner al centro: il gioco intanto continua.
 const fresche=new Map();
 const USCITA_SVG='<svg viewBox="0 0 24 24"><path d="M4 3.5h9v4h-2.4V6H6.4v12h4.2v-1.5H13v4H4z" fill="currentColor"/><path d="M13.5 8l6 4-6 4v-2.6H8.6v-2.8h4.9z" fill="currentColor"/></svg>';
-const chiaviEsp=['',''];
+// Un riquadro per espulso, creato UNA volta e poi solo aggiornato (secondi, barretta rossa, dettaglio dei primi secondi).
+// Prima veniva ricostruito a ogni aggiornamento (la percentuale della barretta cambia di continuo) e il riquadro «sfarfallava»
+// (segnalazione di Ale, 15/11/2026).
+const riquadri=[new Map(),new Map()];
+function riquadroEspulso(t,p){
+  const el=document.createElement('span'); el.className='ex';
+  el.innerHTML=`<span class="r1">${USCITA_SVG}<span class="sq-ex">${t.short}</span><span class="lab">Espulsione</span><span class="chi">#${p.num} <small>${p.name}</small></span><span class="t"></span></span><span class="det"></span>`;
+  return { el, t:el.querySelector('.t'), det:el.querySelector('.det'), testo:'', p:'', nuova:null, dettaglio:null };
+}
 function aggiornaStato(){
   const inCampo=t=>t.players.filter(p=>!p.excluded&&!p.isGK).length;      // giocatori di movimento: «6 contro 5»
   const a=inCampo(teams[0]), b=inCampo(teams[1]);
   teams.forEach((t,k)=>{
-    let h='';
+    const box=$(k===0?'espA':'espB'), mappa=riquadri[k];
+    for(const [p,r] of mappa) if(!p.excluded||p.team!==t){ r.el.remove(); mappa.delete(p); }
     for(const p of t.players) if(p.excluded){
+      let r=mappa.get(p); if(!r){ r=riquadroEspulso(t,p); mappa.set(p,r); box.appendChild(r.el); }
       const resta=Math.max(0,p.exclUntil-game.time), f=fresche.get(p), def=p.pf>=3;
-      h+=`<span class="ex${f?' nuova':''}" style="--p:${def?100:Math.round(Math.min(1,resta/EXCL_TIME)*100)}%">`
-        +`<span class="r1">${USCITA_SVG}<span class="sq-ex">${t.short}</span><span class="lab">Espulsione</span><span class="chi">#${p.num} <small>${p.name}</small></span><span class="t">${def?'def.':fmt(resta)}</span></span>`
-        +(f&&f.det?`<span class="det">${f.det}</span>`:'')+'</span>';
+      const testo=def?'def.':fmt(resta), perc=`${def?100:Math.round(Math.min(1,resta/EXCL_TIME)*100)}%`;
+      if(r.testo!==testo){ r.testo=testo; r.t.textContent=testo; }
+      if(r.p!==perc){ r.p=perc; r.el.style.setProperty('--p',perc); }
+      if(r.nuova!==!!f){ r.nuova=!!f; r.el.classList.toggle('nuova',!!f); }
+      const det=f&&f.det?f.det:''; if(r.dettaglio!==det){ r.dettaglio=det; r.det.textContent=det; r.det.hidden=!det; }
     }
     const mia=k===0?a:b, altra=k===0?b:a, piu=$(k===0?'piuA':'piuB'), sup=mia>altra?`${mia} c ${altra}`:'';
     if(piu.textContent!==sup){ piu.textContent=sup; piu.classList.toggle('on',!!sup); piu.title=sup?'uomo in più':''; }
-    if(h!==chiaviEsp[k]){ chiaviEsp[k]=h; $(k===0?'espA':'espB').innerHTML=h; }
   });
 }
 
