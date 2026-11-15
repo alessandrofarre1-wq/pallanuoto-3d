@@ -35,6 +35,13 @@ COSA HA FATTO CLAUDE CODE SULLA v0.41 (nessuna modifica al codice del gioco):
    bloccano. Se vedi solo scarti di caratteri, non è un errore del gioco.
 3. CI completa PASS su tutti i passi (esecuzione 43693430326).
 
+MISURE DI PARTENZA (8 partite ITA–HUN, per squadra; Mondiali 2025 tra
+parentesi): gol 17,4 (13,3), tiri 44,2 (33), espulsioni 7,7 (11), rigori 2,3
+(1,8), superiorità trasformate 63% (52%), controfuga 8,6% dei tiri (3%).
+Dettagli in docs/verifiche-v041.md. Corretta anche la home su iPhone (fascia
+in fondo, versione nascosta, immagine tagliata): non rimettere #menu a
+inset:0 senza 100lvh/100dvh.
+
 REGOLE FISSE DI ALE (da rispettare sempre):
 - Ogni PR alza la versione di 0.01 (package.json) e la scrive nel titolo
   («v0.42: …»). Le correzioni di una PR aperta vanno nella STESSA PR.

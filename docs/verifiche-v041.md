@@ -44,3 +44,25 @@ Restano inoltre: prova su iPhone fisico, giudizio sul gameplay, più slot person
 3. **CI completa sull'ultimo commit:** esito riportato nella descrizione della PR.
 
 `npm run lint`: PASS.
+
+## Misure e controlli aggiuntivi (Claude Code, 15 novembre 2026)
+
+**Bilancio** (`node tests/bilancio.mjs --partite=8 --squadre=ITA,HUN`, tempi da 8 minuti, per squadra a partita; tra parentesi Mondiali 2025):
+
+| Voce | v0.41 | Mondiali 2025 | v0.34–0.36 |
+|---|---|---|---|
+| Gol | 17,4 | 13,3 | 18 |
+| Tiri | 44,2 | 33 | 46 |
+| Tiri in gol | 39,3% | 40% | 39% |
+| Espulsioni | 7,7 (71,5% lotta al centro) | 11 (66%) | 9,1 |
+| Rigori | 2,3 (segnati 80,6%) | 1,8 | 1,1 |
+| Superiorità trasformate | 63,4% | 52% | — |
+| Tiri in controfuga | 8,6% | 3% | 13% |
+
+Gol da entrata 0%; ITA–HUN 0 vittorie su 8 (un pareggio). Restano da tarare: troppi tiri e gol, poche espulsioni, superiorità troppo efficaci, controfughe sopra il reale.
+
+**CAMBI** (basso centro) su 667×300 (SE con barre di Safari), 852×340 e 932×430: nessuna sovrapposizione con comandi, joystick, pannello, lotta al centro e tabellone. Sull'SE il testo del consiglio è troncato con i puntini.
+
+**Editor strategie e carte tattiche in pausa**: nessuno sbordo laterale nelle tre misure; a 300 di altezza si vede poco per volta e serve scorrere.
+
+**Home su iPhone** (foto di Ale): fascia di un altro colore in fondo, versione nascosta in verticale e immagine tagliata dritta in orizzontale. Corretto in `src/stile.css` e `index.html` (menu esteso sotto le barre con `100lvh`, schermate nell'area visibile con `100dvh`, sfondo e `theme-color` uguali al menu, giocatore fino al bordo con sfumatura, versione sopra la sfumatura). `npm run menu -- --no-build --solo-controlli` PASS.
