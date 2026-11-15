@@ -53,7 +53,9 @@ prova(vista.coda.length === 1, `cambio programmato con un tocco: ${vista.coda.jo
 const volante = await pg.evaluate(() => {
   const H = window.__pallanuoto, t = H.teams[0], p = t.players[4], entra = t.coda[0].entra.num, esce = p.num;
   document.getElementById('riprendi').click(); H.game.cambiLiberi = false;
-  const gkO = H.teams[1].players[0], ferma = () => { if (H.ball.holder !== gkO) H.regole.giveBall(gkO); H.ball.holdTime = 0; gkO.decideT = 99; gkO.reazioneT = 99; gkO.act = null; };      // niente gol durante la prova
+  // palla ferma al NOSTRO portiere (niente gol durante la prova): la squadra è in possesso, il momento giusto per un cambio volante
+  // (dalla v0.42 mai mentre si difende, richiesta di Ale)
+  const gkO = H.teams[0].players[0], ferma = () => { if (H.ball.holder !== gkO) H.regole.giveBall(gkO); H.ball.holdTime = 0; gkO.decideT = 99; gkO.reazioneT = 99; gkO.act = null; };
   for (let i = 0; i < 200; i++) { ferma(); window.__salta(1); }
   const r = { fermato: false, comparsaVista: false, cinque: false, fasi: [], tempo: 0 };
   for (let i = 0; i < 60 * 25 && (t.cambio || (t.coda && t.coda.length)); i++) {
@@ -142,6 +144,27 @@ const attesa = await pg.evaluate(() => {
 });
 prova(attesa.aspetta, 'cambio scelto in pausa: con la squadra in difesa vicino alla porta e il giocatore vicino alla palla aspetta');
 prova(attesa.partito && attesa.fatto, 'appena è il momento utile (palla nostra, lui lontano dall\'azione) il cambio volante parte');
+
+// ---------- consiglio sul pulsante CAMBI (v0.42, richieste di Ale): mai a inizio partita, mai mentre si difende ----------
+const regole42 = await pg.evaluate(() => {
+  const H = window.__pallanuoto, t = H.teams[0], O = H.teams[1], p = t.players[4];
+  H.game.state = 'play'; H.game.after = null; H.game.cambiLiberi = false; t.coda = []; t.cambio = null;
+  for (const q of t.players) if (!q.isGK) q.stamina = 0.95;
+  p.stamina = 0.2;
+  const testo = () => { window.__salta(40); return document.getElementById('tCambi').dataset.stato; };
+  const tempoVero = H.game.time;
+  // squadra in attacco, lui lontano dalla palla, ma partita appena cominciata
+  H.regole.giveBall(t.players[0]); H.game.time = 10; const inizio = testo();
+  H.game.time = Math.max(tempoVero, 200);
+  // squadra in difesa: palla agli avversari
+  H.regole.giveBall(O.players[0]); O.players[0].decideT = 99; O.players[0].reazioneT = 99; const difesa = testo();
+  // squadra in attacco
+  H.regole.giveBall(t.players[0]); t.players[0].decideT = 99; t.players[0].reazioneT = 99; const attacco = testo();
+  return { inizio, difesa, attacco };
+});
+prova(regole42.inizio === 'vuoto', `nessun cambio consigliato nei primi 90 s di partita (stato ${regole42.inizio})`);
+prova(regole42.difesa === 'vuoto', `nessun cambio consigliato mentre la squadra difende (stato ${regole42.difesa})`);
+prova(regole42.attacco === 'consiglio', `in attacco il cambio per chi è stanco torna consigliato (stato ${regole42.attacco})`);
 
 // ---------- formazione scelta nella schermata Squadre ----------
 const form = await pg.evaluate(() => {

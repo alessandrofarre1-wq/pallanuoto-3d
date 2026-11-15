@@ -458,7 +458,10 @@ export function aiCarrier(p,dt){
     // o in controfuga, con pochi difensori davanti, si tira subito
     const davanti=difensoriDavanti(p);
     // (con l'uomo in più si fa girare palla qualche secondo prima di cercare il tiro; la controfuga vera è con nessuno davanti)
-    const pazienza = davanti===0 ? 1 : manUp(t) ? clamp((15.5-game.shot)/4,0,1) : clamp((SHOT_CLOCK-game.shot-PAZIENZA[0])/PAZIENZA[1],0,1);
+    // ...ma chi è DAVVERO libero (buon angolo, nessun avversario entro 1,8 m, traiettoria sgombra) non aspetta: segnalazione di Ale
+    // (15/11/2026, «hanno chiare occasioni da gol ma non tirano»); prima tirava solo dopo 23 s di possesso o appena ricevuta palla
+    const libero = dGoal<7.5 && press>1.8 && lane && Math.abs(gx-p.x)/Math.max(0.1,dGoal)>0.55;
+    const pazienza = davanti===0||libero ? 1 : manUp(t) ? clamp((15.5-game.shot)/4,0,1) : clamp((SHOT_CLOCK-game.shot-PAZIENZA[0])/PAZIENZA[1],0,1);
     // con l'uomo in più l'esterno, che ha poco angolo, tira di rado: cerca l'uomo al palo o chi sta ai 5 metri
     const angolo = manUp(t) ? clamp(Math.abs(gx-p.x)/Math.max(0.1,dGoal)*2,0.15,1) : 1;
     // si tira quando si è liberi: subito dopo un passaggio che ha liberato il tiratore o cambiato lato; con il difensore davanti

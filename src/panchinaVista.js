@@ -2,7 +2,7 @@
 // e gol; suggerimenti per chi è stanco; si sceglie chi esce e chi entra e il cambio volante parte quando si riprende a giocare.
 import { CHIAVE, RUOLI, STAT_NOMI } from './dati/rose.js';
 import { iconaMano } from './mano.js';
-import { PANCHINA, RUOLI_BREVI, annullaRichiesta, chiediCambio, consigli } from './panchina.js';
+import { PANCHINA, RUOLI_BREVI, annullaRichiesta, chiediCambio, consigli, consiglioInGioco } from './panchina.js';
 import { teams } from './stato.js';
 import { annuncia } from './cronaca.js';
 let sel = null;      // giocatore in acqua scelto per uscire
@@ -47,7 +47,7 @@ export function azzeraScelta() { sel = null; }
 let ultimo = 0;
 const nomeDi = p => (p.scheda && p.scheda.nomeIntero) || p.name;
 const cognomeDi = g => g.nome || '';
-export function consiglioAdesso() { const t = teams[0]; return t.rosa ? consigli(t, 1)[0] || null : null; }
+export function consiglioAdesso() { const t = teams[0]; return t.rosa ? consiglioInGioco(t) : null; }
 export function cambioRapido() {
   const t = teams[0], c = consiglioAdesso();
   if (!c) { annuncia('avviso', 'Nessun cambio consigliato', { dettaglio: 'per scegliere tu: pausa → Cambi e panchina', durata: 1.6 }); return false; }
