@@ -33,6 +33,9 @@ jobs:
       - run: npm run tornei-menu -- --no-build
       - run: npm run rigori-finali -- --no-build
       - run: npm run gameplay -- --no-build
+      - run: npm run centroboa -- --no-build
+      - run: npm run tattica -- --no-build
+      - run: npm run strategie -- --no-build
       - run: npm run fisica-palla -- --no-build
       - run: npm run fisica-acqua
       - run: npm run sezione1 -- --no-build

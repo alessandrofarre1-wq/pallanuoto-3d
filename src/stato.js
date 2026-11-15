@@ -20,4 +20,4 @@ export const game = {state:'menu',period:1,clock:180,shot:SHOT_CLOCK,time:0,time
 export let ctrl = null;         // giocatore controllato dall'umano
 export function setCtrl(p){ ctrl = game.autoplay ? null : p; }      // in "computer contro computer" nessuno è controllato
 // lotta al centro (centroboa contro il suo marcatore)
-export const fight={active:false,v:0,boa:null,def:null,holdT:0,decT:0,foamT:0};
+export const fight={active:false,v:0,boa:null,def:null,holdT:0,decT:0,foamT:0,stato:null,apertura:0,ricevibile:false};

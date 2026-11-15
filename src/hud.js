@@ -69,26 +69,36 @@ export function updateHUD(){
   const fe=$('fight');
   if(fight.active){
     fe.style.display='block';
+    const stato=fight.ricevibile?'Boa servibile':fight.stato==='anticipo'?'Anticipo difesa':'Cerca il lato';
+    $('fstato').textContent=stato;
+    fe.setAttribute('aria-label',`${stato}. Apertura del passaggio ${Math.round((fight.apertura||0)*100)} per cento`);
+    fe.title='La barra mostra la posizione sulla linea di passaggio. Taglio con palla al boa: girata; Sprint sostiene il tagliafuori.';
     $('fdef').textContent=fight.def.team.short+' #'+fight.def.num; $('fboa').textContent=fight.boa.team.short+' #'+fight.boa.num+' boa';
     const v=fight.v, fb=$('fbar');
     fb.style.left=(v>=0?50:50+v*50)+'%'; fb.style.width=(Math.abs(v)*50)+'%';
     fb.style.background=v>=0?fight.boa.team.css:fight.def.team.css;
   } else fe.style.display='none';
   const hum=teams[0], ai=teams[1], atk=game.possTeam===hum;
-  const key=(atk?'a'+hum.atkPlay:'d'+hum.defPlay)+'|'+ai.defPlay+ai.atkPlay+'|'+schemiAperti;
+  const piano=atk&&hum.schema?hum.schema.nome:null;
+  const key=(atk?'a'+hum.atkPlay:'d'+hum.defPlay)+'|'+ai.defPlay+ai.atkPlay+'|'+schemiAperti+'|'+piano;
   if(key!==tacKey){
     tacKey=key;
     const names=atk?ATK:DEFN, cur=atk?hum.atkPlay:hum.defPlay;
     // barra degli schemi: su telefono è chiusa (si vede solo lo schema in uso) e si apre con un tocco
     let h;
     // chiusa si vede solo il proprio schema (lo schema avversario si legge aprendo la barra: in gioco non serve sempre)
-    if(!schemiAperti) h=`<span class="chip on" data-apri="1">${atk?'ATT':'DIF'}: ${names[cur]} ▾</span>`;
+    if(!schemiAperti) h='<span class="chip on" data-apri="1"></span>';
     else {
       h=`<span class="chip lab" data-apri="1">${atk?'ATTACCO':'DIFESA'}${TOUCH?' ▴':''}</span>`;
       names.forEach((n,i)=>{ h+=`<span class="chip${i===cur?' on':''}" data-i="${i}">${i+1} ${n}</span>`; });
       h+=`<span class="chip lab">${ai.short}: ${(atk?DEFN[ai.defPlay]:ATK[ai.atkPlay]).toLowerCase()}</span>`;
     }
     $('tac').innerHTML=h;
+    if(!schemiAperti){
+      const chip=$('tac').firstElementChild;
+      chip.textContent=`${atk?'ATT':'DIF'}: ${piano||names[cur]} ▾`;
+      chip.title=piano||names[cur];
+    }
   }
 }
 

@@ -181,6 +181,15 @@ export function computePose(p,dt,t){
     hR=add3(J.sR,off); hintR=[-0.4,-0.6,1];
     // palmo: sotto la palla caricando, verso la porta al rilascio, in giù nella chiusura
     nR=mix3(mix3([0.35,0.95,0],[1,0.15,0],w),[0.3,-0.9,0],f);
+    // FIN pp.14–16: il corpo minaccia la porta, il solo braccio indirizza il passaggio.
+    // La posa del mancino sarà specchiata sotto: invertiamo prima l'angolo locale.
+    if(th===THROW.pass && act?.aim){
+      const dx=act.aim[0]-p.x,dz=act.aim[1]-p.z;
+      const avanti=dx*p.fx+dz*p.fz,lato=(-dx*p.fz+dz*p.fx)*(p.mano==='S'?-1:1);
+      const ang=Math.atan2(lato,avanti)*c*(1-f),ca=Math.cos(ang),sa=Math.sin(ang);
+      const ruota=v=>[v[0]*ca-v[2]*sa,v[1],v[0]*sa+v[2]*ca];
+      hR=add3(J.sR,ruota(off)); nR=ruota(nR); hintR=ruota(hintR);
+    }
     if(th===THROW.schizzo) nR=[1,-0.3,0];      // schiaffo: palmo dritto contro la palla
     // schizzo: la mano debole tiene la palla a pelo d'acqua davanti al corpo finché la mano forte non la colpisce
     if(schizzo&&w<1){ hL=add3(J.sL,[0.44,-0.10,0.22]); hintL=[0,-1,-0.4]; nL=[0,1,0]; }      // palmo in su, sotto la palla

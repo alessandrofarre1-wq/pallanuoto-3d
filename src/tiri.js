@@ -1,11 +1,13 @@
 // ================= PASSAGGI E TIRI =================
 import { registraTiro, tipoDiTiro } from './statistiche.js';
 import { ALZATA, clamp, dist, gauss, rnd } from './costanti.js';
-import { manUp, postoPortiere, setteControSei, startCut } from './ia.js';
+import { manUp, postoPortiere, setteControSei } from './ia.js';
+import { leggiCentro } from './centroboa.js';
+import { schemaSquadra, viciniPerimetro } from './schemi.js';
 import { velocitaDiLancio } from './palla.js';
 import { paloCoperto } from './muro.js';
 import { P } from './fisica-palla/parametri.js';
-import { allPlayers, ball, fight, game, goalX, other, setCtrl, teams } from './stato.js';
+import { allPlayers, ball, game, goalX, other, setCtrl, teams } from './stato.js';
 export function startAct(p,kind,wind,fn,aim){
   // sotto pressione (contrasto di disturbo) non si tira: si può solo passare o proteggere la palla; il rigore no
   if(kind!=='pass'&&kind!=='fake'&&p.pressatoUntil>game.time&&game.penalty!==p) return false;
@@ -52,6 +54,24 @@ export function laneClear(a,bx,bz,team,rad=0.6){
   return true;
 }
 export function openness(m){ let best=99; for(const o of other(m.team).players){ if(o.excluded) continue; best=Math.min(best,dist(o,m)); } return best; }
+// Corridoio al tempo di arrivo: una diagonale lunga dà al difensore il tempo di entrarci.
+// Il rischio guida le scelte; intercetti e traiettoria restano quelli della fisica di gioco.
+export function passLaneRisk(p,m){
+  const dx=m.x-p.x,dz=m.z-p.z,L2=dx*dx+dz*dz,L=Math.sqrt(L2);
+  if(L<0.1) return 1;
+  const speed=8.5+3.5*(p.st?.pas||0.7); let risk=0;
+  for(const o of other(p.team).players){
+    if(o.excluded||game.time<o.stunUntil) continue;
+    const u=((o.x-p.x)*dx+(o.z-p.z)*dz)/L2;
+    if(u<0.06||u>0.96) continue;
+    const time=u*L/speed,anticipa=Math.min(time,0.35)*0.65;
+    const ox=o.x+(o.vx||0)*anticipa,oz=o.z+(o.vz||0)*anticipa;
+    const clearance=Math.hypot(ox-p.x-u*dx,oz-p.z-u*dz);
+    const reach=0.52+Math.min(0.55,time*1.4);
+    risk=Math.max(risk,clamp((reach-clearance)/reach,0,1));
+  }
+  return risk;
+}
 // che tipo di tiro parte in questa situazione
 // 0-1: quanto il giocatore riesce ad alzarsi e a restare stabile sulle gambe (Forza, Resistenza, stanchezza)
 export const elevazione = p => ((p.s.frz-40)/59*0.5+(p.s.res-40)/59*0.5)*(0.55+0.45*p.stamina);
@@ -59,31 +79,44 @@ export function shotKind(p){
   if(game.penalty===p) return 'shot';
   // centroboa spalle alla porta: beduina (braccio che gira all'esterno) oppure sciarpa (braccio che attraversa il corpo,
   // come per mettersi una sciarpa); il centroboa alterna i due gesti
-  if(p.i===1 && !(p.turnedUntil>game.time) && Math.hypot(goalX(p.team)-p.x,p.z)<4.5) return (p.tiriDiSchiena||0)%2 ? 'sciarpa' : 'beduina';
+  if(Math.hypot(goalX(p.team)-p.x,p.z)<4.5){
+    const def=other(p.team).players.filter(q=>!q.excluded&&!q.isGK).sort((a,b)=>dist(a,p)-dist(b,p))[0];
+    const lettura=leggiCentro(p,def,p),dx=goalX(p.team)-p.x,dz=-p.z;
+    const fronte=(p.fx*dx+p.fz*dz)/(Math.hypot(dx,dz)||1);
+    if(lettura.spalle&&fronte<-.2) return (p.tiriDiSchiena||0)%2?'sciarpa':'beduina';
+  }
   // colonnello e schizzo: solo in controfuga, con il tasto a comparsa (controfuga.js)
   return 'shot';
 }
 export function bestPassTarget(p,variabile=true){
-  let best=null, bs=-1e9; const sup=manUp(p.team);
+  let best=null,bs=-1e9; const sup=manUp(p.team),schema=schemaSquadra(p.team),gx=goalX(p.team),press=openness(p);
   for(const m of p.team.players){
     if(m===p||m.excluded||m.uscendo||(m.isGK&&!setteControSei(p.team))) continue;
-    const d=dist(p,m); if(d<2) continue;
-    const dg=Math.hypot(goalX(p.team)-m.x,m.z);
-    let s=Math.min(openness(m),3)*1.3 - dg*0.15 + (laneClear(p,m.x,m.z,p.team)?1.2:-2.5) - d*0.04;
-    if(m.i===1 && fight.active && fight.boa===m) s+= (fight.v>0?1.6:0.4) + (p.team.atkPlay===3?1.5:0);   // palla al boa
-    if(m.i===1 && other(p.team).defPlay===3) s-=2.2;      // la zona a M taglia fuori il centroboa
-    // Visione: chi ne ha poca sceglie peggio il compagno a cui passare
-    // schemi dell'uomo in più: dai 5 metri la palla va all'esterno opposto (il portiere deve attraversare la porta); dall'esterno
-    // torna ai 5 metri o va sull'uomo al palo lontano; mai due volte di fila allo stesso compagno
-    if(sup){
-      const lato=Math.sign(p.z||1), opposto=Math.sign(m.z||1)!==lato;
-      if((p.i===4||p.i===5) && (m.i===2||m.i===3)) s+=opposto?2.6:0.8;
-      if((p.i===2||p.i===3) && (m.i===4||m.i===5)) s+=opposto?1.4:1.8;
-      if((p.i===2||p.i===3) && (m.i===1||m.i===6) && opposto) s+=1.2;
-      if((m.i===1||m.i===6) && laneClear(p,m.x,m.z,p.team,0.5)) s+=(p.i===4||p.i===5)?1.6:1.0;      // palla all'uomo al palo, che tira subito
-      if(m===p.daChi) s-=1.5;
+    const d=dist(p,m); if(d<1.2) continue;
+    const dg=Math.hypot(gx-m.x,m.z),aperto=openness(m),risk=passLaneRisk(p,m),linea=laneClear(p,m.x,m.z,p.team,0.55);
+    const interno=(!sup&&m.i===1)||(sup&&(m.i===1||m.i===6));
+    if(interno){
+      const def=other(p.team).players.filter(q=>!q.excluded&&!q.isGK).sort((a,b)=>dist(a,m)-dist(b,m))[0];
+      if(!leggiCentro(m,def,p).ricevibile||!linea||risk>0.3) continue;
     }
-    if(variabile) s+=(rnd()-0.5)*(99-p.s.vis)/59*3.5;
+    const vicino=viciniPerimetro(p.i,m.i,sup),perimetro=!interno&&!p.isGK&&!(p.i===1||sup&&p.i===6);
+    if(perimetro&&!vicino){
+      const gk=other(p.team).players[0];
+      const fuoriPosto=Math.abs(gk.z-postoPortiere(gk.team,m.x,m.z));
+      const guadagno=aperto>2&&(aperto>Math.min(press,3)+0.8||fuoriPosto>0.65||dg<Math.hypot(gx-p.x,p.z)-1.8);
+      // Uno skip coperto non diventa conveniente per un bonus di posizione o un numero casuale.
+      if(!linea||risk>0.18||!guadagno) continue;
+    }
+    let s=Math.min(aperto,3)*1.2-dg*0.14-d*0.07-risk*6+(linea?0.8:-2.8);
+    if(vicino) s+=schema.passaggi==='vicini'?2.4:schema.passaggi==='equilibrati'?1.7:1.25;
+    if(interno) s+=1.6+(schema.id==='boa'&&!sup?0.8:0);
+    // Una ricezione che libera un tiro ravvicinato prevale sul semplice appoggio laterale.
+    const occasione=aperto>2.1&&dg<8.5&&Math.abs(gx-m.x)/Math.max(0.1,dg)>0.5&&
+      (dg<Math.hypot(gx-p.x,p.z)-1||sup&&Math.sign(m.z)!==Math.sign(p.z));
+    if(occasione&&linea&&risk<0.18) s+=2.6;
+    // Un ritorno può essere la risposta corretta alla difesa: si limita solo il ping-pong senza progresso.
+    if(m===p.daChi&&ball.holdTime<0.35&&!interno) s-=0.35;
+    if(variabile) s+=(rnd()-0.5)*clamp((99-p.s.vis)/59,0,1)*0.8;
     if(s>bs){ bs=s; best=m; }
   }
   return best;
@@ -113,8 +146,7 @@ export function doPass(p,m){
   game.passaggi=(game.passaggi||0)+1; if(Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1)) game.cambiLato=(game.cambiLato||0)+1;
   m.daChi=p; ball.cambioLato=Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1);      // passaggio da un lato all'altro: chi riceve può tirare al volo
   if(p.team===teams[0]) setCtrl(m);
-  // dai e vai: chi passa dal perimetro può tagliare verso la porta
-  if(!p.isGK && p.i>=4 && !manUp(p.team) && (p.team.atkPlay===1||rnd()<0.35)) startCut(p);
+  // Le entrate sono coordinate da aggiornaSchemi: nessun taglio casuale in conflitto con l'editor.
 }
 // Situazione di chi sta per tirare (usata dal tiro e dalle scelte del computer):
 // marcato 0-1 = difensore vicino, tra lui e la porta, con il braccio alto; liberato = palla appena ricevuta su passaggio e
@@ -123,12 +155,11 @@ export function doPass(p,m){
 export function situazioneTiro(p){
   const t=p.team, gx=goalX(t), dP=Math.hypot(gx-p.x,p.z)||1; let marcato=0, vicino=99;
   for(const o of other(t).players){
-    if(o.excluded||o.isGK||game.time<o.stunUntil||(p.turnedUntil>game.time&&o===fight.def)) continue;
+    if(o.excluded||o.isGK||game.time<o.stunUntil) continue;
     const dd=dist(o,p); vicino=Math.min(vicino,dd); if(dd>2) continue;
     const cs=((o.x-p.x)*(gx-p.x)+(o.z-p.z)*(-p.z))/((dd||1)*dP);
     if(cs>0.4) marcato=Math.max(marcato,clamp((2-dd)/1.1,0,1)*clamp((cs-0.4)/0.4,0,1));
   }
-  if(manUp(t)) marcato*=0.45;      // con l'uomo in più ogni difensore deve guardarne due: il braccio arriva tardi
   const da=game.time-(p.ricevutoT||0)-(p.act?p.act.t:0);      // tempo tra la ricezione e l'inizio del gesto
   return { marcato, vicino, liberato:!!p.ricevutoPassaggio&&da<1.5&&vicino>1.8, dopoCambio:!!p.ricevutoCambio&&da<1.5, daFermo:da>2.5 };
 }
@@ -143,7 +174,7 @@ export function doShoot(p,power,lob,aimZ,o){
   let az = aimZ!=null ? clamp(aimZ*1.28,-1.28,1.28) : -Math.sign(gk.z||(rnd()-0.5))*(0.85+rnd()*0.38);
   let ay = lob ? 0.55 : 0.15+rnd()*0.55;
   const d=Math.hypot(gx-p.x,az-p.z);
-  let press=99; for(const o of other(t).players){ if(!o.excluded&&!o.isGK&&game.time>=o.stunUntil&&!(p.turnedUntil>game.time&&o===fight.def)) press=Math.min(press,dist(o,p)); }
+  let press=99; for(const o of other(t).players){ if(!o.excluded&&!o.isGK&&game.time>=o.stunUntil) press=Math.min(press,dist(o,p)); }
   // un tiro marcato stretto è molto meno preciso: gli schemi servono a liberare il tiratore
   // Precisione: tra 60 e 90 l'errore di mira cala di quasi quattro volte (dallo stesso punto, circa il doppio dei tiri nello specchio).
   // Dalla tesi: la precisione NON dipende dalla velocità del tiro (nessuna correlazione), quindi tirare forte non costa mira;
@@ -155,7 +186,7 @@ export function doShoot(p,power,lob,aimZ,o){
   // QUANTO È LIBERO CHI TIRA. Un difensore davanti con il braccio alto (tra il tiratore e la porta) rende il tiro molto più
   // difficile; chi tira subito dopo aver ricevuto, senza nessuno addosso, è stato "liberato" dal passaggio e tira meglio.
   const dPorta=Math.hypot(gx-p.x,p.z), q=situazioneTiro(p);
-  const errBase=(1+0.75*q.marcato)*(q.liberato?0.8:1)*(1+Math.max(0,dPorta-7)*0.3)*1.08*0.27*(1+(1-p.stamina)*1.3)*(classico?1:1.3)*mira(p.s.pre)*(1+clamp(1.4-press,0,1)*0.9*(1.45-0.9*elev))*(o.volo?1.15:1)*(p.fakeUntil>game.time?0.65:1)*(p.turnedUntil>game.time?0.6:1);
+  const errBase=(1+0.75*q.marcato)*(q.liberato?0.8:1)*(1+Math.max(0,dPorta-7)*0.3)*1.08*0.27*(1+(1-p.stamina)*1.3)*(classico?1:1.3)*mira(p.s.pre)*(1+clamp(1.4-press,0,1)*0.9*(1.45-0.9*elev))*(o.volo?1.15:1)*(p.fakeUntil>game.time?0.65:1);
   // Mano: dal lato destro della vasca tira meglio un mancino, dal sinistro un destro (angolo migliore sulla porta)
   const lato=Math.abs(p.z)>1.5?Math.sign(p.z*t.dir):0, mano=lato===0?1:((p.mano==='S')===(lato>0)?0.92:1.2);
   az+=gauss()*errBase*mano*(0.45+d*0.09); ay+=gauss()*errBase*mano*0.35;

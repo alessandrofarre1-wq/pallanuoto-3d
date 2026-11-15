@@ -1,6 +1,8 @@
 // ================= IA =================
 import { difensoriDavanti } from './statistiche.js';
-import { DEF_DOWN, FORM, FORM_UP, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
+import { DEF_DOWN, FORM, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
+import { anticipoTarget, centroTarget, leggiCentro } from './centroboa.js';
+import { schemaSquadra } from './schemi.js';
 import { doFake, timeout } from './regole.js';
 import { annuncia as notifica } from './cronaca.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
@@ -9,16 +11,43 @@ import { QTE, aiControfuga, occasioneControfuga, tiroSpeciale } from './controfu
 import { bestPassTarget, doPass, doShoot, laneClear, openness, shotKind, situazioneTiro, startAct } from './tiri.js';
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 export function startCut(p){
-  if(p.isGK||p.excluded||ball.holder===p) return;
+  if(p.isGK||p.excluded||ball.holder===p||manUp(p.team)||p.team.players.some(q=>q!==p&&q.cut)) return false;
   const t=p.team, side=Math.abs(p.z)<0.5?(rnd()<0.5?1:-1):Math.sign(p.z);
   p.cut={t0:game.time,phase:0,x:goalX(t)-t.dir*2.6,z:side*1.7}; p.cutT=game.time;
+  const cover=t.players.filter(q=>q!==p&&q!==ball.holder&&q!==ctrl&&!q.isGK&&!q.excluded&&!q.uscendo)
+    .sort((a,b)=>(b.i===6?10:0)+Math.abs(goalX(t)-b.x)-(a.i===6?10:0)-Math.abs(goalX(t)-a.x))[0];
+  if(cover) t.copertura={chi:cover,entrante:p,possT:game.possT,d:Math.max(6.8,schemaSquadra(t).attacco[p.i-1][0]),z:p.i===6?0:schemaSquadra(t).attacco[cover.i-1][1]};
+  return true;
+}
+// Un solo tagliante e una copertura: l'editor sceglie il ruolo, la situazione decide quando parte.
+export function aggiornaSchemi(t){
+  const s=schemaSquadra(t);
+  if(!t.schemaStato||t.schemaStato.possT!==game.possT||t.schemaStato.schema!==s){
+    t.schemaStato={possT:game.possT,schema:s,next:game.time+0.6}; t.copertura=null; t.aiutoStato=null;
+    for(const p of t.players) p.cut=null;
+  }
+  for(const p of t.players) if(p.cut&&(p.excluded||p.uscendo||game.time-p.cut.t0>6.4)) p.cut=null;
+  if(game.possTeam!==t){ t.copertura=null; for(const p of t.players) p.cut=null; return; }
+  if(t.copertura&&(!t.copertura.entrante.cut||t.copertura.chi.excluded||t.copertura.chi===ball.holder)) t.copertura=null;
+  const h=ball.holder,p=t.players[s.entrata],st=t.schemaStato;
+  if(!s.entrata||manUp(t)||!h||h.team!==t||h.isGK||!p||p===h||p===ctrl||p.excluded||p.uscendo||p.cut||game.time<st.next||
+    Math.abs(goalX(t)-h.x)>8.5||dist(h,p)<3||t.players.some(q=>q.cut)) return;
+  // Entrare dietro il difensore che si è abbassato o quando il lato opposto tiene la palla.
+  const def=other(t).players.find(q=>!q.excluded&&MARK[q.i]===p.i);
+  const spazio=!def||Math.abs(goalX(t)-def.x)<Math.abs(goalX(t)-p.x)-0.6||Math.sign(h.z)!==Math.sign(p.z);
+  if(spazio&&startCut(p)) st.next=game.time+7;
+}
+function riferimentoPalla(t){
+  if(ball.holder?.team===t) return ball.holder;
+  if(ball.state==='flight'&&ball.kind==='pass'&&ball.target?.team===t) return ball.target;
+  return null;
 }
 // Piccoli appoggi attorno al posto di ruolo, senza trasformare tutti gli attaccanti in taglianti.
 // La scelta resta ferma per un secondo: niente inversioni a ogni fotogramma quando si apre la linea.
 function appoggio(p,x,z,sup){
-  const h=ball.holder;
+  const h=riferimentoPalla(p.team);
   let a=p.appoggio;
-  if(!h||h.team!==p.team||h===p||p===ctrl||p.uscendo||(fight.active&&fight.boa===p)){
+  if(!h||h===p||p===ctrl||p.uscendo||(!sup&&fight.active&&fight.boa===p)){
     if(a){ a.h=null; a.fino=0; } return null;
   }
   if(!a) a=p.appoggio={h:null,possT:-1,dx:0,dz:0,fino:0,dopo:0,checkT:0};
@@ -36,7 +65,7 @@ function appoggio(p,x,z,sup){
     const cx=x+(dx/l*Math.sin(ang)-dz/l*Math.cos(ang))*r;
     const cz=clamp(z+(dz/l*Math.sin(ang)+dx/l*Math.cos(ang))*r,-HW+0.5,HW-0.5);
     if(Math.abs(z)>1.5&&Math.sign(cz)!==Math.sign(z)) continue;
-    if(Math.abs(cz)<3.5&&Math.abs(goalX(p.team)-cx)<2.05) continue;
+    if(Math.abs(cz)<3.58&&Math.abs(goalX(p.team)-cx)<Math.min(2.08,Math.abs(goalX(p.team)-h.x)+0.2)) continue;
     let vicino=99,compagno=99;
     for(const q of other(p.team).players){ if(!q.excluded) vicino=Math.min(vicino,Math.hypot(q.x-cx,q.z-cz)); }
     for(const q of p.team.players){ if(q!==p&&!q.excluded) compagno=Math.min(compagno,Math.hypot(q.x-cx,q.z-cz)); }
@@ -47,6 +76,32 @@ function appoggio(p,x,z,sup){
   if(best<base+0.7) return null;
   a.dx=bx-x; a.dz=bz-z; a.fino=game.time+(sup?1.2:1); a.dopo=a.fino+0.6;
   return a;
+}
+function paloTarget(p,f){
+  const t=p.team,gx=goalX(t),h=riferimentoPalla(t),side=Math.sign(f[1]||1);
+  let d=f[0],z=f[1];
+  if(h&&h!==p){
+    const hd=Math.abs(gx-h.x),hz=h.z*t.dir,near=side===Math.sign(hz||1);
+    if(near){
+      // Il palo vicino esce sulla ricezione esterna; il lontano resta sulla linea.
+      const tx=gx-t.dir*(d+0.9),tz=(z+Math.sign(hz-z)*0.45)*t.dir;
+      const chiuso=other(t).players.some(q=>!q.excluded&&!q.isGK&&Math.hypot(q.x-tx,q.z-tz)<0.95);
+      if(!chiuso){ d+=hd>3.8?1.15:0.85; z+=(hz-z)*0.18; }
+    }else{
+      const vicino=t.players[p.i===1?6:1];
+      const centraleSegue=vicino&&other(t).players.some(q=>!q.excluded&&!q.isGK&&Math.abs(q.z)<2.2&&dist(q,vicino)<1.65);
+      if(centraleSegue) z+=Math.sign(hz||1)*Math.min(0.9,Math.abs(z)*0.55);
+    }
+    d=Math.max(Math.min(2.1,hd+0.2),d);
+  }
+  let x=gx-t.dir*d,zz=z*t.dir;
+  // Non correre da una marcatura dentro la seconda: arretra il candidato prima del nuovo ostacolo.
+  const bx=gx-t.dir*f[0],bz=f[1]*t.dir;
+  for(const q of other(t).players){
+    if(q.excluded||q.isGK||Math.hypot(q.x-bx,q.z-bz)<1) continue;
+    if(Math.hypot(q.x-x,q.z-zz)<1){ x=(x+bx)*0.5; zz=(zz+bz)*0.5; }
+  }
+  return {x,z:zz,sprint:Math.hypot(x-p.x,zz-p.z)>1.5};
 }
 export function attackTarget(p){
   const t=p.team, gx=goalX(t);
@@ -59,18 +114,19 @@ export function attackTarget(p){
   }
   let f;
   const sup=manUp(t);
-  if(sup) f=FORM_UP[p.i];
-  else if(p.i===1 && fight.active && fight.boa===p){ f=[FORM[1][0]+Math.max(0,-fight.v)*1.3, FORM[1][1]]; }
-  else {
-    f=[FORM[p.i][0],FORM[p.i][1]];
-    if(t.cross&&(p.i===4||p.i===5)) f[1]=-f[1];
-    if(t.atkPlay===3){ if(p.i===1) f[1]=clamp(ball.z*t.dir*0.25,-1.2,1.2); else { f[0]*=1.08; f[1]*=1.1; } }
+  const s=schemaSquadra(t);
+  f=[...(sup?s.superiorita:s.attacco)[p.i-1]];
+  if(!sup&&t.copertura?.chi===p&&t.copertura.entrante.cut) return {x:gx-t.dir*t.copertura.d,z:t.copertura.z*t.dir};
+  if(!sup&&p.i===1){
+    const tg=centroTarget(p),d=Math.max(Math.abs(gx-tg.x),Math.abs(gx-ball.x)-14);
+    return {...tg,x:gx-t.dir*d};
   }
   // la squadra sale insieme alla palla: nessuno può stare troppo avanti rispetto a chi la porta
   // ognuno sale lungo la propria corsia, scaglionato per ruolo (boa e ali avanti, mezzi a metà, punto in copertura)
   const ballD=Math.abs(gx-ball.x), lead=[0,14,12,12,8,8,4][p.i];
   let f0=f[0], fz=f[1];
   if(ballD-lead>f0) f0=ballD-lead;
+  if(sup&&(p.i===1||p.i===6)&&ballD<9) return paloTarget(p,[f0,fz]);
   const x=gx-t.dir*f0,z=clamp(fz*t.dir+(sup?0:Math.sin(game.time*0.6+p.uid)*0.35),-HW+0.5,HW-0.5);
   const a=appoggio(p,x,z,sup),ax=x+(a?a.dx:0),az=z+(a?a.dz:0);
   if(sup) return { x:ax, z:az, sprint:Math.hypot(ax-p.x,az-p.z)>1.5 };
@@ -81,14 +137,35 @@ export function attackTarget(p){
 // Poi la zona scivola verso il lato della palla e chi sta davanti al palo esce con il braccio alto su chi ha palla ai 5 metri.
 function postiInferiorita(t){
   if(t.postiT===game.time) return t.posti;
-  const ogx=ownGoalX(t), defs=t.players.filter(q=>!q.excluded&&!q.isGK), liberi=new Set(defs), m=new Map(), h=ball.holder;
-  const sciv=clamp(ball.z*0.18,-1,1);
-  for(const s of DEF_DOWN.slice(0,defs.length)){
+  const ogx=ownGoalX(t),defs=t.players.filter(q=>!q.excluded&&!q.isGK),m=new Map(),h=riferimentoPalla(other(t));
+  let ruoli=t.postiAssegnati;
+  if(!ruoli||ruoli.size!==defs.length||defs.some(q=>!ruoli.has(q))){
+    ruoli=new Map();const liberi=new Set(defs);
+    for(let i=0;i<Math.min(DEF_DOWN.length,defs.length);i++){
+      const s=DEF_DOWN[i],x=ogx+t.dir*s[0];let b=null,bd=Infinity;
+      for(const q of liberi){const d=Math.hypot(q.x-x,q.z-s[1]);if(d<bd){b=q;bd=d;}}
+      liberi.delete(b);ruoli.set(b,i);
+    }
+    t.postiAssegnati=ruoli;
+  }
+  const sciv=clamp((h?h.z:ball.z)*0.18,-1,1);
+  for(const [q,i] of ruoli){
+    const s=DEF_DOWN[i];
     let x=s[0], z=s[1]+sciv;
-    if(s[0]>3 && h && h.team!==t && Math.abs(ogx-h.x)>4 && Math.sign(h.z||1)===Math.sign(s[1])){ x=Math.min(Math.abs(ogx-h.x)-1.9,4.0); z=s[1]+(h.z-s[1])*0.45; }
-    const px=ogx+t.dir*x; let b=null,bd=1e9;
-    for(const q of liberi){ const d=Math.hypot(q.x-px,q.z-z); if(d<bd){bd=d;b=q;} }
-    liberi.delete(b); m.set(b,{ x:px, z:clamp(z,-HW+0.5,HW-0.5), sprint:bd>2.5 });
+    if(s[0]>3&&h&&Math.abs(ogx-h.x)>4&&Math.sign(h.z||1)===Math.sign(s[1])){
+      x=Math.min(Math.abs(ogx-h.x)-0.95,5);z=s[1]+(h.z-s[1])*0.7;
+    }else if(Math.abs(s[1])>3&&h){
+      const palo=other(t).players.find(p=>!p.excluded&&(p.i===1||p.i===6)&&Math.sign(p.z)===Math.sign(s[1]));
+      if(palo&&Math.abs(ogx-palo.x)>2.7&&Math.sign(h.z||1)===Math.sign(s[1])&&Math.abs(ogx-h.x)>4){
+        x=Math.max(1.8,Math.abs(ogx-palo.x)-0.7);z=palo.z+(s[1]-palo.z)*0.25;
+      }
+    }else if(i===0&&h){
+      // Il centrale prende il palo vicino alla palla: quello lontano può scorrere nella finestra lasciata.
+      const palo=other(t).players.find(p=>!p.excluded&&(p.i===1||p.i===6)&&Math.sign(p.z)===Math.sign(h.z||1));
+      if(palo){z=clamp(palo.z*0.55,-1.6,1.6);x=Math.max(1.8,Math.min(2.7,Math.abs(ogx-palo.x)-0.8));}
+    }
+    const px=ogx+t.dir*x,bd=Math.hypot(q.x-px,q.z-z);
+    m.set(q,{x:px,z:clamp(z,-HW+0.5,HW-0.5),sprint:bd>2.5});
   }
   t.postiT=game.time; t.posti=m; return m;
 }
@@ -133,6 +210,26 @@ function rientro(p){
   const z=clamp((a&&!a.excluded?a.z:p.z)*(scappato?0.85:trans?0.55:0.85),-6.5,6.5);
   return { x:ogx+t.dir*d, z, sprint:myD>d+0.8 };
 }
+function aiutoDifensivo(p){
+  const t=p.team;
+  if(t.defPlay!==1&&t.defPlay!==3){ t.aiutoStato=null; return null; }
+  const h=riferimentoPalla(other(t)),boa=other(t).players[1];
+  if(!h||h===boa||h.isGK||boa.excluded||Math.abs(ownGoalX(t)-h.x)>8||Math.abs(ownGoalX(t)-boa.x)>4.6){t.aiutoStato=null;return null;}
+  const def=t.players.find(q=>!q.excluded&&MARK[q.i]===1),lettura=leggiCentro(boa,def,h);
+  if(!lettura.ricevibile){t.aiutoStato=null;return null;}
+  const x=h.x+(boa.x-h.x)*0.62,z=h.z+(boa.z-h.z)*0.62;
+  let st=t.aiutoStato;
+  if(!st||st.h!==h||game.time>st.fino||st.p.excluded||st.p===ctrl){
+    let helper=null,bd=Infinity;
+    for(const i of schemaSquadra(t).aiuti){
+      const q=t.players[i],uomo=other(t).players[MARK[i]];
+      if(!q||q===def||q===ctrl||q.excluded||q.uscendo||uomo===h||!uomo||uomo.excluded) continue;
+      const d=Math.hypot(q.x-x,q.z-z);if(d<bd){helper=q;bd=d;}
+    }
+    st=t.aiutoStato=helper&&bd<5?{h,p:helper,fino:game.time+0.8}:null;
+  }
+  return st?.p===p?{x,z,sprint:true}:null;
+}
 export function markTarget(p){
   const t=p.team, ogx=ownGoalX(t);
   if(t.players.some(q=>q.excluded)){            // uomo in meno: tre sulla linea dei 2 metri negli spazi tra i quattro attaccanti, due davanti ai pali
@@ -141,20 +238,9 @@ export function markTarget(p){
   if(t.doubleP===p && game.time<t.doubleUntil && ball.holder && ball.holder.team!==t) return {x:ball.holder.x,z:ball.holder.z,sprint:true};
   const att=other(t).players[MARK[p.i]];
   if(!att||att.excluded) return { x:ogx+t.dir*3.5, z:clamp(ball.z*0.4,-2,2) };
-  // palla all'ala (posizione 1 o 5): il marcatore del mezzo dello stesso lato (il "-2") si abbassa sulla linea tra l'ala e il
-  // centroboa per impedire quel passaggio
-  const h=ball.holder;
-  if(h && h.team!==t && (h.i===2||h.i===3) && att.i===h.i+2 && Math.abs(ogx-h.x)<5){
-    const boa=other(t).players[1];
-    if(!boa.excluded) return { x:h.x+(boa.x-h.x)*0.62, z:h.z+(boa.z-h.z)*0.62, sprint:true };
-  }
+  const aiuto=aiutoDifensivo(p);if(aiuto) return aiuto;
   if(MARK[p.i]===1 && Math.abs(ogx-att.x)<5){
-    if((t.defPlay===2||t.defPlay===3) && ball.holder!==att){   // pressing e zona a M: anticipo sul centroboa, tra lui e la palla
-      const bx=ball.x-att.x, bz=ball.z-att.z, bl=Math.hypot(bx,bz)||1;
-      return { x:att.x+bx/bl*0.6, z:att.z+bz/bl*0.6 };
-    }
-    const gx=ogx-att.x, gz=-att.z, gl=Math.hypot(gx,gz)||1;  // a uomo e zona: alle spalle, a contatto
-    return { x:att.x+gx/gl*0.55, z:att.z+gz/gl*0.55 };
+    return anticipoTarget(p,att);
   }
   // il difensore reagisce con un piccolo ritardo ai movimenti del suo uomo
   // contro chi ha la palla vicino alla porta ci si mette tra lui e il palo da coprire (muro.js), non tra lui e il centro
@@ -293,6 +379,10 @@ export function passaAZona(t,quale,annuncia){
 // il computer, mentre difende: pressing all'inizio, zona nella seconda parte dell'azione se il centroboa sta vincendo il duello
 // (o comunque, a volte, negli ultimi secondi, per togliere riferimenti)
 export function aggiornaDifesa(t,dt){
+  if(t.schema){
+    if((t.defPlay===1||t.defPlay===3)&&(!t.lasciato||game.time>(t.lasciatoT||0))){t.lasciato=chiLasciare(t);t.lasciatoT=game.time+0.8;}
+    return;
+  }
   if(t.human||game.possTeam!==other(t)||t.defPlay!==2||game.shot>15||inRientro(t)||t.players.some(q=>q.excluded)) return;
   const att=other(t), boa=att.players[1], inDifficolta=fight.active&&fight.def&&fight.def.team===t&&fight.v>0.2;
   if(inDifficolta||rnd()<dt*0.07){
@@ -315,14 +405,20 @@ export function aiCarrier(p,dt){
     if(ball.holdTime>1.0+rnd()*0.05){ const m=bestPassTarget(p); if(m) aiPass(p,m); }
     return;
   }
-  if(fight.active&&fight.boa===p){ p.target={x:p.x,z:p.z}; return; }     // il centroboa in lotta decide in boaHold
+  if(!manUp(t)&&fight.active&&fight.boa===p){ p.target={x:p.x,z:p.z}; return; }     // il centroboa in lotta decide in boaHold
   const slot=attackTarget(p);
   const dGoal=Math.hypot(gx-p.x,p.z);
   p.target={x:slot.x+t.dir*0.8, z:slot.z, sprint: Math.abs(p.x-slot.x)>6};
   if(p.act&&!p.act.done) return;
   if(aiControfuga(p,dt)) return;      // controfuga: schizzo o colonnello
-  // in superiorità: tiro al volo appena ricevuto il passaggio
-  if((p.alVolo||p.i===1||p.i===6) && ball.holdTime<0.15 && manUp(t) && dGoal<7.5 && !(p.freeThrow&&Math.abs(gx-p.x)<6)){ p.alVolo=false; startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,null,{volo:true})); return; }
+  // Il palo conclude subito solo nella finestra creata dal passaggio e dalla scelta difensiva.
+  if((p.alVolo||p.i===1||p.i===6)&&ball.holdTime<0.15&&manUp(t)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
+    const sit=situazioneTiro(p),gk=other(t).players[0],aim=-Math.sign(gk.z||1);
+    p.alVolo=false;
+    if(sit.marcato<0.2&&sit.vicino>1.25&&!(p.pressatoUntil>game.time)&&laneClear(p,gx,aim,t,0.7)){
+      startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,null,{volo:true}));return;
+    }
+  }
   const ft=p.freeThrow&&Math.abs(gx-p.x)<6;       // tiro libero dentro i 6 metri: non si può tirare direttamente
   // Il vantaggio si legge anche tra due decisioni ordinarie. La breve cadenza evita ricerche complete a ogni frame.
   p.reazioneT=(p.reazioneT||0)-dt;
@@ -376,7 +472,9 @@ export function aiCarrier(p,dt){
   }
   if(game.shot<2 && dGoal<13 && !ft){ aiShoot(p,0.9,false); return; }
   // con l'uomo in più la palla gira in fretta: un tocco e via, per spostare la difesa e il portiere
-  if(p.freeThrow || (press<1.3&&rnd()<0.55) || ball.holdTime>(manUp(t)?0.55+rnd()*0.5:2.5+rnd()*2.5)){
+  const ritmo=schemaSquadra(t).passaggi;
+  const attesa=manUp(t)?0.55+rnd()*0.5:ritmo==='rapidi'?1.1+rnd()*0.6:ritmo==='equilibrati'?1.9+rnd():2.5+rnd()*2;
+  if(p.freeThrow || (press<1.3&&rnd()<0.55) || ball.holdTime>attesa){
     const m=bestPassTarget(p); if(m){ aiPass(p,m); return; }
   }
 }

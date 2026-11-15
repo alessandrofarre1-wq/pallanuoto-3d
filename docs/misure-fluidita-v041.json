@@ -1,0 +1,353 @@
+{
+  "ambiente": "Chromium SwiftShader, touch, DPR1.50; non FPS su iPhone fisico",
+  "versione": "0.41.0",
+  "strumento": "node strumenti/misura-fluidita.mjs",
+  "campioni": [
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "dpr": 1.5,
+      "calls": 69,
+      "triangles": 148734,
+      "samples": [
+        {
+          "frame": 55,
+          "calls": 63,
+          "triangles": 142318,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 56,
+          "calls": 63,
+          "triangles": 142318,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 57,
+          "calls": 59,
+          "triangles": 141616,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 58,
+          "calls": 65,
+          "triangles": 142622,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 59,
+          "calls": 65,
+          "triangles": 142622,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 60,
+          "calls": 65,
+          "triangles": 142622,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 61,
+          "calls": 69,
+          "triangles": 148734,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 62,
+          "calls": 69,
+          "triangles": 148734,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 63,
+          "calls": 69,
+          "triangles": 148734,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 64,
+          "calls": 69,
+          "triangles": 148734,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 65,
+          "calls": 69,
+          "triangles": 148734,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 66,
+          "calls": 67,
+          "triangles": 145678,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 67,
+          "calls": 67,
+          "triangles": 145678,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 68,
+          "calls": 63,
+          "triangles": 142318,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 69,
+          "calls": 64,
+          "triangles": 142334,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 70,
+          "calls": 59,
+          "triangles": 141616,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 71,
+          "calls": 64,
+          "triangles": 142334,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 72,
+          "calls": 59,
+          "triangles": 141616,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 73,
+          "calls": 59,
+          "triangles": 141616,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 74,
+          "calls": 59,
+          "triangles": 141616,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 75,
+          "calls": 59,
+          "triangles": 141616,
+          "points": 0,
+          "lines": 0
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "dpr": 1.5,
+      "calls": 68,
+      "triangles": 148478,
+      "samples": [
+        {
+          "frame": 55,
+          "calls": 63,
+          "triangles": 142318,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 56,
+          "calls": 62,
+          "triangles": 142062,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 57,
+          "calls": 59,
+          "triangles": 141616,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 58,
+          "calls": 65,
+          "triangles": 142622,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 59,
+          "calls": 64,
+          "triangles": 142366,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 60,
+          "calls": 64,
+          "triangles": 142366,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 61,
+          "calls": 68,
+          "triangles": 148478,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 62,
+          "calls": 68,
+          "triangles": 148478,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 63,
+          "calls": 68,
+          "triangles": 148478,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 64,
+          "calls": 68,
+          "triangles": 148478,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 65,
+          "calls": 68,
+          "triangles": 148478,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 66,
+          "calls": 66,
+          "triangles": 145422,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 67,
+          "calls": 66,
+          "triangles": 145422,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 68,
+          "calls": 62,
+          "triangles": 142062,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 69,
+          "calls": 60,
+          "triangles": 141632,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 70,
+          "calls": 59,
+          "triangles": 141616,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 71,
+          "calls": 64,
+          "triangles": 142334,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 72,
+          "calls": 59,
+          "triangles": 141616,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 73,
+          "calls": 59,
+          "triangles": 141616,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 74,
+          "calls": 59,
+          "triangles": 141616,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 75,
+          "calls": 59,
+          "triangles": 141616,
+          "points": 0,
+          "lines": 0
+        }
+      ]
+    }
+  ]
+}

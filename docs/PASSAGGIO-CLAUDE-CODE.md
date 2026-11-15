@@ -1,4 +1,54 @@
-# Passaggio a Claude Code — WATERPOLO 7 v0.40
+# Passaggio a Claude Code — WATERPOLO 7 v0.41
+
+Questo è il passaggio corrente. Il testo v0.40 più sotto è storico. Ale ha chiesto di mettere su GitHub anche il codice non ancora pronto, così il lavoro può proseguire senza rispiegare il contesto.
+
+```text
+Continua alessandrofarre1-wq/pallanuoto-3d, branch
+codex/v041-tecnica-schemi-centroboa e relativa PR in bozza.
+Leggi CLAUDE.md, docs/verifiche-v041.md e docs/tecnica-v041.md.
+Non chiedere ad Ale di rispiegare. Non duplicare la v0.40 già su main.
+
+Implementato e verificato con scene mirate: centroboa geometrico,
+anticipo/girata fisici senza rigori gratuiti, passaggi adiacenti e skip
+condizionati al vantaggio/rischio, pali mobili, aiuti con ritorno, una
+entrata con copertura, cinque preset ed editor prepartita reale.
+La nuova pausa spiega con nove carte SVG cosa fanno attacco e difesa,
+richiama il piano personale, mostra ruoli/compiti e Riprendi resta visibile.
+Il codice è già sul branch; non ripartire da una proposta.
+
+DA CHIUDERE prima di rendere pronta la PR:
+1. CI checkpoint43686710038 fallisce sezione3: centrale destro, difensore
+   a1.71m dove l'assert richiede<1.3m. Indaga tests/sezione3.mjs e
+   anticipo/markTarget/postura; correggi la causa senza indebolire la prova.
+2. npm run verifica ha concluso tutte6gare,74gol/260tiri(28%), ma fallisce
+   tre riferimenti grafici vecchi(1.67%,8.42%,7.56%). Ispeziona gli screenshot
+   e aggiorna solo quelli corretti: npm run verifica:aggiorna -- --partite=0,
+   poi npm run verifica -- --partite=0. Non rifare6gare per soliPNG.
+3. Controlla TUTTA la CI sull'ultimo SHA, comprese fasi successive a
+   sezione3. Documenta risultati veri in rapporto/CLAUDE/descrizione PR.
+   La bozza non è pronta da unire finché resta un errore.
+
+GiàPASS: lint0warning, aspetto completo(0gambefuoriacqua), centroboa,
+tattica, gameplay v0.40 con assert invariati, strategie incluso pausa,
+sezione4 e UI tre taglieiPhone. Dettagli e numeri nel rapporto.
+Browser cloud: PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers.
+
+Vincoli: versione0.41 nella STESSA PR; ogni nuovaPR+.01; aggiornaCLAUDE
+con file/misure/nonfatto e segnala decisioni cambiate. iPhone SEMPRE
+<100drawcall e<150000tri anche duecambi: misurati max69/148734.
+Nessuna deroga.14corpi completi,cartoon,camera unica,SPEED1,sprinta tocchi,
+riflesso soloalta,ombraespulso,palla senza contorno,MAX0.9s e tiroalrilascio,
+CAMBI basso centro44px. Nessuna promessa60FPS suApplefisico.
+RegolamentoWA18feb2026: non fondere FINottobre e manuali storici30/20/5.
+
+Limiti onesti: un solo slotpersonale; no sequenzearbitrarie multi-fase,
+arbitraggio contatti semplificato, no vero7movimentisti. Le campagne
+salvano fra gare; uscire durante la gara la fa ricominciare con avviso.
+Non fare merge/deploy senza istruzione di Ale.
+Salva e spingi i blocchi verificabili prima di una nuova prova lunga.
+```
+
+## Storico v0.40
 
 La v0.40 implementa i tornei nel gioco. Il precedente passaggio v0.39, che li descriveva come proposte, è sostituito da questo documento.
 

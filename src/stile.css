@@ -1,7 +1,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 /* margini sicuri dell'iPhone (notch, Dynamic Island, barra Home): in orizzontale stanno a sinistra, a destra e in basso */
 :root{--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px)}
-html,body{width:100%;height:100%;overflow:hidden;background:#0b1d33;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff;touch-action:none;user-select:none;-webkit-user-select:none}
+html,body{width:100%;height:100%;overflow:hidden;background:#07131d;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff;touch-action:none;user-select:none;-webkit-user-select:none}
 canvas{display:block}
 
 /* ================= DESIGN SYSTEM DELL'HUD =================
@@ -571,6 +571,13 @@ body.touch #qte{display:none}
 #vHome .m-angolo{right:max(22px,var(--sr));top:max(18px,var(--st))}
 #vHome .eroe{grid-area:eroe;margin:0;position:relative;align-self:end;width:130%;height:100%;max-width:850px;max-height:85vh;display:flex;align-items:flex-end;justify-content:center;transform:translateX(-3%);pointer-events:none}
 #vHome .eroe img{position:relative;width:100%;height:auto;max-height:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 18px 34px #0008)}
+/* iPhone: il menu copre anche la zona sotto le barre di Safari e la linea Home (100lvh = schermo con le barre nascoste), mentre le
+   schermate restano nell'area visibile (100dvh); così in fondo non compare una fascia di un altro colore e nulla finisce sotto le barre */
+#menu{bottom:auto;height:100%;height:max(100%,100lvh)}
+#menu .vista{bottom:auto;height:100%;height:100dvh}
+/* in orizzontale il giocatore arriva fino al bordo basso e sfuma, senza taglio dritto */
+#vHome .eroe{margin-bottom:calc(-1 * max(18px,var(--sb)))}
+#vHome .eroe img{-webkit-mask-image:linear-gradient(180deg,#000 82%,transparent);mask-image:linear-gradient(180deg,#000 82%,transparent)}
 #vHome::after{height:38%;background:linear-gradient(180deg,transparent,rgba(4,15,23,.65)),repeating-linear-gradient(174deg,transparent 0 24px,#75dbdc08 25px 27px)}
 #vHome .arena{background:linear-gradient(90deg,transparent 48%,#60e7e406 49%,#60e7e406 49.2%,transparent 49.3%);transform:skewX(-12deg)}
 #vHome .arena i{opacity:.22;filter:blur(3px)}
@@ -730,7 +737,7 @@ body.touch #qte{display:none}
   #menu .m-testa{margin-bottom:2px}
   #menu #vHome.on{padding:max(12px,var(--st)) max(4vw,var(--sr)) max(10px,var(--sb)) max(4vw,var(--sl));grid-template-columns:1.25fr 1fr;gap:7px 2vw}
   #vHome .h-logo .logo{width:clamp(220px,29vw,300px)}
-  #vHome .eroe{height:100%;max-height:90vh;width:140%;transform:translateX(-7%)}
+  #vHome .eroe{height:100%;max-height:90vh;width:140%;transform:translateX(-7%);margin-bottom:calc(-1 * max(10px,var(--sb)))}
   #vHome .h-azioni{gap:5px;align-self:center}
   .home-titolo{font-size:clamp(25px,7.6vh,40px);line-height:1;margin:0 0 3px;white-space:nowrap}
   .home-titolo br{display:none}
@@ -787,7 +794,7 @@ body.touch #qte{display:none}
   .modalita-home>.m-voce{min-height:72px;padding:9px 11px;gap:7px}
   .modalita-home>.m-voce b{font-size:18px}.modalita-home>.m-voce small{font-size:8px}
   .home-link button{font-size:10px!important}
-  #vHome .h-versione{align-self:flex-start}
+  #vHome .h-versione{align-self:flex-start;z-index:3}
   #vHome::after{height:63%;background:linear-gradient(180deg,transparent,#07131dbf 20%,#07131d 70%);z-index:2}
   .nazionali-torneo{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
   .nazionale-card{min-height:66px!important}.nazionale-card b{font-size:12px}.nazionale-card .band{width:30px;height:30px}
@@ -807,3 +814,142 @@ body.touch #qte{display:none}
 }
 @media (orientation:portrait) and (max-height:700px){#vHome .h-azioni{padding-top:100px;gap:6px}.home-titolo{font-size:42px}.modalita-home>.m-cta{min-height:52px}.modalita-home>.m-voce{min-height:60px}#vHome .eroe{height:44%}#vHome .h-logo .logo{width:220px}}
 @media (prefers-reduced-motion:reduce){#menu .vista.on,.coriandoli i,.capitano,.cerimonia-luci{animation:none!important}#cerimoniaTrofeo{transition:none}.coriandoli{display:none}}
+
+/* v0.41: lavagna prepartita. Il disegno resta SVG; i valori sono gli stessi usati dall'IA. */
+#tac .chip[data-apri]{max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;box-sizing:border-box}
+body.touch #tac .chip[data-apri]{max-width:200px}
+#menu #vTattiche{padding-bottom:calc(82px + var(--sb))}
+#vTattiche .tp-contenuto{max-width:1060px;width:100%;margin:0 auto}
+#vTattiche .titolo-sezione{font-size:clamp(25px,4vw,42px);margin:6px 0 10px}
+.tp-nota{font-size:12px;line-height:1.5;color:var(--m-tenue);max-width:780px}
+#vTattiche .tp-riprendi{position:fixed;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:flex-end;gap:20px;padding:10px max(16px,var(--sr)) max(10px,var(--sb)) max(16px,var(--sl));background:#091b26;box-shadow:0 -1px #52717d;z-index:5}
+.tp-riprendi>span{font-size:10px;color:var(--m-tenue)}
+#vTattiche .tp-riprendi .m-cta{min-height:44px;width:min(270px,48vw);margin:0;padding:7px 16px;gap:12px;max-width:320px}
+#vTattiche .tp-riprendi .m-cta b{font-size:16px}
+#vTattiche .tp-scelte{margin:20px 0}
+.tp-scelte h3{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:0;text-transform:none;color:#d3e4ec}
+.tp-scelte h3>span{font-size:8px;letter-spacing:.1em;color:var(--m-ciano);border:1px solid #3b6973;padding:4px 6px;border-radius:3px}
+#vTattiche .tp-scelte>div{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#menu .tp-carta{display:grid;grid-template-columns:100px minmax(0,1fr);align-items:center;gap:12px;padding:12px;min-height:125px;min-width:0;color:#f4faff;cursor:pointer}
+.tp-miniatura{width:100%;align-self:center}.tp-miniatura svg{width:100%;display:block;height:auto}
+.tp-testo{display:flex;flex-direction:column;gap:5px;min-width:0}.tp-testo b{font-size:15px;line-height:1.2;letter-spacing:-.015em}
+.tp-testo small{font-size:8px;font-weight:800;letter-spacing:.06em;color:#93b6c5}
+.tp-carta.on .tp-testo small{color:var(--m-ciano)}
+.tp-descrizione{font-size:11px;line-height:1.5;color:#b8d1dd}
+#menu .tp-personale{grid-column:1/-1;grid-template-columns:100px minmax(0,1fr);min-height:100px;border-style:dashed}
+.tp-acqua{fill:#0c3445;stroke:#6eb8c5;stroke-width:.6}.tp-porta{fill:none;stroke:#eff8fa;stroke-width:2}
+.tp-linee{fill:none;stroke:#87b9c7;stroke-opacity:.4;stroke-width:.6;stroke-dasharray:3 4}
+.tp-giocatore{fill:#eef9fa;stroke:#c5edf0;stroke-width:.8}.tp-avversario{fill:#0d2634;stroke:#87adbf;stroke-width:1.3}
+.tp-miniatura text,.tp-lavagne text{fill:#082431;font:850 8px system-ui}
+.tp-appoggi{fill:none;stroke:#7ce9df;stroke-width:1.1;stroke-dasharray:3 3;opacity:.5}
+.tp-freccia{fill:none;stroke:#ffdb92;stroke-width:1.4;stroke-dasharray:3 2}
+.tp-marcatura{fill:none;stroke:#80b7c6;stroke-width:.9;stroke-dasharray:2 2}.tp-palla{fill:#ffd76a;stroke:#6d561c;stroke-width:.5}
+.tp-dettaglio{background:#102632;border:1px solid var(--m-linea);border-radius:5px;margin:18px 0 10px;padding:0 14px}
+.tp-dettaglio>summary{min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#e7f7fa;font-size:12px;font-weight:750;cursor:pointer;list-style:none}
+.tp-dettaglio>summary::-webkit-details-marker{display:none}.tp-dettaglio>summary>span{font-size:20px;color:var(--m-ciano)}
+.tp-lavagne{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:6px 0 14px}.tp-lavagne figure{min-width:0}.tp-lavagne figcaption{font-size:12px;font-weight:800;color:var(--m-ciano);margin:0 0 8px}.tp-lavagne svg{width:100%;max-height:280px;display:block}.tp-lavagne p{font-size:11px;line-height:1.5;color:#c1d8e1;margin:8px 0}
+.tp-legenda{display:flex;align-items:center;flex-wrap:wrap;gap:7px 13px;font-size:10px;line-height:1.5;color:#b4cdd9;padding-top:12px;border-top:1px solid var(--m-linea)}
+.tp-legenda span{white-space:nowrap}.tp-legenda b{color:var(--m-ciano)}.tp-chiave{font-size:10px;line-height:1.6;color:#8faeba;padding:12px 0 14px}
+@media (orientation:landscape) and (max-height:520px){
+  #vTattiche>.m-testa{margin-bottom:4px}#vTattiche .titolo-sezione{font-size:25px;margin:4px 0 8px}.tp-nota{font-size:11px}
+  #vTattiche .tp-scelte{margin:16px 0}#menu .tp-carta{grid-template-columns:76px minmax(0,1fr);padding:10px;gap:10px;min-height:127px}.tp-testo b{font-size:12px}.tp-descrizione{font-size:10px;line-height:1.5}
+  #menu .tp-personale{grid-template-columns:76px minmax(0,1fr);min-height:96px}
+  #vTattiche .tp-riprendi{padding-top:7px}#vTattiche .tp-riprendi .m-cta{min-height:44px}
+}
+@media (orientation:portrait){
+  #vTattiche .tp-scelte>div{grid-template-columns:1fr}#menu .tp-carta,#menu .tp-personale{grid-template-columns:88px minmax(0,1fr);min-height:125px;padding:11px;gap:12px}.tp-testo b{font-size:13px}.tp-descrizione{font-size:11px}
+  .tp-scelte h3{align-items:flex-start;flex-direction:column;gap:6px}.tp-riprendi>span{display:none}#vTattiche .tp-riprendi{justify-content:center}#vTattiche .tp-riprendi .m-cta{width:100%;max-width:none}.tp-lavagne{grid-template-columns:1fr;gap:10px}
+}
+#menu .strategia-accesso{display:flex;align-items:center;gap:10px;min-height:48px;min-width:0;padding:8px 13px;border:1px solid var(--m-linea);border-radius:5px;background:#112a36;color:#effbff;text-align:left;font:inherit;cursor:pointer}
+.strategia-accesso>span:not(.strategia-icona){min-width:0;display:flex;flex-direction:column;gap:2px}
+.strategia-accesso b{font-size:13px;font-weight:800}.strategia-accesso small{font-size:10px;color:var(--m-tenue);white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width:240px}
+.strategia-accesso .strategia-icona{font:800 26px/1 system-ui;color:var(--m-ciano)}
+.strategia-accesso>i{font-style:normal;font-size:23px;margin-left:auto;color:var(--m-ciano)}
+.con-strategie{gap:10px}.con-strategie>.strategia-accesso{width:min(320px,48%)}
+.con-strategie>.m-cta{width:min(320px,48%)}
+.torneo-azioni>.strategia-accesso{width:min(320px,100%)}
+#menu #vStrategie{padding-top:max(10px,var(--st));padding-bottom:max(20px,var(--sb))}
+#menu .schema-testa{position:sticky;top:calc(-1 * max(10px,var(--st)));z-index:4;grid-template-columns:44px 1fr auto;gap:12px;max-width:1100px;width:100%;margin:0 auto 12px;padding:6px 0;background:#091c27;box-shadow:0 0 0 12px #091c27}
+#menu .schema-testa h2{text-align:left;font-size:22px;font-weight:900;letter-spacing:-.035em}.schema-testa .soprattitolo{font-size:8px}
+#menu .schema-salva{min-height:44px;max-width:none;width:auto;gap:15px;padding:8px 14px}
+#menu .schema-salva b{font-size:13px;letter-spacing:0}.schema-salva>span:last-child{font-size:20px}
+.schema-editor{width:100%;max-width:1100px;margin:0 auto}
+.schema-barra{display:grid;grid-template-columns:minmax(160px,1fr) minmax(160px,1.3fr) auto auto;align-items:end;gap:10px}
+.schema-campo{display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:700;color:#b9d1dc;min-width:0;line-height:1.25}
+.schema-campo>span{font-weight:500}
+#menu .schema-campo input,#menu .schema-campo select{width:100%;height:44px;border:1px solid #536f7b;border-radius:4px;color:#f4faff;background:#0a202d;padding:0 10px;font:700 13px system-ui;min-width:0;box-shadow:none;user-select:text;-webkit-user-select:text}
+#menu .schema-campo input:focus-visible,#menu .schema-campo select:focus-visible{outline:2px solid var(--m-ciano);outline-offset:2px}
+#menu .schema-campo select{padding-right:24px;cursor:pointer;color-scheme:dark}
+#menu .schema-barra>.azione-secondaria{padding:10px 13px;font-size:11px}
+#menu .schema-barra>button:disabled{opacity:.4;cursor:default}
+.schema-riga-nota{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:10px 0 14px;min-height:40px}
+.schema-riga-nota>p{max-width:760px;color:var(--m-tenue);font-size:11px;line-height:1.45}
+#schemaStato{white-space:nowrap;flex:none;color:#81d7b8;font-size:9px;font-weight:800;border:1px solid #427666;padding:4px 6px;border-radius:3px;line-height:1.2}
+#schemaStato.bozza{color:#ffdb93;border-color:#806b46}
+.schema-messaggio{font-size:12px;font-weight:650;line-height:1.5;color:#ffdda9;background:#4b3527;border:1px solid #b38652;padding:10px 12px;margin-bottom:12px;border-radius:4px}
+.schema-griglia{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(230px,1fr);gap:14px}
+.schema-griglia>section{min-width:0;background:#102632;border:1px solid var(--m-linea);border-radius:5px;padding:16px}
+.schema-griglia h3{font-size:21px;line-height:1.2;letter-spacing:-.035em;margin:4px 0 16px;font-weight:850}
+.schema-griglia .soprattitolo{font-size:9px}
+.schema-griglia>.schema-lavagna{padding:10px;display:flex;flex-direction:column}
+.schema-lavagna-testa{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px}
+.schema-fasi{display:flex;gap:3px;background:#071d29;padding:3px;border-radius:4px}
+#menu .schema-fasi button{min-height:44px;min-width:96px;padding:6px 10px;border:0;border-radius:3px;background:transparent;color:#b8cfd9;font:750 12px system-ui;cursor:pointer}
+.schema-fasi small{display:block;font-size:9px;font-weight:600;margin-top:1px}
+#menu .schema-fasi button[aria-selected="true"]{background:var(--m-ciano);color:#06202b}
+.schema-porta-label{font-size:8px;font-weight:800;letter-spacing:.05em;color:#a2c0cd;text-align:right}
+#schemaPannello{display:flex;align-items:center;justify-content:center;flex:1;min-height:0}
+#schemaPiscina{width:100%;height:auto;display:block;max-height:340px;overflow:visible;touch-action:none!important}
+#schemaPiscina *{touch-action:none!important}
+.schema-misura{fill:#d4eeee;opacity:.85;font:700 11px system-ui}.schema-lato{fill:#a6ccd7;font:700 9px system-ui;letter-spacing:1px}
+#schemaPiscina [data-schema-ruolo]{cursor:grab;outline:none}#schemaPiscina [data-schema-ruolo]:active{cursor:grabbing}
+.schema-posto-ombra{fill:#041a2480}.schema-posto{fill:#f1f7f8;stroke:#fff;stroke-width:2}
+#schemaPiscina [data-schema-ruolo]>text{fill:#102b39;font:900 19px system-ui;pointer-events:none}
+#schemaPiscina .scelto .schema-posto{fill:var(--m-ciano);stroke:#eeffff;stroke-width:3}
+#schemaPiscina .entra:not(.scelto) .schema-posto{stroke:#ffda84;stroke-width:4}
+#schemaPiscina [data-schema-ruolo]:focus-visible .schema-posto{stroke:#ffcf68;stroke-width:5}
+.schema-aiuto-lavagna{font-size:10px;line-height:1.5;color:#b4cdd8;padding:6px 4px 0}
+.schema-coordinate{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.schema-coordinate .schema-campo{display:block}.schema-coordinate input{margin-top:6px}
+.schema-coordinate .schema-campo>span{font-size:10px}
+.schema-spiegazione{font-size:11px;line-height:1.5;color:#a9c4d0;margin-top:10px}
+.schema-ruolo-compito{display:flex;gap:12px;align-items:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--m-linea)}
+.schema-ruolo-compito>span{font-size:30px;font-style:italic;font-weight:900;color:var(--m-ciano);line-height:1}
+.schema-ruolo-compito>p{font-size:11px;line-height:1.5;color:#d2e3e9}
+.schema-circolazione{margin-top:18px}
+.schema-aiuti{border:0;margin-top:18px;min-width:0}
+.schema-aiuti legend{font-size:11px;font-weight:750;color:#c8dce5;margin-bottom:7px}
+#schemaAiuti{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+#schemaAiuti label{display:flex;align-items:center;gap:8px;min-height:44px;background:#0b202d;border:1px solid #284752;border-radius:3px;padding:7px 9px;font-size:11px;color:#bdd4df;cursor:pointer}
+#schemaAiuti label:has(input:checked){background:#163c43;border-color:#5eaba9;color:#edffff}
+#schemaAiuti input{width:18px;height:18px;flex:none;accent-color:var(--m-ciano)}
+#schemaAiuti input:focus-visible{outline:2px solid var(--m-ciano);outline-offset:3px}
+.schema-persistenza{font-size:10px;line-height:1.6;margin:13px 0 0;color:#91adbb;max-width:850px}
+@media (min-width:1100px){.schema-griglia{grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr)}.schema-griglia>.schema-lavagna{padding:14px}.schema-posizione{display:flex;flex-direction:column}.schema-ruolo-compito{margin-top:auto}}
+@media (orientation:landscape) and (max-height:520px){
+  #menu #vStrategie{padding-top:max(5px,var(--st));padding-left:max(16px,var(--sl));padding-right:max(16px,var(--sr))}
+  #menu .schema-testa{top:calc(-1 * max(5px,var(--st)));padding:0;gap:10px;margin-bottom:10px;box-shadow:0 0 0 7px #091c27}
+  #menu .schema-testa h2{font-size:18px}.schema-testa .soprattitolo{font-size:7px}
+  .schema-barra{gap:7px;grid-template-columns:minmax(150px,1.1fr) minmax(130px,1fr) auto auto}
+  .schema-campo{font-size:10px;gap:4px}
+  #menu .schema-barra>.azione-secondaria{padding:8px 10px;font-size:10px}
+  .schema-riga-nota{padding:7px 0 9px;min-height:0}.schema-riga-nota>p{font-size:10px}.schema-riga-nota>#schemaStato{font-size:8px}
+  .schema-griglia{grid-template-columns:minmax(0,1.35fr) minmax(230px,1fr);gap:10px}
+  .schema-griglia>section{padding:12px}.schema-griglia h3{font-size:18px;margin:3px 0 11px}
+  .schema-griglia>.schema-lavagna{padding:7px}.schema-lavagna-testa{margin-bottom:3px;gap:5px}
+  #menu .schema-fasi button{font-size:11px;min-width:83px;padding:5px 8px}
+  .schema-porta-label{font-size:6px;max-width:75px}.schema-aiuto-lavagna{font-size:9px;padding:4px 3px 0}
+  .schema-coordinate{margin-top:9px;gap:8px}.schema-ruolo-compito{margin-top:10px;padding-top:10px;gap:10px}
+  .schema-spiegazione,.schema-ruolo-compito>p{font-size:10px}.schema-aiuti{margin-top:13px}
+  #schemaAiuti{gap:4px}#schemaAiuti label{font-size:10px;padding:6px;gap:6px}
+}
+@media (orientation:portrait){
+  .con-strategie{gap:7px}.con-strategie>.strategia-accesso{padding:7px 10px}.strategia-accesso .strategia-icona{display:none}.strategia-accesso small{max-width:140px;font-size:9px}
+  #menu .schema-testa{gap:10px}#menu .schema-testa h2{font-size:20px}#menu .schema-salva{padding:7px 11px;gap:8px}#menu .schema-salva b{font-size:12px}
+  .schema-barra{grid-template-columns:1fr 1fr;gap:10px}.schema-barra>.schema-preset,.schema-barra>.schema-nome{grid-column:1/-1}
+  .schema-riga-nota{flex-direction:column;gap:7px;padding:11px 0}
+  .schema-griglia{grid-template-columns:1fr;gap:12px}.schema-griglia>section{padding:16px}.schema-griglia>.schema-lavagna{padding:9px}
+  .schema-porta-label{max-width:80px;font-size:7px}.schema-fasi{gap:2px}#menu .schema-fasi button{min-width:95px;padding:6px 8px}
+  #schemaPiscina{max-height:none}.schema-ruolo-compito{margin-top:14px;padding-top:14px}
+  #schemaAiuti label{font-size:11px}.schema-persistenza{font-size:11px}
+}
