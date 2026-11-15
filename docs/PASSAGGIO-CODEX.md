@@ -4,12 +4,14 @@
 Continua il branch codex/v045-nuoto-comandi-identita e la sua PR; non ripartire
 dalla v0.41 storica sotto. Leggi CLAUDE.md, docs/verifiche-v045.md e i risultati
 Actions sull'ultimo SHA. Versione0.45 nella stessa PR, nessun merge/deploy.
-Le7richieste di Ale sono implementate: nuoto preciso/ricezione;3loghi da scegliere;
+Le7richieste di Ale sono implementate: nuoto preciso/ricezione;logo C Flusso scelto e applicato;
 copy/schemi;24bandiere sui costumi e cuffie bianche/blu;World24selezionabili con
 torneo16/Europei16;desktop frecce/Space/D/C/QWE;homeportraitcentrata.
-I file sono già sul branch. Non sostituire il logo prima della scelta di Ale.
-Al checkpoint, verifiche complete e pipeline sono ancora da concludere:
-aggiorna esiti veri nel rapporto/CLAUDE/PR; non dichiararePASS una prova avviata.
+I file sono già sul branch. Il logo C è stato scelto da Ale: conserva la scelta.
+Per eventuali correzioni leggi gli esiti finali nella PR e nel rapporto:
+non dichiarare PASS una prova soltanto avviata. Main 1b0946a e PR #40 di Claude
+sono integrati: non riscrivere schemi a fasi o priorità HUD. La pausa6c5 ora
+mostra e chiama gli schemi reali; in parità restano9carte.
 Conserva<100drawcall e<150000tri su iPhone, anche due cambi,14corpi interi,
 cartoon,regia unica,SPEED1,sprintatocchi,MAX.9s/tiroalrilascio,riflesso soloalta.
 Nuova decisione esplicita: poca inerzia e cambi rapidi sostituiscono il vecchio

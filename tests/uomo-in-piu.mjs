@@ -11,16 +11,16 @@ if (!process.argv.includes('--no-build')) await build({ root: ROOT, logLevel: 'w
 const server = await preview({ root: ROOT, logLevel: 'warn', preview: { port: 4398, host: '127.0.0.1' } });
 const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 let ok = true; const prova = (bene, testo) => { console.log(`${bene ? '✓' : '✗'} ${testo}`); if (!bene) ok = false; };
-const init = () => {
+const init = (foto = false) => {
   let a = 21; Math.random = () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   let now = 0; performance.now = () => now; window.requestAnimationFrame = cb => { window.__raf = cb; return 1; };
-  window.__salta = n => { const R = window.__pallanuoto.renderer; const d = R.render; R.render = () => {}; for (let i = 0; i < n; i++) { now += 1000 / 60; window.__raf(now); } R.render = d; now += 1000 / 60; window.__raf(now); };
+  window.__salta = n => { const R = window.__pallanuoto.renderer; const d = R.render; R.render = () => {}; for (let i = 0; i < n; i++) { now += 1000 / 60; window.__raf(now); } now += 1000 / 60; if (foto) R.render = d; window.__raf(now); R.render = d; };
 };
 const errori = [];
 const pg = await browser.newPage({ viewport: { width: 852, height: 393 }, isMobile: true, hasTouch: true });
 pg.setDefaultTimeout(150000);
 pg.on('pageerror', e => errori.push(e.message));
-await pg.addInitScript(init);
+await pg.addInitScript(init, process.argv.includes('--foto'));
 await pg.goto(server.resolvedUrls.local[0]);
 await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });
 
@@ -123,6 +123,8 @@ await pg.close();
 
 // ---------- sezione «Uomo in più»: scelta di 3 e creazione ----------
 const pm = await browser.newPage({ viewport: { width: 852, height: 393 }, isMobile: true, hasTouch: true });
+// La sezione è DOM/SVG: evita di renderizzare la vasca dietro al menu a ogni frame.
+await pm.addInitScript(() => { window.requestAnimationFrame = () => 1; });
 pm.setDefaultTimeout(150000); pm.on('pageerror', e => errori.push(e.message));
 await pm.goto(server.resolvedUrls.local[0]);
 await pm.waitForFunction('window.__pallanuoto && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });
