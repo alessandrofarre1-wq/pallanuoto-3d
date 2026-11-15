@@ -1009,3 +1009,7 @@ body.touch #tac .chip[data-apri]{max-width:200px}
 /* barra dell'uomo in più su schermi bassi (iPhone con le barre di Safari): più compatta, nomi lunghi accorciati, non tocca i comandi */
 #tac .chip.up{max-width:230px;overflow:hidden;text-overflow:ellipsis}
 @media (max-height:360px){ #tac:has(.chip.up){gap:2px} #tac .chip.up{padding:2px 8px;font-size:10.5px;max-width:200px} }
+
+/* v0.44 (Ale): il pulsante dei cambi compare solo quando serve davvero (stanco o 2 falli gravi) o mentre un cambio è in corso;
+   le proposte non urgenti restano nella schermata Cambi e panchina della pausa (e nel tasto B) */
+#tCambi:not([data-stato="consiglio"]):not([data-stato="corso"]){display:none}

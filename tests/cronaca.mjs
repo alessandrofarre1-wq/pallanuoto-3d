@@ -96,6 +96,13 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
   const s1 = await pg.evaluate(() => { const H = window.__pallanuoto, e = H.allPlayers.find(q => q.excluded); window.__esp = e;
     for (let i = 0; i < 200; i++) { window.__salta(1); if (!e.excluded) { e.excluded = true; e.exclUntil = H.game.time + 12; } } window.__vai(1); return window.__guarda(); });
   nota(s1.stato.includes(g.atteso.nome), '2. espulsione: il nome resta visibile dopo il primo avviso');
+  // niente sfarfallio (segnalazione di Ale, v0.44): il riquadro dell'espulso è sempre lo stesso, si aggiornano solo tempo e barra
+  const fermo = await pg.evaluate(() => { const H = window.__pallanuoto, e = window.__esp, box = document.querySelector('#espulsioni .ex'); let cambi = 0;
+    const oss = new MutationObserver(l => { for (const m of l) if (m.type === 'childList' && [...m.removedNodes].some(n => n.nodeType === 1 && n.classList.contains('ex'))) cambi++; });
+    oss.observe(document.getElementById('espulsioni'), { childList: true, subtree: true });
+    for (let i = 0; i < 60; i++) { window.__vai(1); if (!e.excluded) { e.excluded = true; e.exclUntil = H.game.time + 10; } }
+    const r = { stesso: document.querySelector('#espulsioni .ex') === box, cambi }; oss.disconnect(); return r; });
+  nota(fermo.stesso && fermo.cambi === 0, `2. espulsione: il riquadro non viene ricostruito in 60 fotogrammi (stesso elemento: ${fermo.stesso}, ricostruzioni: ${fermo.cambi})`);
   const s2 = await pg.evaluate(() => { const H = window.__pallanuoto, e = window.__esp; for (let i = 0; i < 120; i++) { window.__salta(1); if (!e.excluded) { e.excluded = true; e.exclUntil = H.game.time + 10; } } window.__vai(1); return window.__guarda(); });
   nota(/#\d+/.test(s1.stato) && /\d:\d\d/.test(s1.stato) && s1.stato.includes(g.atteso.nome) && s1.stato !== s2.stato && /\d c \d/.test(s1.sup), `2. indicatore persistente con tempo che scende: «${s1.stato}» → «${s2.stato}», superiorità «${s1.sup}»`);
   const sovrapp = await pg.evaluate(() => { const b = document.getElementById('shotclock').getBoundingClientRect(); return [...document.querySelectorAll('#espulsioni .esp > *')].some(e => { const a = e.getBoundingClientRect(); return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom); }); });

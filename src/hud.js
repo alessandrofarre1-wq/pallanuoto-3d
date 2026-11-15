@@ -8,8 +8,9 @@ import { ball, ctrl, fight, game, teams } from './stato.js';
 import { iconaMano } from './mano.js';
 import { aggiornaPulsanteCambi } from './panchinaVista.js';
 import { manUp, schemiUomo } from './ia.js';
+import { siglaUomo } from './uomo-in-piu.js';
 export const $ = id => document.getElementById(id);
-let tacKey='', schedaVista=null, ultimoBip=null, uomoAperto=null;
+let tacKey='', schedaVista=null, ultimoBip=null, uomoAperto=null, uomoChiudi=null;
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
 let schemiAperti=!TOUCH;
 export function apriSchemi(v){ schemiAperti = v===undefined ? !schemiAperti : (TOUCH ? v : true); }
@@ -68,7 +69,10 @@ export function updateHUD(){
   }
   aggiornaCronaca();
   const fe=$('fight');
-  if(fight.active){
+  // la barra della lotta al centro solo quando riguarda il giocatore: controlla il boa o il suo marcatore, oppure la sua squadra
+  // attacca e può servire il centroboa (v0.44, «le informazioni compaiono quando servono»)
+  const lottaUtile=fight.active&&(ctrl===fight.boa||ctrl===fight.def||(game.possTeam===teams[0]&&fight.boa.team===teams[0]));
+  if(lottaUtile){
     fe.style.display='block';
     const stato=fight.ricevibile?'Boa servibile':fight.stato==='anticipo'?'Anticipo difesa':'Cerca il lato';
     $('fstato').textContent=stato;
@@ -83,18 +87,22 @@ export function updateHUD(){
   const piano=atk&&hum.schema?hum.schema.nome:null;
   // uomo in più (v0.44): la barra mostra i tre schemi scelti; si apre da sola all'inizio di ogni superiorità (un tocco per chiamarlo)
   const up=atk&&manUp(hum)&&game.state==='play';
-  if(up&&hum.uomoPossT!==uomoAperto){ uomoAperto=hum.uomoPossT; apriSchemi(true); }
-  if(!up) uomoAperto=null;
+  // si apre da sola a ogni superiorità e, se non si sceglie niente, si richiude dopo 5 s di gioco (resta la pillola chiusa)
+  if(up&&hum.uomoPossT!==uomoAperto){ uomoAperto=hum.uomoPossT; uomoChiudi=game.time+5; apriSchemi(true); }
+  if(up&&TOUCH&&uomoChiudi!=null&&game.time>=uomoChiudi){ uomoChiudi=null; if(!hum.uomo) apriSchemi(false); }
+  if(!up){ uomoAperto=null; uomoChiudi=null; }
   const key=(up?'u'+(hum.uomo?hum.uomo.schema.id+hum.uomo.fase:'-'):'')+(atk?'a'+hum.atkPlay:'d'+hum.defPlay)+'|'+ai.defPlay+ai.atkPlay+'|'+schemiAperti+'|'+piano;
   if(key!==tacKey&&up){
     tacKey=key;
     const lista=schemiUomo(hum), cur=hum.uomo?hum.uomo.schema:null;
     let h;
-    if(!schemiAperti) h=`<span class="chip on up" data-apri="1">6c5: ${cur?cur.nome:'scegli lo schema'} ▾</span>`;
+    // testi brevi (sigla dello schema e fase «2/3»); il nome completo resta nel suggerimento al passaggio del mouse
+    const fase=cur&&cur.fasi.length>1?` ${hum.uomo.fase+1}/${cur.fasi.length}`:'';
+    if(!schemiAperti) h=`<span class="chip on up" data-apri="1" title="${cur?cur.nome:'4-2 base'}">6c5 · ${siglaUomo(cur)}${fase} ▾</span>`;
     else {
-      h=`<span class="chip lab up" data-apri="1">UOMO IN PIÙ${TOUCH?' ▴':''}</span>`;
-      lista.forEach((sc,i)=>{ h+=`<span class="chip up${cur===sc?' on':''}" data-i="${i}">${i+1} ${sc.nome}${cur===sc&&sc.fasi.length>1?` · fase ${hum.uomo.fase+1}/${sc.fasi.length}`:''}</span>`; });
-      h+=`<span class="chip up${!cur?' on':''}" data-i="3">4 4-2 base</span>`;
+      h=`<span class="chip lab up" data-apri="1">6c5${TOUCH?' ▴':''}</span>`;
+      lista.forEach((sc,i)=>{ h+=`<span class="chip up${cur===sc?' on':''}" data-i="${i}" title="${sc.nome}">${i+1} ${siglaUomo(sc)}${cur===sc?fase:''}</span>`; });
+      h+=`<span class="chip up${!cur?' on':''}" data-i="3" title="4-2 della strategia">4 Base</span>`;
     }
     $('tac').innerHTML=h;
   } else if(key!==tacKey){

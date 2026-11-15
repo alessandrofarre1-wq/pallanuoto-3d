@@ -11,7 +11,7 @@
 // 4 = mezzo sinistro (5), P1 = centroboa (1), P5 = punto (6).
 import { FORM_UP } from './costanti.js';
 
-export const MAX_SCELTI = 3, MAX_FASI = 4, MAX_PERSONALI = 24;
+export const MAX_SCELTI = 3, MAX_FASI = 4, MAX_PERSONALI = 24, MAX_SIGLA = 10;
 export const DURATE = [1.5, 2.5, 3.5, 5];      // secondi per fase (l'ultima resta comunque fino alla fine dell'uomo in più)
 export const RUOLI_UP = ['Centroboa', 'Ala destra', 'Ala sinistra', 'Mezzo destro', 'Mezzo sinistro', 'Punto'];
 const KEY = 'pallanuoto-uomo-v044';
@@ -22,27 +22,27 @@ const fase = (posti, durata = 2.5, palla = 0) => ({ posti, durata, palla });
 const P33 = [[2.1, 0], [2.0, 4.4], [2.0, -4.4], [4.6, 3.4], [4.6, -3.4], [6.5, 0]];
 
 export const LIBRERIA = [
-  { id: 'u42', nome: '4-2 classico', fonte: 'Mistrangelo, fig. 1',
+  { id: 'u42', sigla: '4-2', nome: '4-2 classico', fonte: 'Mistrangelo, fig. 1',
     descrizione: 'Quattro sui 2 metri (due esterni e due pali) e due tiratori ai 5 metri. La palla gira in fretta fino al tiro libero.',
     fasi: [fase(P42, 5)] },
-  { id: 'u33', nome: '3-3', fonte: 'Mistrangelo, fig. 2',
+  { id: 'u33', sigla: '3-3', nome: '3-3', fonte: 'Mistrangelo, fig. 2',
     descrizione: 'Tre sui 2 metri e tre fuori: più tiratori da lontano, il centro libera lo spazio per chi è al centro.',
     fasi: [fase(P33, 5)] },
-  { id: 'u33-42', nome: '3-3 che diventa 4-2', fonte: 'Mistrangelo, fig. 3',
+  { id: 'u33-42', sigla: '3-3›4-2', nome: '3-3 che diventa 4-2', fonte: 'Mistrangelo, fig. 3',
     descrizione: 'Si parte in 3-3; il mezzo sinistro entra sul palo, il centro scivola a destra e il punto scende ai 5 metri.',
     fasi: [fase(P33, 2.5), fase([[2.1, 1.75], [2.0, 5.4], [2.0, -5.4], [5.2, 2.5], [2.1, -1.75], [5.2, -2.5]], 5, 4)] },
-  { id: 'u42-33', nome: '4-2 che diventa 3-3', fonte: 'Mistrangelo, fig. 4',
+  { id: 'u42-33', sigla: '4-2›3-3', nome: '4-2 che diventa 3-3', fonte: 'Mistrangelo, fig. 4',
     descrizione: 'Dal 4-2 l’ala sinistra esce ai 5 metri, i pali scivolano a sinistra e il mezzo sinistro diventa punto.',
     fasi: [fase(P42, 2.5), fase([[2.1, 0], [2.0, 4.4], [4.6, -3.4], [4.6, 3.4], [6.5, 0], [2.0, -4.4]], 5, 3)] },
-  { id: 'urot1', nome: 'Rotazione verso 1', fonte: 'Mistrangelo, fig. 5',
+  { id: 'urot1', sigla: 'Rotaz. 1', nome: 'Rotazione verso 1', fonte: 'Mistrangelo, fig. 5',
     descrizione: 'Come il 4-2 che diventa 3-3, ma lo scivolamento del palo sinistro è corto: si apre la linea per il palo destro.',
     fasi: [fase(P42, 2.5), fase([[2.1, 0.6], [2.0, 5.4], [4.4, -4.0], [4.6, 3.6], [6.4, -0.5], [2.0, -3.9]], 5, 1)] },
-  { id: 'u42-33-42', nome: '4-2 → 3-3 → 4-2 dall’altro lato', fonte: 'Mistrangelo, fig. 6',
+  { id: 'u42-33-42', sigla: 'Doppio lato', nome: '4-2 → 3-3 → 4-2 dall’altro lato', fonte: 'Mistrangelo, fig. 6',
     descrizione: 'Il palo sinistro esce, il centro si sposta, poi il mezzo destro entra sul palo: la difesa deve cambiare lato due volte.',
     fasi: [fase(P42, 2),
       fase([[2.1, 0], [2.0, 4.6], [2.0, -4.6], [4.6, 3.4], [6.5, 0], [4.6, -3.4]], 2.5),
       fase([[2.1, -1.75], [2.0, 5.4], [2.0, -5.4], [2.1, 1.75], [5.2, 2.5], [5.2, -2.5]], 5, 4)] },
-  { id: 'uscivola5', nome: 'Uscita del 5 e scivolamento del palo', fonte: 'Mistrangelo, terza puntata, fig. 20-21',
+  { id: 'uscivola5', sigla: 'Uscita 5', nome: 'Uscita del 5 e scivolamento del palo', fonte: 'Mistrangelo, terza puntata, fig. 20-21',
     descrizione: 'L’esterno sinistro esce dai 2 metri per tirare; il palo sinistro scivola sulla linea senza uscire e obbliga il centrale a scegliere.',
     fasi: [fase(P42, 2), fase([[2.1, 1.75], [2.0, 5.4], [3.6, -5.0], [4.8, 3.2], [5.0, -1.2], [2.0, -3.7]], 5, 3)] },
 ];
@@ -72,7 +72,8 @@ export function validaUomo(input) {
   if (!nome) return null;
   const id = typeof input.id === 'string' && input.id ? input.id.slice(0, 40) : null;
   if (!id) return null;
-  return { id, nome, descrizione: typeof input.descrizione === 'string' ? input.descrizione.slice(0, 240) : '',
+  const sigla = typeof input.sigla === 'string' ? input.sigla.trim().slice(0, MAX_SIGLA) : '';
+  return { id, nome, sigla, descrizione: typeof input.descrizione === 'string' ? input.descrizione.slice(0, 240) : '',
     fonte: typeof input.fonte === 'string' ? input.fonte.slice(0, 80) : '', personale: !!input.personale, fasi };
 }
 
@@ -87,6 +88,8 @@ export function personali() {
   return v.personali.map(s => validaUomo({ ...s, personale: true })).filter(Boolean).slice(0, MAX_PERSONALI);
 }
 export function tutti() { return [...LIBRERIA, ...personali()]; }
+// nome breve da mostrare in partita (barra in alto, annuncio): la sigla scelta, altrimenti l'inizio del nome
+export const siglaUomo = s => !s ? '4-2' : (s.sigla || (s.nome.length <= MAX_SIGLA ? s.nome : s.nome.slice(0, MAX_SIGLA - 1).trimEnd() + '…'));
 export const trova = id => tutti().find(s => s.id === id) || null;
 export function scelti() {
   const v = leggi(), ids = v && Array.isArray(v.scelti) ? v.scelti : SCELTI_BASE;

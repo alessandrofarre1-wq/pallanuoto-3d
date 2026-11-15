@@ -83,7 +83,7 @@ prova(partita.dopo2s < partita.inizio - 0.5, `i compagni nuotano verso i posti d
 prova(partita.fase1 === 1 && partita.cambioDopo >= partita.durata - 0.02 && partita.cambioDopo <= partita.durata + 3.05, `la fase 1 dura ${partita.durata} s ma aspetta i compagni ancora lontani (al massimo 3 s in più): si passa alla seconda dopo ${partita.cambioDopo} s`);
 prova(partita.dopoF2 < partita.inizioF2 - 0.3, `e i compagni vanno ai nuovi posti (${partita.inizioF2.toFixed(2)} → ${partita.dopoF2.toFixed(2)} m)`);
 prova(partita.palo5 && !partita.palo6, 'pali riconosciuti dalla fase in corso: il mezzo sinistro entrato sul palo è palo, il punto uscito no');
-prova(/fase 2\/2/.test(partita.barraDopo), `la barra indica la fase in corso («${partita.barraDopo.slice(0, 90)}»)`);
+prova(/3-3›4-2 2\/2/.test(partita.barraDopo), `la barra indica la fase in corso («${partita.barraDopo.slice(0, 90)}»)`);
 prova(partita.base === null && partita.finito === null, 'tasto 4 = 4-2 base; a superiorità finita lo schema si spegne');
 
 // ---------- il computer sceglie da solo ----------
@@ -123,6 +123,7 @@ prova(scambio.length === 3 && scambio.includes('u33') && !scambio.includes('u42'
 // creazione: nuovo schema a due fasi, sposto un giocatore nella seconda fase e salvo
 await pm.locator('#uomoNuovo').click();
 await pm.locator('#uomoNome').fill('Mio rombo');
+await pm.locator('#uomoSigla').fill('Rombo');
 await pm.locator('#uomoAggiungiFase').click();
 const spostato = await pm.evaluate(() => {
   const svg = document.getElementById('uomoPiscina'), m = svg.querySelector('[data-uomo-ruolo="6"]'), r = svg.getBoundingClientRect();
@@ -136,9 +137,9 @@ if (process.argv.includes('--foto')) await pm.screenshot({ path: path.join(ROOT,
 await pm.locator('#uomoSalva').click();
 const salvato = await pm.evaluate(() => {
   const U = window.__pallanuoto.uomo, p = U.personali().find(s => s.nome === 'Mio rombo');
-  return p && { id: p.id, fasi: p.fasi.length, palla: p.fasi[1].palla, mosso: JSON.stringify(p.fasi[0].posti[5]) !== JSON.stringify(p.fasi[1].posti[5]), inLista: !!document.querySelector(`#uomoLista [data-uomo="${p.id}"]`) };
+  return p && { id: p.id, sigla: p.sigla, fasi: p.fasi.length, palla: p.fasi[1].palla, mosso: JSON.stringify(p.fasi[0].posti[5]) !== JSON.stringify(p.fasi[1].posti[5]), inLista: !!document.querySelector(`#uomoLista [data-uomo="${p.id}"]`) };
 });
-prova(!!salvato && salvato.fasi === 2 && salvato.palla === 6 && salvato.mosso && salvato.inLista, `schema nuovo salvato con 2 fasi, il punto spostato nella seconda e la palla a lui (${JSON.stringify(salvato)})`);
+prova(!!salvato && salvato.sigla === 'Rombo' && salvato.fasi === 2 && salvato.palla === 6 && salvato.mosso && salvato.inLista, `schema nuovo salvato con 2 fasi, il punto spostato nella seconda e la palla a lui (${JSON.stringify(salvato)})`);
 if (salvato) { await pm.locator('#uomoScelti [data-scelto="u33"] [data-azione="togli"]').click(); await pm.locator(`#uomoLista [data-uomo="${salvato.id}"] [data-azione="scegli"]`).click(); }
 await pm.reload();
 await pm.waitForFunction('window.__pallanuoto && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });

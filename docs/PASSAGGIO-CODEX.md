@@ -68,8 +68,9 @@ REGOLE FISSE DI ALE (da rispettare sempre):
 - Restano fissi: stile cartoon, 14 corpi completi, camera unica, SPEED=1,
   sprint a tocchi, riflesso completo solo in qualità alta, ombra
   dell'espulso, palla senza contorno, carica 0,9 s e tiro al rilascio, CAMBI
-  in basso al centro con area di tocco 44 px, regolamento World Aquatics
-  18 febbraio 2026.
+  in basso al centro con area di tocco 44 px (dalla v0.44 visibile SOLO con
+  un consiglio urgente o un cambio in corso), regolamento World Aquatics
+  18 febbraio 2026. Cosa si vede in partita e quando: docs/hud-priorita.md.
 - Il caso del gioco passa solo da rnd(); la grafica usa rndGrafica().
 - Nessun merge o pubblicazione senza istruzione di Ale. Prima di cambiare
   direzione in modo grosso, chiedi ad Ale.

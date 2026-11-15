@@ -50,7 +50,7 @@ function azione(e) {
   if (b.dataset.azione === 'togli') salvaScelti(ids.filter(q => q !== id));
   if (b.dataset.azione === 'elimina' && confirm(`Eliminare lo schema «${s.nome}»?`)) eliminaPersonale(id);
   if (b.dataset.azione === 'modifica' && s) return apriCrea(copia(s));
-  if (b.dataset.azione === 'copia' && s) return apriCrea({ ...copia(s), id: nuovoId(), nome: `${s.nome} (mio)`, personale: true, fonte: '' });
+  if (b.dataset.azione === 'copia' && s) return apriCrea({ ...copia(s), id: nuovoId(), nome: `${s.nome} (mio)`, sigla: s.sigla || '', personale: true, fonte: '' });
   disegnaElenco();
 }
 
@@ -59,7 +59,7 @@ function messaggio(t = '') { $('uomoMessaggio').textContent = t; $('uomoMessaggi
 function apriCrea(schema) {
   bozza = schema || { id: nuovoId(), nome: 'Il mio schema', descrizione: '', personale: true, fasi: copia(LIBRERIA[0].fasi) };
   faseI = 0; ruolo = 1; messaggio();
-  $('uomoElenco').hidden = true; $('uomoCrea').hidden = false; $('uomoNome').value = bozza.nome;
+  $('uomoElenco').hidden = true; $('uomoCrea').hidden = false; $('uomoNome').value = bozza.nome; $('uomoSigla').value = bozza.sigla || '';
   disegnaCrea();
 }
 function chiudiCrea() { $('uomoCrea').hidden = true; $('uomoElenco').hidden = false; bozza = null; disegnaElenco(); }
@@ -96,6 +96,7 @@ function puntoSvg(e) {
 function salva() {
   bozza.nome = $('uomoNome').value.trim();
   if (!bozza.nome) { messaggio('Dai un nome allo schema prima di salvarlo.'); $('uomoNome').focus(); return; }
+  bozza.sigla = $('uomoSigla').value.trim();
   bozza.descrizione = bozza.fasi.length === 1 ? 'Schema personale a una fase.' : `Schema personale in ${bozza.fasi.length} fasi.`;
   const s = validaUomo({ ...bozza, personale: true });
   if (!s) { messaggio('Lo schema non è valido: controlla i posti.'); return; }
