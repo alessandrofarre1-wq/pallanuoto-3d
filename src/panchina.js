@@ -56,11 +56,18 @@ export function chiediCambio(t, p, g, subito = false) {
   return true;
 }
 // primo momento utile per un cambio scelto in pausa (oltre a gol, time-out e intervalli, che lo rendono immediato):
-// chi esce non ha la palla, è lontano dall'azione e la sua squadra non sta difendendo vicino alla propria porta
+// chi esce non ha la palla, è lontano dall'azione e la sua squadra ATTACCA. Mai mentre si difende (richiesta di Ale,
+// 15/11/2026: chi esce lascerebbe la squadra in inferiorità proprio quando deve difendere).
 export function momentoUtile(t, p) {
   if (ball.holder === p || dist(p, ball) < 6) return false;
-  if (game.possTeam === t) return true;
-  return Math.abs(ownGoalX(t) - ball.x) > 10;
+  return game.possTeam === t;
+}
+// consiglio da mostrare sul pulsante CAMBI durante il gioco (richiesta di Ale, 15/11/2026): niente nei primi 90 s di partita,
+// solo per chi in questo momento può uscire (squadra in attacco o gioco fermo dopo gol/time-out, lontano dalla palla)
+export const CONSIGLIO_DOPO = 90;
+export function consiglioInGioco(t) {
+  if (game.time < CONSIGLIO_DOPO) return null;
+  return consigli(t, 3).find(c => game.cambiLiberi || momentoUtile(t, c.p)) || null;
 }
 export function annullaRichiesta(t, p) { t.coda = (t.coda || []).filter(x => x.esce !== p); }
 export function annullaCambio(t) {
@@ -173,7 +180,8 @@ export function consigli(t, max = 3) {
     if (p.stamina < 0.5 && dopo > ora - 4) { motivo = `stanco (${Math.round(p.stamina * 100)}%)`; peso = 60 + (0.5 - p.stamina) * 100; urgente = true; }
     else if (p.pf >= 2) { motivo = '2 falli gravi: al terzo esce per sempre'; peso = 40; urgente = true; }
     else if ((sc.tiriP || 0) >= 4 && !(sc.gol)) { motivo = `partita storta (0 gol su ${sc.tiriP} tiri)`; peso = 30; }
-    else if (dopo > ora + 3) { motivo = `in panchina c'è chi ora rende di più (${Math.round(dopo)} contro ${Math.round(ora)})`; peso = 10 + dopo - ora; }
+    // «rende di più» solo quando la differenza nasce dalla stanchezza, non dalla formazione scelta
+    else if (p.stamina < 0.85 && dopo > ora + 3) { motivo = `in panchina c'è chi ora rende di più (${Math.round(dopo)} contro ${Math.round(ora)})`; peso = 10 + dopo - ora; }
     if (motivo) cand.push({ p, g, motivo, peso, urgente });      // urgente = stanco o 2 falli gravi: il pulsante in gioco diventa dorato
   }
   cand.sort((a, b) => b.peso - a.peso);

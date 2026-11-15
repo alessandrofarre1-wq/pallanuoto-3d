@@ -42,6 +42,12 @@ Dettagli in docs/verifiche-v041.md. Corretta anche la home su iPhone (fascia
 in fondo, versione nascosta, immagine tagliata): non rimettere #menu a
 inset:0 senza 100lvh/100dvh.
 
+v0.42 (Claude Code): consigli di cambio mai nei primi 90 s e mai in difesa
+(anche i cambi scelti in pausa aspettano il possesso); il computer libero
+entro 7,5 m tira senza aspettare i 23 s di «pazienza» (npm run occasioni);
+menu che sfuma verso #07131d in basso per nascondere la striscia di iOS 26
+nelle app aggiunte alla Home. Dettagli in CLAUDE.md.
+
 REGOLE FISSE DI ALE (da rispettare sempre):
 - Ogni PR alza la versione di 0.01 (package.json) e la scrive nel titolo
   («v0.42: …»). Le correzioni di una PR aperta vanno nella STESSA PR.

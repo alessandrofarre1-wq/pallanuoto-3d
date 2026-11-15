@@ -545,7 +545,9 @@ body.touch #qte{display:none}
 .ex .sq-ex{font-size:10px;letter-spacing:.04em;color:var(--h-tenue);flex:none}
 
 /* v0.40: il centro sportivo è parte del gioco; i pannelli usano solo DOM/SVG. */
-#menu{--m-ciano:#57e2df;--m-navy:#07131d;--m-pannello:#10222e;--m-linea:rgba(185,218,229,.17);--m-tenue:#a9bec9;background:radial-gradient(90% 95% at 95% 45%,#124754 0%,transparent 64%),linear-gradient(115deg,#060f18,#0b1d29 75%,#102e3a)}
+#menu{--m-ciano:#57e2df;--m-navy:#07131d;--m-pannello:#10222e;--m-linea:rgba(185,218,229,.17);--m-tenue:#a9bec9;background:linear-gradient(180deg,transparent 78%,#07131d),radial-gradient(90% 95% at 95% 45%,#124754 0%,transparent 64%),linear-gradient(115deg,#060f18,#0b1d29 75%,#102e3a)}
+/* iOS 26, app aggiunta alla Home: sotto la pagina resta una striscia (difetto noto di WebKit) che nessuna regola copre e che prende
+   il colore di sfondo della pagina (#07131d). Il menu sfuma verso quello stesso colore in basso, così la striscia non si vede. */
 #menu [hidden]{display:none!important}
 #menu button:focus-visible,#menu summary:focus-visible{outline:3px solid var(--m-ciano);outline-offset:3px}
 #menu .m-cta{background:var(--m-ciano)!important;border-radius:5px;box-shadow:none;color:#06202b!important}
