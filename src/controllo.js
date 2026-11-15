@@ -37,6 +37,7 @@ export function autoSwitch(pt){
 // un gesto o è rimasto indietro dopo una finta. A parità di distanza vince il più vicino alla propria porta.
 // Dopo un cambio a mano il cambio automatico sulla palla vagante aspetta 1,5 s, altrimenti annullerebbe la scelta.
 let cambioManualeT=-9;
+export const ultimoCambioManuale=()=>cambioManualeT;     // per il pannello del giocatore (hud.js)
 export function piuVicinoAllaPalla(t,escluso){
   let best=null,bd=1e9;
   for(const m of t.players){ if(m===escluso||m.excluded||m.isGK||m.uscendo) continue; const d=dist(m,ball);

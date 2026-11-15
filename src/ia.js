@@ -3,6 +3,7 @@ import { difensoriDavanti } from './statistiche.js';
 import { DEF_DOWN, FORM, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
 import { anticipoTarget, centroTarget, leggiCentro } from './centroboa.js';
 import { schemaSquadra } from './schemi.js';
+import { avanzaUomo, avviaUomo, ePalo, perimetroUomo, postiUomo, scelti as sceltiUomo, trova as trovaUomo, SCELTI_BASE } from './uomo-in-piu.js';
 import { doFake, timeout } from './regole.js';
 import { annuncia as notifica } from './cronaca.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
@@ -10,6 +11,20 @@ import { paloCoperto } from './muro.js';
 import { QTE, aiControfuga, occasioneControfuga, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, laneClear, openness, shotKind, situazioneTiro, startAct } from './tiri.js';
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
+// Uomo in più (v0.44): posti della fase in corso dello schema chiamato, altrimenti il 4-2 della strategia
+export const postiSup = t => postiUomo(t,schemaSquadra(t).superiorita);
+// in superiorità è «palo» chi occupa un posto davanti alla porta nella fase in corso (non più solo centroboa e punto)
+export function paloUomo(p){ return !p.isGK&&manUp(p.team)&&ePalo(postiSup(p.team)[p.i-1]); }
+export function viciniUomo(t,a,b){
+  const o=perimetroUomo(postiSup(t)),ia=o.indexOf(a),ib=o.indexOf(b);
+  return ia>=0&&ib>=0&&Math.abs(ia-ib)===1;
+}
+// schemi del computer: i tre di base (la squadra umana usa i tre scelti nella sezione «Uomo in più»)
+export const schemiUomo = t => t.human ? sceltiUomo() : SCELTI_BASE.map(trovaUomo).filter(Boolean);
+// il giocatore chiama uno dei suoi schemi (i = 0, 1, 2); null = torna al 4-2 della strategia
+export function chiamaUomo(t,i){
+  const sc=schemiUomo(t)[i]||null; avviaUomo(t,sc,game.time); if(t.uomo) t.uomo.possT=game.possT; t.uomoPossT=game.possT; return sc;
+}
 export function startCut(p){
   if(p.isGK||p.excluded||ball.holder===p||manUp(p.team)||p.team.players.some(q=>q!==p&&q.cut)) return false;
   const t=p.team, side=Math.abs(p.z)<0.5?(rnd()<0.5?1:-1):Math.sign(p.z);
@@ -22,6 +37,17 @@ export function startCut(p){
 // Un solo tagliante e una copertura: l'editor sceglie il ruolo, la situazione decide quando parte.
 export function aggiornaSchemi(t){
   const s=schemaSquadra(t);
+  // uomo in più: il computer sceglie uno dei suoi schemi a ogni nuova superiorità; il giocatore lo chiama lui (callPlay)
+  if(manUp(t)&&game.possTeam===t){
+    if(t.uomoPossT!==game.possT){ t.uomoPossT=game.possT; t.uomo=null;
+      if(!t.human||game.autoplay){ const l=schemiUomo(t); if(l.length){ avviaUomo(t,l[Math.floor(rnd()*l.length)],game.time); t.uomo.possT=game.possT; } } }
+    if(t.uomo){
+      // arrivati: in media a meno di 1,6 m dai posti della fase (chi ha la palla e il giocatore controllato non contano)
+      const f=t.uomo.schema.fasi[t.uomo.fase].posti,gx=goalX(t); let s2=0,n=0;
+      for(const q of t.players){ if(q.isGK||q.excluded||q===ball.holder||q===ctrl) continue; const [d,z]=f[q.i-1]; s2+=Math.hypot(q.x-(gx-t.dir*d),q.z-z*t.dir); n++; }
+      avanzaUomo(t,game.time,!n||s2/n<1.6);
+    }
+  } else if(t.uomo||t.uomoPossT!=null){ t.uomo=null; t.uomoPossT=null; }
   if(!t.schemaStato||t.schemaStato.possT!==game.possT||t.schemaStato.schema!==s){
     t.schemaStato={possT:game.possT,schema:s,next:game.time+0.6}; t.copertura=null; t.aiutoStato=null;
     for(const p of t.players) p.cut=null;
@@ -88,7 +114,7 @@ function paloTarget(p,f){
       const chiuso=other(t).players.some(q=>!q.excluded&&!q.isGK&&Math.hypot(q.x-tx,q.z-tz)<0.95);
       if(!chiuso){ d+=hd>3.8?1.15:0.85; z+=(hz-z)*0.18; }
     }else{
-      const vicino=t.players[p.i===1?6:1];
+      const vicino=t.players.find(q=>q!==p&&!q.isGK&&manUp(t)&&ePalo(postiSup(t)[q.i-1]));      // l'altro palo della fase in corso
       const centraleSegue=vicino&&other(t).players.some(q=>!q.excluded&&!q.isGK&&Math.abs(q.z)<2.2&&dist(q,vicino)<1.65);
       if(centraleSegue) z+=Math.sign(hz||1)*Math.min(0.9,Math.abs(z)*0.55);
     }
@@ -115,7 +141,7 @@ export function attackTarget(p){
   let f;
   const sup=manUp(t);
   const s=schemaSquadra(t);
-  f=[...(sup?s.superiorita:s.attacco)[p.i-1]];
+  f=[...(sup?postiSup(t):s.attacco)[p.i-1]];
   if(!sup&&t.copertura?.chi===p&&t.copertura.entrante.cut) return {x:gx-t.dir*t.copertura.d,z:t.copertura.z*t.dir};
   if(!sup&&p.i===1){
     const tg=centroTarget(p),d=Math.max(Math.abs(gx-tg.x),Math.abs(gx-ball.x)-14);
@@ -126,7 +152,7 @@ export function attackTarget(p){
   const ballD=Math.abs(gx-ball.x), lead=[0,14,12,12,8,8,4][p.i];
   let f0=f[0], fz=f[1];
   if(ballD-lead>f0) f0=ballD-lead;
-  if(sup&&(p.i===1||p.i===6)&&ballD<9) return paloTarget(p,[f0,fz]);
+  if(sup&&ePalo(f)&&ballD<9) return paloTarget(p,[f0,fz]);
   const x=gx-t.dir*f0,z=clamp(fz*t.dir+(sup?0:Math.sin(game.time*0.6+p.uid)*0.35),-HW+0.5,HW-0.5);
   const a=appoggio(p,x,z,sup),ax=x+(a?a.dx:0),az=z+(a?a.dz:0);
   if(sup) return { x:ax, z:az, sprint:Math.hypot(ax-p.x,az-p.z)>1.5 };
@@ -412,7 +438,7 @@ export function aiCarrier(p,dt){
   if(p.act&&!p.act.done) return;
   if(aiControfuga(p,dt)) return;      // controfuga: schizzo o colonnello
   // Il palo conclude subito solo nella finestra creata dal passaggio e dalla scelta difensiva.
-  if((p.alVolo||p.i===1||p.i===6)&&ball.holdTime<0.15&&manUp(t)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
+  if((p.alVolo||paloUomo(p))&&ball.holdTime<0.15&&manUp(t)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
     const sit=situazioneTiro(p),gk=other(t).players[0],aim=-Math.sign(gk.z||1);
     p.alVolo=false;
     if(sit.marcato<0.2&&sit.vicino>1.25&&!(p.pressatoUntil>game.time)&&laneClear(p,gx,aim,t,0.7)){

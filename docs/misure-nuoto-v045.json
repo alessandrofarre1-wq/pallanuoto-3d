@@ -1,5 +1,5 @@
 {
-  "versione": "0.44",
+  "versione": "0.45",
   "generato": "2026-11-15T13:50:58.157Z",
   "provenienza": {
     "script": "tests/nuoto-v044.mjs",
@@ -2257,5 +2257,22 @@
     "Prove isolate del motore; i comandi desktop/touch/controller sono verificati dalle suite dedicate.",
     "Nessuna misura FPS o giudizio di giocabilità su iPhone fisico.",
     "La chiusura del passaggio da fermo può orientarsi al ricevente per 0,36 s; lanci dalla mano e gesto in corso restano verificati."
-  ]
+  ],
+  "confermaIntegrazione": {
+    "generato": "2026-11-15T18:11:02.516491+00:00",
+    "base": "1b0946a03ca4cf7961c9fa41e29b1ab5d83475d0",
+    "ramo": "codex/v045-nuoto-comandi-identita",
+    "comando": "PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers npm run nuoto -- --json=/tmp/nuoto-v045.json",
+    "esito": "PASS, exit 0",
+    "dopoIdenticoAlConfrontoOriginale": true,
+    "sha256": {
+      "src/fisica.js": "ccffb6abef55576d0fccf790611208c7cadeb1195ae9afb550c745b1c0b6531a",
+      "src/partita.js": "ea54279556352868cdf2fbda26349363e6e880c94a2faa90b6d24817d900fd5d",
+      "src/controllo.js": "fe33b066171af5825f4559a23b5a6ec10cb5d929213f7f4df2a87f75c619fc8d",
+      "src/input.js": "add71bfff048e954318ac054b40e7649c0ddde61a18af77809fa29cb80107c24",
+      "src/grafica/pose.js": "90eef66da61d2c4bea2e5b88358068a570b344fa29e94b72d7839279082f502e",
+      "tests/nuoto-v044.mjs": "9975298e9e53eb9cfda336f078af86447c24cf3b11d7d1ff21420552ea632d8f"
+    },
+    "nota": "PR #40 integrata; protezione da fermo usa rotazione angolare unica. Sezione2 PASS: protezione reale, pressione 17/30, falli 0/30. PRIMA conservato dalla misura originale: non è una nuova esecuzione della v0.43 completa."
+  }
 }

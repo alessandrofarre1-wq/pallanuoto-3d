@@ -1,7 +1,8 @@
 // Lavagne esplicative della pausa: posizioni dagli schemi e principi di markTarget in ia.js.
 import { FORM, MARK, ROLES } from './costanti.js';
 import { caricaSchema, copiaSchema } from './schemi.js';
-import { goalX, other } from './stato.js';
+import { ePalo, perimetroUomo, scelti as sceltiUomo } from './uomo-in-piu.js';
+import { game, goalX, other } from './stato.js';
 
 const PRESET=['arco','entrata','incrocio','boa'];
 const ATTACCHI=[
@@ -24,13 +25,15 @@ let sequenza=0;
 function pallina(d,z,n,classe='tp-giocatore'){
   return `<g transform="translate(${X(z)} ${Y(d)})"><circle r="7.4" class="${classe}"/>${n?`<text text-anchor="middle" dominant-baseline="central">${n}</text>`:''}</g>`;
 }
-function lavagna({schema,difesa=null,superiorita=false,team=null}){
-  const id=`tp-freccia-${++sequenza}`,posti=(superiorita?schema.superiorita:schema.attacco);
+function lavagna({schema,difesa=null,superiorita=false,team=null,faseSup=null,precedente=null}){
+  const id=`tp-freccia-${++sequenza}`,posti=faseSup?.posti||(superiorita?schema.superiorita:schema.attacco);
   let disegno='',frecce='';
   const freccia=(a,b,colore='oro')=>`<path d="M${X(a[1])} ${Y(a[0])}L${X(b[1])} ${Y(b[0])}" class="tp-freccia ${colore}" marker-end="url(#${id})"/>`;
   if(difesa===null){
-    const catena=(superiorita?[2,4,5,3]:[2,4,6,5,3]).map(n=>`${X(posti[n-1][1])},${Y(posti[n-1][0])}`).join(' ');
+    const catena=(superiorita?perimetroUomo(posti):[2,4,6,5,3]).map(n=>`${X(posti[n-1][1])},${Y(posti[n-1][0])}`).join(' ');
     disegno+=`<polyline points="${catena}" class="tp-appoggi"/>`;
+    if(superiorita&&precedente) for(let i=0;i<6;i++) if(Math.hypot(posti[i][0]-precedente[i][0],posti[i][1]-precedente[i][1])>.1) frecce+=freccia(precedente[i],posti[i]);
+    if(faseSup?.palla){ const p=posti[faseSup.palla-1]; disegno+=`<circle cx="${X(p[1])+9}" cy="${Y(p[0])-6}" r="3.8" class="tp-palla"/>`; }
     if(schema.id==='incrocio'&&!superiorita) for(const i of [4,5]) frecce+=freccia(FORM[i],posti[i-1]);
     if(schema.entrata&&!superiorita){
       const origine=posti[schema.entrata-1],cut=team?.players?.[schema.entrata]?.cut;
@@ -64,9 +67,13 @@ function lavagna({schema,difesa=null,superiorita=false,team=null}){
   }
   return `<svg viewBox="0 0 240 160" role="img" aria-label="${difesa===null?'Posizioni e indicazioni di attacco':'Difesa schierata con palla al mezzo destro avversario'}"><defs><marker id="${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#ffdb92"/></marker></defs><rect x="5" y="6" width="230" height="149" rx="3" class="tp-acqua"/><path d="M102 7V2H138V7" class="tp-porta"/><path d="M5 39H235M5 91H235" class="tp-linee"/>${frecce}${disegno}</svg>`;
 }
-function compiti(schema,superiorita=false){
-  const entrata=superiorita?'Centroboa (1) e punto (6) cercano i pali, ali e mezzi fanno girare la palla. L’entrata di parità è sospesa: usa il lato libero e non forzare il centro.':schema.entrata?`${ROLES[schema.entrata]} (${schema.entrata}) cerca l’unica entrata senza palla; un compagno resta alto. Se il taglio è chiuso, ricomincia dagli appoggi esterni.`:'Boa al centro, ali larghe, mezzi e punto in appoggio. Senza entrata automatica, cerca il lato libero e scarica fuori se il centro è chiuso.';
+function compiti(schema){
+  const entrata=schema.entrata?`${ROLES[schema.entrata]} (${schema.entrata}) cerca l’unica entrata senza palla; un compagno resta alto. Se il taglio è chiuso, ricomincia dagli appoggi esterni.`:'Boa al centro, ali larghe, mezzi e punto in appoggio. Senza entrata automatica, cerca il lato libero e scarica fuori se il centro è chiuso.';
   return `${entrata} Circolazione ${schema.passaggi==='vicini'?'tra compagni vicini':schema.passaggi==='rapidi'?'con più cambi di lato':'equilibrata'}.`;
+}
+function compitiUomo(fase){
+  const pali=fase.posti.map((p,i)=>ePalo(p)?ruolo(i+1):null).filter(Boolean);
+  return `${pali.length?`Sui pali: ${pali.join(', ')}.`:'Nessun palo fisso in questa fase.'} ${fase.palla?`La squadra cerca il passaggio a ${ruolo(fase.palla)}.`:'Gli esterni cercano la linea libera.'} I passaggi restano manuali quando controlli il portatore.`;
 }
 function stessaStrategia(a,b){
   if(!a||!b) return false;
@@ -79,16 +86,17 @@ function carta(tipo,indice,titolo,testo,svg,attiva,extra=''){
 export function renderTattichePausa(team){
   const salvata=caricaSchema(),attuale=team.schema||copiaSchema(PRESET[team.atkPlay]||'arco');
   const personale=!PRESET.includes(attuale.id)&&stessaStrategia(attuale,salvata);
-  const superiorita=other(team)?.players.some(p=>p.excluded)||false;
-  const attacco=ATTACCHI.map(([titolo,testo],i)=>carta('attacco',i,titolo,testo,lavagna({schema:copiaSchema(PRESET[i]),superiorita}),!personale&&attuale.id===PRESET[i])).join('');
-  const prepartita=carta('attacco','personale',`Piano prepartita: ${salvata.nome}`,compiti(salvata,superiorita),lavagna({schema:salvata,superiorita}),personale,'SALVATO NEL BROWSER');
+  const superiorita=game.possTeam===team&&(other(team)?.players.some(p=>p.excluded)||false);
+  const base={posti:attuale.superiorita,palla:0},uomo=team.uomo,fase=uomo?.schema.fasi[uomo.fase]||base;
+  const attacco=superiorita?sceltiUomo().map((schema,i)=>carta('uomo',i,schema.nome,`${schema.descrizione} Chiama dalla fase 1; ${schema.fasi.length} ${schema.fasi.length===1?'fase':'fasi'}.`,lavagna({schema:attuale,superiorita:true,faseSup:schema.fasi[0]}),uomo?.schema.id===schema.id)).join('')+carta('uomo',3,'Base della strategia',`Torna ai posti di superiorità del piano prepartita, senza fasi. ${compitiUomo(base)}`,lavagna({schema:attuale,superiorita:true,faseSup:base}),!uomo):ATTACCHI.map(([titolo,testo],i)=>carta('attacco',i,titolo,testo,lavagna({schema:copiaSchema(PRESET[i])}),!personale&&attuale.id===PRESET[i])).join('');
+  const prepartita=superiorita?'':carta('attacco','personale',`Piano prepartita: ${salvata.nome}`,compiti(salvata),lavagna({schema:salvata}),personale,'SALVATO NEL BROWSER');
   const difesa=DIFESE.map(([titolo,testo],i)=>carta('difesa',i,titolo,testo,lavagna({schema:attuale,difesa:i}),team.defPlay===i)).join('');
   const tagliante=team.players?.find(p=>p.cut),copertura=team.copertura?.chi;
-  const dettaglio=tagliante?`Entrata in corso: ${ruolo(tagliante.i)}.${copertura?` ${ruolo(copertura.i)} rimane alto a coprire.`:''}`:compiti(attuale,superiorita);
+  const dettaglio=superiorita?compitiUomo(fase):tagliante?`Entrata in corso: ${ruolo(tagliante.i)}.${copertura?` ${ruolo(copertura.i)} rimane alto a coprire.`:''}`:compiti(attuale);
   const helper=team.aiutoStato?.p;
   document.getElementById('tattichePausa').innerHTML=`
-    <p class="tp-nota">Scegli come attaccare e come difendere. I compagni raggiungono i posti nuotando; alla palla persa rientrano verso la propria porta. La copertura di un’entrata aiuta il rientro, ma non ferma da sola una controfuga.</p>
-    <section class="scelte-tattiche tp-scelte"><h3><span>CON PALLA</span> Come costruire l’attacco</h3><div>${attacco}${prepartita}</div></section>
+    <p class="tp-nota">${superiorita?'Hai l’uomo in più: chiama uno dei tuoi schemi o torna alla base. La chiamata riparte dalla fase 1; le fasi successive aspettano che i compagni raggiungano i posti.':'Scegli come attaccare e come difendere. I compagni raggiungono i posti nuotando; alla palla persa rientrano verso la propria porta. La copertura di un’entrata aiuta il rientro, ma non ferma da sola una controfuga.'}</p>
+    <section class="scelte-tattiche tp-scelte"><h3><span>CON PALLA</span> ${superiorita?'Schemi del 6 contro 5':'Come costruire l’attacco'}</h3><div>${attacco}${prepartita}</div></section>
     <section class="scelte-tattiche tp-scelte"><h3><span>SENZA PALLA</span> Come proteggere la porta</h3><div>${difesa}</div></section>
-    <details class="tp-dettaglio"><summary>Vedi la lavagna e i compiti attuali <span aria-hidden="true">＋</span></summary><div class="tp-lavagne"><figure><figcaption>Con palla · ${superiorita?'6 contro 5':'Parità'}</figcaption>${lavagna({schema:attuale,superiorita,team})}<p>${esc(dettaglio)}</p></figure><figure><figcaption>Senza palla · ${esc(DIFESE[team.defPlay][0])}</figcaption>${lavagna({schema:attuale,difesa:team.defPlay})}<p>${esc(DIFESE[team.defPlay][1])}${helper?` Aiuto assegnato a ${esc(ruolo(helper.i))}.`:''}</p></figure></div><p class="tp-legenda">Numeri = posti tattici, non cuffie. ${ROLES.slice(1).map((nome,i)=>`<span><b>${i+1}</b> ${esc(nome)}</span>`).join('')}</p><p class="tp-chiave">Bianco: i tuoi posti · Cerchi vuoti: avversari · Giallo: palla e indicazioni. Le difese mostrano una situazione con palla al mezzo destro: i posti si adattano alla palla. Con un espulso, la squadra passa alla difesa di inferiorità.</p></details>`;
+    <details class="tp-dettaglio"><summary>Vedi la lavagna e i compiti attuali <span aria-hidden="true">＋</span></summary><div class="tp-lavagne"><figure><figcaption>Con palla · ${superiorita?`6 contro 5 · ${esc(uomo?.schema.nome||'Base della strategia')}${uomo?` · fase ${uomo.fase+1}/${uomo.schema.fasi.length}`:''}`:'Parità'}</figcaption>${lavagna({schema:attuale,superiorita,team,faseSup:superiorita?fase:null,precedente:superiorita&&uomo?.fase>0?uomo.schema.fasi[uomo.fase-1].posti:null})}<p>${esc(dettaglio)}</p></figure><figure><figcaption>Senza palla · ${esc(DIFESE[team.defPlay][0])}</figcaption>${lavagna({schema:attuale,difesa:team.defPlay})}<p>${esc(DIFESE[team.defPlay][1])}${helper?` Aiuto assegnato a ${esc(ruolo(helper.i))}.`:''}</p></figure></div><p class="tp-legenda">Numeri = posti tattici, non cuffie. ${ROLES.slice(1).map((nome,i)=>`<span><b>${i+1}</b> ${esc(nome)}</span>`).join('')}</p><p class="tp-chiave">Bianco: i tuoi posti · Cerchi vuoti: avversari · Giallo: palla e indicazioni. Le difese mostrano una situazione con palla al mezzo destro: i posti si adattano alla palla. Con un espulso, la squadra passa alla difesa di inferiorità.</p></details>`;
 }

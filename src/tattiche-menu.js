@@ -95,8 +95,8 @@ function aggiornaPosizione(){
   $('schemaDistanza').value=String(d); $('schemaLarghezza').value=String(z);
   $('schemaDistanza').min=Math.abs(z)<3.58?'2.1':'1';
   $('schemaRuoloNumero').textContent=String(ruolo).padStart(2,'0');
-  $('schemaRuoloCompito').textContent=fase==='superiorita'&&[1,6].includes(ruolo)?'In superiorità cerca uno dei due pali, vicino alla porta: si sposta con la palla per offrire una ricezione. Se il palo è coperto, la palla resta agli esterni.':`${COMPITI[ruolo-1]}${bozza.entrata===ruolo?' Entrata assegnata: taglia senza palla quando si apre spazio; un compagno resta alto. Se non ricevi, torna a offrire un appoggio.':''}`;
-  $('schemaFaseCorrente').textContent=fase==='attacco'?'PARITÀ · 6 CONTRO 6':'SUPERIORITÀ · 6 CONTRO 5';
+  $('schemaRuoloCompito').textContent=fase==='superiorita'?`Questi sono i posti base del 6 contro 5, usati finché non chiami uno schema dalla sezione «Uomo in più». ${d<=2.7&&Math.abs(z)<3.2?'Da questo posto cerca la ricezione sul palo; se è coperto, la palla resta agli esterni.':'Da questo posto offre un appoggio sul perimetro e cerca il lato libero.'}`:`${COMPITI[ruolo-1]}${bozza.entrata===ruolo?' Entrata assegnata: taglia senza palla quando si apre spazio; un compagno resta alto. Se non ricevi, torna a offrire un appoggio.':''}`;
+  $('schemaFaseCorrente').textContent=fase==='attacco'?'PARITÀ · 6 CONTRO 6':'SUPERIORITÀ · POSTI BASE';
   for(const tab of document.querySelectorAll('[data-fase-schema]')){
     const attiva=tab.dataset.faseSchema===fase;
     tab.setAttribute('aria-selected',String(attiva)); tab.tabIndex=attiva?0:-1;

@@ -13,14 +13,16 @@ import { LOGO } from './logo.js';
 import { applicaSquadre, formazioneValida, formazioni } from './giocatori.js';
 import { annullaCambio } from './panchina.js';
 import { azzeraScelta, disegnaPanchina } from './panchinaVista.js';
+import { apriRegistro } from './cronaca.js';
 import { kickoff } from './regole.js';
 import { allPlayers, ball, fight, game, teams } from './stato.js';
 import { iconaMano } from './mano.js';
-import { passaAZona } from './ia.js';
+import { chiamaUomo, passaAZona } from './ia.js';
 import { resetTap } from './controllo.js';
 import { COMPETIZIONI, classificaGirone, creaTorneo, prossimaPartita, registraPartita, simulaBronzo } from './tornei.js';
 import { applicaSchema, caricaSchema, copiaSchema } from './schemi.js';
 import { inizializzaEditor, aggiornaRiepilogoStrategia } from './tattiche-menu.js';
+import { aggiornaRiepilogoUomo, inizializzaUomo } from './uomo-editor.js';
 import { renderTattichePausa } from './tattiche-pausa.js';
 
 const salva=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){ /* senza memoria si va avanti lo stesso */ } };
@@ -28,7 +30,7 @@ const leggi=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } 
 for(const id of ['logoHome','logoPausa','logoFine']) $(id).innerHTML=LOGO();
 
 // ---------- navigazione tra le schermate ----------
-const VISTE={ home:'vHome', squadre:'vSquadre', impostazioni:'vImpostazioni', comandi:'vComandi', info:'vInfo', opzioni:'vOpzioni', pausa:'vPausa', panchina:'vPanchina', fine:'vFine', nazionale:'vNazionale', torneo:'vTorneo', bacheca:'vBacheca', tattiche:'vTattiche', cerimonia:'vCerimonia', strategie:'vStrategie' };
+const VISTE={ home:'vHome', squadre:'vSquadre', impostazioni:'vImpostazioni', comandi:'vComandi', info:'vInfo', opzioni:'vOpzioni', pausa:'vPausa', panchina:'vPanchina', fine:'vFine', nazionale:'vNazionale', torneo:'vTorneo', bacheca:'vBacheca', tattiche:'vTattiche', cerimonia:'vCerimonia', strategie:'vStrategie', uomo:'vUomo' };
 const storia=[];
 export function vai(v,senzaStoria){
   const M=$('menu'), prima=M.dataset.vista;
@@ -42,7 +44,7 @@ export function vai(v,senzaStoria){
   if(v==='bacheca') disegnaBacheca();
   if(v==='tattiche') disegnaTattiche();
   if(v==='squadre') disegnaSquadre();
-  if(v==='squadre'||v==='torneo'||v==='impostazioni') aggiornaRiepilogoStrategia();
+  if(v==='squadre'||v==='torneo'||v==='impostazioni'){ aggiornaRiepilogoStrategia(); aggiornaRiepilogoUomo(); }
   if(v==='panchina') disegnaPanchina();
   else azzeraScelta();
 }
@@ -50,6 +52,7 @@ function indietro(){ vai(storia.pop()||(game.state==='paused'?'pausa':game.state
 document.querySelectorAll('[data-va]').forEach(b=>b.addEventListener('click',()=>{ if(b.dataset.va==='squadre') preparaSingola(); vai(b.dataset.va); }));
 document.querySelectorAll('[data-indietro]').forEach(b=>b.addEventListener('click',indietro));
 inizializzaEditor({apri:()=>vai('strategie'),torna:()=>indietro()});
+inizializzaUomo({apri:()=>vai('uomo'),torna:()=>indietro()});
 
 // ---------- impostazioni: valori di prima, ricordati per la prossima volta ----------
 function gruppo(attr,applica,chiave){
@@ -280,13 +283,19 @@ export function togglePause(){
   $('pausaSalvataggio').textContent=torneoAttivo?'I risultati delle gare concluse sono salvati. Uscendo, questa gara ripartirà dall’inizio.':'Uscendo perderai questa gara. Puoi riprenderla finché resti in pausa.';
   apriMenu('pausa');
 }
+// registro degli eventi (v0.44, scelta di Ale): si apre dal menu di pausa; chiudendolo si torna alla pausa
+$('vaiRegistro').onclick=()=>{ if(game.state==='paused') apriRegistro(); };
 function disegnaTattiche(){
   renderTattichePausa(teams[0]);
 }
 $('tattichePausa').onclick=e=>{
   const b=e.target.closest('[data-tattica]'); if(!b||game.state!=='paused') return;
   const t=teams[0], i=+b.dataset.schema;
-  if(b.dataset.tattica==='attacco'){
+  if(b.dataset.tattica==='uomo'){
+    if(game.possTeam!==t||!teams[1].players.some(p=>p.excluded)) return;
+    chiamaUomo(t,i<3?i:-1);
+  }
+  else if(b.dataset.tattica==='attacco'){
     const difesa=t.defPlay;
     applicaSchema(t,b.dataset.schema==='personale'?caricaSchema():copiaSchema(['arco','entrata','incrocio','boa'][i]));
     t.defPlay=difesa; t.schema.difesa=difesa;

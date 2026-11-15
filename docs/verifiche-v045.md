@@ -1,6 +1,6 @@
-# Verifiche v0.44
+# Verifiche v0.45
 
-Base: main38b31e8 (v0.43). Le modifiche rispondono ai sette punti di Ale; il logo resta una proposta da scegliere, gli altri interventi sono nel gioco. Nessun merge/deploy effettuato in questa sessione.
+Base integrata: main `1b0946a` (v0.44, PR #40 di Claude Code). Confronto iniziale del nuoto: `38b31e8` (v0.43). Le modifiche rispondono ai sette punti di Ale; il logo resta una proposta da scegliere, gli altri interventi sono nel gioco. Nessun merge/deploy effettuato in questa sessione.
 
 ## Cosa verificare
 
@@ -17,7 +17,7 @@ Base: main38b31e8 (v0.43). Le modifiche rispondono ai sette punti di Ale; il log
 ## Risultati mirati
 
 - Lint e build iniziali PASS (0 errori/0 warning,67moduli).
-- Nuoto PRIMA e DOPO PASS, con dati e provenienza in `docs/misure-nuoto-v044.json`. Arresto1,174→0,192m, tempo2,017→0,333s; cambio90° all'80%1,333→0,217s, deriva1,271→0,215m; ripartenza con palla contro direzione0,40→0,05s. Velocità massime, curve di stamina e risposta del portiere conservate. Sono misure di scene controllate, non tempi fisiologici ricavati dai manuali né FPS Apple.
+- Nuoto PRIMA e DOPO PASS, con dati e provenienza in `docs/misure-nuoto-v045.json`. Arresto1,174→0,192m, tempo2,017→0,333s; cambio90° all'80%1,333→0,217s, deriva1,271→0,215m; ripartenza con palla contro direzione0,40→0,05s. Velocità massime, curve di stamina e risposta del portiere conservate. Sono misure di scene controllate, non tempi fisiologici ricavati dai manuali né FPS Apple.
 - Desktop PASS su eventi reali keydown/up: nessun passaggio alla pressione di D, finte durante Space tenuto, tiro al rilascio senza autotiro, annullamento su pausa/blur/cambio possesso/focus, conservazione touch e sprint a tocchi.
 - Home PASS: quattro taglie,11insets, copy24, input testuali liberi, nove carte/SVG e Riprendi visibile; tre immagini reali visionate.
 - Tornei PASS:17gruppi,288sorteggi e80campagne; integrazione UI selezione FRA/MLT, reload, torneo16, Euro senza nazionali extraeuropee, slot indipendenti e bacheca.

@@ -1,9 +1,9 @@
-# Passaggio corrente — WATERPOLO 7 v0.44
+# Passaggio corrente — WATERPOLO 7 v0.45
 
 ```text
-Continua il branch codex/v044-nuoto-comandi-identita e la sua PR; non ripartire
-dalla v0.41 storica sotto. Leggi CLAUDE.md, docs/verifiche-v044.md e i risultati
-Actions sull'ultimo SHA. Versione0.44 nella stessa PR, nessun merge/deploy.
+Continua il branch codex/v045-nuoto-comandi-identita e la sua PR; non ripartire
+dalla v0.41 storica sotto. Leggi CLAUDE.md, docs/verifiche-v045.md e i risultati
+Actions sull'ultimo SHA. Versione0.45 nella stessa PR, nessun merge/deploy.
 Le7richieste di Ale sono implementate: nuoto preciso/ricezione;3loghi da scegliere;
 copy/schemi;24bandiere sui costumi e cuffie bianche/blu;World24selezionabili con
 torneo16/Europei16;desktop frecce/Space/D/C/QWE;homeportraitcentrata.
@@ -72,6 +72,11 @@ entro 7,5 m tira senza aspettare i 23 s di «pazienza» (npm run occasioni);
 menu che sfuma verso #07131d in basso per nascondere la striscia di iOS 26
 nelle app aggiunte alla Home. Dettagli in CLAUDE.md.
 
+v0.44 (Claude Code): SCHEMI DELL'UOMO IN PIÙ a fasi (src/uomo-in-piu.js,
+src/uomo-editor.js, docs/uomo-in-piu.md). In superiorità i pali NON sono
+più fissi (ruoli 1 e 6): sono chi nella fase in corso sta davanti alla porta
+(paloUomo in ia.js). Prova: npm run uomo.
+
 REGOLE FISSE DI ALE (da rispettare sempre):
 - Ogni PR alza la versione di 0.01 (package.json) e la scrive nel titolo
   («v0.42: …»). Le correzioni di una PR aperta vanno nella STESSA PR.
@@ -87,8 +92,9 @@ REGOLE FISSE DI ALE (da rispettare sempre):
 - Restano fissi: stile cartoon, 14 corpi completi, camera unica, SPEED=1,
   sprint a tocchi, riflesso completo solo in qualità alta, ombra
   dell'espulso, palla senza contorno, carica 0,9 s e tiro al rilascio, CAMBI
-  in basso al centro con area di tocco 44 px, regolamento World Aquatics
-  18 febbraio 2026.
+  in basso al centro con area di tocco 44 px (dalla v0.44 visibile SOLO con
+  un consiglio urgente o un cambio in corso), regolamento World Aquatics
+  18 febbraio 2026. Cosa si vede in partita e quando: docs/hud-priorita.md.
 - Il caso del gioco passa solo da rnd(); la grafica usa rndGrafica().
 - Nessun merge o pubblicazione senza istruzione di Ale. Prima di cambiare
   direzione in modo grosso, chiedi ad Ale.
