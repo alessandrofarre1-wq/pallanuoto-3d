@@ -82,7 +82,7 @@ const contatto = await pg.evaluate(() => {
     d.x = frontale ? 0.82 : 0.1; d.z = frontale ? 0 : 0.81; d.vx = d.vz = 0;
     const prima = (H.cronaca.registro || []).length;
     window.__salta(3);
-    const nuovi = (H.cronaca.registro || []).slice(prima).filter(e => /Fallo in attacco/.test(e.testo)).length;
+    const nuovi = (H.cronaca.registro || []).slice(prima).filter(e => /Fallo in attacco/.test(e.testo) && (e.chi || '').includes(`#${c.num} `)).length;   // solo i falli di chi porta palla: la lotta al centro continua altrove
     if (nuovi) { if (frontale) falli++; else laterali++; }
     window.__salta(80);
   }
