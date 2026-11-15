@@ -136,13 +136,17 @@ function aggiornaStato(){
 // ---------- la notifica non deve coprire palla, porte e giocatore controllato ----------
 const _v=new THREE.Vector3();
 function aSchermo(x,y,z){ _v.set(x,y,z).project(camera); if(_v.z>1) return null; return [(_v.x+1)/2*innerWidth,(1-_v.y)/2*innerHeight]; }
-// quanto è grave ciò che la notifica coprirebbe: palla 4, giocatore controllato 2, porta 1 (0 = non copre niente)
+// Palla4, controllato2, porta1 nel margine di sicurezza. Dentro il rettangolo
+// si aggiunge8: coprire davvero deve costare più del solo avvicinarsi a un punto.
 function copre(r){
   const punti=[[aSchermo(ball.x,ball.y||0.2,ball.z),4]];
   if(ctrl) punti.push([aSchermo(ctrl.x,0.5,ctrl.z),2]);
   for(const s of [1,-1]) for(const dz of [-1.5,0,1.5]) punti.push([aSchermo(s*HL,0.5,dz),1]);
   const m=18; let peso=0;
-  for(const [q,w] of punti) if(q&&q[0]>r.left-m&&q[0]<r.right+m&&q[1]>r.top-m&&q[1]<r.bottom+m) peso=Math.max(peso,w);
+  for(const [q,w] of punti) if(q&&q[0]>r.left-m&&q[0]<r.right+m&&q[1]>r.top-m&&q[1]<r.bottom+m){
+    const dentro=q[0]>r.left&&q[0]<r.right&&q[1]>r.top&&q[1]<r.bottom;
+    peso=Math.max(peso,w+(dentro?8:0));
+  }
   // Anche i pannelli e i comandi restano distinti dalle notifiche.
   for(const id of ['hud','tac','player','tCambi','tLog','tPause']){
     const el=$(id); if(!el.getClientRects().length) continue;

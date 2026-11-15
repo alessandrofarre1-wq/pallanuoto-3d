@@ -55,8 +55,9 @@ function loop(now){
   const nuovoDpr=qualita.aggiorna(frameMs,inPartita&&!document.hidden&&['play','stop','countdown'].includes(game.state),dpr);
   if(nuovoDpr!==dpr){ setDpr(nuovoDpr); renderer.setPixelRatio(dpr); }
   cronaca.tick(dt);
-  hudT+=raw; if(hudT>0.05){ hudT=0; updateHUD(); }
   render(dt,now);
+  // Le notifiche evitano porte e palla usando la camera del fotogramma corrente.
+  hudT+=raw; if(hudT>0.05){ hudT=0; updateHUD(); }
   tickFps(now);
   requestAnimationFrame(loop);
 }

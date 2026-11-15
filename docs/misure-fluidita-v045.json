@@ -1,13 +1,16 @@
 {
   "versione": "0.45",
-  "generato": "2026-11-15T18:22:37.384860+00:00",
+  "generato": "2026-11-15T19:13:49.323224+00:00",
   "comando": "PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers node strumenti/misura-fluidita.mjs",
-  "scenario": "Azione e due sostituzioni simultanee, seed33, due schermi iPhone, DPR1.5; build con PR40 integrata. Cambio successivo al solo marchio DOM/SVG senza variazioni al renderer 3D.",
+  "scenario": "Azione e due sostituzioni simultanee, seed33, due schermi iPhone, DPR1.5; PR40 integrata, logoC, correzione banner e sincronizzazione camera/HUD.",
   "sha256": {
     "src/fisica.js": "ccffb6abef55576d0fccf790611208c7cadeb1195ae9afb550c745b1c0b6531a",
     "src/partita.js": "ea54279556352868cdf2fbda26349363e6e880c94a2faa90b6d24817d900fd5d",
     "src/ia.js": "613a5222c68cee81a0f9e8c941380d7e16f886160dcbdff3ded2463a7f66508a",
-    "src/grafica/costumi.js": "a7cce779a6d91de4e0be82a986398fb67e41445cb2d98b42722d8fc062275835"
+    "src/grafica/costumi.js": "a7cce779a6d91de4e0be82a986398fb67e41445cb2d98b42722d8fc062275835",
+    "src/main.js": "6ccc76c21126a097a787a024eb924523e1dd267ee0afd494b1aa2215f1bc3d33",
+    "src/grafica/render.js": "c89eb44626b08e084a5ffa00042c31ca2e82ad2ca2180ac1bd842f1679559ccd",
+    "src/cronaca.js": "63fcc76d3a9a9c0d6e495782548a6c84c3567ca5472b74466940dd4d4a9fb787"
   },
   "esito": "PASS, exit0",
   "misure": [
