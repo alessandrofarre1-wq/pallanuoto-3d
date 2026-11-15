@@ -167,12 +167,6 @@ export function update(dt){
       if(game.state!=='play') return;
     }
   }
-  // chi è sotto pressione si gira a proteggere la palla: di spalle al difensore (corpo tra palla e avversario)
-  { const h=ball.holder;
-    if(h && h.pressatoUntil>game.time && h.pressatoDa && Math.hypot(h.vx,h.vz)<1.0){
-      const d=h.pressatoDa, ax=h.x-d.x, az=h.z-d.z, l=Math.hypot(ax,az)||1, k=Math.min(1,dt*6);
-      h.fx+=(ax/l-h.fx)*k; h.fz+=(az/l-h.fz)*k; const m=Math.hypot(h.fx,h.fz)||1; h.fx/=m; h.fz/=m;
-    } }
   separate();
   updateFight(dt);
   if(game.state!=='play') return;

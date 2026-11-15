@@ -47,7 +47,13 @@ const dif = await pg.evaluate(() => {
   tocco(); window.__salta(2);
   out.pressato = c.pressatoUntil > H.game.time; out.puoTirare = H.prova.startAct(c, 'shot', 0.1, () => {}) !== false;
   out.falli1 = H.cronaca.registro.slice(r0).filter(e => /Fallo|Espulsione|Rigore/.test(e.testo)).length;
-  out.girato = (() => { window.__salta(20); const d = H.teams[0].players[3]; return (c.fx * (c.x - d.x) + c.fz * (c.z - d.z)) > 0; })();
+  out.girato = (() => {
+    // Il gesto di protezione si misura da fermi. Se lasciato all'IA, il
+    // portatore ora può nuotare via o scaricare prima della verifica.
+    const d=H.teams[0].players[3]; H.__setCtrl(c);
+    d.tackleCD=9; d.colpi=[]; window.__salta(20);
+    return (c.fx*(c.x-d.x)+c.fz*(c.z-d.z))>0;
+  })();
   ({ c } = prepara()); const r1 = H.cronaca.registro.length;
   const d0 = H.teams[0].players[3];
   for (let k = 0; k < 3; k++) { // l'attaccante resta lì (altrimenti passa e la prova perde il bersaglio)
@@ -66,7 +72,9 @@ const ia = await pg.evaluate(() => {
   for (let k = 0; k < prove; k++) {
     H.game.state = 'play'; H.game.after = null; for (const q of H.allPlayers) { q.act = null; q.excluded = false; q.stunUntil = 0; q.colpi = []; q.tackleCD = 0; q.pressatoUntil = 0; }
     const c = H.teams[0].players[3]; R.giveBall(c); c.x = 2; c.z = 0; c.vx = c.vz = 0; c.fx = 1; c.fz = 0;
-    const d = H.teams[1].players[H.teams[1].players.findIndex(q => q.i === 3)]; d.x = 2.8; d.z = 0;
+    // MARK[2] === 3: è il vero marcatore dell'ala sinistra, non l'ala
+    // omologa che deve abbandonare la scena per seguire un altro uomo.
+    const d = H.teams[1].players[2]; d.x = 2.8; d.z = 0; d.vx=d.vz=0; d.lagX=c.x; d.lagZ=c.z;
     const r0 = H.cronaca.registro.length; let visto = false;
     for (let i = 0; i < 90; i++) { window.__salta(1); if (c.pressatoUntil > H.game.time) visto = true; if (H.ball.holder !== c) break; }
     if (visto) pressioni++; falli += H.cronaca.registro.slice(r0).filter(e => /Fallo|Espulsione|Rigore/.test(e.testo)).length ? 1 : 0;

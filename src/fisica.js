@@ -88,6 +88,11 @@ export function movePlayer(p,dx,dz,sprint,dt){
   const passaFronte=gestoAttivo&&p.act.kind==='pass'&&!p.isGK&&p.i!==1&&Math.abs(goalX(p.team)-p.x)<10;
   const riceveFronte=riceve&&!p.isGK&&p.i!==1&&Math.abs(goalX(p.team)-p.x)<10;
   if(passaFronte||riceveFronte){ tfx=goalX(p.team)-p.x;tfz=-p.z; }
+  else if(hold&&!moving&&!gestoAttivo&&!p.isGK&&game.penalty!==p&&p.pressatoUntil>game.time&&p.pressatoDa&&sp<1){
+    // Una sola rotazione angolare: il blend di due vettori opposti poteva
+    // lasciare fermo il corpo invece di proteggere il pallone.
+    tfx=p.x-p.pressatoDa.x; tfz=p.z-p.pressatoDa.z;
+  }
   // La chiusura del braccio resta visibile, ma un gesto già rilasciato non trattiene il fronte contro la levetta.
   else if(p.act?.aim&&(gestoAttivo||!moving)){ tfx=p.act.aim[0]-p.x; tfz=p.act.aim[1]-p.z; }
   else if(p.turnedUntil>game.time&&!moving){ tfx=goalX(p.team)-p.x; tfz=-p.z; }
