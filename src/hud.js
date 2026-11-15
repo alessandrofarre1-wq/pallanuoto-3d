@@ -7,8 +7,9 @@ import { aggiorna as aggiornaCronaca } from './cronaca.js';
 import { ball, ctrl, fight, game, teams } from './stato.js';
 import { iconaMano } from './mano.js';
 import { aggiornaPulsanteCambi } from './panchinaVista.js';
+import { manUp, schemiUomo } from './ia.js';
 export const $ = id => document.getElementById(id);
-let tacKey='', schedaVista=null, ultimoBip=null;
+let tacKey='', schedaVista=null, ultimoBip=null, uomoAperto=null;
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
 let schemiAperti=!TOUCH;
 export function apriSchemi(v){ schemiAperti = v===undefined ? !schemiAperti : (TOUCH ? v : true); }
@@ -80,8 +81,23 @@ export function updateHUD(){
   } else fe.style.display='none';
   const hum=teams[0], ai=teams[1], atk=game.possTeam===hum;
   const piano=atk&&hum.schema?hum.schema.nome:null;
-  const key=(atk?'a'+hum.atkPlay:'d'+hum.defPlay)+'|'+ai.defPlay+ai.atkPlay+'|'+schemiAperti+'|'+piano;
-  if(key!==tacKey){
+  // uomo in più (v0.44): la barra mostra i tre schemi scelti; si apre da sola all'inizio di ogni superiorità (un tocco per chiamarlo)
+  const up=atk&&manUp(hum)&&game.state==='play';
+  if(up&&hum.uomoPossT!==uomoAperto){ uomoAperto=hum.uomoPossT; apriSchemi(true); }
+  if(!up) uomoAperto=null;
+  const key=(up?'u'+(hum.uomo?hum.uomo.schema.id+hum.uomo.fase:'-'):'')+(atk?'a'+hum.atkPlay:'d'+hum.defPlay)+'|'+ai.defPlay+ai.atkPlay+'|'+schemiAperti+'|'+piano;
+  if(key!==tacKey&&up){
+    tacKey=key;
+    const lista=schemiUomo(hum), cur=hum.uomo?hum.uomo.schema:null;
+    let h;
+    if(!schemiAperti) h=`<span class="chip on up" data-apri="1">6c5: ${cur?cur.nome:'scegli lo schema'} ▾</span>`;
+    else {
+      h=`<span class="chip lab up" data-apri="1">UOMO IN PIÙ${TOUCH?' ▴':''}</span>`;
+      lista.forEach((sc,i)=>{ h+=`<span class="chip up${cur===sc?' on':''}" data-i="${i}">${i+1} ${sc.nome}${cur===sc&&sc.fasi.length>1?` · fase ${hum.uomo.fase+1}/${sc.fasi.length}`:''}</span>`; });
+      h+=`<span class="chip up${!cur?' on':''}" data-i="3">4 4-2 base</span>`;
+    }
+    $('tac').innerHTML=h;
+  } else if(key!==tacKey){
     tacKey=key;
     const names=atk?ATK:DEFN, cur=atk?hum.atkPlay:hum.defPlay;
     // barra degli schemi: su telefono è chiusa (si vede solo lo schema in uso) e si apre con un tocco

@@ -959,3 +959,53 @@ body.touch #tac .chip[data-apri]{max-width:200px}
   #schemaPiscina{max-height:none}.schema-ruolo-compito{margin-top:14px;padding-top:14px}
   #schemaAiuti label{font-size:11px}.schema-persistenza{font-size:11px}
 }
+
+/* ===== Uomo in più (v0.44): accesso, scelta di 3 schemi, libreria e lavagna a fasi ===== */
+.con-strategie>.strategia-accesso,.con-strategie>.m-cta{flex:1 1 0;width:auto;min-width:0}
+.uomo-accesso .strategia-icona{font:900 15px/1 system-ui!important;letter-spacing:-.02em}
+.torneo-azioni>.uomo-accesso{width:min(320px,100%)}
+#vUomo .uomo-intro{font-size:13px;color:var(--m-tenue);max-width:760px;margin:0 0 12px;line-height:1.45}
+#vUomo .uomo-intro b{color:#fff}
+.uomo-scelti{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.uomo-slot{display:flex;align-items:center;gap:8px;min-height:46px;padding:6px 10px;border:1px dashed var(--m-linea);border-radius:6px;font-size:11px;color:var(--m-tenue);min-width:0}
+.uomo-slot.pieno{border-style:solid;border-color:#ffd67b88;background:#2b2a14;color:#fff}
+.uomo-slot b{font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.uomo-slot button{min-width:44px;min-height:40px;font-size:14px!important;color:#ffd67b!important}
+.uomo-tasto{flex:none;width:24px;height:24px;border-radius:50%;background:#ffd67b;color:#0b1d33;font:800 13px/24px system-ui;text-align:center}
+.uomo-slot:not(.pieno) .uomo-tasto{background:transparent;border:1px solid var(--m-linea);color:var(--m-tenue)}
+.uomo-azioni{display:flex;gap:10px;margin-bottom:12px}.uomo-azioni .m-cta{max-width:320px}
+.uomo-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.uomo-carta{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:10px;border:1px solid var(--m-linea);border-radius:6px;background:var(--m-pannello);min-width:0}
+.uomo-carta.presa{border-color:#ffd67b;box-shadow:inset 0 0 0 1px #ffd67b55}
+.uomo-mini{width:150px;height:auto;border-radius:4px;display:block}
+.uomo-testo{min-width:0}.uomo-testo .soprattitolo{font-size:8.5px;margin:0 0 3px}
+.uomo-testo h3{font-size:15px;margin:0 0 4px;line-height:1.15}.uomo-testo p{font-size:11px;color:var(--m-tenue);margin:0 0 8px;line-height:1.35}
+.uomo-bottoni{display:flex;flex-wrap:wrap;gap:6px}
+.uomo-bottoni>button{min-height:44px;padding:6px 12px;font-size:12px!important}
+.uomo-bottoni>button:disabled{opacity:.4;cursor:default}
+.uomo-crea-barra{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px;margin-bottom:10px}
+.uomo-nome{flex:1 1 220px}.uomo-fasi{display:flex;gap:4px}
+.uomo-fasi button{min-height:44px;padding:6px 12px;border:1px solid var(--m-linea)!important;border-radius:5px;font-size:12px!important;font-weight:700!important}
+.uomo-fasi button[aria-selected="true"]{background:var(--m-ciano)!important;color:#062030!important}
+.uomo-crea-barra>.azione-secondaria:disabled{opacity:.4}
+.uomo-crea-griglia{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(220px,1fr);gap:12px;align-items:start}
+.uomo-lavagna svg{width:100%;height:auto;display:block;touch-action:none;border-radius:6px}
+.uomo-lavagna g[data-uomo-ruolo]{cursor:grab}
+.uomo-crea-lato{display:flex;flex-direction:column;gap:6px}
+.uomo-ruolo{font-size:12.5px;font-weight:700;color:#ffd67b;margin:0}
+#tac .chip.up.lab{color:var(--h-oro)}
+@media (orientation:landscape) and (max-height:520px){
+  .uomo-scelti{gap:5px}.uomo-slot{min-height:40px}
+  .uomo-lista{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+  .uomo-carta{grid-template-columns:120px 1fr}.uomo-mini{width:120px}
+  .uomo-crea-griglia{grid-template-columns:minmax(0,1.4fr) minmax(200px,1fr)}
+}
+@media (orientation:portrait){
+  .uomo-scelti{grid-template-columns:1fr}
+  .uomo-crea-griglia{grid-template-columns:1fr}
+  .uomo-carta{grid-template-columns:110px 1fr}.uomo-mini{width:110px}
+  .con-strategie{flex-wrap:wrap}
+}
+/* barra dell'uomo in più su schermi bassi (iPhone con le barre di Safari): più compatta, nomi lunghi accorciati, non tocca i comandi */
+#tac .chip.up{max-width:230px;overflow:hidden;text-overflow:ellipsis}
+@media (max-height:360px){ #tac:has(.chip.up){gap:2px} #tac .chip.up{padding:2px 8px;font-size:10.5px;max-width:200px} }

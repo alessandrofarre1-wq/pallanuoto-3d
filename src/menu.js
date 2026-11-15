@@ -21,6 +21,7 @@ import { resetTap } from './controllo.js';
 import { COMPETIZIONI, classificaGirone, creaTorneo, prossimaPartita, registraPartita, simulaBronzo } from './tornei.js';
 import { applicaSchema, caricaSchema, copiaSchema } from './schemi.js';
 import { inizializzaEditor, aggiornaRiepilogoStrategia } from './tattiche-menu.js';
+import { aggiornaRiepilogoUomo, inizializzaUomo } from './uomo-editor.js';
 import { renderTattichePausa } from './tattiche-pausa.js';
 
 const salva=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){ /* senza memoria si va avanti lo stesso */ } };
@@ -28,7 +29,7 @@ const leggi=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } 
 for(const id of ['logoHome','logoPausa','logoFine']) $(id).innerHTML=LOGO();
 
 // ---------- navigazione tra le schermate ----------
-const VISTE={ home:'vHome', squadre:'vSquadre', impostazioni:'vImpostazioni', comandi:'vComandi', info:'vInfo', opzioni:'vOpzioni', pausa:'vPausa', panchina:'vPanchina', fine:'vFine', nazionale:'vNazionale', torneo:'vTorneo', bacheca:'vBacheca', tattiche:'vTattiche', cerimonia:'vCerimonia', strategie:'vStrategie' };
+const VISTE={ home:'vHome', squadre:'vSquadre', impostazioni:'vImpostazioni', comandi:'vComandi', info:'vInfo', opzioni:'vOpzioni', pausa:'vPausa', panchina:'vPanchina', fine:'vFine', nazionale:'vNazionale', torneo:'vTorneo', bacheca:'vBacheca', tattiche:'vTattiche', cerimonia:'vCerimonia', strategie:'vStrategie', uomo:'vUomo' };
 const storia=[];
 export function vai(v,senzaStoria){
   const M=$('menu'), prima=M.dataset.vista;
@@ -42,7 +43,7 @@ export function vai(v,senzaStoria){
   if(v==='bacheca') disegnaBacheca();
   if(v==='tattiche') disegnaTattiche();
   if(v==='squadre') disegnaSquadre();
-  if(v==='squadre'||v==='torneo'||v==='impostazioni') aggiornaRiepilogoStrategia();
+  if(v==='squadre'||v==='torneo'||v==='impostazioni'){ aggiornaRiepilogoStrategia(); aggiornaRiepilogoUomo(); }
   if(v==='panchina') disegnaPanchina();
   else azzeraScelta();
 }
@@ -50,6 +51,7 @@ function indietro(){ vai(storia.pop()||(game.state==='paused'?'pausa':game.state
 document.querySelectorAll('[data-va]').forEach(b=>b.addEventListener('click',()=>{ if(b.dataset.va==='squadre') preparaSingola(); vai(b.dataset.va); }));
 document.querySelectorAll('[data-indietro]').forEach(b=>b.addEventListener('click',indietro));
 inizializzaEditor({apri:()=>vai('strategie'),torna:()=>indietro()});
+inizializzaUomo({apri:()=>vai('uomo'),torna:()=>indietro()});
 
 // ---------- impostazioni: valori di prima, ricordati per la prossima volta ----------
 function gruppo(attr,applica,chiave){

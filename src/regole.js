@@ -1,5 +1,5 @@
 // ================= REGOLE / FASI =================
-import { chiLasciare, passaAZona, scegliDifesa, setteControSei } from './ia.js';
+import { chiLasciare, chiamaUomo, manUp, passaAZona, scegliDifesa, setteControSei } from './ia.js';
 import { elevazione } from './tiri.js';
 import { riservaPer, vesti } from './giocatori.js';
 import { annullaCambio } from './panchina.js';
@@ -226,6 +226,12 @@ export function timeout(t){       // art. 5: due time-out a squadra, solo in pos
 export function callPlay(i){
   if(!Number.isInteger(i)||i<0||i>3) return;
   const t=teams[0];
+  // uomo in più (v0.44): 1-3 chiamano gli schemi scelti nella sezione «Uomo in più», 4 torna al 4-2 della strategia
+  if(game.possTeam===t&&manUp(t)){
+    const sc=chiamaUomo(t,i<3?i:-1);
+    annuncia('avviso',sc?`Uomo in più: ${sc.nome}`:'Uomo in più: 4-2 base',{durata:1.6});
+    return;
+  }
   if(game.possTeam===t){
     const difesa=t.defPlay;
     applicaSchema(t,copiaSchema(['arco','entrata','incrocio','boa'][i]));

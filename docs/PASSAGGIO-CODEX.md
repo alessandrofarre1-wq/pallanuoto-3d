@@ -48,6 +48,11 @@ entro 7,5 m tira senza aspettare i 23 s di «pazienza» (npm run occasioni);
 menu che sfuma verso #07131d in basso per nascondere la striscia di iOS 26
 nelle app aggiunte alla Home. Dettagli in CLAUDE.md.
 
+v0.44 (Claude Code): SCHEMI DELL'UOMO IN PIÙ a fasi (src/uomo-in-piu.js,
+src/uomo-editor.js, docs/uomo-in-piu.md). In superiorità i pali NON sono
+più fissi (ruoli 1 e 6): sono chi nella fase in corso sta davanti alla porta
+(paloUomo in ia.js). Prova: npm run uomo.
+
 REGOLE FISSE DI ALE (da rispettare sempre):
 - Ogni PR alza la versione di 0.01 (package.json) e la scrive nel titolo
   («v0.42: …»). Le correzioni di una PR aperta vanno nella STESSA PR.
