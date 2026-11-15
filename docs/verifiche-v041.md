@@ -36,3 +36,11 @@ La [CI del checkpoint e57ef12](https://github.com/alessandrofarre1-wq/pallanuoto
 La pausa esplicativa e le prove aggiuntive sono successive a quel checkpoint. Sul nuovo SHA controllare tutta la pipeline, incluse le fasi che la prima CI non ha raggiunto. Non dichiarare CI verde sulla base dei soli test mirati.
 
 Restano inoltre: prova su iPhone fisico, giudizio sul gameplay, più slot personali/sequenze multi-fase, arbitraggio completo dei contatti e vero sette di movimento mediante sostituzione del portiere. Regolamento mantenuto WA febbraio 2026; differenze FIN ottobre documentate e non fuse nel motore.
+
+## Chiusura dei punti aperti (Claude Code, 15 novembre 2026)
+
+1. **sezione3, centrale destro a 1,71 m.** Causa: la prova, non il muro. Per escludere i contrasti azzerava solo `tackleCD`, ma il terzo tocco ravvicinato di `contrasto` (`regole.js`, regola v0.29) azzera `tackleCD` apposta e diventa fallo. Con la nuova sequenza di numeri casuali della v0.41 il computer arrivava per caso al terzo tocco al fotogramma 145 della prova: `foul` fermava il gioco e spostava il difensore di 0,9 m (da 0,81 a 1,71 m). Lanciato da solo, lo stesso caso dava 0,80 m. Correzione: la prova azzera anche `d.colpi`, come dichiarato nel suo commento («niente contrasti»). Soglia invariata: 1,7 m (il passaggio citava 1,3 m, ma il file della prova usa 1,7). Esito locale: 14/14 controlli PASS, centrale destro 0,82 m.
+2. **Riferimenti grafici.** Con il computer di Claude Code gli scarti erano 4,92 / 1,26 / 3,05 / 10,48 / 9,29% (diversi da quelli misurati da Codex: i caratteri dei testi cambiano da un computer all'altro). Confronti guardati uno per uno: posizioni dei giocatori della nuova IA, «Prototipo v0.41», forma dei caratteri; nessun errore di disegno. Aggiornati tutti e cinque (`npm run verifica:aggiorna -- --partite=0`), poi `npm run verifica -- --partite=0`: PASS, cinque immagini identiche. Le sei partite non sono state rifatte (già complete nel controllo di Codex).
+3. **CI completa sull'ultimo commit:** esito riportato nella descrizione della PR.
+
+`npm run lint`: PASS.
