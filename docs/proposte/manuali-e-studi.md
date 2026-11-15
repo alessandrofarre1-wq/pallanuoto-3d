@@ -169,6 +169,77 @@ Gli schemi eseguiti bene rendono di più. Proposta:
 - quanto un giocatore rispetta lo schema chiamato dipende da Visione e Disciplina;
 - a fine azione si vede un breve «schema riuscito / saltato».
 
+
+## Aggiunta: studi mandati da Ale (15/11/2026, sera)
+
+**Letti per intero.**
+- Hochstein, Hohenstein, Hohmann 2022: tiri alla World Cup di Berlino 2018, 1.482 tiri.
+- Oliveira, Chiu, Sanders 2015: bicicletta.
+- Kawai, Gonjo, Takagi 2021: bicicletta.
+- Kwatra et al. 2010: simulazione di nuotatori.
+- Mosler e Whiteley 2015, Aspetar.
+
+**Scaricati da me, ancora da leggere a fondo.**
+- Panero et al. 2022.
+- Canossa, Lupo et al. 2022.
+- Botonis et al. 2015.
+
+### Tiro e portiere (Berlino 2018): i numeri
+
+**Gol sui tiri:**
+- 36% su tutti i tiri;
+- 25% in parità;
+- 47% in controfuga;
+- 48% in superiorità;
+- 67% sui rigori, che allora si tiravano da 6 m; oggi si tirano dai 5 m.
+
+**Velocità del tiro in nuotata, da almeno 6 m e senza ostacoli:**
+- media 21,6 m/s, con un intervallo da 17 a 27,3 m/s;
+- Ungheria 22,9 m/s, con cinque giocatori sopra 23 m/s;
+- in alcuni casi il portiere ha meno di 0,2 s per reagire.
+
+**Dove entrano i gol:** negli angoli accanto ai pali. Le due zone centrali basse rendono meno. In parità rendono bene i tiri bassi e quelli che rimbalzano sull'acqua davanti alla porta. Il tiro alto senza rimbalzo segna il 31%. Rovesciata e pallonetto rendono poco.
+
+**Mancini all'ala destra:** segnano il 56%. I destri dalla stessa posizione segnano il 35%, e solo il 24% con l'uomo in più.
+
+**Cosa aiuta il gol in parità:**
+- tirare più vicino alla porta;
+- tenere la palla poco;
+- tirare mentre il portiere si sta ancora spostando di lato;
+- più spazio tra il portiere e il palo vicino;
+- i gol in parità sono stati tirati in media più piano dei tiri sbagliati: conta più la mira che la forza.
+
+**Spazio controllato:** quando l'attacco segna, i suoi 6 giocatori controllano circa 32 m² in più davanti alla porta rispetto alla difesa. Quando la difesa ferma l'azione, succede il contrario (circa 24 m² in più per la difesa).
+
+### Proposte nuove
+9. **Tiro che rimbalza anche in parità.** Il tiro a schizzo resta il gesto di controfuga di Ale. In parità serve un tiro basso che rimbalza davanti alla porta (rende più del tiro alto), con il suo gesto. Va deciso con Ale come distinguerlo dallo schizzo.
+10. **Mira contro forza.** Oggi la precisione non dipende dalla forza del tiro, come nella tesi. Berlino però mostra che i gol in parità arrivano da tiri un po' meno forti. Proposta: un tiro al 100% della carica sbaglia un po' di più. Va misurato con `npm run dati-tesi` e `bilancio`.
+11. **Portiere in movimento.** Il tiro mentre il portiere sta ancora scivolando di lato e lo spazio libero sul palo vicino aumentano il gol. Oggi c'è `dopoCambio`: va reso proporzionale a quanto il portiere è fuori posto.
+12. **Bersagli.** L'intelligenza del computer mira agli angoli e ai tiri bassi in parità, non al centro basso.
+13. **Taratura con i dati di Berlino.**
+    - In parità circa 25% di gol sui tiri, in controfuga e in superiorità circa 47-48%.
+    - Velocità media dei tiri in nuotata circa 21-22 m/s, con picchi di 26-27 m/s per i migliori. La velocità di oggi (22,8 ± 2,4) è già vicina.
+    - Mancini a destra molto più efficaci: oggi il vantaggio esiste, va misurato.
+
+### Bicicletta (dopo che Codex ha finito: riguarda le animazioni in acqua)
+- **Cosa conta per la spinta verso l'alto (Oliveira et al.):**
+  - anche molto aperte, cioè gambe larghe, e molto flesse;
+  - ginocchia che si piegano e si stendono in fretta;
+  - piedi che si muovono veloci in orizzontale.
+
+  Queste tre misure spiegano l'81% della spinta. Muovere i piedi in su e in giù toglie spinta.
+- **Kawai et al.:**
+  - i piedi devono restare veloci per tutto il ciclo;
+  - l'angolo del piede è il parametro tecnico chiave;
+  - la parte di ritorno verso l'alto va ridotta al minimo.
+- **Proposta:** bicicletta disegnata con gambe larghe, ginocchia che lavorano veloci e piedi in cerchi piatti, quasi orizzontali. Le gambe più larghe e veloci per chi sta più alto, cioè per chi ha più Forza o per chi non è stanco.
+
+### Simulazione dell'acqua (Kwatra 2010)
+Ogni simulazione richiede 30-40 minuti di calcolo: non è usabile in un gioco nel browser. L'idea utile è un'altra: partire dal movimento voluto e calcolare le forze dell'acqua solo attorno al corpo. È la stessa idea di Soliman 2024, che da qui non ho potuto scaricare. Per noi resta un riferimento, senza un lavoro concreto da fare ora.
+
+### Aspetar (Mosler e Whiteley 2015)
+Conferma il tiro fino a 95 km/h, cioè circa 26 m/s. Il resto riguarda gli infortuni di spalla, ginocchio e collo dovuti a tiro e bicicletta. Idea per più avanti: un affaticamento della spalla dei tiratori che tirano molto. È un'ipotesi, non un dato misurato.
+
 ## Cosa NON vale più nei documenti
 - 35 s (Nitzkowski) e 30/20 s (FINA 2019, Mondiali 2009): oggi 28/18.
 - Rigore dai 4 m (Nitzkowski): oggi dai 5 m.
