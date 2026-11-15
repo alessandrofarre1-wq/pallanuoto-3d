@@ -118,3 +118,6 @@ Come finisce un'azione in parità:
 - Difesa «in anticipo» e stile per nazionale scelti dal giocatore: oggi li sceglie solo il computer.
 - Il tiro con rimbalzo e la rovesciata non hanno un comando dedicato per il giocatore.
 - Le schede svizzere con le descrizioni (mobilesport) non sono ancora state lette.
+
+## Dopo l'unione con la v0.45 di Codex (nuoto, comandi desktop, logo, costumi)
+Stesse 8 partite ITA–HUN, per squadra: gol 16,3; tiri 44,6; tiri in gol 36,6%; espulsioni 12,5; superiorità trasformate 39,5%; azioni 71,2. Parità: gol 19%, tiro sbagliato 37%, palla persa 9%, fallo in attacco 10%, espulsione 22%, rigore 2%, durata 14,1 s. Superiorità 8,4 s. Il nuoto più reattivo di Codex cambia poco i numeri.
