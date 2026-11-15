@@ -24,12 +24,19 @@ try{
   await scatta('home');
   assert.equal(await page.locator('#vHome [data-competizione]').count(),2);
   await page.locator('#vHome [data-competizione="mondiali"]').click();
-  assert.equal(await page.locator('#nazionaliTorneo [data-nazionale]').count(),16);
-  await page.locator('[data-nazionale="ITA"]').click();
+  assert.equal(await page.locator('#nazionaliTorneo [data-nazionale]').count(),24);
+  assert.match(await page.locator('#formulaTorneo').textContent(),/24 nazionali disponibili · 16 al torneo/);
+  for(const codice of ['FRA','MLT']){
+    await page.locator(`[data-nazionale="${codice}"]`).click();
+    assert.equal(await page.locator(`[data-nazionale="${codice}"]`).getAttribute('aria-pressed'),'true');
+  }
   await page.locator('#sorteggiaTorneo').click();
   assert.equal(await page.locator('#menu').getAttribute('data-vista'),'torneo');
   const iniziale=await page.evaluate(()=>window.__pallanuoto.tornei.esportaSalvataggi().campagne.mondiali);
-  assert.equal(iniziale.nazionale,'ITA');assert.equal(Object.keys(iniziale.gruppi).length,4);
+  assert.equal(iniziale.nazionale,'MLT');assert.equal(Object.keys(iniziale.gruppi).length,4);
+  assert.equal(iniziale.partecipanti.length,16);
+  assert.ok(iniziale.partecipanti.includes('MLT'));
+  assert.deepEqual([...iniziale.partecipanti].sort(),Object.values(iniziale.gruppi).flat().sort());
   await scatta('mondiali-gironi');
   async function giocaFine(){
     await page.locator('#torneoGioca').click();
@@ -56,7 +63,7 @@ try{
   }
   await giocaFine();
   const salvata=await page.evaluate(()=>window.__pallanuoto.tornei.esportaSalvataggi().campagne.mondiali);
-  assert.equal(salvata.partite.filter(p=>(p.casa==='ITA'||p.ospite==='ITA')&&p.golCasa!==null).length,1);
+  assert.equal(salvata.partite.filter(p=>(p.casa==='MLT'||p.ospite==='MLT')&&p.golCasa!==null).length,1);
   await page.reload();await pronta();
   const riletta=await page.evaluate(()=>window.__pallanuoto.tornei.esportaSalvataggi().campagne.mondiali);
   assert.deepEqual(riletta,salvata,'reload conserva sorteggio, risultati e prossima avversaria');
@@ -71,6 +78,9 @@ try{
   assert.deepEqual(await page.evaluate(()=>window.__pallanuoto.tornei.esportaSalvataggi().campagne.mondiali),riletta,'uscita non inventa un risultato');
   await page.locator('#vHome [data-competizione="europei"]').click();
   assert.equal(await page.locator('#nazionaliTorneo [data-nazionale]').count(),16);
+  for(const codice of ['USA','BRA','CAN','AUS','CHN','JPN','RSA','SGP','NZL'])
+    assert.equal(await page.locator(`#nazionaliTorneo [data-nazionale="${codice}"]`).count(),0);
+  for(const codice of ['ISR','GEO','TUR']) assert.equal(await page.locator(`#nazionaliTorneo [data-nazionale="${codice}"]`).count(),1);
   await page.locator('[data-nazionale="FRA"]').click();await page.locator('#sorteggiaTorneo').click();
   const fasi=[];
   for(let i=0;i<8;i++){
@@ -93,6 +103,6 @@ try{
   assert.equal(await page.evaluate(()=>window.__pallanuoto.game.torneoMatch),null,'singola non eredita il torneo');
   assert.deepEqual(await page.evaluate(()=>window.__pallanuoto.tornei.esportaSalvataggi().campagne),dopo.campagne,'singola conserva le campagne');
   assert.deepEqual(errori,[],'nessun errore JavaScript');
-  console.log('PASS integrazione: Mondiali salvati/reload, pausa congelata, uscita avvisata, 8 gare Europei con FRA fino al titolo, cerimonia saltabile, bacheca persistente e singola indipendente.');
+  console.log('PASS integrazione: 24 scelte Mondiali incluse FRA/MLT, torneo a 16 con MLT salvato/reload, Europei solo europee, pausa congelata, uscita avvisata, 8 gare con FRA fino al titolo, cerimonia saltabile, bacheca persistente e singola indipendente.');
   await context.close();
 }finally{await browser.close();await new Promise(r=>server.httpServer.close(r));}

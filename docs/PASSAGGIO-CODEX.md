@@ -1,4 +1,33 @@
-# Passaggio a Codex — WATERPOLO 7 dopo la v0.41
+# Passaggio corrente — WATERPOLO 7 v0.45
+
+```text
+Continua il branch codex/v045-nuoto-comandi-identita e la PR #41; non ripartire
+dalla v0.41 storica sotto. Leggi CLAUDE.md, docs/verifiche-v045.md e i risultati
+Actions sull'ultimo SHA. Versione0.45 nella stessa PR, nessun merge/deploy.
+Le7richieste di Ale sono implementate: nuoto preciso/ricezione;logo C Flusso scelto e applicato;
+copy/schemi;24bandiere sui costumi e cuffie bianche/blu;World24selezionabili con
+torneo16/Europei16;desktop frecce/Space/D/C/QWE;homeportraitcentrata.
+I file sono già sul branch. Il logo C è stato scelto da Ale: conserva la scelta.
+Per eventuali correzioni leggi gli esiti finali nella PR e nel rapporto:
+non dichiarare PASS una prova soltanto avviata. Main 1b0946a e PR #40 di Claude
+sono integrati: non riscrivere schemi a fasi o priorità HUD.
+I run43746814493/43748621655 fallivano sul banner GOL a due righe: il caso
+è riprodotto in tests/cronaca.mjs. Sono corretti costo copertura reale/margine
+e ordine camera/HUD; leggi il run definitivo della PR, non quelli superati. La pausa6c5 ora
+mostra e chiama gli schemi reali; in parità restano9carte.
+Conserva<100drawcall e<150000tri su iPhone, anche due cambi,14corpi interi,
+cartoon,regia unica,SPEED1,sprintatocchi,MAX.9s/tiroalrilascio,riflesso soloalta.
+Nuova decisione esplicita: poca inerzia e cambi rapidi sostituiscono il vecchio
+nuoto lento/scivoloso. Mobile/controller conservati, nuova tastiera separata.
+Comandi utili: npm run lint; npm run verifica; npm run aspetto; npm run nuoto;
+npm run desktop; npm run costumi; npm run home; npm run tornei-menu.
+PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers nel workspace cloud.
+La fixture sezione1 deve isolare la selezione in play, non un fermo da fallo;
+assert6/6 conservato. Non indebolire test. Guarda immagini prima di aggiornare
+i riferimenti; dopo soloPNG usa verifica --partite=0 senza rifare6gare.
+```
+
+## Storico dopo la v0.41
 
 Testo da incollare in Codex per continuare il lavoro dopo la sessione di Claude Code del 15 novembre 2026.
 

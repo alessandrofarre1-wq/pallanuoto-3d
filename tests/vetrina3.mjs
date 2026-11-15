@@ -85,7 +85,7 @@ if (fare('curva')) {
     window.__ferma = () => { H.game.shot = 28; H.game.clock = 100; H.game.state = 'play'; B.state = 'free'; B.x = -11.5; B.z = 9.4; B.vx = B.vz = 0;
       for (const q of H.allPlayers) { if (q === p || q.isGK) continue; q.x = (q.team.idx ? 11.5 : -11.5); q.z = -8.5 + q.i * 0.8; q.vx = q.vz = 0; q.oriz = 0; } };
     window.__ferma(); });
-  const tasti = t => t < 2 ? ['KeyD'] : t < 3.7 ? ['KeyS'] : ['KeyD'], quando = [1.9, 2.2, 2.5, 2.9, 3.9, 4.2, 4.5, 4.9], file = [], titoli = [];
+  const tasti = t => t < 2 ? ['ArrowRight'] : t < 3.7 ? ['ArrowDown'] : ['ArrowRight'], quando = [1.9, 2.2, 2.5, 2.9, 3.9, 4.2, 4.5, 4.9], file = [], titoli = [];
   for (let f = 1; f <= Math.round(4.95 * 60); f++) {
     const t = f / 60, k = quando.findIndex(q => Math.abs(q - t) < 1e-6);
     await pg.evaluate(({ tasti, scatta }) => { const H = window.__pallanuoto, p = window.__p; window.__tasti(tasti);

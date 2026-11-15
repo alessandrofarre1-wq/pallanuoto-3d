@@ -136,13 +136,17 @@ function aggiornaStato(){
 // ---------- la notifica non deve coprire palla, porte e giocatore controllato ----------
 const _v=new THREE.Vector3();
 function aSchermo(x,y,z){ _v.set(x,y,z).project(camera); if(_v.z>1) return null; return [(_v.x+1)/2*innerWidth,(1-_v.y)/2*innerHeight]; }
-// quanto è grave ciò che la notifica coprirebbe: palla 4, giocatore controllato 2, porta 1 (0 = non copre niente)
+// Palla4, controllato2, porta1 nel margine di sicurezza. Dentro il rettangolo
+// si aggiunge8: coprire davvero deve costare più del solo avvicinarsi a un punto.
 function copre(r){
   const punti=[[aSchermo(ball.x,ball.y||0.2,ball.z),4]];
   if(ctrl) punti.push([aSchermo(ctrl.x,0.5,ctrl.z),2]);
   for(const s of [1,-1]) for(const dz of [-1.5,0,1.5]) punti.push([aSchermo(s*HL,0.5,dz),1]);
   const m=18; let peso=0;
-  for(const [q,w] of punti) if(q&&q[0]>r.left-m&&q[0]<r.right+m&&q[1]>r.top-m&&q[1]<r.bottom+m) peso=Math.max(peso,w);
+  for(const [q,w] of punti) if(q&&q[0]>r.left-m&&q[0]<r.right+m&&q[1]>r.top-m&&q[1]<r.bottom+m){
+    const dentro=q[0]>r.left&&q[0]<r.right&&q[1]>r.top&&q[1]<r.bottom;
+    peso=Math.max(peso,w+(dentro?8:0));
+  }
   // Anche i pannelli e i comandi restano distinti dalle notifiche.
   for(const id of ['hud','tac','player','tCambi','tLog','tPause']){
     const el=$(id); if(!el.getClientRects().length) continue;
@@ -164,24 +168,26 @@ export function aggiorna(){
   const metti=p=>{ el.classList.remove('sx','dx'); if(p) el.classList.add(p); el.style.top=alto[p]+'px'; };
   metti(pos);
   if(!visibile||game.state==='menu') return;
-  if((posT-=0.05)>0) return;                  // non salta di continuo da una parte all'altra
+  // La stabilità non deve trattenere un banner sopra un bersaglio dopo un gol
+  // o uno spostamento della camera. I soli pannelli hanno peso 0,5.
+  if((posT-=0.05)>0&&copre(el.getBoundingClientRect())<1) return;
   // la prima posizione libera; se nessuna lo è (schermi molto bassi), quella che copre la cosa meno importante
   // se in ogni posizione coprirebbe la palla, la notifica si riduce a una riga (i dettagli restano nel registro)
   // riduzione automatica: a gioco in corso, se la palla è vicina alla zona delle notifiche (in alto), la notifica è già
   // compatta: una riga sola, senza dettagli
   const pb=aSchermo(ball.x,ball.y||0.2,ball.z), vicina=game.state==='play'&&pb&&pb[1]<sotto+130;
-  let meglio='', minimo=99;
+  let meglio='', minimo=99, ridotta=vicina;
   for(const compatta of (vicina?[true]:[false,true])){
     el.classList.toggle('compatto',compatta);
     for(const p of ['','dx','sx']){
       metti(p); const c=copre(el.getBoundingClientRect());
-      if(c<minimo){ minimo=c; meglio=p; }
+      if(c<minimo){ minimo=c; meglio=p; ridotta=compatta; }
       if(!c) break;
     }
-    if(minimo<4) break;
+    if(!minimo) break;
   }
   if(meglio!==pos){ pos=meglio; posT=0.8; }
-  metti(pos);
+  el.classList.toggle('compatto',ridotta); metti(pos);
 }
 
 // ---------- registro degli eventi ----------

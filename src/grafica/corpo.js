@@ -9,6 +9,7 @@ import riservaIndici from './modelli/riserva-indici.json';
 import { sottAcqua } from './sottacqua.js';
 import { preparaViso } from './espressioni.js';
 import { valoriDisegno } from '../aspetto.js';
+import { atlanteCostumi, profiloCostume } from './costumi.js';
 
 const SPALLE=0.40;                       // distanza tra le spalle nel sistema di pose.js: da qui si ricava la scala del modello
 const inAttesa=[];
@@ -67,14 +68,14 @@ function attaccaFumetto(R,colori,num,seme){
     roughness:0.45, metalness:0, clearcoat:0.45, clearcoatRoughness:0.27,
     envMapIntensity:0.65,
   });
-  const u={ uCal:{value:new THREE.Color()}, uCos:{value:new THREE.Color()}, uTono:{value:TONI[seme%TONI.length].clone()}, uLuce:{value:FUMETTO.luceBlu},
+  const u={ uCal:{value:new THREE.Color()}, uCos:{value:new THREE.Color()}, uCostumi:{value:atlanteCostumi}, uBandiera:{value:new THREE.Vector4()}, uTono:{value:TONI[seme%TONI.length].clone()}, uLuce:{value:FUMETTO.luceBlu},
     uCapelli:{value:new THREE.Vector3(0.15,0.095,0.06)}, uBarba:{value:0}, uGonfia:{value:0} };      // aspetto del giocatore (src/aspetto.js)
   mat.onBeforeCompile=sh=>{ Object.assign(sh.uniforms,u);
     sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 _zona; attribute float _numero; attribute float _bocca; attribute float _scuro; uniform float uGonfia; varying vec3 vZona; varying float vNum; varying float vQuota; varying float vBocca; varying float vScuro; varying vec3 vRiposo;')
       .replace('#include <begin_vertex>','#include <begin_vertex>\nvZona=_zona; vNum=_numero; vQuota=position.y; vBocca=_bocca; vScuro=_scuro; vRiposo=position;\n'
         // corporatura: busto, braccia e gambe un po\' più pieni o più asciutti (non testa, mani e piedi)
         +'{ float massa=(1.0-smoothstep(1.36,1.44,position.y))*smoothstep(0.08,0.22,position.y)*(1.0-smoothstep(0.55,0.70,abs(position.x))); transformed+=normal*uGonfia*massa; }');
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uCal; uniform vec3 uCos; uniform vec3 uTono; uniform float uLuce; uniform vec3 uCapelli; uniform float uBarba; varying vec3 vZona; varying float vNum; varying float vQuota; varying float vBocca; varying float vScuro; varying vec3 vRiposo;')
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uCal; uniform vec3 uCos; uniform sampler2D uCostumi; uniform vec4 uBandiera; uniform vec3 uTono; uniform float uLuce; uniform vec3 uCapelli; uniform float uBarba; varying vec3 vZona; varying float vNum; varying float vQuota; varying float vBocca; varying float vScuro; varying vec3 vRiposo;')
       .replace('#include <map_fragment>',`#include <map_fragment>
         { vec3 c=diffuseColor.rgb; float lum=dot(c,vec3(0.3,0.5,0.2)), mx=max(c.r,max(c.g,c.b)), mn=min(c.r,min(c.g,c.b));
           // dentro cuffia e costume tutto prende il colore di squadra: il blu tiene le sue luci e ombre, il 7 dipinto (bianco) e il
@@ -82,7 +83,15 @@ function attaccaFumetto(R,colori,num,seme){
           float blu=smoothstep(0.04,0.15,c.b-max(c.r,c.g)*0.9), num=smoothstep(0.15,0.4,vNum), ombra=mix(1.0,clamp(lum/uLuce,0.3,1.6),blu*(1.0-num));
           float zb=step(0.5,vZona.z), alto=step(1.2,vQuota);
           float zc=max(step(0.5,vZona.x),num*alto), zs=max(step(0.5,vZona.y),num*(1.0-alto));
-          c=mix(c,uCal*ombra,max(blu,num)*zc); c=mix(c,uCos*ombra,max(blu,num)*zs);
+          c=mix(c,uCal*ombra,zc);
+          // Bandiera grande su davanti e dietro, solidale al tessuto mentre bacino e gambe si muovono.
+          // Coordinate dalla posa di riposo: non cambiano con altezza, mano dominante, lato o sostituzioni.
+          if(zs>0.5){
+            vec2 uvCostume=clamp(vec2((vRiposo.x+0.175)/0.35,(vRiposo.y-0.83)/0.19),0.0,1.0);
+            uvCostume.x=mix(1.0-uvCostume.x,uvCostume.x,step(-0.015,vRiposo.z));
+            vec3 bandieraCostume=texture2D(uCostumi,uBandiera.xy+uvCostume*uBandiera.zw).rgb;
+            c=bandieraCostume*ombra;
+          }
           float pelle=(1.0-max(zc,zs))*(1.0-zb)*smoothstep(0.25,0.45,(mx-mn)/max(mx,0.001));
           diffuseColor.rgb=mix(c,c*uTono,pelle);
           // sopracciglia del colore dei capelli del giocatore (sotto la cuffia i capelli non si vedono)
@@ -130,7 +139,8 @@ export function aggiornaColori(R,colori,num,profilo){
   R.coloriVoluti=colori; R.numVoluto=num; if(profilo) R.profiloVoluto=profilo;
   const K=R.corpo; if(!K) return;
   if(R.profiloVoluto) applicaAspetto(K,R.profiloVoluto);
-  K.colori=colori; K.u.uCal.value.setHex(colori.calottina); K.u.uCos.value.setHex(colori.costume); K.num=-1;
+  K.colori=colori; K.u.uCal.value.setHex(colori.calottina); K.u.uCos.value.setHex(colori.costume);
+  K.costume=colori.profiloCostume||profiloCostume('ITA'); K.u.uBandiera.value.fromArray(K.costume.rettangolo); K.num=-1;
   aggiornaNumero(R,num);
 }
 // aspetto del giocatore (src/aspetto.js): pelle, colore di sopracciglia e barba, corporatura, altezza. Solo disegno.

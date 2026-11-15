@@ -17,7 +17,7 @@ import { apriRegistro } from './cronaca.js';
 import { kickoff } from './regole.js';
 import { allPlayers, ball, fight, game, teams } from './stato.js';
 import { iconaMano } from './mano.js';
-import { passaAZona } from './ia.js';
+import { chiamaUomo, passaAZona } from './ia.js';
 import { resetTap } from './controllo.js';
 import { COMPETIZIONI, classificaGirone, creaTorneo, prossimaPartita, registraPartita, simulaBronzo } from './tornei.js';
 import { applicaSchema, caricaSchema, copiaSchema } from './schemi.js';
@@ -184,9 +184,9 @@ function disegnaHome(){
 function disegnaNazionali(){
   const c=COMPETIZIONI[tipoScelto], attuale=campagne[tipoScelto];
   $('nazionaleTitolo').textContent=c.nome;
-  $('formulaTorneo').textContent=tipoScelto==='mondiali'?'Quattro gironi da quattro. Le prime ai quarti; seconde e terze agli spareggi. Poi la corsa alla coppa.':'Quattro gironi da quattro. Le prime tre alla seconda fase con i risultati contro le altre qualificate. Poi semifinali, finale e bronzo.';
+  $('formulaTorneo').textContent=tipoScelto==='mondiali'?'24 nazionali disponibili · 16 al torneo. Quattro gironi da quattro. Le prime ai quarti; seconde e terze agli spareggi. Poi la corsa alla coppa.':'16 nazionali europee. Quattro gironi da quattro. Le prime tre alla seconda fase con i risultati contro le altre qualificate. Poi semifinali, finale e bronzo.';
   $('nazionaliTorneo').innerHTML=c.codici.filter(cod=>sq(cod)).map(cod=>`<button type="button" class="nazionale-card${cod===nazionaleScelta?' on':''}" data-nazionale="${cod}" aria-pressed="${cod===nazionaleScelta}">${bandiera(cod,'band',true)}<span><b>${nome(cod)}</b><small>${cod} · ${sq(cod).forza} OVR</small></span></button>`).join('');
-  $('nazionaleScelta').textContent=`Giocherai tutte le gare con ${nome(nazionaleScelta)}. Le altre partite saranno simulate.`;
+  $('nazionaleScelta').textContent=`Giocherai tutte le gare con ${nome(nazionaleScelta)}.${tipoScelto==='mondiali'?' La tua nazionale è sempre inclusa tra le 16 sorteggiate per fasce.':''} Le altre partite saranno simulate.`;
   $('slotEsistente').innerHTML=attuale?`<div class="slot-esistente"><span>${finito(attuale)?'Ultimo torneo':'Torneo salvato'}: <b>${nome(attuale.nazionale)}</b> · ${finito(attuale)?esitoTorneo(attuale):faseNome(attuale.fase)}</span><button type="button" data-continua="${tipoScelto}">${finito(attuale)?'Rivedi':'Continua'} ›</button></div>`:'';
 }
 export function creaCampagna(tipo,nazionale,seme){
@@ -291,7 +291,11 @@ function disegnaTattiche(){
 $('tattichePausa').onclick=e=>{
   const b=e.target.closest('[data-tattica]'); if(!b||game.state!=='paused') return;
   const t=teams[0], i=+b.dataset.schema;
-  if(b.dataset.tattica==='attacco'){
+  if(b.dataset.tattica==='uomo'){
+    if(game.possTeam!==t||!teams[1].players.some(p=>p.excluded)) return;
+    chiamaUomo(t,i<3?i:-1);
+  }
+  else if(b.dataset.tattica==='attacco'){
     const difesa=t.defPlay;
     applicaSchema(t,b.dataset.schema==='personale'?caricaSchema():copiaSchema(['arco','entrata','incrocio','boa'][i]));
     t.defPlay=difesa; t.schema.difesa=difesa;

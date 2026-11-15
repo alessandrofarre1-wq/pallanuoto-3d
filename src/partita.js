@@ -137,8 +137,8 @@ export function update(dt){
     const dx=tg.x-p.x, dz=tg.z-p.z, d=Math.hypot(dx,dz);
     let mx=0,mz=0; if(d>0.12){ const s=Math.min(1,d/0.8); mx=dx/d*s; mz=dz/d*s; }
     if(d>1.0 && !tg.gk){ const st=steer(p,dx/d,dz/d,d); mx=st[0]; mz=st[1]; }
-    // il corpo scivola: chi sta arrivando al suo posto smette di nuotare in anticipo e si lascia portare
-    if(!tg.gk && !tg.sprint && d<Math.hypot(p.vx,p.vz)/1.5 && p.vx*dx+p.vz*dz>0){ mx=0; mz=0; }
+    // Anticipa l'arresto soltanto per la breve distanza di frenata effettiva.
+    if(!tg.gk && !tg.sprint && d<Math.hypot(p.vx,p.vz)/8 && p.vx*dx+p.vz*dz>0){ mx=0; mz=0; }
     const sprint = tg.gk ? false : ((tg.sprint && d>0.6) || (d>4 && p.stamina>0.35));
     if(tg.gk){ // spostamento laterale del portiere: di posizione (lento o svelto secondo Posizione) oppure in tuffo (Riflessi); stanco è più lento
       const fresco=0.75+0.25*p.stamina, sp=(tg.tuffo ? 1.6+2.2*rif01(p) : 1.1+1.3*pos01(p))*fresco; p.z+=clamp(tg.z-p.z,-sp*dt,sp*dt); mz=0;
@@ -167,12 +167,6 @@ export function update(dt){
       if(game.state!=='play') return;
     }
   }
-  // chi è sotto pressione si gira a proteggere la palla: di spalle al difensore (corpo tra palla e avversario)
-  { const h=ball.holder;
-    if(h && h.pressatoUntil>game.time && h.pressatoDa && Math.hypot(h.vx,h.vz)<1.0){
-      const d=h.pressatoDa, ax=h.x-d.x, az=h.z-d.z, l=Math.hypot(ax,az)||1, k=Math.min(1,dt*6);
-      h.fx+=(ax/l-h.fx)*k; h.fz+=(az/l-h.fz)*k; const m=Math.hypot(h.fx,h.fz)||1; h.fx/=m; h.fz/=m;
-    } }
   separate();
   updateFight(dt);
   if(game.state!=='play') return;

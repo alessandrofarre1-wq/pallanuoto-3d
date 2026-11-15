@@ -8,15 +8,17 @@ import { callPlay } from './regole.js';
 import { ctrl, game } from './stato.js';
 import { cambioRapido } from './panchinaVista.js';
 export const keys={};
+// I campi dell'editor e le finestre di dialogo conservano frecce, spazio e scorciatoie.
+const editing=e=>!!e.target?.closest?.('input,textarea,select,[contenteditable]:not([contenteditable="false"]),[role="textbox"],dialog,[role="dialog"],[aria-modal="true"]');
 addEventListener('keydown',e=>{
+  if(editing(e)||e.isComposing||(e.repeat&&!keys[e.code])) return;
   keys[e.code]=true;
-  if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) e.preventDefault();
+  if(['play','stop','countdown'].includes(game.state)&&['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) e.preventDefault();
   if(e.code==='KeyB' && !e.repeat && ['play','stop','countdown'].includes(game.state)) cambioRapido();      // cambio consigliato, subito
   if((e.code==='Escape'||e.code==='KeyP') && !e.repeat){ if(registroAperto()) chiudiRegistro(); else togglePause(); }
 });
 addEventListener('keyup',e=>{ keys[e.code]=false; });
-addEventListener('blur',()=>{ for(const k in keys) keys[k]=false; });
-export const touch={x:0,z:0,btn:{}}; let sprintBtn=null;
+export const touch={x:0,z:0,btn:{}}; let sprintBtn=null, resetJoystick=null;
 // SPRINT A TOCCHI (richiesta di Ale): lo scatto dura finché si continua a premere ripetutamente. Ogni tocco allunga lo scatto;
 // più tocchi nell'ultimo secondo, più dura ognuno (da 0,3 a 0,9 s). Smettendo di premere si torna alla velocità normale.
 // Vale per tastiera, controller e telefono; lo scatto consuma stamina come prima (in movePlayer).
@@ -29,13 +31,34 @@ export function aggiornaSprint(premuto,t){
   return t<sprintFino;
 }
 export let inp={x:0,z:0}, prev={x:0,z:0}, padStart=false;
+export let inputEpoch=0;
+let faseInput=game.state;
+export function resetInput(){
+  for(const k in keys) keys[k]=false;
+  for(const k in touch.btn) touch.btn[k]=false;
+  touch.x=touch.z=0;
+  if(resetJoystick) resetJoystick();
+  // Un cambio di finestra non equivale al rilascio volontario di TIRO/PASSA.
+  inp={x:0,z:0}; prev=inp; inputEpoch++;
+  sprintGrezzo=false; tocchiSprint=[]; sprintFino=-9;
+  if(ctrl){ ctrl.charging=false; ctrl.chargeT=0; ctrl.voloPronto=false; }
+  document.querySelectorAll('.tb.on,.tb.scatto').forEach(b=>b.classList.remove('on','scatto'));
+}
+addEventListener('blur',resetInput);
+document.addEventListener('focusin',e=>{ if(editing(e)) resetInput(); });
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) resetInput(); });
 export function pollInput(){
+  if(faseInput==='play'&&game.state!=='play') resetInput();
+  faseInput=game.state;
   prev=inp;
   const n={x:0,z:0,sprint:false,pass:false,shoot:false,lob:false,sw:false,cmd:false,p1:false,p2:false,p3:false,p4:false,to:false};
-  if(keys.KeyA||keys.ArrowLeft) n.x-=1; if(keys.KeyD||keys.ArrowRight) n.x+=1;
-  if(keys.KeyW||keys.ArrowUp) n.z-=1;   if(keys.KeyS||keys.ArrowDown) n.z+=1;
-  n.sprint=!!(keys.ShiftLeft||keys.ShiftRight); n.pass=!!keys.Space; n.shoot=!!keys.KeyK; n.lob=!!keys.KeyL; n.sw=!!keys.KeyQ; n.cmd=!!keys.KeyE; n.to=!!keys.KeyT;
-  n.p1=!!keys.Digit1; n.p2=!!keys.Digit2; n.p3=!!keys.Digit3; n.p4=!!keys.Digit4;
+  if(keys.ArrowLeft) n.x-=1; if(keys.ArrowRight) n.x+=1;
+  if(keys.ArrowUp) n.z-=1; if(keys.ArrowDown) n.z+=1;
+  // Water Polo Revolution: D passa al rilascio; SPACE finta tenuto e tira al rilascio.
+  // I canali desktop separati lasciano invariati il tocco e i pulsanti del controller.
+  n.desktopPass=!!keys.KeyD; n.desktopShoot=!!keys.Space;
+  n.sprint=!!(keys.ShiftLeft||keys.ShiftRight); n.shoot=!!keys.KeyK; n.lob=!!keys.KeyL; n.sw=!!keys.KeyC; n.cmd=!!keys.KeyF; n.to=!!keys.KeyT;
+  n.p1=!!(keys.KeyQ||keys.Digit1); n.p2=!!(keys.KeyW||keys.Digit2); n.p3=!!(keys.KeyE||keys.Digit3); n.p4=!!keys.Digit4;
   const pads=navigator.getGamepads?navigator.getGamepads():[];
   for(const gp of pads){
     if(!gp) continue;
@@ -50,6 +73,8 @@ export function pollInput(){
   }
   n.x+=touch.x; n.z+=touch.z;
   for(const k of ['sprint','pass','shoot','lob','sw','cmd','to']) if(touch.btn[k]) n[k]=true;
+  n.legacyShoot=n.shoot;
+  n.shoot=n.shoot||n.desktopShoot;  // HUD e rigori leggono il comando TIRO comune.
   n.sprint=aggiornaSprint(n.sprint,game.time)&&!(ctrl&&ctrl.stamina<0.06);
   if(sprintBtn) sprintBtn.classList.toggle('scatto',n.sprint);
   const l=Math.hypot(n.x,n.z); if(l>1){ n.x/=l; n.z/=l; }
@@ -72,6 +97,8 @@ export const released = k => !inp[k] && prev[k];
 if('ontouchstart' in window || navigator.maxTouchPoints>0) document.body.classList.add('touch');
 {
   const joy=$('joy'), knob=$('knob'); let jid=null, jc=null;
+  resetJoystick=()=>{ jid=null; jc=null; touch.x=touch.z=0; knob.style.transform=''; joy.classList.remove('on');
+    joy.style.left=''; joy.style.top=''; joy.style.bottom=''; };
   // joystick: zona morta piccola e rotonda (prima era a croce e larga: le diagonali leggere si perdevano), corsa più ampia
   const setJ=(cx,cy)=>{ const R=joy.offsetWidth/2+6; let dx=(cx-jc.x)/R, dy=(cy-jc.y)/R;
     const l=Math.hypot(dx,dy); if(l>1){dx/=l;dy/=l;} const m=Math.min(1,l), ZM=0.09, f=m<ZM?0:(m-ZM)/(1-ZM)/m; touch.x=dx*f; touch.z=dy*f;
@@ -88,8 +115,7 @@ if('ontouchstart' in window || navigator.maxTouchPoints>0) document.body.classLi
     }
   },{passive:false});
   document.addEventListener('touchmove',e=>{ for(const t of e.changedTouches) if(t.identifier===jid){ setJ(t.clientX,t.clientY); e.preventDefault(); } },{passive:false});
-  const endJ=e=>{ for(const t of e.changedTouches) if(t.identifier===jid){ jid=null; touch.x=touch.z=0; knob.style.transform=''; joy.classList.remove('on');
-    joy.style.left=''; joy.style.top=''; joy.style.bottom=''; } };
+  const endJ=e=>{ for(const t of e.changedTouches) if(t.identifier===jid) resetJoystick(); };
   document.addEventListener('touchend',endJ); document.addEventListener('touchcancel',endJ);
   $('tac').addEventListener('pointerdown',e=>{ if(e.target.closest('[data-apri]')){ e.preventDefault(); apriSchemi(); return; } const c=e.target.closest('[data-i]'); if(c&&game.state==='play'){ e.preventDefault(); callPlay(+c.dataset.i); apriSchemi(false); } });
   document.querySelectorAll('.tb').forEach(b=>{

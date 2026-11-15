@@ -37,7 +37,12 @@ try{
       for(const k in I.keys) I.keys[k]=false;I.pollInput();I.pollInput();return p;
     }
     function frame(p){G.time+=dt;T.updateActs(dt);C.humanControl(p,dt);}
-    function tocco(p,key){I.keys[key]=true;I.pollInput();C.humanControl(p,dt);I.keys[key]=false;I.pollInput();}
+    function tocco(p,key){
+      // Questo controllo riguarda il buffer touch; la tastiera ha una prova
+      // dedicata per il nuovo passaggio al rilascio di D.
+      if(key==='pass'){I.touch.btn.pass=true;I.pollInput();C.humanControl(p,dt);I.touch.btn.pass=false;I.pollInput();}
+      else {I.keys[key]=true;I.pollInput();C.humanControl(p,dt);I.keys[key]=false;I.pollInput();}
+    }
     function finta(p,wind=.18){let fine=null;T.startAct(p,'fake',wind,()=>{fine=G.time;});return ()=>fine;}
     function buffer(key,modifica){
       const p=prepara(),m=p.team.players[4];m.x=7;m.z=4;const fine=finta(p);for(let i=0;i<6;i++)frame(p);
@@ -45,16 +50,16 @@ try{
       for(let i=0;i<50;i++){frame(p);if(!inizio&&p.act&&p.act.kind!=='fake')inizio=G.time;}
       return {esecuzioni:G.passaggi,azione:B.kind,ritardo:inizio&&fine()?+(inizio-fine()).toFixed(4):null};
     }
-    const passaggio=buffer('Space'),palombella=buffer('KeyL');
-    const passaggioPressato=buffer('Space',p=>{p.pressatoUntil=G.time+2;});
+    const passaggio=buffer('pass'),palombella=buffer('KeyL');
+    const passaggioPressato=buffer('pass',p=>{p.pressatoUntil=G.time+2;});
     const tiroAnticipato=buffer('KeyK');
     const pressione=buffer('KeyL',p=>{p.pressatoUntil=G.time+2;});
     const libero6=buffer('KeyL',p=>{p.x=9;p.freeThrow=true;});
-    const cambio=buffer('Space',p=>{const q=p.team.players[3];S.setCtrl(q);C.humanControl(q,dt);S.setCtrl(p);});
-    const fallo=buffer('Space',p=>{p.act=null;p.freeThrow=true;});
-    const possesso=buffer('Space',p=>{H.regole.giveBall(S.teams[1].players[4]);H.regole.giveBall(p);});
-    const reset=buffer('Space',()=>C.resetTap());
-    const early=(()=>{const p=prepara();p.team.players[4].x=7;p.team.players[4].z=4;finta(p,.4);tocco(p,'Space');for(let i=0;i<55;i++)frame(p);return G.passaggi;})();
+    const cambio=buffer('pass',p=>{const q=p.team.players[3];S.setCtrl(q);C.humanControl(q,dt);S.setCtrl(p);});
+    const fallo=buffer('pass',p=>{p.act=null;p.freeThrow=true;});
+    const possesso=buffer('pass',p=>{H.regole.giveBall(S.teams[1].players[4]);H.regole.giveBall(p);});
+    const reset=buffer('pass',()=>C.resetTap());
+    const early=(()=>{const p=prepara();p.team.players[4].x=7;p.team.players[4].z=4;finta(p,.4);tocco(p,'pass');for(let i=0;i<55;i++)frame(p);return G.passaggi;})();
     const stabile=(()=>{
       const p=prepara();p.s={...p.s,vis:40};for(const m of p.team.players)m.excluded=m!==p&&m.i!==4&&m.i!==5;
       for(const i of [4,5]){p.team.players[i].x=7;p.team.players[i].z=i===4?3:-3;}

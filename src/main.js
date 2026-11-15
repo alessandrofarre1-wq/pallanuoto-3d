@@ -2,6 +2,8 @@
 import { movePlayer } from './fisica.js';
 import { bestPassTarget, doShoot, passLaneRisk, shotKind, startAct } from './tiri.js';
 import { valoriMotore } from './dati/rose.js';
+import { colora, vesti } from './giocatori.js';
+import { atlanteCostumi, costumiPronti, profiloCostume } from './grafica/costumi.js';
 import { aggiornaSchemi, aiCarrier, attackTarget, markTarget, paloUomo, schemiUomo } from './ia.js';
 import * as UOMO from './uomo-in-piu.js';
 import { applicaSchema, copiaSchema, validaSchema } from './schemi.js';
@@ -56,15 +58,16 @@ function loop(now){
   const nuovoDpr=qualita.aggiorna(frameMs,inPartita&&!document.hidden&&['play','stop','countdown'].includes(game.state),dpr);
   if(nuovoDpr!==dpr){ setDpr(nuovoDpr); renderer.setPixelRatio(dpr); }
   cronaca.tick(dt);
-  hudT+=raw; if(hudT>0.05){ hudT=0; updateHUD(); }
   render(dt,now);
+  // Le notifiche evitano porte e palla usando la camera del fotogramma corrente.
+  hudT+=raw; if(hudT>0.05){ hudT=0; updateHUD(); }
   tickFps(now);
   requestAnimationFrame(loop);
 }
 // accesso per le verifiche automatiche (tests/verifica.mjs) e per il debug dalla console
 // "vista" permette alla verifica di mettere la telecamera dove vuole (primi piani): { pos:[x,y,z], look:[x,y,z], fov };
 // "senzaCorpi" ferma l'animazione degli scheletri (serve solo ad accelerare le partite simulate)
-window.__pallanuoto = { imposta, cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, tornei:{creaCampagna,continuaTorneo,esportaSalvataggi}, palla:{ passoPalla, velocitaDiLancio, diagnosi }, effetti:{ gocce:gocceMesh, schiuma, contatti, LIMITI, gocceAttive }, __ridisegna:()=>renderer.render(scene,camera), regole:{ callPlay, setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, uomo:UOMO, v045:{ statPartita, azioneAperta, CONTRO, contropiede, uomoDi, simulazione, simultanea, controllaInterferenza, ARBITRI }, prova:{ paloUomo, schemiUomo, movePlayer, doShoot, startAct, valoriMotore, aiCarrier, bestPassTarget, passLaneRisk, shotKind, attackTarget, markTarget, aggiornaSchemi, applicaSchema, copiaSchema, validaSchema }, muro:{ paloCoperto, braccioMuro }, panchina:{ chiediCambio, suggerimento }, pausa:togglePause, __setCtrl:setCtrl, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get inp(){ return input.inp; }, get modelloPronto(){ return modelloPronto; } };
+window.__pallanuoto = { imposta, cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, costumi:{pronti:costumiPronti,profilo:profiloCostume,atlante:atlanteCostumi,colora,vesti}, tornei:{creaCampagna,continuaTorneo,esportaSalvataggi}, palla:{ passoPalla, velocitaDiLancio, diagnosi }, effetti:{ gocce:gocceMesh, schiuma, contatti, LIMITI, gocceAttive }, __ridisegna:()=>renderer.render(scene,camera), regole:{ callPlay, setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, uomo:UOMO, v045:{ statPartita, azioneAperta, CONTRO, contropiede, uomoDi, simulazione, simultanea, controllaInterferenza, ARBITRI }, prova:{ paloUomo, schemiUomo, movePlayer, doShoot, startAct, valoriMotore, aiCarrier, bestPassTarget, passLaneRisk, shotKind, attackTarget, markTarget, aggiornaSchemi, applicaSchema, copiaSchema, validaSchema }, muro:{ paloCoperto, braccioMuro }, panchina:{ chiediCambio, suggerimento }, pausa:togglePause, __setCtrl:setCtrl, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get inp(){ return input.inp; }, get modelloPronto(){ return modelloPronto; } };
 // scena iniziale dietro al menu
 kickoff(); game.state='menu';
 requestAnimationFrame(loop);

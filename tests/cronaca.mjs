@@ -33,7 +33,7 @@ const init = () => {
     const sopra = Object.entries(punti).filter(([, q]) => q && q[0] > r.left && q[0] < r.right && q[1] > r.top && q[1] < r.bottom).map(([k]) => k);
     const centro = r.bottom > Hh * 0.42 && r.top < Hh * 0.62 && r.left < W * 0.6 && r.right > W * 0.4;
     const tx = el.querySelector('b') || el.querySelector('.chi'), fs = tx ? parseFloat(getComputedStyle(tx).fontSize) : 0;
-    return { vis, tipo: sel ? 'espulsione' : (el.className.match(/t-(\w+)/) || [])[1] || '', testo: el.innerText.replace(/\s+/g, ' ').trim(), sopra, centro, fs, alto: Math.round(r.top), basso: Math.round(r.bottom), pos: el.classList.contains('sx') ? 'sinistra' : el.classList.contains('dx') ? 'destra' : 'centro', stato: [...document.querySelectorAll('#espulsioni .esp')].map(e => e.innerText).join(' ').replace(/\s+/g, ' ').trim(), sup: [...document.querySelectorAll('.piu.on')].map(e => e.textContent).join(' ') };
+    return { vis, tipo: sel ? 'espulsione' : (el.className.match(/t-(\w+)/) || [])[1] || '', box: {left:r.left,right:r.right,top:r.top,bottom:r.bottom}, punti, testo: el.innerText.replace(/\s+/g, ' ').trim(), sopra, centro, fs, alto: Math.round(r.top), basso: Math.round(r.bottom), pos: el.classList.contains('sx') ? 'sinistra' : el.classList.contains('dx') ? 'destra' : 'centro', stato: [...document.querySelectorAll('#espulsioni .esp')].map(e => e.innerText).join(' ').replace(/\s+/g, ' ').trim(), sup: [...document.querySelectorAll('.piu.on')].map(e => e.textContent).join(' ') };
   };
 };
 async function apri(vp = { width: 844, height: 390 }) {
@@ -50,7 +50,7 @@ const foto = async (pg, nome) => { if (FOTO) { await pg.waitForTimeout(450); awa
 const controlla = (g, cosa) => {
   nota(g.vis, `${cosa}: notifica visibile («${g.testo}», ${g.pos}, dall'alto ${g.alto}-${g.basso} px, testo ${g.fs}px)`);
   nota(!g.centro, `${cosa}: fuori dalla zona centrale del campo`);
-  nota(g.sopra.length === 0, `${cosa}: non copre ${g.sopra.length ? g.sopra.join(', ') : 'palla, porte e giocatore controllato'}`);
+  nota(g.sopra.length === 0, `${cosa}: non copre ${g.sopra.length ? g.sopra.join(', ')+' '+JSON.stringify({box:g.box,punti:g.punti}) : 'palla, porte e giocatore controllato'}`);
   nota(g.fs >= 13, `${cosa}: testo leggibile (${g.fs}px)`);
 };
 
@@ -119,12 +119,13 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
   nota(g.fatto, '4. time-out chiamato'); controlla(g, '4. time-out'); nota(/\d"/.test(g.testo), `4. time-out: tempo alla ripresa («${g.testo}»)`); await foto(pg, 'scenario-4-timeout');
   const g2 = await pg.evaluate(() => { for (let i = 0; i < 400 && window.__pallanuoto.game.state !== 'play'; i++) window.__salta(1); window.__vai(30); return window.__guarda(); });
   nota(!g2.vis || g2.tipo !== 'timeout', '4. time-out: niente banner quando il gioco riprende'); }
-// 5. gol
-{ const g = await pg.evaluate(() => { const H = window.__pallanuoto, p = H.ball.holder || H.teams[0].players[5]; const prima = H.teams[0].score + H.teams[1].score; H.ball.shooter = p; H.regole.goalScored(p.team);
+// 5. gol: due righe anche sui font più stretti, come nel caso che falliva in CI.
+{ const righe = await pg.addStyleTag({ content: '#cronaca.t-gol .esito{flex-basis:100%}' });
+  const g = await pg.evaluate(() => { const H = window.__pallanuoto, p = H.ball.holder || H.teams[0].players[5]; const prima = H.teams[0].score + H.teams[1].score; H.ball.shooter = p; H.regole.goalScored(p.team);
     window.__vai(20); const r = window.__guarda(); r.punteggio = document.getElementById('score').textContent.replace(/\s+/g, ' '); r.sale = H.teams[0].score + H.teams[1].score === prima + 1; return r; });
   controlla(g, '5. gol'); nota(g.sale && g.tipo === 'gol' && /#\d+/.test(g.testo), `5. gol: marcatore e punteggio aggiornato (${g.punteggio})`); await foto(pg, 'scenario-5-gol');
   const g2 = await pg.evaluate(() => { for (let i = 0; i < 600 && window.__pallanuoto.game.state !== 'play'; i++) window.__salta(1); window.__salta(150); return window.__guarda(); });
-  nota(!g2.vis || g2.tipo !== 'gol', '5. gol: si torna al tabellone normale'); }
+  nota(!g2.vis || g2.tipo !== 'gol', '5. gol: si torna al tabellone normale'); await righe.evaluate(e => e.remove()); }
 // 6. eventi ravvicinati: un'informazione, un fallo e un'espulsione nello stesso istante
 { const seq = await pg.evaluate(() => { const H = window.__pallanuoto, C = H.cronaca, { c, d } = window.__attori(); C.svuota();
     C.annuncia('avviso', 'Raddoppio!'); H.regole.foul(d, c); C.annuncia('parata', 'Parata!', { p: H.teams[1].players[0] }); H.regole.exclude(d, c);

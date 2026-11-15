@@ -73,6 +73,9 @@ export function render(dt,now){
   camera.position.copy(camPos); camera.lookAt(camLook);
   const V=window.__pallanuoto&&window.__pallanuoto.vista;
   if(V){ camera.position.set(V.pos[0],V.pos[1],V.pos[2]); camera.lookAt(V.look[0],V.look[1],V.look[2]); if(V.fov&&camera.fov!==V.fov){ camera.fov=V.fov; camera.updateProjectionMatrix(); } }
+  // lookAt cambia la rotazione dopo aver aggiornato il mondo: rendi subito
+  // coerenti le proiezioni anche quando il disegno GPU è sospeso nelle prove.
+  camera.updateMatrixWorld();
   aggiornaOmbreAcqua(allPlayers);
   renderer.info.reset();
   renderer.render(scene,camera);

@@ -45,7 +45,10 @@ export const THROW={
 };
 const PALLA_DAVANTI=[0.62,0.08,0];     // in nuotata la palla si spinge davanti alla testa, tra le braccia
 export function computePose(p,dt,t){
-  const sp=Math.hypot(p.vx,p.vz), hold=ball.holder===p, act=p.act, J={ballHand:false,ballDavanti:0,swim:false,oriz:0,dorso:0};
+  const sp=Math.hypot(p.vx,p.vz), hold=ball.holder===p;
+  // Una nuova ricezione interrompe il recupero del gesto precedente: il pallone
+  // torna nella mano o davanti alla testa appena il giocatore riparte a nuotare.
+  const act=hold&&p.act?.done?null:p.act, J={ballHand:false,ballDavanti:0,swim:false,oriz:0,dorso:0};
   let th=null,c=0,w=0,f=0;
   let wb=0;      // wb = rotazione del busto, w = braccio: il busto parte prima e il braccio segue (catena cinetica)
   if(act){ th=THROW[act.kind]||THROW.shot; c=act.wind>0?clamp(act.t/act.wind,0,1):1;
@@ -229,7 +232,7 @@ function posturaVista(p,J,e){
 // Accento del gesto soltanto nel disegno: le giunture J usate per il
 // rilascio fisico della palla restano identiche. Nessun fermo o rallentamento.
 function enfatizzaTiro(p,J){
-  const a=p.act; if(!a||a.kind==='pass'||a.kind==='fake') return J;
+  const a=p.act; if(!a||a.kind==='pass'||a.kind==='fake'||(a.done&&ball.holder===p)) return J;
   const speciale=['beduina','sciarpa','rovesciata','schizzo','colonnello'].includes(a.kind);
   if(!speciale && !(a.potenza>=0.98)) return J;
   const fase=clamp((a.t-a.wind)/((a.frusta||0.18)+0.36),0,1);
