@@ -2,6 +2,7 @@
 import { rnd } from './costanti.js';
 import { RUOLI, rosa, squadra, valoriMotore } from './dati/rose.js';
 import { coloraGiocatore, makePlayerMesh } from './grafica/modello.js';
+import { profiloCostume } from './grafica/costumi.js';
 import { allPlayers, setCtrl, teams } from './stato.js';
 export let uid=0;
 for(const t of teams){
@@ -16,8 +17,8 @@ allPlayers.push(...teams[0].players, ...teams[1].players);
 for(const t of teams) Object.assign(t,{atkPlay:0,defPlay:2,cross:false,doubleP:null,doubleUntil:0,nextDrive:0,subs:0,timeouts:2});
 
 // calottine: la squadra del giocatore in bianco, quella del computer in blu, portieri in rosso (scelta di Ale finché non ci sono
-// "casa" e "ospite"); il costume ha il colore della nazionale
-const BIANCA={ cal:0xf4f4f4, css:'#f4f4f4', testo:'#111' }, BLU={ cal:0x1d3f8f, css:'#1d3f8f', testo:'#fff' };
+// "casa" e "ospite"). Questi due colori valgono per tutte le nazionali; i costumi portano la propria bandiera.
+const BIANCA={ cal:0xf4f4f4, css:'#f4f4f4', testo:'#111' }, BLU={ cal:0x10284f, css:'#10284f', testo:'#fff' };
 // mette un giocatore della rosa nel corpo p (titolare all'inizio, riserva quando entra un cambio)
 export function vesti(p,g){
   if(p.scheda&&p.scheda!==g) p.scheda.inAcqua=false;
@@ -27,7 +28,7 @@ export function vesti(p,g){
 // solo l'aspetto (calottina, costume, numero e profilo visivo del giocatore, src/aspetto.js): serve anche per chi entra o esce con un cambio (panchina.js)
 export function colora(mesh,t,isGK,num,scheda){
   const C=t.calottina;
-  coloraGiocatore(mesh,{ costume:t.costume, calottina:isGK?0xd62828:C.cal, paraorecchie:isGK?0xf2f2ee:(C===BIANCA?t.costume:0xf2f2ee), testo:isGK?'#fff':C.testo,
+  coloraGiocatore(mesh,{ costume:t.costume, profiloCostume:t.profiloCostume, calottina:isGK?0xd62828:C.cal, paraorecchie:isGK?0xf2f2ee:C.cal, testo:isGK?'#fff':C.testo,
     disco:isGK?'#d62828':C.css, discoTesto:isGK?'#fff':C.testo },num,scheda&&scheda.profilo);
 }
 // formazione scelta dal giocatore nella schermata Squadre: per ogni nazionale i numeri dei 7 in acqua, posto per posto
@@ -40,7 +41,7 @@ export function formazioneValida(R,F){
 export function applicaSquadre(codA,codB){
   [codA,codB].forEach((cod,k)=>{
     const t=teams[k], sq=squadra(cod), R=rosa(cod);
-    Object.assign(t,{ codice:cod, name:sq.nome, short:cod, forza:sq.forza, costume:parseInt(sq.costume.slice(1),16), calottina:k===0?BIANCA:BLU, rosa:R, subs:0, usciti:new Set() });
+    Object.assign(t,{ codice:cod, name:sq.nome, short:cod, forza:sq.forza, costume:parseInt(sq.costume.slice(1),16), profiloCostume:profiloCostume(cod), calottina:k===0?BIANCA:BLU, rosa:R, subs:0, usciti:new Set() });
     t.css=t.calottina.css; t.color=t.calottina.cal;
     // un mancino titolare gioca sul lato destro (ala destra = 2, mezzo destro = 4): se sta a sinistra si scambia con il destro
     const posto=[0,1,2,3,4,5,6];

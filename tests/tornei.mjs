@@ -10,6 +10,7 @@ const hook=registerHooks({load(url,context,next){
 }});
 const { COMPETIZIONI,creaTorneo,prossimaPartita,registraPartita,classificaGirone,simulaBronzo }=await import('../src/tornei.js');
 hook.deregister();
+const squadre=JSON.parse(readFileSync(new URL('../src/dati/squadre.json',import.meta.url),'utf8')).squadre;
 
 let controlli=0;
 function prova(nome,fn){ fn(); controlli++; console.log(`✓ ${nome}`); }
@@ -37,21 +38,48 @@ function fixture(incontri,ordine=['A','B','C','D']){
     ({id:String(i),casa,ospite,golCasa,golOspite,rigoriCasa,rigoriOspite,girone:'A'}))};
 }
 
-prova('Sorteggio: sedici squadre, una per fascia e gruppo, seme e JSON ripetibili',()=>{
+prova('Sorteggio: 24 scelte mondiali, 16 europee, torneo a 16 e nazionale sempre inclusa',()=>{
+  assert.equal(COMPETIZIONI.mondiali.codici.length,24);
+  assert.deepEqual([...COMPETIZIONI.mondiali.codici].sort(),squadre.map(s=>s.codice).sort());
+  assert.deepEqual(COMPETIZIONI.mondiali.fasce.map(f=>f.length),[6,6,6,6]);
+  assert.deepEqual(COMPETIZIONI.europei.fasce,[
+    ['ESP','CRO','ITA','HUN'],['GRE','MNE','SRB','ROU'],
+    ['NED','SVK','GEO','FRA'],['SLO','TUR','MLT','ISR'],
+  ]);
+  const nonEuropee=['USA','BRA','CAN','AUS','CHN','JPN','RSA','SGP'];
+  assert.deepEqual(squadre.map(s=>s.codice).filter(c=>!COMPETIZIONI.europei.codici.includes(c)).sort(),[...nonEuropee].sort());
+  for(const codice of [...nonEuropee,'NZL']) assert.throws(()=>creaTorneo('europei',codice,1));
   for(const tipo of ['mondiali','europei']){
     const t=creaTorneo(tipo,'ITA',712),c=COMPETIZIONI[tipo];
     assert.deepEqual(t,creaTorneo(tipo,'ITA',712));
     assert.deepEqual(t,copia(t));
     assert.notDeepEqual(t.gruppi,creaTorneo(tipo,'ITA',713).gruppi);
     assert.equal(new Set(Object.values(t.gruppi).flat()).size,16);
+    assert.equal(t.partecipanti.length,16);
+    assert.deepEqual([...t.partecipanti].sort(),Object.values(t.gruppi).flat().sort());
+    assert.deepEqual(t.fasce.map(f=>f.length),[4,4,4,4]);
     for(const gruppo of Object.values(t.gruppi)) for(const fascia of c.fasce)
       assert.equal(gruppo.filter(c=>fascia.includes(c)).length,1);
     assert.equal(t.partite.length,24);
     assert.equal(t.partite.filter(p=>p.casa==='ITA'||p.ospite==='ITA').length,3);
     assert.ok(t.partite.every(p=>p.golCasa===null&&p.rigoriCasa===null));
   }
+  const incontrate=new Set();
+  for(const nazionale of COMPETIZIONI.mondiali.codici) for(let seme=1;seme<=12;seme++){
+    const t=creaTorneo('mondiali',nazionale,seme);
+    assert.ok(t.partecipanti.includes(nazionale),'ogni scelta entra sempre nel torneo');
+    assert.equal(new Set(t.partecipanti).size,16);
+    for(const [i,fascia] of COMPETIZIONI.mondiali.fasce.entries()){
+      assert.equal(t.partecipanti.filter(c=>fascia.includes(c)).length,4);
+      assert.ok(t.fasce[i].every(c=>fascia.includes(c)));
+    }
+    for(const gruppo of Object.values(t.gruppi)) for(const fascia of t.fasce)
+      assert.equal(gruppo.filter(c=>fascia.includes(c)).length,1);
+    t.partecipanti.filter(c=>c!==nazionale).forEach(c=>incontrate.add(c));
+  }
+  assert.equal(incontrate.size,24,'tutte le disponibili possono anche essere avversarie');
   assert.throws(()=>creaTorneo('inesistente','ITA',1));
-  assert.throws(()=>creaTorneo('europei','USA',1));
+  assert.throws(()=>creaTorneo('mondiali','NZL',1));
 });
 
 prova('Classifica: 3/2/1/0 e gol dei rigori esclusi',()=>{
@@ -217,8 +245,8 @@ prova('Entrambe le formule: argento, bronzo giocato e bronzo simulato',()=>{
 });
 
 prova('Ripresa JSON a ogni gara e consultazioni extra mantengono simulazioni identiche',()=>{
-  for(const tipo of ['mondiali','europei']){
-    const a=creaTorneo(tipo,'ITA','salvataggio-v040'); let b=copia(a),n=0,p;
+  for(const tipo of ['mondiali','europei']) for(const nazionale of ['ITA','FRA','MLT']){
+    const a=creaTorneo(tipo,nazionale,'salvataggio-v044'); let b=copia(a),n=0,p;
     while((p=prossimaPartita(a))){
       assert.deepEqual(prossimaPartita(b),p);
       for(let i=0;i<4;i++) prossimaPartita(b);
@@ -227,14 +255,41 @@ prova('Ripresa JSON a ogni gara e consultazioni extra mantengono simulazioni ide
     }
     assert.deepEqual(a,b);
   }
+  // Salvataggio v1 reale precedente all'ampliamento: niente metadati fasce o
+  // partecipanti. Le sue 16 squadre e la sequenza casuale devono restare quelle.
+  const storico={versione:1,tipo:'mondiali',nazionale:'ITA',seed:2026,rng:1007908578,
+    fase:'gironi',faseAttiva:'gironi',stato:'in_corso',eliminatoDalTitolo:false,
+    gruppi:{A:['USA','HUN','ROU','RSA'],B:['ESP','BRA','MNE','CHN'],C:['SRB','GRE','CAN','SGP'],D:['CRO','ITA','AUS','JPN']},
+    sorteggiParita:{A:['RSA','ROU','USA','HUN'],B:['ESP','MNE','CHN','BRA'],C:['GRE','SGP','SRB','CAN'],D:['CRO','JPN','AUS','ITA']},
+    partite:[],piazzamenti:{},piazzamento:null,medaglia:null,campione:null};
+  for(const [girone,q] of Object.entries(storico.gruppi))
+    for(const [turno,coppie] of [[[0,3],[1,2]],[[0,2],[3,1]],[[0,1],[2,3]]].entries())
+      for(const [a,b] of coppie) storico.partite.push({id:`mondiali-${storico.partite.length+1}`,casa:q[a],ospite:q[b],
+        fase:'gironi',girone,turno:turno+1,golCasa:null,golOspite:null,rigoriCasa:null,rigoriOspite:null});
+  const prima=copia(storico);
+  assert.equal(prossimaPartita(storico).id,'mondiali-20');
+  assert.deepEqual(storico,prima,'aprire lo storico non lo risorteggia né lo migra');
+  gioca(storico,prossimaPartita(storico));
+  assert.equal(storico.rng,2184909821);
+  assert.equal(prossimaPartita(storico).ospite,'ITA');
+  assert.equal(prossimaPartita(storico).casa,'JPN');
+  const ripreso=copia(storico); completa(storico); completa(ripreso);
+  assert.deepEqual(ripreso,storico);
+  assert.deepEqual(storico.gruppi,prima.gruppi);
+  assert.deepEqual(Object.keys(storico.piazzamenti).sort(),Object.values(prima.gruppi).flat().sort());
 });
 
-prova('Campagne di tutte le partecipanti: titolo o eliminazione, nessun risultato duplicato',()=>{
+prova('Tutte le 24 scelte mondiali e le 16 europee arrivano al titolo o all’eliminazione',()=>{
   for(const [tipo,c] of Object.entries(COMPETIZIONI)) for(const [i,nazionale] of c.codici.entries()){
-    const t=creaTorneo(tipo,nazionale,100+i); completa(t,(p,n)=>i%2===0||n<2);
-    assert.equal(new Set(t.partite.map(p=>p.id)).size,t.partite.length);
-    assert.ok(c.codici.includes(t.campione));
-    assert.ok(t.partite.every(p=>p.golCasa!==p.golOspite||p.rigoriCasa!==p.rigoriOspite));
+    for(const vinci of [true,false]){
+      const t=creaTorneo(tipo,nazionale,100+i); completa(t,()=>vinci);
+      assert.equal(t.stato,vinci?'campione':'eliminato');
+      if(vinci) assert.equal(t.campione,nazionale);
+      assert.equal(new Set(t.partite.map(p=>p.id)).size,t.partite.length);
+      assert.ok(t.partecipanti.includes(t.campione));
+      assert.ok(t.partite.every(p=>t.partecipanti.includes(p.casa)&&t.partecipanti.includes(p.ospite)));
+      assert.ok(t.partite.every(p=>p.golCasa!==p.golOspite||p.rigoriCasa!==p.rigoriOspite));
+    }
   }
 });
 

@@ -47,20 +47,27 @@ prova(fuori.angolo.oltre > 13.0 && /angolo/i.test(fuori.angolo.annuncio), `devia
 // ---------- 1.2 Cambia: sempre al compagno più vicino alla palla, anche durante un gesto ----------
 const cambio = await pg.evaluate(() => {
   const H = window.__pallanuoto, B = H.ball, out = [];
-  const premi = () => { window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyQ' })); window.__salta(1); window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyQ' })); window.__salta(1); };
+  const premi = () => { window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyC' })); window.__salta(1); const dopo=H.ctrl; window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyC' })); window.__salta(1); return dopo; };
   for (let k = 0; k < 6; k++) {
     window.__salta(90);
+    // Si prova una selezione in gioco attivo, non durante il fermo di un fallo
+    // casuale della scena precedente. Pausa e annullamento input hanno prove dedicate.
+    H.game.state='play'; H.game.after=null; H.game.penalty=null;
+    for(const q of H.allPlayers){ q.tackleCD=9; q.colpi=[]; q.decideT=9; q.reazioneT=9; }
     const T = H.teams[0]; if (B.holder && B.holder.team === T) { const o = H.teams[1].players[6]; H.regole.giveBall(o); window.__salta(2); }
     const prima = H.ctrl; if (!prima) continue;
     if (k % 2 === 0) prima.act = { kind: 'pass', t: 0, wind: 0.5, frusta: 0.1, done: false, fn: () => {} };      // durante un gesto
-    const atteso = T.players.filter(m => m !== prima && !m.excluded && !m.isGK).sort((a, b) => Math.hypot(a.x - B.x, a.z - B.z) - Math.hypot(b.x - B.x, b.z - B.z))[0];
-    premi();
-    out.push({ ok: H.ctrl === atteso, gesto: k % 2 === 0, cambiato: H.ctrl !== prima });
+    const atteso = T.players.filter(m => m !== prima && !m.excluded && !m.isGK && !m.uscendo).sort((a, b) => Math.hypot(a.x - B.x, a.z - B.z) - Math.hypot(b.x - B.x, b.z - B.z))[0];
+    const statoPrima=H.game.state;
+    const dopo=premi();
+    out.push({ ok: dopo === atteso, gesto: k % 2 === 0, cambiato: dopo !== prima,statoPrima,statoDopo:H.game.state,
+      prima:prima.num,atteso:atteso?.num,attuale:dopo?.num,uscendo:!!atteso?.uscendo,possesso:B.holder?.team.short });
     prima.act = null;
   }
   return out;
 });
 prova(cambio.length >= 5 && cambio.every(c => c.ok && c.cambiato), `Cambia: passa al compagno più vicino alla palla in ${cambio.filter(c => c.ok).length} prove su ${cambio.length} (metà durante un gesto)`);
+if(cambio.some(c=>!c.ok||!c.cambiato)) console.log('Diagnosi cambio:',JSON.stringify(cambio));
 
 // ---------- 1.3 portatore che nuota addosso a un difensore fermo ----------
 const contatto = await pg.evaluate(() => {

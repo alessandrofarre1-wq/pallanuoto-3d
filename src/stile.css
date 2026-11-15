@@ -364,6 +364,8 @@ body.touch #fps b{font-size:12px}
 .comandi b{font-size:15px;font-weight:800}
 .comandi p{font-size:12px;color:rgba(235,245,255,.75);margin-top:1px;line-height:1.3}
 .comandi kbd{font:700 10.5px system-ui,sans-serif;padding:3px 6px;border-radius:6px;background:rgba(255,255,255,.12);color:rgba(235,245,255,.75);white-space:nowrap;flex:none}
+.comandi-intro{max-width:640px;width:100%;margin:0 auto 12px;color:#c4dce5;font-size:12px;line-height:1.5}
+body:not(.touch) #menu .solo-touch,body.touch #menu .solo-tastiera{display:none}
 .nota-pad{font-size:11.5px;color:rgba(235,245,255,.6);text-align:center;margin:12px auto 4px;max-width:640px}
 /* --- informazioni --- */
 .info{max-width:640px;width:100%;margin:0 auto}
@@ -745,7 +747,7 @@ body.touch #qte{display:none}
   #vHome .h-logo .logo{width:clamp(220px,29vw,300px)}
   #vHome .eroe{height:100%;max-height:90vh;width:140%;transform:translateX(-7%);margin-bottom:calc(-1 * max(10px,var(--sb)))}
   #vHome .h-azioni{gap:5px;align-self:center}
-  .home-titolo{font-size:clamp(25px,7.6vh,40px);line-height:1;margin:0 0 3px;white-space:nowrap}
+  .home-titolo{font-size:clamp(22px,7vh,36px);line-height:1;margin:0 0 3px;white-space:nowrap}
   .home-titolo br{display:none}
   .home-titolo br::after{content:' '}
   .home-carriera>.soprattitolo{font-size:8px}
@@ -792,10 +794,10 @@ body.touch #qte{display:none}
   #menu #vHome.on{display:flex;align-items:stretch;justify-content:flex-end;padding:max(20px,var(--st)) 22px max(18px,var(--sb));gap:10px}
   #vHome .h-logo{align-self:flex-start;z-index:3}
   #vHome .h-logo .logo{width:clamp(220px,65vw,320px)}
-  #vHome .eroe{position:absolute;right:-24%;top:7%;height:48%;width:115%;max-height:480px;transform:rotate(-3deg);display:block}
-  #vHome .eroe img{position:relative;left:auto;bottom:auto;transform:none;width:100%;height:100%;object-fit:contain;object-position:right bottom;max-width:100%}
+  #vHome .eroe{position:absolute;left:0;right:0;top:max(128px,calc(var(--st) + 114px));height:42%;width:100%;max-height:420px;transform:none;display:block}
+  #vHome .eroe img{position:relative;left:auto;bottom:auto;transform:none;width:100%;height:100%;object-fit:contain;object-position:center top;max-width:100%}
   #vHome .h-azioni{position:relative;margin-top:auto;z-index:4;padding-top:clamp(110px,22vh,230px);max-width:none;gap:10px}
-  .home-titolo{font-size:clamp(45px,13vw,72px);max-width:70%;text-shadow:0 4px 20px #07131d}
+  .home-titolo{font-size:clamp(42px,12vw,66px);max-width:100%;text-shadow:0 4px 20px #07131d}
   .home-carriera>.soprattitolo{font-size:8px;text-shadow:0 2px 6px #07131d}
   .modalita-home>.m-voce{min-height:72px;padding:9px 11px;gap:7px}
   .modalita-home>.m-voce b{font-size:18px}.modalita-home>.m-voce small{font-size:8px}
@@ -819,6 +821,20 @@ body.touch #qte{display:none}
   #menu #vCerimonia.on{padding-top:max(80px,var(--st));justify-content:center;gap:30px}.cerimonia-titoli h1{font-size:56px}.cerimonia-palco{height:44vh!important;max-height:420px;flex:none!important;width:110vw}.cerimonia-didascalia{font-size:10px;max-width:80vw;line-height:1.5}
 }
 @media (orientation:portrait) and (max-height:700px){#vHome .h-azioni{padding-top:100px;gap:6px}.home-titolo{font-size:42px}.modalita-home>.m-cta{min-height:52px}.modalita-home>.m-voce{min-height:60px}#vHome .eroe{height:44%}#vHome .h-logo .logo{width:220px}}
+/* Con le barre di Safari resta poca altezza: prima scelta e versione restano nel riquadro visibile. */
+@media (orientation:landscape) and (max-height:340px){
+  #menu #vHome.on{padding-top:max(8px,var(--st));padding-bottom:max(8px,var(--sb));row-gap:4px;grid-template-rows:auto minmax(0,1fr) auto;align-content:start}
+  #vHome .h-azioni{gap:3px}
+  .home-carriera>.soprattitolo{font-size:7px;line-height:10px}
+  .home-titolo{font-size:22px;line-height:1;margin-bottom:0}
+  .modalita-home{gap:5px}
+  .modalita-home>.m-cta{min-height:44px;padding:5px 10px}
+  .modalita-home>.m-voce{min-height:44px;padding:5px 7px}
+  .home-link button{min-height:28px;padding-top:3px;padding-bottom:3px}
+  #vHome .h-versione{font-size:8px;line-height:12px}
+}
+@media (orientation:landscape) and (max-height:300px){#vHome .h-logo .logo{width:180px}}
+@media (orientation:landscape) and (max-width:720px){.modalita-home .modo-num{display:none}}
 @media (prefers-reduced-motion:reduce){#menu .vista.on,.coriandoli i,.capitano,.cerimonia-luci{animation:none!important}#cerimoniaTrofeo{transition:none}.coriandoli{display:none}}
 
 /* v0.41: lavagna prepartita. Il disegno resta SVG; i valori sono gli stessi usati dall'IA. */

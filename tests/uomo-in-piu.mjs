@@ -11,16 +11,16 @@ if (!process.argv.includes('--no-build')) await build({ root: ROOT, logLevel: 'w
 const server = await preview({ root: ROOT, logLevel: 'warn', preview: { port: 4398, host: '127.0.0.1' } });
 const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 let ok = true; const prova = (bene, testo) => { console.log(`${bene ? '✓' : '✗'} ${testo}`); if (!bene) ok = false; };
-const init = () => {
+const init = (foto = false) => {
   let a = 21; Math.random = () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   let now = 0; performance.now = () => now; window.requestAnimationFrame = cb => { window.__raf = cb; return 1; };
-  window.__salta = n => { const R = window.__pallanuoto.renderer; const d = R.render; R.render = () => {}; for (let i = 0; i < n; i++) { now += 1000 / 60; window.__raf(now); } R.render = d; now += 1000 / 60; window.__raf(now); };
+  window.__salta = n => { const R = window.__pallanuoto.renderer; const d = R.render; R.render = () => {}; for (let i = 0; i < n; i++) { now += 1000 / 60; window.__raf(now); } now += 1000 / 60; if (foto) R.render = d; window.__raf(now); R.render = d; };
 };
 const errori = [];
 const pg = await browser.newPage({ viewport: { width: 852, height: 393 }, isMobile: true, hasTouch: true });
 pg.setDefaultTimeout(150000);
 pg.on('pageerror', e => errori.push(e.message));
-await pg.addInitScript(init);
+await pg.addInitScript(init, process.argv.includes('--foto'));
 await pg.goto(server.resolvedUrls.local[0]);
 await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });
 
@@ -70,6 +70,23 @@ const partita = await pg.evaluate(() => {
   // pali della fase 2: il mezzo sinistro (5) è entrato sul palo e ora conta come palo, il punto (6) no
   r.palo5 = H.prova.paloUomo(t.players[5]); r.palo6 = H.prova.paloUomo(t.players[6]);
   r.barraDopo = document.getElementById('tac').textContent;
+  // Pausa 6c5: le carte chiamano gli schemi a fasi, senza sostituire il piano della parità.
+  const pianoPrima = JSON.stringify(t.schema);
+  H.pausa(); document.querySelector('#vPausa [data-va="tattiche"]').click();
+  const lavagna = document.querySelector('#tattichePausa .tp-lavagne figure');
+  r.pausa = {
+    nomi: [...document.querySelectorAll('#tattichePausa [data-tattica="uomo"] b')].map(e => e.textContent),
+    fase: lavagna.querySelector('figcaption').textContent,
+    posti: [...lavagna.querySelectorAll('svg g')].map(e => e.getAttribute('transform')),
+    attesi: sc.fasi[1].posti.map(([d, z]) => `translate(${120 + z * 12} ${13 + d * 13})`),
+    compiti: lavagna.querySelector('p').textContent,
+    carteParita: document.querySelectorAll('#tattichePausa [data-tattica="attacco"]').length,
+  };
+  document.querySelector('#tattichePausa [data-tattica="uomo"][data-schema="0"]').click();
+  r.pausa.chiamato = t.uomo && t.uomo.schema.id; r.pausa.riparte = t.uomo && t.uomo.fase;
+  document.querySelector('#tattichePausa [data-tattica="uomo"][data-schema="3"]').click();
+  r.pausa.base = t.uomo; r.pausa.pianoConservato = JSON.stringify(t.schema) === pianoPrima;
+  H.pausa();
   // 4 = torna al 4-2 base
   H.regole.callPlay(3); r.base = t.uomo; ferma(); window.__salta(5);
   // finita la superiorità lo schema si spegne
@@ -84,6 +101,9 @@ prova(partita.fase1 === 1 && partita.cambioDopo >= partita.durata - 0.02 && part
 prova(partita.dopoF2 < partita.inizioF2 - 0.3, `e i compagni vanno ai nuovi posti (${partita.inizioF2.toFixed(2)} → ${partita.dopoF2.toFixed(2)} m)`);
 prova(partita.palo5 && !partita.palo6, 'pali riconosciuti dalla fase in corso: il mezzo sinistro entrato sul palo è palo, il punto uscito no');
 prova(/3-3›4-2 2\/2/.test(partita.barraDopo), `la barra indica la fase in corso («${partita.barraDopo.slice(0, 90)}»)`);
+prova(partita.pausa.nomi.includes('3-3 che diventa 4-2') && partita.pausa.carteParita === 0 && /fase 2\/2/.test(partita.pausa.fase), 'pausa 6c5: mostra i propri schemi e la fase reale, senza carte della parità');
+prova(JSON.stringify(partita.pausa.posti) === JSON.stringify(partita.pausa.attesi) && /5 · Mezzo sinistro/.test(partita.pausa.compiti) && !/6 · Punto/.test(partita.pausa.compiti), 'pausa 6c5: lavagna e pali corrispondono ai posti della seconda fase');
+prova(partita.pausa.chiamato === 'u42' && partita.pausa.riparte === 0 && partita.pausa.base === null && partita.pausa.pianoConservato, 'pausa 6c5: scelta e ritorno alla base funzionano senza cambiare il piano prepartita');
 prova(partita.base === null && partita.finito === null, 'tasto 4 = 4-2 base; a superiorità finita lo schema si spegne');
 
 // ---------- il computer sceglie da solo ----------
@@ -103,6 +123,8 @@ await pg.close();
 
 // ---------- sezione «Uomo in più»: scelta di 3 e creazione ----------
 const pm = await browser.newPage({ viewport: { width: 852, height: 393 }, isMobile: true, hasTouch: true });
+// La sezione è DOM/SVG: evita di renderizzare la vasca dietro al menu a ogni frame.
+await pm.addInitScript(() => { window.requestAnimationFrame = () => 1; });
 pm.setDefaultTimeout(150000); pm.on('pageerror', e => errori.push(e.message));
 await pm.goto(server.resolvedUrls.local[0]);
 await pm.waitForFunction('window.__pallanuoto && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });
