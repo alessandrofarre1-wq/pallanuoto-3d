@@ -1,7 +1,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 /* margini sicuri dell'iPhone (notch, Dynamic Island, barra Home): in orizzontale stanno a sinistra, a destra e in basso */
 :root{--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px)}
-html,body{width:100%;height:100%;overflow:hidden;background:#0b1d33;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff;touch-action:none;user-select:none;-webkit-user-select:none}
+html,body{width:100%;height:100%;overflow:hidden;background:#07131d;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff;touch-action:none;user-select:none;-webkit-user-select:none}
 canvas{display:block}
 
 /* ================= DESIGN SYSTEM DELL'HUD =================
@@ -571,6 +571,13 @@ body.touch #qte{display:none}
 #vHome .m-angolo{right:max(22px,var(--sr));top:max(18px,var(--st))}
 #vHome .eroe{grid-area:eroe;margin:0;position:relative;align-self:end;width:130%;height:100%;max-width:850px;max-height:85vh;display:flex;align-items:flex-end;justify-content:center;transform:translateX(-3%);pointer-events:none}
 #vHome .eroe img{position:relative;width:100%;height:auto;max-height:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 18px 34px #0008)}
+/* iPhone: il menu copre anche la zona sotto le barre di Safari e la linea Home (100lvh = schermo con le barre nascoste), mentre le
+   schermate restano nell'area visibile (100dvh); così in fondo non compare una fascia di un altro colore e nulla finisce sotto le barre */
+#menu{bottom:auto;height:100%;height:max(100%,100lvh)}
+#menu .vista{bottom:auto;height:100%;height:100dvh}
+/* in orizzontale il giocatore arriva fino al bordo basso e sfuma, senza taglio dritto */
+#vHome .eroe{margin-bottom:calc(-1 * max(18px,var(--sb)))}
+#vHome .eroe img{-webkit-mask-image:linear-gradient(180deg,#000 82%,transparent);mask-image:linear-gradient(180deg,#000 82%,transparent)}
 #vHome::after{height:38%;background:linear-gradient(180deg,transparent,rgba(4,15,23,.65)),repeating-linear-gradient(174deg,transparent 0 24px,#75dbdc08 25px 27px)}
 #vHome .arena{background:linear-gradient(90deg,transparent 48%,#60e7e406 49%,#60e7e406 49.2%,transparent 49.3%);transform:skewX(-12deg)}
 #vHome .arena i{opacity:.22;filter:blur(3px)}
@@ -730,7 +737,7 @@ body.touch #qte{display:none}
   #menu .m-testa{margin-bottom:2px}
   #menu #vHome.on{padding:max(12px,var(--st)) max(4vw,var(--sr)) max(10px,var(--sb)) max(4vw,var(--sl));grid-template-columns:1.25fr 1fr;gap:7px 2vw}
   #vHome .h-logo .logo{width:clamp(220px,29vw,300px)}
-  #vHome .eroe{height:100%;max-height:90vh;width:140%;transform:translateX(-7%)}
+  #vHome .eroe{height:100%;max-height:90vh;width:140%;transform:translateX(-7%);margin-bottom:calc(-1 * max(10px,var(--sb)))}
   #vHome .h-azioni{gap:5px;align-self:center}
   .home-titolo{font-size:clamp(25px,7.6vh,40px);line-height:1;margin:0 0 3px;white-space:nowrap}
   .home-titolo br{display:none}
@@ -787,7 +794,7 @@ body.touch #qte{display:none}
   .modalita-home>.m-voce{min-height:72px;padding:9px 11px;gap:7px}
   .modalita-home>.m-voce b{font-size:18px}.modalita-home>.m-voce small{font-size:8px}
   .home-link button{font-size:10px!important}
-  #vHome .h-versione{align-self:flex-start}
+  #vHome .h-versione{align-self:flex-start;z-index:3}
   #vHome::after{height:63%;background:linear-gradient(180deg,transparent,#07131dbf 20%,#07131d 70%);z-index:2}
   .nazionali-torneo{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
   .nazionale-card{min-height:66px!important}.nazionale-card b{font-size:12px}.nazionale-card .band{width:30px;height:30px}
