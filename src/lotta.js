@@ -10,6 +10,7 @@ import { ESPULSIONI, deadBall, exclude, foul, giveBall, tackle } from './regole.
 import { ball, ctrl, fight, game, goalX, other } from './stato.js';
 import { bestPassTarget } from './tiri.js';
 import { avviaGirata, leggiCentro } from './centroboa.js';
+import { chiudiAzione } from './statistiche.js';
 export const boaDef = t => other(t).players.find(q=>MARK[q.i]===1);
 export function fightOn(a,b){ return fight.active && ((fight.boa===a&&fight.def===b)||(fight.boa===b&&fight.def===a)); }
 export function updateFight(dt){
@@ -34,7 +35,26 @@ export function updateFight(dt){
   def.stamina=Math.max(0,def.stamina-dt*(ctrl===def&&inp.sprint?0.05:0.02));
   if(dist(boa,def)<1.12) boa.contactT=def.contactT=0.25;
   fight.foamT-=dt; if(fight.foamT<=0){ fight.foamT=0.18; spawnFoam((boa.x+def.x)/2+(rnd()-0.5)*0.6,(boa.z+def.z)/2+(rnd()-0.5)*0.6,0.18+rnd()*0.12,0.7); }
-  if(ball.holder===boa) boaHold(boa,def,dt); else fight.holdT=0;
+  if(ball.holder===boa) boaHold(boa,def,dt); else { fight.holdT=0; lottaSenzaPalla(boa,def,lettura,dt); }
+}
+// aggressività del marcatore del centroboa: il giocatore la alza premendo CONTRASTO; il computer la alza in pressing
+const aggressivita=d=>d===ctrl ? (d.aggrT>game.time?1.6:0.35) : (d.team.defPlay===2?1.05:0.85)*(0.85+0.3*DIFF());
+// ARBITRO AL CENTRO SENZA PALLA (v0.45, manuale arbitri FINA 2019-21, WP 22.8-22.10 e «General observations»): il centroboa
+// procura la maggior parte delle espulsioni lottando per la posizione PRIMA di ricevere (Lupo et al. 2012: in Euro League 8 delle
+// 10 espulsioni o rigori procurati in parità sono del centroboa). Trattenere, affondare o tirare indietro chi NON ha la palla è
+// espulsione; affondarlo mentre la palla gli sta arrivando è sempre espulsione; un fallo semplice è possibile quando non c'è
+// minaccia immediata; la spinta all'indietro del centroboa è fallo in attacco (contro-fallo).
+export const CENTRO_SENZA_PALLA={ espulsione:0.13, inArrivo:1.6, fallo:0.18, contro:0.05 };
+function lottaSenzaPalla(b,d,lettura,dt){
+  const h=ball.holder, inArrivo=ball.state==='flight'&&ball.kind==='pass'&&ball.target===b;
+  if(!(inArrivo||(h&&h.team===b.team&&h!==b))||dist(b,d)>1.15||game.state!=='play') return;
+  const ag=aggressivita(d), sev=Math.pow(ARBITRO,1.5)*(1.5-(d.s.dis-40)/59);
+  const posizione=lettura.ricevibile?1:0.35+0.4*Math.max(0,fight.v);      // chi ha preso posizione davanti al difensore lo obbliga a trattenere
+  const C=CENTRO_SENZA_PALLA, rE=(inArrivo?C.inArrivo:C.espulsione)*posizione*ag*sev*(ESPULSIONI.centro/7), rF=C.fallo*ag*(1-posizione*0.5), rO=C.contro*(1+Math.max(0,-fight.v));
+  const r=rnd();
+  if(r<rE*dt){ if(h&&h.team===b.team) h.freeThrow=true; exclude(d,b,inArrivo?'affonda il centroboa sul passaggio':'trattiene il centroboa','centro'); return; }
+  if(!inArrivo&&r<(rE+rF)*dt&&h){ foul(d,h); return; }      // fallo semplice al centro: nessuna minaccia immediata, tiro libero
+  if(!inArrivo&&r<(rE+rF+rO)*dt){ offFoul(b); return; }
 }
 export function boaHold(b,d,dt){
   fight.holdT+=dt;
@@ -50,13 +70,19 @@ export function boaHold(b,d,dt){
   }
   const v=fight.v;
   // aggressività del marcatore: il giocatore la alza premendo CONTRASTO
-  let ag = d===ctrl ? (d.aggrT>game.time?1.6:0.35) : (d.team.defPlay===2?1.05:0.85)*(0.85+0.3*DIFF());
+  const ag=aggressivita(d);
   // Restano i contatti del duello; un semplice cambio di postura non assegna rigori.
   const sev=Math.pow(ARBITRO,1.5);
   const rE=Math.max(0.12,0.42+0.5*v)*ESPULSIONI.centro*ag*(1.5-(d.s.dis-40)/59)*sev, rF=0.5*ag, rO=0.14+0.3*Math.max(0,-v), rS=(0.08+0.25*Math.max(0,-v))*(d===ctrl&&d.aggrT>game.time?1.5:1);
   if(fight.holdT>0.35&&dist(b,d)<1.15){
     const r=rnd();
-    if(r<rE*dt){ exclude(d,b,'guadagnata dal centroboa','centro'); return; }
+    if(r<rE*dt){
+      // espulsioni simultanee (WP 22.15): rare (Mondiali 2025: 0,29 a partita su circa 22 espulsioni, circa 1,3%); 18 s a tutti e due,
+      // il tempo dell'azione NON si azzera, tiro libero alla squadra che aveva la palla
+      if(rnd()<0.015){ simultanea(b,d); return; }
+      exclude(d,b,'guadagnata dal centroboa','centro'); return; }
+    // simulazione (WP 21.16): fallo semplice contro chi simula; ripetuta, cartellino giallo alla squadra e poi espulsione
+    if(v<-0.2&&b!==ctrl&&r>1-0.03*dt*(1.5-(b.s.dis-40)/59)*ARBITRO){ simulazione(b); return; }
     if(r<(rE+rF)*dt){ foul(d,b); return; }
     if(r<(rE+rF+rO)*dt){ offFoul(b); return; }
     if(r<(rE+rF+rO+rS)*dt){ giveBall(d); annuncia('possesso','Palla rubata al centroboa',{p:d}); return; }
@@ -74,10 +100,27 @@ export function girata(b,d){
   annuncia('info','Girata: cerca lo spazio',{p:b});
   return true;
 }
-export function offFoul(b){       // fallo in attacco del centroboa (spinta sul difensore): palla alla difesa
-  whistle(0.22);
+export function offFoul(b,titolo='Fallo in attacco',dettaglio='spinge il difensore'){       // fallo in attacco del centroboa (spinta sul difensore): palla alla difesa
+  chiudiAzione('falloAttacco'); whistle(0.22);
   const t=other(b.team);
-  annuncia('fallo','Fallo in attacco',{p:b,dettaglio:'spinge il difensore'});
+  annuncia('fallo',titolo,{p:b,dettaglio});
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.y=BRV;
   deadBall(0.9,()=>{ const r=boaDef(b.team)||closestTo(t,b); giveBall(r); r.freeThrow=true; });
+}
+
+// due espulsi insieme: il centroboa e il suo marcatore (v0.45)
+export function simultanea(b,d){
+  const shot=game.shot, t=b.team;
+  exclude(d,b,'espulsioni simultanee','centro'); exclude(b,d,'espulsioni simultanee','altro'); game.shot=shot;
+  const r=t.players.filter(q=>q!==b&&!q.excluded&&!q.isGK).sort((x,y)=>dist(x,ball)-dist(y,ball))[0];
+  if(r){ giveBall(r); r.freeThrow=true; }
+  annuncia('info','Espulsioni simultanee',{squadra:t,dettaglio:'18" a tutti e due, il tempo dell\'azione continua'});
+}
+// simulazione del centroboa (v0.45): la prima volta fallo semplice contro; la seconda cartellino giallo alla squadra; dopo il giallo,
+// chi simula ancora viene espulso (comportamento antisportivo ripetuto, WP 22.13)
+export function simulazione(b){
+  const t=b.team; t.simulazioni=(t.simulazioni||0)+1;
+  if(t.simulazioni>=3){ exclude(b,null,'simulazione ripetuta dopo il giallo','altro'); const r=boaDef(t); if(r){ giveBall(r); r.freeThrow=true; } return; }
+  offFoul(b,'Simulazione',t.simulazioni===2?'cartellino giallo alla squadra':'fallo contro chi simula');
+  if(t.simulazioni===2) annuncia('info','Cartellino giallo',{squadra:t,dettaglio:'per simulazioni ripetute'});
 }

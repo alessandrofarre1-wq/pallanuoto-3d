@@ -1,11 +1,11 @@
 // ================= REGOLE / FASI =================
-import { chiLasciare, chiamaUomo, manUp, passaAZona, scegliDifesa, setteControSei } from './ia.js';
+import { CONTRO, chiLasciare, stileVeloce, chiamaUomo, manUp, passaAZona, scegliDifesa, setteControSei } from './ia.js';
 import { siglaUomo } from './uomo-in-piu.js';
 import { elevazione } from './tiri.js';
 import { riservaPer, vesti } from './giocatori.js';
 import { annullaCambio } from './panchina.js';
 import { sceltaRientro } from './pozzetto.js';
-import { registraEspulsione, registraFallo, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
+import { apriAzione, azioneAperta, chiudiAzione, difensoriDavanti, registraEspulsione, registraFallo, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
 import { whistle } from './audio.js';
 import { autoSwitch, resetTap } from './controllo.js';
 import { ARBITRO, ATK, BRV, DEFN, DIFF, EXCL_TIME, FORM, HL, HW, KICK_Z, SHOT_CLOCK, SHOT_RESET, clamp, dist, rnd } from './costanti.js';
@@ -53,7 +53,8 @@ export function giveBall(p){
     ball.afterShot=false; ball.inUscita=false; ball.inRete=false; ball.toccoDifesa=null; ball.ignora=null;
     game.possTeam=p.team; resetTap(); return;
   }
-  const changed = game.possTeam!==p.team, daPassaggio = ball.kind==='pass' && ball.state==='flight' && !changed;
+  const changed = game.possTeam!==p.team; if(changed) chiudiAzione('persa');
+  const daPassaggio = ball.kind==='pass' && ball.state==='flight' && !changed;
   ball.state='held'; ball.inUscita=false; ball.toccoDifesa=null; ball.ignora=null; ball.holder=p; ball.holdTime=0; ball.kind=null; ball.target=null; ball.lastTeam=p.team;
   // quando e come è arrivata la palla: un tiro subito dopo un passaggio che ha cambiato lato trova il portiere fuori posto
   p.ricevutoT=game.time; p.ricevutoCambio=!!ball.cambioLato; p.ricevutoPassaggio=daPassaggio; if(!daPassaggio) p.ricevutoCambio=false;
@@ -66,6 +67,7 @@ export function giveBall(p){
     for(const q of allPlayers) q.cut=null;
     for(const q of p.team.players) if(q.excluded){ if(q.alPozzetto) reenter(q); else q.puoRientrare=true; }      // art. 9.3c: rientra dal pozzetto (appena ci arriva)
     game.possT=game.time;
+    { const veloce=rnd()<stileVeloce(p.team); p.team.contro=veloce&&Math.abs(goalX(p.team)-ball.x)>12?{t0:game.time,fino:game.time+CONTRO.durata}:null; }      // controfuga organizzata (ia.js), più spesso per le squadre «veloci»
     // le squadre guidate dal computer scelgono lo schema a ogni cambio di possesso
     const att=p.team, dif=other(att);
     if(!att.human){ att.atkPlay=[0,0,1,1,3][Math.floor(rnd()*5)]; att.cross=rnd()<0.2; att.nextDrive=game.time+3+rnd()*4; }
@@ -76,6 +78,7 @@ export function giveBall(p){
     if(setteControSei(att)&&!att.setteAnnunciato){ att.setteAnnunciato=true; att.vuoleTimeout=true; annuncia('info','7 contro 6',{squadra:att,dettaglio:'portiere in attacco'}); }
     if(att.human) att.nextDrive=game.time+6+rnd()*4;
   } else if(ball.afterShot){ game.shot=SHOT_RESET; }                  // art. 8.12a
+  if(!azioneAperta()) apriAzione(p.team);      // nuova azione: cambio di possesso o rimbalzo ripreso dopo un tiro
   ball.afterShot=false;
   if(p.team!==teams[0]) autoSwitch(p);
 }
@@ -105,7 +108,7 @@ export function cornerThrow(att){   // art. 13
   });
 }
 export function penalty(d,c,motivo){       // art. 10.2 (motivo: solo per la notifica)
-  whistle(0.6); d.pf++; registraRigore(c.team);
+  chiudiAzione('rigore'); whistle(0.6); d.pf++; registraRigore(c.team);
   annuncia('rigore',`Rigore per ${c.team.short}`,{p:c,dettaglio:`fallo di ${d.team.short} #${d.num}${motivo?' · '+motivo:''}`});
   ball.state='dead'; ball.holder=null; ball.x=c.x; ball.z=c.z; ball.y=BRV; ball.vx=ball.vy=ball.vz=0;
   const t=c.team;
@@ -199,14 +202,14 @@ export function sideOut(){        // art. 12: palla uscita lateralmente, tiro li
 // Sfondamento (fallo in attacco, art. 8): chi ha la palla nuota dritto addosso a un difensore fermo o che arretra.
 // Come lo sfondamento del basket: palla alla difesa, tiro libero dal punto del contatto.
 export function sfondamento(c,d){
-  whistle(0.22); registraFallo(c.team);
+  chiudiAzione('falloAttacco'); whistle(0.22); registraFallo(c.team);
   annuncia('fallo','Fallo in attacco',{p:c,dettaglio:'nuota addosso al difensore'});
   c.stunUntil=game.time+0.6; c.vx*=0.2; c.vz*=0.2;
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.y=BRV; ball.x=c.x; ball.z=c.z;
   deadBall(0.9,()=>{ if(d.excluded) d=closestTo(d.team,ball); giveBall(d); d.freeThrow=true; });
 }
 export function areaFoul(q){      // art. 8.2.8: attaccante nell'area di porta davanti alla linea della palla
-  const def=other(q.team);
+  const def=other(q.team); chiudiAzione('falloAttacco');
   whistle(0.25); annuncia('fallo','Fallo in attacco',{p:q,dettaglio:"nell'area di porta davanti alla palla"});
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.y=BRV;
   deadBall(1.1,()=>giveBall(def.players[0]));
@@ -266,6 +269,7 @@ export function goalThrow(defTeam,text){
   deadBall(ball.inUscita?1.4:1.0,()=>{ giveBall(defTeam.players[0]); });
 }
 export function exclude(d,c,motivo,origine){      // c e motivo: solo per la notifica; origine: «centro» (lotta), «fuga» (fallo tattico), altro
+  chiudiAzione(d.team===game.possTeam?'falloAttacco':'espulsione');
   whistle(0.5); d.pf++; rumble(220,0.8); registraEspulsione(d,origine);
   // tre espulsioni subite in due minuti: time-out per ridare calma e attenzione in marcatura
   { const T=d.team; T.espulsioniT=(T.espulsioniT||[]).filter(x=>game.time-x<120); T.espulsioniT.push(game.time); if(T.espulsioniT.length>=3){ T.vuoleTimeout=true; T.espulsioniT=[]; } }
@@ -280,6 +284,11 @@ export function exclude(d,c,motivo,origine){      // c e motivo: solo per la not
   if(ctrl===d) autoSwitch(ball.holder||ball);
 }
 export function foul(d,c){     // fallo semplice: il gioco si ferma e l'attacco batte il tiro libero (artt. 8, 11)
+  // REGOLA DEL VANTAGGIO (WP 7.3): niente fischio se il fallo semplice toglierebbe il vantaggio a chi attacca in controfuga
+  if(c.team===game.possTeam&&ball.holder===c&&azioneAperta()?.tipo==='controfuga'&&Math.abs(goalX(c.team)-c.x)<12&&difensoriDavanti(c)<=1){
+    d.stunUntil=game.time+0.6; c.vx*=0.85; c.vz*=0.85; annuncia('avviso','Vantaggio',{durata:0.9}); return;
+  }
+  c.falloDa=d; c.falloT=game.time;      // chi ha fatto fallo deve allontanarsi prima di alzare il braccio (interferenza, WP 20.2)
   whistle(0.22); rumble(120,0.5); registraFallo(d.team);
   d.stunUntil=game.time+0.9;
   const dx=d.x-c.x, dz=d.z-c.z, l=Math.hypot(dx,dz)||1; d.x+=dx/l*0.9; d.z+=dz/l*0.9; d.vx=d.vz=0;
@@ -303,7 +312,10 @@ export function pallaEsposta(c){
 function probabileGol(d,c){
   const gx=ownGoalX(d.team), dxg=gx-c.x;
   if(Math.abs(dxg)>6||Math.abs(c.z)>5) return false;
-  const l=Math.hypot(dxg,c.z)||1; if((c.fx*dxg-c.fz*c.z)/l<0.1) return false;
+  const l=Math.hypot(dxg,c.z)||1, gk=d.team.players[0], portiereFuori=gk.excluded||Math.abs(gx-gk.x)>2.2;
+  // rivolto alla porta o che nuota verso la porta; di schiena solo se il portiere è fuori dalla porta (manuale arbitri, WP 23.2)
+  const verso=(c.fx*dxg-c.fz*c.z)/l>0.1||(c.vx*dxg-c.vz*c.z)/l>0.6;
+  if(!verso&&!portiereFuori) return false;
   return !d.team.players.some(q=>q!==d&&!q.isGK&&!q.excluded&&Math.hypot(gx-q.x,q.z)<l+0.5&&dist(q,c)<1.6);
 }
 // o.voluto = CONTRASTO tenuto premuto: fallo semplice cercato apposta per fermare l'azione (scelta tattica normale)
@@ -325,6 +337,9 @@ export function contrasto(d,c){
 // il resto da falli tattici (fermare una controfuga) o da interventi irruenti. Tarati sui Mondiali 2025 (World Aquatics, uomini):
 // circa 11 espulsioni per squadra a partita, 66% dal centroboa. Moltiplicatori della probabilità:
 export const ESPULSIONI={ centro:7, contrasto:0.24 };
+// Regole d'arbitraggio aggiunte nella v0.45 (manuale arbitri FINA 2019-21 adattato al regolamento World Aquatics 2026):
+// palleggio = probabilità di espulsione per il fallo su chi palleggia; interferenza = per chi resta entro 1 m da chi batte il tiro libero
+export const ARBITRI={ palleggio:0.6, interferenza:0.45 };
 export function tackle(d,c,o){
   o=o||{};
   if(d.tackleCD>0||d.excluded||game.time<d.stunUntil) return false;
@@ -335,6 +350,8 @@ export function tackle(d,c,o){
   // Disciplina: chi ne ha poca sbaglia più spesso il contrasto e commette più falli gravi
   const fDis=1.5-(d.s.dis-40)/59, sev=fDis*ARBITRO;
   const grave=()=>{ if(gol&&rnd()<(lato==='dietro'?0.6:0.35)){ penalty(d,c); return 'rigore'; }
+    // chi palleggia NON tiene la palla (WP 22.8, manuale arbitri FINA): chi lo ferma con un fallo viene espulso, soprattutto in controfuga
+    if(palla==='palleggio'&&rnd()<ARBITRI.palleggio*sev){ exclude(d,c,'fallo su chi palleggia',azioneAperta()?.tipo==='controfuga'?'fuga':o.origine); return 'espulsione'; }
     if(rnd()<(lato==='dietro'?0.55:lato==='lato'?0.24:0.12)*(palla==='alzata'?1.3:1)*(press?1:0.85)*sev*ESPULSIONI.contrasto){ exclude(d,c,undefined,o.origine); return 'espulsione'; }
     return null; };
   if(o.voluto){
@@ -379,4 +396,22 @@ export function doFake(p){
   if(dG<9 && !gk.excluded && rnd()<0.45*q){ gk.fakedUntil=game.time+1.1; bit++; }
   if(bit) p.fakeUntil=game.time+1.3;
   annuncia('avviso',bit?'Finta riuscita!':'Finta',{durata:0.8});
+}
+
+// INTERFERENZA sul tiro libero (WP 20.2 e 22.5, v0.45): chi ha commesso il fallo deve allontanarsi di circa 1 m prima di alzare il
+// braccio; se resta addosso a chi batte il tiro libero viene espulso. Chiamata quando chi ha subito il fallo rimette in gioco.
+export function controllaInterferenza(c){
+  const d=c.falloDa; if(!d||!c.freeThrow||game.time-(c.falloT||0)>4||d.excluded) return false;
+  c.falloDa=null;
+  if(dist(d,c)<1.0&&rnd()<ARBITRI.interferenza*ARBITRO){ exclude(d,c,'interferenza sul tiro libero','altro'); return true; }
+  return false;
+}
+
+// fallo in attacco di un giocatore senza palla (blocco irregolare, spinta del centroboa lontano dalla palla): palla alla difesa,
+// tiro libero dal punto della palla (v0.45)
+export function falloSenzaPalla(a,d,dettaglio){
+  chiudiAzione('falloAttacco'); whistle(0.22); registraFallo(a.team);
+  annuncia('fallo','Fallo in attacco',{p:a,dettaglio});
+  ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.y=BRV;
+  deadBall(0.9,()=>{ const r=closestTo(d.team,ball)||d; giveBall(r); r.freeThrow=true; });
 }

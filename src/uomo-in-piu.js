@@ -45,6 +45,12 @@ export const LIBRERIA = [
   { id: 'uscivola5', sigla: 'Uscita 5', nome: 'Uscita del 5 e scivolamento del palo', fonte: 'Mistrangelo, terza puntata, fig. 20-21',
     descrizione: 'L’esterno sinistro esce dai 2 metri per tirare; il palo sinistro scivola sulla linea senza uscire e obbliga il centrale a scegliere.',
     fasi: [fase(P42, 2), fase([[2.1, 1.75], [2.0, 5.4], [3.6, -5.0], [4.8, 3.2], [5.0, -1.2], [2.0, -3.7]], 5, 3)] },
+  { id: 'utasca', sigla: 'Tasca dx', nome: 'Rotazione con la tasca', fonte: 'Manuale USA Water Polo 2021, 6x5 «4-2»',
+    descrizione: 'Dal 4-2 si ruota a destra: il mezzo sinistro va al centro, il mezzo destro si allarga e l’ala destra sale «in tasca» tra i 2 e i 5 metri per tirare.',
+    fasi: [fase(P42, 2.5), fase([[2.1, 1.75], [3.4, 4.6], [2.0, -5.4], [4.8, 5.4], [5.6, 0], [2.1, -1.75]], 5, 2)] },
+  { id: 'u33-entra', sigla: '3-3 entra', nome: '3-3 con l’entrata dell’ala', fonte: 'Manuale USA Water Polo 2021, 6x5 «1 in, 2 down»',
+    descrizione: 'Dal 3-3 la palla va al punto; l’ala destra entra sul palo, il centro scivola sull’altro palo e il mezzo destro scende largo: due 2 contro 1 in alto.',
+    fasi: [fase(P33, 2.5, 6), fase([[2.1, -1.8], [2.1, 1.8], [2.0, -4.6], [2.4, 4.9], [5.2, -2.5], [5.6, 1.0]], 5)] },
 ];
 export const SCELTI_BASE = ['u42', 'u33-42', 'u42-33-42'];
 
@@ -127,7 +133,7 @@ export function avanzaUomo(team, ora, arrivati = true) {
   u.visto = ora;
   const f = u.schema.fasi;
   const passato = ora - u.tf, dur = f[u.fase].durata;
-  if (u.fase < f.length - 1 && passato >= dur && (arrivati || passato >= dur + 3)) { u.fase++; u.tf = ora; }
+  if (u.fase < f.length - 1 && passato >= dur && (arrivati || passato >= dur + 3)) { if (!arrivati) u.saltato = true; u.fase++; u.tf = ora; }
 }
 export const faseUomo = team => team.uomo ? team.uomo.schema.fasi[team.uomo.fase] : null;
 // posti in uso con l'uomo in più: la fase dello schema chiamato, altrimenti il 4-2 della strategia
@@ -137,4 +143,13 @@ export const ePalo = p => p[0] <= 2.7 && Math.abs(p[1]) < 3.2;
 // perimetro: chi non è palo, ordinato da destra a sinistra (per i passaggi «vicini»)
 export function perimetroUomo(posti) {
   return [1, 2, 3, 4, 5, 6].filter(r => !ePalo(posti[r - 1])).sort((a, b) => posti[b - 1][1] - posti[a - 1][1]);
+}
+
+// RISPETTO DELLO SCHEMA (v0.45, Napolitano et al. 2013: gli schemi eseguiti bene rendono di più). Chi ha meno Visione e Disciplina
+// parte in ritardo verso il posto della nuova fase (fino a 1,6 s per chi ha 45 di media), chi le ha alte parte subito.
+export const ritardoSchema = p => 1.6 * Math.max(0, Math.min(1, (80 - ((p.s?.vis ?? 70) + (p.s?.dis ?? 70)) / 2) / 35));
+export function postiUomoDi(team, p, base, ora) {
+  const u = team.uomo; if (!u) return base;
+  const f = u.schema.fasi; if (u.fase > 0 && ora - u.tf < ritardoSchema(p)) return f[u.fase - 1].posti;
+  return f[u.fase].posti;
 }

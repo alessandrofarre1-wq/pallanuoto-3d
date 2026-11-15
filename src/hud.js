@@ -65,7 +65,7 @@ export function updateHUD(){
   }
   { const btn=document.querySelector('.tb[data-b="shoot"]'), carica=!!(ctrl&&ctrl.charging&&ball.holder===ctrl), pot=carica?Math.min(1,ctrl.chargeT/0.9):0;
     const max=carica&&pot>=1, recente=ctrl&&ctrl.effettoTiro&&game.time-ctrl.effettoTiro.inizio>=0&&game.time-ctrl.effettoTiro.inizio<0.65?ctrl.effettoTiro:null;
-    const nomi={beduina:'BEDUINA',sciarpa:'SCIARPA',schizzo:'SCHIZZO',colonnello:'COLONNELLO'};
+    const nomi={beduina:'BEDUINA',sciarpa:'SCIARPA',rovesciata:'ROVESCIATA',schizzo:'SCHIZZO',colonnello:'COLONNELLO'};
     btn.classList.toggle('caricando',carica); btn.classList.toggle('massimo',max);
     const riempimento=pot*100+'%'; if(btn.style.getPropertyValue('--potenza')!==riempimento) btn.style.setProperty('--potenza',riempimento);
     const etichetta=$('power').previousElementSibling, testoPotenza=carica?(max?'Potenza tiro · MAX — rilascia':'Potenza tiro · '+Math.round(pot*100)+'%'):'Potenza tiro';

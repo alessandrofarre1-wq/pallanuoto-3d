@@ -10,7 +10,7 @@ const barra = s => { const v = Math.round((s ?? 1) * 100); return `<span class="
 const chiave = g => CHIAVE[g.ruolo].map(k => `${STAT_NOMI[k].slice(0, 3).toUpperCase()} ${g.s[k]}`).join(' · ');
 function riga(g, extra, cls, attr) {
   return `<button type="button" class="pc-g ${cls}" ${attr}><span class="pc-num">${g.num}</span>`
-    + `<span class="pc-nome">${g.nomeIntero || g.nome}${iconaMano(g.mano)}<small>${RUOLI[g.ruolo]} · OVR ${g.ovr}${g.tiriP ? ` · ${g.gol || 0} gol su ${g.tiriP} tiri` : g.gol ? ` · ${g.gol} gol` : ''}${g.pf ? ` · ${g.pf} falli gravi` : ''}</small></span>`
+    + `<span class="pc-nome">${g.nomeIntero || g.nome}${iconaMano(g.mano)}<small>${RUOLI[g.ruolo]} · OVR ${g.ovr}${g.minuti >= 0.5 ? ` · ${Math.round(g.minuti)}′ in acqua` : ''}${g.tiriP ? ` · ${g.gol || 0} gol su ${g.tiriP} tiri` : g.gol ? ` · ${g.gol} gol` : ''}${g.pf ? ` · ${g.pf} falli gravi` : ''}</small></span>`
     + `<span class="pc-stat">${chiave(g)}</span><span class="pc-stam">${barra(g.stamina)}</span>${extra || ''}</button>`;
 }
 export function disegnaPanchina() {

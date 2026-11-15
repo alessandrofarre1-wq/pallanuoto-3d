@@ -198,6 +198,12 @@ export function updateBall(dt){
         if(lontano<reach && ball.y<1.9){
           let prob=(1.07-0.30*ball.shotPower*(1.25-0.5*R)-lontano*(0.7-0.3*R)-(ball.lob?0.2:0)-(gk.fakedUntil>game.time?0.25:0)-(ball.skipped?0.12:0)-(ball.sorpresa||0)-vicino+facile)*fresco*(def.human?1:DIFF_GK())
             *(ball.rigore?0.41:1);      // sul rigore il portiere para molto meno: negli studi citati dalla tesi ne entra l'80%
+          // PORTIERE FUORI POSTO O ANCORA IN MOVIMENTO (Berlino 2018: si segna di più tirando mentre il portiere scivola di lato e
+          // quando c'è più spazio tra lui e il palo vicino): para meno se al tiro era lontano dal suo posto o andava dall'altra parte
+          if(!ball.rigore){
+            const vz0=ball.gkVz0||0, controPiede=Math.abs(vz0)>0.3&&Math.sign(ball.z-ball.gkZ0)!==Math.sign(vz0);
+            prob-=0.15*clamp((ball.gkFuoriPosto||0)-0.3,0,1)+(controPiede?0.12*Math.min(1,Math.abs(vz0)/1.2):0);
+          }
           if(rnd()<prob){
             whistle(0.12); const r=rnd(); ball.afterShot=true; registraParata(att,def);
             if(ball.shotPower>0.55&&r<0.25){

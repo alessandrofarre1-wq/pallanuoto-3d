@@ -1,15 +1,15 @@
 // ================= CICLO DI GIOCO =================
 import { bip, whistle } from './audio.js';
 import { aiutoGuida, humanControl, updateCtrl } from './controllo.js';
-import { DIFF, GW, MARK, PERIOD_LEN, clamp, dist, rnd } from './costanti.js';
+import { DIFF, GW, PERIOD_LEN, clamp, dist, rnd } from './costanti.js';
 import { movePlayer, separate, updateBall } from './fisica.js';
 import { annuncia } from './cronaca.js';
-import { aggiornaDifesa, aggiornaSchemi, pos01, rif01, aiCarrier, aiTarget, closestTo, steer } from './ia.js';
+import { aggiornaDifesa, aggiornaSchemi, pos01, rif01, aiCarrier, aiTarget, closestTo, steer, uomoDi } from './ia.js';
 import { inp, pollInput, pressed, released } from './input.js';
 import { fightOn, updateFight } from './lotta.js';
 import { endMatch } from './menu.js';
 import { areaFoul, avviaRigoriFinali, callPlay, concludiRigoreFinale, contrasto, deadBall, giveBall, kickoff, latoContrasto, pallaEsposta, preparaProssimoRigoreFinale, reenter, tackle, timeout } from './regole.js';
-import { difensoriDavanti } from './statistiche.js';
+import { aggiornaAzione, annullaAzione, chiudiAzione, difensoriDavanti } from './statistiche.js';
 import { allPlayers, ball, ctrl, game, goalX, other, setCtrl, teams } from './stato.js';
 import { doShoot, startAct, updateActs } from './tiri.js';
 import { aggiornaPanchina, obiettivoUscita } from './panchina.js';
@@ -105,7 +105,7 @@ export function update(dt){
   // ritardo di reazione dei marcatori
   for(const p of allPlayers){
     if(p.excluded||game.time<p.stunUntil) continue;      // chi ha abboccato a una finta resta indietro
-    const a=other(p.team).players[MARK[p.i]], k=Math.min(1,dt*(2+2*p.st.def*(p.team.human?1:DIFF()))*(p.team.defPlay===3?1.4:1));      // zona a M: scalate più rapide
+    const a=uomoDi(p), k=Math.min(1,dt*(2+2*p.st.def*(p.team.human?1:DIFF()))*(p.team.defPlay===3?1.4:1));      // zona a M: scalate più rapide
     p.lagX+=(a.x-p.lagX)*k; p.lagZ+=(a.z-p.lagZ)*k;
   }
   // Un solo controller coordina entrata, liberazione dello spazio e copertura.
@@ -148,7 +148,7 @@ export function update(dt){
     // pressing e contrasti dei difensori controllati dall'IA
     if(ball.holder && ball.holder.team!==p.team && !p.isGK && !ball.holder.isGK){
       if(fightOn(p,ball.holder)) continue;
-      const marking = other(p.team).players[MARK[p.i]]===ball.holder;
+      const marking = uomoDi(p)===ball.holder;
       if((marking||dist(p,ball.holder)<0.9) && dist(p,ball.holder)<1.0){
         // il computer difende con la stessa logica: prova a rubare quando la palla è esposta e non arriva da dietro; chi ha poca
         // Disciplina ci prova anche quando non dovrebbe; in controfuga, superato, spende il fallo per fermare l'azione
@@ -192,9 +192,10 @@ export function update(dt){
   // palla tenuta: segue il giocatore
   updateBall(dt);
   if(game.state!=='play') return;
+  aggiornaAzione(dt);
   // tempo per l'azione
   if(game.possTeam && game.shot<=0 && ball.state==='held'){
-    const opp=other(game.possTeam); whistle(0.4); bip(330,0.5,0.07); annuncia('possesso',"Tempo d'azione scaduto",{squadra:opp,dettaglio:`palla ${opp.short}`});
+    chiudiAzione('tempo'); const opp=other(game.possTeam); whistle(0.4); bip(330,0.5,0.07); annuncia('possesso',"Tempo d'azione scaduto",{squadra:opp,dettaglio:`palla ${opp.short}`});
     const r=closestTo(opp,ball,false); ball.state='dead';
     deadBall(1.0,()=>giveBall(r));
   } else if(game.possTeam && game.shot<=0 && ball.state!=='flight'){
@@ -202,7 +203,7 @@ export function update(dt){
   }
   // fine tempo
   if(game.clock<=0 && game.state==='play'){
-    game.clock=0; whistle(0.9);
+    game.clock=0; whistle(0.9); annullaAzione();      // l'azione interrotta dalla sirena non ha un esito
     if(game.period<4){
       annuncia('fine',`Fine ${game.period}° tempo`,{dettaglio:`${teams[0].short} ${teams[0].score} - ${teams[1].score} ${teams[1].short}`});
       ball.state='dead';

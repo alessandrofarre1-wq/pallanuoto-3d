@@ -1,5 +1,6 @@
 // ================= PASSAGGI E TIRI =================
 import { registraTiro, tipoDiTiro } from './statistiche.js';
+import { controllaInterferenza } from './regole.js';
 import { ALZATA, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, paloUomo, postoPortiere, setteControSei, viciniUomo } from './ia.js';
 import { faseUomo } from './uomo-in-piu.js';
@@ -12,6 +13,7 @@ import { allPlayers, ball, game, goalX, other, setCtrl, teams } from './stato.js
 export function startAct(p,kind,wind,fn,aim){
   // sotto pressione (contrasto di disturbo) non si tira: si può solo passare o proteggere la palla; il rigore no
   if(kind!=='pass'&&kind!=='fake'&&p.pressatoUntil>game.time&&game.penalty!==p) return false;
+  if(p.freeThrow) controllaInterferenza(p);      // chi ha fatto fallo è rimasto addosso a chi batte il tiro libero?
   const gx=goalX(p.team);
   if(!aim) aim = diSchiena(kind) ? [2*p.x-gx,2*p.z] : [gx,0];
   // chi sta ancora nuotando disteso deve prima raddrizzarsi: piccolo ritardo (non per il colonnello, che si tira in nuotata)
@@ -24,7 +26,7 @@ export function startAct(p,kind,wind,fn,aim){
   if(diSchiena(kind)) p.tiriDiSchiena=(p.tiriDiSchiena||0)+1;
 }
 // tiri del centroboa spalle alla porta
-export const diSchiena = kind => kind==='beduina'||kind==='sciarpa';
+export const diSchiena = kind => kind==='beduina'||kind==='sciarpa'||kind==='rovesciata';
 export function updateActs(dt){
   for(const p of allPlayers){
     const a=p.act; if(!a) continue;
@@ -84,7 +86,8 @@ export function shotKind(p){
     const def=other(p.team).players.filter(q=>!q.excluded&&!q.isGK).sort((a,b)=>dist(a,p)-dist(b,p))[0];
     const lettura=leggiCentro(p,def,p),dx=goalX(p.team)-p.x,dz=-p.z;
     const fronte=(p.fx*dx+p.fz*dz)/(Math.hypot(dx,dz)||1);
-    if(lettura.spalle&&fronte<-.2) return (p.tiriDiSchiena||0)%2?'sciarpa':'beduina';
+    // rovesciata (Nitzkowski: quando il difensore copre una spalla; Mondiali 2009: circa il 5% dei tiri): una volta su quattro
+    if(lettura.spalle&&fronte<-.2) return (p.tiriDiSchiena||0)%4===3?'rovesciata':(p.tiriDiSchiena||0)%2?'sciarpa':'beduina';
   }
   // colonnello e schizzo: solo in controfuga, con il tasto a comparsa (controfuga.js)
   return 'shot';
@@ -176,6 +179,9 @@ export function doShoot(p,power,lob,aimZ,o){
   // si mira un po' più dentro di prima: ora pali e traversa sono veri e la palla ha il suo ingombro
   let az = aimZ!=null ? clamp(aimZ*1.28,-1.28,1.28) : -Math.sign(gk.z||(rnd()-0.5))*(0.85+rnd()*0.38);
   let ay = lob ? 0.55 : 0.15+rnd()*0.55;
+  // TIRO BASSO CHE RIMBALZA (Berlino 2018: in parità i tiri bassi e quelli che toccano l'acqua davanti alla porta rendono di più;
+  // il tiro alto senza rimbalzo segna il 31%): il computer lo sceglie una volta su cinque nei tiri classici in parità
+  if(!lob&&aimZ==null&&!o.speciale&&!game.penalty&&!manUp(p.team)&&rnd()<0.2) { ay=0.04+rnd()*0.05; o.rimbalzo=true; }
   const d=Math.hypot(gx-p.x,az-p.z);
   let press=99; for(const o of other(t).players){ if(!o.excluded&&!o.isGK&&game.time>=o.stunUntil) press=Math.min(press,dist(o,p)); }
   // un tiro marcato stretto è molto meno preciso: gli schemi servono a liberare il tiratore
@@ -191,8 +197,11 @@ export function doShoot(p,power,lob,aimZ,o){
   const dPorta=Math.hypot(gx-p.x,p.z), q=situazioneTiro(p);
   const errBase=(1+0.75*q.marcato)*(q.liberato?0.8:1)*(1+Math.max(0,dPorta-7)*0.3)*1.08*0.27*(1+(1-p.stamina)*1.3)*(classico?1:1.3)*mira(p.s.pre)*(1+clamp(1.4-press,0,1)*0.9*(1.45-0.9*elev))*(o.volo?1.15:1)*(p.fakeUntil>game.time?0.65:1);
   // Mano: dal lato destro della vasca tira meglio un mancino, dal sinistro un destro (angolo migliore sulla porta)
+  // MIRA CONTRO FORZA (Berlino 2018: in parità i gol sono stati tirati in media più piano dei tiri sbagliati): oltre l'80% della
+  // forza la mira peggiora un poco (fino a +35% di errore al massimo); il rigore è escluso
+  const sforzo=game.penalty===p?1:1+0.35*clamp((power-0.8)/0.2,0,1);
   const lato=Math.abs(p.z)>1.5?Math.sign(p.z*t.dir):0, mano=lato===0?1:((p.mano==='S')===(lato>0)?0.92:1.2);
-  az+=gauss()*errBase*mano*(0.45+d*0.09); ay+=gauss()*errBase*mano*0.35;
+  az+=gauss()*errBase*mano*sforzo*(0.45+d*0.09); ay+=gauss()*errBase*mano*sforzo*(o.rimbalzo?0.15:0.35);
   // Velocità al rilascio (dati riportati nella tesi): professionisti 22,8 ± 2,4 m/s a tutta forza. La bravura al tiro sposta
   // il massimo tra circa 20 e 25 m/s; il tiro classico è il più veloce.
   const vMax=(22.8+(p.s.pot-75)*0.16)*(classico?1:tipo==='colonnello'?0.9:tipo==='schizzo'?0.82:0.85);      // Potenza: da circa 20 (60) a 25 m/s (90)
@@ -208,6 +217,7 @@ export function doShoot(p,power,lob,aimZ,o){
   ball.tipoTiro=tipoAzione; registraTiro(p,tipoAzione);
   // dove si trova il portiere nel momento in cui parte il tiro: è da qui che dipende soprattutto la parata
   ball.gkZ0=gk.z; ball.gkFuoriPosto=Math.abs(gk.z-postoPortiere(gk.team,p.x,p.z));
+  ball.gkVz0=gk.vz; ball.rimbalzo=!!o.rimbalzo;      // portiere ancora in movimento di lato al momento del tiro (Berlino 2018)
   // sorpresa per portiere e muro: il polso parte senza caricare (ancora di più dopo una finta); con la torsione il portiere
   // si sposta verso il primo palo e la palla va sull'altro
   ball.sorpresa = o.polso ? (o.dopoFinta?0.26:0.15) : o.torsione ? 0.08 : o.volo ? 0.06 : o.speciale==='schizzo' ? 0.14 : o.speciale==='colonnello' ? 0.1 : 0;

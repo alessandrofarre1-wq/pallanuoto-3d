@@ -35,6 +35,7 @@ export const THROW={
   fake:{K:[-0.34,0.44,0.06],R:[0.12,0.58,0.06],F:[0.05,0.40,0.12],lift:0.24,tw0:-0.9,tw1:-0.15,ind:0.6},  // finta: il braccio parte e si ferma
   beduina:{K:[0.30,0.0,0.20],R:[-0.35,0.45,0.25],F:[-0.45,0.10,-0.05],lift:0.16,tw0:0.3,tw1:-1.0,ind:0},   // spalle alla porta: busto e spalla ruotano all'esterno
   sciarpa:{K:[0.30,0.02,0.18],R:[-0.16,0.36,-0.30],F:[-0.34,0.22,-0.34],lift:0.16,tw0:-0.25,tw1:0.95,ind:0}, // spalle alla porta: il braccio attraversa il corpo, colpo di polso
+  rovesciata:{K:[0.28,0.12,0.30],R:[-0.30,0.30,0.34],F:[-0.46,0.12,0.30],lift:0.12,tw0:0.45,tw1:-0.6,ind:0}, // rovesciata (v0.45): palla di lato, braccio teso che frusta all'indietro verso la porta
   polso:{K:[0.02,0.46,0.10],R:[0.30,0.52,0.02],F:[0.36,0.30,-0.10],lift:0.14,tw0:-0.12,tw1:0.18,ind:0.15},     // tiro di solo polso: quasi senza caricare
   torsione:{K:[-0.34,0.44,0.06],R:[0.36,0.50,-0.20],F:[0.36,-0.02,-0.38],lift:0.30,tw0:-1.05,tw1:0.95,ind:1},   // busto verso il primo palo, chiusura in diagonale
   // controfuga (sezione 4). Colonnello: la mano forte prende la palla dall'acqua, la porta vicino alla spalla e la spinge avanti.
@@ -51,7 +52,7 @@ export function computePose(p,dt,t){
     const fr=act.frusta||0.09, tt=act.t-act.wind;
     wb=ease(clamp(tt/Math.min(fr,0.125),0,1));                 // il busto ruota in circa 125 ms (dato riportato nella tesi)
     w=ease(clamp((tt-0.25*fr)/(0.75*fr),0,1)); f=clamp((tt-fr)/0.3,0,1); }
-  else if(p.charging){ const k=shotKind(p); th=THROW[k==='beduina'||k==='sciarpa'?k:'shot']; c=clamp(p.chargeT/0.5,0,1); }
+  else if(p.charging){ const k=shotKind(p); th=THROW[k==='beduina'||k==='sciarpa'||k==='rovesciata'?k:'shot']; c=clamp(p.chargeT/0.5,0,1); }
   // quanto il corpo è disteso (lo decide la fisica: fisica.js): 0 verticale, 1 orizzontale. Tutto sfuma tra le due pose.
   const o=p.excluded&&p.alPozzetto?0:(p.oriz||0), e=ease(o);      // l'espulso nuota fino al pozzetto, poi aspetta in verticale
   const frena=(p.orizPrec||0)>o+1e-6 ? Math.sin(Math.PI*o) : 0; p.orizPrec=o;      // sta tornando verticale: remata di freno
@@ -229,7 +230,7 @@ function posturaVista(p,J,e){
 // rilascio fisico della palla restano identiche. Nessun fermo o rallentamento.
 function enfatizzaTiro(p,J){
   const a=p.act; if(!a||a.kind==='pass'||a.kind==='fake') return J;
-  const speciale=['beduina','sciarpa','schizzo','colonnello'].includes(a.kind);
+  const speciale=['beduina','sciarpa','rovesciata','schizzo','colonnello'].includes(a.kind);
   if(!speciale && !(a.potenza>=0.98)) return J;
   const fase=clamp((a.t-a.wind)/((a.frusta||0.18)+0.36),0,1);
   const k=Math.sin(Math.PI*fase)*(speciale?1:0.8);
