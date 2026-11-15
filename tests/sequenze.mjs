@@ -20,10 +20,10 @@ const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--ena
 
 // ogni scena: comandi nel tempo (secondi → tasti premuti) e finestra da fotografare
 const SCENE = {
-  'partenza-con-palla': { tasti: [[0, []], [0.5, ['KeyD']]], da: 0.4, a: 2.0, palla: true },
-  'frenata-e-tiro': { tasti: [[0, ['KeyD']], [2.0, ['KeyK']], [2.5, []]], da: 1.7, a: 3.3, palla: true },
-  'cambio-di-direzione': { tasti: [[0, ['KeyD']], [2.0, ['KeyS']]], da: 1.7, a: 3.5, palla: false, alta: true },
-  'passaggio-in-nuotata': { tasti: [[0, ['KeyD']], [1.5, ['KeyD', 'Space']], [1.6, ['KeyD']]], da: 1.3, a: 3.1, palla: true, compagno: true }
+  'partenza-con-palla': { tasti: [[0, []], [0.5, ['ArrowRight']]], da: 0.4, a: 2.0, palla: true },
+  'frenata-e-tiro': { tasti: [[0, ['ArrowRight']], [2.0, ['KeyK']], [2.5, []]], da: 1.7, a: 3.3, palla: true },
+  'cambio-di-direzione': { tasti: [[0, ['ArrowRight']], [2.0, ['ArrowDown']]], da: 1.7, a: 3.5, palla: false, alta: true },
+  'passaggio-in-nuotata': { tasti: [[0, ['ArrowRight']], [1.5, ['ArrowRight', 'KeyD']], [1.6, ['ArrowRight']]], da: 1.3, a: 3.1, palla: true, compagno: true }
 };
 const tabelle = {};
 for (const [nome, sc] of Object.entries(SCENE)) {

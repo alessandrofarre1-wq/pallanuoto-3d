@@ -5,18 +5,24 @@ import { SCHEMI_PRESET, caricaSchema, copiaSchema, salvaSchema, validaSchema } f
 const $ = id => document.getElementById(id);
 const RUOLI = ['Centroboa','Ala destra','Ala sinistra','Mezzo destro','Mezzo sinistro','Punto'];
 const COMPITI = [
-  'Occupa lo spazio davanti alla porta e offre un appoggio quando supera la marcatura.',
-  'Allarga l’attacco sul lato destro e offre lo scarico al compagno vicino.',
-  'Allarga l’attacco sul lato sinistro e offre lo scarico al compagno vicino.',
-  'Collega ala e punto: può servire il centro oppure entrare nello spazio.',
-  'Collega ala e punto: può servire il centro oppure entrare nello spazio.',
-  'Collega i due lati e mantiene un appoggio alto per la circolazione.'
+  'Davanti alla porta, cerca una linea di ricezione davanti al marcatore. Se arriva un aiuto, offre lo scarico agli esterni.',
+  'Tiene largo il lato destro e offre lo scarico. Quando il centro è chiuso, collega la palla al mezzo destro.',
+  'Tiene largo il lato sinistro e offre lo scarico. Quando il centro è chiuso, collega la palla al mezzo sinistro.',
+  'Collega ala destra e punto; cerca il servizio al boa sulla linea libera. Può entrare se il compito è assegnato.',
+  'Collega ala sinistra e punto; cerca il servizio al boa sulla linea libera. Può entrare se il compito è assegnato.',
+  'Collega i due lati e offre un appoggio alto per ricominciare. È il primo candidato alla copertura di un’entrata.'
 ];
 const NOTE_PASSAGGI = {
-  vicini:'L’IA privilegia il compagno vicino nella catena degli appoggi.',
-  equilibrati:'L’IA alterna appoggi vicini e cambi di lato secondo lo spazio.',
-  rapidi:'L’IA cerca più spesso il cambio di lato quando la linea è aperta.'
+  vicini:'I compagni cercano soprattutto l’appoggio vicino. Utile per tenere le distanze; per spostare la difesa servono più passaggi.',
+  equilibrati:'I compagni alternano appoggi vicini e cambi di lato secondo lo spazio: cerca il centro quando la linea si apre.',
+  rapidi:'I compagni cercano più spesso il cambio di lato su linea aperta. Utile contro la zona; se la diagonale è chiusa, usa l’appoggio vicino.'
 };
+const NOTE_DIFESE = [
+  'A uomo: ogni difensore segue il proprio avversario verso la porta; il punto marca il boa. Se perdi la marcatura, rientra fra uomo e porta.',
+  'Zona: gli esterni si abbassano e un aiuto può chiudere il centro. Protegge il boa, ma lascia più spazio al tiro da fuori; dopo l’aiuto torna sull’uomo.',
+  'Pressing: marcature strette e anticipo sul boa per togliere appoggi facili. Attenzione alle entrate alle spalle: se ti superano, rientra verso la porta.',
+  'Zona a M: ali e punto bassi, mezzi più alti; protegge il centro e concede più spazio fuori. Segui il cambio di lato e recupera l’uomo dopo l’aiuto.'
+];
 let bozza = null, salvata = null, fase = 'attacco', ruolo = 1, ritorno = 'squadre';
 let navigazione = null, trascinamento = null, inizializzato = false;
 const x = z => 300 + z * 29.8;
@@ -89,7 +95,7 @@ function aggiornaPosizione(){
   $('schemaDistanza').value=String(d); $('schemaLarghezza').value=String(z);
   $('schemaDistanza').min=Math.abs(z)<3.58?'2.1':'1';
   $('schemaRuoloNumero').textContent=String(ruolo).padStart(2,'0');
-  $('schemaRuoloCompito').textContent=bozza.entrata===ruolo?'Entrata assegnata: cerca il taglio senza palla, con un compagno a coprire lo spazio.':fase==='superiorita'&&[1,6].includes(ruolo)?'In superiorità occupa uno dei due pali: offre una ricezione vicina alla porta e si sposta con la palla.':COMPITI[ruolo-1];
+  $('schemaRuoloCompito').textContent=fase==='superiorita'&&[1,6].includes(ruolo)?'In superiorità cerca uno dei due pali, vicino alla porta: si sposta con la palla per offrire una ricezione. Se il palo è coperto, la palla resta agli esterni.':`${COMPITI[ruolo-1]}${bozza.entrata===ruolo?' Entrata assegnata: taglia senza palla quando si apre spazio; un compagno resta alto. Se non ricevi, torna a offrire un appoggio.':''}`;
   $('schemaFaseCorrente').textContent=fase==='attacco'?'PARITÀ · 6 CONTRO 6':'SUPERIORITÀ · 6 CONTRO 5';
   for(const tab of document.querySelectorAll('[data-fase-schema]')){
     const attiva=tab.dataset.faseSchema===fase;
@@ -104,7 +110,8 @@ function aggiornaCompiti(){
   $('schemaDifesa').value=String(bozza.difesa);
   $('schemaPassaggi').value=bozza.passaggi;
   $('schemaPassaggiNota').textContent=NOTE_PASSAGGI[bozza.passaggi];
-  $('schemaCompiti').textContent=bozza.entrata?`Taglio al ${RUOLI[bozza.entrata-1].toLowerCase()}. Gli altri mantengono gli appoggi; un compagno rimane più alto a coprire lo spazio lasciato.`:'Nessuna entrata automatica: i sei ruoli mantengono gli appoggi disegnati.';
+  $('schemaDifesaNota').textContent=NOTE_DIFESE[bozza.difesa];
+  $('schemaCompiti').textContent=bozza.entrata?`Entra il ${RUOLI[bozza.entrata-1].toLowerCase()}, uno alla volta e senza palla. Gli altri mantengono gli appoggi; un compagno resta alto a coprire. Se il taglio è chiuso, scarica fuori. In superiorità si usano invece i sei posti dedicati.`:'Nessuna entrata automatica: boa al centro, ali larghe, mezzi e punto collegano gli appoggi disegnati. Se il centro è chiuso, ricomincia dal lato libero. Alla palla persa tutti rientrano.';
   for(const input of $('schemaAiuti').querySelectorAll('input')) input.checked=bozza.aiuti.includes(Number(input.value));
 }
 

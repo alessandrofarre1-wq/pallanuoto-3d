@@ -3,12 +3,14 @@
 // la prossima gara è idempotente e non risimula mai un risultato già registrato.
 import dati from './dati/squadre.json';
 
-const definisci=(nome,fasce)=>({ nome,fasce,codici:fasce.flat(),partecipanti:fasce.flat() });
+// Le fasce della competizione contengono le candidate disponibili; quelle del
+// singolo torneo (t.fasce) contengono le quattro estratte per ciascuna fascia.
+const definisci=(nome,fasce)=>({ nome,fasce,codici:fasce.flat(),numeroPartecipanti:16 });
+// La forza già presente nel database serve soltanto a ordinare le fasce: non
+// cambia le valutazioni. Nei Mondiali ogni nazionale disponibile è eleggibile.
+const ordineMondiali=[...dati.squadre].sort((a,b)=>b.forza-a.forza).map(s=>s.codice);
 export const COMPETIZIONI={
-  mondiali:definisci('Mondiali',[
-    ['SRB','CRO','USA','ESP'], ['GRE','HUN','ITA','BRA'],
-    ['MNE','ROU','AUS','CAN'], ['JPN','CHN','RSA','SGP'],
-  ]),
+  mondiali:definisci('Mondiali',Array.from({length:4},(_,i)=>ordineMondiali.slice(i*6,i*6+6))),
   europei:definisci('Europei',[
     ['ESP','CRO','ITA','HUN'], ['GRE','MNE','SRB','ROU'],
     ['NED','SVK','GEO','FRA'], ['SLO','TUR','MLT','ISR'],
@@ -59,7 +61,17 @@ export function creaTorneo(tipo,nazionale,seme=Date.now()){
   const t={versione:1,tipo,nazionale,seed,rng:seed,fase:'gironi',faseAttiva:'gironi',
     stato:'in_corso',eliminatoDalTitolo:false,gruppi:{},partite:[],sorteggiParita:{},
     piazzamenti:{},piazzamento:null,medaglia:null,campione:null};
-  const estrazioni=c.fasce.map(f=>mescola(t,f));
+  const estrazioni=c.fasce.map(f=>{
+    const estratte=mescola(t,f);
+    if(f.length===4) return estratte;
+    // Campione uniforme della fascia condizionato alla presenza della propria
+    // nazionale; il secondo mescolamento ne sorteggia anche il girone.
+    return f.includes(nazionale)
+      ? mescola(t,[nazionale,...estratte.filter(c=>c!==nazionale).slice(0,3)])
+      : estratte.slice(0,4);
+  });
+  t.fasce=estrazioni.map(f=>[...f]);
+  t.partecipanti=estrazioni.flat();
   for(const [i,g] of ['A','B','C','D'].entries()) gruppo(t,g,estrazioni.map(f=>f[i]));
   for(const g of ['A','B','C','D']) calendarioGirone(t,g);
   return t;

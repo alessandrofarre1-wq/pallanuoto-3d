@@ -1,4 +1,28 @@
-# Passaggio a Codex — WATERPOLO 7 dopo la v0.41
+# Passaggio corrente — WATERPOLO 7 v0.44
+
+```text
+Continua il branch codex/v044-nuoto-comandi-identita e la sua PR; non ripartire
+dalla v0.41 storica sotto. Leggi CLAUDE.md, docs/verifiche-v044.md e i risultati
+Actions sull'ultimo SHA. Versione0.44 nella stessa PR, nessun merge/deploy.
+Le7richieste di Ale sono implementate: nuoto preciso/ricezione;3loghi da scegliere;
+copy/schemi;24bandiere sui costumi e cuffie bianche/blu;World24selezionabili con
+torneo16/Europei16;desktop frecce/Space/D/C/QWE;homeportraitcentrata.
+I file sono già sul branch. Non sostituire il logo prima della scelta di Ale.
+Al checkpoint, verifiche complete e pipeline sono ancora da concludere:
+aggiorna esiti veri nel rapporto/CLAUDE/PR; non dichiararePASS una prova avviata.
+Conserva<100drawcall e<150000tri su iPhone, anche due cambi,14corpi interi,
+cartoon,regia unica,SPEED1,sprintatocchi,MAX.9s/tiroalrilascio,riflesso soloalta.
+Nuova decisione esplicita: poca inerzia e cambi rapidi sostituiscono il vecchio
+nuoto lento/scivoloso. Mobile/controller conservati, nuova tastiera separata.
+Comandi utili: npm run lint; npm run verifica; npm run aspetto; npm run nuoto;
+npm run desktop; npm run costumi; npm run home; npm run tornei-menu.
+PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers nel workspace cloud.
+La fixture sezione1 deve isolare la selezione in play, non un fermo da fallo;
+assert6/6 conservato. Non indebolire test. Guarda immagini prima di aggiornare
+i riferimenti; dopo soloPNG usa verifica --partite=0 senza rifare6gare.
+```
+
+## Storico dopo la v0.41
 
 Testo da incollare in Codex per continuare il lavoro dopo la sessione di Claude Code del 15 novembre 2026.
 

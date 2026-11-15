@@ -181,9 +181,9 @@ function disegnaHome(){
 function disegnaNazionali(){
   const c=COMPETIZIONI[tipoScelto], attuale=campagne[tipoScelto];
   $('nazionaleTitolo').textContent=c.nome;
-  $('formulaTorneo').textContent=tipoScelto==='mondiali'?'Quattro gironi da quattro. Le prime ai quarti; seconde e terze agli spareggi. Poi la corsa alla coppa.':'Quattro gironi da quattro. Le prime tre alla seconda fase con i risultati contro le altre qualificate. Poi semifinali, finale e bronzo.';
+  $('formulaTorneo').textContent=tipoScelto==='mondiali'?'24 nazionali disponibili · 16 al torneo. Quattro gironi da quattro. Le prime ai quarti; seconde e terze agli spareggi. Poi la corsa alla coppa.':'16 nazionali europee. Quattro gironi da quattro. Le prime tre alla seconda fase con i risultati contro le altre qualificate. Poi semifinali, finale e bronzo.';
   $('nazionaliTorneo').innerHTML=c.codici.filter(cod=>sq(cod)).map(cod=>`<button type="button" class="nazionale-card${cod===nazionaleScelta?' on':''}" data-nazionale="${cod}" aria-pressed="${cod===nazionaleScelta}">${bandiera(cod,'band',true)}<span><b>${nome(cod)}</b><small>${cod} · ${sq(cod).forza} OVR</small></span></button>`).join('');
-  $('nazionaleScelta').textContent=`Giocherai tutte le gare con ${nome(nazionaleScelta)}. Le altre partite saranno simulate.`;
+  $('nazionaleScelta').textContent=`Giocherai tutte le gare con ${nome(nazionaleScelta)}.${tipoScelto==='mondiali'?' La tua nazionale è sempre inclusa tra le 16 sorteggiate per fasce.':''} Le altre partite saranno simulate.`;
   $('slotEsistente').innerHTML=attuale?`<div class="slot-esistente"><span>${finito(attuale)?'Ultimo torneo':'Torneo salvato'}: <b>${nome(attuale.nazionale)}</b> · ${finito(attuale)?esitoTorneo(attuale):faseNome(attuale.fase)}</span><button type="button" data-continua="${tipoScelto}">${finito(attuale)?'Rivedi':'Continua'} ›</button></div>`:'';
 }
 export function creaCampagna(tipo,nazionale,seme){

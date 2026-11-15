@@ -49,8 +49,8 @@ function giocaPartita({ bot, seed, maxFrames, senzaCorpi }) {
   if (H.cronaca) H.cronaca.ascoltatori.push((tipo, testo) => { const k = (tipo + ': ' + testo).replace(/ · [A-Z]{3} #\d+.*/, '').replace(/\d+° tempo · \d/, 'conto alla rovescia').slice(0, 44); eventi[k] = (eventi[k] || 0) + 1; });
   // giocatore finto: preme tasti a caso (con un suo generatore, per non toccare il caso del gioco)
   let b = seed >>> 0; const r = () => { b = Math.imul(b ^ b >>> 15, 0x2c1b3c6d) + 0x9e3779b9 | 0; return ((b ^ b >>> 13) >>> 0) / 4294967296; };
-  const TASTI = [['KeyW', .02, 90], ['KeyS', .02, 90], ['KeyA', .02, 90], ['KeyD', .03, 120], ['ShiftLeft', .01, 150], ['Space', .012, 6], ['KeyK', .012, 70],
-    ['KeyL', .002, 5], ['KeyQ', .004, 5], ['KeyE', .006, 5], ['Digit1', .001, 5], ['Digit2', .001, 5], ['Digit3', .001, 5], ['Digit4', .001, 5], ['KeyT', .0003, 5], ['KeyC', .0003, 5]];
+  const TASTI = [['ArrowUp', .02, 90], ['ArrowDown', .02, 90], ['ArrowLeft', .02, 90], ['ArrowRight', .03, 120], ['ShiftLeft', .01, 150], ['KeyD', .012, 6], ['Space', .012, 70],
+    ['KeyL', .002, 5], ['KeyC', .004, 5], ['KeyF', .006, 5], ['Digit1', .001, 5], ['Digit2', .001, 5], ['Digit3', .001, 5], ['Digit4', .001, 5], ['KeyT', .0003, 5]];
   const giu = {};
   const tasto = (tipo, code) => window.dispatchEvent(new KeyboardEvent(tipo, { code }));
   const impronte = []; let h = 0x811c9dc5, tiri = 0, inVolo = false, voloT = 0, f = 0;

@@ -30,9 +30,9 @@ try {
     const left=H.camera.getWorldDirection(H.camera.position.clone()).x;
     H.ball.x=9;window.__step(420);H.camera.updateMatrixWorld();
     const right=H.camera.getWorldDirection(H.camera.position.clone()).x,roll=H.camera.matrixWorld.elements[1];
-    window.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyD'}));window.__step(1);
+    window.dispatchEvent(new KeyboardEvent('keydown',{code:'ArrowRight'}));window.__step(1);
     const e=H.camera.matrixWorld.elements, dot=H.inp.x*e[0]+H.inp.z*e[2];
-    window.dispatchEvent(new KeyboardEvent('keyup',{code:'KeyD'}));window.__step(1);
+    window.dispatchEvent(new KeyboardEvent('keyup',{code:'ArrowRight'}));window.__step(1);
     return {left,right,roll,dot,secondo,tabellone:document.getElementById('hud').getBoundingClientRect().left};
   });
   assert.ok(regia.left<-.1&&regia.right>.1,'diagonali opposte verso le due porte');

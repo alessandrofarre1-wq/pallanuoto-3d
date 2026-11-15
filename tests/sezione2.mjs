@@ -42,7 +42,7 @@ const dif = await pg.evaluate(() => {
   const prepara = () => { H.game.state = 'play'; H.game.after = null; for (const q of H.allPlayers) { q.act = null; q.excluded = false; q.stunUntil = 0; q.colpi = []; q.tackleCD = 0; q.pressatoUntil = 0; }
     const c = H.teams[1].players[3], d = H.teams[0].players[3]; R.giveBall(c); c.x = 0; c.z = 0; c.fx = -1; c.fz = 0; c.vx = c.vz = 0; d.x = -0.9; d.z = 0; d.vx = d.vz = 0; d.fx = 1; d.fz = 0;
     window.__pallanuoto.__setCtrl(d); return { c, d }; };
-  const tocco = () => { window.__tasto('Space', true); window.__salta(1); window.__tasto('Space', false); window.__salta(1); };
+  const tocco = () => { window.__tasto('KeyD', true); window.__salta(1); window.__tasto('KeyD', false); window.__salta(1); };
   let { c } = prepara(); const r0 = H.cronaca.registro.length;
   tocco(); window.__salta(2);
   out.pressato = c.pressatoUntil > H.game.time; out.puoTirare = H.prova.startAct(c, 'shot', 0.1, () => {}) !== false;
