@@ -1,4 +1,4 @@
-# v0.45: il gioco tarato sui manuali e sugli studi
+# v0.46: il gioco tarato sui manuali e sugli studi
 
 Richiesta di Ale (15/11/2026): «porta avanti tutto ma escludi il nuoto», che farà Codex. Le proposte sono in `docs/proposte/manuali-e-studi.md`. Regole di riferimento: World Aquatics 18 febbraio 2026; i documenti più vecchi sono stati adattati, per esempio 28/18 s al posto di 30/20 s.
 
@@ -77,7 +77,7 @@ I tipi di azione:
 - Il computer cambia prima il centroboa e il suo marcatore (soglia di stamina più alta di 0,1).
 
 ## Misure (8 partite ITA–HUN, 4×8 min, per squadra a partita)
-Prima = v0.44 misurata con il contatore nuovo (gioco identico alla v0.44). Dopo = v0.45 finale.
+Prima = v0.44 misurata con il contatore nuovo (gioco identico alla v0.44). Dopo = v0.46 (lavoro sui manuali, prima dell'unione con la v0.45 di Codex).
 
 | Voce | Prima | Dopo | Riferimento vero |
 |---|---|---|---|
@@ -110,7 +110,7 @@ Come finisce un'azione in parità:
 `npm run verifica`: sei partite arrivate alla fine, 62 gol su 248 tiri (25%).
 
 ## Prove
-- `npm run v045` (`tests/v045.mjs`, anche in CI): esiti delle azioni, palleggio, vantaggio, interferenza, simultanee, simulazione, cambio di marcatura, controfuga, 9 schemi, rovesciata, minuti.
+- `npm run v046` (`tests/v046.mjs`, anche in CI): esiti delle azioni, palleggio, vantaggio, interferenza, simultanee, simulazione, cambio di marcatura, controfuga, 9 schemi, rovesciata, minuti.
 - `npm run uomo`: invariata, tutte le prove superate.
 
 ## Non fatto

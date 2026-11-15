@@ -1,7 +1,7 @@
-// Prove della v0.45 (manuali e studi indicati da Ale): esiti delle azioni, arbitro (palleggio, vantaggio, interferenza, espulsioni
+// Prove della v0.46 (manuali e studi indicati da Ale): esiti delle azioni, arbitro (palleggio, vantaggio, interferenza, espulsioni
 // simultanee, simulazione con cartellino giallo), cambio di marcatura, controfuga organizzata, schemi nuovi dell'uomo in più,
 // rovesciata del centroboa, minuti in acqua.
-// Uso: node tests/v045.mjs [--no-build]
+// Uso: node tests/v046.mjs [--no-build]
 import { chromium } from 'playwright';
 import { build, preview } from 'vite';
 import path from 'node:path';
@@ -29,7 +29,7 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
     H.game.state = 'play'; H.game.penalty = null; c.x = x; c.z = 0; c.vx = c.vz = 0; H.regole.giveBall(c); return c; }; });
 
 // 1. esiti delle azioni: il tiro chiude l'azione, il gol la trasforma in «gol»; l'espulsione procurata apre la superiorità
-{ const r = await pg.evaluate(() => { const H = window.__pallanuoto, V = H.v045, it = H.teams[0], s = () => V.statPartita.squadre[0].azioni;
+{ const r = await pg.evaluate(() => { const H = window.__pallanuoto, V = H.v046, it = H.teams[0], s = () => V.statPartita.squadre[0].azioni;
     const c = window.__scena(4 * it.dir); const prima = { ...s().parita }; const aperta = !!V.azioneAperta();
     H.prova.doShoot(c, 0.8, false, 0); const dopoTiro = { ...s().parita }, chiusa = !V.azioneAperta();
     H.regole.goalScored(it); const dopoGol = { ...s().parita };
@@ -42,7 +42,7 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
   prova(r.esp === 1 && r.tipo === 'superiorita', `l'espulsione procurata chiude l'azione e apre una superiorità (${r.tipo})`); }
 
 // 2. arbitro: fallo su chi palleggia = espulsione; regola del vantaggio in controfuga; interferenza sul tiro libero
-{ const r = await pg.evaluate(() => { const H = window.__pallanuoto, V = H.v045, it = H.teams[0], hu = H.teams[1];
+{ const r = await pg.evaluate(() => { const H = window.__pallanuoto, V = H.v046, it = H.teams[0], hu = H.teams[1];
     const out = {};
     { const c = window.__scena(0); c.oriz = 0.9; c.fx = it.dir; c.fz = 0; const d = hu.players[2]; d.x = c.x; d.z = c.z + 0.8;
       const vecchio = V.ARBITRI.palleggio; V.ARBITRI.palleggio = 50; const esito = H.regole.tackle(d, c, { fallo: true }); V.ARBITRI.palleggio = vecchio;
@@ -59,7 +59,7 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
   prova(r.interferenza.fischio && r.interferenza.esp, 'interferenza: chi ha fatto fallo e resta entro 1 m da chi batte il tiro libero viene espulso'); }
 
 // 3. lotta al centro: espulsioni simultanee (il tempo dell'azione non si azzera); simulazione → giallo → espulsione
-{ const r = await pg.evaluate(() => { const H = window.__pallanuoto, V = H.v045, it = H.teams[0], hu = H.teams[1];
+{ const r = await pg.evaluate(() => { const H = window.__pallanuoto, V = H.v046, it = H.teams[0], hu = H.teams[1];
     const c = window.__scena(9 * it.dir); const boa = it.players[1], def = hu.players.find(q => q.i === 6);
     H.game.shot = 11; V.simultanea(boa, def); const sim = { boa: boa.excluded, def: def.excluded, shot: H.game.shot };
     const c2 = window.__scena(9 * it.dir); it.simulazioni = 0; const visti = [];
@@ -70,7 +70,7 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
   prova(r.simulazioni === 3 && r.giallo && r.espulso, `simulazione: fallo contro, poi cartellino giallo alla squadra, poi espulsione di chi simula (${r.simulazioni}, giallo ${r.giallo}, espulso ${r.espulso})`); }
 
 // 4. difesa: cambio di marcatura; controfuga organizzata (tre corsie, prima linea sui 2 metri)
-{ const r = await pg.evaluate(() => { const H = window.__pallanuoto, V = H.v045, it = H.teams[0], hu = H.teams[1];
+{ const r = await pg.evaluate(() => { const H = window.__pallanuoto, V = H.v046, it = H.teams[0], hu = H.teams[1];
     window.__scena(0); const a = hu.players[2], b = hu.players[3];
     const primaA = V.uomoDi(a), primaB = V.uomoDi(b); hu.scambio = { a, b, fino: H.game.time + 5 };
     const scambiato = V.uomoDi(a) === primaB && V.uomoDi(b) === primaA; hu.scambio = null;
@@ -98,5 +98,5 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
 
 prova(errori.length === 0, `nessun errore nella pagina${errori.length ? ': ' + errori.slice(0, 2).join(' | ') : ''}`);
 await browser.close(); server.httpServer.close();
-console.log(ok ? '\nv0.45: tutte le prove superate' : '\nv0.45: prove NON superate');
+console.log(ok ? '\nv0.46: tutte le prove superate' : '\nv0.46: prove NON superate');
 process.exit(ok ? 0 : 1);
