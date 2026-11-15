@@ -76,6 +76,39 @@ I tipi di azione:
 - **Minuti in acqua** per ogni giocatore, mostrati nella schermata Panchina.
 - Il computer cambia prima il centroboa e il suo marcatore (soglia di stamina più alta di 0,1).
 
+## Misure (8 partite ITA–HUN, 4×8 min, per squadra a partita)
+Prima = v0.44 misurata con il contatore nuovo (gioco identico alla v0.44). Dopo = v0.45 finale.
+
+| Voce | Prima | Dopo | Riferimento vero |
+|---|---|---|---|
+| Gol | 16,0 | 16,8 | 13,3 (Mondiali 2025) |
+| Tiri | 48,6 | 45,9 | 33 (Mondiali 2025) |
+| Tiri in gol | 32,9% | 36,6% | 40% |
+| Espulsioni | 5,4 | 12,3 | 11 |
+| Superiorità trasformate | 47,7% | 44,9% | 52% |
+| Azioni | 64,9 | 69,8 | circa 50 (Euro League) |
+| Controfughe con vantaggio numerico | 24 (vecchia regola, contava anche le transizioni) | 2,1 | circa 2 (Euro League); 9-13% delle azioni per chi vince (Mondiali 2009) |
+| Durata della superiorità | 2,9 s | 6,9 s | circa 15 s (Mondiali 2009) |
+| Difese in parità (tempo) | pressing 88%, zona 1%, zona M 12% | pressing 68%, zona 26%, zona M 5% | pressing 40-60%, zone 30-65%, zona M 6-9% |
+
+Come finisce un'azione in parità:
+
+| Esito | Prima | Dopo | Mondiali 2009 |
+|---|---|---|---|
+| Gol | 20% | 19% | 6-19% |
+| Tiro sbagliato | 48% | 39% | circa 32% |
+| Palla persa | 15% | 8% | circa 20% |
+| Fallo in attacco | 1% | 10% | circa 15% |
+| Espulsione procurata | 10% | 21% | circa 22% |
+| Rigore | 4% | 1% | circa 2% |
+
+**Ancora lontani dai riferimenti:**
+- troppi tiri e troppe azioni: le azioni in parità durano 14,7 s contro circa 20;
+- poche palle perse;
+- superiorità ancora corte.
+
+`npm run verifica`: sei partite arrivate alla fine, 62 gol su 248 tiri (25%).
+
 ## Prove
 - `npm run v045` (`tests/v045.mjs`, anche in CI): esiti delle azioni, palleggio, vantaggio, interferenza, simultanee, simulazione, cambio di marcatura, controfuga, 9 schemi, rovesciata, minuti.
 - `npm run uomo`: invariata, tutte le prove superate.
