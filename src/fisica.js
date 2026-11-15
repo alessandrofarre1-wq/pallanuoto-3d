@@ -1,5 +1,5 @@
 // ================= FISICA GIOCATORI =================
-import { rif01, setteControSei } from './ia.js';
+import { manUp, rif01, setteControSei } from './ia.js';
 import { registraIntercetto, registraParata } from './statistiche.js';
 import { whistle } from './audio.js';
 import { ALZATA, ARBITRO, BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
@@ -190,7 +190,8 @@ export function updateBall(dt){
         // tiro da lontano: il portiere ha più tempo, arriva più lontano e para molto di più (da oltre 8-9 metri quasi sempre);
         // da poco angolo vede poca porta da coprire
         const tempo=clamp((ball.flightT-0.28)/0.3,0,1), dT=ball.distTiro||6, ang=ball.angoloTiro==null?1:ball.angoloTiro;
-        const facile=0.3*tempo+Math.max(0,dT-7.5)*0.2+Math.max(0,0.6-ang)*0.8+0.1*(ball.marcato||0)+(ball.daFermo?0.1:0)-(ball.dopoCambio?0.16:0)-(ball.liberato?0.05:0)-(ball.tipoTiro==='superiorita'?0.2:0);
+        // v0.45: in parità a difesa schierata il tiro dal perimetro segna circa il 25% (Berlino 2018): il portiere è piazzato
+        const facile=(ball.tipoTiro==='perimetro'?0.12:0)+0.3*tempo+Math.max(0,dT-7.5)*0.2+Math.max(0,0.6-ang)*0.8+0.1*(ball.marcato||0)+(ball.daFermo?0.1:0)-(ball.dopoCambio?0.16:0)-(ball.liberato?0.05:0)-(ball.tipoTiro==='superiorita'?0.2:0);
         const lontano=Math.max(0,Math.abs(ball.z-ball.gkZ0)-braccia), reach=(0.5+0.8*R)*fresco+0.7*tempo+Math.max(0,dT-7.5)*0.3;
         gk.stamina=Math.max(0,gk.stamina-0.035*(1.5-(gk.s.res-40)/59));          // ogni salto costa
         // tiro da vicino: la palla arriva in meno di un quarto di secondo e il portiere non fa in tempo a reagire
@@ -248,7 +249,10 @@ export function updateBall(dt){
           const muro=(primoPalo?0.42:0.34*braccioAlto)*finta*(1-2*(ball.sorpresa||0))*(1.3-0.6*(ball.elevazione||0.5));
           // intercetto: è da qui che nasce la maggior parte delle palle rubate. Un passaggio lungo e lento dà il tempo di leggerlo;
           // conta la Difesa di chi anticipa contro il Passaggio di chi l'ha fatto
-          const letto=0.06+0.26*clamp((ball.flightT-0.2)/0.7,0,1)+(ball.shooter?(p.s.dif-ball.shooter.s.pas)/59*0.12:0);
+          // v0.45: nelle partite vere circa un'azione in parità su cinque finisce con la palla persa (Mondiali 2009): il pressing chiude
+          // le linee di passaggio, e il passaggio verso il centroboa marcato è il più rischioso
+          const versoBoa=ball.target&&ball.target.i===1&&Math.abs(goalX(ball.target.team)-ball.target.x)<5&&!manUp(ball.target.team);
+          const letto=(0.09+0.3*clamp((ball.flightT-0.2)/0.7,0,1)+(ball.shooter?(p.s.dif-ball.shooter.s.pas)/59*0.12:0))*(p.team.defPlay===2?1.15:1)*(versoBoa?1.3:1);
           const pr=(ball.kind==='shot'?muro:clamp(letto,0.04,0.5))*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
           if(rnd()<pr){
             if(ball.kind==='shot'){

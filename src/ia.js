@@ -217,7 +217,11 @@ export function contropiedePortatore(p){
 export function attackTarget(p){
   const t=p.team, gx=goalX(t);
   if(p.isGK) return { x:gx-t.dir*8.6, z:2.6 };      // 7 contro 6: il portiere avanzato sta dietro l'arco (non ha un posto nello schema)
-  { const c=contropiede(t); if(c&&!p.cut){ if(ball.holder===p) return contropiedePortatore(p); const tg=contropiedeTarget(p,c); if(tg) return tg; } }
+  // NON SBILANCIARSI IN ATTACCO (manuale USA: «do not over commit to offense»): appena parte il tiro il punto e i mezzi cominciano
+  // a rientrare, così la controfuga avversaria trova la difesa già in transizione (nelle partite vere le controfughe sono poche)
+  if(ball.kind==='shot'&&ball.state==='flight'&&ball.shooter?.team===t&&!ball.rigore&&(p.i===6||p.i===4||p.i===5)&&!p.isGK&&ball.shooter!==p)
+    return { x:gx-t.dir*(p.i===6?15:12.5), z:p.z*0.6, sprint:true };
+  { const c=contropiede(t); if(c&&!p.cut){ if(ball.holder===p){ if(!(p.pressatoUntil>game.time)) return contropiedePortatore(p); } else { const tg=contropiedeTarget(p,c); if(tg) return tg; } } }
   if(p.cut){
     const c=p.cut;
     if(c.phase===0 && (Math.hypot(c.x-p.x,c.z-p.z)<0.7 || game.time-c.t0>4.5)){ c.phase=1; c.t1=game.time; }
@@ -514,11 +518,13 @@ export function aggiornaDifesa(t,dt){
     if((t.defPlay===1||t.defPlay===3)&&(!t.lasciato||game.time>(t.lasciatoT||0))){t.lasciato=chiLasciare(t);t.lasciatoT=game.time+0.8;}
     return;
   }
-  if(t.human||game.possTeam!==other(t)||t.defPlay!==2||game.shot>15||inRientro(t)||t.players.some(q=>q.excluded)) return;
+  if(t.human||game.possTeam!==other(t)||t.defPlay!==2||game.shot>22||inRientro(t)||t.players.some(q=>q.excluded)) return;
   const att=other(t), boa=att.players[1], inDifficolta=fight.active&&fight.def&&fight.def.team===t&&fight.v>0.2;
-  if(inDifficolta||rnd()<dt*0.07){
+  // Mondiali 2009 (Lupo et al. 2012): pressing 40-60% del tempo, zone 30-65%, zona a M 6-9%: la zona arriva spesso nella seconda
+  // parte dell'azione; la zona a M solo contro un centroboa forte
+  if(inDifficolta||rnd()<dt*0.7){
     const forte=!boa.excluded&&(boa.s.frz+boa.s.pot)/2>74;
-    passaAZona(t,forte||inDifficolta?3:1,true);
+    passaAZona(t,forte&&rnd()<0.3?3:1,true);
   }
 }
 export function aiShoot(p,power,lob){
@@ -545,7 +551,11 @@ export function aiCarrier(p,dt){
   if(slot.unoZero&&dGoal<5.4&&!p.fakeUsed&&!(p.freeThrow&&Math.abs(gx-p.x)<6)&&rnd()<dt*3){ p.fakeUsed=true; p.shootNext=true; p.decideT=0.45; startAct(p,'fake',0.1,()=>doFake(p)); return; }
   if(aiControfuga(p,dt)) return;      // controfuga: schizzo o colonnello
   // Il palo conclude subito solo nella finestra creata dal passaggio e dalla scelta difensiva.
-  if((p.alVolo||paloUomo(p))&&ball.holdTime<0.15&&manUp(t)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
+  // superiorità: nelle partite vere dura circa 15 s (Mondiali 2009): si fa girare palla e si tira dopo almeno 5-6 passaggi di tempo,
+  // tranne il «quick» dei primi secondi; tempoSup = secondi da quando è iniziata la superiorità
+  const azSup=manUp(t)?azioneAperta():null, tempoSup=azSup&&azSup.tipo==='superiorita'?game.time-azSup.t0:99;
+  const supPronta=!manUp(t)||tempoSup>5;
+  if(supPronta&&(p.alVolo||paloUomo(p))&&ball.holdTime<0.15&&manUp(t)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
     const sit=situazioneTiro(p),gk=other(t).players[0],aim=-Math.sign(gk.z||1);
     p.alVolo=false;
     if(sit.marcato<0.2&&sit.vicino>1.25&&!(p.pressatoUntil>game.time)&&laneClear(p,gx,aim,t,0.7)){
@@ -559,7 +569,7 @@ export function aiCarrier(p,dt){
     p.reazioneT=0.12;
     const press=openness(p),sottoPressione=p.pressatoUntil>game.time;
     const sit=situazioneTiro(p),angolo=Math.abs(gx-p.x)/Math.max(0.1,dGoal);
-    if(!ft&&!sottoPressione&&dGoal<7&&angolo>0.68&&sit.liberato&&sit.marcato<0.2&&laneClear(p,gx,0,t,0.7)){
+    if(supPronta&&!ft&&!sottoPressione&&dGoal<7&&angolo>0.68&&sit.liberato&&sit.marcato<0.2&&laneClear(p,gx,0,t,0.7)){
       // Il tiro rapido non deve consumare quasi sempre la controfuga prima che
       // il controllo per fotogramma scelga uno speciale. La decisione resta immediata.
       const speciale=dGoal<=QTE.maxComputer?occasioneControfuga(p):null;
@@ -572,7 +582,10 @@ export function aiCarrier(p,dt){
       const md=Math.hypot(gx-m.x,m.z),ma=Math.abs(gx-m.x)/Math.max(0.1,md);
       const vantaggio=openness(m)>2.1&&openness(m)>press+0.8&&md<8.5&&ma>0.5&&
         (md<dGoal-1||(manUp(t)&&Math.sign(m.z)!==Math.sign(p.z)));
-      if(ft||sottoPressione||press<1.25||vantaggio){ aiPass(p,m); return; }
+      // sotto pressione (contrasto di disturbo) si scarica solo dalla parte opposta al difensore; altrimenti si protegge la palla
+      // girandosi di spalle (partita.js) e si aspetta: il passaggio che scavalca chi pressa è quello che viene intercettato
+      const dP=p.pressatoDa, scarico=!sottoPressione||!dP||((m.x-p.x)*(p.x-dP.x)+(m.z-p.z)*(p.z-dP.z))>0;
+      if((ft||sottoPressione||press<1.25||vantaggio)&&scarico){ aiPass(p,m); return; }
     }
   }
   p.decideT-=dt;
@@ -593,11 +606,13 @@ export function aiCarrier(p,dt){
     // (con l'uomo in più si fa girare palla qualche secondo prima di cercare il tiro; la controfuga vera è con nessuno davanti)
     // ...ma chi è DAVVERO libero (buon angolo, nessun avversario entro 1,8 m, traiettoria sgombra) non aspetta: segnalazione di Ale
     // (15/11/2026, «hanno chiare occasioni da gol ma non tirano»); prima tirava solo dopo 23 s di possesso o appena ricevuta palla
-    const libero = dGoal<7.5 && press>1.8 && lane && Math.abs(gx-p.x)/Math.max(0.1,dGoal)>0.55;
+    // con l'uomo in più c'è quasi sempre qualcuno «libero»: lì vale solo il tiro davvero pulito, il resto si costruisce girando palla
+    const libero = manUp(t) ? dGoal<5.5 && press>2.4 && lane && Math.abs(gx-p.x)/Math.max(0.1,dGoal)>0.6
+                            : dGoal<6.5 && press>2.2 && lane && Math.abs(gx-p.x)/Math.max(0.1,dGoal)>0.55;
     // IL «QUICK» (manuale USA Water Polo, 6 contro 5): nei primi secondi della superiorità la difesa non è ancora organizzata;
     // chi è libero vicino alla porta tira subito invece di aspettare la circolazione
-    const az=azioneAperta(), quick=manUp(t)&&az&&az.tipo==='superiorita'&&game.time-az.t0<3&&press>2&&lane&&dGoal<7.5;
-    const pazienza = davanti===0||libero||quick ? 1 : manUp(t) ? clamp((15.5-game.shot)/4,0,1) : clamp((SHOT_CLOCK-game.shot-PAZIENZA[0])/PAZIENZA[1],0,1);
+    const az=azioneAperta(), quick=manUp(t)&&az&&az.tipo==='superiorita'&&game.time-az.t0<3&&press>2.4&&lane&&dGoal<6.5;
+    const pazienza = quick ? 1 : manUp(t) ? (libero&&tempoSup>3.5?1:clamp((tempoSup-5)/4,0,1)) : davanti===0||libero ? 1 : clamp((SHOT_CLOCK-game.shot-PAZIENZA[0])/PAZIENZA[1],0,1);
     // con l'uomo in più l'esterno, che ha poco angolo, tira di rado: cerca l'uomo al palo o chi sta ai 5 metri
     const angolo = manUp(t) ? clamp(Math.abs(gx-p.x)/Math.max(0.1,dGoal)*2,0.15,1) : 1;
     // si tira quando si è liberi: subito dopo un passaggio che ha liberato il tiratore o cambiato lato; con il difensore davanti

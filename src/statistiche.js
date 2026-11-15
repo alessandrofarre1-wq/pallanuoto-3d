@@ -15,6 +15,15 @@ export function difensoriDavanti(p){
   const t=p.team, gx=t.dir*12.5, dp=Math.hypot(gx-p.x,p.z);
   return other(t).players.filter(q=>!q.isGK&&!q.excluded&&(Math.hypot(gx-q.x,q.z)<dp+0.8||Math.hypot(q.x-p.x,q.z-p.z)<2)).length;
 }
+// VANTAGGIO NUMERICO IN CONTROFUGA (v0.45, manuale USA: 1 contro 0, 2 contro 1, 3 contro 2...): entro 9 m dalla porta ci sono
+// più attaccanti che difensori (portieri esclusi) e la palla è già lì, nei primi 6 s del possesso. Senza vantaggio la ripartenza è
+// una transizione 6 contro 6.
+export function vantaggioNumerico(t){
+  const gx=t.dir*12.5, h=ball.holder; if(!h||h.team!==t||Math.hypot(gx-h.x,h.z)>9) return false;
+  // i difensori contano fino a 10,5 m: chi sta appena oltre i 9 m in un attacco schierato non è un difensore «battuto»
+  const vicini=r=>q=>!q.isGK&&!q.excluded&&Math.hypot(gx-q.x,q.z)<r;
+  return t.players.filter(vicini(9)).length>other(t).players.filter(vicini(10.5)).length;
+}
 // che tipo di azione ha portato a questo tiro
 export function tipoDiTiro(p,ball){
   const t=p.team, dif=other(t), gx=t.dir*12.5, dPorta=Math.hypot(gx-p.x,p.z);
@@ -22,8 +31,7 @@ export function tipoDiTiro(p,ball){
   if(dif.players.some(q=>q.excluded)) return 'superiorita';
   if(p.i===1 && dPorta<4.6) return 'centroboa';
   // controfuga: possesso appena conquistato e al massimo due difensori (portiere escluso) tra chi tira e la porta
-  const davanti=difensoriDavanti(p);
-  if(game.time-(game.possT||0)<11 && davanti<=2) return 'controfuga';
+  if(game.time-(game.possT||0)<6 && vantaggioNumerico(t)) return 'controfuga';
   if((p.cut||game.time-(p.cutT||-99)<3) && dPorta<5.5) return 'entrata';
   return 'perimetro';
 }
@@ -75,9 +83,7 @@ export function aggiornaAzione(dt=0){
   // dopo un tiro la palla è in volo o vagante e la nuova azione nasce con chi la riprende (giveBall)
   if(!azione){ if(h&&h.team===game.possTeam&&ball.state==='held') apriAzione(game.possTeam); return; }
   if(azione.t!==game.possTeam) return;
-  if(azione.tipo==='parita'&&h&&h.team===azione.t&&game.time-azione.t0<11){
-    const gx=h.team.dir*12.5; if(Math.hypot(gx-h.x,h.z)<9&&difensoriDavanti(h)<=2) azione.tipo='controfuga';
-  }
+  if(azione.tipo==='parita'&&h&&h.team===azione.t&&game.time-azione.t0<6&&vantaggioNumerico(h.team)) azione.tipo='controfuga';
 }
 // il tiro chiude l'azione; se poi è gol, l'esito diventa «gol»
 function tiroChiude(){ chiudiAzione('tiro'); }

@@ -44,7 +44,7 @@ const aggressivita=d=>d===ctrl ? (d.aggrT>game.time?1.6:0.35) : (d.team.defPlay=
 // 10 espulsioni o rigori procurati in parità sono del centroboa). Trattenere, affondare o tirare indietro chi NON ha la palla è
 // espulsione; affondarlo mentre la palla gli sta arrivando è sempre espulsione; un fallo semplice è possibile quando non c'è
 // minaccia immediata; la spinta all'indietro del centroboa è fallo in attacco (contro-fallo).
-export const CENTRO_SENZA_PALLA={ espulsione:0.13, inArrivo:1.6, fallo:0.18, contro:0.05 };
+export const CENTRO_SENZA_PALLA={ espulsione:0.07, inArrivo:0.9, fallo:0.18, contro:0.05 };
 function lottaSenzaPalla(b,d,lettura,dt){
   const h=ball.holder, inArrivo=ball.state==='flight'&&ball.kind==='pass'&&ball.target===b;
   if(!(inArrivo||(h&&h.team===b.team&&h!==b))||dist(b,d)>1.15||game.state!=='play') return;

@@ -67,7 +67,7 @@ export function giveBall(p){
     for(const q of allPlayers) q.cut=null;
     for(const q of p.team.players) if(q.excluded){ if(q.alPozzetto) reenter(q); else q.puoRientrare=true; }      // art. 9.3c: rientra dal pozzetto (appena ci arriva)
     game.possT=game.time;
-    { const veloce=rnd()<stileVeloce(p.team); p.team.contro=veloce&&Math.abs(goalX(p.team)-ball.x)>12?{t0:game.time,fino:game.time+CONTRO.durata}:null; }      // controfuga organizzata (ia.js), più spesso per le squadre «veloci»
+    { const veloce=rnd()<stileVeloce(p.team); p.team.contro=veloce&&Math.abs(goalX(p.team)-p.x)>13?{t0:game.time,fino:game.time+CONTRO.durata}:null; }      // controfuga organizzata (ia.js), più spesso per le squadre «veloci»
     // le squadre guidate dal computer scelgono lo schema a ogni cambio di possesso
     const att=p.team, dif=other(att);
     if(!att.human){ att.atkPlay=[0,0,1,1,3][Math.floor(rnd()*5)]; att.cross=rnd()<0.2; att.nextDrive=game.time+3+rnd()*4; }
@@ -339,7 +339,7 @@ export function contrasto(d,c){
 export const ESPULSIONI={ centro:7, contrasto:0.24 };
 // Regole d'arbitraggio aggiunte nella v0.45 (manuale arbitri FINA 2019-21 adattato al regolamento World Aquatics 2026):
 // palleggio = probabilità di espulsione per il fallo su chi palleggia; interferenza = per chi resta entro 1 m da chi batte il tiro libero
-export const ARBITRI={ palleggio:0.6, interferenza:0.45 };
+export const ARBITRI={ palleggio:0.35, interferenza:0.45 };
 export function tackle(d,c,o){
   o=o||{};
   if(d.tackleCD>0||d.excluded||game.time<d.stunUntil) return false;

@@ -12,6 +12,7 @@
     "verifica:legacy": "node tests/verifica.mjs",
     "occasioni": "node tests/occasioni.mjs",
     "uomo": "node tests/uomo-in-piu.mjs",
+    "v045": "node tests/v045.mjs",
     "primi-piani": "node tests/primi-piani.mjs",
     "sequenze": "node tests/sequenze.mjs",
     "azione": "node tests/azione.mjs",
