@@ -19,13 +19,15 @@ import { iconaMano } from './mano.js';
 import { passaAZona } from './ia.js';
 import { resetTap } from './controllo.js';
 import { COMPETIZIONI, classificaGirone, creaTorneo, prossimaPartita, registraPartita, simulaBronzo } from './tornei.js';
+import { applicaSchema, caricaSchema, copiaSchema } from './schemi.js';
+import { inizializzaEditor, aggiornaRiepilogoStrategia } from './tattiche-menu.js';
 
 const salva=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){ /* senza memoria si va avanti lo stesso */ } };
 const leggi=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } };
 for(const id of ['logoHome','logoPausa','logoFine']) $(id).innerHTML=LOGO();
 
 // ---------- navigazione tra le schermate ----------
-const VISTE={ home:'vHome', squadre:'vSquadre', impostazioni:'vImpostazioni', comandi:'vComandi', info:'vInfo', opzioni:'vOpzioni', pausa:'vPausa', panchina:'vPanchina', fine:'vFine', nazionale:'vNazionale', torneo:'vTorneo', bacheca:'vBacheca', tattiche:'vTattiche', cerimonia:'vCerimonia' };
+const VISTE={ home:'vHome', squadre:'vSquadre', impostazioni:'vImpostazioni', comandi:'vComandi', info:'vInfo', opzioni:'vOpzioni', pausa:'vPausa', panchina:'vPanchina', fine:'vFine', nazionale:'vNazionale', torneo:'vTorneo', bacheca:'vBacheca', tattiche:'vTattiche', cerimonia:'vCerimonia', strategie:'vStrategie' };
 const storia=[];
 export function vai(v,senzaStoria){
   const M=$('menu'), prima=M.dataset.vista;
@@ -39,12 +41,14 @@ export function vai(v,senzaStoria){
   if(v==='bacheca') disegnaBacheca();
   if(v==='tattiche') disegnaTattiche();
   if(v==='squadre') disegnaSquadre();
+  if(v==='squadre'||v==='torneo'||v==='impostazioni') aggiornaRiepilogoStrategia();
   if(v==='panchina') disegnaPanchina();
   else azzeraScelta();
 }
 function indietro(){ vai(storia.pop()||(game.state==='paused'?'pausa':game.state==='over'?'fine':'home'),true); }
 document.querySelectorAll('[data-va]').forEach(b=>b.addEventListener('click',()=>{ if(b.dataset.va==='squadre') preparaSingola(); vai(b.dataset.va); }));
 document.querySelectorAll('[data-indietro]').forEach(b=>b.addEventListener('click',indietro));
+inizializzaEditor({apri:()=>vai('strategie'),torna:()=>indietro()});
 
 // ---------- impostazioni: valori di prima, ricordati per la prossima volta ----------
 function gruppo(attr,applica,chiave){
@@ -282,8 +286,13 @@ function disegnaTattiche(){
 $('tattichePausa').onclick=e=>{
   const b=e.target.closest('[data-tattica]'); if(!b||game.state!=='paused') return;
   const t=teams[0], i=+b.dataset.schema;
-  if(b.dataset.tattica==='attacco'){ t.atkPlay=i; t.cross=i===2; t.nextDrive=0; }
+  if(b.dataset.tattica==='attacco'){
+    const difesa=t.defPlay;
+    applicaSchema(t,copiaSchema(['arco','entrata','incrocio','boa'][i]));
+    t.defPlay=difesa; t.schema.difesa=difesa;
+  }
   else if(i===1||i===3) passaAZona(t,i,false); else { t.defPlay=i; t.lasciato=null; }
+  if(t.schema) t.schema.difesa=t.defPlay;
   aggiornaTabellone(); disegnaTattiche();
 };
 $('esciPartita').onclick=()=>{
@@ -306,12 +315,14 @@ export function newMatch(){
   Object.assign(game,{period:1,clock:PERIOD_LEN,time:0,shot:SHOT_CLOCK,possT:0,possTeam:null,prevState:null,after:null,penalty:null,penT:0,rigoriFinali:null,cambiLiberi:false,contoVisto:0});
   // I corpi vengono riutilizzati: i timer assoluti della gara precedente non devono
   // sopravvivere al ritorno del cronometro a zero (pressione, finte, esclusioni, IA).
-  for(const p of allPlayers) Object.assign(p,{stamina:1,excluded:false,pf:0,cut:null,act:null,charging:false,chargeT:0,exclUntil:0,stunUntil:0,tackleCD:0,fakeUntil:0,freeThrow:false,qte:null,
+  for(const p of allPlayers) Object.assign(p,{stamina:1,excluded:false,pf:0,cut:null,girata:null,act:null,charging:false,chargeT:0,exclUntil:0,stunUntil:0,tackleCD:0,fakeUntil:0,freeThrow:false,qte:null,
     pressatoUntil:0,turnedUntil:0,fakedUntil:0,biteUntil:0,qteDopo:0,fintaFino:0,sfondaT:0,lunge:0,aggrT:0,cinqueUntil:0,cutT:0,ricevutoT:0,arrivoPozzetto:0,contactT:0,decideT:0,reazioneT:0,
     pressatoDa:null,rientro:null,appoggio:null,daChi:null,ricevutoPassaggio:false,ricevutoCambio:false,alVolo:false,voloPronto:false,shootNext:false,fakeUsed:false,fakeCount:0,tiriDiSchiena:0,perno:false,uscendo:false,alPozzetto:false,puoRientrare:false,valutatoPozzetto:false,colpi:[],sprinting:false});
-  for(const t of teams) Object.assign(t,{atkPlay:0,defPlay:2,lasciato:null,cross:false,timeouts:2,vuoleTimeout:false,parzialeSubito:0,espulsioniT:[],setteAnnunciato:false,fugaFino:0,doubleP:null,doubleUntil:0,nextDrive:0,alaConPalla:null,postiT:-1,posti:null,rallT:-1,rall:null});
+  for(const t of teams) Object.assign(t,{atkPlay:0,defPlay:2,lasciato:null,cross:false,timeouts:2,vuoleTimeout:false,parzialeSubito:0,espulsioniT:[],setteAnnunciato:false,fugaFino:0,doubleP:null,doubleUntil:0,nextDrive:0,alaConPalla:null,postiT:-1,posti:null,rallT:-1,rall:null,schema:null,schemaStato:null,aiutoStato:null,copertura:null,postiAssegnati:null});
+  // Strategia scelta prima della gara: i posti restano relativi alla porta anche al cambio campo.
+  applicaSchema(teams[0],caricaSchema());
   Object.assign(ball,{kind:null,target:null,shooter:null,afterShot:false,flightT:0,saveChecked:false,holdTime:0,shotPower:0,lob:false,inRete:false,daTiro:false,inUscita:false,rigore:false,cambioLato:false,toccoDifesa:null,ignora:null,skip:false,skipped:false,schizzi:0,lastTeam:null,wx:0,wy:0,wz:0}); ball.intercept.clear();
-  Object.assign(fight,{active:false,v:0,boa:null,def:null,holdT:0,decT:0});
+  Object.assign(fight,{active:false,v:0,boa:null,def:null,holdT:0,decT:0,foamT:0,stato:null,apertura:0,ricevibile:false});
   resetTap(); azzeraStatistiche(); aggiornaTabellone(); chiudiMenu(); kickoff();
 }
 export function endMatch(){

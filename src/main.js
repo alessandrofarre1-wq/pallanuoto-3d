@@ -1,8 +1,9 @@
 // Punto d'ingresso: carica i moduli nell'ordine giusto e fa girare il ciclo di gioco
 import { movePlayer } from './fisica.js';
-import { doShoot, startAct } from './tiri.js';
+import { bestPassTarget, doShoot, passLaneRisk, shotKind, startAct } from './tiri.js';
 import { valoriMotore } from './dati/rose.js';
-import { aiCarrier } from './ia.js';
+import { aggiornaSchemi, aiCarrier, attackTarget, markTarget } from './ia.js';
+import { applicaSchema, copiaSchema, validaSchema } from './schemi.js';
 import { squadreStat } from './statistiche.js';
 import './stile.css';
 import './grafica/scena.js';
@@ -59,7 +60,7 @@ function loop(now){
 // accesso per le verifiche automatiche (tests/verifica.mjs) e per il debug dalla console
 // "vista" permette alla verifica di mettere la telecamera dove vuole (primi piani): { pos:[x,y,z], look:[x,y,z], fov };
 // "senzaCorpi" ferma l'animazione degli scheletri (serve solo ad accelerare le partite simulate)
-window.__pallanuoto = { imposta, cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, tornei:{creaCampagna,continuaTorneo,esportaSalvataggi}, palla:{ passoPalla, velocitaDiLancio, diagnosi }, effetti:{ gocce:gocceMesh, schiuma, contatti, LIMITI, gocceAttive }, __ridisegna:()=>renderer.render(scene,camera), regole:{ setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, prova:{ movePlayer, doShoot, startAct, valoriMotore, aiCarrier }, muro:{ paloCoperto, braccioMuro }, panchina:{ chiediCambio, suggerimento }, pausa:togglePause, __setCtrl:setCtrl, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get inp(){ return input.inp; }, get modelloPronto(){ return modelloPronto; } };
+window.__pallanuoto = { imposta, cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, tornei:{creaCampagna,continuaTorneo,esportaSalvataggi}, palla:{ passoPalla, velocitaDiLancio, diagnosi }, effetti:{ gocce:gocceMesh, schiuma, contatti, LIMITI, gocceAttive }, __ridisegna:()=>renderer.render(scene,camera), regole:{ setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, prova:{ movePlayer, doShoot, startAct, valoriMotore, aiCarrier, bestPassTarget, passLaneRisk, shotKind, attackTarget, markTarget, aggiornaSchemi, applicaSchema, copiaSchema, validaSchema }, muro:{ paloCoperto, braccioMuro }, panchina:{ chiediCambio, suggerimento }, pausa:togglePause, __setCtrl:setCtrl, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get inp(){ return input.inp; }, get modelloPronto(){ return modelloPronto; } };
 // scena iniziale dietro al menu
 kickoff(); game.state='menu';
 requestAnimationFrame(loop);

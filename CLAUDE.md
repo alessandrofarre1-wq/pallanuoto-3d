@@ -2,7 +2,16 @@
 
 Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Proprietario: Ale, ex nuotatore agonista, non programmatore: spiega le scelte in italiano semplice, senza gergo tecnico, e chiedi conferma prima di cambiamenti grossi di direzione.
 
-## Stato attuale (v0.40, novembre 2026)
+## Stato attuale (v0.41, novembre 2026)
+- v0.41, richiesta di Ale: letto integralmente il manuale FIN (63 pagine) e l'articolo Rari Nantes sui pali (15 pagine), con controllo delle figure tecniche; aperto e letto il Reddit indicato. Fonti, numerazione dei posti e confronto con regole correnti in `docs/tecnica-v041.md`. I testi didattici storici non sostituiscono il regolamento del gioco.
+- GAMEPLAY v0.41: nuovo `src/centroboa.js` legge palla–boa–difensore–porta; `lotta.js` mostra un vantaggio geometrico, `fisica.js` esegue anticipo/girata con movimento continuo e difensore obliquo. `ia.js` e `tiri.js`: appoggi adiacenti, servizio al centro solo su linea aperta, skip valutato con rischio d'intercetto, pali scaglionati, tiro al volo subordinato alla copertura effettiva. `grafica/pose.js` separa direzione del passaggio e fronte del corpo; la palla continua a partire dalla mano.
+- STRATEGIE v0.41: `src/schemi.js`, `src/tattiche-menu.js`, `menu.js`, `partita.js`, `regole.js`, `index.html`, `stile.css`: cinque preset e una strategia personale persistente. Lavagna touch/tastiera per i sei posti in parità e superiorità, entrata assegnata con copertura, stile di circolazione, difesa e aiuti autorizzati. Il piano viene applicato realmente prima di singola o torneo; i posti si specchiano al cambio campo e restano assegnati al ruolo dopo le sostituzioni. `hud.js` distingue boa servibile e anticipo, senza nuovi oggetti 3D.
+- DECISIONI SUPERATE ESPLICITAMENTE v0.41: barra di forza/stanchezza e SPRINT che aumentava uno scalare → lettura della linea di ricezione e movimento fisico; girata con esito e rigore casuali → aggiramento reale senza rigore gratuito; beduina per solo indice del boa → posizione/orientamento effettivi; preferenza fissa alla diagonale lunga e sconto marcatura in superiorità → opportunità geometrica; tagli casuali indipendenti → entrata coordinata con copertura; soli schemi fissi in partita → preset più editor prepartita. Sprint a tocchi, velocità, camera, stile e budget non cambiano.
+- RIFERIMENTO NORMATIVO v0.41: resta **World Aquatics 18 febbraio 2026**, già usato dal progetto e coerente con i tornei internazionali. Il FIN 2026–2027 approvato il 2 ottobre introduce differenze (area di porta estesa e falli del portiere, luogo del libero), documentate ma non fuse nel motore WA. Nessun ritorno a 30/20 secondi o diretto dai 5 m.
+- VERIFICHE v0.41: in corso; non considerare i risultati v0.40 sottostanti come misure di questa versione. Nuove prove `centroboa`, `tattica`, `strategie` aggiunte alla CI; eseguire lint, verifica completa, aspetto e controllare l'intera pipeline prima della consegna. Dati definitivi da registrare in `docs/verifiche-v041.md`.
+- NON FATTO v0.41: misura FPS e giudizio di giocabilità su iPhone fisico; editor di sequenze arbitrarie multi-fase o più slot personali; animazione dedicata per ogni scivolamento/contatto; riscrittura completa dell'arbitraggio, adeguamento al ruleset FIN ottobre e sostituzione del portiere per un vero sette di movimento. Il motore conserva semplificazioni dei contatti: non dichiarare conformità integrale a ogni articolo.
+
+### Storico v0.40 e precedenti
 - CORREZIONE CI PR35 (v0.40 invariata nella stessa PR): `sezione4` falliva nel conteggio di speciali in 500 s di partita libera (0/0). La nuova scelta rapida poteva tirare prima che l'evento speciale per fotogramma avesse una finestra sufficiente. `src/ia.js` ora valuta anche uno speciale lecito nella decisione rapida su ricezione, con peso 35%, soltanto entro 6,5 m e con i controlli esistenti di nuotata/libertà/pressione/tiro libero. È una scelta di bilanciamento esplicitamente aggiunta; non si dichiara invariata la frequenza precedente. Portiere, velocità e traiettorie non cambiano. `src/main.js` espone aiCarrier nelle prove; `tests/sezione4.mjs` sostituisce il campione casuale con controfughe ripetibili per entrambi gli speciali, tiro classico alternativo e quattro vincoli negativi. Le altre prove della sezione restano presenti. Lint e sezione4 locali PASS; controllo GitHub dell'intera pipeline da completare dopo push.
 - v0.40: implementazione nel gioco di Mondiali/Europei, home e pausa, campagna salvata fra gare, bacheca/coppe/premiazione, otto nazionali europee e rigori finali giocabili. Nuovi `src/tornei.js`, `src/rigoriFinali.js`, `src/grafica/arena.js`; integrazione in `menu.js`, `index.html`, `stile.css`, `regole.js`, `partita.js`, `main.js`, `hud.js`; dati in `src/dati/` e fonte aggiuntiva ufficiale. La versione 0.39 precedente conteneva proposte: questa modifica introduce il codice effettivo.
 - GAMEPLAY v0.40: `controllo.js` conserva passaggio/palombella anticipati negli ultimi 200 ms del gesto; `tiri.js` rende stabile il ricevente umano senza direzione; `ia.js` aggiunge appoggi brevi nel posto di ruolo e lettura rapida dei vantaggi. Prova mirata prima/dopo: ricevente unico 200/200, linea aperta in 1,283 s con appoggio massimo 1,167 m, quattro situazioni AI da 650 ms a 17 ms. Velocità, sprint a tocchi, portiere e probabilità di tiro invariati.
@@ -70,7 +79,7 @@ Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Propr
 ## Scelte fissate con Ale
 - Piattaforma browser, grafica 3D, controlli tastiera o controller (+ touch), stile simulazione, avversario il computer.
 - Italia (calottine blu, umano) contro Ungheria (bianche, computer); portieri in rosso.
-- Regole: World Aquatics 2026 (fonte principale) e Regolamento Tecnico FIN 2025-26.
+- Regole del motore: World Aquatics 18 febbraio 2026. FIN 2025-26 resta una fonte storica di confronto; le differenze FIN 2026–2027 non sono importate (scelta esplicita v0.41, vedi `docs/tecnica-v041.md`).
 
 ## Regole già implementate
 - Campo 25 m tra le linee di porta, porta 3 × 0,90 m; linee 2, 5 e 6 m (il 6 m è una LINEA trasversale, non un raggio).
@@ -81,7 +90,7 @@ Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Propr
 - Area di porta (art. 8.2.8): attaccante davanti alla linea della palla = fallo. Misure: dalla linea di porta ai 2 metri, fino a 2 m oltre ciascun palo (CONFERMATE, vedi `docs/tecnica.md`). La regola vale solo dentro l'area: un attaccante laterale fuori dall'area ma dentro i 2 metri può ricevere.
 - Rigore (corretto nella v0.16): tutti gli altri giocatori (tranne tiratore e portiere) stanno sulla linea dei 6 metri, ad almeno 3 m dal tiratore (`setupPenalty` in `regole.js`).
 - Time-out: 2 a squadra, solo in possesso, ripresa da metà campo.
-- Non implementati: rigori finali in caso di parità, VAR. (Cambi volanti dalla v0.32, pozzetto dalla v0.33.)
+- Rigori finali nei tornei dalla v0.40. Non implementato: VAR. (Cambi volanti dalla v0.32, pozzetto dalla v0.33.)
 
 ## Gioco già implementato
 - Ruoli: centroboa, ali, mezzi, punto; arco 3-3 in attacco; 4-2 con uomo in più (`FORM_UP`); con uomo in meno tre sulla linea dei 2 metri e due davanti ai pali (`DEF_DOWN`).
@@ -89,7 +98,7 @@ Gioco di pallanuoto 3D nel browser, "una sorta di FIFA per la pallanuoto". Propr
 - La squadra sale per corsie, scaglionata per ruolo: nessuno va tutto sulla palla (richiesta esplicita di Ale).
 - Schemi chiamabili: attacco Arco/Entrata/Incrocio/Palla al boa; difesa A uomo/Zona/Pressing/Zona a M (di base Pressing; le zone scelgono chi lasciare tirare); taglio di un compagno; raddoppio.
 - Contrasto (v0.17): un tocco = provare a rubare palla senza fallo; tenuto = fallo voluto (vedi "Correzioni v0.17"). Finta di tiro (doppio tocco) con difensori che abboccano, tiro rapido, tiro caricato, palombella, beduina, colonnello, tiro a schizzo.
-- Lotta al centro: barra di posizione boa/marcatore basata su forza e stanchezza; tenere SPRINT = spingere; il boa con palla guadagna espulsioni o falli, può fare girata (rigore se trattenuto), beduina o scarico.
+- Lotta al centro v0.41: linea di ricezione, anticipo e tagliafuori reali; girata tramite movimento continuo, beduina solo quando realmente di schiena e marcato, scarico contro aiuto. La barra mostra la geometria; non assegna da sola un rigore. I falli restano una simulazione semplificata del contatto.
 - Fisica: acqua che frena, bisogna girare il corpo prima di nuotare, resistenza corpo a corpo, sprint che consuma resistenza.
 - IA con steering (separazione, aggiramento, inseguimento della palla).
 - Portiere che esce sulle palle vaganti vicino alla porta.

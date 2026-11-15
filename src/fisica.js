@@ -9,7 +9,11 @@ import { blockR } from './ia.js';
 import { cornerThrow, giveBall, goalScored, goalThrow, sfondamento, sideOut } from './regole.js';
 import { active, allPlayers, ball, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
 import { diSchiena, shotKind } from './tiri.js';
+import { difensoreCentro, leggiCentro, passoGirata } from './centroboa.js';
 export function movePlayer(p,dx,dz,sprint,dt){
+  // La girata usa lo stesso movimento e gli stessi collisori del nuoto ordinario.
+  const giroTarget=passoGirata(p);
+  if(giroTarget){ const gx=giroTarget.x-p.x,gz=giroTarget.z-p.z,l=Math.hypot(gx,gz)||1;dx=gx/l;dz=gz/l;sprint=false; }
   const mag=Math.hypot(dx,dz), moving=mag>0.05, swimming=mag>0.5;
   const hold=ball.holder===p, sp=Math.hypot(p.vx,p.vz);
   // Velocità: tra 60 e 90 di Velocità ci sono circa il 19% di differenza
@@ -32,18 +36,24 @@ export function movePlayer(p,dx,dz,sprint,dt){
   // inversione: per tornare indietro non si fa una curva a U distesi, ci si alza, si gira sul posto e si riparte
   const cosGiro=swimming?(p.fx*dx+p.fz*dz)/mag:1;
   if(swimming&&!p.isGK&&!lunging){ if(cosGiro<-0.25) p.perno=true; else if(cosGiro>0.45) p.perno=false; } else p.perno=false;
-  const vuoleNuoto=swimming && !gesto && !riceve && !p.perno;
-  p.oriz=clamp((p.oriz||0)+(vuoleNuoto?dt/(ALZATA+0.1):-dt/ALZATA),0,1);
+  const boaAvversario=other(p.team).players[1];
+  const difendeCentro=!p.isGK&&p.i===6&&!p.team.players.some(q=>q.excluded)&&game.possTeam===other(p.team)&&boaAvversario&&!boaAvversario.excluded&&
+    Math.abs(ownGoalX(p.team)-boaAvversario.x)<5&&Math.hypot(p.x-boaAvversario.x,p.z-boaAvversario.z)<1.8;
+  const vuoleNuoto=swimming && !gesto && !riceve && !p.perno&&!giroTarget;
+  const obliquo=difendeCentro&&!gesto&&!riceve?0.48:0;
+  const assetto=obliquo|| (vuoleNuoto?1:0),deltaAssetto=assetto-(p.oriz||0);
+  p.oriz=clamp((p.oriz||0)+clamp(deltaAssetto,-dt/ALZATA,dt/(ALZATA+0.1)),0,1);
   // da verticale si riparte subito, ma finché il corpo non è disteso non si spinge a piena forza
   if(swimming) base*=0.62+0.38*p.oriz;
   if(game.time<p.stunUntil) base*=0.15;
   p.contactT=(p.contactT||0)-dt;
   if(p.contactT>0) base*=0.55;                       // corpo a corpo: si fatica ad avanzare
+  if(giroTarget) base=Math.max(base,1.65*(0.7+0.3*p.stamina)); // scivolamento esplosivo alla velocità normale, senza sprint
   if(lunging) base*=1.35;
   // disteso si spinge nella direzione del corpo (e il corpo gira piano: curve ampie); in verticale ci si sposta con le gambe
   // in qualsiasi direzione
   let ux=dx, uz=dz;
-  if(swimming && !p.isGK && !lunging){
+  if(swimming && !p.isGK && !lunging&&!giroTarget&&!difendeCentro){
     const o=p.oriz; ux=dx/mag*(1-o)+p.fx*o; uz=dz/mag*(1-o)+p.fz*o;
     const ul=Math.hypot(ux,uz)||1, af=0.3+0.7*Math.max(0,cosGiro); ux=ux/ul*mag*af; uz=uz/ul*mag*af;
   }
@@ -69,14 +79,18 @@ export function movePlayer(p,dx,dz,sprint,dt){
   if(p.excluded){ p.x=clamp(p.x,-HL-1,HL+1); p.z=clamp(p.z,-HW-1.6,HW-0.25); } else { p.x=clamp(p.x,-HL+0.25,HL-0.25); p.z=clamp(p.z,-HW+0.25,HW-0.25); }
   if(p.isGK && !setteControSei(p.team)){ const og=ownGoalX(p.team); p.x = p.team.dir>0 ? clamp(p.x,og+0.3,0) : clamp(p.x,0,og-0.3); }      // il portiere resta nella sua metà, tranne nel 7 contro 6
   let tfx=p.fx, tfz=p.fz;
-  if(p.act&&p.act.aim){ tfx=p.act.aim[0]-p.x; tfz=p.act.aim[1]-p.z; }
+  const passaFronte=p.act?.kind==='pass'&&!p.isGK&&p.i!==1&&Math.abs(goalX(p.team)-p.x)<10;
+  const riceveFronte=riceve&&!p.isGK&&p.i!==1&&Math.abs(goalX(p.team)-p.x)<10;
+  if(passaFronte||riceveFronte){ tfx=goalX(p.team)-p.x;tfz=-p.z; }
+  else if(p.act&&p.act.aim){ tfx=p.act.aim[0]-p.x; tfz=p.act.aim[1]-p.z; }
   else if(p.turnedUntil>game.time){ tfx=goalX(p.team)-p.x; tfz=-p.z; }
   else if(p.charging){ tfx=goalX(p.team)-p.x; tfz=-p.z; if(diSchiena(shotKind(p))){ tfx=-tfx; tfz=-tfz; } }
   else if(muroOra){ tfx=hm.x-p.x; tfz=hm.z-p.z; }
-  else if(swimming && !(p.isGK&&ball.state!=='held'&&!sprint)){ tfx=dx; tfz=dz; }
+  else if(difendeCentro){ tfx=ball.x-p.x;tfz=ball.z-p.z; }
+  else if(swimming && !giroTarget && !(p.isGK&&ball.state!=='held'&&!sprint)){ tfx=dx; tfz=dz; }
   else if(hold){
     tfx=goalX(p.team)-p.x; tfz=-p.z;
-    if(p.i===1 && Math.hypot(tfx,tfz)<4.5 && game.penalty!==p){ tfx=-tfx; tfz=-tfz; }   // il centroboa lavora spalle alla porta
+    if(p.i===1 && Math.hypot(tfx,tfz)<4.5 && game.penalty!==p&&!other(p.team).players.some(q=>q.excluded)&&leggiCentro(p,difensoreCentro(p),p).spalle){ tfx=-tfx; tfz=-tfz; }
   }
   else { tfx=ball.x-p.x; tfz=ball.z-p.z; }
   // il corpo gira a velocità limitata: in verticale ci si gira in fretta sul posto, distesi si curva largo

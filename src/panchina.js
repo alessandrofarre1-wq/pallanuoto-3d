@@ -71,7 +71,7 @@ export function annullaCambio(t) {
 function scambia(t, p, g, dalPozzetto) {
   const vecchio = p.scheda;
   vecchio.stamina = p.stamina; vecchio.pf = p.pf;
-  vesti(p, g); p.stamina = g.stamina ?? 1; p.pf = g.pf || 0; p.uscendo = false; p.cut = null; p.act = null; p.charging = false;
+  vesti(p, g); p.stamina = g.stamina ?? 1; p.pf = g.pf || 0; p.uscendo = false; p.cut = null; p.girata = null; p.act = null; p.charging = false;
   annuncia('info', 'Cambio', { squadra: t, dettaglio: `entra #${g.num} ${g.nome}, esce #${vecchio.num}${dalPozzetto ? ' · dal pozzetto' : ''}`, durata: 1.6 });
   return vecchio;
 }

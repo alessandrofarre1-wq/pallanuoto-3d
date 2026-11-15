@@ -807,3 +807,98 @@ body.touch #qte{display:none}
 }
 @media (orientation:portrait) and (max-height:700px){#vHome .h-azioni{padding-top:100px;gap:6px}.home-titolo{font-size:42px}.modalita-home>.m-cta{min-height:52px}.modalita-home>.m-voce{min-height:60px}#vHome .eroe{height:44%}#vHome .h-logo .logo{width:220px}}
 @media (prefers-reduced-motion:reduce){#menu .vista.on,.coriandoli i,.capitano,.cerimonia-luci{animation:none!important}#cerimoniaTrofeo{transition:none}.coriandoli{display:none}}
+
+/* v0.41: lavagna prepartita. Il disegno resta SVG; i valori sono gli stessi usati dall'IA. */
+#menu .strategia-accesso{display:flex;align-items:center;gap:10px;min-height:48px;min-width:0;padding:8px 13px;border:1px solid var(--m-linea);border-radius:5px;background:#112a36;color:#effbff;text-align:left;font:inherit;cursor:pointer}
+.strategia-accesso>span:not(.strategia-icona){min-width:0;display:flex;flex-direction:column;gap:2px}
+.strategia-accesso b{font-size:13px;font-weight:800}.strategia-accesso small{font-size:10px;color:var(--m-tenue);white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width:240px}
+.strategia-accesso .strategia-icona{font:800 26px/1 system-ui;color:var(--m-ciano)}
+.strategia-accesso>i{font-style:normal;font-size:23px;margin-left:auto;color:var(--m-ciano)}
+.con-strategie{gap:10px}.con-strategie>.strategia-accesso{width:min(320px,48%)}
+.con-strategie>.m-cta{width:min(320px,48%)}
+.torneo-azioni>.strategia-accesso{width:min(320px,100%)}
+#menu #vStrategie{padding-top:max(10px,var(--st));padding-bottom:max(20px,var(--sb))}
+#menu .schema-testa{position:sticky;top:calc(-1 * max(10px,var(--st)));z-index:4;grid-template-columns:44px 1fr auto;gap:12px;max-width:1100px;width:100%;margin:0 auto 12px;padding:6px 0;background:#091c27;box-shadow:0 0 0 12px #091c27}
+#menu .schema-testa h2{text-align:left;font-size:22px;font-weight:900;letter-spacing:-.035em}.schema-testa .soprattitolo{font-size:8px}
+#menu .schema-salva{min-height:44px;max-width:none;width:auto;gap:15px;padding:8px 14px}
+#menu .schema-salva b{font-size:13px;letter-spacing:0}.schema-salva>span:last-child{font-size:20px}
+.schema-editor{width:100%;max-width:1100px;margin:0 auto}
+.schema-barra{display:grid;grid-template-columns:minmax(160px,1fr) minmax(160px,1.3fr) auto auto;align-items:end;gap:10px}
+.schema-campo{display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:700;color:#b9d1dc;min-width:0;line-height:1.25}
+.schema-campo>span{font-weight:500}
+#menu .schema-campo input,#menu .schema-campo select{width:100%;height:44px;border:1px solid #536f7b;border-radius:4px;color:#f4faff;background:#0a202d;padding:0 10px;font:700 13px system-ui;min-width:0;box-shadow:none;user-select:text;-webkit-user-select:text}
+#menu .schema-campo input:focus-visible,#menu .schema-campo select:focus-visible{outline:2px solid var(--m-ciano);outline-offset:2px}
+#menu .schema-campo select{padding-right:24px;cursor:pointer;color-scheme:dark}
+#menu .schema-barra>.azione-secondaria{padding:10px 13px;font-size:11px}
+#menu .schema-barra>button:disabled{opacity:.4;cursor:default}
+.schema-riga-nota{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:10px 0 14px;min-height:40px}
+.schema-riga-nota>p{max-width:760px;color:var(--m-tenue);font-size:11px;line-height:1.45}
+#schemaStato{white-space:nowrap;flex:none;color:#81d7b8;font-size:9px;font-weight:800;border:1px solid #427666;padding:4px 6px;border-radius:3px;line-height:1.2}
+#schemaStato.bozza{color:#ffdb93;border-color:#806b46}
+.schema-messaggio{font-size:12px;font-weight:650;line-height:1.5;color:#ffdda9;background:#4b3527;border:1px solid #b38652;padding:10px 12px;margin-bottom:12px;border-radius:4px}
+.schema-griglia{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(230px,1fr);gap:14px}
+.schema-griglia>section{min-width:0;background:#102632;border:1px solid var(--m-linea);border-radius:5px;padding:16px}
+.schema-griglia h3{font-size:21px;line-height:1.2;letter-spacing:-.035em;margin:4px 0 16px;font-weight:850}
+.schema-griglia .soprattitolo{font-size:9px}
+.schema-griglia>.schema-lavagna{padding:10px;display:flex;flex-direction:column}
+.schema-lavagna-testa{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px}
+.schema-fasi{display:flex;gap:3px;background:#071d29;padding:3px;border-radius:4px}
+#menu .schema-fasi button{min-height:44px;min-width:96px;padding:6px 10px;border:0;border-radius:3px;background:transparent;color:#b8cfd9;font:750 12px system-ui;cursor:pointer}
+.schema-fasi small{display:block;font-size:9px;font-weight:600;margin-top:1px}
+#menu .schema-fasi button[aria-selected="true"]{background:var(--m-ciano);color:#06202b}
+.schema-porta-label{font-size:8px;font-weight:800;letter-spacing:.05em;color:#a2c0cd;text-align:right}
+#schemaPannello{display:flex;align-items:center;justify-content:center;flex:1;min-height:0}
+#schemaPiscina{width:100%;height:auto;display:block;max-height:340px;overflow:visible;touch-action:none!important}
+#schemaPiscina *{touch-action:none!important}
+.schema-misura{fill:#d4eeee;opacity:.85;font:700 11px system-ui}.schema-lato{fill:#a6ccd7;font:700 9px system-ui;letter-spacing:1px}
+#schemaPiscina [data-schema-ruolo]{cursor:grab;outline:none}#schemaPiscina [data-schema-ruolo]:active{cursor:grabbing}
+.schema-posto-ombra{fill:#041a2480}.schema-posto{fill:#f1f7f8;stroke:#fff;stroke-width:2}
+#schemaPiscina [data-schema-ruolo]>text{fill:#102b39;font:900 19px system-ui;pointer-events:none}
+#schemaPiscina .scelto .schema-posto{fill:var(--m-ciano);stroke:#eeffff;stroke-width:3}
+#schemaPiscina .entra:not(.scelto) .schema-posto{stroke:#ffda84;stroke-width:4}
+#schemaPiscina [data-schema-ruolo]:focus-visible .schema-posto{stroke:#ffcf68;stroke-width:5}
+.schema-aiuto-lavagna{font-size:10px;line-height:1.5;color:#b4cdd8;padding:6px 4px 0}
+.schema-coordinate{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.schema-coordinate .schema-campo{display:block}.schema-coordinate input{margin-top:6px}
+.schema-coordinate .schema-campo>span{font-size:10px}
+.schema-spiegazione{font-size:11px;line-height:1.5;color:#a9c4d0;margin-top:10px}
+.schema-ruolo-compito{display:flex;gap:12px;align-items:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--m-linea)}
+.schema-ruolo-compito>span{font-size:30px;font-style:italic;font-weight:900;color:var(--m-ciano);line-height:1}
+.schema-ruolo-compito>p{font-size:11px;line-height:1.5;color:#d2e3e9}
+.schema-circolazione{margin-top:18px}
+.schema-aiuti{border:0;margin-top:18px;min-width:0}
+.schema-aiuti legend{font-size:11px;font-weight:750;color:#c8dce5;margin-bottom:7px}
+#schemaAiuti{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+#schemaAiuti label{display:flex;align-items:center;gap:8px;min-height:44px;background:#0b202d;border:1px solid #284752;border-radius:3px;padding:7px 9px;font-size:11px;color:#bdd4df;cursor:pointer}
+#schemaAiuti label:has(input:checked){background:#163c43;border-color:#5eaba9;color:#edffff}
+#schemaAiuti input{width:18px;height:18px;flex:none;accent-color:var(--m-ciano)}
+#schemaAiuti input:focus-visible{outline:2px solid var(--m-ciano);outline-offset:3px}
+.schema-persistenza{font-size:10px;line-height:1.6;margin:13px 0 0;color:#91adbb;max-width:850px}
+@media (min-width:1100px){.schema-griglia{grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr)}.schema-griglia>.schema-lavagna{padding:14px}.schema-posizione{display:flex;flex-direction:column}.schema-ruolo-compito{margin-top:auto}}
+@media (orientation:landscape) and (max-height:520px){
+  #menu #vStrategie{padding-top:max(5px,var(--st));padding-left:max(16px,var(--sl));padding-right:max(16px,var(--sr))}
+  #menu .schema-testa{top:calc(-1 * max(5px,var(--st)));padding:0;gap:10px;margin-bottom:10px;box-shadow:0 0 0 7px #091c27}
+  #menu .schema-testa h2{font-size:18px}.schema-testa .soprattitolo{font-size:7px}
+  .schema-barra{gap:7px;grid-template-columns:minmax(150px,1.1fr) minmax(130px,1fr) auto auto}
+  .schema-campo{font-size:10px;gap:4px}
+  #menu .schema-barra>.azione-secondaria{padding:8px 10px;font-size:10px}
+  .schema-riga-nota{padding:7px 0 9px;min-height:0}.schema-riga-nota>p{font-size:10px}.schema-riga-nota>#schemaStato{font-size:8px}
+  .schema-griglia{grid-template-columns:minmax(0,1.35fr) minmax(230px,1fr);gap:10px}
+  .schema-griglia>section{padding:12px}.schema-griglia h3{font-size:18px;margin:3px 0 11px}
+  .schema-griglia>.schema-lavagna{padding:7px}.schema-lavagna-testa{margin-bottom:3px;gap:5px}
+  #menu .schema-fasi button{font-size:11px;min-width:83px;padding:5px 8px}
+  .schema-porta-label{font-size:6px;max-width:75px}.schema-aiuto-lavagna{font-size:9px;padding:4px 3px 0}
+  .schema-coordinate{margin-top:9px;gap:8px}.schema-ruolo-compito{margin-top:10px;padding-top:10px;gap:10px}
+  .schema-spiegazione,.schema-ruolo-compito>p{font-size:10px}.schema-aiuti{margin-top:13px}
+  #schemaAiuti{gap:4px}#schemaAiuti label{font-size:10px;padding:6px;gap:6px}
+}
+@media (orientation:portrait){
+  .con-strategie{gap:7px}.con-strategie>.strategia-accesso{padding:7px 10px}.strategia-accesso .strategia-icona{display:none}.strategia-accesso small{max-width:140px;font-size:9px}
+  #menu .schema-testa{gap:10px}#menu .schema-testa h2{font-size:20px}#menu .schema-salva{padding:7px 11px;gap:8px}#menu .schema-salva b{font-size:12px}
+  .schema-barra{grid-template-columns:1fr 1fr;gap:10px}.schema-barra>.schema-preset,.schema-barra>.schema-nome{grid-column:1/-1}
+  .schema-riga-nota{flex-direction:column;gap:7px;padding:11px 0}
+  .schema-griglia{grid-template-columns:1fr;gap:12px}.schema-griglia>section{padding:16px}.schema-griglia>.schema-lavagna{padding:9px}
+  .schema-porta-label{max-width:80px;font-size:7px}.schema-fasi{gap:2px}#menu .schema-fasi button{min-width:95px;padding:6px 8px}
+  #schemaPiscina{max-height:none}.schema-ruolo-compito{margin-top:14px;padding-top:14px}
+  #schemaAiuti label{font-size:11px}.schema-persistenza{font-size:11px}
+}

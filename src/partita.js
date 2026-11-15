@@ -4,7 +4,7 @@ import { aiutoGuida, humanControl, updateCtrl } from './controllo.js';
 import { DIFF, GW, MARK, PERIOD_LEN, clamp, dist, rnd } from './costanti.js';
 import { movePlayer, separate, updateBall } from './fisica.js';
 import { annuncia } from './cronaca.js';
-import { aggiornaDifesa, pos01, rif01, aiCarrier, aiTarget, closestTo, manUp, startCut, steer } from './ia.js';
+import { aggiornaDifesa, aggiornaSchemi, pos01, rif01, aiCarrier, aiTarget, closestTo, steer } from './ia.js';
 import { inp, pollInput, pressed, released } from './input.js';
 import { fightOn, updateFight } from './lotta.js';
 import { endMatch } from './menu.js';
@@ -108,19 +108,8 @@ export function update(dt){
     const a=other(p.team).players[MARK[p.i]], k=Math.min(1,dt*(2+2*p.st.def*(p.team.human?1:DIFF()))*(p.team.defPlay===3?1.4:1));      // zona a M: scalate più rapide
     p.lagX+=(a.x-p.lagX)*k; p.lagZ+=(a.z-p.lagZ)*k;
   }
-  // entrate (tagli) della squadra in attacco
-  for(const t of teams){
-    const h=ball.holder;
-    // palla all'ala: il mezzo dello stesso lato (il "2") attacca lo spazio lasciato dal suo marcatore che si è abbassato
-    if(game.possTeam===t&&h&&h.team===t&&(h.i===2||h.i===3)&&t.alaConPalla!==h){ t.alaConPalla=h; const m=t.players[h.i+2]; if(m!==ctrl&&!m.excluded&&!m.cut&&!manUp(t)) startCut(m); }
-    if(h&&h.team===t&&h.i!==2&&h.i!==3) t.alaConPalla=null;
-    if(game.possTeam!==t||!h||h.team!==t||h.isGK||t.atkPlay===3||manUp(t)) continue;
-    if(Math.abs(goalX(t)-h.x)>10||game.time<t.nextDrive) continue;
-    let b=null,bd=-1;
-    for(const q of t.players){ if(q.i<4||q.excluded||q===h||q===ctrl||q.cut) continue; const d=dist(q,ball); if(d>bd){bd=d;b=q;} }
-    if(b) startCut(b);
-    t.nextDrive=game.time+(t.atkPlay===1?4.5:10+rnd()*5);
-  }
+  // Un solo controller coordina entrata, liberazione dello spazio e copertura.
+  for(const t of teams) aggiornaSchemi(t);
   for(const t of teams) aggiornaDifesa(t,dt);
   aggiornaPanchina(dt);      // stamina delle riserve e cambi volanti (panchina.js)
   updateCtrl();

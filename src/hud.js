@@ -69,6 +69,10 @@ export function updateHUD(){
   const fe=$('fight');
   if(fight.active){
     fe.style.display='block';
+    const stato=fight.ricevibile?'Boa servibile':fight.stato==='anticipo'?'Anticipo difesa':'Cerca il lato';
+    $('fstato').textContent=stato;
+    fe.setAttribute('aria-label',`${stato}. Apertura del passaggio ${Math.round((fight.apertura||0)*100)} per cento`);
+    fe.title='La barra mostra la posizione sulla linea di passaggio. Taglio con palla al boa: girata; Sprint sostiene il tagliafuori.';
     $('fdef').textContent=fight.def.team.short+' #'+fight.def.num; $('fboa').textContent=fight.boa.team.short+' #'+fight.boa.num+' boa';
     const v=fight.v, fb=$('fbar');
     fb.style.left=(v>=0?50:50+v*50)+'%'; fb.style.width=(Math.abs(v)*50)+'%';

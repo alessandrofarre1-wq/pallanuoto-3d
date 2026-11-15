@@ -13,6 +13,7 @@ import { closestTo } from './ia.js';
 import { rumble } from './input.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, setCtrl, teams } from './stato.js';
 import { creaSerieRigori, preparaRigoreFinale as preparaTiroSerie, registraRigoreFinale } from './rigoriFinali.js';
+import { applicaSchema, copiaSchema } from './schemi.js';
 const serieAttiva = () => game.rigoriFinali && !game.rigoriFinali.terminati;
 export function deadBall(t,fn){ game.state='stop'; game.timer=t; game.after=fn||null; }
 // gioco fermo per palla fuori: se la palla si sta ancora muovendo (tiro fuori, deviazione del portiere, rimbalzo sul palo)
@@ -223,12 +224,12 @@ export function timeout(t){       // art. 5: due time-out a squadra, solo in pos
   return true;
 }
 export function callPlay(i){
+  if(!Number.isInteger(i)||i<0||i>3) return;
   const t=teams[0];
   if(game.possTeam===t){
-    if(i===0){ t.atkPlay=0; t.cross=false; }
-    else if(i===1){ t.atkPlay=1; t.nextDrive=0; }
-    else if(i===2){ t.atkPlay=2; t.cross=!t.cross; }
-    else t.atkPlay=3;
+    const difesa=t.defPlay;
+    applicaSchema(t,copiaSchema(['arco','entrata','incrocio','boa'][i]));
+    t.defPlay=difesa; t.schema.difesa=difesa;
     annuncia('avviso',`Schema: ${ATK[t.atkPlay]}`);
   } else if(i===1||i===3) passaAZona(t,i,true);
   else if(i<4){ t.defPlay=i; t.lasciato=null; annuncia('avviso',`Difesa: ${DEFN[i]}`); }
