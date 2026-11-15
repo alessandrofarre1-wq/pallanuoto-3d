@@ -26,10 +26,17 @@ export function fmt(s){ s=Math.max(0,Math.ceil(s)); return Math.floor(s/60)+':'+
 export function updateHUD(){
   aggiornaPulsanteCambi();      // pulsante CAMBI: cambio consigliato, in corso o in attesa
   $('scA').textContent=teams[0].score; $('scB').textContent=teams[1].score;
-  $('period').textContent=game.period+'°T';
-  $('clock').textContent=fmt(game.clock);
+  const serie=game.rigoriFinali;
+  $('period').textContent=serie?'RIG':game.period+'°T';
+  $('clock').textContent=serie?serie.gol.join(' – '):fmt(game.clock);
+  $('clock').title=serie?'Risultato della serie di rigori':'Tempo rimasto nel periodo';
+  // Durante la serie si conserva il pareggio dei regolamentari e si legge il conto dei rigori accanto a RIG.
+  // Cambi e schemi non sono disponibili mentre si stanno eseguendo i tiri finali.
+  $('tCambi').style.visibility=serie?'hidden':'';
+  $('tac').style.visibility=serie?'hidden':'';
   // tempo per l'azione: negli ultimi 5 secondi il numero lampeggia e suona a ogni secondo
-  { const n=game.possTeam?Math.max(0,Math.ceil(game.shot)):null, el=$('shotclock'), urg=n!==null&&n<=5&&game.state==='play'&&!game.penalty;
+  { const n=serie?(serie.fase==='tiro'?Math.max(0,Math.ceil(7-serie.tempoTiro)):null):game.possTeam?Math.max(0,Math.ceil(game.shot)):null, el=$('shotclock'), urg=n!==null&&n<=5&&game.state==='play'&&(!game.penalty||!!serie);
+    el.title=serie?'Tempo per eseguire il rigore':'Tempo rimasto per il possesso';
     el.textContent=n===null?'—':n; el.classList.toggle('urg',urg);
     if(urg&&n>0&&n!==ultimoBip){ bip(n<=2?1320:880); }
     ultimoBip=urg?n:null; }

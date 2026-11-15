@@ -1,4 +1,4 @@
-// Bandiere delle 16 nazionali, disegnate in modo semplificato (solo forme e colori: niente stemmi né loghi), in SVG.
+// Bandiere delle 24 nazionali in SVG, con gli elementi distintivi semplificati.
 // Servono al menu e al tabellone; pesano pochi byte e non si scarica nessuna immagine.
 const R = (x, y, w, h, c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
 const strisceO = (...c) => c.map((col, i) => R(0, i * 40 / c.length, 60, 40 / c.length + 0.3, col)).join('');
@@ -12,6 +12,14 @@ const DISEGNI = {
   CRO: () => strisceO('#FF0000', '#FFFFFF', '#171796') + [0, 1, 2, 3].map(i => R(24 + (i % 2) * 6, 10 + Math.floor(i / 2) * 6, 6, 6, '#FF0000')).join('') + `<rect x="24" y="10" width="12" height="12" fill="none" stroke="#FF0000" stroke-width="1"/>`,
   MNE: () => R(0, 0, 60, 40, '#D4AF37') + R(2.5, 2.5, 55, 35, '#C40308'),
   ITA: () => strisceV('#009246', '#FFFFFF', '#CE2B37'),
+  FRA: () => strisceV('#002395', '#FFFFFF', '#ED2939'),
+  GEO: () => R(0, 0, 60, 40, '#FFFFFF') + R(26, 0, 8, 40, '#FF0000') + R(0, 16, 60, 8, '#FF0000') + [[13, 8], [43, 8], [13, 29], [43, 29]].map(([x, y]) => R(x, y - 3, 4, 10, '#FF0000') + R(x - 3, y, 10, 4, '#FF0000')).join(''),
+  NED: () => strisceO('#AE1C28', '#FFFFFF', '#21468B'),
+  SVK: () => strisceO('#FFFFFF', '#0B4EA2', '#EE1C25') + '<path d="M16 10h16v14c0 5-8 9-8 9s-8-4-8-9z" fill="#EE1C25" stroke="#FFFFFF" stroke-width="1.5"/><path d="M17 27q3-6 6-3 3-7 8 3v1l-7 4z" fill="#0B4EA2"/><path d="M24 13v13m-5-9h10m-9 5h8" fill="none" stroke="#FFFFFF" stroke-width="2.4"/>',
+  SLO: () => strisceO('#FFFFFF', '#005DA4', '#ED1C24') + '<path d="M13 6h15v13c0 5-7.5 8-7.5 8S13 24 13 19z" fill="#005DA4" stroke="#ED1C24" stroke-width="1.1"/><path d="M14 19l3-4 2 2 2-6 3 6 2-2 1 4-1 3H15z" fill="#FFFFFF"/><path d="M15 23q3-2 5.5 0t5.5 0" fill="none" stroke="#FFFFFF" stroke-width="1"/>' + stella(17, 9, 1, '#FFDD00') + stella(24, 9, 1, '#FFDD00') + stella(20.5, 11, 1, '#FFDD00'),
+  TUR: () => R(0, 0, 60, 40, '#E30A17') + '<circle cx="25" cy="20" r="11" fill="#FFFFFF"/><circle cx="28.5" cy="20" r="8.8" fill="#E30A17"/>' + stella(39, 20, 5.7, '#FFFFFF'),
+  MLT: () => strisceV('#FFFFFF', '#CF142B') + '<path d="M7 5h5v4h4v5h-4v4H7v-4H3V9h4z" fill="#D2D2D2" stroke="#CF142B" stroke-width=".8"/>',
+  ISR: () => R(0, 0, 60, 40, '#FFFFFF') + R(0, 6, 60, 5, '#0038B8') + R(0, 29, 60, 5, '#0038B8') + '<path d="M30 12L39 25H21zM30 28L21 15h18z" fill="none" stroke="#0038B8" stroke-width="1.6"/>',
   USA: () => Array.from({ length: 13 }, (_, i) => R(0, i * 40 / 13, 60, 40 / 13 + 0.3, i % 2 ? '#FFFFFF' : '#B22234')).join('') + R(0, 0, 26, 21.5, '#3C3B6E') + Array.from({ length: 12 }, (_, i) => `<circle cx="${3.5 + (i % 4) * 6.3}" cy="${4 + Math.floor(i / 4) * 6.5}" r="1.1" fill="#FFFFFF"/>`).join(''),
   JPN: () => R(0, 0, 60, 40, '#FFFFFF') + '<circle cx="30" cy="20" r="11.5" fill="#BC002D"/>',
   ROU: () => strisceV('#002B7F', '#FCD116', '#CE1126'),

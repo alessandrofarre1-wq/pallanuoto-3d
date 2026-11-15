@@ -5,13 +5,48 @@ import { doFake, timeout } from './regole.js';
 import { annuncia as notifica } from './cronaca.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
 import { paloCoperto } from './muro.js';
-import { aiControfuga } from './controfuga.js';
-import { bestPassTarget, doPass, doShoot, laneClear, shotKind, situazioneTiro, startAct } from './tiri.js';
+import { QTE, aiControfuga, occasioneControfuga, tiroSpeciale } from './controfuga.js';
+import { bestPassTarget, doPass, doShoot, laneClear, openness, shotKind, situazioneTiro, startAct } from './tiri.js';
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 export function startCut(p){
   if(p.isGK||p.excluded||ball.holder===p) return;
   const t=p.team, side=Math.abs(p.z)<0.5?(rnd()<0.5?1:-1):Math.sign(p.z);
   p.cut={t0:game.time,phase:0,x:goalX(t)-t.dir*2.6,z:side*1.7}; p.cutT=game.time;
+}
+// Piccoli appoggi attorno al posto di ruolo, senza trasformare tutti gli attaccanti in taglianti.
+// La scelta resta ferma per un secondo: niente inversioni a ogni fotogramma quando si apre la linea.
+function appoggio(p,x,z,sup){
+  const h=ball.holder;
+  let a=p.appoggio;
+  if(!h||h.team!==p.team||h===p||p===ctrl||p.uscendo||(fight.active&&fight.boa===p)){
+    if(a){ a.h=null; a.fino=0; } return null;
+  }
+  if(!a) a=p.appoggio={h:null,possT:-1,dx:0,dz:0,fino:0,dopo:0,checkT:0};
+  if(a.h!==h||a.possT!==game.possT){ a.h=h; a.possT=game.possT; a.fino=0; a.dopo=0; a.checkT=0; }
+  if(game.time<a.fino) return a;
+  a.dx=a.dz=0;
+  if(game.time<a.dopo||game.time<a.checkT) return null;
+  a.checkT=game.time+0.3;
+  if(Math.hypot(p.x-x,p.z-z)>2||dist(h,p)<2.2|| (laneClear(h,p.x,p.z,p.team)&&openness(p)>1.8)) return null;
+  let best=-1e9, base=-1e9, bx=x,bz=z;
+  const dx=x-h.x,dz=z-h.z,l=Math.hypot(dx,dz)||1;
+  for(let k=0;k<9;k++){
+    // Otto direzioni, al massimo 1,25 m: ali larghe e punto in copertura restano riconoscibili.
+    const ang=(k-1)*Math.PI/4,r=k===0?0:1.25;
+    const cx=x+(dx/l*Math.sin(ang)-dz/l*Math.cos(ang))*r;
+    const cz=clamp(z+(dz/l*Math.sin(ang)+dx/l*Math.cos(ang))*r,-HW+0.5,HW-0.5);
+    if(Math.abs(z)>1.5&&Math.sign(cz)!==Math.sign(z)) continue;
+    if(Math.abs(cz)<3.5&&Math.abs(goalX(p.team)-cx)<2.05) continue;
+    let vicino=99,compagno=99;
+    for(const q of other(p.team).players){ if(!q.excluded) vicino=Math.min(vicino,Math.hypot(q.x-cx,q.z-cz)); }
+    for(const q of p.team.players){ if(q!==p&&!q.excluded) compagno=Math.min(compagno,Math.hypot(q.x-cx,q.z-cz)); }
+    const s=(laneClear(h,cx,cz,p.team)?3:0)+Math.min(vicino,3)*0.65-Math.max(0,1.7-compagno)*3-r*0.18;
+    if(k===0) base=s;
+    if(s>best){ best=s; bx=cx; bz=cz; }
+  }
+  if(best<base+0.7) return null;
+  a.dx=bx-x; a.dz=bz-z; a.fino=game.time+(sup?1.2:1); a.dopo=a.fino+0.6;
+  return a;
 }
 export function attackTarget(p){
   const t=p.team, gx=goalX(t);
@@ -36,9 +71,10 @@ export function attackTarget(p){
   const ballD=Math.abs(gx-ball.x), lead=[0,14,12,12,8,8,4][p.i];
   let f0=f[0], fz=f[1];
   if(ballD-lead>f0) f0=ballD-lead;
-  // con l'uomo in più ci si schiera subito e si sta fermi al proprio posto
-  if(sup) return { x:gx-t.dir*f0, z:clamp(fz*t.dir,-HW+0.5,HW-0.5), sprint:Math.hypot(gx-t.dir*f0-p.x,fz*t.dir-p.z)>1.5 };
-  return { x:gx-t.dir*f0, z:clamp(fz*t.dir+Math.sin(game.time*0.6+p.uid)*0.35,-HW+0.5,HW-0.5), sprint:(t.atkPlay===2&&(p.i===4||p.i===5))||game.time<(t.fugaFino||0) };
+  const x=gx-t.dir*f0,z=clamp(fz*t.dir+(sup?0:Math.sin(game.time*0.6+p.uid)*0.35),-HW+0.5,HW-0.5);
+  const a=appoggio(p,x,z,sup),ax=x+(a?a.dx:0),az=z+(a?a.dz:0);
+  if(sup) return { x:ax, z:az, sprint:Math.hypot(ax-p.x,az-p.z)>1.5 };
+  return { x:ax, z:az, sprint:(t.atkPlay===2&&(p.i===4||p.i===5))||game.time<(t.fugaFino||0) };
 }
 // Difesa con l'uomo in meno. Posizione di partenza: tre difensori sulla linea dei 2 metri, ciascuno in mezzo tra due dei quattro
 // attaccanti; gli altri due davanti ai pali, a metà tra gli attaccanti ai 2 metri e quelli a 5. Ognuno prende il posto più vicino.
@@ -283,14 +319,36 @@ export function aiCarrier(p,dt){
   const slot=attackTarget(p);
   const dGoal=Math.hypot(gx-p.x,p.z);
   p.target={x:slot.x+t.dir*0.8, z:slot.z, sprint: Math.abs(p.x-slot.x)>6};
-  if(p.act) return;
+  if(p.act&&!p.act.done) return;
   if(aiControfuga(p,dt)) return;      // controfuga: schizzo o colonnello
   // in superiorità: tiro al volo appena ricevuto il passaggio
   if((p.alVolo||p.i===1||p.i===6) && ball.holdTime<0.15 && manUp(t) && dGoal<7.5 && !(p.freeThrow&&Math.abs(gx-p.x)<6)){ p.alVolo=false; startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,null,{volo:true})); return; }
+  const ft=p.freeThrow&&Math.abs(gx-p.x)<6;       // tiro libero dentro i 6 metri: non si può tirare direttamente
+  // Il vantaggio si legge anche tra due decisioni ordinarie. La breve cadenza evita ricerche complete a ogni frame.
+  p.reazioneT=(p.reazioneT||0)-dt;
+  if(p.reazioneT<=0&&ball.holdTime>=0.18){
+    p.reazioneT=0.12;
+    const press=openness(p),sottoPressione=p.pressatoUntil>game.time;
+    const sit=situazioneTiro(p),angolo=Math.abs(gx-p.x)/Math.max(0.1,dGoal);
+    if(!ft&&!sottoPressione&&dGoal<7&&angolo>0.68&&sit.liberato&&sit.marcato<0.2&&laneClear(p,gx,0,t,0.7)){
+      // Il tiro rapido non deve consumare quasi sempre la controfuga prima che
+      // il controllo per fotogramma scelga uno speciale. La decisione resta immediata.
+      const speciale=dGoal<=QTE.maxComputer?occasioneControfuga(p):null;
+      if(speciale&&rnd()<0.35) tiroSpeciale(p,speciale,null);
+      else aiShoot(p,0.55+rnd()*0.45,false);
+      return;
+    }
+    const m=bestPassTarget(p,false);
+    if(m&&laneClear(p,m.x,m.z,t)&&openness(m)>1.5){
+      const md=Math.hypot(gx-m.x,m.z),ma=Math.abs(gx-m.x)/Math.max(0.1,md);
+      const vantaggio=openness(m)>2.1&&openness(m)>press+0.8&&md<8.5&&ma>0.5&&
+        (md<dGoal-1||(manUp(t)&&Math.sign(m.z)!==Math.sign(p.z)));
+      if(ft||sottoPressione||press<1.25||vantaggio){ aiPass(p,m); return; }
+    }
+  }
   p.decideT-=dt;
   if(p.decideT>0) return;
   p.decideT=0.3+rnd()*0.35;
-  const ft=p.freeThrow&&Math.abs(gx-p.x)<6;       // tiro libero dentro i 6 metri: non si può tirare direttamente
   // time-out dell'allenatore: dopo un parziale negativo, dopo una serie di espulsioni subite, o per preparare il 7 contro 6
   if(t.timeouts>0 && !t.human && t.vuoleTimeout && timeout(t)){ t.vuoleTimeout=false; t.parzialeSubito=0; return; }
   if(t.timeouts>0 && !t.human && rnd()<0.25){ let st=0,n=0; for(const q of t.players){ if(!q.isGK&&!q.excluded){ st+=q.stamina; n++; } } if(n&&st/n<0.3&&timeout(t)) return; }

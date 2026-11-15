@@ -5,8 +5,8 @@
 // Il menu si usa sia in verticale sia in orizzontale; la partita solo in orizzontale (main.js, stile.css).
 import { azzeraStatistiche } from './statistiche.js';
 import { initAudio } from './audio.js';
-import { PERIOD_LEN, setArbitro, setDiff, setPeriodLen } from './costanti.js';
-import { $, aggiornaTabellone, fpsIniziale, setFps } from './hud.js';
+import { ATK, DEFN, PERIOD_LEN, SHOT_CLOCK, setArbitro, setDiff, setPeriodLen } from './costanti.js';
+import { $, aggiornaTabellone, fmt, fpsIniziale, setFps } from './hud.js';
 import { RUOLI, CHIAVE, STAT_NOMI, squadre } from './dati/rose.js';
 import { bandiera } from './dati/bandiere.js';
 import { LOGO } from './logo.js';
@@ -14,15 +14,18 @@ import { applicaSquadre, formazioneValida, formazioni } from './giocatori.js';
 import { annullaCambio } from './panchina.js';
 import { azzeraScelta, disegnaPanchina } from './panchinaVista.js';
 import { kickoff } from './regole.js';
-import { allPlayers, game, teams } from './stato.js';
+import { allPlayers, ball, fight, game, teams } from './stato.js';
 import { iconaMano } from './mano.js';
+import { passaAZona } from './ia.js';
+import { resetTap } from './controllo.js';
+import { COMPETIZIONI, classificaGirone, creaTorneo, prossimaPartita, registraPartita, simulaBronzo } from './tornei.js';
 
 const salva=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){ /* senza memoria si va avanti lo stesso */ } };
 const leggi=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } };
 for(const id of ['logoHome','logoPausa','logoFine']) $(id).innerHTML=LOGO();
 
 // ---------- navigazione tra le schermate ----------
-const VISTE={ home:'vHome', squadre:'vSquadre', impostazioni:'vImpostazioni', comandi:'vComandi', info:'vInfo', opzioni:'vOpzioni', pausa:'vPausa', panchina:'vPanchina', fine:'vFine' };
+const VISTE={ home:'vHome', squadre:'vSquadre', impostazioni:'vImpostazioni', comandi:'vComandi', info:'vInfo', opzioni:'vOpzioni', pausa:'vPausa', panchina:'vPanchina', fine:'vFine', nazionale:'vNazionale', torneo:'vTorneo', bacheca:'vBacheca', tattiche:'vTattiche', cerimonia:'vCerimonia' };
 const storia=[];
 export function vai(v,senzaStoria){
   const M=$('menu'), prima=M.dataset.vista;
@@ -30,14 +33,18 @@ export function vai(v,senzaStoria){
   M.dataset.vista=v;
   for(const [k,id] of Object.entries(VISTE)) $(id).classList.toggle('on',k===v);
   M.scrollTop=0; $(VISTE[v]).scrollTop=0;
+  if(v==='home') disegnaHome();
+  if(v==='nazionale') disegnaNazionali();
+  if(v==='torneo') disegnaTorneo();
+  if(v==='bacheca') disegnaBacheca();
+  if(v==='tattiche') disegnaTattiche();
   if(v==='squadre') disegnaSquadre();
   if(v==='panchina') disegnaPanchina();
   else azzeraScelta();
 }
 function indietro(){ vai(storia.pop()||(game.state==='paused'?'pausa':game.state==='over'?'fine':'home'),true); }
-document.querySelectorAll('[data-va]').forEach(b=>b.addEventListener('click',()=>vai(b.dataset.va)));
+document.querySelectorAll('[data-va]').forEach(b=>b.addEventListener('click',()=>{ if(b.dataset.va==='squadre') preparaSingola(); vai(b.dataset.va); }));
 document.querySelectorAll('[data-indietro]').forEach(b=>b.addEventListener('click',indietro));
-vai('home',true);
 
 // ---------- impostazioni: valori di prima, ricordati per la prossima volta ----------
 function gruppo(attr,applica,chiave){
@@ -132,43 +139,217 @@ $('elencoSq').addEventListener('click',e=>{ const b=e.target.closest('[data-sq]'
 $('scambia').onclick=()=>{ if(game.state==='menu'||game.state==='over') scegliSquadre(scelta[1],scelta[0]); };
 { let a='ITA', b='HUN'; const v=(leggi('pallanuoto-squadre')||'').split(','); if(v.length===2&&sq(v[0])&&sq(v[1])) [a,b]=v; scegliSquadre(a,b); }
 
+// ---------- campagne: uno slot indipendente per competizione ----------
+const CHIAVE_TORNEO='pallanuoto-torneo-', CHIAVE_BACHECA='pallanuoto-bacheca';
+const campagne={};
+let tipoScelto='mondiali', nazionaleScelta='ITA', torneoAttivo=null, partitaTorneo=null, fineTimer=null, cerimoniaTimer=null, memoriaDisponibile=true;
+function leggiJSON(k){ try{ return JSON.parse(leggi(k)); }catch(e){ return null; } }
+function salvaJSON(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ memoriaDisponibile=false; return false; } }
+for(const tipo of Object.keys(COMPETIZIONI)){
+  const t=leggiJSON(CHIAVE_TORNEO+tipo);
+  if(t&&t.tipo===tipo&&sq(t.nazionale)&&Array.isArray(t.partite)&&t.gruppi) campagne[tipo]=t;
+}
+let bacheca=leggiJSON(CHIAVE_BACHECA); if(!Array.isArray(bacheca)) bacheca=[];
+const nome=c=>sq(c)?.nome||c;
+const finito=t=>['campione','concluso','eliminato'].includes(t.stato);
+const faseNome=f=>({gironi:'Prima fase a gironi',prima_fase:'Prima fase a gironi',seconda_fase:'Seconda fase a gironi',seconda:'Seconda fase a gironi',spareggi:'Spareggi',quarti:'Quarti di finale',semifinali:'Semifinali',finale:'Finale',bronzo:'Finale per il bronzo',concluso:'Torneo concluso',terminato:'Torneo concluso'}[f]||String(f||'Gironi').replaceAll('_',' '));
+const sfida=m=>`${nome(m.casa)} – ${nome(m.ospite)}`;
+const risultato=m=>m.golCasa==null?'Da giocare':`${m.golCasa} – ${m.golOspite}${m.rigoriCasa!=null?` (${m.rigoriCasa}–${m.rigoriOspite} dcr)`:''}`;
+const esitoTorneo=t=>t.medaglia==='oro'?'Campioni!':t.medaglia==='argento'?'Medaglia d’argento':t.medaglia==='bronzo'?'Medaglia di bronzo':`${t.piazzamento||'—'}° posto`;
+function salvaTorneo(t){ campagne[t.tipo]=t; salvaJSON(CHIAVE_TORNEO+t.tipo,t); }
+function prossimaSalvata(t){ const m=prossimaPartita(t); salvaTorneo(t); return m; }
+// Le coppe sono disegni originali del gioco, non riproduzioni dei trofei ufficiali.
+let coppeDisegnate=0;
+function coppa(tipo,medaglia='oro'){
+  const colore=medaglia==='argento'?'#d5e4ed':medaglia==='bronzo'?'#d59a60':'#f5ce6b';
+  if(medaglia!=='oro') return `<svg class="trofeo-svg medaglia-svg ${tipo}" viewBox="0 0 120 150" role="img" aria-label="Medaglia di ${medaglia} ${COMPETIZIONI[tipo].nome}"><path d="M26 8h23l22 57-18 14z" fill="#4dc7d1"/><path d="M71 8h23L67 79 49 65z" fill="#12627c"/><circle cx="60" cy="98" r="35" fill="${colore}" stroke="#fff2c0" stroke-width="2"/><circle cx="60" cy="98" r="28" fill="none" stroke="#384651" stroke-opacity=".35"/><text x="60" y="111" fill="#263440" font-size="42" font-weight="900" font-family="system-ui" text-anchor="middle">${medaglia==='argento'?'2':'3'}</text><path d="M41 121q19-13 38 0" fill="none" stroke="#fff2c0" stroke-width="2"/></svg>`;
+  const gradiente=`metallo-${tipo}-${++coppeDisegnate}`;
+  return `<svg class="trofeo-svg ${tipo}" viewBox="0 0 120 150" role="img" aria-label="Coppa ${COMPETIZIONI[tipo].nome}"><defs><linearGradient id="${gradiente}" x2="1" y2=".6"><stop stop-color="#fff4c1"/><stop offset=".45" stop-color="${colore}"/><stop offset="1" stop-color="#a66c23"/></linearGradient></defs><g fill="url(#${gradiente})" stroke="${colore}" stroke-width="2">${tipo==='mondiali'?'<circle cx="60" cy="35" r="25"/><path d="M37 67q23-18 46 0l-11 39H48z"/><path d="M32 30q28 15 56 0M37 48q23-14 46 0" fill="none"/><path d="M60 10q-17 25 0 50q17-25 0-50" fill="none"/>':'<path d="M38 19h44l-6 44q-2 16-16 23q-14-7-16-23z"/><path d="M39 28H23q-4 37 25 39M81 28h16q4 37-25 39" fill="none" stroke-width="7"/><path d="M54 83h12v24H54z"/>'}<path d="M45 108h30l8 14H37z"/><path d="M31 126h58v12H31z"/></g><path d="M40 91q10-9 20 0t20 0" stroke="#59e3e2" stroke-width="4" fill="none"/></svg>`;
+}
+function disegnaHome(){
+  $('continuaTornei').innerHTML=Object.values(campagne).filter(t=>!finito(t)).map(t=>{
+    const m=t.partite.find(p=>p.golCasa==null&&(p.casa===t.nazionale||p.ospite===t.nazionale));
+    return `<button type="button" class="continua-torneo" data-continua="${t.tipo}"><span>${bandiera(t.nazionale)}</span><span><small>CONTINUA ${COMPETIZIONI[t.tipo].nome.toUpperCase()}</small><b>${nome(t.nazionale)}</b><em>${faseNome(t.fase)}${m?` · ${nome(m.casa===t.nazionale?m.ospite:m.casa)}`:''}</em></span><i>›</i></button>`;
+  }).join('');
+  $('numeroTrofei').textContent=bacheca.filter(t=>t.medaglia).length;
+}
+function disegnaNazionali(){
+  const c=COMPETIZIONI[tipoScelto], attuale=campagne[tipoScelto];
+  $('nazionaleTitolo').textContent=c.nome;
+  $('formulaTorneo').textContent=tipoScelto==='mondiali'?'Quattro gironi da quattro. Le prime ai quarti; seconde e terze agli spareggi. Poi la corsa alla coppa.':'Quattro gironi da quattro. Le prime tre alla seconda fase con i risultati contro le altre qualificate. Poi semifinali, finale e bronzo.';
+  $('nazionaliTorneo').innerHTML=c.codici.filter(cod=>sq(cod)).map(cod=>`<button type="button" class="nazionale-card${cod===nazionaleScelta?' on':''}" data-nazionale="${cod}" aria-pressed="${cod===nazionaleScelta}">${bandiera(cod,'band',true)}<span><b>${nome(cod)}</b><small>${cod} · ${sq(cod).forza} OVR</small></span></button>`).join('');
+  $('nazionaleScelta').textContent=`Giocherai tutte le gare con ${nome(nazionaleScelta)}. Le altre partite saranno simulate.`;
+  $('slotEsistente').innerHTML=attuale?`<div class="slot-esistente"><span>${finito(attuale)?'Ultimo torneo':'Torneo salvato'}: <b>${nome(attuale.nazionale)}</b> · ${finito(attuale)?esitoTorneo(attuale):faseNome(attuale.fase)}</span><button type="button" data-continua="${tipoScelto}">${finito(attuale)?'Rivedi':'Continua'} ›</button></div>`:'';
+}
+export function creaCampagna(tipo,nazionale,seme){
+  if(!COMPETIZIONI[tipo]?.codici.includes(nazionale)||!sq(nazionale)) throw new Error('Nazionale non disponibile per questa competizione');
+  const semeNuovo=()=>globalThis.crypto?.getRandomValues?crypto.getRandomValues(new Uint32Array(1))[0]:Date.now();
+  const t=creaTorneo(tipo,nazionale,seme??semeNuovo());
+  t.id=`${tipo}-${Date.now()}-${t.seed}`; t.impostazioni={durata:$('selLen').value,difficolta:$('selDiff').value,arbitro:$('selArb').value};
+  torneoAttivo=t; partitaTorneo=null; game.state='menu'; game.torneoMatch=null;
+  salvaTorneo(t); apriMenu('torneo'); return t;
+}
+export function continuaTorneo(tipo){
+  const t=campagne[tipo]; if(!t) return;
+  torneoAttivo=t; partitaTorneo=null; game.state='menu'; game.torneoMatch=null;
+  if(t.impostazioni){ imposta('len',t.impostazioni.durata); imposta('diff',t.impostazioni.difficolta); imposta('arb',t.impostazioni.arbitro); }
+  apriMenu('torneo');
+}
+export function esportaSalvataggi(){ return JSON.parse(JSON.stringify({campagne,bacheca})); }
+function disegnaTorneo(){
+  const t=torneoAttivo; if(!t) return;
+  const m=finito(t)?null:prossimaSalvata(t), finale=finito(t);
+  $('torneoTitolo').textContent=COMPETIZIONI[t.tipo].nome;
+  $('torneoFase').textContent=finale?'TORNEO CONCLUSO':faseNome(t.fase).toUpperCase();
+  $('torneoNazionale').innerHTML=`${bandiera(t.nazionale)} ${nome(t.nazionale)}`;
+  $('torneoCoppa').innerHTML=coppa(t.tipo,t.medaglia||'oro');
+  $('torneoProssima').innerHTML=m?`<div><p class="soprattitolo">${faseNome(m.fase)}${m.girone?` · GIRONE ${m.girone}`:''}${m.turno?` · GIORNATA ${m.turno}`:''}</p><h2>${bandiera(m.casa)}<span>${nome(m.casa)}</span><i>VS</i><span>${nome(m.ospite)}</span>${bandiera(m.ospite)}</h2></div><span class="tag-tu">TU: ${t.nazionale}</span>`:`<div><p class="soprattitolo">${esitoTorneo(t)}</p><h2>${t.medaglia==='oro'?'IL MONDO È TUO.':t.medaglia?'UN POSTO SUL PODIO.':'IL PERCORSO SI FERMA QUI.'}</h2><p class="testo-tenue">Campione: ${nome(t.campione||t.nazionale)} · ${t.piazzamento||'—'}° posto con ${nome(t.nazionale)}</p></div>`;
+  $('torneoGioca').hidden=!m;
+  $('simulaBronzo').hidden=!m||m.fase!=='bronzo';
+  $('torneoNota').textContent=memoriaDisponibile?(finale?'Percorso registrato nella bacheca.':t.eliminatoDalTitolo?'Resta una medaglia: gioca o simula la finale per il bronzo.':'Sorteggio e risultati salvati automaticamente dopo ogni gara.'): 'La memoria del browser non è disponibile: i progressi restano solo in questa sessione.';
+  const fasi=t.tipo==='mondiali'?['gironi','spareggi','quarti','semifinali','finale']:['gironi','seconda_fase','semifinali','finale'];
+  $('torneoPercorso').innerHTML=fasi.map(f=>`<div class="tappa${t.fase===f?' attuale':''}"><b>${faseNome(f)}</b><small>${t.partite.filter(p=>p.fase===f&&(p.casa===t.nazionale||p.ospite===t.nazionale)&&p.golCasa!=null).length} gare completate</small></div>`).join('');
+  $('torneoGruppi').innerHTML=Object.entries(t.gruppi).map(([g,codici])=>{
+    const righe=classificaGirone(t,g);
+    return `<article class="girone${codici.includes(t.nazionale)?' tuo-girone':''}"><h4>GIRONE ${g}${codici.includes(t.nazionale)?'<span>LA TUA NAZIONALE</span>':''}</h4><table><thead><tr><th scope="col">Nazionale</th><th scope="col">G</th><th scope="col">DR</th><th scope="col">PT</th></tr></thead><tbody>${righe.map((r,i)=>`<tr class="${r.codice===t.nazionale?'riga-tu':''}"><th scope="row"><span>${i+1}</span>${bandiera(r.codice)} ${nome(r.codice)}</th><td>${r.giocate}</td><td>${r.differenzaReti>0?'+':''}${r.differenzaReti}</td><td><b>${r.punti}</b></td></tr>`).join('')}</tbody></table></article>`;
+  }).join('');
+  const partite=t.partite, fasiPresenti=[...new Set(partite.map(p=>p.fase))];
+  $('torneoCalendario').innerHTML=fasiPresenti.map(f=>`<details class="calendario-fase"${f===t.fase||finale?' open':''}><summary>${faseNome(f)} <span>${partite.filter(p=>p.fase===f&&p.golCasa!=null).length}/${partite.filter(p=>p.fase===f).length}</span></summary>${partite.filter(p=>p.fase===f).map(p=>`<div class="calendario-riga${p.casa===t.nazionale||p.ospite===t.nazionale?' tua-partita':''}"><span><small>${p.girone?`Girone ${p.girone} · `:''}${p.turno?`Giornata ${p.turno}`:faseNome(p.fase)}</small>${sfida(p)}</span><b>${risultato(p)}</b></div>`).join('')}</details>`).join('');
+  if(finale) archiviaTorneo(t);
+}
+function preparaGaraTorneo(){
+  if(!torneoAttivo||finito(torneoAttivo)) return;
+  const m=prossimaSalvata(torneoAttivo); if(!m) return;
+  partitaTorneo=m; game.state='menu';
+  scegliSquadre(torneoAttivo.nazionale,m.casa===torneoAttivo.nazionale?m.ospite:m.casa);
+  document.querySelector('#vImpostazioni h2').textContent=`${COMPETIZIONI[torneoAttivo.tipo].nome} · ${faseNome(m.fase)}`;
+  vai('impostazioni');
+}
+function preparaSingola(){
+  torneoAttivo=null; partitaTorneo=null; game.torneoMatch=null; game.torneo=false; game.state='menu';
+  document.querySelector('#vImpostazioni h2').textContent='Impostazioni partita';
+}
+function archiviaTorneo(t){
+  if(!finito(t)) return;
+  const id=t.id||`${t.tipo}-${t.seed}`; if(bacheca.some(v=>v.id===id)) return;
+  bacheca.unshift({id,tipo:t.tipo,nazionale:t.nazionale,piazzamento:t.piazzamento,medaglia:t.medaglia,campione:t.campione,data:new Date().toISOString(),percorso:t.partite.filter(p=>p.golCasa!=null&&(p.casa===t.nazionale||p.ospite===t.nazionale)).map(p=>({...p}))});
+  salvaJSON(CHIAVE_BACHECA,bacheca);
+}
+function disegnaBacheca(){
+  $('bachecaTrofei').innerHTML=bacheca.length?bacheca.map(t=>`<article class="bacheca-trofeo ${t.medaglia||'senza-medaglia'}"><div class="premio-bacheca">${t.medaglia?coppa(t.tipo,t.medaglia):'<span class="piazzamento-bacheca">'+t.piazzamento+'°</span>'}</div><div><p class="soprattitolo">${COMPETIZIONI[t.tipo].nome} · ${new Date(t.data).toLocaleDateString('it-IT')}</p><h2>${bandiera(t.nazionale)}${nome(t.nazionale)}</h2><p class="premio-nome">${esitoTorneo(t)}</p><details><summary>Il percorso · ${t.percorso.length} partite</summary>${t.percorso.map(p=>`<div class="calendario-riga"><span><small>${faseNome(p.fase)}</small>${sfida(p)}</span><b>${risultato(p)}</b></div>`).join('')}</details></div></article>`).join(''):`<div class="bacheca-vuota">${coppa('mondiali')}<h2>La prima coppa ti aspetta.</h2><p>Completa un torneo per conservare qui nazionale, risultati e medaglie.</p><button type="button" class="azione-secondaria" data-apri-mondiali>Gioca i Mondiali ›</button></div>`;
+}
+document.querySelectorAll('[data-competizione]').forEach(b=>b.onclick=()=>{ tipoScelto=b.dataset.competizione; nazionaleScelta=COMPETIZIONI[tipoScelto].codici.includes(scelta[0])?scelta[0]:'ITA'; vai('nazionale'); });
+$('menu').addEventListener('click',e=>{
+  const continua=e.target.closest('[data-continua]'); if(continua) continuaTorneo(continua.dataset.continua);
+  const nazionale=e.target.closest('[data-nazionale]'); if(nazionale){ nazionaleScelta=nazionale.dataset.nazionale; disegnaNazionali(); }
+  if(e.target.closest('[data-apri-mondiali]')){ tipoScelto='mondiali'; nazionaleScelta=COMPETIZIONI.mondiali.codici.includes(scelta[0])?scelta[0]:'ITA'; vai('nazionale'); }
+});
+$('sorteggiaTorneo').onclick=()=>{
+  const precedente=campagne[tipoScelto];
+  if(precedente&&!finito(precedente)&&!window.confirm(`Sostituire il torneo ${COMPETIZIONI[tipoScelto].nome} di ${nome(precedente.nazionale)}? I progressi di questa campagna saranno persi.`)) return;
+  creaCampagna(tipoScelto,nazionaleScelta);
+};
+$('torneoGioca').onclick=preparaGaraTorneo;
+$('simulaBronzo').onclick=()=>{ if(!torneoAttivo) return; simulaBronzo(torneoAttivo); salvaTorneo(torneoAttivo); archiviaTorneo(torneoAttivo); disegnaTorneo(); if(torneoAttivo.medaglia) avviaCerimonia(torneoAttivo,'torneo'); };
+document.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>{ game.state='menu'; partitaTorneo=null; game.torneoMatch=null; apriMenu('home'); });
+
 // ---------- avvio, pausa, fine ----------
 function chiudiMenu(){ $('menu').style.display='none'; storia.length=0; }
 function apriMenu(v){ $('menu').style.display='flex'; storia.length=0; vai(v,true); }
+function annullaSchermateFinali(){ clearTimeout(fineTimer); clearInterval(cerimoniaTimer); fineTimer=null; cerimoniaTimer=null; }
 $('goBtn').onclick=()=>{
   initAudio();
-  // dove il browser lo permette si blocca lo schermo in orizzontale (non è indispensabile: in verticale c'è comunque l'avviso)
   try{ const o=screen.orientation; if(o&&o.lock) o.lock('landscape').catch(()=>{}); }catch(e){ /* non supportato */ }
   if(game.state==='paused'){ game.state=game.prevState; chiudiMenu(); return; }
   newMatch();
 };
 $('riprendi').onclick=()=>$('goBtn').click();
-$('rigioca').onclick=()=>$('goBtn').click();
+$('riprendiTattiche').onclick=()=>$('goBtn').click();
+$('rigioca').onclick=()=>{ if(torneoAttivo){ partitaTorneo=null; apriMenu('torneo'); }else $('goBtn').click(); };
 export function togglePause(){
-  if(game.state==='menu') return;
+  if(game.state==='menu'||game.state==='over') return;
   if(game.state==='paused'){ game.state=game.prevState; chiudiMenu(); return; }
-  if(game.state==='over') return;
   game.prevState=game.state; game.state='paused';
-  $('pausaPunteggio').innerHTML=`${bandiera(teams[0].codice)}<b>${teams[0].short} ${teams[0].score} – ${teams[1].score} ${teams[1].short}</b>${bandiera(teams[1].codice)}<span>${game.period}° tempo</span>`;
+  const rigori=game.rigoriFinali;
+  $('pausaPunteggio').innerHTML=`<p class="soprattitolo">${torneoAttivo?`${COMPETIZIONI[torneoAttivo.tipo].nome} · ${faseNome(partitaTorneo?.fase)}`:'PARTITA SINGOLA'}</p><div class="pausa-squadre">${bandiera(teams[0].codice)}<b>${teams[0].short} <strong>${teams[0].score} – ${teams[1].score}</strong> ${teams[1].short}</b>${bandiera(teams[1].codice)}</div><div class="pausa-cronometri"><span><small>${game.period}° TEMPO</small><b>${fmt(game.clock)}</b></span><span><small>POSSESSO ${game.possTeam?.short||'—'}</small><b>${game.possTeam?Math.ceil(game.shot)+' s':'—'}</b></span>${rigori?`<span><small>SERIE DI RIGORI</small><b>${rigori.gol[0]} – ${rigori.gol[1]}</b></span>`:''}</div>`;
+  $('pausaSalvataggio').textContent=torneoAttivo?'I risultati delle gare concluse sono salvati. Uscendo, questa gara ripartirà dall’inizio.':'Uscendo perderai questa gara. Puoi riprenderla finché resti in pausa.';
   apriMenu('pausa');
 }
+function disegnaTattiche(){
+  const t=teams[0];
+  $('tattichePausa').innerHTML=[['attacco','Attacco',ATK,t.atkPlay],['difesa','Difesa',DEFN,t.defPlay]].map(([tipo,titolo,schemi,attuale])=>`<section class="scelte-tattiche"><h3>${titolo}</h3><div>${schemi.map((s,i)=>`<button type="button" class="tattica${i===attuale?' on':''}" data-tattica="${tipo}" data-schema="${i}" aria-pressed="${i===attuale}"><small>0${i+1}</small><b>${s}</b></button>`).join('')}</div></section>`).join('');
+}
+$('tattichePausa').onclick=e=>{
+  const b=e.target.closest('[data-tattica]'); if(!b||game.state!=='paused') return;
+  const t=teams[0], i=+b.dataset.schema;
+  if(b.dataset.tattica==='attacco'){ t.atkPlay=i; t.cross=i===2; t.nextDrive=0; }
+  else if(i===1||i===3) passaAZona(t,i,false); else { t.defPlay=i; t.lasciato=null; }
+  aggiornaTabellone(); disegnaTattiche();
+};
+$('esciPartita').onclick=()=>{
+  if(!window.confirm(torneoAttivo?'I risultati delle gare concluse sono salvati. La gara in corso ripartirà dall’inizio. Tornare alla home?':'La gara in corso sarà persa. Tornare alla home?')) return;
+  if(torneoAttivo) salvaTorneo(torneoAttivo);
+  annullaSchermateFinali(); for(const t of teams) annullaCambio(t);
+  game.state='menu'; game.prevState=null; game.torneoMatch=null; partitaTorneo=null;
+  apriMenu('home');
+};
 export function newMatch(){
+  annullaSchermateFinali();
+  if(partitaTorneo&&torneoAttivo){
+    game.torneoMatch={id:partitaTorneo.id,tipo:torneoAttivo.tipo,nazionale:torneoAttivo.nazionale};
+    torneoAttivo.impostazioni={durata:$('selLen').value,difficolta:$('selDiff').value,arbitro:$('selArb').value}; salvaTorneo(torneoAttivo);
+  }else game.torneoMatch=null;
+  game.torneo=!!game.torneoMatch;
   for(const t of teams) annullaCambio(t);
-  applicaSquadre(teams[0].codice,teams[1].codice);      // si riparte con i titolari, panchina fresca
-  teams[0].score=teams[1].score=0; game.period=1; game.clock=PERIOD_LEN; game.time=0;
-  for(const p of allPlayers){ p.stamina=1; p.excluded=false; p.pf=0; p.cut=null; }
-  for(const t of teams){ t.atkPlay=0; t.defPlay=2; t.lasciato=null; t.cross=false; t.timeouts=2; t.vuoleTimeout=false; t.parzialeSubito=0; t.espulsioniT=[]; t.setteAnnunciato=false; t.fugaFino=0; }
-  game.penalty=null; azzeraStatistiche();
-  chiudiMenu();
-  kickoff();
+  applicaSquadre(teams[0].codice,teams[1].codice);
+  teams[0].score=teams[1].score=0;
+  Object.assign(game,{period:1,clock:PERIOD_LEN,time:0,shot:SHOT_CLOCK,possT:0,possTeam:null,prevState:null,after:null,penalty:null,penT:0,rigoriFinali:null,cambiLiberi:false,contoVisto:0});
+  // I corpi vengono riutilizzati: i timer assoluti della gara precedente non devono
+  // sopravvivere al ritorno del cronometro a zero (pressione, finte, esclusioni, IA).
+  for(const p of allPlayers) Object.assign(p,{stamina:1,excluded:false,pf:0,cut:null,act:null,charging:false,chargeT:0,exclUntil:0,stunUntil:0,tackleCD:0,fakeUntil:0,freeThrow:false,qte:null,
+    pressatoUntil:0,turnedUntil:0,fakedUntil:0,biteUntil:0,qteDopo:0,fintaFino:0,sfondaT:0,lunge:0,aggrT:0,cinqueUntil:0,cutT:0,ricevutoT:0,arrivoPozzetto:0,contactT:0,decideT:0,reazioneT:0,
+    pressatoDa:null,rientro:null,appoggio:null,daChi:null,ricevutoPassaggio:false,ricevutoCambio:false,alVolo:false,voloPronto:false,shootNext:false,fakeUsed:false,fakeCount:0,tiriDiSchiena:0,perno:false,uscendo:false,alPozzetto:false,puoRientrare:false,valutatoPozzetto:false,colpi:[],sprinting:false});
+  for(const t of teams) Object.assign(t,{atkPlay:0,defPlay:2,lasciato:null,cross:false,timeouts:2,vuoleTimeout:false,parzialeSubito:0,espulsioniT:[],setteAnnunciato:false,fugaFino:0,doubleP:null,doubleUntil:0,nextDrive:0,alaConPalla:null,postiT:-1,posti:null,rallT:-1,rall:null});
+  Object.assign(ball,{kind:null,target:null,shooter:null,afterShot:false,flightT:0,saveChecked:false,holdTime:0,shotPower:0,lob:false,inRete:false,daTiro:false,inUscita:false,rigore:false,cambioLato:false,toccoDifesa:null,ignora:null,skip:false,skipped:false,schizzi:0,lastTeam:null,wx:0,wy:0,wz:0}); ball.intercept.clear();
+  Object.assign(fight,{active:false,v:0,boa:null,def:null,holdT:0,decT:0});
+  resetTap(); azzeraStatistiche(); aggiornaTabellone(); chiudiMenu(); kickoff();
 }
 export function endMatch(){
+  if(game.state==='over') return;
   game.state='over';
-  const a=teams[0].score, b=teams[1].score;
-  $('final').innerHTML=`<div class="fin-esito">${a>b?'Vittoria!':a<b?'Sconfitta':'Pareggio'}</div><div class="fin-punteggio">${bandiera(teams[0].codice)}<b>${teams[0].name} ${a} – ${b} ${teams[1].name}</b>${bandiera(teams[1].codice)}</div>`+
-    `<div class="fin-nota">${a>b?'Bella partita.':a<b?'Si riprova.':'Tutto da rifare.'}</div>`;
-  setTimeout(()=>apriMenu('fine'),1500);
+  const a=teams[0].score, b=teams[1].score, rigori=game.rigoriFinali?.terminati?game.rigoriFinali:null;
+  const vinto=rigori?rigori.vincitore===0:a>b, perso=rigori?rigori.vincitore===1:a<b;
+  let premiazione=false;
+  if(torneoAttivo&&partitaTorneo){
+    const inCasa=partitaTorneo.casa===teams[0].codice;
+    registraPartita(torneoAttivo,partitaTorneo.id,{golCasa:inCasa?a:b,golOspite:inCasa?b:a,...(rigori?{rigoriCasa:rigori.gol[inCasa?0:1],rigoriOspite:rigori.gol[inCasa?1:0]}:{})});
+    salvaTorneo(torneoAttivo); archiviaTorneo(torneoAttivo);
+    premiazione=finito(torneoAttivo)&&!!torneoAttivo.medaglia&&!torneoAttivo.premiazioneVista;
+  }
+  $('final').innerHTML=`<p class="soprattitolo">${torneoAttivo?`${COMPETIZIONI[torneoAttivo.tipo].nome} · ${faseNome(partitaTorneo?.fase)}`:'FISCHIO FINALE'}</p><div class="fin-esito">${vinto?'Vittoria!':perso?'Sconfitta':'Pareggio'}</div><div class="fin-punteggio">${bandiera(teams[0].codice)}<b>${teams[0].name} ${a} – ${b} ${teams[1].name}</b>${bandiera(teams[1].codice)}</div>${rigori?`<div class="fin-rigori">Rigori: ${rigori.gol[0]} – ${rigori.gol[1]}</div>`:''}<div class="fin-nota">${torneoAttivo?(finito(torneoAttivo)?esitoTorneo(torneoAttivo):'Risultato salvato. Scopri la prossima avversaria.'):(vinto?'Bella partita.':perso?'La prossima sfida ti aspetta.':'Una sfida alla pari.')}</div>`;
+  $('rigioca').querySelector('b').textContent=torneoAttivo?'Vai al centro torneo':'Rigioca';
+  $('rigioca').querySelector('small').textContent=torneoAttivo?(finito(torneoAttivo)?'Classifiche e percorso':'Risultati e prossima gara'):'Stesse squadre';
+  fineTimer=setTimeout(()=>{ fineTimer=null; if(premiazione) avviaCerimonia(torneoAttivo); else apriMenu('fine'); },1500);
 }
+function avviaCerimonia(t,dopo='fine'){
+  t.premiazioneVista=true; salvaTorneo(t);
+  $('cerimoniaCompetizione').textContent=COMPETIZIONI[t.tipo].nome;
+  $('cerimoniaTitolo').textContent=t.medaglia==='oro'?'CAMPIONI!':t.medaglia==='argento'?'ARGENTO!':'BRONZO!';
+  $('cerimoniaSottotitolo').textContent=nome(t.nazionale)+' · '+esitoTorneo(t);
+  $('cerimoniaTrofeo').innerHTML=coppa(t.tipo,t.medaglia);
+  $('cerimoniaBandiera').innerHTML=bandiera(t.nazionale);
+  $('vCerimonia').dataset.medaglia=t.medaglia; $('vCerimonia').dataset.atto='0';
+  $('cerimoniaDidascalia').textContent='Il fischio finale. La tua nazionale sul podio.';
+  const c=document.querySelector('.coriandoli'); c.innerHTML=Array.from({length:28},(_,i)=>`<i style="--x:${(i*37)%100}%;--ritardo:${(i%7)*.27}s;--giro:${i*43}deg"></i>`).join('');
+  apriMenu('cerimonia');
+  let atto=0;
+  const chiudi=()=>{ clearInterval(cerimoniaTimer); cerimoniaTimer=null; apriMenu(dopo); };
+  $('saltaCerimonia').onclick=chiudi;
+  cerimoniaTimer=setInterval(()=>{ atto++; if(atto>=4){ chiudi(); return; } $('vCerimonia').dataset.atto=String(atto); $('cerimoniaDidascalia').textContent=[null,t.medaglia==='oro'?'Il capitano alza la coppa. È il vostro momento.':'La squadra riceve le medaglie.','Una nazionale. Una squadra. Un percorso da ricordare.','Il trofeo e tutti i risultati ti aspettano in bacheca.'][atto]; },2500);
+}
+
+for(const t of Object.values(campagne)) archiviaTorneo(t);
+vai('home',true);
 
 // versione del prototipo (da package.json, vedi vite.config.js): in home e in pausa, così si vede quando il gioco si aggiorna
 for(const el of document.querySelectorAll('#sub, .versione-pausa')) el.textContent='Prototipo v'+__VERSIONE__;

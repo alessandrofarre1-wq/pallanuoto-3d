@@ -9,7 +9,13 @@ import { aggiornaQte, tiroSpeciale } from './controfuga.js';
 import { ball, ctrl, fight, game, goalX, ownGoalX, setCtrl, teams } from './stato.js';
 import { diSchiena, doPass, doShoot, humanPassTarget, shotKind, startAct } from './tiri.js';
 export let tapT=-9, pendingQuick=null;   // doppio tocco = finta, tocco singolo = tiro rapido
-export function resetTap(){ tapT=-9; pendingQuick=null; }
+// Una sola intenzione negli ultimi 200 ms del gesto: non si accodano tiri speciali o cariche.
+let intenzione=null;
+export function resetTap(){ tapT=-9; pendingQuick=null; intenzione=null; }
+function verificaIntenzione(){
+  if(intenzione && (game.state!=='play'||game.penalty||ctrl!==intenzione.p||ball.holder!==intenzione.p||
+    game.possT!==intenzione.possT||intenzione.p.act!==intenzione.act||game.time>intenzione.fino)) intenzione=null;
+}
 export function autoSwitch(pt){
   const c=closestTo(teams[0],pt);
   if(c) setCtrl(c);
@@ -26,6 +32,7 @@ export function piuVicinoAllaPalla(t,escluso){
   return best;
 }
 export function updateCtrl(){
+  verificaIntenzione();
   if(game.autoplay) return;
   const ht=teams[0];
   if(ball.holder&&ball.holder.team===ht){ setCtrl(ball.holder); return; }
@@ -35,12 +42,26 @@ export function updateCtrl(){
 }
 export function humanControl(p,dt){
   const hasBall = ball.holder===p;
+  verificaIntenzione();
+  let passa=pressed('pass'), lob=pressed('lob'), ix=inp.x, iz=inp.z;
   p.cut=null;
   // secondo tocco rapido mentre parte il tiro di polso: il tiro diventa una finta (il braccio si ferma)
   if(hasBall && pressed('shoot') && p.act && p.act.kind==='polso' && !p.act.done && game.time-tapT<0.3){
     p.act.kind='fake'; p.act.frusta=0.09; p.act.fn=()=>doFake(p); p.fintaFino=game.time+1.0; tapT=-9; return;
   }
-  if(p.act&&!p.act.done) return;
+  if(p.act&&!p.act.done){
+    const resto=p.act.wind+p.act.frusta-p.act.t;
+    const lobLecito=!p.isGK&&!(p.freeThrow&&Math.abs(goalX(p.team)-p.x)<6)&&!(p.pressatoUntil>game.time);
+    if(hasBall&&p===ctrl&&game.state==='play'&&!game.penalty&&resto<=0.2&&resto>0 && (passa||(lob&&lobLecito))){
+      intenzione={p,act:p.act,possT:game.possT,kind:passa?'pass':'lob',x:ix,z:iz,fino:game.time+0.24};
+    }
+    return;
+  }
+  if(intenzione){
+    const c=intenzione; intenzione=null;
+    // Un comando nuovo sostituisce quello anticipato; altrimenti si usa la direzione del tocco.
+    if(!passa&&!lob&&!pressed('shoot')&&!pressed('cmd')){ passa=c.kind==='pass'; lob=c.kind==='lob'; ix=c.x; iz=c.z; }
+  }
   if(pressed('cmd') && hasBall && fightOn(p,fight.def) && fight.boa===p && !(p.turnedUntil>game.time)){ girata(p,fight.def); return; }
   if(pressed('cmd')){
     if(hasBall){ const m=humanPassTarget(p,inp.x,inp.z); if(m&&!m.isGK){ startCut(m); annuncia('avviso','Taglio',{p:m}); } }
@@ -51,19 +72,19 @@ export function humanControl(p,dt){
     }
   }
   if(hasBall){
-    const aimZ=Math.abs(inp.z)>0.3?inp.z:null;
+    const aimZ=Math.abs(iz)>0.3?iz:null;
     const ftBlock = p.freeThrow && Math.abs(goalX(p.team)-p.x)<6;
-    if(pressed('pass')){ pendingQuick=null; const m=humanPassTarget(p,inp.x,inp.z); if(m) startAct(p,'pass',0.05,()=>doPass(p,m),[m.x,m.z]); return; }
-    if(ftBlock && (pressed('lob')||pressed('shoot'))){ annuncia('avviso','Tiro libero dentro i 6 metri',{dettaglio:'devi passare o uscire oltre i 6',durata:1.6}); return; }
+    if(passa){ pendingQuick=null; const m=humanPassTarget(p,ix,iz); if(m) startAct(p,'pass',0.05,()=>doPass(p,m),[m.x,m.z]); return; }
+    if(ftBlock && (lob||pressed('shoot'))){ annuncia('avviso','Tiro libero dentro i 6 metri',{dettaglio:'devi passare o uscire oltre i 6',durata:1.6}); return; }
     if(ftBlock){ p.charging=false; p.chargeT=0; pendingQuick=null; }
     // sotto pressione non si tira: si passa o ci si allontana proteggendo la palla
     if(p.pressatoUntil>game.time && !p.isGK){ p.charging=false; p.chargeT=0; p.voloPronto=false; pendingQuick=null;
-      if(pressed('shoot')||pressed('lob')) annuncia('avviso','Sotto pressione',{dettaglio:'proteggi la palla o passa',durata:0.9});
+      if(pressed('shoot')||lob) annuncia('avviso','Sotto pressione',{dettaglio:'proteggi la palla o passa',durata:0.9});
       return; }
     // controfuga: tasto a comparsa per lo schizzo o il colonnello (controfuga.js)
     const qte=aggiornaQte(p);
     if(qte && pressed('shoot')){ pendingQuick=null; p.charging=false; p.chargeT=0; tiroSpeciale(p,qte.tipo,aimZ); return; }
-    if(pressed('lob')&&!p.isGK){ pendingQuick=null; startAct(p,'lob',0.12,()=>doShoot(p,0.4,true,aimZ)); return; }
+    if(lob&&!p.isGK){ pendingQuick=null; startAct(p,'lob',0.12,()=>doShoot(p,0.4,true,aimZ)); return; }
     // tiro al volo: TIRO tenuto premuto mentre il passaggio era in volo → si tira appena arriva la palla
     if(p.voloPronto && inp.shoot && ball.holdTime<0.2 && !p.isGK && !ftBlock){ p.voloPronto=false; p.charging=false; p.chargeT=0; startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,aimZ,{volo:true})); return; }
     p.voloPronto=false;

@@ -1,10 +1,11 @@
 // Scena 3D: piscina, acqua, schiuma, corde, porte, palla, telecamera
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { BRV, GH, GW, HL, HW, rndGrafica } from '../costanti.js';
+import { BRV, HL } from '../costanti.js';
 import { sottAcqua, tempoAcqua } from './sottacqua.js';
 import { creaSuperficie } from './superficie.js';
 import { illuminaArena, creaOmbreAcqua } from './illuminazione.js';
+import { creaArena, creaCorde, creaPorta } from './arena.js';
 // ================= SCENA =================
 export const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.info.autoReset=false;   // il conteggio degli oggetti disegnati si azzera a mano una volta per fotogramma (render.js)
@@ -42,34 +43,19 @@ export const tileDraw=(base,line)=>(x,w,h)=>{ x.fillStyle=base; x.fillRect(0,0,w
 // fondo, corsie e pareti prendono il colore dell'acqua secondo la profondità (sottacqua.js): piastrelle e righe si vedono, ma
 // attenuate come in una piscina vera; sul fondo si muovono giochi di luce leggeri
 box(PX*2,0.1,PZ*2,sottAcqua(new THREE.MeshBasicMaterial({map:canvasTex(256,256,tileDraw('#319fc2','rgba(220,250,255,.18)'),PX/2,PZ/2)}),{luci:'0.3'}),0,-DEPTH,0);
-{ const riga=sottAcqua(new THREE.MeshLambertMaterial({color:0x124658}),{luci:'0.18'}); for(let i=-4;i<=4;i++) box(PX*2-4,0.02,0.28,riga,0,-DEPTH+0.06,i*2.5); }
+{
+  const righe=[];
+  for(let i=-4;i<=4;i++){
+    const g=new THREE.PlaneGeometry(PX*2-4,0.28); g.rotateX(-Math.PI/2); g.translate(0,-DEPTH+0.07,i*2.5); righe.push(g);
+  }
+  scene.add(new THREE.Mesh(mergeGeometries(righe),sottAcqua(new THREE.MeshLambertMaterial({color:0x124658}),{luci:'0.18'})));
+  righe.forEach(g=>g.dispose());
+}
 export const wallMat=sottAcqua(new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#8fe0f7','rgba(255,255,255,.55)'),12,1)}));
 box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,-PZ-0.15); box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,PZ+0.15);
 box(0.3,DEPTH+0.3,PZ*2,wallMat,-PX-0.15,-DEPTH/2+0.15,0); box(0.3,DEPTH+0.3,PZ*2,wallMat,PX+0.15,-DEPTH/2+0.15,0);
-// bordo vasca
-export const deckMat=()=>new THREE.MeshLambertMaterial({map:canvasTex(128,128,tileDraw('#c5ccd0','rgba(60,85,100,.22)'),20,4)});
-box(PX*2+16,0.3,7,deckMat(),0,0.15,-PZ-3.8); box(PX*2+16,0.3,7,deckMat(),0,0.15,PZ+3.8);
-box(7,0.3,PZ*2+0.6,deckMat(),-PX-3.8,0.15,0); box(7,0.3,PZ*2+0.6,deckMat(),PX+3.8,0.15,0);
-box(PX*2+0.8,0.08,0.4,0xffffff,0,0.32,-PZ-0.2); box(PX*2+0.8,0.08,0.4,0xffffff,0,0.32,PZ+0.2);
-box(0.4,0.08,PZ*2,0xffffff,-PX-0.2,0.32,0); box(0.4,0.08,PZ*2,0xffffff,PX+0.2,0.32,0);
-// cartelloni e tribuna con pubblico sul lato lontano
-{
-  const cols=['#0b3d91','#c1121f','#0a7d4b','#f59e0b','#111827'], words=['WATERPOLO 7','MILANO','WATERPOLO','FORZA AZZURRI','WATERPOLO 7'];
-  for(let i=0;i<5;i++){
-    const tex=canvasTex(512,96,(x,w,h)=>{ x.fillStyle=cols[i]; x.fillRect(0,0,w,h); x.fillStyle='#fff'; x.font='bold 54px sans-serif'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(words[i],w/2,h/2+3); });
-    const m=new THREE.Mesh(new THREE.PlaneGeometry(6.2,1.0),new THREE.MeshBasicMaterial({map:tex})); m.position.set((i-2)*6.4,0.82,-PZ-2.6); scene.add(m);
-  }
-  const crowd=canvasTex(1024,256,(x,w,h)=>{ x.fillStyle='#22324d'; x.fillRect(0,0,w,h);
-    const cc=['#e11d48','#2563eb','#f8fafc','#facc15','#16a34a','#f97316','#94a3b8','#0ea5e9'];
-    for(let r=0;r<9;r++){ x.fillStyle='rgba(0,0,0,.25)'; x.fillRect(0,r*28+22,w,6);
-      for(let i=0;i<120;i++){ if(rndGrafica()<0.2) continue; const px=i*8.6+rndGrafica()*3, py=r*28+12;
-        x.fillStyle=cc[Math.floor(rndGrafica()*cc.length)]; x.fillRect(px-3,py,6,10);
-        x.fillStyle='#e0b090'; x.beginPath(); x.arc(px,py-2,2.6,0,7); x.fill(); } } });
-  const st=new THREE.Mesh(new THREE.PlaneGeometry(PX*2+14,7),new THREE.MeshLambertMaterial({map:crowd}));
-  st.position.set(0,3.6,-PZ-8.5); st.rotation.x=-0.55; scene.add(st);
-  box(PX*2+14,1.2,0.4,0x1b2d4a,0,0.6,-PZ-5.4);
-  box(PX*2+14,0.3,1.5,0x9aa7b8,0,7.3,-PZ-11.6);
-}
+// Bordo, griglie, panchine, tavolo ufficiali e tribune a gradoni condividono un atlante.
+creaArena(scene,PX,PZ);
 // Onde e riflessi in un solo passaggio, sincronizzati con l'immersione dei corpi.
 export const acqua=creaSuperficie(PX*2,PZ*2,tempoAcqua);
 scene.add(acqua);
@@ -161,17 +147,9 @@ export function contatto(i,x,z,ang,lungo,largo,forza,vel){
   contattoForza.array[i]=forza; contattoVel.array[i]=vel;
 }
 // corde di delimitazione con i colori delle zone
+creaCorde(scene);
 {
-  const geo=new THREE.SphereGeometry(0.09,6,3);
-  const cols={w:0xffffff,r:0xe11d2a,y:0xfacc15,g:0x22c55e}, pts={w:[],r:[],y:[],g:[]};
-  for(const zs of [-HW-0.2,HW+0.2]) for(let x=-HL;x<=HL+0.01;x+=0.3){ const ax=HL-Math.abs(x); pts[ax<2?'r':ax<6?'y':'g'].push([x,zs]); }
-  for(const xs of [-HL-0.6,HL+0.6]) for(let z=-HW;z<=HW;z+=0.3) pts.w.push([xs,z]);
   const mtx=new THREE.Matrix4();
-  for(const c in pts){
-    const im=new THREE.InstancedMesh(geo,sottAcqua(new THREE.MeshLambertMaterial({color:cols[c]})),pts[c].length);
-    pts[c].forEach((q,i)=>{ mtx.makeTranslation(q[0],0.04,q[1]); im.setMatrixAt(i,mtx); });
-    im.instanceMatrix.needsUpdate=true; scene.add(im);
-  }
   const mk=[[HL,0xffffff],[HL-2,0xe11d2a],[HL-5,0xe11d2a],[HL-6,0xfacc15],[0,0xffffff],[-HL,0xffffff],[-HL+2,0xe11d2a],[-HL+5,0xe11d2a],[-HL+6,0xfacc15]];
   // Stessi 18 segni e colori, inviati insieme anziché come 18 oggetti.
   const segni=new THREE.InstancedMesh(new THREE.BoxGeometry(0.35,0.06,0.9),new THREE.MeshLambertMaterial({color:0xffffff}),mk.length*2);
@@ -183,24 +161,7 @@ export function contatto(i,x,z,ang,lungo,largo,forza,vel){
 }
 // porte
 export function makeGoal(sign){
-  const g=new THREE.Group(); const mat=sottAcqua(new THREE.MeshPhongMaterial({color:0xffffff,shininess:60}));
-  const H=GH+0.3;
-  for(const z of [-GW-0.04,GW+0.04]){ const p=new THREE.Mesh(new THREE.BoxGeometry(0.08,H,0.08),mat); p.position.set(0,H/2-0.3,z); g.add(p); }
-  const bar=new THREE.Mesh(new THREE.BoxGeometry(0.08,0.08,GW*2+0.16),mat); bar.position.set(0,GH+0.04,0); g.add(bar);
-  const netMat=sottAcqua(new THREE.MeshBasicMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:0.5}));
-  const back=new THREE.Mesh(new THREE.PlaneGeometry(GW*2,H,12,5),netMat); back.rotation.y=Math.PI/2; back.position.set(sign*0.8,H/2-0.3,0); g.add(back);
-  const top=new THREE.Mesh(new THREE.PlaneGeometry(0.8,GW*2,3,12),netMat); top.rotation.x=-Math.PI/2; top.position.set(sign*0.4,GH,0); g.add(top);
-  for(const z of [-GW,GW]){ const sd=new THREE.Mesh(new THREE.PlaneGeometry(0.8,H,4,8),netMat); sd.position.set(sign*0.4,H/2-0.3,z); g.add(sd); }
-  const flo=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.14,GW*2+0.5),sottAcqua(new THREE.MeshLambertMaterial({color:0xf4f4f4}))); flo.position.set(sign*0.45,-0.02,0); g.add(flo);
-  // Pali e rete mantengono le stesse facce: si accorpano soltanto le
-  // chiamate di disegno (3 pali → 1, 4 pannelli di rete → 1 per porta).
-  for(const materiale of [mat,netMat]){
-    const pezzi=g.children.filter(p=>p.material===materiale), geometrie=[];
-    for(const p of pezzi){ p.updateMatrix(); geometrie.push(p.geometry.clone().applyMatrix4(p.matrix)); g.remove(p); p.geometry.dispose(); }
-    const unita=mergeGeometries(geometrie); geometrie.forEach(geo=>geo.dispose());
-    g.add(new THREE.Mesh(unita,materiale));
-  }
-  g.position.set(sign*HL,0,0); scene.add(g);
+  return creaPorta(scene,sign);
 }
 makeGoal(1); makeGoal(-1);
 

@@ -51,7 +51,7 @@ const dif = await pg.evaluate(() => {
   ({ c } = prepara()); const r1 = H.cronaca.registro.length;
   const d0 = H.teams[0].players[3];
   for (let k = 0; k < 3; k++) { // l'attaccante resta lì (altrimenti passa e la prova perde il bersaglio)
-    c.decideT = 9; c.x = 0; c.z = 0; c.vx = c.vz = 0; d0.x = -0.9; d0.z = 0; tocco(); window.__salta(28); }
+    c.decideT = 9; c.reazioneT = 9; c.x = 0; c.z = 0; c.vx = c.vz = 0; d0.x = -0.9; d0.z = 0; tocco(); window.__salta(28); }
   out.falli3 = H.cronaca.registro.slice(r1).filter(e => /Fallo|Espulsione|Rigore/.test(e.testo)).map(e => e.testo);
   return out;
 });

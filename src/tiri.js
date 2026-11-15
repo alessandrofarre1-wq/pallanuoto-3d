@@ -63,7 +63,7 @@ export function shotKind(p){
   // colonnello e schizzo: solo in controfuga, con il tasto a comparsa (controfuga.js)
   return 'shot';
 }
-export function bestPassTarget(p){
+export function bestPassTarget(p,variabile=true){
   let best=null, bs=-1e9; const sup=manUp(p.team);
   for(const m of p.team.players){
     if(m===p||m.excluded||m.uscendo||(m.isGK&&!setteControSei(p.team))) continue;
@@ -83,14 +83,14 @@ export function bestPassTarget(p){
       if((m.i===1||m.i===6) && laneClear(p,m.x,m.z,p.team,0.5)) s+=(p.i===4||p.i===5)?1.6:1.0;      // palla all'uomo al palo, che tira subito
       if(m===p.daChi) s-=1.5;
     }
-    s+=(rnd()-0.5)*(99-p.s.vis)/59*3.5;
+    if(variabile) s+=(rnd()-0.5)*(99-p.s.vis)/59*3.5;
     if(s>bs){ bs=s; best=m; }
   }
   return best;
 }
 export function humanPassTarget(p,ix,iz){
   const il=Math.hypot(ix,iz);
-  if(il<0.3) return bestPassTarget(p);
+  if(il<0.3) return bestPassTarget(p,false);
   let best=null, bs=-1e9;
   for(const m of p.team.players){
     if(m===p||m.excluded||m.uscendo) continue;
@@ -99,7 +99,7 @@ export function humanPassTarget(p,ix,iz){
     const s=c*4 - d*0.07 + (laneClear(p,m.x,m.z,p.team)?0.5:0);
     if(s>bs){ bs=s; best=m; }
   }
-  return best||bestPassTarget(p);
+  return best||bestPassTarget(p,false);
 }
 export function doPass(p,m){
   if(!m) return;

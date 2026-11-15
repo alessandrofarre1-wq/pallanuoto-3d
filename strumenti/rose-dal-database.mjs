@@ -1,5 +1,5 @@
 // Rose e valutazioni dei giocatori dal database di Ale (waterpolo_database, 13 novembre 2026).
-// Uso: node strumenti/rose-dal-database.mjs <waterpolo.json | dati-sorgente/database-giocatori.json>
+// Uso: node strumenti/rose-dal-database.mjs <waterpolo.json | dati-sorgente/database-giocatori.json> [--output-dir=/tmp/rose]
 // Scrive:
 //  - dati-sorgente/database-giocatori.json: l'estratto del database che serve (solo le 16 nazionali del gioco), così il calcolo
 //    si può rifare senza il file completo;
@@ -23,13 +23,19 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = process.argv[2];
-if (!src) { console.error('Uso: node strumenti/rose-dal-database.mjs <waterpolo.json>'); process.exit(1); }
+if (!src) { console.error('Uso: node strumenti/rose-dal-database.mjs <waterpolo.json> [--output-dir=/tmp/rose]'); process.exit(1); }
+const outputArg = process.argv.find(x => x.startsWith('--output-dir='));
+const OUTPUT = outputArg ? path.resolve(outputArg.slice('--output-dir='.length)) : ROOT;
 const DB = JSON.parse(fs.readFileSync(src, 'utf8'));
+const SUPPLEMENTO = JSON.parse(fs.readFileSync(path.join(ROOT, 'dati-sorgente/europei-2026-aggiunte.json'), 'utf8'));
 // correzioni dei nomi indicate da Ale (nella fonte nome e cognome sono invertiti)
 const NOMI_CORRETTI = { 'KARLO Babic': 'BABIC Karlo' };
 for (const t of ['players', 'rosters', 'player_event_statistics']) for (const r of DB[t] || []) if (NOMI_CORRETTI[r.name]) r.name = NOMI_CORRETTI[r.name];
 const SQ = JSON.parse(fs.readFileSync(path.join(ROOT, 'src/dati/squadre.json'), 'utf8')).squadre;
-const CODICI = SQ.map(s => s.codice);
+// Le aggiunte senza osservazioni individuali non entrano nelle medie dei tornei: i 16 calcoli precedenti restano identici.
+// Se in futuro il database comprende una di queste nazionali, si usano le sue osservazioni invece della stima supplementare.
+const SQ_DATABASE = SQ.filter(s => DB.rosters.some(r => r.team_code === s.codice));
+const CODICI = SQ_DATABASE.map(s => s.codice);
 const OGGI = new Date('2026-11-13');
 
 // ---------- estratto (solo le nazionali del gioco) ----------
@@ -39,9 +45,6 @@ const estratto = {
   rosters: DB.rosters.filter(r => CODICI.includes(r.team_code)),
   player_event_statistics: DB.player_event_statistics.filter(r => CODICI.includes(r.team_code)),
 };
-fs.mkdirSync(path.join(ROOT, 'dati-sorgente'), { recursive: true });
-fs.writeFileSync(path.join(ROOT, 'dati-sorgente/database-giocatori.json'), JSON.stringify(estratto));
-
 // ---------- utilità ----------
 const coppia = s => { const m = /^(\d+)\/(\d+)$/.exec(String(s || '')); return m ? [+m[1], +m[2]] : [0, 0]; };
 const num = s => { const v = parseInt(s, 10); return Number.isFinite(v) ? v : 0; };
@@ -175,7 +178,7 @@ const ovr = (s, ruolo) => { const w = PESI[ruolo]; let a = 0, b = 0; for (const 
 // ruolo del gioco per un tipo di giocatore (la mano decide il lato quando il ruolo vero non lo dice)
 const ruoloDi = (t, mano) => t === 'gk' ? 0 : t === 'boa' ? 1 : t === 'dif' || t === 'punto' ? 6 : t === 'aladx' ? 2 : t === 'alasx' ? 3 : t === 'ala' ? (mano === 'L' ? 2 : 3) : (mano === 'L' ? 4 : 5);
 
-for (const sq of SQ) {
+for (const sq of SQ_DATABASE) {
   const cod = sq.codice, base = 57 + (sq.forza - 60) * 0.72;
   const gioc = tutti.filter(x => x.cod === cod);
   const gk = gioc.filter(x => x.t === 'gk').sort((a, b) => b.min - a.min || (b.S ? b.S.tir : 0) - (a.S ? a.S.tir : 0)).slice(0, 2);
@@ -250,7 +253,60 @@ for (const sq of SQ) {
   rose[cod] = ordine;
   riassunto.push(`${cod} (${ordine[0].convocazione}): ` + ordine.slice(0, 7).map(g => `${g.num} ${g.nome} ${g.ovr}`).join(', '));
 }
-fs.writeFileSync(path.join(ROOT, 'src/dati/rose-db.json'), JSON.stringify({ fonte: estratto.fonte, metodo: 'strumenti/rose-dal-database.mjs; docs/valutazioni.md', rose }, null, 1));
+// ---------- convocazioni ufficiali supplementari, senza statistiche individuali ----------
+// Stesso livello di base e stessi profili di ruolo del gioco; nessuna prestazione o differenza individuale inventata.
+// Il ruolo generale resta quello ufficiale, mentre i sette posti sono la proposta esplicita contenuta nella fonte.
+function rosaSupplementare(sq, fonte) {
+  const cod = sq.codice, posizioni = { GK: 'Goalkeeper', CF: 'Centre Forward', DF: 'Defender', W: 'Wing' };
+  const selezionati = fonte.numeriSelezionati.map(n => fonte.convocati.find(p => p.numero === n));
+  const gk = p => p && p.posizioneFonte === 'GK', F = fonte.formazioneGioco;
+  if (selezionati.length !== 13 || selezionati.some(p => !p || !p.nomeFonte || !posizioni[p.posizioneFonte]) ||
+      new Set(selezionati.map(p => p.numero)).size !== 13 || selezionati.filter(gk).length !== 2 ||
+      !Array.isArray(F) || F.length !== 7 || new Set(F).size !== 7 ||
+      !F.every((n, i) => { const p = selezionati.find(q => q.numero === n); return p && gk(p) === (i === 0); })) {
+    throw new Error(`Convocazione supplementare non valida: ${cod}`);
+  }
+  const ordine = [...F, ...selezionati.filter(p => !F.includes(p.numero) && !gk(p)).map(p => p.numero),
+    ...selezionati.filter(p => !F.includes(p.numero) && gk(p)).map(p => p.numero)];
+  const base = 57 + (sq.forza - 60) * 0.72;
+  const schede = ordine.map((n, k) => {
+    const p = selezionati.find(q => q.numero === n), ruolo = ruoloDi(tipo(posizioni[p.posizioneFonte]), p.manoFonte), s = {};
+    for (const st of ['vel', 'res', 'pot', 'pre', 'pas', 'vis', 'dif', 'dis', 'frz']) s[st] = lim(base + PROFILO[ruolo][st]);
+    for (const st of ['rif', 'pos', 'usc', 'rig']) s[st] = lim(base + (ruolo === 0 ? 3 : -28));
+    return { id: `euro2026_${cod}_${n}`, num: n, nome: cognome(p.nomeFonte), nomeIntero: nomeIntero(p.nomeFonte), nomeCompleto: p.nomeFonte,
+      ruolo, ruoloVero: posizioni[p.posizioneFonte], mano: p.manoFonte === 'L' ? 'S' : 'D',
+      manoNota: 'rapporto ufficiale European Aquatics / Microplus, 9 gennaio 2026', altezza: null, peso: null,
+      nascita: p.nascita || null, capitano: !!p.capitano, s, ovr: ovr(s, ruolo), dati: null, convocazione: 'euro2026',
+      titolare: k < 7, posto: k < 7 ? k : null, campione: false, statisticheStimate: true,
+      fonte: SUPPLEMENTO.fonte.url, fontePagina: fonte.pagina };
+  });
+  const doppi = new Set(schede.map(g => g.nome).filter((n, i, a) => a.indexOf(n) !== i));
+  for (const g of schede) if (doppi.has(g.nome)) g.nome += ' ' + g.nomeIntero[0] + '.';
+  const stessaIniziale = new Set(schede.map(g => g.nome).filter((n, i, a) => a.indexOf(n) !== i));
+  for (const g of schede) if (stessaIniziale.has(g.nome)) {
+    const proprio = g.nomeCompleto.split(/\s+/).find(w => w !== w.toUpperCase());
+    if (proprio) g.nome = g.nome.replace(/ \S+\.$/, ' ' + proprio);
+  }
+  return schede;
+}
+for (const sq of SQ) {
+  if (rose[sq.codice]) continue;
+  const fonte = SUPPLEMENTO.squadre[sq.codice];
+  if (!fonte) throw new Error(`Nessuna convocazione verificata per ${sq.codice}`);
+  rose[sq.codice] = rosaSupplementare(sq, fonte);
+  riassunto.push(`${sq.codice} (euro2026, statistiche STIMATE per squadra/ruolo): ` + rose[sq.codice].slice(0, 7).map(g => `${g.num} ${g.nome} ${g.ovr}`).join(', '));
+}
+const risultato = {
+  fonte: 'waterpolo_database di Ale, 13 novembre 2026 (World Aquatics, Microplus, Omega), per le 16 nazionali originali; rapporto ufficiale European Aquatics / Microplus del 9 gennaio 2026 per le 8 aggiunte europee.',
+  metodo: '16 rose originali: strumenti/rose-dal-database.mjs; docs/valutazioni.md. 8 aggiunte europee: dati-sorgente/europei-2026-aggiunte.json; statistiche stimate per squadra e ruolo, senza dati individuali di prestazione.',
+  rose,
+  aggiunteEuropei2026: { fonte: SUPPLEMENTO.fonte.url, metodo: 'dati-sorgente/europei-2026-aggiunte.json: identita ufficiali, 13 selezionati per il gioco; statistiche e formazione STIMATE. Le rose precedenti dal database di Ale non sono state ricalcolate.' },
+};
+// Scrivere soltanto dopo aver validato tutte le nazionali, anche quando l'output sostituisce i file del gioco.
+fs.mkdirSync(path.join(OUTPUT, 'dati-sorgente'), { recursive: true });
+fs.mkdirSync(path.join(OUTPUT, 'src/dati'), { recursive: true });
+fs.writeFileSync(path.join(OUTPUT, 'dati-sorgente/database-giocatori.json'), JSON.stringify(estratto));
+fs.writeFileSync(path.join(OUTPUT, 'src/dati/rose-db.json'), JSON.stringify(risultato, null, 1));
 console.log(riassunto.join('\n'));
 console.log('\nfile di Ale: ' + collegati.trovati + ' giocatori collegati; mani prese dal file ' + collegati.mani + '; altezze ' + collegati.altezze + '; pesi ' + collegati.pesi + '; con aspetto documentato ' + collegati.aspetto + '\n  disaccordi sulla mano (resta il database): ' + (collegati.disaccordi.join('; ') || 'nessuno') + '\n  non trovati nel file: ' + collegati.mancanti.length);
 console.log('\nmani: ' + Object.values(rose).flat().filter(g => g.mano === 'S').length + ' mancini, ' + Object.values(rose).flat().filter(g => g.manoNota === 'sconosciuta').length + ' sconosciute su ' + Object.values(rose).flat().length);

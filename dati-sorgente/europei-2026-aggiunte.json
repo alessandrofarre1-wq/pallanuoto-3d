@@ -1,0 +1,1324 @@
+{
+  "fonte": {
+    "titolo": "Belgrade 2026, Men — Team Roster",
+    "organizzazione": "European Aquatics / Microplus",
+    "dataRapporto": "2026-01-09T20:47",
+    "consultata": "2026-11-14",
+    "url": "https://ea.microplustimingservices.com/EWPC2026_Belgrade/assets/export/EWPC/pdf/WPOMTEAM7-------------------------_33%204.0.pdf",
+    "sha256Pdf": "459cc9f23cd052f71813eeddd77157f9376b57a916f8bcda504a86e115977953"
+  },
+  "metodo": {
+    "identita": "Nomi, numeri, ruolo generale, mano e capitano trascritti dal rapporto ufficiale. Si conservano qui tutti i convocati (14 SVK, 15 le altre); nel gioco entrano i numeri 1-13 per mantenere la rosa da 13: 2 portieri e 11 giocatori di movimento. Nessun atleta inventato.",
+    "formazione": "I sette posti del gioco sono una proposta tecnica, non una formazione ufficiale. Il ruoloVero conserva il ruolo generale della fonte; Wing si adatta ad ala/mezzo e Defender a punto secondo necessita.",
+    "valutazioni": "STIMATE, senza statistiche individuali dei tornei: base 57+(forza-60)*0.72 e profili di ruolo gia usati in rose.js. I rating non sono misure ufficiali; dati prestazione=null. Le nuove forze sono stime prudenti nella scala esistente, ordinate per piazzamento Europeo2026; le 16 nazionali precedenti restano identiche.",
+    "biografia": "Altezze/pesi non indicati restano null. Data di nascita palesemente errata di ISR14 esclusa. Mano sinistra soltanto dove L nel rapporto ufficiale.",
+    "rigenerazione": "node strumenti/rose-dal-database.mjs dati-sorgente/database-giocatori.json; per il confronto senza modificare il gioco aggiungere --output-dir=/tmp/rose-verifica. La pipeline integra queste otto convocazioni senza includerle nelle medie dei tornei usate per le 16 rose precedenti."
+  },
+  "fontePiazzamenti": "https://en.wikipedia.org/wiki/2026_Men%27s_European_Water_Polo_Championship#Final_standings",
+  "squadre": {
+    "FRA": {
+      "pagina": 3,
+      "convocati": [
+        {
+          "numero": 1,
+          "nomeFonte": "OFFNER Julien",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "1999-12-16",
+          "capitano": false,
+          "club": "USB Bordeaux"
+        },
+        {
+          "numero": 2,
+          "nomeFonte": "BRAISE FERNANDEZ Killian",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2007-07-04",
+          "capitano": false,
+          "club": "Pays D'Aix Natation"
+        },
+        {
+          "numero": 3,
+          "nomeFonte": "BARNAT Luca",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "2007-02-08",
+          "capitano": false,
+          "club": "AS Monaco Natation"
+        },
+        {
+          "numero": 4,
+          "nomeFonte": "BOUET Alexandre",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2000-12-05",
+          "capitano": false,
+          "club": "CN Marseille"
+        },
+        {
+          "numero": 5,
+          "nomeFonte": "DRAHE Alexis",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2003-12-15",
+          "capitano": false,
+          "club": "Pays D'Aix Natation"
+        },
+        {
+          "numero": 6,
+          "nomeFonte": "VERNOUX Thomas",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2002-03-21",
+          "capitano": true,
+          "club": "CN Marseille"
+        },
+        {
+          "numero": 7,
+          "nomeFonte": "VITRANT Steven",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1997-10-27",
+          "capitano": false,
+          "club": "Team Strasbourg"
+        },
+        {
+          "numero": 8,
+          "nomeFonte": "GUERIN Denis",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2002-01-08",
+          "capitano": false,
+          "club": "Taverny SN 95"
+        },
+        {
+          "numero": 9,
+          "nomeFonte": "MARION-VERNOUX Romain",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2000-01-02",
+          "capitano": false,
+          "club": "CN Marseille"
+        },
+        {
+          "numero": 10,
+          "nomeFonte": "CANOVAS Lorris",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2001-02-07",
+          "capitano": false,
+          "club": "Team Strasbourg"
+        },
+        {
+          "numero": 11,
+          "nomeFonte": "NARDON Enzo",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2003-01-06",
+          "capitano": false,
+          "club": "Taverny SN 95"
+        },
+        {
+          "numero": 12,
+          "nomeFonte": "CARPENTRAS Jean-Baptiste",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2002-04-12",
+          "capitano": false,
+          "club": "Olympic Nice Natation"
+        },
+        {
+          "numero": 13,
+          "nomeFonte": "FONTANI Hugo",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "1994-12-22",
+          "capitano": false,
+          "club": "Team Strasbourg"
+        },
+        {
+          "numero": 14,
+          "nomeFonte": "MAS Mathis",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "2004-05-13",
+          "capitano": false,
+          "club": "Team Strasbourg"
+        },
+        {
+          "numero": 15,
+          "nomeFonte": "SAUTON Tom",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2002-10-04",
+          "capitano": false,
+          "club": "Sete Natation"
+        }
+      ],
+      "numeriSelezionati": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "formazioneGioco": [
+        1,
+        3,
+        4,
+        6,
+        7,
+        9,
+        5
+      ]
+    },
+    "GEO": {
+      "pagina": 4,
+      "convocati": [
+        {
+          "numero": 1,
+          "nomeFonte": "RAZMADZE Irakli",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "1997-04-04",
+          "capitano": false,
+          "club": "Apolo"
+        },
+        {
+          "numero": 2,
+          "nomeFonte": "TKESHELASHVILI Saba",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2004-01-14",
+          "capitano": false,
+          "club": "Dinamo Tbilisi"
+        },
+        {
+          "numero": 3,
+          "nomeFonte": "DADVANI Valiko",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2002-08-07",
+          "capitano": false,
+          "club": "VK Radnicki"
+        },
+        {
+          "numero": 4,
+          "nomeFonte": "SHUSHIASHVILI Nika",
+          "posizioneFonte": "W",
+          "manoFonte": "L",
+          "nascita": "1999-04-18",
+          "capitano": false,
+          "club": "Budapesti VSC"
+        },
+        {
+          "numero": 5,
+          "nomeFonte": "BITADZE Andria",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1997-05-17",
+          "capitano": false,
+          "club": "Apolo"
+        },
+        {
+          "numero": 6,
+          "nomeFonte": "VASIC Dusan",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1993-07-17",
+          "capitano": false,
+          "club": "VK Novi Beograd"
+        },
+        {
+          "numero": 7,
+          "nomeFonte": "ADEISHVILI Sandro",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "1999-09-06",
+          "capitano": false,
+          "club": "BVSC-Manna Abc"
+        },
+        {
+          "numero": 8,
+          "nomeFonte": "SARIC Jovan",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1991-01-20",
+          "capitano": false,
+          "club": "Apolo"
+        },
+        {
+          "numero": 9,
+          "nomeFonte": "IMNAISHVILI Revaz",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1997-08-09",
+          "capitano": true,
+          "club": "Dinamo Tbilisi"
+        },
+        {
+          "numero": 10,
+          "nomeFonte": "MAGRAKVELIDZE Giorgi",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1998-01-21",
+          "capitano": false,
+          "club": "Dinamo Tbilisi"
+        },
+        {
+          "numero": 11,
+          "nomeFonte": "TANKOSIC Veljko",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1997-11-07",
+          "capitano": false,
+          "club": "CC Ortigia"
+        },
+        {
+          "numero": 12,
+          "nomeFonte": "PJESIVAC Stefan",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "1996-12-12",
+          "capitano": false,
+          "club": "VK Novi Beograd"
+        },
+        {
+          "numero": 13,
+          "nomeFonte": "GVETADZE Giorgi",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "2002-06-13",
+          "capitano": false,
+          "club": "Dinamo Tbilisi"
+        },
+        {
+          "numero": 14,
+          "nomeFonte": "VLAHOVIC Andrija",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "1991-09-23",
+          "capitano": false,
+          "club": "VK Solaris"
+        },
+        {
+          "numero": 15,
+          "nomeFonte": "CHIKOVANI Luka",
+          "posizioneFonte": "W",
+          "manoFonte": "L",
+          "nascita": "2004-07-09",
+          "capitano": false,
+          "club": "CS Dinamo Bucharest"
+        }
+      ],
+      "numeriSelezionati": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "formazioneGioco": [
+        1,
+        7,
+        4,
+        5,
+        6,
+        9,
+        3
+      ]
+    },
+    "ISR": {
+      "pagina": 7,
+      "convocati": [
+        {
+          "numero": 1,
+          "nomeFonte": "FIRE Yahav",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "1997-07-14",
+          "capitano": false,
+          "club": "Hapoel Palram Zvulun"
+        },
+        {
+          "numero": 2,
+          "nomeFonte": "SCHLEIN Or",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2002-05-21",
+          "capitano": false,
+          "club": "Drummoyne"
+        },
+        {
+          "numero": 3,
+          "nomeFonte": "GROS Ronen",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1991-12-08",
+          "capitano": false,
+          "club": "Hapoel Palram Zvulun"
+        },
+        {
+          "numero": 4,
+          "nomeFonte": "GVISHI Gil Natan",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2003-07-28",
+          "capitano": false,
+          "club": "Chiavari Nuoto"
+        },
+        {
+          "numero": 5,
+          "nomeFonte": "ARAZI Tomer",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "2006-11-13",
+          "capitano": false,
+          "club": "Givat Haim"
+        },
+        {
+          "numero": 6,
+          "nomeFonte": "SHAFRIR Amir",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2006-02-02",
+          "capitano": false,
+          "club": "Hapoel Palram Zvulun"
+        },
+        {
+          "numero": 7,
+          "nomeFonte": "BEGIN Vlad",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "1998-05-06",
+          "capitano": false,
+          "club": "Gush Zvulun"
+        },
+        {
+          "numero": 8,
+          "nomeFonte": "GOLDSCHMIDT Ido",
+          "posizioneFonte": "W",
+          "manoFonte": "L",
+          "nascita": "1993-12-28",
+          "capitano": true,
+          "club": "Hapoel Palram Zvulun"
+        },
+        {
+          "numero": 9,
+          "nomeFonte": "ROTH Itai",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2001-04-11",
+          "capitano": false,
+          "club": "Long Beach State University"
+        },
+        {
+          "numero": 10,
+          "nomeFonte": "RENDLER Yoav",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2002-02-05",
+          "capitano": false,
+          "club": "University Of The Pacific"
+        },
+        {
+          "numero": 11,
+          "nomeFonte": "BUZAGLO Ori",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "2003-02-04",
+          "capitano": false,
+          "club": "University Of The Pacific"
+        },
+        {
+          "numero": 12,
+          "nomeFonte": "KLARFELD Yuval",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1999-09-12",
+          "capitano": false,
+          "club": "Hapoel Palram Zvulun"
+        },
+        {
+          "numero": 13,
+          "nomeFonte": "SMIRNOV Maxim",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "2003-03-23",
+          "capitano": false,
+          "club": "Pepperdine University"
+        },
+        {
+          "numero": 14,
+          "nomeFonte": "CARMON Nadav",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": null,
+          "capitano": false,
+          "club": "Wagner College",
+          "notaNascita": "La fonte riporta 5 JUL 2023 (eta 2), dato incoerente: non importato."
+        },
+        {
+          "numero": 15,
+          "nomeFonte": "SEGERE SHARIR Raz",
+          "posizioneFonte": "W",
+          "manoFonte": "L",
+          "nascita": "2006-04-17",
+          "capitano": false,
+          "club": "Hapoel Givat Haim"
+        }
+      ],
+      "numeriSelezionati": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "formazioneGioco": [
+        1,
+        5,
+        8,
+        3,
+        2,
+        10,
+        7
+      ]
+    },
+    "MLT": {
+      "pagina": 9,
+      "convocati": [
+        {
+          "numero": 1,
+          "nomeFonte": "TANTI Jake",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "1998-06-12",
+          "capitano": false,
+          "club": "CN Mataro"
+        },
+        {
+          "numero": 2,
+          "nomeFonte": "NAGAEV Ivan Sergeevich",
+          "posizioneFonte": "W",
+          "manoFonte": "L",
+          "nascita": "1993-11-30",
+          "capitano": false,
+          "club": "HAVK Mladost"
+        },
+        {
+          "numero": 3,
+          "nomeFonte": "GALEA Liam",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2001-11-28",
+          "capitano": false,
+          "club": "Sliema ASC"
+        },
+        {
+          "numero": 4,
+          "nomeFonte": "PLUMPTON Ben",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "1998-02-16",
+          "capitano": false,
+          "club": "San Giljan ASC"
+        },
+        {
+          "numero": 5,
+          "nomeFonte": "CACHIA Benjamin",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2002-02-12",
+          "capitano": false,
+          "club": "Sliema ASC"
+        },
+        {
+          "numero": 6,
+          "nomeFonte": "ZAMMIT Matthew",
+          "posizioneFonte": "CF",
+          "manoFonte": "L",
+          "nascita": "1987-10-01",
+          "capitano": false,
+          "club": "San Giljan ASC"
+        },
+        {
+          "numero": 7,
+          "nomeFonte": "CAMILLERI Steven",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1987-07-04",
+          "capitano": true,
+          "club": "Neptunes WPSC"
+        },
+        {
+          "numero": 8,
+          "nomeFonte": "CUTAJAR Jayden",
+          "posizioneFonte": "W",
+          "manoFonte": "L",
+          "nascita": "2007-08-22",
+          "capitano": false,
+          "club": "VK Partizan Belgrade"
+        },
+        {
+          "numero": 9,
+          "nomeFonte": "MUSCAT MELITO Jake",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2003-02-08",
+          "capitano": false,
+          "club": "Telimar Palermo"
+        },
+        {
+          "numero": 10,
+          "nomeFonte": "ZAMMIT Nikolai",
+          "posizioneFonte": "W",
+          "manoFonte": "L",
+          "nascita": "2001-04-19",
+          "capitano": false,
+          "club": "San Giljan ASC"
+        },
+        {
+          "numero": 11,
+          "nomeFonte": "ZAMMIT Darren",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "1999-01-01",
+          "capitano": false,
+          "club": "San Giljan ASC"
+        },
+        {
+          "numero": 12,
+          "nomeFonte": "FENECH Alec",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2005-11-08",
+          "capitano": false,
+          "club": "CSA Steaua Bucharest"
+        },
+        {
+          "numero": 13,
+          "nomeFonte": "GRIXTI Nicholas Kane",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "1995-10-13",
+          "capitano": false,
+          "club": "Sirens ASC"
+        },
+        {
+          "numero": 14,
+          "nomeFonte": "SCHEMBRI Elijah",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2006-03-24",
+          "capitano": false,
+          "club": "Sliema ASC"
+        },
+        {
+          "numero": 15,
+          "nomeFonte": "BONAVIA Jake",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2003-03-23",
+          "capitano": false,
+          "club": "San Giljan ASC"
+        }
+      ],
+      "numeriSelezionati": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "formazioneGioco": [
+        1,
+        6,
+        2,
+        7,
+        8,
+        9,
+        4
+      ]
+    },
+    "NED": {
+      "pagina": 11,
+      "convocati": [
+        {
+          "numero": 1,
+          "nomeFonte": "BUITENHUIS Miki",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "2002-09-16",
+          "capitano": false,
+          "club": "UZSC"
+        },
+        {
+          "numero": 2,
+          "nomeFonte": "GBADAMASSI Bilal",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "1997-09-23",
+          "capitano": true,
+          "club": "CN Marseille"
+        },
+        {
+          "numero": 3,
+          "nomeFonte": "ROUWENHORST Jeroen",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "2000-01-10",
+          "capitano": false,
+          "club": "RN Florentia"
+        },
+        {
+          "numero": 4,
+          "nomeFonte": "HESSELS Benjamin",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2001-12-13",
+          "capitano": false,
+          "club": "OSC Budapest"
+        },
+        {
+          "numero": 5,
+          "nomeFonte": "VAN DER WEIJDEN Mart",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2003-10-20",
+          "capitano": false,
+          "club": "CN Barcelona"
+        },
+        {
+          "numero": 6,
+          "nomeFonte": "DE MEY Tim",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1997-12-18",
+          "capitano": false,
+          "club": "RN Florentia"
+        },
+        {
+          "numero": 7,
+          "nomeFonte": "TE RIELE Kas",
+          "posizioneFonte": "W",
+          "manoFonte": "L",
+          "nascita": "2002-08-21",
+          "capitano": false,
+          "club": "Vouliagmeni NC"
+        },
+        {
+          "numero": 8,
+          "nomeFonte": "HESSELS Sebastian",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2001-12-13",
+          "capitano": false,
+          "club": "OSC Budapest"
+        },
+        {
+          "numero": 9,
+          "nomeFonte": "VAN DEN BURG Sam",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "1997-10-25",
+          "capitano": false,
+          "club": "Waspo Hannover"
+        },
+        {
+          "numero": 10,
+          "nomeFonte": "DE WEERD Tom",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1998-04-16",
+          "capitano": false,
+          "club": "Tenerife Echeyde"
+        },
+        {
+          "numero": 11,
+          "nomeFonte": "SNEL Marnick",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2004-10-02",
+          "capitano": false,
+          "club": "VK Primorje Erste Bank"
+        },
+        {
+          "numero": 12,
+          "nomeFonte": "TEN BROEK Lars",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2004-02-23",
+          "capitano": false,
+          "club": "Sant Andreu"
+        },
+        {
+          "numero": 13,
+          "nomeFonte": "SPIJKER Jelto",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "1999-08-29",
+          "capitano": false,
+          "club": "Spandau 04"
+        },
+        {
+          "numero": 14,
+          "nomeFonte": "HOFMEIJER Niels",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2000-06-19",
+          "capitano": false,
+          "club": "RN Florentia"
+        },
+        {
+          "numero": 15,
+          "nomeFonte": "VAN DER WEIJDEN Jorrit",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2006-11-13",
+          "capitano": false,
+          "club": "GZC Donk"
+        }
+      ],
+      "numeriSelezionati": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "formazioneGioco": [
+        1,
+        2,
+        7,
+        5,
+        6,
+        8,
+        9
+      ]
+    },
+    "SLO": {
+      "pagina": 13,
+      "convocati": [
+        {
+          "numero": 1,
+          "nomeFonte": "BETON Jure",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "1997-04-23",
+          "capitano": false,
+          "club": "VK Ljubljana Slovan"
+        },
+        {
+          "numero": 2,
+          "nomeFonte": "STEFANOVIC Vukasin",
+          "posizioneFonte": "W",
+          "manoFonte": "L",
+          "nascita": "2002-10-11",
+          "capitano": false,
+          "club": "DSV98"
+        },
+        {
+          "numero": 3,
+          "nomeFonte": "KADIVEC Jasa",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "1993-11-13",
+          "capitano": true,
+          "club": "AVK Triglav Kranj"
+        },
+        {
+          "numero": 4,
+          "nomeFonte": "CANC Matija Bernard",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "2004-12-27",
+          "capitano": false,
+          "club": "VK Ljubljana Slovan"
+        },
+        {
+          "numero": 5,
+          "nomeFonte": "SANTAK Miha",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2006-04-07",
+          "capitano": false,
+          "club": "AVK Branik Maribor"
+        },
+        {
+          "numero": 6,
+          "nomeFonte": "LIPNIK Marcel",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2008-04-05",
+          "capitano": false,
+          "club": "VK Ljubljana Slovan"
+        },
+        {
+          "numero": 7,
+          "nomeFonte": "STROMAJER Nace",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2007-12-03",
+          "capitano": false,
+          "club": "CN Sabadell"
+        },
+        {
+          "numero": 8,
+          "nomeFonte": "PAUNOVIC Aleksander",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2004-02-25",
+          "capitano": false,
+          "club": "AVK Triglav Kranj"
+        },
+        {
+          "numero": 9,
+          "nomeFonte": "FICUR Gasper",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "2004-01-30",
+          "capitano": false,
+          "club": "Vaterpolo Drustvo Koper 1958"
+        },
+        {
+          "numero": 10,
+          "nomeFonte": "CERAR Aleksander",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2004-01-03",
+          "capitano": false,
+          "club": "AVK Triglav Kranj"
+        },
+        {
+          "numero": 11,
+          "nomeFonte": "TROPPAN Aljaz",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "2002-05-17",
+          "capitano": false,
+          "club": "AVK Triglav Kranj"
+        },
+        {
+          "numero": 12,
+          "nomeFonte": "POTOCNIK Enej",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2003-08-01",
+          "capitano": false,
+          "club": "VK Ljubljana Slovan"
+        },
+        {
+          "numero": 13,
+          "nomeFonte": "BULAJIC Milan",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "2000-05-04",
+          "capitano": false,
+          "club": "VK Zemun"
+        },
+        {
+          "numero": 14,
+          "nomeFonte": "MILETIC Nikola",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2005-12-24",
+          "capitano": false,
+          "club": "AVK Branik Maribor"
+        },
+        {
+          "numero": 15,
+          "nomeFonte": "STROMAJER Bine",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2010-01-07",
+          "capitano": false,
+          "club": "CN Sabadell"
+        }
+      ],
+      "numeriSelezionati": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "formazioneGioco": [
+        1,
+        3,
+        2,
+        6,
+        7,
+        4,
+        10
+      ]
+    },
+    "SVK": {
+      "pagina": 15,
+      "convocati": [
+        {
+          "numero": 1,
+          "nomeFonte": "KOZMER Lukas",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "1993-12-06",
+          "capitano": false,
+          "club": "Olympic Nice Natation"
+        },
+        {
+          "numero": 2,
+          "nomeFonte": "TKAC Marek",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "1995-03-09",
+          "capitano": false,
+          "club": "Wasserfreunde Spandau 04"
+        },
+        {
+          "numero": 3,
+          "nomeFonte": "TKAC Maros",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1996-07-13",
+          "capitano": false,
+          "club": "Muri Antichi"
+        },
+        {
+          "numero": 4,
+          "nomeFonte": "SEMAN Lukas",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "1987-10-06",
+          "capitano": false,
+          "club": "VK Primorje Erste Bank"
+        },
+        {
+          "numero": 5,
+          "nomeFonte": "DURIK Lukas",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "1992-12-02",
+          "capitano": false,
+          "club": "Pro Recco Waterpolo"
+        },
+        {
+          "numero": 6,
+          "nomeFonte": "CARAJ Matej",
+          "posizioneFonte": "CF",
+          "manoFonte": "L",
+          "nascita": "2000-09-20",
+          "capitano": false,
+          "club": "Wasserfreunde Spandau 04"
+        },
+        {
+          "numero": 7,
+          "nomeFonte": "MIHAL Marco",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2002-02-04",
+          "capitano": false,
+          "club": "One Eger"
+        },
+        {
+          "numero": 8,
+          "nomeFonte": "TISAJ Patrik",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2002-10-12",
+          "capitano": false,
+          "club": "Olympic Nice Natation"
+        },
+        {
+          "numero": 9,
+          "nomeFonte": "MOLNAR Marek",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "1991-10-31",
+          "capitano": false,
+          "club": "White Sharks Hannover"
+        },
+        {
+          "numero": 10,
+          "nomeFonte": "JUHASZ Boris",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "2001-10-19",
+          "capitano": false,
+          "club": "SK Hornets Kosice"
+        },
+        {
+          "numero": 11,
+          "nomeFonte": "BIELIK Tomas",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "1993-11-19",
+          "capitano": false,
+          "club": "KVP Novaky"
+        },
+        {
+          "numero": 12,
+          "nomeFonte": "BALAZ Samuel",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1994-01-05",
+          "capitano": true,
+          "club": "Olympic Nice Natation"
+        },
+        {
+          "numero": 13,
+          "nomeFonte": "BALOGH Filip",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "2005-07-04",
+          "capitano": false,
+          "club": "CH Kosice"
+        },
+        {
+          "numero": 14,
+          "nomeFonte": "FURMAN Adam",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1999-05-16",
+          "capitano": false,
+          "club": "Team Strasbourg"
+        }
+      ],
+      "numeriSelezionati": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "formazioneGioco": [
+        1,
+        4,
+        3,
+        12,
+        6,
+        5,
+        2
+      ]
+    },
+    "TUR": {
+      "pagina": 16,
+      "convocati": [
+        {
+          "numero": 1,
+          "nomeFonte": "KIL Huseyin Kagan",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "1999-07-23",
+          "capitano": false,
+          "club": "Enka"
+        },
+        {
+          "numero": 2,
+          "nomeFonte": "YENER Arda",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2006-06-26",
+          "capitano": false,
+          "club": "Enka"
+        },
+        {
+          "numero": 3,
+          "nomeFonte": "OGUZCAN Kaan",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "2001-09-19",
+          "capitano": false,
+          "club": "Athletic Club Of Palaio Faliro"
+        },
+        {
+          "numero": 4,
+          "nomeFonte": "ACAR Fatih",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1998-11-22",
+          "capitano": false,
+          "club": "Galatasaray"
+        },
+        {
+          "numero": 5,
+          "nomeFonte": "ERGIN Tugay",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "1993-01-03",
+          "capitano": true,
+          "club": "Enka"
+        },
+        {
+          "numero": 6,
+          "nomeFonte": "ALKAN Berk",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "1998-04-22",
+          "capitano": false,
+          "club": "Enka"
+        },
+        {
+          "numero": 7,
+          "nomeFonte": "GEMALMAZOGLU Kerem",
+          "posizioneFonte": "CF",
+          "manoFonte": "R",
+          "nascita": "2001-05-21",
+          "capitano": false,
+          "club": "ASC Duisburg"
+        },
+        {
+          "numero": 8,
+          "nomeFonte": "ALPMAN Orhan Arda",
+          "posizioneFonte": "DF",
+          "manoFonte": "R",
+          "nascita": "2006-06-25",
+          "capitano": false,
+          "club": "Galatasaray"
+        },
+        {
+          "numero": 9,
+          "nomeFonte": "NAIPOGLU Efe",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2006-08-05",
+          "capitano": false,
+          "club": "Galatasaray"
+        },
+        {
+          "numero": 10,
+          "nomeFonte": "YUTMAZ Mehmet",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2002-07-07",
+          "capitano": false,
+          "club": "Pays D'Aix Natation"
+        },
+        {
+          "numero": 11,
+          "nomeFonte": "KAHRAMAN Ege",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "1999-03-08",
+          "capitano": false,
+          "club": "Enka"
+        },
+        {
+          "numero": 12,
+          "nomeFonte": "DUZENLI Yusa Han",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2001-09-15",
+          "capitano": false,
+          "club": "Enka"
+        },
+        {
+          "numero": 13,
+          "nomeFonte": "MERAL Mert",
+          "posizioneFonte": "GK",
+          "manoFonte": "R",
+          "nascita": "2003-02-05",
+          "capitano": false,
+          "club": "Enka"
+        },
+        {
+          "numero": 14,
+          "nomeFonte": "KULOGLU Efe",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2005-01-29",
+          "capitano": false,
+          "club": "Galatasaray"
+        },
+        {
+          "numero": 15,
+          "nomeFonte": "CANER Selcuk Can",
+          "posizioneFonte": "W",
+          "manoFonte": "R",
+          "nascita": "2001-12-03",
+          "capitano": false,
+          "club": "Galatasaray"
+        }
+      ],
+      "numeriSelezionati": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "formazioneGioco": [
+        1,
+        3,
+        4,
+        9,
+        10,
+        11,
+        5
+      ]
+    }
+  }
+}
