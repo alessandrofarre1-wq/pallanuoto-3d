@@ -13,6 +13,7 @@ import { LOGO } from './logo.js';
 import { applicaSquadre, formazioneValida, formazioni } from './giocatori.js';
 import { annullaCambio } from './panchina.js';
 import { azzeraScelta, disegnaPanchina } from './panchinaVista.js';
+import { apriRegistro } from './cronaca.js';
 import { kickoff } from './regole.js';
 import { allPlayers, ball, fight, game, teams } from './stato.js';
 import { iconaMano } from './mano.js';
@@ -282,6 +283,8 @@ export function togglePause(){
   $('pausaSalvataggio').textContent=torneoAttivo?'I risultati delle gare concluse sono salvati. Uscendo, questa gara ripartirà dall’inizio.':'Uscendo perderai questa gara. Puoi riprenderla finché resti in pausa.';
   apriMenu('pausa');
 }
+// registro degli eventi (v0.44, scelta di Ale): si apre dal menu di pausa; chiudendolo si torna alla pausa
+$('vaiRegistro').onclick=()=>{ if(game.state==='paused') apriRegistro(); };
 function disegnaTattiche(){
   renderTattichePausa(teams[0]);
 }

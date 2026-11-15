@@ -9,6 +9,7 @@ import { iconaMano } from './mano.js';
 import { aggiornaPulsanteCambi } from './panchinaVista.js';
 import { manUp, schemiUomo } from './ia.js';
 import { siglaUomo } from './uomo-in-piu.js';
+import { ultimoCambioManuale } from './controllo.js';
 export const $ = id => document.getElementById(id);
 let tacKey='', schedaVista=null, ultimoBip=null, uomoAperto=null, uomoChiudi=null;
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
@@ -47,6 +48,13 @@ export function updateHUD(){
     const t=q?`Premi TIRO<small>(K) · ${q.tipo==="schizzo"?"tiro a schizzo":"colonnello"}</small>`:"";
     if(el.dataset.t!==t){ el.dataset.t=t; el.innerHTML=t; el.classList.toggle('on',!!q); }
     if(b){ const on=!!q; if(b.classList.contains('premi')!==on){ b.classList.toggle('premi',on); const s=b.querySelector('small'); if(s) s.textContent=on?'Premi!':'2× finta'; } } }
+  // pannello del giocatore (v0.44, scelta di Ale): si vede per 3 s quando CAMBI giocatore tu (tasto Cambia) e a inizio partita, poi resta
+  // solo la freccia; i passaggi automatici al compagno con la palla o al più vicino non lo riaccendono (in difesa sarebbe sempre acceso);
+  // con tastiera/mouse resta anche mentre si carica il tiro (lì c'è la barra della potenza)
+  { const dal=game.time-ultimoCambioManuale();
+    const vedi=!!ctrl&&(game.time<3||(dal>=0&&dal<3)||(!TOUCH&&ctrl.charging)); const pl=$('player'); if(pl.classList.contains('vis')!==vedi) pl.classList.toggle('vis',vedi); }
+  // pulsante PALOMB. solo quando la nostra squadra ha la palla (in difesa non serve)
+  { const nostra=game.possTeam===teams[0]; if(document.body.classList.contains('nostra-palla')!==nostra) document.body.classList.toggle('nostra-palla',nostra); }
   if(ctrl){
     { const t=`#${ctrl.num} ${ctrl.name}${iconaMano(ctrl.mano)}<span class="ruolo"> · ${ctrl.role}</span>${ctrl.sprinting?' <span class="sp">⚡</span>':''}`;
       if($('pname').innerHTML!==t) $('pname').innerHTML=t; }
