@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { writeFileSync } from 'node:fs';
 import { chromium } from 'playwright';
 import { createServer } from 'vite';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -143,8 +144,8 @@ try{
   for(const n of out.negativi){assert.equal(n.attiva,false,n.vincolo);assert.equal(n.fronte,false,n.vincolo);assert.equal(n.rigore,false,n.vincolo);assert.equal(n.avviata,['possessoPerso','pressioneDurante'].includes(n.vincolo),n.vincolo);}
   if(process.argv.includes('--foto')){
     await page.setViewportSize({width:760,height:520});
-    await page.addStyleTag({content:'body > :not(canvas){display:none!important}'});
-    await page.evaluate(async()=>{
+    await page.addStyleTag({content:'#menu,#hud,#tac,#player,#cronaca,#tLog,#fight,#touch,#fps,#ruota,#tCambi{display:none!important}'});
+    const foto=await page.evaluate(async()=>{
       const [S,T,P,R]=await Promise.all([import('/src/stato.js'),import('/src/tiri.js'),import('/src/grafica/pose.js'),import('/src/grafica/render.js')]);
       const H=window.__pallanuoto,p=S.teams[0].players[4];
       for(const q of S.allPlayers)q.mesh.g.visible=q===p;
@@ -153,8 +154,10 @@ try{
       T.startAct(p,'pass',.2,()=>{},[p.x+.5,-4]);
       for(let i=0;i<=24;i++){p.act.t=(p.act.wind+p.act.frusta)*i/24;P.updateRig(p,1/60,S.game.time);}
       H.vista={pos:[p.x+2.2,1.65,-3.4],look:[p.x,.55,0],fov:34};R.render(1/60,S.game.time*1000);
+      // Il RAF è fermato per le misure: copia il framebuffer prima che il browser lo scarti.
+      return H.renderer.domElement.toDataURL('image/png');
     });
-    await page.screenshot({path:path.join(root,'docs/immagini/v041-passaggio.png')});
+    writeFileSync(path.join(root,'docs/immagini/v041-passaggio.png'),Buffer.from(foto.split(',')[1],'base64'));
   }
   console.log('Centroboa v0.41: tutte le prove superate');
 }finally{await browser.close();await server.close();}

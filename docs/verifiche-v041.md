@@ -1,0 +1,38 @@
+# Verifiche v0.41 — consegna in bozza
+
+15 novembre 2026. Ale ha chiesto di pubblicare subito il codice pronto e quello ancora da chiudere, con un prompt per Claude Code. La PR resta **in bozza, da non unire** finché i punti aperti sotto non sono risolti. Nessun merge o deploy.
+
+## Passato
+
+- `npm run lint`: PASS, zero errori e zero warning sull'ultima integrazione.
+- Build Vite: PASS, 66 moduli con la nuova pausa.
+- `npm run centroboa`: PASS. Anticipo e girata nei due versi; girata 2,00 s nei quattro casi verso/mano, distanza minima 0,900 m, passo massimo 0,0209 m/frame. Nessun rigore gratuito; recupero difensivo e cinque vincoli negativi rispettati.
+- Dodici passaggi destra/sinistra/dietro, due versi e due mani: corpo fronte porta 1,000; mano verso bersaglio almeno 0,99846, palmo disegnato almeno 0,999976; errore origine dalla mano 0, nessun NaN; lunghezze entro 0,30/0,29 m su 300 campioni.
+- `npm run tattica`: PASS; adiacenti, servizio al centro negato/aperto, skip aperto/coperto, pali durante passaggio, al volo libero/marcato, difensore recuperato, posizioni editate, entrata/copertura e aiuto/ritorno.
+- `npm run gameplay -- --no-build`: PASS senza indebolire gli assert v0.40. Reazione al vantaggio 0,017 s; appoggio apre in 1,283 s con spostamento 1,167 m e distanza compagni 2,911 m.
+- `npm run strategie -- --no-build`: PASS, inclusa la nuova pausa: editor→storage→IA, due fasi, reload, cambio campo, sostituzione, validazione, avvio torneo, scelta Incrocio e richiamo del piano personale.
+- Editor e pausa su 667×320, 852×393, 393×852: PASS, nessun overflow orizzontale o errore pagina; Riprendi sempre visibile dopo scroll, almeno 44 px. Tre foto per schermata in `docs/immagini/v041-*`.
+- `npm run sezione4 -- --no-build`: PASS, inclusi schizzo/colonnello AI e vincoli negativi.
+- `npm run aspetto -- --no-build`: PASS completo. Partita terminata; gambe sopra acqua 0/4.558 verticali, 0/7.582 nuotata, 0/1.300 transizione. Viste iPhone 57 chiamate/141.358 triangoli e 56/141.346. Primi piani diagnostici desktop fino a 156.066 triangoli: non sono le viste iPhone cui si applica il budget.
+- Misura fluidità touch 844×390 e 667×375 DPR1,50: azione fino a 65/142.622; due cambi contemporanei fino a **69/148.734**, sotto entrambi i limiti. Traccia `docs/misure-fluidita-v041.json`. Chromium SwiftShader, non una misura FPS su hardware Apple.
+
+## Verifica completa eseguita: partite PASS, riferimenti grafici da chiudere
+
+`npm run verifica`: 13 controlli qualità e 17 gruppi tornei PASS; tutte le sei partite terminate.
+
+| Input | Risultati | Tiri |
+| --- | --- | --- |
+| Nessun comando | 0–10, 0–8, 0–6 | 19, 15, 15 |
+| Comandi casuali | 1–20, 0–14, 0–15 | 71, 68, 72 |
+
+Totale 74 gol/260 tiri, conversione 28%. Nessun risultato è una misura del piacere di gioco.
+
+Esito complessivo **FAIL sui soli screenshot precedenti**: menu entro tolleranza, sprint identico; azione 1,67%, iPhone piccolo 8,42%, iPhone orizzontale 7,56% diversi. Sono cambiate intenzionalmente IA e posizioni: ispezionare attuale/confronto e poi aggiornare i riferimenti soltanto se corretti. Le sei gare non devono essere ripetute per un semplice aggiornamento dei PNG.
+
+## GitHub e lavoro ancora aperto
+
+La [CI del checkpoint e57ef12](https://github.com/alessandrofarre1-wq/pallanuoto-3d/actions/runs/43686710038) ha superato verifica completa con immagini non bloccanti, tornei-menu, rigori, gameplay, centroboa, tattica, strategie, fisica e sezioni 1–2. Si è fermata su **sezione3: centrale destro, difensore a 1,71 m anziché sotto 1,3 m**. Gli altri controlli della sezione sono passati. Non è ancora stabilito se la causa sia il nuovo comportamento o una fixture incompleta: non indebolire l'assert per farla passare.
+
+La pausa esplicativa e le prove aggiuntive sono successive a quel checkpoint. Sul nuovo SHA controllare tutta la pipeline, incluse le fasi che la prima CI non ha raggiunto. Non dichiarare CI verde sulla base dei soli test mirati.
+
+Restano inoltre: prova su iPhone fisico, giudizio sul gameplay, più slot personali/sequenze multi-fase, arbitraggio completo dei contatti e vero sette di movimento mediante sostituzione del portiere. Regolamento mantenuto WA febbraio 2026; differenze FIN ottobre documentate e non fuse nel motore.

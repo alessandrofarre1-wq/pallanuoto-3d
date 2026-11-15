@@ -79,20 +79,26 @@ export function updateHUD(){
     fb.style.background=v>=0?fight.boa.team.css:fight.def.team.css;
   } else fe.style.display='none';
   const hum=teams[0], ai=teams[1], atk=game.possTeam===hum;
-  const key=(atk?'a'+hum.atkPlay:'d'+hum.defPlay)+'|'+ai.defPlay+ai.atkPlay+'|'+schemiAperti;
+  const piano=atk&&hum.schema?hum.schema.nome:null;
+  const key=(atk?'a'+hum.atkPlay:'d'+hum.defPlay)+'|'+ai.defPlay+ai.atkPlay+'|'+schemiAperti+'|'+piano;
   if(key!==tacKey){
     tacKey=key;
     const names=atk?ATK:DEFN, cur=atk?hum.atkPlay:hum.defPlay;
     // barra degli schemi: su telefono è chiusa (si vede solo lo schema in uso) e si apre con un tocco
     let h;
     // chiusa si vede solo il proprio schema (lo schema avversario si legge aprendo la barra: in gioco non serve sempre)
-    if(!schemiAperti) h=`<span class="chip on" data-apri="1">${atk?'ATT':'DIF'}: ${names[cur]} ▾</span>`;
+    if(!schemiAperti) h='<span class="chip on" data-apri="1"></span>';
     else {
       h=`<span class="chip lab" data-apri="1">${atk?'ATTACCO':'DIFESA'}${TOUCH?' ▴':''}</span>`;
       names.forEach((n,i)=>{ h+=`<span class="chip${i===cur?' on':''}" data-i="${i}">${i+1} ${n}</span>`; });
       h+=`<span class="chip lab">${ai.short}: ${(atk?DEFN[ai.defPlay]:ATK[ai.atkPlay]).toLowerCase()}</span>`;
     }
     $('tac').innerHTML=h;
+    if(!schemiAperti){
+      const chip=$('tac').firstElementChild;
+      chip.textContent=`${atk?'ATT':'DIF'}: ${piano||names[cur]} ▾`;
+      chip.title=piano||names[cur];
+    }
   }
 }
 

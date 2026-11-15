@@ -59,6 +59,17 @@ try{
   assert.ok(Math.abs(campo.a.z-5.3)<.36,'ampiezza disegnata rispettata salvo piccolo appoggio di ruolo');
   assert.ok(Math.abs(campo.b.x+5.6)<.001&&Math.abs(campo.b.z+5.3)<.36,'piano specchiato al cambio campo');
   assert.equal(campo.difesa,1);
+  await page.evaluate(()=>window.__pallanuoto.pausa());
+  await page.locator('#vPausa [data-va="tattiche"]').click();
+  const personale=page.locator('#tattichePausa [data-tattica="attacco"][data-schema="personale"]');
+  assert.match(await personale.textContent(),/Taglio Ale/);
+  assert.ok(await page.locator('#tattichePausa svg').count()>=9,'tattiche spiegate con diagrammi');
+  await page.locator('#tattichePausa [data-tattica="attacco"][data-schema="2"]').click();
+  assert.equal(await page.evaluate(()=>window.__pallanuoto.teams[0].schema.id),'incrocio');
+  await personale.click();
+  assert.deepEqual(await page.evaluate(()=>window.__pallanuoto.teams[0].schema),salvata,'pausa richiama il piano preparato');
+  await page.locator('#riprendiTattiche').click();
+  assert.equal(await page.evaluate(()=>window.__pallanuoto.game.state),'play');
   // Le sostituzioni cambiano l'atleta che occupa il posto, non il piano del posto.
   const cambio=await page.evaluate(()=>{
     const H=window.__pallanuoto,t=H.teams[0];t.dir=1;

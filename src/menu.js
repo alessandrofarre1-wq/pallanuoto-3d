@@ -5,7 +5,7 @@
 // Il menu si usa sia in verticale sia in orizzontale; la partita solo in orizzontale (main.js, stile.css).
 import { azzeraStatistiche } from './statistiche.js';
 import { initAudio } from './audio.js';
-import { ATK, DEFN, PERIOD_LEN, SHOT_CLOCK, setArbitro, setDiff, setPeriodLen } from './costanti.js';
+import { PERIOD_LEN, SHOT_CLOCK, setArbitro, setDiff, setPeriodLen } from './costanti.js';
 import { $, aggiornaTabellone, fmt, fpsIniziale, setFps } from './hud.js';
 import { RUOLI, CHIAVE, STAT_NOMI, squadre } from './dati/rose.js';
 import { bandiera } from './dati/bandiere.js';
@@ -21,6 +21,7 @@ import { resetTap } from './controllo.js';
 import { COMPETIZIONI, classificaGirone, creaTorneo, prossimaPartita, registraPartita, simulaBronzo } from './tornei.js';
 import { applicaSchema, caricaSchema, copiaSchema } from './schemi.js';
 import { inizializzaEditor, aggiornaRiepilogoStrategia } from './tattiche-menu.js';
+import { renderTattichePausa } from './tattiche-pausa.js';
 
 const salva=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){ /* senza memoria si va avanti lo stesso */ } };
 const leggi=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } };
@@ -280,15 +281,14 @@ export function togglePause(){
   apriMenu('pausa');
 }
 function disegnaTattiche(){
-  const t=teams[0];
-  $('tattichePausa').innerHTML=[['attacco','Attacco',ATK,t.atkPlay],['difesa','Difesa',DEFN,t.defPlay]].map(([tipo,titolo,schemi,attuale])=>`<section class="scelte-tattiche"><h3>${titolo}</h3><div>${schemi.map((s,i)=>`<button type="button" class="tattica${i===attuale?' on':''}" data-tattica="${tipo}" data-schema="${i}" aria-pressed="${i===attuale}"><small>0${i+1}</small><b>${s}</b></button>`).join('')}</div></section>`).join('');
+  renderTattichePausa(teams[0]);
 }
 $('tattichePausa').onclick=e=>{
   const b=e.target.closest('[data-tattica]'); if(!b||game.state!=='paused') return;
   const t=teams[0], i=+b.dataset.schema;
   if(b.dataset.tattica==='attacco'){
     const difesa=t.defPlay;
-    applicaSchema(t,copiaSchema(['arco','entrata','incrocio','boa'][i]));
+    applicaSchema(t,b.dataset.schema==='personale'?caricaSchema():copiaSchema(['arco','entrata','incrocio','boa'][i]));
     t.defPlay=difesa; t.schema.difesa=difesa;
   }
   else if(i===1||i===3) passaAZona(t,i,false); else { t.defPlay=i; t.lasciato=null; }

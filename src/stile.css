@@ -809,6 +809,50 @@ body.touch #qte{display:none}
 @media (prefers-reduced-motion:reduce){#menu .vista.on,.coriandoli i,.capitano,.cerimonia-luci{animation:none!important}#cerimoniaTrofeo{transition:none}.coriandoli{display:none}}
 
 /* v0.41: lavagna prepartita. Il disegno resta SVG; i valori sono gli stessi usati dall'IA. */
+#tac .chip[data-apri]{max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;box-sizing:border-box}
+body.touch #tac .chip[data-apri]{max-width:200px}
+#menu #vTattiche{padding-bottom:calc(82px + var(--sb))}
+#vTattiche .tp-contenuto{max-width:1060px;width:100%;margin:0 auto}
+#vTattiche .titolo-sezione{font-size:clamp(25px,4vw,42px);margin:6px 0 10px}
+.tp-nota{font-size:12px;line-height:1.5;color:var(--m-tenue);max-width:780px}
+#vTattiche .tp-riprendi{position:fixed;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:flex-end;gap:20px;padding:10px max(16px,var(--sr)) max(10px,var(--sb)) max(16px,var(--sl));background:#091b26;box-shadow:0 -1px #52717d;z-index:5}
+.tp-riprendi>span{font-size:10px;color:var(--m-tenue)}
+#vTattiche .tp-riprendi .m-cta{min-height:44px;width:min(270px,48vw);margin:0;padding:7px 16px;gap:12px;max-width:320px}
+#vTattiche .tp-riprendi .m-cta b{font-size:16px}
+#vTattiche .tp-scelte{margin:20px 0}
+.tp-scelte h3{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:0;text-transform:none;color:#d3e4ec}
+.tp-scelte h3>span{font-size:8px;letter-spacing:.1em;color:var(--m-ciano);border:1px solid #3b6973;padding:4px 6px;border-radius:3px}
+#vTattiche .tp-scelte>div{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#menu .tp-carta{display:grid;grid-template-columns:100px minmax(0,1fr);align-items:center;gap:12px;padding:12px;min-height:125px;min-width:0;color:#f4faff;cursor:pointer}
+.tp-miniatura{width:100%;align-self:center}.tp-miniatura svg{width:100%;display:block;height:auto}
+.tp-testo{display:flex;flex-direction:column;gap:5px;min-width:0}.tp-testo b{font-size:15px;line-height:1.2;letter-spacing:-.015em}
+.tp-testo small{font-size:8px;font-weight:800;letter-spacing:.06em;color:#93b6c5}
+.tp-carta.on .tp-testo small{color:var(--m-ciano)}
+.tp-descrizione{font-size:11px;line-height:1.5;color:#b8d1dd}
+#menu .tp-personale{grid-column:1/-1;grid-template-columns:100px minmax(0,1fr);min-height:100px;border-style:dashed}
+.tp-acqua{fill:#0c3445;stroke:#6eb8c5;stroke-width:.6}.tp-porta{fill:none;stroke:#eff8fa;stroke-width:2}
+.tp-linee{fill:none;stroke:#87b9c7;stroke-opacity:.4;stroke-width:.6;stroke-dasharray:3 4}
+.tp-giocatore{fill:#eef9fa;stroke:#c5edf0;stroke-width:.8}.tp-avversario{fill:#0d2634;stroke:#87adbf;stroke-width:1.3}
+.tp-miniatura text,.tp-lavagne text{fill:#082431;font:850 8px system-ui}
+.tp-appoggi{fill:none;stroke:#7ce9df;stroke-width:1.1;stroke-dasharray:3 3;opacity:.5}
+.tp-freccia{fill:none;stroke:#ffdb92;stroke-width:1.4;stroke-dasharray:3 2}
+.tp-marcatura{fill:none;stroke:#80b7c6;stroke-width:.9;stroke-dasharray:2 2}.tp-palla{fill:#ffd76a;stroke:#6d561c;stroke-width:.5}
+.tp-dettaglio{background:#102632;border:1px solid var(--m-linea);border-radius:5px;margin:18px 0 10px;padding:0 14px}
+.tp-dettaglio>summary{min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#e7f7fa;font-size:12px;font-weight:750;cursor:pointer;list-style:none}
+.tp-dettaglio>summary::-webkit-details-marker{display:none}.tp-dettaglio>summary>span{font-size:20px;color:var(--m-ciano)}
+.tp-lavagne{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:6px 0 14px}.tp-lavagne figure{min-width:0}.tp-lavagne figcaption{font-size:12px;font-weight:800;color:var(--m-ciano);margin:0 0 8px}.tp-lavagne svg{width:100%;max-height:280px;display:block}.tp-lavagne p{font-size:11px;line-height:1.5;color:#c1d8e1;margin:8px 0}
+.tp-legenda{display:flex;align-items:center;flex-wrap:wrap;gap:7px 13px;font-size:10px;line-height:1.5;color:#b4cdd9;padding-top:12px;border-top:1px solid var(--m-linea)}
+.tp-legenda span{white-space:nowrap}.tp-legenda b{color:var(--m-ciano)}.tp-chiave{font-size:10px;line-height:1.6;color:#8faeba;padding:12px 0 14px}
+@media (orientation:landscape) and (max-height:520px){
+  #vTattiche>.m-testa{margin-bottom:4px}#vTattiche .titolo-sezione{font-size:25px;margin:4px 0 8px}.tp-nota{font-size:11px}
+  #vTattiche .tp-scelte{margin:16px 0}#menu .tp-carta{grid-template-columns:76px minmax(0,1fr);padding:10px;gap:10px;min-height:127px}.tp-testo b{font-size:12px}.tp-descrizione{font-size:10px;line-height:1.5}
+  #menu .tp-personale{grid-template-columns:76px minmax(0,1fr);min-height:96px}
+  #vTattiche .tp-riprendi{padding-top:7px}#vTattiche .tp-riprendi .m-cta{min-height:44px}
+}
+@media (orientation:portrait){
+  #vTattiche .tp-scelte>div{grid-template-columns:1fr}#menu .tp-carta,#menu .tp-personale{grid-template-columns:88px minmax(0,1fr);min-height:125px;padding:11px;gap:12px}.tp-testo b{font-size:13px}.tp-descrizione{font-size:11px}
+  .tp-scelte h3{align-items:flex-start;flex-direction:column;gap:6px}.tp-riprendi>span{display:none}#vTattiche .tp-riprendi{justify-content:center}#vTattiche .tp-riprendi .m-cta{width:100%;max-width:none}.tp-lavagne{grid-template-columns:1fr;gap:10px}
+}
 #menu .strategia-accesso{display:flex;align-items:center;gap:10px;min-height:48px;min-width:0;padding:8px 13px;border:1px solid var(--m-linea);border-radius:5px;background:#112a36;color:#effbff;text-align:left;font:inherit;cursor:pointer}
 .strategia-accesso>span:not(.strategia-icona){min-width:0;display:flex;flex-direction:column;gap:2px}
 .strategia-accesso b{font-size:13px;font-weight:800}.strategia-accesso small{font-size:10px;color:var(--m-tenue);white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width:240px}
