@@ -106,7 +106,7 @@ function cambiDelComputer(t) {
   let best = null;
   for (const p of t.players) {
     const pozzetto = p.excluded && p.alPozzetto && p.pf < 3;      // dal pozzetto il cambio non costa nulla
-    if (p.isGK || (p.excluded && !pozzetto) || ball.holder === p || (!pozzetto && dist(p, ball) < 5) || p.stamina > (pozzetto ? PANCHINA.stancoPozzetto : PANCHINA.stancoComputer)) continue;
+    if (p.isGK || (p.excluded && !pozzetto) || ball.holder === p || (!pozzetto && dist(p, ball) < 5) || p.stamina > (pozzetto ? PANCHINA.stancoPozzetto : PANCHINA.stancoComputer + (p.i === 1 || p.i === 6 ? 0.1 : 0))) continue;      // centroboa e suo marcatore ruotano di più (16,3 contro 18,3 min, Melchiorri 2020)
     const g = suggerimento(p); if (!g) continue;
     if (!best || pozzetto || p.stamina < best.p.stamina) best = { p, g };
     if (pozzetto) break;
@@ -119,6 +119,8 @@ export function aggiornaPanchina(dt, liberi = false) {
   for (const t of teams) {
     if (!t.rosa) continue;
     for (const g of t.rosa) if (!g.inAcqua) g.stamina = Math.min(1, (g.stamina ?? 1) + dt * PANCHINA.recupero);
+    // minuti in acqua (v0.45, Melchiorri et al. 2020: in media 17,4 su 32, da 2,3 a 31,6): contano solo a gioco in corso
+    if (game.state === 'play') for (const g of t.rosa) if (g.inAcqua) g.minuti = (g.minuti || 0) + dt / 60;
     if (!t.human || game.autoplay) cambiDelComputer(t);
     if (!t.cambio && t.coda && t.coda.length) {
       const r = t.coda[0], valido = t.players.includes(r.esce) && !r.entra.inAcqua && !r.entra.fuori;

@@ -70,6 +70,22 @@ console.log(`  espulsioni per origine: lotta al centro ${r1(sintesi.espCentro)}%
   console.log(`  tiro dopo ${r1(S('etaPossesso') / tt)} s di possesso in media · gesti: ` + Object.entries(g).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${r1(100 * v / tt)}%`).join(' · ')); }
 console.log(`  intercetti ${r1(sintesi.intercetti)} · tiri da oltre 8 m ${r1(sintesi.tiriLontani)} (gol ${r1(sintesi.golLontani)}) · tiri senza difensori davanti ${r1(sintesi.tiriSoli)} · gol dopo 2+ passaggi o un cambio di lato ${r1(sintesi.golCostruiti)}% (in media ${r1(sintesi.passaggiGol)} passaggi)`);
 console.log('  gol per tipo: ' + tipi.map(t => `${t} ${r1(sintesi.golTipo[t])}%`).join(' · '));
+{ // esiti delle azioni per tipo (v0.45): confronto con Mondiali 2009 (Lupo, Condello, Tessitore 2012) ed Euro League (Lupo et al. 2012)
+  const ES = ['gol', 'tiro', 'persa', 'falloAttacco', 'espulsione', 'rigore', 'tempo'], NOMI = { gol: 'gol', tiro: 'tiro sbagliato', persa: 'palla persa', falloAttacco: 'fallo in attacco', espulsione: 'espulsione procurata', rigore: 'rigore', tempo: 'tempo scaduto' };
+  sintesi.azioni = {};
+  let totAz = 0; for (const tipo of ['parita', 'controfuga', 'superiorita']) totAz += tutte.reduce((s, x) => s + x.azioni[tipo].n, 0);
+  console.log(`  azioni per squadra a partita: ${r1(totAz / tutte.length)} (Euro League circa 50: 37 parità, 2 controfughe, 11 superiorità)`);
+  for (const tipo of ['parita', 'controfuga', 'superiorita']) {
+    const n = tutte.reduce((s, x) => s + x.azioni[tipo].n, 0), d = tutte.reduce((s, x) => s + x.azioni[tipo].durata, 0);
+    const pc = Object.fromEntries(ES.map(e => [e, 100 * tutte.reduce((s, x) => s + x.azioni[tipo][e], 0) / Math.max(1, n)]));
+    sintesi.azioni[tipo] = { perPartita: n / tutte.length, quota: 100 * n / Math.max(1, totAz), durata: d / Math.max(1, n), ...pc };
+    console.log(`  ${tipo}: ${r1(n / tutte.length)} a partita (${r1(100 * n / Math.max(1, totAz))}%), durata media ${r1(d / Math.max(1, n))} s · ` + ES.map(e => `${NOMI[e]} ${r1(pc[e])}%`).join(' · '));
+  }
+  { const D = [0, 1, 2, 3].map(i => tutte.reduce((s, x) => s + (x.difesa ? x.difesa[i] : 0), 0)), tot = D.reduce((a, b) => a + b, 0) || 1;
+    sintesi.difese = D.map(x => 100 * x / tot);
+    console.log(`  difese in parità (tempo): ` + ['a uomo', 'zona', 'pressing', 'zona a M'].map((n, i) => `${n} ${r1(100 * D[i] / tot)}%`).join(' · ') + ' (Mondiali 2009: pressing 40-60%, zone 30-65%, zona M 6-9%)'); }
+  console.log('  riferimento parità Mondiali 2009: gol 6-19% · tiro sbagliato ~32% · palla persa ~20% · fallo in attacco ~15% · espulsione ~22% · rigore ~2% · durata ~21 s');
+}
 if (errori.length) console.log('ERRORI nella pagina:\n  ' + [...new Set(errori)].slice(0, 10).join('\n  '));
 sintesi.pallaSola = Math.max(...partite.map(p => p.pallaSola)); sintesi.pallaVagante = Math.max(...partite.map(p => p.pallaVagante));
 console.log(`  palla vagante: al massimo ${r1(sintesi.pallaSola)} s ferma senza che nessuno ci vada (limite 2 s) · al massimo ${r1(sintesi.pallaVagante)} s prima che qualcuno la prenda`);
