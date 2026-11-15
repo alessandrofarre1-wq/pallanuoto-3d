@@ -164,24 +164,26 @@ export function aggiorna(){
   const metti=p=>{ el.classList.remove('sx','dx'); if(p) el.classList.add(p); el.style.top=alto[p]+'px'; };
   metti(pos);
   if(!visibile||game.state==='menu') return;
-  if((posT-=0.05)>0) return;                  // non salta di continuo da una parte all'altra
+  // La stabilità non deve trattenere un banner sopra un bersaglio dopo un gol
+  // o uno spostamento della camera. I soli pannelli hanno peso 0,5.
+  if((posT-=0.05)>0&&copre(el.getBoundingClientRect())<1) return;
   // la prima posizione libera; se nessuna lo è (schermi molto bassi), quella che copre la cosa meno importante
   // se in ogni posizione coprirebbe la palla, la notifica si riduce a una riga (i dettagli restano nel registro)
   // riduzione automatica: a gioco in corso, se la palla è vicina alla zona delle notifiche (in alto), la notifica è già
   // compatta: una riga sola, senza dettagli
   const pb=aSchermo(ball.x,ball.y||0.2,ball.z), vicina=game.state==='play'&&pb&&pb[1]<sotto+130;
-  let meglio='', minimo=99;
+  let meglio='', minimo=99, ridotta=vicina;
   for(const compatta of (vicina?[true]:[false,true])){
     el.classList.toggle('compatto',compatta);
     for(const p of ['','dx','sx']){
       metti(p); const c=copre(el.getBoundingClientRect());
-      if(c<minimo){ minimo=c; meglio=p; }
+      if(c<minimo){ minimo=c; meglio=p; ridotta=compatta; }
       if(!c) break;
     }
-    if(minimo<4) break;
+    if(!minimo) break;
   }
   if(meglio!==pos){ pos=meglio; posT=0.8; }
-  metti(pos);
+  el.classList.toggle('compatto',ridotta); metti(pos);
 }
 
 // ---------- registro degli eventi ----------
