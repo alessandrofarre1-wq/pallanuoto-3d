@@ -35,7 +35,10 @@ function atlanteArena(){
     cella('bordo',0,0,()=>{
       x.fillStyle='#c7d2d8'; x.fillRect(0,0,256,256); x.strokeStyle='#a9bac3'; x.lineWidth=2;
       for(let i=0;i<=256;i+=64){ x.beginPath(); x.moveTo(i,0); x.lineTo(i,256); x.stroke(); x.beginPath(); x.moveTo(0,i); x.lineTo(256,i); x.stroke(); }
+      // Fughe con un bordo chiaro e grana antiscivolo: leggibili anche dal bordo vasca.
+      x.fillStyle='#dce5e7'; for(let i=1;i<256;i+=64){ x.fillRect(i,2,1,254); x.fillRect(2,i,254,1); }
       x.fillStyle='rgba(255,255,255,.32)'; for(let i=0;i<250;i++) x.fillRect((i*97)%256,(i*53)%256,2,2);
+      x.fillStyle='rgba(59,89,105,.12)'; for(let i=0;i<250;i++) x.fillRect((i*73+17)%256,(i*41+9)%256,1,1);
     });
     cella('cimasa',1,0,()=>{
       x.fillStyle='#f5f4e9'; x.fillRect(0,0,256,256); x.fillStyle='#c1c9c5';
@@ -43,9 +46,14 @@ function atlanteArena(){
       x.fillStyle='#fffdf2'; x.fillRect(0,0,256,14); x.fillStyle='#aab9ba'; x.fillRect(0,242,256,14);
     });
     cella('griglia',2,0,()=>{
-      x.fillStyle='#687e8b'; x.fillRect(0,0,256,256); x.fillStyle='#dce4e6';
-      for(let i=0;i<256;i+=16) x.fillRect(i,4,9,248);
-      x.fillRect(0,0,256,7); x.fillRect(0,249,256,7);
+      x.fillStyle='#314d5d'; x.fillRect(0,0,256,256);
+      for(let i=0;i<256;i+=16){
+        x.fillStyle='#738c96'; x.fillRect(i+2,5,10,246);
+        x.fillStyle='#dce4e6'; x.fillRect(i,4,8,248);
+        x.fillStyle='#f1f6f3'; x.fillRect(i,5,2,245);
+      }
+      x.fillStyle='#a5b6bd'; x.fillRect(0,0,256,7); x.fillRect(0,249,256,7);
+      x.fillStyle='#eff5f3'; x.fillRect(0,0,256,2); x.fillRect(0,249,256,2);
     });
     cella('cemento',3,0,()=>{
       x.fillStyle='#8fa5b6'; x.fillRect(0,0,256,256); x.fillStyle='#aebfca'; x.fillRect(0,0,256,12);
@@ -81,6 +89,8 @@ function atlanteArena(){
     cella('seduta',0,2,()=>{
       x.fillStyle='#126b9c'; x.fillRect(0,0,256,256); x.fillStyle='#259fc2'; x.fillRect(0,0,256,30);
       x.strokeStyle='#08496e'; x.lineWidth=4; for(let i=0;i<256;i+=26) x.strokeRect(i+3,20,20,218);
+      x.fillStyle='#4cb5cc'; for(let i=0;i<256;i+=26) x.fillRect(i+5,24,2,188);
+      x.fillStyle='#083c5e'; x.fillRect(0,231,256,25);
     });
     cella('tavolo',1,2,()=>{
       x.fillStyle='#f1f0de'; x.fillRect(0,0,256,256); x.fillStyle='#214c63'; x.fillRect(0,90,256,166);
@@ -131,12 +141,25 @@ export function creaArena(scene,PX,PZ){
   }
   const scatola=(w,h,d,c,x,y,z)=>pezzo(new THREE.BoxGeometry(w,h,d),c,x,y,z);
   const piano=(w,d,c,x,y,z)=>pezzo(new THREE.PlaneGeometry(w,d),c,x,y,z,-Math.PI/2);
-  // Il piano del bordo e la cimasa sostituiscono gli otto parallelepipedi precedenti.
+  // Tre superfici per lato: fronte, smusso e appoggio. La cimasa non è più un foglio sospeso.
+  function cimasa(lunghezza,x,z,ry){
+    const profilo=[[0,0.23],[0,0.33],[0.035,0.365],[0.4,0.365]], pos=[], uv=[];
+    for(let i=0;i<profilo.length-1;i++){
+      const [za,ya]=profilo[i], [zb,yb]=profilo[i+1], a=-lunghezza/2, b=lunghezza/2;
+      pos.push(a,ya,za,b,ya,za,b,yb,zb,a,ya,za,b,yb,zb,a,yb,zb);
+      const u=lunghezza/1.2;
+      uv.push(0,0.04,u,0.04,u,0.96,0,0.04,u,0.96,0,0.96);
+    }
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+    g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2)); g.computeVertexNormals();
+    pezzo(g,'cimasa',x,0,z,0,ry);
+  }
   for(const s of [-1,1]){
     piano(PX*2+14.6,7,'bordo',0,0.3,s*(PZ+3.8));
     piano(7,PZ*2+0.6,'bordo',s*(PX+3.8),0.3,0);
-    piano(PX*2+0.8,0.4,'cimasa',0,0.365,s*(PZ+0.2));
-    piano(0.4,PZ*2,'cimasa',s*(PX+0.2),0.365,0);
+    cimasa(PX*2+0.8,0,s*PZ,s>0?0:Math.PI);
+    cimasa(PZ*2,s*PX,0,s*Math.PI/2);
     piano(PX*2+1.1,0.20,'griglia',0,0.37,s*(PZ+0.52));
     piano(0.20,PZ*2+0.6,'griglia',s*(PX+0.52),0.37,0);
     pezzo(new THREE.PlaneGeometry(PX*2+14.6,0.3),'cemento',0,0.15,s*(PZ+7.3));
@@ -167,6 +190,31 @@ export function creaArena(scene,PX,PZ){
   }
   pezzo(new THREE.PlaneGeometry(larghezza,file*salita),'cemento',0,0.3+file*salita/2,fronte-file*passo);
   pezzo(new THREE.PlaneGeometry(32,0.96),'cartelloni',0,0.82,-PZ-2.8);
+  // Due testate basse, sul pavimento esterno e arretrate rispetto alle porte.
+  // Lasciano libera la fascia z>6 verso la camera laterale; nessun nuovo materiale o mesh.
+  for(const s of [-1,1]){
+    const fronteX=PX+2.8, file=3, passo=0.82, salita=0.34, base=0.34, centroZ=-1.2, larghezza=14.4;
+    const profondita=file*passo, retro=fronteX+profondita, alto=base+file*salita;
+    scatola(profondita+0.4,0.08,larghezza+0.4,'cemento',s*(fronteX+profondita/2),0.30,centroZ);
+    for(let r=0;r<file;r++){
+      const y=base+(r+1)*salita, x=fronteX+(r+0.5)*passo;
+      piano(passo,larghezza,'cemento',s*x,y,centroZ);
+      pezzo(new THREE.PlaneGeometry(larghezza,salita),'cemento',s*(fronteX+r*passo),y-salita/2,centroZ,0,-s*Math.PI/2);
+      piano(passo,0.9,'scala',s*x,y+0.006,centroZ+larghezza/2-0.7);
+      pezzo(new THREE.PlaneGeometry(13.2,1.1),'pubblico'+(r%2),s*x,y+0.28,centroZ-0.6,0,-s*Math.PI/2);
+    }
+    scatola(0.12,0.38,larghezza,'parapetto',s*(fronteX-0.04),base+0.19,centroZ);
+    scatola(0.12,0.45,larghezza,'parapetto',s*(retro+0.04),alto+0.225,centroZ);
+    pezzo(new THREE.PlaneGeometry(larghezza,file*salita),'cemento',s*retro,base+file*salita/2,centroZ,0,s*Math.PI/2);
+    // Chiusure a gradini: sotto la tribuna non si vede il vuoto nelle riprese di tre quarti.
+    const sagoma=new THREE.Shape(); sagoma.moveTo(0,0);
+    for(let r=0;r<file;r++){ sagoma.lineTo(r*passo,(r+1)*salita); sagoma.lineTo((r+1)*passo,(r+1)*salita); }
+    sagoma.lineTo(profondita,0); sagoma.closePath();
+    for(const z of [centroZ-larghezza/2,centroZ+larghezza/2]){
+      const lato=new THREE.ShapeGeometry(sagoma); lato.scale(s,1,1);
+      pezzo(lato,'cemento',s*fronteX,base,z);
+    }
+  }
   // Due panchine e tavolo degli ufficiali, fuori dal corridoio lungo la vasca.
   for(const s of [-1,1]){
     const x=s*9.6, z=-PZ-1.8;

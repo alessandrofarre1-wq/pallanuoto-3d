@@ -1,6 +1,62 @@
-# Passaggio a Claude Code — WATERPOLO 7 v0.41
+# Passaggio corrente — WATERPOLO 7 v0.48
 
-Questo è il passaggio corrente. Il testo v0.40 più sotto è storico. Ale ha chiesto di mettere su GitHub anche il codice non ancora pronto, così il lavoro può proseguire senza rispiegare il contesto.
+```text
+Continua alessandrofarre1-wq/pallanuoto-3d, branch
+codex/v048-replay-regia-leggibile, versione 0.48.
+Prima controlla main, PR recenti, stato locale, CLAUDE.md e CI:
+Claude e Codex lavorano in parallelo. Non duplicare modifiche.
+Base 933654b dopo PR #43 v0.47; conservati nuoto v0.45 e IA/regole v0.46.
+Leggi docs/verifiche-v048.md e docs/misure-replay-v048.json.
+
+Ale autorizza un replay più ambizioso sul riferimento FIFA e insiste sulla
+comprensibilità. Implementati 0,6 s diretta + 5,2 s replay saltabile + 1,2 s
+rimessa. Motore congelato solo con archivio valido; fine e Salta attraversano
+una volta sola il residuo dello stop originale. Nessun recupero, cambio,
+cronometro, gol o statistica aggiuntivi. Risultato e premiazione aspettano
+la fine della clip; gestita la rotazione anche nel ramo finale.
+
+Fonte vera fino a 3 s: arrivo del passaggio, ricezione, alzata, rilascio,
+rete e reazione. Camera FERMA durante ricezione e intero volo; avvicinamento
+morbido solo dopo il gol, stesso lato e orientamento. Fit prospettico sui
+punti critici e margini DOM/notch. Rallenty legato a rilascio/rete.
+Identità registrata: niente primo piano della riserva appena subentrata.
+Pose.js aggiunge una piccola esultanza vera (mano su dopo rete), registrata.
+
+Arena: cimasa con spessore/smusso e due tribune basse alle testate;
+stessa mesh/atlante 1024, 388→552 triangoli (+164). Pareti 4→1 mesh,
+48 triangoli invariati. I 14 corpi in campo restano completi.
+Sei foto vere in docs/immagini/v048-replay-regia-* e tavola
+v048-replay-sequenza.jpg: stessa beduina fisica, tre momenti, due telefoni.
+
+npm run replay usa tests/replay-v048.mjs, che sostituisce il test v047.
+PASS locale: 558 fotogrammi, 18 sequenze, due direzioni, tiri da fuori/ala/
+palombella, 844×390 e667×300, anche margini 44/44/21. Punti critici liberi
+dalle scritte; palla minima 5,46 px CSS. Replay con due comparse: max
+49 chiamate/146360 triangoli. Diretta con due cambi: max62/147652 su
+entrambe le viste. Buffer34episodi: max16676528 byte contati,19 texture
+finali (tetto32),≤106campioni. La fixture dell'ala inizialmente trovava
+una parata vera: portiere posizionato dal lato opposto per isolare la camera;
+gol sempre fisico e assert invariati. Non alterare l'IA per far passare test.
+
+Prima della PR: lint, verifica, aspetto e CI INTERA verde sull'ultimo SHA.
+Sei gare in CI una sola volta; per sole PNG verifica --partite=0, con
+ispezione prima di aggiornare i riferimenti. Esiti/link definitivi nella PR.
+Non dichiarare PASS una prova soltanto avviata.
+PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers nel workspace cloud.
+Conserva <100 chiamate/<150000 triangoli su iPhone ANCHE con due cambi,
+14 corpi interi, cartoon, SPEED1, sprint a tocchi, riflesso solo alta,
+MAX0,9s/tiro al rilascio, logo C e CAMBI in basso.
+
+NON FATTO: telecronaca, barra oscillante, bonus/Sfide/progressione,
+replay manuale/serie rigori, tribune animate, nuovi GLB, arena fotorealistica.
+Nessuna misura FPS su iPhone fisico. Non ampliare lo scopo senza richiesta.
+Nessun merge/deploy. Ogni PR aggiorna CLAUDE con versione/file/misure/non fatto
+ed evidenzia decisioni superate. Preserva lavoro locale e di Claude.
+```
+
+## Archivio v0.41 e precedenti
+
+Il testo seguente è storico, superato dal passaggio corrente sopra.
 
 ```text
 Continua alessandrofarre1-wq/pallanuoto-3d, branch

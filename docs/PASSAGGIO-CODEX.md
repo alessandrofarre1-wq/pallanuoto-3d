@@ -1,42 +1,57 @@
-# Passaggio corrente — WATERPOLO 7 v0.47
+# Passaggio corrente — WATERPOLO 7 v0.48
 
 ```text
-Continua alessandrofarre1-wq/pallanuoto-3d per Ale, branch
-codex/v047-replay-azioni-firma, versione0.47. Prima controlla PR recenti,
-main, diff locale e CI: Claude Code lavora sullo stesso progetto.
-Base60dcc44: PR41 v0.45 e PR42 v0.46 già unite e preservate.
-Leggi CLAUDE.md, docs/verifiche-v047.md e docs/misure-replay-v047.json.
+Continua alessandrofarre1-wq/pallanuoto-3d, branch
+codex/v048-replay-regia-leggibile, versione 0.48.
+Prima controlla main, PR recenti, stato locale, CLAUDE.md e CI:
+Claude e Codex lavorano in parallelo. Non duplicare modifiche.
+Base 933654b dopo PR #43 v0.47; conservati nuoto v0.45 e IA/regole v0.46.
+Leggi docs/verifiche-v048.md e docs/misure-replay-v048.json.
 
-Richiesta approvata: replay automatico dei gol nella pausa originale3,8s
-(0,6diretta+2replay+1,2rimessa), camera dedicata soltanto al replay,
-Salta senza doppio gol o rimessa e firme dei gesti senza bonus.
-Implementato: buffer circolare30Hz/3,5s, clipcirca1,8s, ossa e numeri delle
-cuffie congelati, palla/schiuma/gocce/ombre/contatti, ripristino finally,
-UI compatta nazionale/#/nome/gesto, salto/pausa/rotazione/reset/fine gara.
-Nessuna nuova mesh, regola di tiro o chiamata casuale. Breve accento WebAudio.
-I test replay/replay-ui sono in CI. Il test core include passaggio, ricezione,
-tiro e gol fisico, sostituzione del marcatore,34episodi, due comparse reali,
-un solo render per frame, motore/RNG/scena identici dopo playback.
-Foto passano dal canvas nello stesso task del draw (RAF finto e bufferWebGL
-non persistente): non sostituirle con foto DOM su piscina non inizializzata.
+Ale autorizza un replay più ambizioso sul riferimento FIFA e insiste sulla
+comprensibilità. Implementati 0,6 s diretta + 5,2 s replay saltabile + 1,2 s
+rimessa. Motore congelato solo con archivio valido; fine e Salta attraversano
+una volta sola il residuo dello stop originale. Nessun recupero, cambio,
+cronometro, gol o statistica aggiuntivi. Risultato e premiazione aspettano
+la fine della clip; gestita la rotazione anche nel ramo finale.
 
-Prima di PR lint/verifica/aspetto e CI INTERA sull'ultimo SHA verde.
-Le sei partite complete si fanno in CI per non duplicare simulazioni locali.
-Per sole immagini: npm run verifica -- --partite=0; ispeziona prima di aggiornare.
+Fonte vera fino a 3 s: arrivo del passaggio, ricezione, alzata, rilascio,
+rete e reazione. Camera FERMA durante ricezione e intero volo; avvicinamento
+morbido solo dopo il gol, stesso lato e orientamento. Fit prospettico sui
+punti critici e margini DOM/notch. Rallenty legato a rilascio/rete.
+Identità registrata: niente primo piano della riserva appena subentrata.
+Pose.js aggiunge una piccola esultanza vera (mano su dopo rete), registrata.
+
+Arena: cimasa con spessore/smusso e due tribune basse alle testate;
+stessa mesh/atlante 1024, 388→552 triangoli (+164). Pareti 4→1 mesh,
+48 triangoli invariati. I 14 corpi in campo restano completi.
+Sei foto vere in docs/immagini/v048-replay-regia-* e tavola
+v048-replay-sequenza.jpg: stessa beduina fisica, tre momenti, due telefoni.
+
+npm run replay usa tests/replay-v048.mjs, che sostituisce il test v047.
+PASS locale: 558 fotogrammi, 18 sequenze, due direzioni, tiri da fuori/ala/
+palombella, 844×390 e667×300, anche margini 44/44/21. Punti critici liberi
+dalle scritte; palla minima 5,46 px CSS. Replay con due comparse: max
+49 chiamate/146360 triangoli. Diretta con due cambi: max62/147652 su
+entrambe le viste. Buffer34episodi: max16676528 byte contati,19 texture
+finali (tetto32),≤106campioni. La fixture dell'ala inizialmente trovava
+una parata vera: portiere posizionato dal lato opposto per isolare la camera;
+gol sempre fisico e assert invariati. Non alterare l'IA per far passare test.
+
+Prima della PR: lint, verifica, aspetto e CI INTERA verde sull'ultimo SHA.
+Sei gare in CI una sola volta; per sole PNG verifica --partite=0, con
+ispezione prima di aggiornare i riferimenti. Esiti/link definitivi nella PR.
+Non dichiarare PASS una prova soltanto avviata.
 PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers nel workspace cloud.
-Misure locali: due cambi max65call/147488tri su entrambe le viste iPhone;
-replay48/145416 su entrambe le viste,14corpi in campo. Mai >=100call o >=150000tri.
-Nessuna deroga ai cambi; conserva cartoon, nuoto rapido v0.45, regole/IA v0.46,
-SPEED1, sprint a tocchi, riflesso solo alta, MAX.9s/tiro al rilascio,
-logo C Flusso scelto da Ale, CAMBI basso centro≥44px.
+Conserva <100 chiamate/<150000 triangoli su iPhone ANCHE con due cambi,
+14 corpi interi, cartoon, SPEED1, sprint a tocchi, riflesso solo alta,
+MAX0,9s/tiro al rilascio, logo C e CAMBI in basso.
 
-NON FATTO: telecronaca, cori registrati, replay dalla pausa/serie rigori,
-nuove animazioni di ricezione, assist/traversa in didascalia, Sfide lampo e
-progressione. Gli screenshot Splash Land sono riferimenti di leggibilità e
-continuità del gesto; la barra oscillante è una scelta futura da concordare.
-Non cambiare il tiro implicitamente e non copiare l'interfaccia del concorrente.
-Nessun merge/deploy. Risultati e link finali nella PR, non dichiarare PASS
-una prova soltanto avviata. Mantieni aggiornati rapporto e CLAUDE.md.
+NON FATTO: telecronaca, barra oscillante, bonus/Sfide/progressione,
+replay manuale/serie rigori, tribune animate, nuovi GLB, arena fotorealistica.
+Nessuna misura FPS su iPhone fisico. Non ampliare lo scopo senza richiesta.
+Nessun merge/deploy. Ogni PR aggiorna CLAUDE con versione/file/misure/non fatto
+ed evidenzia decisioni superate. Preserva lavoro locale e di Claude.
 ```
 
 ## Storico dopo la v0.41

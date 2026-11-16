@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.47.0",
+  "version": "0.48.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -52,7 +52,7 @@
     "desktop": "node tests/desktop-v044.mjs",
     "costumi": "node tests/costumi-v044.mjs",
     "home": "node tests/home-v044.mjs",
-    "replay": "node tests/replay-v047.mjs",
+    "replay": "node tests/replay-v048.mjs",
     "replay-ui": "node tests/replay-ui-v047.mjs"
   },
   "dependencies": {

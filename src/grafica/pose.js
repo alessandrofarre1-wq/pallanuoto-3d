@@ -199,6 +199,14 @@ export function computePose(p,dt,t){
     if(schizzo&&w<1){ hL=add3(J.sL,[0.44,-0.10,0.22]); hintL=[0,-1,-0.4]; nL=[0,1,0]; }      // palmo in su, sotto la palla
     if(hold && !(act&&act.done&&act.kind!=='fake')) J.ballHand=true;
   }
+  // Reazione reale al gol, registrata insieme alla diretta: il marcatore alza
+  // la mano soltanto a palla in rete. Nessuna modifica a nuoto, tiro o gambe.
+  if(ball.inRete&&ball.shooter===p&&game.state==='stop'&&!p.excluded&&!p.isGK&&o<0.4&&
+    ball.tiroReplay?.uid===p.uid&&ball.tiroReplay.numero===p.num){
+    const esulta=ease(clamp((2.6-game.timer-0.06)/0.24,0,1));
+    hR=mix3(hR,add3(J.sR,[0.06,0.55,0.16]),esulta);
+    hintR=mix3(hintR,[-0.4,0.1,1],esulta); nR=mix3(nR,[0.2,0.8,0.3],esulta);
+  }
   [J.eR,J.hR]=ik(J.sR,hR,L1,L2,hintR); [J.eL,J.hL]=ik(J.sL,hL,L1,L2,hintL);
   J.nR=nR; J.nL=nL;
   // MANCINI (sezione 4): con la palla e nei gesti la posa è quella del destro vista allo specchio (destra e sinistra
