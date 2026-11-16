@@ -152,14 +152,14 @@
         <section class="schema-lavagna">
           <div class="schema-lavagna-testa"><div class="schema-fasi" role="tablist" aria-label="Situazione di attacco"><button type="button" role="tab" id="schemaParita" aria-controls="schemaPannello" aria-selected="true" data-fase-schema="attacco">Parità <small>6 c 6</small></button><button type="button" role="tab" id="schemaSuperiorita" aria-controls="schemaPannello" aria-selected="false" data-fase-schema="superiorita">Superiorità <small>6 c 5</small></button></div><span class="schema-porta-label">PORTA AVVERSARIA ↑</span></div>
           <div id="schemaPannello" role="tabpanel" aria-labelledby="schemaParita"><svg id="schemaPiscina" viewBox="0 0 600 350" aria-label="Lavagna tattica: seleziona e trascina uno dei sei posti" role="group"></svg></div>
-          <p class="schema-aiuto-lavagna">Trascina un posto oppure usa i valori accanto. I numeri indicano i ruoli, non le cuffie.</p>
+          <p class="schema-aiuto-lavagna">Porta avversaria in alto: destra e sinistra sono quelle di chi attacca. Pos. = posizione, # = calotta. La numerazione cambia fra parità e 6 contro 5.</p>
         </section>
         <section class="schema-posizione" aria-labelledby="schemaPosizioneTitolo">
           <p class="soprattitolo" id="schemaFaseCorrente">PARITÀ · 6 CONTRO 6</p><h3 id="schemaPosizioneTitolo">Scegli il tuo spazio.</h3>
           <label class="schema-campo">Posto tattico<select id="schemaGiocatore"></select></label>
           <div class="schema-coordinate"><label class="schema-campo">Dalla porta <span>(metri)</span><input type="number" id="schemaDistanza" min="1" max="10" step="0.1" inputmode="decimal" aria-describedby="schemaVincoli"></label><label class="schema-campo">Lato <span>(metri)</span><input type="number" id="schemaLarghezza" min="-8.8" max="8.8" step="0.1" inputmode="decimal" aria-describedby="schemaVincoli"></label></div>
           <p id="schemaVincoli" class="schema-spiegazione">Lato − a sinistra, + a destra. Nell’area centrale dei 2 m il posto resta ad almeno 2,1 m dalla porta.</p>
-          <div class="schema-ruolo-compito"><span id="schemaRuoloNumero">01</span><p id="schemaRuoloCompito"></p></div>
+          <div class="schema-ruolo-compito"><span id="schemaRuoloNumero">Pos. 6</span><p id="schemaRuoloCompito"></p></div>
         </section>
         <section class="schema-compiti" aria-labelledby="schemaCompitiTitolo"><p class="soprattitolo">ATTACCO</p><h3 id="schemaCompitiTitolo">Entrata e copertura</h3><label class="schema-campo">Chi entra senza palla<select id="schemaEntrata"></select></label><p id="schemaCompiti" class="schema-spiegazione"></p><label class="schema-campo schema-circolazione">Circolazione della palla<select id="schemaPassaggi"><option value="vicini">Appoggi vicini</option><option value="equilibrati">Equilibrata</option><option value="rapidi">Cambi di lato rapidi</option></select></label><p class="schema-spiegazione" id="schemaPassaggiNota"></p></section>
         <section class="schema-difesa" aria-labelledby="schemaDifesaTitolo"><p class="soprattitolo">DIFESA</p><h3 id="schemaDifesaTitolo">Proteggi il centro.</h3><label class="schema-campo">Sistema difensivo<select id="schemaDifesa"></select></label><p class="schema-spiegazione" id="schemaDifesaNota"></p><fieldset class="schema-aiuti"><legend>Chi può aiutare sul boa</legend><div id="schemaAiuti"></div></fieldset><p class="schema-spiegazione">In Zona e Zona a M aiuta un solo compagno fra quelli autorizzati, se è abbastanza vicino e il boa può ricevere. Lascia spazio al proprio uomo e torna su di lui quando la linea al centro si chiude. Chi controlli tu mantiene i tuoi comandi.</p></section>
@@ -173,6 +173,7 @@
     <header class="m-testa schema-testa"><button type="button" class="m-icona" id="uomoIndietro" aria-label="Torna indietro">‹</button><div><p class="soprattitolo">PREPARAZIONE PARTITA · 6 CONTRO 5</p><h2 id="uomoTitolo">Uomo in più</h2></div></header>
     <div id="uomoElenco">
       <p class="uomo-intro">Scegli fino a <b>3 schemi</b>. In partita, quando gli avversari hanno un espulso, compaiono in alto: li chiami con un tocco (o con i tasti 1, 2, 3; il 4 torna al 4-2 base) e i compagni si muovono fase dopo fase.</p>
+      <p class="uomo-intro">Numerazione del <b>4–2, guardando la porta</b>: Pos. 1 destra 2 m; Pos. 2 esterno destro 5 m; Pos. 3 esterno sinistro 5 m; Pos. 4 sinistra 2 m; Pos. 5 palo destro; Pos. 6 palo sinistro. I numeri seguono i giocatori nelle rotazioni e non sono le calotte. In parità la numerazione è diversa.</p>
       <div id="uomoScelti" class="uomo-scelti" aria-label="Schemi scelti"></div>
       <div class="uomo-azioni"><button type="button" class="m-cta corta" id="uomoNuovo"><span><b>＋ Crea uno schema</b></span></button></div>
       <div id="uomoLista" class="uomo-lista"></div>
@@ -186,7 +187,7 @@
       </div>
       <div class="uomo-crea-griglia">
         <div class="uomo-lavagna"><svg id="uomoPiscina" viewBox="0 0 600 350" role="group" aria-label="Lavagna: trascina i sei posti della fase"></svg>
-          <p class="schema-aiuto-lavagna">Trascina i giocatori (porta in alto). In giallo i pali; i cerchi tratteggiati sono la fase prima, le frecce il movimento.</p></div>
+          <p class="schema-aiuto-lavagna">Trascina le posizioni del 6 contro 5, non le calotte: numeri del 4–2 iniziale, conservati nelle rotazioni. Porta in alto, destra di chi attacca a destra. In giallo i pali; tratteggio = fase prima, frecce = movimento.</p></div>
         <div class="uomo-crea-lato">
           <p class="uomo-ruolo" id="uomoRuolo"></p>
           <label class="schema-campo">Durata della fase<select id="uomoDurata"></select></label>

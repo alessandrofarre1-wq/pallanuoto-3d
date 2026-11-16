@@ -59,7 +59,7 @@ export function computePose(p,dt,t){
   // quanto il corpo è disteso (lo decide la fisica: fisica.js): 0 verticale, 1 orizzontale. Tutto sfuma tra le due pose.
   const o=p.excluded&&p.alPozzetto?0:(p.oriz||0), e=ease(o);      // l'espulso nuota fino al pozzetto, poi aspetta in verticale
   const frena=(p.orizPrec||0)>o+1e-6 ? Math.sin(Math.PI*o) : 0; p.orizPrec=o;      // sta tornando verticale: remata di freno
-  if(o>0.02) p.phase+=dt*(3.2+sp*1.9);
+  if(o>0.02&&(p.comparsa||game.state==='play'||game.state==='paused')) p.phase+=dt*(3.2+sp*1.9);
   const bob=Math.sin(t*2.2+p.uid)*0.02, eg=t*5.5+p.uid;
 
   // ================= POSA VERTICALE: bicicletta, acqua alle spalle =================

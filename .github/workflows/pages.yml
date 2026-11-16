@@ -37,6 +37,9 @@ jobs:
       - run: npm run tattica -- --no-build
       - run: npm run strategie -- --no-build
       - run: npm run nuoto -- --no-build
+      - run: npm run nuoto-coerente -- --no-build
+      - run: npm run gioco-fermo -- --no-build
+      - run: npm run posizioni
       - run: npm run desktop -- --no-build
       - run: npm run gesti -- --no-build
       - run: npm run costumi -- --no-build

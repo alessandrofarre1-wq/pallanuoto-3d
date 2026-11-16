@@ -80,12 +80,13 @@ try{
    Object.assign(H.ball,{state:'held',holder:p,inRete:true});
    H.prova.startAct(p,'shot',.1,()=>{chiamate++;});const attesa=p.act;
    const step=n=>{for(let i=0;i<n;i++){window.__now+=1000/60;window.__raf(window.__now);}};
-   step(20);const nonRilasciata=attesa.t===0&&p.act===attesa;
-   attesa.done=true;step(60);const chiusa=p.act===null;
+   step(20);const nonRilasciataAnnullata=attesa.t===0&&p.act===null;
+   H.prova.startAct(p,'shot',.1,()=>{chiamate++;});const rilasciata=p.act;rilasciata.done=true;
+   step(60);const chiusa=p.act===null&&rilasciata.t>rilasciata.wind+rilasciata.frusta+0.36;
    H.prova.startAct(p,'shot',.1,()=>{chiamate++;});const fallo=p.act;fallo.done=true;H.ball.inRete=false;step(20);
-   return {nonRilasciata,chiusa,falloInvariato:fallo.t===0&&p.act===fallo,chiamate,clock:H.game.clock,time:H.game.time};
+   return {nonRilasciataAnnullata,chiusa,falloInvariato:fallo.t===0&&p.act===fallo,chiamate,clock:H.game.clock,time:H.game.time};
   });
-  assert.deepEqual(recuperi,{nonRilasciata:true,chiusa:true,falloInvariato:true,chiamate:0,clock:180,time:200});
+  assert.deepEqual(recuperi,{nonRilasciataAnnullata:true,chiusa:true,falloInvariato:true,chiamate:0,clock:180,time:200});
   console.log('PASS articolazioni GLB, due mani, recupero gol senza nuove azioni e falli invariati');
  }
  console.log(JSON.stringify(misure));if(errors.length)throw new Error(errors.join('\n'));

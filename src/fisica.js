@@ -30,7 +30,7 @@ export function movePlayer(p,dx,dz,sprint,dt){
   const lunging=p.lunge>game.time;
   // muro (sezione 3): l'avversario vicino carica il tiro → ci si alza in verticale e lo si guarda in faccia, braccio alto
   const hm=ball.holder, muroOra=!p.isGK&&hm&&hm.team!==p.team&&Math.hypot(hm.x-p.x,hm.z-p.z)<2&&(hm.charging||(hm.act&&!hm.act.done&&hm.act.kind!=='pass'&&hm.act.kind!=='fake'));
-  const gesto=p.charging||(p.act&&!p.act.done&&p.act.kind!=='colonnello')||muroOra;
+  const gesto=p.charging||(p.act&&!p.act.done&&p.act.kind!=='colonnello'&&p.act.kind!=='schizzo')||muroOra;
   // chi sta per ricevere un passaggio si alza un attimo prima che la palla arrivi (e continua a scivolare)
   const riceve=ball.state==='flight'&&ball.kind==='pass'&&ball.target===p&&Math.hypot(ball.tx-ball.x,ball.tz-ball.z)<Math.hypot(ball.vx,ball.vz)*0.3;
   // inversione: per tornare indietro non si fa una curva a U distesi, ci si alza, si gira sul posto e si riparte
@@ -40,7 +40,33 @@ export function movePlayer(p,dx,dz,sprint,dt){
   const difendeCentro=!p.isGK&&p.i===6&&!p.team.players.some(q=>q.excluded)&&game.possTeam===other(p.team)&&boaAvversario&&!boaAvversario.excluded&&
     Math.abs(ownGoalX(p.team)-boaAvversario.x)<5&&Math.hypot(p.x-boaAvversario.x,p.z-boaAvversario.z)<1.8;
   const nuotoDiretto=!p.isGK&&!giroTarget&&!difendeCentro;
-  const vuoleNuoto=swimming && !gesto && !riceve && !p.perno&&!giroTarget;
+  let tfx=p.fx, tfz=p.fz;
+  const gestoAttivo=p.act&&!p.act.done;
+  const passaFronte=gestoAttivo&&p.act.kind==='pass'&&!p.isGK&&p.i!==1&&Math.abs(goalX(p.team)-p.x)<10;
+  const riceveFronte=riceve&&!p.isGK&&p.i!==1&&Math.abs(goalX(p.team)-p.x)<10;
+  if(passaFronte||riceveFronte){ tfx=goalX(p.team)-p.x;tfz=-p.z; }
+  else if(hold&&!moving&&!gestoAttivo&&!p.isGK&&game.penalty!==p&&p.pressatoUntil>game.time&&p.pressatoDa&&sp<1){
+    // Una sola rotazione angolare: il blend di due vettori opposti poteva
+    // lasciare fermo il corpo invece di proteggere il pallone.
+    tfx=p.x-p.pressatoDa.x; tfz=p.z-p.pressatoDa.z;
+  }
+  // La chiusura del braccio resta visibile, ma un gesto già rilasciato non trattiene il fronte contro la levetta.
+  else if(p.act?.aim&&(gestoAttivo||!moving)){ tfx=p.act.aim[0]-p.x; tfz=p.act.aim[1]-p.z; }
+  else if(p.turnedUntil>game.time&&!moving){ tfx=goalX(p.team)-p.x; tfz=-p.z; }
+  else if(p.charging){ tfx=goalX(p.team)-p.x; tfz=-p.z; if(diSchiena(shotKind(p))){ tfx=-tfx; tfz=-tfz; } }
+  else if(muroOra){ tfx=hm.x-p.x; tfz=hm.z-p.z; }
+  else if(difendeCentro){ tfx=ball.x-p.x;tfz=ball.z-p.z; }
+  else if((p.isGK?swimming:moving) && !giroTarget && !(p.isGK&&ball.state!=='held'&&!sprint)){ tfx=dx; tfz=dz; }
+  else if(hold){
+    tfx=goalX(p.team)-p.x; tfz=-p.z;
+    if(p.i===1 && Math.hypot(tfx,tfz)<4.5 && game.penalty!==p&&!other(p.team).players.some(q=>q.excluded)&&leggiCentro(p,difensoreCentro(p),p).spalle){ tfx=-tfx; tfz=-tfz; }
+  }
+  else { tfx=ball.x-p.x; tfz=ball.z-p.z; }
+  // Si decide prima dove guarda il giocatore: un gesto che guarda altrove
+  // richiede la remata in verticale, non il crawl contro la direzione di marcia.
+  const fronteRichiesto=Math.hypot(tfx,tfz)||1;
+  const nuotoCoerente=!moving||(tfx*dx+tfz*dz)/(fronteRichiesto*mag)>0.5;
+  const vuoleNuoto=swimming && !gesto && !riceve && !p.perno&&!giroTarget&&nuotoCoerente;
   const obliquo=difendeCentro&&!gesto&&!riceve?0.48:0;
   const assetto=obliquo|| (vuoleNuoto?1:0),deltaAssetto=assetto-(p.oriz||0);
   p.oriz=clamp((p.oriz||0)+clamp(deltaAssetto,-dt/ALZATA,dt/(ALZATA+0.1)),0,1);
@@ -83,35 +109,22 @@ export function movePlayer(p,dx,dz,sprint,dt){
   // l'espulso nuota fino al pozzetto, fuori dal campo di gioco (sezione 6): può uscire dalle corde fino al bordo della vasca
   if(p.excluded){ p.x=clamp(p.x,-HL-1,HL+1); p.z=clamp(p.z,-HW-1.6,HW-0.25); } else { p.x=clamp(p.x,-HL+0.25,HL-0.25); p.z=clamp(p.z,-HW+0.25,HW-0.25); }
   if(p.isGK && !setteControSei(p.team)){ const og=ownGoalX(p.team); p.x = p.team.dir>0 ? clamp(p.x,og+0.3,0) : clamp(p.x,0,og-0.3); }      // il portiere resta nella sua metà, tranne nel 7 contro 6
-  let tfx=p.fx, tfz=p.fz;
-  const gestoAttivo=p.act&&!p.act.done;
-  const passaFronte=gestoAttivo&&p.act.kind==='pass'&&!p.isGK&&p.i!==1&&Math.abs(goalX(p.team)-p.x)<10;
-  const riceveFronte=riceve&&!p.isGK&&p.i!==1&&Math.abs(goalX(p.team)-p.x)<10;
-  if(passaFronte||riceveFronte){ tfx=goalX(p.team)-p.x;tfz=-p.z; }
-  else if(hold&&!moving&&!gestoAttivo&&!p.isGK&&game.penalty!==p&&p.pressatoUntil>game.time&&p.pressatoDa&&sp<1){
-    // Una sola rotazione angolare: il blend di due vettori opposti poteva
-    // lasciare fermo il corpo invece di proteggere il pallone.
-    tfx=p.x-p.pressatoDa.x; tfz=p.z-p.pressatoDa.z;
-  }
-  // La chiusura del braccio resta visibile, ma un gesto già rilasciato non trattiene il fronte contro la levetta.
-  else if(p.act?.aim&&(gestoAttivo||!moving)){ tfx=p.act.aim[0]-p.x; tfz=p.act.aim[1]-p.z; }
-  else if(p.turnedUntil>game.time&&!moving){ tfx=goalX(p.team)-p.x; tfz=-p.z; }
-  else if(p.charging){ tfx=goalX(p.team)-p.x; tfz=-p.z; if(diSchiena(shotKind(p))){ tfx=-tfx; tfz=-tfz; } }
-  else if(muroOra){ tfx=hm.x-p.x; tfz=hm.z-p.z; }
-  else if(difendeCentro){ tfx=ball.x-p.x;tfz=ball.z-p.z; }
-  else if((p.isGK?swimming:moving) && !giroTarget && !(p.isGK&&ball.state!=='held'&&!sprint)){ tfx=dx; tfz=dz; }
-  else if(hold){
-    tfx=goalX(p.team)-p.x; tfz=-p.z;
-    if(p.i===1 && Math.hypot(tfx,tfz)<4.5 && game.penalty!==p&&!other(p.team).players.some(q=>q.excluded)&&leggiCentro(p,difensoreCentro(p),p).spalle){ tfx=-tfx; tfz=-tfz; }
-  }
-  else { tfx=ball.x-p.x; tfz=ball.z-p.z; }
   // Rotazione continua: remata rapida in verticale e curva breve da distesi, senza scatti di orientamento.
   const ang=Math.atan2(p.fz,p.fx), dest=Math.atan2(tfz,tfx);
   let diff=dest-ang; while(diff>Math.PI) diff-=2*Math.PI; while(diff<-Math.PI) diff+=2*Math.PI;
   const o=p.oriz||0, veloce=clamp(sp/1.4,0,1);
   const omega=(nuotoDiretto?(gestoAttivo?16:11-3*o*veloce):(p.act?16:7.5-4.4*o*veloce))*dt;
   const risposta=nuotoDiretto?1-Math.exp(-dt*(gestoAttivo?14:13)):Math.min(1,dt*(p.act?14:9));
-  const giro=clamp(diff*risposta,-omega,omega), na=ang+giro;
+  const giro=clamp(diff*risposta,-omega,omega);
+  let na=ang+giro;
+  // Da distesi il fronte accompagna la velocità effettiva. Il pivot e i gesti
+  // possono completare la rotazione appena si torna verticali; niente crawl
+  // all'indietro né pallone dietro al corpo durante la frenata.
+  if(!p.isGK&&p.oriz>0.5&&Math.hypot(p.vx,p.vz)>0.3){
+    const avanzamento=Math.atan2(p.vz,p.vx);
+    const scarto=Math.atan2(Math.sin(na-avanzamento),Math.cos(na-avanzamento));
+    na=avanzamento+clamp(scarto,-Math.PI/3,Math.PI/3);
+  }
   p.fx=Math.cos(na); p.fz=Math.sin(na);
 }
 export function separate(){

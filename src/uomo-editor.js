@@ -1,6 +1,7 @@
 // Sezione «Uomo in più» (v0.44): scelta di massimo 3 schemi dalla libreria e creazione di schemi nuovi a fasi.
 // Stessa lavagna dell'editor delle strategie (coordinate x/y uguali), con i 6 posti trascinabili e la fase precedente in trasparenza.
-import { DURATE, MAX_FASI, MAX_SCELTI, RUOLI_UP, eliminaPersonale, ePalo, nuovoId, salvaPersonale, salvaScelti, scelti, tutti, validaUomo, LIBRERIA } from './uomo-in-piu.js';
+import { DURATE, MAX_FASI, MAX_SCELTI, eliminaPersonale, ePalo, nuovoId, salvaPersonale, salvaScelti, scelti, tutti, validaUomo, LIBRERIA } from './uomo-in-piu.js';
+import { nomePosizione, numeroPosizione } from './schemi.js';
 
 const $ = id => document.getElementById(id);
 const x = z => 300 + z * 29.8, y = d => 28 + d * 29;
@@ -23,7 +24,7 @@ export function miniatura(s, id) {
   let h = `<svg viewBox="0 0 600 350" class="uomo-mini" aria-hidden="true">${fondo(id)}`;
   for (let k = 1; k < s.fasi.length; k++) h += frecce(s.fasi[k - 1], s.fasi[k], id);
   const fin = s.fasi[s.fasi.length - 1];
-  fin.posti.forEach((p, i) => { h += `<circle cx="${x(p[1])}" cy="${y(p[0])}" r="20" fill="${ePalo(p) ? '#ffd67b' : '#57e2df'}" stroke="#062030" stroke-width="3"/><text x="${x(p[1])}" y="${y(p[0]) + 8}" text-anchor="middle" font-size="22" font-weight="800" fill="#062030">${i + 1}</text>`; });
+  fin.posti.forEach((p, i) => { h += `<circle cx="${x(p[1])}" cy="${y(p[0])}" r="20" fill="${ePalo(p) ? '#ffd67b' : '#57e2df'}" stroke="#062030" stroke-width="3"/><text x="${x(p[1])}" y="${y(p[0]) + 8}" text-anchor="middle" font-size="22" font-weight="800" fill="#062030">${numeroPosizione(i + 1, true)}</text>`; });
   return h + '</svg>';
 }
 
@@ -74,13 +75,13 @@ function disegnaCrea() {
   }
   f.posti.forEach((p, i) => {
     const n = i + 1;
-    h += `<g data-uomo-ruolo="${n}" transform="translate(${x(p[1])} ${y(p[0])})" class="${n === ruolo ? 'scelto' : ''}" role="button" tabindex="${n === ruolo ? 0 : -1}" aria-label="${n} ${RUOLI_UP[i]}, ${p[0]} metri dalla porta, lato ${p[1]}">
+    h += `<g data-uomo-ruolo="${n}" transform="translate(${x(p[1])} ${y(p[0])})" class="${n === ruolo ? 'scelto' : ''}" role="button" tabindex="${n === ruolo ? 0 : -1}" aria-label="${esc(nomePosizione(n, true))}, ${p[0]} metri dalla porta, lato ${p[1]}">
       <circle r="36" fill="transparent"/><circle r="22" fill="${ePalo(p) ? '#ffd67b' : '#57e2df'}" stroke="${n === ruolo ? '#fff' : '#062030'}" stroke-width="${n === ruolo ? 4 : 3}"/>
-      <text text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="800" fill="#062030">${n}</text>${f.palla === n ? '<circle cx="17" cy="-17" r="9" fill="#ffd400" stroke="#062030" stroke-width="2"/>' : ''}</g>`;
+      <text text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="800" fill="#062030">${numeroPosizione(n, true)}</text>${f.palla === n ? '<circle cx="17" cy="-17" r="9" fill="#ffd400" stroke="#062030" stroke-width="2"/>' : ''}</g>`;
   });
   $('uomoPiscina').innerHTML = h;
   $('uomoDurata').value = String(f.durata); $('uomoPalla').value = String(f.palla);
-  $('uomoRuolo').textContent = `${ruolo} · ${RUOLI_UP[ruolo - 1]}: ${f.posti[ruolo - 1][0]} m dalla porta, lato ${f.posti[ruolo - 1][1]}${ePalo(f.posti[ruolo - 1]) ? ' · palo' : ''}`;
+  $('uomoRuolo').textContent = `${nomePosizione(ruolo, true)}: ${f.posti[ruolo - 1][0]} m dalla porta, lato ${f.posti[ruolo - 1][1]}${ePalo(f.posti[ruolo - 1]) ? ' · palo' : ''}`;
   $('uomoDurataNota').textContent = faseI === bozza.fasi.length - 1 ? 'Ultima fase: i compagni restano qui fino alla fine dell’uomo in più.' : 'Finita la durata, quando i compagni sono arrivati, si passa alla fase dopo.';
 }
 function sposta(d, z) {
@@ -112,7 +113,8 @@ export function inizializzaUomo({ apri, torna }) {
   if (pronto) return; pronto = true; navigazione = { apri, torna };
   for (const d of DURATE) $('uomoDurata').insertAdjacentHTML('beforeend', `<option value="${d}">${String(d).replace('.', ',')} s</option>`);
   $('uomoPalla').insertAdjacentHTML('beforeend', '<option value="0">Libera: decide chi ha la palla</option>');
-  RUOLI_UP.forEach((r, i) => $('uomoPalla').insertAdjacentHTML('beforeend', `<option value="${i + 1}">${i + 1} · ${r}</option>`));
+  [1, 2, 3, 4, 5, 6].sort((a, b) => numeroPosizione(a, true) - numeroPosizione(b, true))
+    .forEach(i => $('uomoPalla').insertAdjacentHTML('beforeend', `<option value="${i}">${esc(nomePosizione(i, true))}</option>`));
   for (const id of ['btUomoSquadre', 'btUomoImpostazioni', 'btUomoTorneo', 'btUomoStrategie']) if ($(id)) $(id).onclick = mostraUomo;
   $('uomoIndietro').onclick = () => { if (!$('uomoCrea').hidden) chiudiCrea(); else { aggiornaRiepilogoUomo(); navigazione.torna(); } };
   $('uomoLista').onclick = azione; $('uomoScelti').onclick = azione;

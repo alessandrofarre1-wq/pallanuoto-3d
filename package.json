@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.49.0",
+  "version": "0.50.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -54,7 +54,10 @@
     "home": "node tests/home-v044.mjs",
     "replay": "node tests/replay-v048.mjs",
     "replay-ui": "node tests/replay-ui-v047.mjs",
-    "gesti": "node strumenti/gesti-v049.mjs --verifica"
+    "gesti": "node strumenti/gesti-v049.mjs --verifica",
+    "nuoto-coerente": "node tests/nuoto-coerente-v050.mjs",
+    "gioco-fermo": "node tests/gioco-fermo-v050.mjs",
+    "posizioni": "node tests/posizioni-v050.mjs"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",

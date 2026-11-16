@@ -4,11 +4,25 @@ import { FORM, FORM_UP } from './costanti.js';
 const KEY='pallanuoto-schema-v041';
 const clone = value => JSON.parse(JSON.stringify(value));
 const base = FORM.slice(1).map(p=>[...p]), up=FORM_UP.slice(1).map(p=>[...p]);
+// Numeri di posizione richiesti da Ale, guardando la porta avversaria.
+// Sono etichette: indici dei giocatori, coordinate e numero di calotta restano distinti.
+// Il 4–2 nominale usa già 2,1 m sui pali (vincolo area di porta) e 5,2 m fuori.
+export const POSIZIONI_PARITA=Object.freeze([null,6,1,5,2,4,3]);
+export const POSIZIONI_SUPERIORITA=Object.freeze([null,5,1,4,2,3,6]);
+const NOMI_PARITA=['','Centroboa','Destra vicino alla porta','Sinistra vicino alla porta','Destra fuori','Sinistra fuori','Centro · marcatore del centroboa'];
+const NOMI_SUPERIORITA=['','Palo destro · 2 m','Destra · 2 m','Sinistra · 2 m','Esterno destro · 5 m','Esterno sinistro · 5 m','Palo sinistro · 2 m'];
+export function numeroPosizione(i,superiorita=false){
+  return (superiorita?POSIZIONI_SUPERIORITA:POSIZIONI_PARITA)[i]??null;
+}
+export function nomePosizione(i,superiorita=false){
+  const numero=numeroPosizione(i,superiorita);
+  return numero===null?'Posto non assegnato':`Pos. ${numero} · ${(superiorita?NOMI_SUPERIORITA:NOMI_PARITA)[i]}`;
+}
 export const PERIMETRO=Object.freeze([2,4,6,5,3]);
 export const SCHEMI_PRESET=[
   {id:'arco',nome:'Arco e appoggi',descrizione:'Circolazione tra vicini, centro quando si libera e difesa in pressing.',attacco:clone(base),superiorita:clone(up),difesa:2,aiuti:[4,5],entrata:0,passaggi:'vicini'},
-  {id:'entrata',nome:'Entrata e copertura',descrizione:'Il mezzo destro entra nello spazio; un compagno rimane alto a coprire.',attacco:clone(base),superiorita:clone(up),difesa:2,aiuti:[4,5],entrata:4,passaggi:'equilibrati'},
-  {id:'incrocio',nome:'Incrocio dei mezzi',descrizione:'I mezzi scambiano lato; entra il mezzo sinistro con un compagno alto in copertura.',attacco:base.map((p,i)=>[p[0],i===3||i===4?-p[1]:p[1]]),superiorita:clone(up),difesa:2,aiuti:[4,5],entrata:5,passaggi:'equilibrati'},
+  {id:'entrata',nome:'Entrata e copertura',descrizione:'La Pos. 2, destra fuori, entra nello spazio; un compagno rimane alto a coprire.',attacco:clone(base),superiorita:clone(up),difesa:2,aiuti:[4,5],entrata:4,passaggi:'equilibrati'},
+  {id:'incrocio',nome:'Incrocio dei lati',descrizione:'Le Pos. 2 e 4 scambiano lato; entra la Pos. 4 con un compagno alto in copertura.',attacco:base.map((p,i)=>[p[0],i===3||i===4?-p[1]:p[1]]),superiorita:clone(up),difesa:2,aiuti:[4,5],entrata:5,passaggi:'equilibrati'},
   {id:'boa',nome:'Centro e scarico',descrizione:'Spazio al centroboa, servizio soltanto davanti alla marcatura e scarico se chiuso.',attacco:base.map((p,i)=>i===0?[2.6,0]:[Math.min(10,p[0]*1.08),p[1]*1.1]),superiorita:clone(up),difesa:1,aiuti:[4,5],entrata:0,passaggi:'equilibrati'},
   {id:'pali',nome:'Pali in movimento',descrizione:'Appoggi rapidi e pali scaglionati: la conclusione dipende dalla risposta della difesa.',attacco:clone(base),superiorita:clone(up),difesa:3,aiuti:[2,3,4,5],entrata:0,passaggi:'rapidi'}
 ];
