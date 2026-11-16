@@ -57,7 +57,8 @@
     "gesti": "node strumenti/gesti-v049.mjs --verifica",
     "nuoto-coerente": "node tests/nuoto-coerente-v050.mjs",
     "gioco-fermo": "node tests/gioco-fermo-v050.mjs",
-    "posizioni": "node tests/posizioni-v050.mjs"
+    "posizioni": "node tests/posizioni-v050.mjs",
+    "rotazioni": "node strumenti/misura-rotazioni-v050.mjs"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",

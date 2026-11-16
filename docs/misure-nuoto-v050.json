@@ -11,7 +11,20 @@
       "src/grafica/pose.js": "b5a4ede05ef32bb910b9542ddd6d85bbc749e1bbbdea7cdeedef357b52cdbe84",
       "src/schemi.js": "27ccc49836b56778ff11f5d6a2f910b3edeb2da63a5db9a082477b058f47ae21"
     },
-    "nota": "Sequenze controllate con fisica e ossa reali; non certifica naturalezza n\u00e9 FPS hardware Apple."
+    "nota": "Sequenze controllate con fisica e ossa reali; non certifica naturalezza né FPS hardware Apple.",
+    "aggiornamento_claude_code": {
+      "motivo": "Rientro nel settore ±60° a velocità limitata (16 rad/s): il taglio secco girava il corpo fino a 73° in un fotogramma in partita vera.",
+      "sha256_fisica_js": "528e2d1ed7fbd01492777f3b04c3505b59e00db43093166b33eaf5b5799f0f2b",
+      "riepilogo_dopo": {
+        "casi": 96,
+        "campioniNuoto": 4286,
+        "campioniPalla": 1996,
+        "inversi": 0,
+        "pallaDietro": 0,
+        "peggiorBodyDot": 0.676131,
+        "peggiorPalla": 0.299109
+      }
+    }
   },
   "prima": {
     "misure": [

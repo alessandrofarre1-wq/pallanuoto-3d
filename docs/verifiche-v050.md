@@ -20,9 +20,26 @@ Le coordinate del 4-2 esistente sono già coerenti: pali a 2,1 m e tiratori fuor
 
 ## Prove e misure
 
-**SOSPESO su richiesta di Ale il16/11/2026 alle17:09UTC.** Successivamente Ale ha autorizzato il checkpoint sul branch GitHub `codex/v050-nuoto-direzione-stop` con `[skip ci]`, senza PR/merge/deploy o nuovi test. Il passaggio aggiornato è `docs/PASSAGGIO-CLAUDE-CODE.md`.
+**Chiusura (Claude Code, 16/11/2026)**, dal checkpoint di Codex `9c65184`, sul branch `claude/gracious-rubin-rcvklk`.
 
-Lint/build/posizioni/stop/nuoto PASS. `npm run aspetto -- --no-build` completo PASS, iPhone56/141794 su entrambe le viste; fluidità con2cambi PASS, max61/147940 su844×390 e667×375,DPR1.5. `npm run verifica -- --partite=0` FAIL: riferimenti azione55.09%, iPhone piccolo5.02%, orizzontale4.90%; menu/sprint entro tolleranza. Riferimenti ancora invariati. Replay INTERROTTO dopo risultati parziali, nessun PASS completo; gesti/sezione4/strategie/uomo non avviati dalla pipeline. Sei gare e CI sul codice finale non eseguite.
+- **Scatti di orientamento trovati e corretti.** Nuovo strumento `npm run rotazioni` (`strumenti/misura-rotazioni-v050.mjs`): partita vera computer contro computer ITA–HUN, 240 s, 14 giocatori a ogni fotogramma. Conta i fotogrammi in cui il corpo gira più di 0,35 rad (la rotazione normale arriva a 0,27 rad per fotogramma a 60 Hz) e quelli in cui nuota disteso all'indietro.
+  - v0.49: 0 scatti, 63 fotogrammi all'indietro.
+  - Checkpoint Codex: 24 scatti, tutti in nuotata, fino a 1,27 rad (73°) in un fotogramma; 2 fotogrammi all'indietro. Il limite di ±60° tagliava di colpo la direzione del corpo.
+  - Dopo la correzione: 0 scatti, rotazione massima 0,267 rad per fotogramma come nella v0.49, 1 fotogramma all'indietro.
+
+  `fisica.js` ora porta il corpo dentro il settore di ±60° girando al massimo di 16 rad/s in tutto, la stessa velocità dei gesti, invece di tagliare. `docs/misure-nuoto-v050.json` riporta il nuovo hash di `fisica.js` e il riepilogo rifatto: 96 casi, 0 su 4.286 inversi, palla dietro 0 su 1.996.
+- **Prove sul codice finale**, tutte PASS:
+  - lint e build;
+  - replay, replay-ui, gesti, sezione1-6, strategie, uomo;
+  - nuoto-coerente, nuoto, gioco-fermo, posizioni;
+  - v046, gameplay, centroboa, tattica, azione, cronaca, menu, desktop.
+
+  Il replay completo, interrotto nel checkpoint, ora passa.
+- **`npm run verifica`**: le sei partite sono arrivate alla fine, 49 gol su 205 tiri (24%). Senza comandi 0–2, 0–8, 0–4; con comandi 0–9, 1–13, 0–12.
+  - Prima esecuzione FAIL sui vecchi riferimenti grafici: menu 4,78%, sprint 0,54%, azione 49,42%, iPhone piccolo 6,68%, orizzontale 6,33%.
+  - Confronti guardati: il menu cambia per la scritta «v0.50» e i caratteri di questo computer; l'azione è un momento diverso della partita; le viste iPhone cambiano per piccoli spostamenti dei giocatori. I corpi sono in acqua e corretti.
+  - Riferimenti aggiornati, poi `--partite=0` PASS con cinque immagini identiche.
+- **`npm run aspetto -- --no-build`**: PASS. Gambe fuori dall'acqua 0/4.058 in verticale, 0/8.070 in nuotata, 0/1.354 a metà. Viste iPhone 56 oggetti e 141.794 triangoli. I primi piani desktop restano a 154–155 mila triangoli, fuori dal budget specifico iPhone come nelle versioni precedenti.
 
 Stop reale: velocità max al fischio1.4→0 immediatamente; dopo.3s oriz1→0 e deltafase1.299112→0, asse verticale testa-bacino.698→.982. Dati `docs/misure-stop-v050.json`. Filmato prima/dopo `docs/filmati/v050-nuoto-e-fischio.mp4`,8s controllati con fisica e camera vere, acquisizione30fps senza IA; tavola `docs/immagini/v050-nuoto-e-fischio.jpg`. Non è una gara completa o misura FPS.
 

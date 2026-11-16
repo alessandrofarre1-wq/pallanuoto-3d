@@ -123,7 +123,11 @@ export function movePlayer(p,dx,dz,sprint,dt){
   if(!p.isGK&&p.oriz>0.5&&Math.hypot(p.vx,p.vz)>0.3){
     const avanzamento=Math.atan2(p.vz,p.vx);
     const scarto=Math.atan2(Math.sin(na-avanzamento),Math.cos(na-avanzamento));
-    na=avanzamento+clamp(scarto,-Math.PI/3,Math.PI/3);
+    const voluto=avanzamento+clamp(scarto,-Math.PI/3,Math.PI/3);
+    // Il rientro nel settore ±60° resta continuo: in tutto il corpo non gira più di 16 rad/s (la rotazione
+    // dei gesti). Un taglio secco lo girava fino a 73° in un fotogramma (strumenti/misura-rotazioni-v050.mjs).
+    const resto=Math.atan2(Math.sin(voluto-ang),Math.cos(voluto-ang)), passo=16*dt;
+    na=ang+clamp(resto,-passo,passo);
   }
   p.fx=Math.cos(na); p.fz=Math.sin(na);
 }

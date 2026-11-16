@@ -1,5 +1,7 @@
 # Passaggio a Claude Code — WATERPOLO 7 v0.50 sospesa
 
+> **Ripreso e chiuso da Claude Code il 16/11/2026** sul branch `claude/gracious-rubin-rcvklk`: scatti del limite ±60° corretti, prove mancanti eseguite, riferimenti grafici aggiornati. Esiti in `docs/verifiche-v050.md`. Restano aperti i punti di «Non fatto».
+
 Ale ha chiesto di fermare Codex e continuare con Claude Code il 16 novembre 2026 alle 17:09 UTC. La pipeline locale è stata interrotta. Alle17:09 non c’erano commit/push/PR v0.50. In seguito Ale ha autorizzato il solo caricamento su GitHub per continuare con Claude: questo è il checkpoint sul branch `codex/v050-nuoto-direzione-stop`, senza PR, merge o deploy. Il commit usa `[skip ci]`: nessuna nuova pipeline onerosa avviata per il passaggio. Il lavoro resta incompleto e non approvato visivamente da Ale.
 
 ## Prompt da usare
