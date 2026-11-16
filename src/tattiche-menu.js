@@ -116,7 +116,7 @@ function aggiornaCompiti(){
   $('schemaPassaggi').value=bozza.passaggi;
   $('schemaPassaggiNota').textContent=NOTE_PASSAGGI[bozza.passaggi];
   $('schemaDifesaNota').textContent=NOTE_DIFESE[bozza.difesa];
-  $('schemaCompiti').textContent=bozza.entrata?`Entra ${nomePosizione(bozza.entrata)}, senza palla. Gli altri mantengono gli appoggi; un compagno resta alto a coprire. Se il taglio è chiuso, scarica fuori. Il 6 contro 5 usa una numerazione e sei posti dedicati.`:'Nessuna entrata automatica: centroboa davanti alla porta, due appoggi per lato e Pos. 3 al centro. Se il centro è chiuso, ricomincia dal lato libero. Alla palla persa tutti rientrano.';
+  $('schemaCompiti').textContent=bozza.entrata?`Entra ${nomePosizione(bozza.entrata)}, uno alla volta e senza palla. Gli altri mantengono gli appoggi; un compagno resta alto a coprire. Se il taglio è chiuso, scarica fuori. Il 6 contro 5 usa una numerazione e sei posti dedicati.`:'Nessuna entrata automatica: centroboa davanti alla porta, due appoggi per lato e Pos. 3 al centro. Se il centro è chiuso, ricomincia dal lato libero. Alla palla persa tutti rientrano.';
   for(const input of $('schemaAiuti').querySelectorAll('input')) input.checked=bozza.aiuti.includes(Number(input.value));
 }
 
