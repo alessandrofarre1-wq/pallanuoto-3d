@@ -51,18 +51,19 @@ const verticale=()=>innerHeight>innerWidth, menuEl=document.getElementById('menu
 function loop(now){
   const frameMs=now-last;
   const raw=Math.min(0.1,frameMs/1000); last=now;
-  const inPartita=menuEl.style.display==='none';
+  const inPartita=menuEl.style.display==='none'||!!replay.statoReplay();
   document.body.classList.toggle('gioco',inPartita);
   if(verticale()&&inPartita){ replay.interrompiReplay(); chiudiPresentazioneReplay(); qualita.reset(); requestAnimationFrame(loop); return; }
   replay.avanzaTempoReplay(raw*SPEED);
-  if(replay.statoReplay()?.fase==='replay'){
-    const saltati=replay.eseguiSaltoReplay(update);
-    if(saltati){ input.resetInput(); cronaca.tick(saltati); }
-  }
+  const saltati=replay.eseguiSaltoReplay(update);
+  if(saltati){ input.resetInput(); cronaca.tick(saltati); }
   const dt=raw*SPEED;
   // un aggiornamento per fotogramma (suddiviso solo se il fotogramma è lungo): movimento continuo, senza scatti
   const n=Math.max(1,Math.ceil(dt/0.02));
-  try{ for(let i=0;i<n;i++) update(dt/n); }catch(e){ console.error(e); }
+  try{
+    if(replay.trattieniMondoReplay()) input.pollInput();
+    else for(let i=0;i<n;i++) update(dt/n);
+  }catch(e){ console.error(e); }
   aggiornaPannelloFisica(raw);
   const nuovoDpr=qualita.aggiorna(frameMs,inPartita&&!document.hidden&&['play','stop','countdown'].includes(game.state),dpr);
   if(nuovoDpr!==dpr){ setDpr(nuovoDpr); renderer.setPixelRatio(dpr); }

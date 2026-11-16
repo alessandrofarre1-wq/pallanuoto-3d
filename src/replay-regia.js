@@ -1,7 +1,7 @@
 // Presentazione visuale: il mondo continua soltanto nella pausa regolamentare.
 import { game } from './stato.js';
 import { resetInput } from './input.js';
-import { generazioneReplay, interrompiReplay, richiediSaltoReplay, statoReplay } from './replay.js';
+import { attivaRiproduzioneReplay, generazioneReplay, interrompiReplay, richiediSaltoReplay, statoReplay } from './replay.js';
 import { aggiornaReplay, mostraReplay, nascondiReplay, registraSalto } from './replay-ui.js';
 import { azzeraArchivioReplay, disegnaClipReplay, preparaClipReplay, registraFotogrammaReplay } from './grafica/replay.js';
 
@@ -28,8 +28,8 @@ export function presentaReplay(draw,now){
     return false;
   }
   if(clipId!==s.id){
-    if(ultimoCampione===null||now-ultimoCampione>120||!preparaClipReplay()){ interrompiReplay(); chiudiPresentazioneReplay(); return false; }
-    clipId=s.id; resetInput(); mostraReplay(s.info);
+    if(ultimoCampione===null||now-ultimoCampione>120||!preparaClipReplay(s.info)){ interrompiReplay(); chiudiPresentazioneReplay(); return false; }
+    clipId=s.id; attivaRiproduzioneReplay(); resetInput(); mostraReplay(s.info);
   }
   aggiornaReplay(s.progresso);
   if(disegnaClipReplay(s.progresso,s.info,draw)) return true;

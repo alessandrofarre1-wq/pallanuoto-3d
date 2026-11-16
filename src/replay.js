@@ -1,7 +1,7 @@
 // Regia del replay: osserva il gol, senza cambiare tiri, probabilità o cronometri.
 import { ball, game, teams } from './stato.js';
 
-export const TEMPI_REPLAY=Object.freeze({diretta:0.6,clip:2,attesaGol:2.6});
+export const TEMPI_REPLAY=Object.freeze({diretta:0.6,clip:5.2,attesaGol:2.6});
 const FIRME={beduina:'BEDUINA',schizzo:'SCHIZZO',colonnello:'COLONNELLO',rovesciata:'ROVESCIATA',sciarpa:'SCIARPA'};
 let sessione=null, progressivo=0, salto=false;
 export let generazioneReplay=0;
@@ -16,6 +16,7 @@ export function datiGolReplay(t){
   const valido=s?.team===t&&tiro?.uid===s.uid&&tiro.squadra===t.short;
   return Object.freeze({squadra:t.short,avversaria:teams[1-t.idx].short,
     finePeriodo:game.clock<=0,periodo:game.period,casa:teams[0].short,ospite:teams[1].short,punteggio:`${teams[0].score} – ${teams[1].score}`,
+    uid:valido?tiro.uid:s?.team===t?s.uid:null,
     numero:valido?tiro.numero:s?.team===t?s.num:null,
     nome:valido?tiro.nome:s?.team===t?s.name:'',
     firma:valido?(tiro.rigore?'RIGORE':FIRME[tiro.tipo]||(tiro.distanza>=6?'TIRO DA FUORI':'GOL')):'GOL',
@@ -24,7 +25,7 @@ export function datiGolReplay(t){
 }
 
 export function segnalaGolReplay(info,riprendi){
-  sessione={id:++progressivo,info,riprendi,consumato:false,eta:0}; salto=false;
+  sessione={id:++progressivo,info,riprendi,consumato:false,attiva:false,eta:0}; salto=false;
 }
 
 export function avanzaTempoReplay(dt){
@@ -39,20 +40,24 @@ export function statoReplay(){
   if(game.rigoriFinali||(!normale&&!sirena)){
     sessione=null; salto=false; return null;
   }
-  const eta=normale?TEMPI_REPLAY.attesaGol-Math.max(0,game.timer):sessione.eta;
-  if(eta>=TEMPI_REPLAY.attesaGol){ sessione.consumato=true; return null; }
+  const eta=sessione.eta;
   return {id:sessione.id,info:sessione.info,fase:eta<TEMPI_REPLAY.diretta?'diretta':'replay',
     progresso:Math.max(0,Math.min(1,(eta-TEMPI_REPLAY.diretta)/TEMPI_REPLAY.clip))};
 }
 
 export function interrompiReplay(){ if(sessione) sessione.consumato=true; salto=false; }
 export function richiediSaltoReplay(){ if(statoReplay()?.fase==='replay') salto=true; }
+export function attivaRiproduzioneReplay(){ if(sessione&&!sessione.consumato) sessione.attiva=true; }
+// Il tempo aggiuntivo appartiene soltanto al filmato: nessun recupero, cambio,
+// esclusione o cronometro avanza durante la sua riproduzione.
+export function trattieniMondoReplay(){ return !!sessione?.attiva&&statoReplay()?.fase==='replay'; }
 
 // Salta solo il resto dell'attesa del gol: la callback originale prepara la
 // rimessa UNA volta e rimangono gli 1,2 s di ripresa. Recupero e cambi avanzano
 // degli stessi secondi non giocati; nessun comando premuto viene conservato.
 export function eseguiSaltoReplay(avanza){
-  if(!salto) return 0;
+  const automatico=sessione?.attiva&&sessione.eta>=TEMPI_REPLAY.diretta+TEMPI_REPLAY.clip;
+  if(!salto&&!automatico) return 0;
   salto=false;
   const s=sessione;
   if(!s||s.consumato) return 0;

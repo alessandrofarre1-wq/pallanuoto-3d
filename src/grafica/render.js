@@ -1,4 +1,5 @@
 import { presentaReplay, registraDirettaReplay } from '../replay-regia.js';
+import { trattieniMondoReplay } from '../replay.js';
 // ================= RENDER =================
 import * as THREE from 'three';
 import { BRV, HL, clamp } from '../costanti.js';
@@ -15,6 +16,10 @@ let camLargo=0;
 const _wv=new THREE.Vector3(), _wq=new THREE.Quaternion();
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
 export function render(dt,now){
+  if(trattieniMondoReplay()){
+    renderer.info.reset();
+    if(presentaReplay(()=>renderer.render(scene,camera),now)) return;
+  }
   const t=now*0.001;
   animateWater(t);
   for(const p of allPlayers) updateRig(p,dt,t);

@@ -1,4 +1,4 @@
-import { azzeraReplay } from './replay.js';
+import { azzeraReplay, trattieniMondoReplay } from './replay.js';
 // ================= MENU (esperienza pre-partita di WATERPOLO 7) =================
 // Schermate: home → squadre (passo 1) → impostazioni (passo 2, facoltativo) → partita. A parte: comandi, opzioni, pausa, fine.
 // Dalla home a Italia–Ungheria in campo bastano tre tocchi (PARTITA VELOCE, CONTINUA, GIOCA). Indietro conserva le scelte.
@@ -351,7 +351,12 @@ export function endMatch(){
   $('final').innerHTML=`<p class="soprattitolo">${torneoAttivo?`${COMPETIZIONI[torneoAttivo.tipo].nome} · ${faseNome(partitaTorneo?.fase)}`:'FISCHIO FINALE'}</p><div class="fin-esito">${vinto?'Vittoria!':perso?'Sconfitta':'Pareggio'}</div><div class="fin-punteggio">${bandiera(teams[0].codice)}<b>${teams[0].name} ${a} – ${b} ${teams[1].name}</b>${bandiera(teams[1].codice)}</div>${rigori?`<div class="fin-rigori">Rigori: ${rigori.gol[0]} – ${rigori.gol[1]}</div>`:''}<div class="fin-nota">${torneoAttivo?(finito(torneoAttivo)?esitoTorneo(torneoAttivo):'Risultato salvato. Scopri la prossima avversaria.'):(vinto?'Bella partita.':perso?'La prossima sfida ti aspetta.':'Una sfida alla pari.')}</div>`;
   $('rigioca').querySelector('b').textContent=torneoAttivo?'Vai al centro torneo':'Rigioca';
   $('rigioca').querySelector('small').textContent=torneoAttivo?(finito(torneoAttivo)?'Classifiche e percorso':'Risultati e prossima gara'):'Stesse squadre';
-  fineTimer=setTimeout(()=>{ fineTimer=null; if(premiazione) avviaCerimonia(torneoAttivo); else apriMenu('fine'); },1500);
+  const mostraFine=()=>{
+    // La premiazione deve cominciare davanti al giocatore, dopo il replay.
+    if(trattieniMondoReplay()){ fineTimer=setTimeout(mostraFine,100); return; }
+    fineTimer=null; if(premiazione) avviaCerimonia(torneoAttivo); else apriMenu('fine');
+  };
+  fineTimer=setTimeout(mostraFine,1500);
 }
 function avviaCerimonia(t,dopo='fine'){
   t.premiazioneVista=true; salvaTorneo(t);

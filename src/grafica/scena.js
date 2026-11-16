@@ -52,8 +52,16 @@ box(PX*2,0.1,PZ*2,sottAcqua(new THREE.MeshBasicMaterial({map:canvasTex(256,256,t
   righe.forEach(g=>g.dispose());
 }
 export const wallMat=sottAcqua(new THREE.MeshLambertMaterial({map:canvasTex(256,256,tileDraw('#8fe0f7','rgba(255,255,255,.55)'),12,1)}));
-box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,-PZ-0.15); box(PX*2,DEPTH+0.3,0.3,wallMat,0,-DEPTH/2+0.15,PZ+0.15);
-box(0.3,DEPTH+0.3,PZ*2,wallMat,-PX-0.15,-DEPTH/2+0.15,0); box(0.3,DEPTH+0.3,PZ*2,wallMat,PX+0.15,-DEPTH/2+0.15,0);
+{
+  // Stesse quattro pareti, facce e UV; un solo invio anziché quattro anche dalle nuove camere.
+  const pareti=[];
+  for(const s of [-1,1]){
+    pareti.push(new THREE.BoxGeometry(PX*2,DEPTH+0.3,0.3).translate(0,-DEPTH/2+0.15,s*(PZ+0.15)));
+    pareti.push(new THREE.BoxGeometry(0.3,DEPTH+0.3,PZ*2).translate(s*(PX+0.15),-DEPTH/2+0.15,0));
+  }
+  const muro=new THREE.Mesh(mergeGeometries(pareti),wallMat); muro.name='Pareti della vasca'; scene.add(muro);
+  pareti.forEach(g=>g.dispose());
+}
 // Bordo, griglie, panchine, tavolo ufficiali e tribune a gradoni condividono un atlante.
 creaArena(scene,PX,PZ);
 // Onde e riflessi in un solo passaggio, sincronizzati con l'immersione dei corpi.
