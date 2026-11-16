@@ -1,3 +1,5 @@
+> Passaggio più recente: [v0.50 sospesa, checkpoint per Claude Code](PASSAGGIO-CLAUDE-CODE.md). Il testo v0.49 sotto è storico; non usarlo per riprendere il lavoro corrente.
+
 # Passaggio corrente — WATERPOLO 7 v0.49
 
 ```text

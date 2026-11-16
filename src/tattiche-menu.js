@@ -1,16 +1,16 @@
 // Editor prepartita: la bozza usa gli stessi dati delle posizioni e dei compiti dell'IA.
 import { DEFN } from './costanti.js';
-import { SCHEMI_PRESET, caricaSchema, copiaSchema, salvaSchema, validaSchema } from './schemi.js';
+import { SCHEMI_PRESET, caricaSchema, copiaSchema, nomePosizione, numeroPosizione, salvaSchema, validaSchema } from './schemi.js';
 
 const $ = id => document.getElementById(id);
-const RUOLI = ['Centroboa','Ala destra','Ala sinistra','Mezzo destro','Mezzo sinistro','Punto'];
+const RUOLI = [1,2,3,4,5,6];
 const COMPITI = [
   'Davanti alla porta, cerca una linea di ricezione davanti al marcatore. Se arriva un aiuto, offre lo scarico agli esterni.',
-  'Tiene largo il lato destro e offre lo scarico. Quando il centro è chiuso, collega la palla al mezzo destro.',
-  'Tiene largo il lato sinistro e offre lo scarico. Quando il centro è chiuso, collega la palla al mezzo sinistro.',
-  'Collega ala destra e punto; cerca il servizio al boa sulla linea libera. Può entrare se il compito è assegnato.',
-  'Collega ala sinistra e punto; cerca il servizio al boa sulla linea libera. Può entrare se il compito è assegnato.',
-  'Collega i due lati e offre un appoggio alto per ricominciare. È il primo candidato alla copertura di un’entrata.'
+  'Tiene largo il lato destro vicino alla porta e offre lo scarico. Collega la palla alla Pos. 2, più fuori.',
+  'Tiene largo il lato sinistro vicino alla porta e offre lo scarico. Collega la palla alla Pos. 4, più fuori.',
+  'Collega la Pos. 1 a destra e la Pos. 3 al centro; cerca il servizio al centroboa. Può entrare se il compito è assegnato.',
+  'Collega la Pos. 5 a sinistra e la Pos. 3 al centro; cerca il servizio al centroboa. Può entrare se il compito è assegnato.',
+  'Collega i due lati e offre un appoggio alto per ricominciare. Copre le entrate; in difesa marca il centroboa avversario.'
 ];
 const NOTE_PASSAGGI = {
   vicini:'I compagni cercano soprattutto l’appoggio vicino. Utile per tenere le distanze; per spostare la difesa servono più passaggi.',
@@ -18,16 +18,16 @@ const NOTE_PASSAGGI = {
   rapidi:'I compagni cercano più spesso il cambio di lato su linea aperta. Utile contro la zona; se la diagonale è chiusa, usa l’appoggio vicino.'
 };
 const NOTE_DIFESE = [
-  'A uomo: ogni difensore segue il proprio avversario verso la porta; il punto marca il boa. Se perdi la marcatura, rientra fra uomo e porta.',
+  'A uomo: ogni difensore segue il proprio avversario verso la porta; la Pos. 3 marca il centroboa. Se perdi la marcatura, rientra fra uomo e porta.',
   'Zona: gli esterni si abbassano e un aiuto può chiudere il centro. Protegge il boa, ma lascia più spazio al tiro da fuori; dopo l’aiuto torna sull’uomo.',
   'Pressing: marcature strette e anticipo sul boa per togliere appoggi facili. Attenzione alle entrate alle spalle: se ti superano, rientra verso la porta.',
-  'Zona a M: ali e punto bassi, mezzi più alti; protegge il centro e concede più spazio fuori. Segui il cambio di lato e recupera l’uomo dopo l’aiuto.'
+  'Zona a M: le Pos. 1, 3 e 5 restano basse, le Pos. 2 e 4 più alte. Protegge il centro e concede più spazio fuori. Recupera l’uomo dopo l’aiuto.'
 ];
 let bozza = null, salvata = null, fase = 'attacco', ruolo = 1, ritorno = 'squadre';
 let navigazione = null, trascinamento = null, inizializzato = false;
 const x = z => 300 + z * 29.8;
 const y = d => 28 + d * 29;
-const ruoloNome = i => `${i} · ${RUOLI[i-1]}`;
+const ruoloNome = i => nomePosizione(i,fase==='superiorita');
 
 function opzione(select, valore, testo){
   const option=document.createElement('option'); option.value=valore; option.textContent=testo; select.append(option);
@@ -65,7 +65,7 @@ function preparaLavagna(){
     <text x="32" y="328" class="schema-lato">SINISTRA −</text><text x="568" y="328" text-anchor="end" class="schema-lato">+ DESTRA</text>
     <polyline id="schemaTraccia" fill="none" stroke="#8fe9e4" stroke-opacity=".25" stroke-width="2" stroke-dasharray="5 6"/>
     <path id="schemaTaglio" fill="none" stroke="#ffd67b" stroke-width="3" stroke-dasharray="5 5" marker-end="url(#schemaFreccia)"/>
-    ${RUOLI.map((nome,i)=>`<g data-schema-ruolo="${i+1}" role="button" tabindex="${i===0?0:-1}"><title>${i+1} · ${nome}</title><circle class="schema-tocco" r="39" fill="transparent"/><circle class="schema-posto-ombra" r="22" cy="3"/><circle class="schema-posto" r="22"/><text text-anchor="middle" dominant-baseline="central">${i+1}</text></g>`).join('')}`;
+    ${RUOLI.map(i=>`<g data-schema-ruolo="${i}" role="button" tabindex="${i===1?0:-1}"><title>${ruoloNome(i)}</title><circle class="schema-tocco" r="39" fill="transparent"/><circle class="schema-posto-ombra" r="22" cy="3"/><circle class="schema-posto" r="22"/><text text-anchor="middle" dominant-baseline="central">${numeroPosizione(i)}</text></g>`).join('')}`;
 }
 
 function aggiornaLavagna(){
@@ -78,6 +78,8 @@ function aggiornaLavagna(){
     marker.setAttribute('tabindex',n===ruolo?'0':'-1');
     marker.setAttribute('aria-pressed',n===ruolo?'true':'false');
     marker.setAttribute('aria-label',`${ruoloNome(n)}, ${d} metri dalla porta, lato ${z}. Frecce per spostare.`);
+    marker.querySelector('title').textContent=ruoloNome(n);
+    marker.querySelector('text').textContent=numeroPosizione(n,fase==='superiorita');
   }
   const ordine=fase==='superiorita'?[2,4,5,3]:[2,4,6,5,3];
   $('schemaTraccia').setAttribute('points',ordine.map(n=>`${x(posti[n-1][1])},${y(posti[n-1][0])}`).join(' '));
@@ -91,10 +93,13 @@ function aggiornaLavagna(){
 
 function aggiornaPosizione(){
   const [d,z]=bozza[fase][ruolo-1];
+  const sup=fase==='superiorita';
+  $('schemaGiocatore').replaceChildren();
+  for(const i of [...RUOLI].sort((a,b)=>numeroPosizione(a,sup)-numeroPosizione(b,sup))) opzione($('schemaGiocatore'),String(i),ruoloNome(i));
   $('schemaGiocatore').value=String(ruolo);
   $('schemaDistanza').value=String(d); $('schemaLarghezza').value=String(z);
   $('schemaDistanza').min=Math.abs(z)<3.58?'2.1':'1';
-  $('schemaRuoloNumero').textContent=String(ruolo).padStart(2,'0');
+  $('schemaRuoloNumero').textContent=`Pos. ${numeroPosizione(ruolo,sup)}`;
   $('schemaRuoloCompito').textContent=fase==='superiorita'?`Questi sono i posti base del 6 contro 5, usati finché non chiami uno schema dalla sezione «Uomo in più». ${d<=2.7&&Math.abs(z)<3.2?'Da questo posto cerca la ricezione sul palo; se è coperto, la palla resta agli esterni.':'Da questo posto offre un appoggio sul perimetro e cerca il lato libero.'}`:`${COMPITI[ruolo-1]}${bozza.entrata===ruolo?' Entrata assegnata: taglia senza palla quando si apre spazio; un compagno resta alto. Se non ricevi, torna a offrire un appoggio.':''}`;
   $('schemaFaseCorrente').textContent=fase==='attacco'?'PARITÀ · 6 CONTRO 6':'SUPERIORITÀ · POSTI BASE';
   for(const tab of document.querySelectorAll('[data-fase-schema]')){
@@ -111,7 +116,7 @@ function aggiornaCompiti(){
   $('schemaPassaggi').value=bozza.passaggi;
   $('schemaPassaggiNota').textContent=NOTE_PASSAGGI[bozza.passaggi];
   $('schemaDifesaNota').textContent=NOTE_DIFESE[bozza.difesa];
-  $('schemaCompiti').textContent=bozza.entrata?`Entra il ${RUOLI[bozza.entrata-1].toLowerCase()}, uno alla volta e senza palla. Gli altri mantengono gli appoggi; un compagno resta alto a coprire. Se il taglio è chiuso, scarica fuori. In superiorità si usano invece i sei posti dedicati.`:'Nessuna entrata automatica: boa al centro, ali larghe, mezzi e punto collegano gli appoggi disegnati. Se il centro è chiuso, ricomincia dal lato libero. Alla palla persa tutti rientrano.';
+  $('schemaCompiti').textContent=bozza.entrata?`Entra ${nomePosizione(bozza.entrata)}, uno alla volta e senza palla. Gli altri mantengono gli appoggi; un compagno resta alto a coprire. Se il taglio è chiuso, scarica fuori. Il 6 contro 5 usa una numerazione e sei posti dedicati.`:'Nessuna entrata automatica: centroboa davanti alla porta, due appoggi per lato e Pos. 3 al centro. Se il centro è chiuso, ricomincia dal lato libero. Alla palla persa tutti rientrano.';
   for(const input of $('schemaAiuti').querySelectorAll('input')) input.checked=bozza.aiuti.includes(Number(input.value));
 }
 
@@ -156,12 +161,11 @@ export function inizializzaEditor({apri,torna}){
   opzione($('schemaPreset'),'personale','La mia strategia');
   for(const schema of SCHEMI_PRESET) opzione($('schemaPreset'),schema.id,schema.nome);
   opzione($('schemaEntrata'),'0','Nessuna entrata automatica');
-  RUOLI.forEach((nome,i)=>{
-    opzione($('schemaGiocatore'),String(i+1),ruoloNome(i+1));
-    opzione($('schemaEntrata'),String(i+1),ruoloNome(i+1));
+  [...RUOLI].sort((a,b)=>numeroPosizione(a)-numeroPosizione(b)).forEach(i=>{
+    opzione($('schemaEntrata'),String(i),nomePosizione(i));
     const label=document.createElement('label'), input=document.createElement('input'), testo=document.createElement('span');
-    input.type='checkbox'; input.value=String(i+1); input.id=`schemaAiuto${i+1}`;
-    testo.textContent=ruoloNome(i+1); label.append(input,testo); $('schemaAiuti').append(label);
+    input.type='checkbox'; input.value=String(i); input.id=`schemaAiuto${i}`;
+    testo.textContent=nomePosizione(i); label.append(input,testo); $('schemaAiuti').append(label);
   });
   DEFN.forEach((nome,i)=>opzione($('schemaDifesa'),String(i),nome));
   preparaLavagna(); aggiornaRiepilogoStrategia();

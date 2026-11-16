@@ -102,7 +102,7 @@ prova(partita.dopoF2 < partita.inizioF2 - 0.3, `e i compagni vanno ai nuovi post
 prova(partita.palo5 && !partita.palo6, 'pali riconosciuti dalla fase in corso: il mezzo sinistro entrato sul palo è palo, il punto uscito no');
 prova(/3-3›4-2 2\/2/.test(partita.barraDopo), `la barra indica la fase in corso («${partita.barraDopo.slice(0, 90)}»)`);
 prova(partita.pausa.nomi.includes('3-3 che diventa 4-2') && partita.pausa.carteParita === 0 && /fase 2\/2/.test(partita.pausa.fase), 'pausa 6c5: mostra i propri schemi e la fase reale, senza carte della parità');
-prova(JSON.stringify(partita.pausa.posti) === JSON.stringify(partita.pausa.attesi) && /5 · Mezzo sinistro/.test(partita.pausa.compiti) && !/6 · Punto/.test(partita.pausa.compiti), 'pausa 6c5: lavagna e pali corrispondono ai posti della seconda fase');
+prova(JSON.stringify(partita.pausa.posti) === JSON.stringify(partita.pausa.attesi) && /Sui pali: Pos\. 5, Pos\. 3\./.test(partita.pausa.compiti), 'pausa 6c5: lavagna e pali corrispondono ai posti della seconda fase con la numerazione del 4–2');
 prova(partita.pausa.chiamato === 'u42' && partita.pausa.riparte === 0 && partita.pausa.base === null && partita.pausa.pianoConservato, 'pausa 6c5: scelta e ritorno alla base funzionano senza cambiare il piano prepartita');
 prova(partita.base === null && partita.finito === null, 'tasto 4 = 4-2 base; a superiorità finita lo schema si spegne');
 

@@ -14,10 +14,12 @@ import { allPlayers, ball, ctrl, game, goalX, other, setCtrl, teams } from './st
 import { doShoot, startAct, updateActs, updateRecuperi } from './tiri.js';
 import { aggiornaPanchina, obiettivoUscita } from './panchina.js';
 import { obiettivoEspulso, obiettivoRientro, recuperoPozzetto } from './pozzetto.js';
+import { aggiornaGiocoFermo } from './gioco-fermo.js';
 export const CONTR_AI={ ritmo:1.5, insiste:2.0, fallo:0.2, indisciplina:0.4 };      // contrasto del computer (sezione 2)
 export function aggiornaRigoriFinali(dt){
   const serie=game.rigoriFinali;
   if(serie.fase==='attesa'){
+    aggiornaGiocoFermo(dt);
     if(ball.state==='dead') updateBall(dt);
     serie.attesa-=dt;
     if(serie.attesa<=0){ if(serie.terminati) endMatch(); else preparaProssimoRigoreFinale(); }
@@ -50,9 +52,11 @@ export function aggiornaRigoriFinali(dt){
 }
 export function update(dt){
   pollInput();
-  if(game.state==='menu'||game.state==='paused'||game.state==='over') return;
+  if(game.state==='menu'||game.state==='paused') return;
+  if(game.state==='over'){ aggiornaGiocoFermo(dt); return; }
   if(game.rigoriFinali){ aggiornaRigoriFinali(dt); return; }
   if(game.state==='countdown'){
+    aggiornaGiocoFermo(dt);
     game.timer-=dt;
     const n=Math.ceil(game.timer);
     if(n>0&&n!==game.contoVisto){ game.contoVisto=n; annuncia('conto',`${game.period}° tempo · ${n}`,{durata:0.9}); }
@@ -61,9 +65,9 @@ export function update(dt){
     return;
   }
   if(game.state==='stop'){
+    aggiornaGiocoFermo(dt);
     if(ball.inRete) updateRecuperi(dt);
     aggiornaPanchina(dt,!!game.cambiLiberi);      // dopo un gol o nel time-out i cambi si fanno subito; su un fallo il cambio volante continua
-    for(const p of allPlayers){ p.vx*=0.9; p.vz*=0.9; }
     if(ball.state==='dead') updateBall(dt);
     game.timer-=dt;
     if(game.timer<=0){ const f=game.after; game.after=null; game.state='play'; game.cambiLiberi=false; if(f) f(); }

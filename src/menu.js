@@ -21,7 +21,7 @@ import { iconaMano } from './mano.js';
 import { chiamaUomo, passaAZona } from './ia.js';
 import { resetTap } from './controllo.js';
 import { COMPETIZIONI, classificaGirone, creaTorneo, prossimaPartita, registraPartita, simulaBronzo } from './tornei.js';
-import { applicaSchema, caricaSchema, copiaSchema } from './schemi.js';
+import { applicaSchema, caricaSchema, copiaSchema, nomePosizione } from './schemi.js';
 import { inizializzaEditor, aggiornaRiepilogoStrategia } from './tattiche-menu.js';
 import { aggiornaRiepilogoUomo, inizializzaUomo } from './uomo-editor.js';
 import { renderTattichePausa } from './tattiche-pausa.js';
@@ -84,12 +84,12 @@ const scelta=['ITA','HUN'];
 let lato=0;                                   // quale card cambia toccando una squadra dell'elenco
 // FORMAZIONE: i 7 che partono in acqua, scelti qui (si possono cambiare quante volte si vuole anche durante la partita:
 // i cambi nella pallanuoto sono illimitati). Tocca un posto e poi un giocatore della panchina (o un altro posto) per scambiarli.
-const POSTI=['Portiere','Centroboa','Ala destra','Ala sinistra','Mezzo destro','Mezzo sinistro','Punto'];
+const POSTI=['Portiere',...[1,2,3,4,5,6].map(i=>nomePosizione(i))];
 let postoScelto=null;
 // dati dei tornei (dal database): gol/tiri e assist per chi gioca, parate per i portieri
 const datiTornei=g=>{ const d=g.dati; if(!d) return '<small class="fm-dati">nessun dato nei tornei</small>';
   return `<small class="fm-dati">${d.partite} partite · ${d.parate!=null?`parate ${d.parate}/${d.tiriSubiti}`:`${d.gol}/${d.tiri} al tiro · ${d.assist} assist`}</small>`; };
-const scheda=(g,extra)=>`<span class="ov">${g.ovr}</span><b>${g.num} ${g.nome}${iconaMano(g.mano)}</b><br>${RUOLI[g.ruolo]}${extra||''}${datiTornei(g)}`+
+const scheda=(g,extra)=>`<span class="ov">${g.ovr}</span><b>#${g.num} ${g.nome}${iconaMano(g.mano)}</b><br>${RUOLI[g.ruolo]}${extra||''}${datiTornei(g)}`+
   `<div class="st">${CHIAVE[g.ruolo].map(k=>`<span>${STAT_NOMI[k].slice(0,3).toUpperCase()} ${g.s[k]}</span>`).join('')}</div>`;
 function disegnaRosa(){
   const t=teams[0], R=t.rosa, inAcqua=t.players.map(p=>p.scheda);

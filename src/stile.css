@@ -161,7 +161,10 @@ body:not(.gioco) :is(#hud,#tac,#player,#cronaca,#tLog,#tCambi,#cambiBox,#touch,#
 
 /* ---------- giocatore controllato (sempre visibile, compatto), lotta al centro, contatore ---------- */
 #player{position:fixed;left:calc(12px + var(--sl));bottom:calc(12px + var(--sb));background:var(--h-bg);border:1px solid var(--h-linea);border-radius:var(--h-r);padding:7px 11px;font-size:12.5px;z-index:5;pointer-events:none;min-width:190px;box-shadow:var(--h-ombra)}
-#pname{font-weight:800}
+#pname{font-weight:800;display:flex;align-items:center;gap:5px}
+#pname .posto{flex:none;font-size:.85em;color:var(--h-ciano);font-variant-numeric:tabular-nums}
+#pname .identita{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.touch #pname .ruolo{display:none}
 .bar{height:5px;background:rgba(255,255,255,.14);border-radius:3px;margin-top:5px;overflow:hidden}
 .bar>div{height:100%;background:var(--h-verde);width:100%;transition:width .2s linear}
 #power>div{background:var(--h-oro);width:0}
@@ -936,7 +939,7 @@ body.touch #tac .chip[data-apri]{max-width:200px}
 .schema-coordinate .schema-campo>span{font-size:10px}
 .schema-spiegazione{font-size:11px;line-height:1.5;color:#a9c4d0;margin-top:10px}
 .schema-ruolo-compito{display:flex;gap:12px;align-items:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--m-linea)}
-.schema-ruolo-compito>span{font-size:30px;font-style:italic;font-weight:900;color:var(--m-ciano);line-height:1}
+.schema-ruolo-compito>span{flex:none;font-size:20px;font-weight:900;color:var(--m-ciano);line-height:1;white-space:nowrap}
 .schema-ruolo-compito>p{font-size:11px;line-height:1.5;color:#d2e3e9}
 .schema-circolazione{margin-top:18px}
 .schema-aiuti{border:0;margin-top:18px;min-width:0}

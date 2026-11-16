@@ -1,0 +1,94 @@
+{
+  "provenienza": {
+    "base": "fa688c51aaedd8090b0e933140aaec2e828cf6ab",
+    "branch": "codex/v050-nuoto-direzione-stop",
+    "sha256_dopo": {
+      "src/fisica.js": "19835fb6829463c70c3bbc04c2ec4d6c32eaaab0860674dbbd1cdbb1555b3394",
+      "src/controfuga.js": "d0dc99b71bde3c82c5a013dbd9b6c026963861d4448b140181a89ff04d6aa698",
+      "src/gioco-fermo.js": "0df00f2a6aea346e36145e39281fef7f059f2c157552edc6d2cf3ad8bc81d848",
+      "src/partita.js": "038b009d38c42954e19f5ce96af55e8335668c7c68bb4651ccefd51ddbaa1b9a",
+      "src/regole.js": "4112f8aa9dbfb3f5a122d55983a0f101b13d97f8cf6c76df3381a95f15b9e6a1",
+      "src/grafica/pose.js": "b5a4ede05ef32bb910b9542ddd6d85bbc749e1bbbdea7cdeedef357b52cdbe84",
+      "src/schemi.js": "27ccc49836b56778ff11f5d6a2f910b3edeb2da63a5db9a082477b058f47ae21"
+    },
+    "nota": "Sequenze controllate con fisica e ossa reali; non certifica naturalezza n\u00e9 FPS hardware Apple."
+  },
+  "prima": {
+    "primaFallo": {
+      "velocitaMax": 1.4,
+      "orizMax": 1,
+      "fase": 0.09766666666666665,
+      "verticaleTestaBacino": 0.6987700406630669
+    },
+    "immediato": {
+      "velocitaMax": 1.4,
+      "orizMax": 1,
+      "fase": 0.09766666666666665,
+      "verticaleTestaBacino": 0.6987700406630669
+    },
+    "dopoFallo": {
+      "velocitaMax": 0.21013248941579887,
+      "orizMax": 1,
+      "fase": 1.3967789071831642,
+      "verticaleTestaBacino": 0.6979993287397498
+    },
+    "deltaFaseFallo": 1.2991122405164977,
+    "gestoAnnullato": false,
+    "countdown": {
+      "velocitaMax": 0,
+      "orizMax": 1,
+      "fase": 0.09766666666666643,
+      "verticaleTestaBacino": 0.6987700406630669
+    },
+    "rigore": {
+      "velocitaMax": 0,
+      "orizMax": 1,
+      "fase": 0.09766666666666643,
+      "verticaleTestaBacino": 0.6987700406630669
+    },
+    "esclusioneViva": true,
+    "spostamentoComparsa": 0.18000000000000188,
+    "faseComparsaViva": null,
+    "recuperoGol": true,
+    "replayCongelato": true
+  },
+  "dopo": {
+    "primaFallo": {
+      "velocitaMax": 1.4,
+      "orizMax": 1,
+      "fase": 0.09766666666666665,
+      "verticaleTestaBacino": 0.6987700406630669
+    },
+    "immediato": {
+      "velocitaMax": 0,
+      "orizMax": 1,
+      "fase": 0.09766666666666665,
+      "verticaleTestaBacino": 0.6987700406630669
+    },
+    "dopoFallo": {
+      "velocitaMax": 0,
+      "orizMax": 0,
+      "fase": 0.09766666666666665,
+      "verticaleTestaBacino": 0.9822457233534652
+    },
+    "deltaFaseFallo": 0,
+    "gestoAnnullato": true,
+    "countdown": {
+      "velocitaMax": 0,
+      "orizMax": 0,
+      "fase": 0.09766666666666643,
+      "verticaleTestaBacino": 0.6987700406630669
+    },
+    "rigore": {
+      "velocitaMax": 0,
+      "orizMax": 0,
+      "fase": 0.09766666666666643,
+      "verticaleTestaBacino": 0.6987700406630669
+    },
+    "esclusioneViva": true,
+    "spostamentoComparsa": 0.18000000000000188,
+    "faseComparsaViva": true,
+    "recuperoGol": true,
+    "replayCongelato": true
+  }
+}

@@ -18,7 +18,10 @@ export function occasioneControfuga(p) {
   const d = Math.hypot(goalX(p.team) - p.x, p.z);
   if (d < QTE.min || d > QTE.max) return null;
   const inNuotata = (p.oriz || 0) > 0.35 || Math.hypot(p.vx, p.vz) > 0.9;
-  if (!inNuotata || difensoriDavanti(p) > 0) return null;
+  const velocita=Math.hypot(p.vx,p.vz), versoPorta=((goalX(p.team)-p.x)*p.vx-p.z*p.vz)/(d*velocita||1);
+  // Schizzo e colonnello sono conclusioni in avanzamento verso la porta.
+  // Allontanandosi ci si alza per il tiro normale, senza torcere il crawl a 180°.
+  if (!inNuotata || versoPorta<0.5 || difensoriDavanti(p) > 0) return null;
   return d < QTE.vicino ? 'colonnello' : 'schizzo';
 }
 // tasto a comparsa per il giocatore: si accende quando nasce l'occasione, si spegne dopo QTE.durata o se l'occasione finisce

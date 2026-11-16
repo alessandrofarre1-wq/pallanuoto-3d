@@ -16,8 +16,9 @@ import { rumble } from './input.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, setCtrl, teams } from './stato.js';
 import { creaSerieRigori, preparaRigoreFinale as preparaTiroSerie, registraRigoreFinale } from './rigoriFinali.js';
 import { applicaSchema, copiaSchema } from './schemi.js';
+import { aggiornaGiocoFermo } from './gioco-fermo.js';
 const serieAttiva = () => game.rigoriFinali && !game.rigoriFinali.terminati;
-export function deadBall(t,fn){ game.state='stop'; game.timer=t; game.after=fn||null; }
+export function deadBall(t,fn){ game.state='stop'; game.timer=t; game.after=fn||null; aggiornaGiocoFermo(); }
 // gioco fermo per palla fuori: se la palla si sta ancora muovendo (tiro fuori, deviazione del portiere, rimbalzo sul palo)
 // continua il suo volo con la fisica vera finché non riparte il gioco, così si vede uscire; se è quasi ferma, si ferma
 function fermaOVola(){
@@ -25,6 +26,7 @@ function fermaOVola(){
   if(!ball.inUscita){ ball.vx=ball.vy=ball.vz=0; }
 }
 export function kickoff(){
+  aggiornaGiocoFermo(0,true);
   // sprint d'inizio tempo: tutti sulla propria linea di porta, palla a metà campo
   for(const t of teams) for(const p of t.players){
     if(p.excluded&&p.pf>=3) substitute(p);
@@ -37,6 +39,7 @@ export function kickoff(){
   game.state='countdown'; game.timer=3;
 }
 export function placeHalves(){
+  aggiornaGiocoFermo(0,true);
   for(const t of teams) for(const p of t.players){
     if(p.excluded) continue;
     p.vx=p.vz=0; p.charging=false; p.act=null;
@@ -119,6 +122,7 @@ export function setupPenalty(t,tiratore){    // tiro dai 5 metri; tutti gli altr
   const gx=goalX(t), ot=other(t);
   let s=tiratore||null; if(!s) for(const q of t.players){ if(q.excluded||q.isGK) continue; if(!s||q.st.sht>s.st.sht) s=q; }
   if(!s) return;
+  aggiornaGiocoFermo(0,true);
   // posti sulla linea dei 6 metri: a 3 metri di lato da chi tira (cioè a più di 3 metri di distanza) e poi ogni 95 cm,
   // alternando difensori e attaccanti; ognuno va sul lato in cui si trova già
   const fila=[], dif=ot.players.filter(q=>!q.excluded&&!q.isGK), att=t.players.filter(q=>!q.excluded&&!q.isGK&&q!==s);
@@ -138,6 +142,7 @@ export function setupPenalty(t,tiratore){    // tiro dai 5 metri; tutti gli altr
 }
 
 function azzeraGestiRigori(){
+  aggiornaGiocoFermo(0,true);
   resetTap();
   // Il tempo della partita resta fermo nella serie: i vantaggi di una finta precedente
   // non devono quindi sopravvivere a tutti i rigori. Falli e stanchezza restano quelli reali.

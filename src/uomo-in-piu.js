@@ -6,9 +6,9 @@
 //
 // Coordinate come nel resto del gioco (costanti.js, FORM_UP): [distanza dalla porta avversaria, lato (+ = destra di chi attacca)].
 // Ruoli (indice 1-6, come ROLES senza il portiere): 1 centroboa, 2 ala destra, 3 ala sinistra, 4 mezzo destro, 5 mezzo sinistro, 6 punto.
-// Nei documenti (Mistrangelo, «Pali in superiorità numerica», Rari Nantes Savona) le posizioni sono numerate 1-5 da destra a sinistra
-// sul perimetro e i pali sono P1 (destra) e P5 (sinistra): 1 = nostra ala destra (2), 5 = ala sinistra (3), 2 = mezzo destro (4),
-// 4 = mezzo sinistro (5), P1 = centroboa (1), P5 = punto (6).
+// I numeri mostrati sono quelli del 4-2 iniziale scelti da Ale: interni 1..6 → Pos. 5, 1, 4, 2, 3, 6.
+// Seguono il giocatore nelle rotazioni, non sono numeri di calottina. Indici, coordinate e palla restano interni.
+// Le fonti Mistrangelo usano una numerazione diversa (perimetro 1-5 e pali P1/P5): i titoli qui usano quella di Ale.
 import { FORM_UP } from './costanti.js';
 
 export const MAX_SCELTI = 3, MAX_FASI = 4, MAX_PERSONALI = 24, MAX_SIGLA = 10;
@@ -23,33 +23,33 @@ const P33 = [[2.1, 0], [2.0, 4.4], [2.0, -4.4], [4.6, 3.4], [4.6, -3.4], [6.5, 0
 
 export const LIBRERIA = [
   { id: 'u42', sigla: '4-2', nome: '4-2 classico', fonte: 'Mistrangelo, fig. 1',
-    descrizione: 'Quattro sui 2 metri (due esterni e due pali) e due tiratori ai 5 metri. La palla gira in fretta fino al tiro libero.',
+    descrizione: 'Sui 2 metri: Pos. 1 e 4 larghe, Pos. 5 e 6 ai pali. Pos. 2 e 3 tirano dai 5 metri. La palla gira fino al compagno libero.',
     fasi: [fase(P42, 5)] },
   { id: 'u33', sigla: '3-3', nome: '3-3', fonte: 'Mistrangelo, fig. 2',
-    descrizione: 'Tre sui 2 metri e tre fuori: più tiratori da lontano, il centro libera lo spazio per chi è al centro.',
+    descrizione: 'Pos. 1, 4 e 5 sui 2 metri; Pos. 2, 3 e 6 fuori. Più appoggi per il tiro da lontano, con la Pos. 5 davanti alla porta.',
     fasi: [fase(P33, 5)] },
   { id: 'u33-42', sigla: '3-3›4-2', nome: '3-3 che diventa 4-2', fonte: 'Mistrangelo, fig. 3',
-    descrizione: 'Si parte in 3-3; il mezzo sinistro entra sul palo, il centro scivola a destra e il punto scende ai 5 metri.',
+    descrizione: 'Si parte in 3-3: la Pos. 3 entra sul palo sinistro, la Pos. 5 scivola a destra e la Pos. 6 scende ai 5 metri.',
     fasi: [fase(P33, 2.5), fase([[2.1, 1.75], [2.0, 5.4], [2.0, -5.4], [5.2, 2.5], [2.1, -1.75], [5.2, -2.5]], 5, 4)] },
   { id: 'u42-33', sigla: '4-2›3-3', nome: '4-2 che diventa 3-3', fonte: 'Mistrangelo, fig. 4',
-    descrizione: 'Dal 4-2 l’ala sinistra esce ai 5 metri, i pali scivolano a sinistra e il mezzo sinistro diventa punto.',
+    descrizione: 'Dal 4-2 la Pos. 4 esce ai 5 metri, le Pos. 5 e 6 scivolano a sinistra e la Pos. 3 sale al centro, fuori.',
     fasi: [fase(P42, 2.5), fase([[2.1, 0], [2.0, 4.4], [4.6, -3.4], [4.6, 3.4], [6.5, 0], [2.0, -4.4]], 5, 3)] },
-  { id: 'urot1', sigla: 'Rotaz. 1', nome: 'Rotazione verso 1', fonte: 'Mistrangelo, fig. 5',
-    descrizione: 'Come il 4-2 che diventa 3-3, ma lo scivolamento del palo sinistro è corto: si apre la linea per il palo destro.',
+  { id: 'urot1', sigla: 'Rotaz. 5', nome: 'Rotazione verso Pos. 5', fonte: 'Mistrangelo, fig. 5',
+    descrizione: 'Dal 4-2 verso il 3-3: la Pos. 6 scivola sul lato sinistro e la Pos. 5 si offre al passaggio vicino alla porta.',
     fasi: [fase(P42, 2.5), fase([[2.1, 0.6], [2.0, 5.4], [4.4, -4.0], [4.6, 3.6], [6.4, -0.5], [2.0, -3.9]], 5, 1)] },
   { id: 'u42-33-42', sigla: 'Doppio lato', nome: '4-2 → 3-3 → 4-2 dall’altro lato', fonte: 'Mistrangelo, fig. 6',
-    descrizione: 'Il palo sinistro esce, il centro si sposta, poi il mezzo destro entra sul palo: la difesa deve cambiare lato due volte.',
+    descrizione: 'La Pos. 6 esce ai 5 metri, la Pos. 5 scivola dall’altro lato e la Pos. 2 entra sul palo destro: due cambi di lato per la difesa.',
     fasi: [fase(P42, 2),
       fase([[2.1, 0], [2.0, 4.6], [2.0, -4.6], [4.6, 3.4], [6.5, 0], [4.6, -3.4]], 2.5),
       fase([[2.1, -1.75], [2.0, 5.4], [2.0, -5.4], [2.1, 1.75], [5.2, 2.5], [5.2, -2.5]], 5, 4)] },
-  { id: 'uscivola5', sigla: 'Uscita 5', nome: 'Uscita del 5 e scivolamento del palo', fonte: 'Mistrangelo, terza puntata, fig. 20-21',
-    descrizione: 'L’esterno sinistro esce dai 2 metri per tirare; il palo sinistro scivola sulla linea senza uscire e obbliga il centrale a scegliere.',
+  { id: 'uscivola5', sigla: 'Uscita 4', nome: 'Uscita del 4', fonte: 'Mistrangelo, terza puntata, fig. 20-21',
+    descrizione: 'Nel 6 contro 5 la Pos. 4, esterno sinistro sui 2 metri, esce per tirare; la Pos. 6 scivola sulla linea senza uscire e obbliga il difensore centrale a scegliere.',
     fasi: [fase(P42, 2), fase([[2.1, 1.75], [2.0, 5.4], [3.6, -5.0], [4.8, 3.2], [5.0, -1.2], [2.0, -3.7]], 5, 3)] },
   { id: 'utasca', sigla: 'Tasca dx', nome: 'Rotazione con la tasca', fonte: 'Manuale USA Water Polo 2021, 6x5 «4-2»',
-    descrizione: 'Dal 4-2 si ruota a destra: il mezzo sinistro va al centro, il mezzo destro si allarga e l’ala destra sale «in tasca» tra i 2 e i 5 metri per tirare.',
+    descrizione: 'Dal 4-2 si ruota a destra: la Pos. 3 va al centro, la Pos. 2 si allarga e la Pos. 1 sale «in tasca» tra i 2 e i 5 metri per tirare.',
     fasi: [fase(P42, 2.5), fase([[2.1, 1.75], [3.4, 4.6], [2.0, -5.4], [4.8, 5.4], [5.6, 0], [2.1, -1.75]], 5, 2)] },
-  { id: 'u33-entra', sigla: '3-3 entra', nome: '3-3 con l’entrata dell’ala', fonte: 'Manuale USA Water Polo 2021, 6x5 «1 in, 2 down»',
-    descrizione: 'Dal 3-3 la palla va al punto; l’ala destra entra sul palo, il centro scivola sull’altro palo e il mezzo destro scende largo: due 2 contro 1 in alto.',
+  { id: 'u33-entra', sigla: '3-3 entra', nome: '3-3 con entrata della Pos. 1', fonte: 'Manuale USA Water Polo 2021, 6x5 «1 in, 2 down»',
+    descrizione: 'Dal 3-3 la palla va alla Pos. 6; la Pos. 1 entra sul palo destro, la Pos. 5 scivola sul sinistro e la Pos. 2 scende larga: due 2 contro 1 in alto.',
     fasi: [fase(P33, 2.5, 6), fase([[2.1, -1.8], [2.1, 1.8], [2.0, -4.6], [2.4, 4.9], [5.2, -2.5], [5.6, 1.0]], 5)] },
 ];
 export const SCELTI_BASE = ['u42', 'u33-42', 'u42-33-42'];

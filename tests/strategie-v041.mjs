@@ -19,6 +19,10 @@ try{
   await page.locator('#vHome .m-cta').click();
   await page.locator('#btStrategieSquadre').click();
   assert.equal(await page.locator('#menu').getAttribute('data-vista'),'strategie');
+  const numeriLavagna=()=>page.locator('#schemaPiscina [data-schema-ruolo] > text').allTextContents();
+  assert.deepEqual(await numeriLavagna(),['6','1','5','2','4','3'],'parità: numeri richiesti sui posti interni, senza rinumerare il motore');
+  assert.match(await page.locator('#schemaGiocatore option[value="6"]').textContent(),/Pos\. 3 · Centro/);
+  assert.match(await page.locator('.schema-aiuto-lavagna').first().textContent(),/Pos\. = posizione, # = calotta/);
   await page.locator('#schemaPreset').selectOption('entrata');
   await page.locator('#schemaNome').fill('Taglio Ale');
   await page.locator('#schemaGiocatore').selectOption('4');
@@ -26,6 +30,8 @@ try{
     await page.locator('#'+id).fill(value);await page.locator('#'+id).dispatchEvent('change');
   }
   await page.locator('#schemaSuperiorita').click();
+  assert.deepEqual(await numeriLavagna(),['5','1','4','2','3','6'],'6c5: convenzione diversa e destra della porta invariata');
+  assert.match(await page.locator('#schemaGiocatore option[value="5"]').textContent(),/Pos\. 3 · Esterno sinistro · 5 m/);
   await page.locator('#schemaGiocatore').selectOption('6');
   for(const [id,value] of [['schemaDistanza','2.7'],['schemaLarghezza','-2.4']]){
     await page.locator('#'+id).fill(value);await page.locator('#'+id).dispatchEvent('change');
