@@ -1,3 +1,4 @@
+import { azzeraReplay } from './replay.js';
 // ================= MENU (esperienza pre-partita di WATERPOLO 7) =================
 // Schermate: home → squadre (passo 1) → impostazioni (passo 2, facoltativo) → partita. A parte: comandi, opzioni, pausa, fine.
 // Dalla home a Italia–Ungheria in campo bastano tre tocchi (PARTITA VELOCE, CONTINUA, GIOCA). Indietro conserva le scelte.
@@ -312,6 +313,7 @@ $('esciPartita').onclick=()=>{
   apriMenu('home');
 };
 export function newMatch(){
+  azzeraReplay();
   annullaSchermateFinali();
   if(partitaTorneo&&torneoAttivo){
     game.torneoMatch={id:partitaTorneo.id,tipo:torneoAttivo.tipo,nazionale:torneoAttivo.nazionale};

@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.46.0",
+  "version": "0.47.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -51,7 +51,9 @@
     "nuoto": "node tests/nuoto-v044.mjs",
     "desktop": "node tests/desktop-v044.mjs",
     "costumi": "node tests/costumi-v044.mjs",
-    "home": "node tests/home-v044.mjs"
+    "home": "node tests/home-v044.mjs",
+    "replay": "node tests/replay-v047.mjs",
+    "replay-ui": "node tests/replay-ui-v047.mjs"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",

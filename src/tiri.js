@@ -1,3 +1,4 @@
+import { registraTiroReplay } from './replay.js';
 // ================= PASSAGGI E TIRI =================
 import { registraTiro, tipoDiTiro } from './statistiche.js';
 import { controllaInterferenza } from './regole.js';
@@ -36,6 +37,7 @@ export function updateActs(dt){
   }
 }
 export function launch(p,tx,ty,tz,t,kind){
+  ball.tiroReplay=null;
   ball.state='flight'; ball.holder=null; ball.kind=kind; ball.shooter=p; ball.lastTeam=p.team;
   if(p.ballW){ ball.x=p.ballW[0]; ball.y=Math.max(0.3,p.ballW[1]); ball.z=p.ballW[2]; }
   else { ball.x=p.x+p.fx*0.25; ball.z=p.z+p.fz*0.25; ball.y=1.0; }
@@ -224,6 +226,7 @@ export function doShoot(p,power,lob,aimZ,o){
   ball.elevazione=elev;
   // per il portiere: tiro da lontano o da poco angolo = più tempo e meno porta; tiro "da fermo" con tutti piazzati = facile da
   // leggere; tiro subito dopo un cambio di lato della palla = portiere ancora in viaggio
+  registraTiroReplay(p,{tipo:o.speciale||tipo,distanza:dPorta,rigore:ball.rigore});
   ball.distTiro=dPorta; ball.angoloTiro=Math.abs(gx-p.x)/Math.max(0.5,dPorta); ball.marcato=q.marcato; ball.liberato=q.liberato;
   ball.dopoCambio=q.dopoCambio; ball.daFermo=q.daFermo&&!o.polso&&!o.torsione;
   if(o.torsione) ball.gkZ0-=Math.sign(az||1)*0.4;

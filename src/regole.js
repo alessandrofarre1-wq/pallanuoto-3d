@@ -1,3 +1,4 @@
+import { datiGolReplay, segnalaGolReplay } from './replay.js';
 // ================= REGOLE / FASI =================
 import { CONTRO, chiLasciare, stileVeloce, chiamaUomo, manUp, passaAZona, scegliDifesa, setteControSei } from './ia.js';
 import { siglaUomo } from './uomo-in-piu.js';
@@ -6,7 +7,7 @@ import { riservaPer, vesti } from './giocatori.js';
 import { annullaCambio } from './panchina.js';
 import { sceltaRientro } from './pozzetto.js';
 import { apriAzione, azioneAperta, chiudiAzione, difensoriDavanti, registraEspulsione, registraFallo, registraGol, registraPallaRubata, registraRigore, registraTimeout } from './statistiche.js';
-import { whistle } from './audio.js';
+import { accentoGol, whistle } from './audio.js';
 import { autoSwitch, resetTap } from './controllo.js';
 import { ARBITRO, ATK, BRV, DEFN, DIFF, EXCL_TIME, FORM, HL, HW, KICK_Z, SHOT_CLOCK, SHOT_RESET, clamp, dist, rnd } from './costanti.js';
 import { annuncia } from './cronaca.js';
@@ -261,6 +262,8 @@ export function goalScored(t){
     annuncia('ripresa','Ripresa dal centro',{squadra:conceding,registro:false});
     deadBall(1.2,null);
   });
+  const replayGol=datiGolReplay(t);
+  segnalaGolReplay(replayGol,game.after); accentoGol(replayGol.firma);
 }
 export function goalThrow(defTeam,text){
   if(serieAttiva()){ concludiRigoreFinale(false,'fuori'); return; }

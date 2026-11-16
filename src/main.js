@@ -1,3 +1,6 @@
+import * as replay from './replay.js';
+import { diagnosticaReplay } from './grafica/replay.js';
+import { chiudiPresentazioneReplay } from './replay-regia.js';
 // Punto d'ingresso: carica i moduli nell'ordine giusto e fa girare il ciclo di gioco
 import { movePlayer } from './fisica.js';
 import { bestPassTarget, doShoot, passLaneRisk, shotKind, startAct } from './tiri.js';
@@ -39,6 +42,7 @@ let last=performance.now(), hudT=1;
 // tornando da un'altra app i primi fotogrammi sono lunghi: non devono contare come "dispositivo lento"
 // uscendo dall'app (o cambiando scheda) a partita in corso il gioco va in pausa: al ritorno si riprende dal menu
 document.addEventListener('visibilitychange',()=>{ qualita.reset(); last=performance.now();
+  if(document.hidden){ replay.interrompiReplay(); chiudiPresentazioneReplay(); }
   if(document.hidden && ['play','stop','countdown'].includes(game.state)){ cronaca.chiudiRegistro(); togglePause(); } });
 // il gioco è solo in orizzontale: in verticale resta fermo sotto la schermata "Ruota il dispositivo" (stile.css) e riparte da
 // solo appena si gira il telefono
@@ -49,7 +53,12 @@ function loop(now){
   const raw=Math.min(0.1,frameMs/1000); last=now;
   const inPartita=menuEl.style.display==='none';
   document.body.classList.toggle('gioco',inPartita);
-  if(verticale()&&inPartita){ qualita.reset(); requestAnimationFrame(loop); return; }
+  if(verticale()&&inPartita){ replay.interrompiReplay(); chiudiPresentazioneReplay(); qualita.reset(); requestAnimationFrame(loop); return; }
+  replay.avanzaTempoReplay(raw*SPEED);
+  if(replay.statoReplay()?.fase==='replay'){
+    const saltati=replay.eseguiSaltoReplay(update);
+    if(saltati){ input.resetInput(); cronaca.tick(saltati); }
+  }
   const dt=raw*SPEED;
   // un aggiornamento per fotogramma (suddiviso solo se il fotogramma è lungo): movimento continuo, senza scatti
   const n=Math.max(1,Math.ceil(dt/0.02));
@@ -67,7 +76,7 @@ function loop(now){
 // accesso per le verifiche automatiche (tests/verifica.mjs) e per il debug dalla console
 // "vista" permette alla verifica di mettere la telecamera dove vuole (primi piani): { pos:[x,y,z], look:[x,y,z], fov };
 // "senzaCorpi" ferma l'animazione degli scheletri (serve solo ad accelerare le partite simulate)
-window.__pallanuoto = { imposta, cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, costumi:{pronti:costumiPronti,profilo:profiloCostume,atlante:atlanteCostumi,colora,vesti}, tornei:{creaCampagna,continuaTorneo,esportaSalvataggi}, palla:{ passoPalla, velocitaDiLancio, diagnosi }, effetti:{ gocce:gocceMesh, schiuma, contatti, LIMITI, gocceAttive }, __ridisegna:()=>renderer.render(scene,camera), regole:{ callPlay, setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, uomo:UOMO, v046:{ statPartita, azioneAperta, CONTRO, contropiede, uomoDi, simulazione, simultanea, controllaInterferenza, ARBITRI }, prova:{ paloUomo, schemiUomo, movePlayer, doShoot, startAct, valoriMotore, aiCarrier, bestPassTarget, passLaneRisk, shotKind, attackTarget, markTarget, aggiornaSchemi, applicaSchema, copiaSchema, validaSchema }, muro:{ paloCoperto, braccioMuro }, panchina:{ chiediCambio, suggerimento }, pausa:togglePause, __setCtrl:setCtrl, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get inp(){ return input.inp; }, get modelloPronto(){ return modelloPronto; } };
+window.__pallanuoto = { imposta, cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, replay:{...replay,diagnostica:diagnosticaReplay,forzaRegistrazione:false}, costumi:{pronti:costumiPronti,profilo:profiloCostume,atlante:atlanteCostumi,colora,vesti}, tornei:{creaCampagna,continuaTorneo,esportaSalvataggi}, palla:{ passoPalla, velocitaDiLancio, diagnosi }, effetti:{ gocce:gocceMesh, schiuma, contatti, LIMITI, gocceAttive }, __ridisegna:()=>renderer.render(scene,camera), regole:{ callPlay, setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, uomo:UOMO, v046:{ statPartita, azioneAperta, CONTRO, contropiede, uomoDi, simulazione, simultanea, controllaInterferenza, ARBITRI }, prova:{ paloUomo, schemiUomo, movePlayer, doShoot, startAct, valoriMotore, aiCarrier, bestPassTarget, passLaneRisk, shotKind, attackTarget, markTarget, aggiornaSchemi, applicaSchema, copiaSchema, validaSchema }, muro:{ paloCoperto, braccioMuro }, panchina:{ chiediCambio, suggerimento }, pausa:togglePause, __setCtrl:setCtrl, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get inp(){ return input.inp; }, get modelloPronto(){ return modelloPronto; } };
 // scena iniziale dietro al menu
 kickoff(); game.state='menu';
 requestAnimationFrame(loop);

@@ -1036,3 +1036,48 @@ body.touch #tac .chip[data-apri]{max-width:200px}
 #player.vis{opacity:1}
 body:not(.nostra-palla) .tb[data-b="lob"]{display:none}
 #tLog{display:none}
+
+/* ===== Replay del gol (v0.47): informazioni ai margini, campo libero al centro ===== */
+/* Le interfacce normali conservano il proprio stato: tornano appena finisce il playback. */
+body.replay :is(#hud,#espulsioni,#tac,#cronaca,#qte,#fight,#player,#tCambi,#tLog,#registro,#touch,#fps,#cambiBox,#pannelloFisica){visibility:hidden!important;pointer-events:none!important}
+#replayOverlay{--r-ciano:#57e2df;--r-oro:#ffd465;position:fixed;inset:0;z-index:35;color:#f4faff;background:linear-gradient(180deg,#07131d52,transparent 28%,transparent 65%,#07131d52);touch-action:none;isolation:isolate}
+#replayOverlay[hidden]{display:none}
+.replay-testa{position:absolute;left:calc(14px + var(--sl));top:calc(12px + var(--st));display:flex;align-items:center;gap:8px;max-width:calc(100% - 180px - var(--sl) - var(--sr))}
+.replay-badge{display:flex;align-items:center;gap:5px;min-height:29px;padding:0 9px;border-radius:4px;background:var(--r-ciano);color:#06232e;font-size:10px;font-weight:900;letter-spacing:.1em;white-space:nowrap}
+.replay-badge svg{width:14px;height:14px;flex:none}
+.replay-score{display:flex;align-items:center;gap:10px;min-height:29px;padding:0 10px;border:1px solid #c6e5ee26;border-radius:4px;background:#091b2be8;white-space:nowrap;box-shadow:0 2px 10px #030a1633}
+.replay-score span{font-size:10px;font-weight:800;letter-spacing:.06em;color:#c4d9e3}
+.replay-score b{font-size:17px;font-weight:850;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.replay-marchio{position:absolute;right:calc(16px + var(--sr));top:calc(16px + var(--st));width:128px;opacity:.9;pointer-events:none}
+.replay-marchio .logo{display:block;width:100%;height:auto}
+.replay-fascia{position:absolute;left:calc(14px + var(--sl));bottom:calc(14px + var(--sb));width:min(420px,calc(100% - 132px - var(--sl) - var(--sr)));border:1px solid #c6e5ee26;border-left:3px solid var(--r-ciano);border-radius:4px;background:#091b2bea;box-shadow:0 3px 15px #030a1633;overflow:hidden}
+.replay-marcatore{min-width:0;padding:11px 14px 10px}
+.replay-identita{display:flex;align-items:center;gap:7px;min-width:0}
+#replayBandiera{display:flex;flex:none;width:25px}
+.replay-bandiera{display:block;width:25px;height:17px}
+#replayNazione{font-size:10px;font-weight:850;letter-spacing:.08em;color:#bed4df;flex:none}
+#replayNumero{font-size:16px;line-height:1.15;font-variant-numeric:tabular-nums;color:var(--r-oro);flex:none}
+#replayNome{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:17px;line-height:1.2;font-weight:800;letter-spacing:-.02em}
+#replayFirma{display:flex;align-items:center;gap:7px;margin-top:7px;font-size:12px;line-height:1.2;font-weight:850;letter-spacing:.12em;color:var(--r-oro)}
+#replayFirma::before{content:'';width:16px;height:2px;background:var(--r-oro);flex:none}
+.replay-progresso{height:2px;background:#b9dae51f;overflow:hidden}
+.replay-progresso i{display:block;width:100%;height:100%;background:var(--r-ciano);transform:scaleX(var(--replay-progresso,0));transform-origin:left center}
+#replaySalta{position:absolute;right:calc(14px + var(--sr));bottom:calc(14px + var(--sb));display:flex;align-items:center;justify-content:center;gap:9px;min-width:88px;min-height:44px;padding:10px 13px;border:1px solid #c6e5ee66;border-radius:4px;background:#091b2be8;color:#f4faff;font:800 12px/1 system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#replaySalta svg{width:15px;height:15px;color:var(--r-ciano);flex:none}
+#replaySalta:focus-visible{outline:3px solid var(--r-oro);outline-offset:3px}
+#replaySalta:active{background:#17424c;border-color:var(--r-ciano)}
+@media (max-height:360px){
+  .replay-testa{top:calc(8px + var(--st));left:calc(12px + var(--sl));gap:6px}
+  .replay-badge,.replay-score{min-height:27px}.replay-score{gap:8px;padding:0 8px}.replay-score b{font-size:16px}
+  .replay-marchio{top:calc(12px + var(--st));right:calc(14px + var(--sr));width:112px}
+  .replay-fascia{left:calc(12px + var(--sl));bottom:calc(10px + var(--sb));width:min(390px,calc(100% - 128px - var(--sl) - var(--sr)))}
+  .replay-marcatore{padding:9px 11px 8px}#replayNome{font-size:16px}#replayFirma{font-size:11px;margin-top:6px}
+  #replaySalta{right:calc(12px + var(--sr));bottom:calc(10px + var(--sb))}
+}
+@media (max-width:480px){
+  .replay-testa{max-width:calc(100% - 28px - var(--sl) - var(--sr));gap:6px}.replay-marchio{display:none}
+  .replay-fascia{width:calc(100% - 28px - var(--sl) - var(--sr));bottom:calc(70px + var(--sb))}
+}
+
+/* Il gol sulla sirena precede il risultato finale senza cambiare lo stato della gara. */
+body.replay #menu,body.replay-attesa-fine #menu{visibility:hidden;pointer-events:none}
