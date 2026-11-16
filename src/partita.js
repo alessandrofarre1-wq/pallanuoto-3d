@@ -11,7 +11,7 @@ import { endMatch } from './menu.js';
 import { areaFoul, avviaRigoriFinali, callPlay, concludiRigoreFinale, contrasto, deadBall, giveBall, kickoff, latoContrasto, pallaEsposta, preparaProssimoRigoreFinale, reenter, tackle, timeout } from './regole.js';
 import { aggiornaAzione, annullaAzione, chiudiAzione, difensoriDavanti } from './statistiche.js';
 import { allPlayers, ball, ctrl, game, goalX, other, setCtrl, teams } from './stato.js';
-import { doShoot, startAct, updateActs } from './tiri.js';
+import { doShoot, startAct, updateActs, updateRecuperi } from './tiri.js';
 import { aggiornaPanchina, obiettivoUscita } from './panchina.js';
 import { obiettivoEspulso, obiettivoRientro, recuperoPozzetto } from './pozzetto.js';
 export const CONTR_AI={ ritmo:1.5, insiste:2.0, fallo:0.2, indisciplina:0.4 };      // contrasto del computer (sezione 2)
@@ -61,6 +61,7 @@ export function update(dt){
     return;
   }
   if(game.state==='stop'){
+    if(ball.inRete) updateRecuperi(dt);
     aggiornaPanchina(dt,!!game.cambiLiberi);      // dopo un gol o nel time-out i cambi si fanno subito; su un fallo il cambio volante continua
     for(const p of allPlayers){ p.vx*=0.9; p.vz*=0.9; }
     if(ball.state==='dead') updateBall(dt);

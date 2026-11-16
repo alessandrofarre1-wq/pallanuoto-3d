@@ -20,4 +20,7 @@ export default {
   luceBlu:0.13,
   // in posa a T i palmi guardano in avanti (+Z del modello)
   palmoRiposo:[0,0,1],
+  // Le prese sono già davanti alla superficie: distanze misurate sul GLB v2, in metri modello lungo +Z.
+  prese:{D:'presa_r',S:'presa_l'},
+  distanzeSuperficiePrese:{D:0.033477,S:0.028076},
 };

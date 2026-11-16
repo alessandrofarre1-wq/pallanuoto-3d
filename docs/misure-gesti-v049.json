@@ -1,0 +1,1022 @@
+{
+  "versione": "0.49.0",
+  "base": "19c213d88ae480c519a5f49b52973942d2522170",
+  "prova": "articolazioni reali del GLB, sequenza controllata ai tempi startAct; non partita completa",
+  "comandoPrima": "node strumenti/gesti-v049.mjs --dist=/tmp/v049-prima --out=/tmp/v049-prima30 --filmato",
+  "comandoDopo": "npm run gesti -- --out=/tmp/v049-finale --filmato",
+  "casi": 8,
+  "campioniPerCaso": 91,
+  "prima": {
+    "shotD": {
+      "gomito": [
+        59.13549485143414,
+        141.06346724002367
+      ],
+      "polso": [
+        0.9451772857046874,
+        14.476206111409699
+      ],
+      "polsoConSegno": [
+        -1.052957990863248,
+        1.2736585934879294
+      ],
+      "torsione": [
+        0,
+        0
+      ],
+      "quatError": 0.10087842129416447,
+      "carica": {
+        "tipo": "shot",
+        "mano": "D",
+        "t": 0.65,
+        "elbow": 136.67305250229575,
+        "wrist": 10.05717056794836,
+        "wristSigned": 0.8700739671739894,
+        "torso": 0,
+        "quatError": 0.0425172840609882,
+        "fase": "carica"
+      },
+      "preRilascio": {
+        "tipo": "shot",
+        "mano": "D",
+        "t": 0.8166666666666667,
+        "elbow": 130.86280978227487,
+        "wrist": 12.455942190353845,
+        "wristSigned": -0.5440497154921495,
+        "torso": 0,
+        "quatError": 0.029784544551133774,
+        "fase": "carica"
+      }
+    },
+    "passD": {
+      "gomito": [
+        62.11370540975139,
+        134.75747630298744
+      ],
+      "polso": [
+        1.0497180158400703,
+        15.394749633595746
+      ],
+      "polsoConSegno": [
+        -2.003865628727681,
+        0.9654132530062153
+      ],
+      "torsione": [
+        0,
+        0
+      ],
+      "quatError": 0.09924274439165581,
+      "carica": {
+        "tipo": "pass",
+        "mano": "D",
+        "t": 0.45,
+        "elbow": 100.80320549643942,
+        "wrist": 1.1030558479672508,
+        "wristSigned": 0.9264108715281821,
+        "torso": 0,
+        "quatError": 0.06708901188543415,
+        "fase": "carica"
+      },
+      "preRilascio": {
+        "tipo": "pass",
+        "mano": "D",
+        "t": 0.5333333333333333,
+        "elbow": 122.36143746047091,
+        "wrist": 11.82131238678364,
+        "wristSigned": -0.43966971408379346,
+        "torso": 0,
+        "quatError": 0.06483584604779868,
+        "fase": "carica"
+      }
+    },
+    "beduinaD": {
+      "gomito": [
+        12.100128301229844,
+        157.59581836552283
+      ],
+      "polso": [
+        2.6747979649229103,
+        20.370604590992862
+      ],
+      "polsoConSegno": [
+        -1.2844300267338324,
+        3.7996527929702846
+      ],
+      "torsione": [
+        0,
+        0
+      ],
+      "quatError": 0.11457778506527383,
+      "carica": {
+        "tipo": "beduina",
+        "mano": "D",
+        "t": 0.65,
+        "elbow": 72.00844528206225,
+        "wrist": 8.824480981340011,
+        "wristSigned": 0.7796503736949012,
+        "torso": 0,
+        "quatError": 0.01640372630965048,
+        "fase": "carica"
+      },
+      "preRilascio": {
+        "tipo": "beduina",
+        "mano": "D",
+        "t": 0.8166666666666667,
+        "elbow": 132.09563262301717,
+        "wrist": 10.898749292428532,
+        "wristSigned": 1.3816395724883674,
+        "torso": 0,
+        "quatError": 0.03029523366861908,
+        "fase": "carica"
+      }
+    },
+    "nuotoD": {
+      "gomito": [
+        52.83107272413247,
+        131.2474183108966
+      ],
+      "polso": [
+        1.483805022408264,
+        20.96730351296131
+      ],
+      "polsoConSegno": [
+        -2.4969873737308648,
+        4.530585718980415
+      ],
+      "torsione": [
+        0,
+        0
+      ],
+      "quatError": 0.18598947424179046,
+      "carica": {
+        "tipo": "nuoto",
+        "mano": "D",
+        "t": 0.65,
+        "elbow": 65.72882707125225,
+        "wrist": 12.268535268321036,
+        "wristSigned": 0.20325816119047416,
+        "torso": 0,
+        "quatError": 0.03141234592017472,
+        "fase": "nuoto"
+      }
+    },
+    "shotS": {
+      "gomito": [
+        56.09272039856077,
+        140.7292170060388
+      ],
+      "polso": [
+        6.927296814744385,
+        24.204391296727888
+      ],
+      "polsoConSegno": [
+        -3.6440898095785914,
+        1.793721009607892
+      ],
+      "torsione": [
+        0,
+        0
+      ],
+      "quatError": 0.1610148120296212,
+      "carica": {
+        "tipo": "shot",
+        "mano": "S",
+        "t": 0.65,
+        "elbow": 136.31612390361644,
+        "wrist": 23.720549080405927,
+        "wristSigned": -0.7768025870294855,
+        "torso": 0,
+        "quatError": 0.07443391926973653,
+        "fase": "carica"
+      },
+      "preRilascio": {
+        "tipo": "shot",
+        "mano": "S",
+        "t": 0.8166666666666667,
+        "elbow": 130.74148566590415,
+        "wrist": 19.012637231269018,
+        "wristSigned": -0.8290911969482848,
+        "torso": 0,
+        "quatError": 0.026030791774323436,
+        "fase": "carica"
+      }
+    },
+    "passS": {
+      "gomito": [
+        51.814219258259186,
+        134.67464805531645
+      ],
+      "polso": [
+        7.4377252794850754,
+        20.75532100522456
+      ],
+      "polsoConSegno": [
+        -4.241180052434807,
+        1.0587483161676452
+      ],
+      "torsione": [
+        0,
+        0
+      ],
+      "quatError": 0.17697973223543173,
+      "carica": {
+        "tipo": "pass",
+        "mano": "S",
+        "t": 0.45,
+        "elbow": 100.744101106508,
+        "wrist": 17.59967958088853,
+        "wristSigned": -0.7562384700537124,
+        "torso": 0,
+        "quatError": 0.03009864426180653,
+        "fase": "carica"
+      },
+      "preRilascio": {
+        "tipo": "pass",
+        "mano": "S",
+        "t": 0.5333333333333333,
+        "elbow": 122.2436629175095,
+        "wrist": 18.32512394787519,
+        "wristSigned": -0.6864376725335279,
+        "torso": 0,
+        "quatError": 0.027579547183558928,
+        "fase": "carica"
+      }
+    },
+    "beduinaS": {
+      "gomito": [
+        8.719230496858263,
+        157.29871418145177
+      ],
+      "polso": [
+        1.3809986687534592,
+        26.000167867949994
+      ],
+      "polsoConSegno": [
+        -3.057939447280273,
+        1.6369904136355018
+      ],
+      "torsione": [
+        0,
+        0
+      ],
+      "quatError": 0.09090872566243202,
+      "carica": {
+        "tipo": "beduina",
+        "mano": "S",
+        "t": 0.65,
+        "elbow": 72.30443792278221,
+        "wrist": 15.124147507897272,
+        "wristSigned": 0.34399913298237444,
+        "torso": 0,
+        "quatError": 0.042249297843893974,
+        "fase": "carica"
+      },
+      "preRilascio": {
+        "tipo": "beduina",
+        "mano": "S",
+        "t": 0.8166666666666667,
+        "elbow": 131.5476382778951,
+        "wrist": 17.307955495288546,
+        "wristSigned": 0.36572839301499965,
+        "torso": 0,
+        "quatError": 0.03208556809003382,
+        "fase": "carica"
+      }
+    },
+    "nuotoS": {
+      "gomito": [
+        53.091495863484475,
+        131.2243946903219
+      ],
+      "polso": [
+        2.2892449830461894,
+        24.82257281403119
+      ],
+      "polsoConSegno": [
+        -0.7654220014081126,
+        3.669953432255757
+      ],
+      "torsione": [
+        0,
+        0
+      ],
+      "quatError": 0.1859894742363256,
+      "carica": {
+        "tipo": "nuoto",
+        "mano": "S",
+        "t": 0.65,
+        "elbow": 96.2306896115187,
+        "wrist": 3.5312191581194043,
+        "wristSigned": 2.323055893243812,
+        "torso": 0,
+        "quatError": 0.03141234591827691,
+        "fase": "nuoto"
+      }
+    }
+  },
+  "dopo": {
+    "shotD": {
+      "gomito": [
+        52.75113174700681,
+        151.49764647230654
+      ],
+      "polso": [
+        0,
+        30.90911670366957
+      ],
+      "polsoConSegno": [
+        -26.35605857601791,
+        30.909116703669575
+      ],
+      "torsione": [
+        -48.095876122266645,
+        26.72499527639752
+      ],
+      "quatError": 4.440892098500626e-16,
+      "carica": {
+        "tipo": "shot",
+        "mano": "D",
+        "t": 0.65,
+        "elbow": 88.87929577416293,
+        "wrist": 26.356058576017862,
+        "wristSigned": -26.356058576017862,
+        "torso": -48.095876122266645,
+        "quatError": 2.220446049250313e-16,
+        "fase": "carica"
+      },
+      "preRilascio": {
+        "tipo": "shot",
+        "mano": "D",
+        "t": 0.8166666666666667,
+        "elbow": 149.85182974718555,
+        "wrist": 28.449209388274255,
+        "wristSigned": 28.44920938827426,
+        "torso": 26.087855304505638,
+        "quatError": 2.220446049250313e-16,
+        "fase": "carica"
+      }
+    },
+    "passD": {
+      "gomito": [
+        52.65392709113822,
+        147.60885426718647
+      ],
+      "polso": [
+        8.537736462515939e-07,
+        30.895462108754067
+      ],
+      "polsoConSegno": [
+        -26.35605857601789,
+        30.895462108754064
+      ],
+      "torsione": [
+        -6.859665680762873,
+        6.728275125171535
+      ],
+      "quatError": 4.440892098500626e-16,
+      "carica": {
+        "tipo": "pass",
+        "mano": "D",
+        "t": 0.45,
+        "elbow": 85.37819707772407,
+        "wrist": 26.35605857601789,
+        "wristSigned": -26.35605857601787,
+        "torso": -6.859665680762873,
+        "quatError": 2.220446049250313e-16,
+        "fase": "carica"
+      },
+      "preRilascio": {
+        "tipo": "pass",
+        "mano": "D",
+        "t": 0.5333333333333333,
+        "elbow": 143.64754012393723,
+        "wrist": 25.257068243673455,
+        "wristSigned": 25.257068243673462,
+        "torso": 6.699992985074232,
+        "quatError": 2.220446049250313e-16,
+        "fase": "carica"
+      }
+    },
+    "beduinaD": {
+      "gomito": [
+        29.999999999999954,
+        166.44184081817875
+      ],
+      "polso": [
+        0,
+        30.909116703669607
+      ],
+      "polsoConSegno": [
+        -26.35605857601792,
+        30.909116703669604
+      ],
+      "torsione": [
+        -56.23298706486145,
+        41.05838787879179
+      ],
+      "quatError": 4.440892098500626e-16,
+      "carica": {
+        "tipo": "beduina",
+        "mano": "D",
+        "t": 0.65,
+        "elbow": 86.46715504651358,
+        "wrist": 26.356058576017904,
+        "wristSigned": -26.35605857601789,
+        "torso": 41.05838787879179,
+        "quatError": 2.220446049250313e-16,
+        "fase": "carica"
+      },
+      "preRilascio": {
+        "tipo": "beduina",
+        "mano": "D",
+        "t": 0.8166666666666667,
+        "elbow": 166.44184081817872,
+        "wrist": 28.449209388274227,
+        "wristSigned": 28.449209388274216,
+        "torso": -56.23298706486145,
+        "quatError": 3.3306690738754696e-16,
+        "fase": "carica"
+      }
+    },
+    "nuotoD": {
+      "gomito": [
+        32.49108140047939,
+        154.95889482890942
+      ],
+      "polso": [
+        0.007872042578156832,
+        19.477964080654036
+      ],
+      "polsoConSegno": [
+        -5.330514850526279,
+        19.477964080654015
+      ],
+      "torsione": [
+        -2.1954898017054347,
+        2.1961574470733467
+      ],
+      "quatError": 4.440892098500626e-16,
+      "carica": {
+        "tipo": "nuoto",
+        "mano": "D",
+        "t": 0.65,
+        "elbow": 32.49108140047939,
+        "wrist": 0.8407477615162409,
+        "wristSigned": 0.8407477615167577,
+        "torso": -2.099082237212315,
+        "quatError": 2.220446049250313e-16,
+        "fase": "nuoto"
+      }
+    },
+    "shotS": {
+      "gomito": [
+        51.826478186213116,
+        151.4887820681734
+      ],
+      "polso": [
+        0,
+        30.909116703669586
+      ],
+      "polsoConSegno": [
+        -26.35605857601791,
+        30.909116703669586
+      ],
+      "torsione": [
+        -26.72499527639752,
+        48.095876122266645
+      ],
+      "quatError": 4.440892098500626e-16,
+      "carica": {
+        "tipo": "shot",
+        "mano": "S",
+        "t": 0.65,
+        "elbow": 88.8437003944273,
+        "wrist": 26.356058576017876,
+        "wristSigned": -26.35605857601787,
+        "torso": 48.095876122266645,
+        "quatError": 2.220446049250313e-16,
+        "fase": "carica"
+      },
+      "preRilascio": {
+        "tipo": "shot",
+        "mano": "S",
+        "t": 0.8166666666666667,
+        "elbow": 149.8424297448732,
+        "wrist": 28.449209388274266,
+        "wristSigned": 28.449209388274273,
+        "torso": -26.087855304505638,
+        "quatError": 2.220446049250313e-16,
+        "fase": "carica"
+      }
+    },
+    "passS": {
+      "gomito": [
+        47.250464929854004,
+        147.59871757877147
+      ],
+      "polso": [
+        0,
+        30.89546210875403
+      ],
+      "polsoConSegno": [
+        -26.356058576017872,
+        30.895462108754042
+      ],
+      "torsione": [
+        -6.728275125171535,
+        6.859665680762873
+      ],
+      "quatError": 3.3306690738754696e-16,
+      "carica": {
+        "tipo": "pass",
+        "mano": "S",
+        "t": 0.45,
+        "elbow": 85.3403547388568,
+        "wrist": 26.356058576017862,
+        "wristSigned": -26.35605857601786,
+        "torso": 6.859665680762873,
+        "quatError": 3.3306690738754696e-16,
+        "fase": "carica"
+      },
+      "preRilascio": {
+        "tipo": "pass",
+        "mano": "S",
+        "t": 0.5333333333333333,
+        "elbow": 143.6360813339345,
+        "wrist": 25.257068243673487,
+        "wristSigned": 25.257068243673473,
+        "torso": -6.699992985074232,
+        "quatError": 2.220446049250313e-16,
+        "fase": "carica"
+      }
+    },
+    "beduinaS": {
+      "gomito": [
+        29.999999999999954,
+        166.4376921209543
+      ],
+      "polso": [
+        8.537736462515939e-07,
+        30.909116703669596
+      ],
+      "polsoConSegno": [
+        -26.356058576017876,
+        30.90911670366959
+      ],
+      "torsione": [
+        -41.05838787879168,
+        56.23298706486139
+      ],
+      "quatError": 3.3306690738754696e-16,
+      "carica": {
+        "tipo": "beduina",
+        "mano": "S",
+        "t": 0.65,
+        "elbow": 86.4300271936986,
+        "wrist": 26.356058576017876,
+        "wristSigned": -26.35605857601786,
+        "torso": -41.05838787879168,
+        "quatError": 2.220446049250313e-16,
+        "fase": "carica"
+      },
+      "preRilascio": {
+        "tipo": "beduina",
+        "mano": "S",
+        "t": 0.8166666666666667,
+        "elbow": 166.43769212095427,
+        "wrist": 28.44920938827424,
+        "wristSigned": 28.449209388274248,
+        "torso": 56.23298706486139,
+        "quatError": 1.1102230246251565e-16,
+        "fase": "carica"
+      }
+    },
+    "nuotoS": {
+      "gomito": [
+        32.39702286794287,
+        154.76128185537945
+      ],
+      "polso": [
+        0.02980492255594748,
+        19.47413421113388
+      ],
+      "polsoConSegno": [
+        -5.689599293661795,
+        19.474134211133862
+      ],
+      "torsione": [
+        -2.1954937584865775,
+        2.204865706432088
+      ],
+      "quatError": 4.440892098500626e-16,
+      "carica": {
+        "tipo": "nuoto",
+        "mano": "S",
+        "t": 0.65,
+        "elbow": 73.1323945716829,
+        "wrist": 18.921090681748108,
+        "wristSigned": 18.921090681748115,
+        "torso": -2.0990906566670446,
+        "quatError": 2.220446049250313e-16,
+        "fase": "nuoto"
+      }
+    }
+  },
+  "filmato": {
+    "fpsAcquisizione": 30,
+    "fotogrammiPerVersione": 184,
+    "nota": "non misura gli FPS del gioco su dispositivo"
+  },
+  "ci": "Esito completo, SHA e run nella PR",
+  "definizionePolso": "flessione nel piano mano/avambraccio, con segno dalla normale del palmo trasformata dalla matrice reale; include polsoConSegno e angolo totale",
+  "fluiditaDueCambi": [
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "dpr": 1.5,
+      "calls": 62,
+      "triangles": 147652,
+      "samples": [
+        {
+          "frame": 55,
+          "calls": 60,
+          "triangles": 142482,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 56,
+          "calls": 60,
+          "triangles": 142482,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 57,
+          "calls": 57,
+          "triangles": 141796,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 58,
+          "calls": 56,
+          "triangles": 141780,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 59,
+          "calls": 57,
+          "triangles": 141796,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 60,
+          "calls": 57,
+          "triangles": 141796,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 61,
+          "calls": 59,
+          "triangles": 147636,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 62,
+          "calls": 58,
+          "triangles": 147380,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 63,
+          "calls": 60,
+          "triangles": 147652,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 64,
+          "calls": 58,
+          "triangles": 144836,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 65,
+          "calls": 47,
+          "triangles": 140492,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 66,
+          "calls": 62,
+          "triangles": 142786,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 67,
+          "calls": 62,
+          "triangles": 142786,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 68,
+          "calls": 58,
+          "triangles": 142084,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 69,
+          "calls": 58,
+          "triangles": 142084,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 70,
+          "calls": 58,
+          "triangles": 142084,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 71,
+          "calls": 58,
+          "triangles": 142084,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 72,
+          "calls": 58,
+          "triangles": 142084,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 73,
+          "calls": 57,
+          "triangles": 141796,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 74,
+          "calls": 56,
+          "triangles": 141780,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 75,
+          "calls": 60,
+          "triangles": 142482,
+          "points": 0,
+          "lines": 0
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "dpr": 1.5,
+      "calls": 62,
+      "triangles": 147652,
+      "samples": [
+        {
+          "frame": 55,
+          "calls": 60,
+          "triangles": 142482,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 56,
+          "calls": 56,
+          "triangles": 141780,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 57,
+          "calls": 57,
+          "triangles": 141796,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 58,
+          "calls": 56,
+          "triangles": 141780,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 59,
+          "calls": 57,
+          "triangles": 141796,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 60,
+          "calls": 57,
+          "triangles": 141796,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 61,
+          "calls": 59,
+          "triangles": 147636,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 62,
+          "calls": 58,
+          "triangles": 147380,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 63,
+          "calls": 60,
+          "triangles": 147652,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 64,
+          "calls": 56,
+          "triangles": 144578,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 65,
+          "calls": 45,
+          "triangles": 140234,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 66,
+          "calls": 62,
+          "triangles": 142786,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 67,
+          "calls": 59,
+          "triangles": 142086,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 68,
+          "calls": 58,
+          "triangles": 142084,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 69,
+          "calls": 58,
+          "triangles": 142084,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 70,
+          "calls": 58,
+          "triangles": 142084,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 71,
+          "calls": 58,
+          "triangles": 142084,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 72,
+          "calls": 58,
+          "triangles": 142084,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 73,
+          "calls": 57,
+          "triangles": 141796,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 74,
+          "calls": 56,
+          "triangles": 141780,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "cambi",
+          "frame": 75,
+          "calls": 60,
+          "triangles": 142482,
+          "points": 0,
+          "lines": 0
+        }
+      ]
+    }
+  ],
+  "aspetto": {
+    "gambeFuori": {
+      "verticale": [
+        0,
+        4375
+      ],
+      "nuoto": [
+        0,
+        7740
+      ],
+      "transizione": [
+        0,
+        1395
+      ]
+    },
+    "iphone": [
+      {
+        "calls": 59,
+        "triangoli": 142480
+      },
+      {
+        "calls": 58,
+        "triangoli": 142224
+      }
+    ]
+  },
+  "verificheLocali": {
+    "lint": "PASS",
+    "build": "PASS",
+    "gesti": "PASS",
+    "nuoto": "PASS",
+    "replay": "PASS",
+    "fluiditaDueCambi": "PASS",
+    "aspettoCompleto": "PASS",
+    "verificaPartite0": "PASS"
+  },
+  "replay": {
+    "campioniLeggibilita": 558,
+    "maxCalls": 49,
+    "maxTriangoli": 146360,
+    "durataTotaleStop": 7
+  }
+}

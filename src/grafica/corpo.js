@@ -123,6 +123,20 @@ function attaccaFumetto(R,colori,num,seme){
   const n=new THREE.Mesh(baseF.numeroGeo,new THREE.MeshStandardMaterial({map:tex,transparent:true,roughness:0.55,polygonOffset:true,polygonOffsetFactor:-2,depthWrite:false}));
   n.renderOrder=2; K.ossa.testa.add(n);
   R.g.add(radice);
+  // Tutti i riferimenti sono intrinseci al bind, prima che bacino e colonna ricevano la prima posa.
+  radice.updateWorldMatrix(true,true);
+  K.bracci={
+    1:preparaBraccio(K,K.ossa.bracD,K.ossa.avamD,K.ossa.manoD),
+    '-1':preparaBraccio(K,K.ossa.bracS,K.ossa.avamS,K.ossa.manoS),
+  };
+  K.prese={};K.normaliPrese={};K.distanzeSuperficiePrese={...FUMETTO.distanzeSuperficiePrese};
+  const palmoBind=new THREE.Vector3(...FUMETTO.palmoRiposo).applyQuaternion(radice.getWorldQuaternion(new THREE.Quaternion()));
+  for(const lato of ['D','S']){
+    const presa=radice.getObjectByName(FUMETTO.prese[lato]);
+    if(!presa)continue;
+    K.prese[lato]=presa;
+    K.normaliPrese[lato]=palmoBind.clone().applyQuaternion(presa.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize();
+  }
   return K;
 }
 // R = "manichino" del giocatore creato in modello.js; colori = { costume, calottina, paraorecchie, testo }
@@ -194,42 +208,70 @@ function orienta(osso,qMondo,peso){
 //   rotazione si divide a metà tra avambraccio e polso, come nel braccio umano, ed è limitata a ±120°;
 // - il polso è appena piegato verso il palmo (mano a coppa, come quando si rema).
 const _R=new THREE.Vector3(), _X=new THREE.Vector3(), _ml=new THREE.Matrix4(), _mw=new THREE.Matrix4(), _qa=new THREE.Quaternion();
+const _asseLocale=new THREE.Vector3(),_rifLocale=new THREE.Vector3(),_asseMondo=new THREE.Vector3();
 const _cg=new THREE.Vector3(), _pn=new THREE.Vector3(), _pt=new THREE.Vector3(), _fd=new THREE.Vector3(), _hw=new THREE.Vector3();
 const POLSO_FLEX=0.22, ROT_MAX=2.1;
 // orienta l'osso perché il suo asse (aLoc, nel suo sistema) vada su asseW e il riferimento rLoc vada verso rifW (nel mondo)
 function allinea(osso,aLoc,rLoc,asseW,rifW){
-  _R.copy(rifW).addScaledVector(asseW,-rifW.dot(asseW)); if(_R.lengthSq()<1e-8) return; _R.normalize();
-  _X.crossVectors(asseW,_R); _mw.makeBasis(asseW,_R,_X);
-  _ml.makeBasis(aLoc,rLoc,_X.crossVectors(aLoc,rLoc)); _ml.transpose();
-  _qa.setFromRotationMatrix(_mw.multiply(_ml));
-  osso.parent.getWorldQuaternion(_qp); osso.quaternion.copy(_qa).premultiply(_qp.invert());
+  _asseMondo.copy(asseW).normalize();
+  _R.copy(rifW).addScaledVector(_asseMondo,-rifW.dot(_asseMondo)); if(_R.lengthSq()<1e-8) return; _R.normalize();
+  _X.crossVectors(_asseMondo,_R).normalize(); _mw.makeBasis(_asseMondo,_R,_X);
+  // La trasposta è l'inversa soltanto per una base ortonormale, anche sul lato locale.
+  _asseLocale.copy(aLoc).normalize();
+  _rifLocale.copy(rLoc).addScaledVector(_asseLocale,-rLoc.dot(_asseLocale));if(_rifLocale.lengthSq()<1e-8)return;_rifLocale.normalize();
+  _ml.makeBasis(_asseLocale,_rifLocale,_X.crossVectors(_asseLocale,_rifLocale).normalize()); _ml.transpose();
+  _qa.setFromRotationMatrix(_mw.multiply(_ml)).normalize();
+  osso.parent.getWorldQuaternion(_qp); osso.quaternion.copy(_qa).premultiply(_qp.invert()).normalize();
 }
-// riferimenti nel sistema di ciascun osso, misurati una volta sulla posa di riposo (lato: 1 destro, -1 sinistro)
-function preparaBraccio(C,brac,avam,mano,lato){
-  const r=C.radice; r.updateMatrixWorld(true); const qr=r.getWorldQuaternion(new THREE.Quaternion());
-  const loc=(osso,vModello)=>vModello.clone().applyQuaternion(qr).applyQuaternion(osso.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize();
-  const asse=(osso,figlio)=>{ const a=osso.getWorldPosition(new THREE.Vector3()), b=figlio.getWorldPosition(new THREE.Vector3()); return b.sub(a).applyQuaternion(osso.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize(); };
-  const cardine=new THREE.Vector3(0,lato,0), palmo=new THREE.Vector3(...(FUMETTO.palmoRiposo||[0,-1,0]));      // posa a T
-  const dita=mano.children[0]?asse(mano,mano.children[0]):asse(avam,mano);
-  return { brac:{ a:asse(brac,avam), r:loc(brac,cardine) }, avam:{ a:asse(avam,mano), r:loc(avam,cardine) }, mano:{ a:dita, r:loc(mano,palmo) }, cardine:new THREE.Vector3(0,lato,0) };
+// Il primo figlio della mano è la presa: non indica le dita. L'asse anatomico continua l'avambraccio.
+function preparaBraccio(C,brac,avam,mano){
+  const r=C.radice;r.updateWorldMatrix(true,true);
+  const spalla=brac.getWorldPosition(new THREE.Vector3()),gomito=avam.getWorldPosition(new THREE.Vector3()),polso=mano.getWorldPosition(new THREE.Vector3());
+  const su=gomito.clone().sub(spalla).normalize(),giu=polso.clone().sub(gomito).normalize();
+  const palmo=new THREE.Vector3(...(FUMETTO.palmoRiposo||[0,-1,0])).applyQuaternion(r.getWorldQuaternion(new THREE.Quaternion())).normalize();
+  const loc=(osso,v)=>v.clone().applyQuaternion(osso.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize();
+  const riferimenti=(osso,asse,rif)=>{
+    const a=loc(osso,asse),v=loc(osso,rif);v.addScaledVector(a,-v.dot(a)).normalize();return {a,r:v};
+  };
+  const cardineSu=new THREE.Vector3().crossVectors(su,palmo).normalize(),cardineGiu=new THREE.Vector3().crossVectors(giu,palmo).normalize();
+  const palmoNeutro=palmo.clone().addScaledVector(giu,-palmo.dot(giu)).normalize();
+  const terzo=new THREE.Vector3().crossVectors(giu,cardineGiu).normalize();
+  const inv=r.matrixWorld.clone().invert(),a=spalla.clone().applyMatrix4(inv),b=gomito.clone().applyMatrix4(inv),c=polso.clone().applyMatrix4(inv);
+  return {brac:riferimenti(brac,su,cardineSu),avam:riferimenti(avam,giu,cardineGiu),mano:riferimenti(mano,giu,palmo),
+    neutro:new THREE.Vector3(palmoNeutro.dot(giu),palmoNeutro.dot(cardineGiu),palmoNeutro.dot(terzo)),
+    lunghezzaSu:a.distanceTo(b),lunghezzaGiu:b.distanceTo(c),cardine:cardineGiu.clone()};
 }
 const _braccioSu=new THREE.Vector3(), _braccioGiu=new THREE.Vector3();
-function braccio(C,brac,avam,mano,S,E,H,palmoLoc,lato,dirMondo){
-  if(!C.bracci) C.bracci={};
-  const B=C.bracci[lato]||(C.bracci[lato]=preparaBraccio(C,brac,avam,mano,lato));
-  const su=dirMondo(S,E,_braccioSu), giu=dirMondo(E,H,_braccioGiu);
+const _spallaVera=new THREE.Vector3(),_gomitoVero=new THREE.Vector3(),_manoVera=new THREE.Vector3(),_raggiungi=new THREE.Vector3(),_piegaGomito=new THREE.Vector3(),_scalaCorpo=new THREE.Vector3();
+function braccio(C,brac,avam,mano,S,E,H,palmoLoc,lato,dirMondo,flessione=POLSO_FLEX){
+  const B=C.bracci[lato];
+  brac.getWorldPosition(_spallaVera);C.radice.getWorldScale(_scalaCorpo);
+  const l1=B.lunghezzaSu*_scalaCorpo.x,l2=B.lunghezzaGiu*_scalaCorpo.x;
+  const distanzaNominale=Math.hypot(H[0]-S[0],H[1]-S[1],H[2]-S[2]);
+  const minima=Math.sqrt(l1*l1+l2*l2-2*l1*l2*Math.cos(Math.PI/6));
+  const distanza=Math.max(minima,Math.min(l1+l2-0.001,distanzaNominale/0.59*(l1+l2)));
+  dirMondo(S,H,_raggiungi);dirMondo(S,E,_piegaGomito);
+  _piegaGomito.addScaledVector(_raggiungi,-_piegaGomito.dot(_raggiungi));
+  if(_piegaGomito.lengthSq()<1e-8)_piegaGomito.crossVectors(_raggiungi,B.cardine);
+  _piegaGomito.normalize();
+  const avanti=(l1*l1-l2*l2+distanza*distanza)/(2*distanza),altezza=Math.sqrt(Math.max(0,l1*l1-avanti*avanti));
+  _gomitoVero.copy(_spallaVera).addScaledVector(_raggiungi,avanti).addScaledVector(_piegaGomito,altezza);
+  _manoVera.copy(_spallaVera).addScaledVector(_raggiungi,distanza);
+  const su=_braccioSu.copy(_gomitoVero).sub(_spallaVera).normalize(),giu=_braccioGiu.copy(_manoVera).sub(_gomitoVero).normalize();
   // cardine del gomito: perpendicolare a braccio e avambraccio; a braccio quasi teso si tiene l'ultimo valido
   _cg.crossVectors(su,giu); if(_cg.lengthSq()>4e-3) B.cardine.copy(_cg.normalize()); else _cg.copy(B.cardine);
   allinea(brac,B.brac.a,B.brac.r,su,_cg);
   // palmo «neutro» (senza rotazione dell'avambraccio) e palmo voluto: l'angolo tra i due, attorno all'avambraccio
-  _pn.copy(_cg).multiplyScalar(-lato);
+  _fd.crossVectors(giu,_cg).normalize();
+  _pn.copy(giu).multiplyScalar(B.neutro.x).addScaledVector(_cg,B.neutro.y).addScaledVector(_fd,B.neutro.z).normalize();
   if(palmoLoc){ _pt.set(palmoLoc[0],palmoLoc[1],palmoLoc[2]).applyQuaternion(_qg); _pt.addScaledVector(giu,-_pt.dot(giu)); }
   let ang=0;
   if(palmoLoc&&_pt.lengthSq()>1e-4){ _pt.normalize(); ang=Math.atan2(_X.crossVectors(_pn,_pt).dot(giu),_pn.dot(_pt)); ang=Math.max(-ROT_MAX,Math.min(ROT_MAX,ang)); }
   _hw.copy(_cg).applyAxisAngle(giu,ang*0.5); allinea(avam,B.avam.a,B.avam.r,giu,_hw);
   // mano: palmo ruotato dell'angolo intero (l'altra metà la fa il polso); dita appena piegate verso il palmo (mano a coppa)
   _pn.applyAxisAngle(giu,ang);
-  _fd.copy(giu).addScaledVector(_pn,Math.tan(POLSO_FLEX)).normalize();
+  const flex=Number.isFinite(flessione)?Math.max(-1.2,Math.min(1.2,flessione)):POLSO_FLEX;
+  _fd.copy(giu).multiplyScalar(Math.cos(flex)).addScaledVector(_pn,Math.sin(flex)).normalize();
   allinea(mano,B.mano.a,B.mano.r,_fd,_pn);
 }
 // J = giunture (smussate) nel sistema del giocatore: x avanti, y su, z a destra.
@@ -250,15 +292,18 @@ export function muoviCorpo(R,J,T,dt){
   // colonna che si piega: il bacino resta indietro rispetto alle spalle (ruota attorno alla verticale del ritardo calcolato da
   // pose.js) e le tre ossa della schiena recuperano la differenza un po' ciascuna, fino al petto; le spalle restano dove le
   // vuole la posa, quindi il corpo gira attorno a testa e spalle e il bacino descrive l'arco più largo
-  const pg=T.piega||PIEGA0;
-  if(Math.abs(pg.bacino)>0.002) _qr.premultiply(_qy.setFromAxisAngle(SU,pg.bacino));
+  const pg=T.piega||PIEGA0,torsione=Number.isFinite(T.torsioneVista)?T.torsioneVista:0;
+  const ritardoBacino=pg.bacino-torsione;
+  if(Math.abs(ritardoBacino)>0.002) _qr.premultiply(_qy.setFromAxisAngle(SU,ritardoBacino));
   O.bacino.parent.getWorldQuaternion(_qp); O.bacino.quaternion.copy(_qr).premultiply(_qp.invert());
-  if(Math.abs(pg.bacino)>0.002 && C.schiena.length){
-    const passo=(pg.petto-pg.bacino)/C.schiena.length; _qy.setFromAxisAngle(SU,passo);
+  const recuperoTorace=pg.petto-pg.bacino+torsione;
+  if(Math.abs(recuperoTorace)>0.002 && C.schiena.length){
+    const passo=recuperoTorace/C.schiena.length; _qy.setFromAxisAngle(SU,passo);
     for(const o of C.schiena){ o.getWorldQuaternion(_q); o.parent.getWorldQuaternion(_qp); o.quaternion.copy(_q.premultiply(_qy).premultiply(_qp.invert())); }
   }
   // le gambe seguono con un ritardo ancora maggiore
-  const qGambe=Math.abs(pg.gambe)>0.002 ? _qg2.setFromAxisAngle(SU,pg.gambe) : null, curva=Math.abs(T.curva||0);
+  const ritardoGambe=pg.gambe-torsione;
+  const qGambe=Math.abs(ritardoGambe)>0.002 ? _qg2.setFromAxisAngle(SU,ritardoGambe) : null, curva=Math.abs(T.curva||0);
   // posizione: le spalle del modello vanno dove le vuole pose.js
   const pv=O.bacino.position; pv.set(0,0,0);
   _inv.copy(C.radice.matrixWorld).invert();
@@ -290,7 +335,7 @@ export function muoviCorpo(R,J,T,dt){
     // sotto il ginocchio: il piede gira in cerchio (verso opposto tra destra e sinistra, mezzo giro di ritardo)
     _d.copy(_su).multiplyScalar(-0.80).addScaledVector(_de,lato*0.46*cs*amp).addScaledVector(_av,-0.15+0.42*sn*amp).normalize();
     if(e>0.001){ dirMondo(gin,pie,_d2); _d.lerp(_d2,e).normalize(); }
-    if(qGambe) _d.applyQuaternion(_qy.setFromAxisAngle(SU,pg.gambe*1.25));      // la gamba sotto il ginocchio resta ancora un po' più indietro: coda leggermente piegata
+    if(qGambe) _d.applyQuaternion(_qy.setFromAxisAngle(SU,pg.gambe*1.25-torsione));      // la gamba sotto il ginocchio resta ancora un po' più indietro: coda leggermente piegata
     sottoIlPelo(gamba,piede,_d,0.12);
     punta(gamba,piede,_d);
     // in battuta il piede si distende in linea con la gamba; nella bicicletta il piede resta quasi orizzontale e si inclina
@@ -302,8 +347,8 @@ export function muoviCorpo(R,J,T,dt){
     }
   }
   // --- braccia: gomito e mano dove li mette pose.js; gomito che si piega come un cardine, avambraccio e polso che ruotano ---
-  braccio(C,O.bracD,O.avamD,O.manoD,J.sR,J.eR,J.hR,T.nR,1,dirMondo);
-  braccio(C,O.bracS,O.avamS,O.manoS,J.sL,J.eL,J.hL,T.nL,-1,dirMondo);
+  braccio(C,O.bracD,O.avamD,O.manoD,J.sR,J.eR,J.hR,T.nR,1,dirMondo,T.polsoR);
+  braccio(C,O.bracS,O.avamS,O.manoS,J.sL,J.eL,J.hL,T.nL,-1,dirMondo,T.polsoL);
   // --- testa alta e ferma, che guarda avanti: sia da fermi sia in nuotata ---
   _qr.copy(_qg).multiply(ROT_MODELLO);
   orienta(O.collo,_qr,0.5); orienta(O.testa,_qr,0.9);
