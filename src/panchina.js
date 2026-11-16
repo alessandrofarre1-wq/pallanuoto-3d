@@ -25,6 +25,8 @@ const comparse = teams.map((t, k) => {
   return { uid: 900 + k, team: t, i: 9, isGK: false, mesh: m, x: 0, z: 0, vx: 0, vz: 0, fx: 1, fz: 0, oriz: 0, stamina: 1, phase: 0,
     act: null, excluded: false, pf: 0, mano: 'D', num: 0, s: null, st: null, comparsa: true, visibile: false };
 });
+// Soli riferimenti visuali: il replay deve poter registrare anche chi è momentaneamente nascosto.
+export const comparsePerReplay = Object.freeze(comparse.slice());
 export const comparseVisibili = () => comparse.filter(c => c.visibile);
 function mostra(c, g, punto) {
   c.num = g.num; c.name = g.nome; c.mano = g.mano; c.s = g.s; c.st = valoriMotore(g.s); c.x = punto.x; c.z = punto.z; c.vx = c.vz = 0;

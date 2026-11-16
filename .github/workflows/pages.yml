@@ -40,6 +40,8 @@ jobs:
       - run: npm run desktop -- --no-build
       - run: npm run costumi -- --no-build
       - run: npm run home -- --no-build
+      - run: npm run replay -- --no-build
+      - run: npm run replay-ui -- --no-build
       - run: npm run fisica-palla -- --no-build
       - run: npm run fisica-acqua
       - run: npm run sezione1 -- --no-build

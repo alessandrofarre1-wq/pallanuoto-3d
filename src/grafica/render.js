@@ -1,3 +1,4 @@
+import { presentaReplay, registraDirettaReplay } from '../replay-regia.js';
 // ================= RENDER =================
 import * as THREE from 'three';
 import { BRV, HL, clamp } from '../costanti.js';
@@ -78,5 +79,8 @@ export function render(dt,now){
   camera.updateMatrixWorld();
   aggiornaOmbreAcqua(allPlayers);
   renderer.info.reset();
-  renderer.render(scene,camera);
+  if(!presentaReplay(()=>renderer.render(scene,camera),now)){
+    renderer.render(scene,camera);
+    registraDirettaReplay(dt,now,renderer.info.render.calls>0||!!window.__pallanuoto?.replay?.forzaRegistrazione);
+  }
 }

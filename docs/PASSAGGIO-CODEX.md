@@ -1,30 +1,42 @@
-# Passaggio corrente — WATERPOLO 7 v0.45
+# Passaggio corrente — WATERPOLO 7 v0.47
 
 ```text
-Continua il branch codex/v045-nuoto-comandi-identita e la PR #41; non ripartire
-dalla v0.41 storica sotto. Leggi CLAUDE.md, docs/verifiche-v045.md e i risultati
-Actions sull'ultimo SHA. Versione0.45 nella stessa PR, nessun merge/deploy.
-Le7richieste di Ale sono implementate: nuoto preciso/ricezione;logo C Flusso scelto e applicato;
-copy/schemi;24bandiere sui costumi e cuffie bianche/blu;World24selezionabili con
-torneo16/Europei16;desktop frecce/Space/D/C/QWE;homeportraitcentrata.
-I file sono già sul branch. Il logo C è stato scelto da Ale: conserva la scelta.
-Per eventuali correzioni leggi gli esiti finali nella PR e nel rapporto:
-non dichiarare PASS una prova soltanto avviata. Main 1b0946a e PR #40 di Claude
-sono integrati: non riscrivere schemi a fasi o priorità HUD.
-I run43746814493/43748621655 fallivano sul banner GOL a due righe: il caso
-è riprodotto in tests/cronaca.mjs. Sono corretti costo copertura reale/margine
-e ordine camera/HUD; leggi il run definitivo della PR, non quelli superati. La pausa6c5 ora
-mostra e chiama gli schemi reali; in parità restano9carte.
-Conserva<100drawcall e<150000tri su iPhone, anche due cambi,14corpi interi,
-cartoon,regia unica,SPEED1,sprintatocchi,MAX.9s/tiroalrilascio,riflesso soloalta.
-Nuova decisione esplicita: poca inerzia e cambi rapidi sostituiscono il vecchio
-nuoto lento/scivoloso. Mobile/controller conservati, nuova tastiera separata.
-Comandi utili: npm run lint; npm run verifica; npm run aspetto; npm run nuoto;
-npm run desktop; npm run costumi; npm run home; npm run tornei-menu.
+Continua alessandrofarre1-wq/pallanuoto-3d per Ale, branch
+codex/v047-replay-azioni-firma, versione0.47. Prima controlla PR recenti,
+main, diff locale e CI: Claude Code lavora sullo stesso progetto.
+Base60dcc44: PR41 v0.45 e PR42 v0.46 già unite e preservate.
+Leggi CLAUDE.md, docs/verifiche-v047.md e docs/misure-replay-v047.json.
+
+Richiesta approvata: replay automatico dei gol nella pausa originale3,8s
+(0,6diretta+2replay+1,2rimessa), camera dedicata soltanto al replay,
+Salta senza doppio gol o rimessa e firme dei gesti senza bonus.
+Implementato: buffer circolare30Hz/3,5s, clipcirca1,8s, ossa e numeri delle
+cuffie congelati, palla/schiuma/gocce/ombre/contatti, ripristino finally,
+UI compatta nazionale/#/nome/gesto, salto/pausa/rotazione/reset/fine gara.
+Nessuna nuova mesh, regola di tiro o chiamata casuale. Breve accento WebAudio.
+I test replay/replay-ui sono in CI. Il test core include passaggio, ricezione,
+tiro e gol fisico, sostituzione del marcatore,34episodi, due comparse reali,
+un solo render per frame, motore/RNG/scena identici dopo playback.
+Foto passano dal canvas nello stesso task del draw (RAF finto e bufferWebGL
+non persistente): non sostituirle con foto DOM su piscina non inizializzata.
+
+Prima di PR lint/verifica/aspetto e CI INTERA sull'ultimo SHA verde.
+Le sei partite complete si fanno in CI per non duplicare simulazioni locali.
+Per sole immagini: npm run verifica -- --partite=0; ispeziona prima di aggiornare.
 PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers nel workspace cloud.
-La fixture sezione1 deve isolare la selezione in play, non un fermo da fallo;
-assert6/6 conservato. Non indebolire test. Guarda immagini prima di aggiornare
-i riferimenti; dopo soloPNG usa verifica --partite=0 senza rifare6gare.
+Misure locali: due cambi max65call/147488tri su entrambe le viste iPhone;
+replay48/145416 su entrambe le viste,14corpi in campo. Mai >=100call o >=150000tri.
+Nessuna deroga ai cambi; conserva cartoon, nuoto rapido v0.45, regole/IA v0.46,
+SPEED1, sprint a tocchi, riflesso solo alta, MAX.9s/tiro al rilascio,
+logo C Flusso scelto da Ale, CAMBI basso centro≥44px.
+
+NON FATTO: telecronaca, cori registrati, replay dalla pausa/serie rigori,
+nuove animazioni di ricezione, assist/traversa in didascalia, Sfide lampo e
+progressione. Gli screenshot Splash Land sono riferimenti di leggibilità e
+continuità del gesto; la barra oscillante è una scelta futura da concordare.
+Non cambiare il tiro implicitamente e non copiare l'interfaccia del concorrente.
+Nessun merge/deploy. Risultati e link finali nella PR, non dichiarare PASS
+una prova soltanto avviata. Mantieni aggiornati rapporto e CLAUDE.md.
 ```
 
 ## Storico dopo la v0.41

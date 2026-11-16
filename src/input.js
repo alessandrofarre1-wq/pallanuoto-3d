@@ -11,7 +11,8 @@ export const keys={};
 // I campi dell'editor e le finestre di dialogo conservano frecce, spazio e scorciatoie.
 const editing=e=>!!e.target?.closest?.('input,textarea,select,[contenteditable]:not([contenteditable="false"]),[role="textbox"],dialog,[role="dialog"],[aria-modal="true"]');
 addEventListener('keydown',e=>{
-  if(editing(e)||e.isComposing||(e.repeat&&!keys[e.code])) return;
+  const pausaReplay=e.target?.closest?.('#replayOverlay')&&['Escape','KeyP'].includes(e.code);
+  if((editing(e)&&!pausaReplay)||e.isComposing||(e.repeat&&!keys[e.code])) return;
   keys[e.code]=true;
   if(['play','stop','countdown'].includes(game.state)&&['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) e.preventDefault();
   if(e.code==='KeyB' && !e.repeat && ['play','stop','countdown'].includes(game.state)) cambioRapido();      // cambio consigliato, subito

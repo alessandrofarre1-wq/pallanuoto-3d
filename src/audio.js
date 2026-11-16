@@ -21,3 +21,20 @@ export function bip(freq=880,len=0.09,vol=0.05){
     const t=actx.currentTime; g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.0005,t+len); o.start(t); o.stop(t+len);
   }catch(e){}
 }
+
+// Accento breve delle azioni firma. Solo al gol reale, mai rigiocato nel replay;
+// sintetizzato sul dispositivo, senza file remoti o numeri casuali della partita.
+export function accentoGol(firma='GOL'){
+  if(!actx) return;
+  try{
+    const note=firma==='GOL'?[523.25,783.99]:[523.25,659.25,783.99];
+    note.forEach((frequenza,i)=>{
+      const o=actx.createOscillator(), g=actx.createGain(), t=actx.currentTime+i*0.085;
+      o.type='triangle'; o.frequency.value=frequenza;
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.018,t+0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+0.18);
+      o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t+0.19);
+      o.onended=()=>{ o.disconnect(); g.disconnect(); };
+    });
+  }catch(e){}
+}
