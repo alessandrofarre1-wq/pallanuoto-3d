@@ -332,7 +332,7 @@ export function newMatch(){
   for(const t of teams) Object.assign(t,{atkPlay:0,defPlay:2,lasciato:null,cross:false,timeouts:2,vuoleTimeout:false,parzialeSubito:0,espulsioniT:[],setteAnnunciato:false,fugaFino:0,doubleP:null,doubleUntil:0,nextDrive:0,alaConPalla:null,postiT:-1,posti:null,rallT:-1,rall:null,schema:null,schemaStato:null,aiutoStato:null,copertura:null,postiAssegnati:null,simulazioni:0,scambio:null,difesaMeno:null,minuti:null,blocco:null,contro:null,scambi:0,blocchi:0});
   // Strategia scelta prima della gara: i posti restano relativi alla porta anche al cambio campo.
   applicaSchema(teams[0],caricaSchema());
-  Object.assign(ball,{kind:null,target:null,shooter:null,afterShot:false,flightT:0,saveChecked:false,holdTime:0,shotPower:0,lob:false,inRete:false,daTiro:false,inUscita:false,rigore:false,cambioLato:false,toccoDifesa:null,ignora:null,skip:false,skipped:false,schizzi:0,lastTeam:null,wx:0,wy:0,wz:0}); ball.intercept.clear();
+  Object.assign(ball,{kind:null,target:null,shooter:null,afterShot:false,flightT:0,saveChecked:false,holdTime:0,shotPower:0,lob:false,raccordoVista:null,inRete:false,daTiro:false,inUscita:false,rigore:false,cambioLato:false,toccoDifesa:null,ignora:null,skip:false,skipped:false,schizzi:0,lastTeam:null,wx:0,wy:0,wz:0}); ball.intercept.clear();
   Object.assign(fight,{active:false,v:0,boa:null,def:null,holdT:0,decT:0,foamT:0,stato:null,apertura:0,ricevibile:false});
   resetTap(); azzeraStatistiche(); aggiornaTabellone(); chiudiMenu(); kickoff();
 }

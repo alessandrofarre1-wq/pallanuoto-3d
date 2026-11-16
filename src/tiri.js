@@ -36,11 +36,22 @@ export function updateActs(dt){
     if(a.t>a.wind+a.frusta+0.36) p.act=null;
   }
 }
+// La chiusura già rilasciata continua nella pausa regolamentare. Nessuna
+// callback, nuova azione o tempo di gioco: il playback non chiama il motore.
+export function updateRecuperi(dt){
+  for(const p of allPlayers){
+    const a=p.act; if(!a?.done) continue;
+    a.t+=dt;
+    if(a.t>a.wind+a.frusta+0.36) p.act=null;
+  }
+}
 export function launch(p,tx,ty,tz,t,kind){
   ball.tiroReplay=null;
   ball.state='flight'; ball.holder=null; ball.kind=kind; ball.shooter=p; ball.lastTeam=p.team;
   if(p.ballW){ ball.x=p.ballW[0]; ball.y=Math.max(0.3,p.ballW[1]); ball.z=p.ballW[2]; }
   else { ball.x=p.x+p.fx*0.25; ball.z=p.z+p.fz*0.25; ball.y=1.0; }
+  const vista=p.ballVistaW;
+  ball.raccordoVista=vista?.every(Number.isFinite)?{x:vista[0]-ball.x,y:vista[1]-ball.y,z:vista[2]-ball.z,durata:Math.min(0.08,Math.max(1/60,t*0.25))}:null;
   // velocità e rotazione di partenza: la palla gira all'indietro (di più nella palombella) e la mira tiene conto dell'aria
   const giri = kind==='pass' ? P.giriPassaggio : ty>0.55 ? P.giriPalombella : P.giriTiro;
   const L=velocitaDiLancio(ball.x,ball.y,ball.z,tx,ty,tz,t,giri);

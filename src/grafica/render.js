@@ -28,6 +28,12 @@ export function render(dt,now){
   const h=ball.holder; let by;
   if(ball.state==='held'&&h&&h.ballW){ const w=h.ballVistaW||h.ballW; by=Math.max(BRV,w[1]); ball3d.position.set(w[0],by,w[2]); }
   else { by=ball.y; ball3d.position.set(ball.x,ball.y,ball.z); }
+  const raccordo=ball.raccordoVista;
+  if(ball.state==='flight'&&raccordo&&ball.flightT<raccordo.durata){
+    const u=clamp(ball.flightT/raccordo.durata,0,1),k=1-u*u*(3-2*u);
+    ball3d.position.x+=raccordo.x*k; ball3d.position.y+=raccordo.y*k; ball3d.position.z+=raccordo.z*k;
+    by=ball3d.position.y;
+  }
   // palla che tocca l'acqua: evento «palla» (gocce e schiuma in proporzione all'impatto; radente = spruzzo allungato in avanti)
   if(ball.spruzzo){ const S=ball.spruzzo; ball.spruzzo=null; evento('palla',ball.x,0,ball.z,clamp(S.forza/16,0.15,1),ball.vx,ball.vz,!!S.schizzo); }
   prevBY=by;

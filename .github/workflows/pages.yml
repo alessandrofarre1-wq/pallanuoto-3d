@@ -38,6 +38,7 @@ jobs:
       - run: npm run strategie -- --no-build
       - run: npm run nuoto -- --no-build
       - run: npm run desktop -- --no-build
+      - run: npm run gesti -- --no-build
       - run: npm run costumi -- --no-build
       - run: npm run home -- --no-build
       - run: npm run replay -- --no-build
