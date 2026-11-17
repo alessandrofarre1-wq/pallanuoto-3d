@@ -298,7 +298,7 @@ export const PALMO_PALLA=[0.85,0.5,0.1];
 export const ACCOMPAGNA={ shot:[0.54,0.20,-0.08], torsione:[0.50,0.18,-0.20], polso:[0.46,0.30,-0.04], pass:[0.48,0.26,-0.02], lob:[0.40,0.46,0.0] };
 export const PALMO_ACCOMPAGNA=[0.85,-0.35,-0.1];
 // palla tenuta alta (solo disegno): mano sopra il gomito, gomito in fuori all'altezza della spalla (angolo di circa 90°)
-export const HOLD_VISTA=[-0.02,0.42,0.21], GOMITO_FUORI=[-0.1,-0.1,1], PROTEGGI_DIST=1.8;
+export const HOLD_VISTA=[-0.02,0.42,0.21], GOMITO_FUORI=[-0.1,-0.1,1], PROTEGGI_DIST=1.8, PROTEGGI_GIRO=1.2;
 // onda del corpo in nuotata (rad): ampiezza a piena velocità, in più quando si è trattenuti, ritardo tra spalle, bacino e gambe
 export const ONDA={ nuoto:0.11, presa:0.16, ritardo:0.95 };
 const CARICA_VISTA={
@@ -364,12 +364,22 @@ function articolaVista(p,J,T,t){
       // teso dietro la testa, dalla parte opposta all'avversario (resta sul lato del braccio che la tiene)
       let o=null,od=PROTEGGI_DIST;
       for(const q of allPlayers){ if(q.team===p.team||q.excluded||q.isGK) continue; const d=Math.hypot(q.x-p.x,q.z-p.z); if(d<od){ od=d; o=q; } }
-      let mano=HOLD_VISTA, n=PALMO_PALLA, k=0;
-      if(o){ const dx=o.x-p.x,dz=o.z-p.z,l=Math.hypot(dx,dz)||1, av=(dx*p.fx+dz*p.fz)/l, la=(-dx*p.fz+dz*p.fx)/l*lato;
+      // v0.55 (Ale: «posizione del braccio totalmente innaturale; il corpo e la testa devono essere girati»): per proteggere la
+      // palla NON si stende il braccio dietro la schiena a busto fermo; si GIRANO spalle, busto e testa, mettendo la spalla libera
+      // verso l'avversario e la palla dall'altra parte, con il braccio di lato e in alto (rotazione fino a PROTEGGI_GIRO rad)
+      let k=0, giro=0;
+      if(o){ const dx=o.x-p.x,dz=o.z-p.z,l=Math.hypot(dx,dz)||1, av=(dx*p.fx+dz*p.fz)/l, la=(-dx*p.fz+dz*p.fx)/l;
         k=clamp((PROTEGGI_DIST-od)/0.6,0,1);
-        const via=[-av,-la], z=Math.max(0.16,via[1]*0.34+0.1);
-        mano=mix3(HOLD_VISTA,[via[0]*0.32,0.36,z],k); n=mix3(PALMO_PALLA,[via[0]*0.4,0.85,via[1]*0.3+0.1],k); }
-      braccio(lato,add3(V['s'+suff],locale(mano)),locale(GOMITO_FUORI),locale(n),-0.28*(1-k)+0.1*k,1-e);
+        // la spalla della palla (z = lato) ruota verso la direzione opposta all'avversario
+        let d=Math.atan2(-la,-av)-Math.atan2(lato,0); while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI;
+        giro=clamp(d,-PROTEGGI_GIRO,PROTEGGI_GIRO)*k*(1-e);
+        if(Math.abs(giro)>0.01){ const c=mix3(V.sL,V.sR,0.5), cs=Math.cos(giro), sn=Math.sin(giro);
+          const ruota=v=>{ const x=v[0]-c[0], z=v[2]-c[2]; v[0]=c[0]+x*cs-z*sn; v[2]=c[2]+x*sn+z*cs; };
+          for(const key of ['sR','sL','eR','eL','hR','hL']) ruota(V[key]); ruota(V.head);
+          T.torsioneVista=(T.torsioneVista||0)+giro; } }
+      const R2=v=>{ const cs=Math.cos(giro), sn=Math.sin(giro); return [v[0]*cs-v[2]*sn,v[1],v[0]*sn+v[2]*cs]; };
+      const mano=R2(locale(mix3(HOLD_VISTA,[-0.06,0.38,0.30],k))), n=R2(locale(mix3(PALMO_PALLA,[0.25,0.85,0.25],k)));
+      braccio(lato,add3(V['s'+suff],mano),R2(locale(GOMITO_FUORI)),n,-0.28*(1-k)+0.1*k,1-e);
     }
     // BRACCIA «A POLPO» (v0.55): da verticali, senza palla e senza gesti, le mani remano larghe ai lati per coprire spazio
     if(!hold&&e<0.7&&!p.isGK){
