@@ -368,7 +368,10 @@ export function updateRig(p,dt,t){
   { const N=p.palmi||(p.palmi={nR:T.nR.slice(),nL:T.nL.slice()}), kp=1-Math.exp(-dt*(p.act?24:10));
     for(const key of ['nR','nL']){ const a=N[key], b=T[key]; a[0]+=(b[0]-a[0])*kp; a[1]+=(b[1]-a[1])*kp; a[2]+=(b[2]-a[2])*kp; }
     T.nR=N.nR; T.nL=N.nL; }
-  R.g.position.set(p.x,0,p.z); R.g.rotation.y=Math.atan2(-p.fz,p.fx);
+  // Tutti e tre gli angoli: il ripristino dopo il replay passa dal quaternione e Three.js lo riscrive come
+  // Euler; con la direzione oltre ±90° diventa (π, π-y, π). Impostando solo .y il corpo restava capovolto
+  // e girato (v0.51, video e diagnosi di Ale su iPhone: corpo contro moto fino al 35% dopo i replay).
+  R.g.position.set(p.x,0,p.z); R.g.rotation.set(0,Math.atan2(-p.fz,p.fx),0);
   const Jv=articolaVista(p,posturaVista(p,J,T.oriz||0),T,t);
   if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)) muoviCorpo(R,Jv,T,dt); }
   else {
