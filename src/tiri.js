@@ -3,6 +3,7 @@ import { registraTiroReplay } from './replay.js';
 import { registraTiro, tipoDiTiro } from './statistiche.js';
 import { controllaInterferenza } from './regole.js';
 import { annuncia } from './cronaca.js';
+import { FIRMA, firma } from './finte.js';
 import { ALZATA, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, paloUomo, postoPortiere, setteControSei, viciniUomo } from './ia.js';
 import { faseUomo } from './uomo-in-piu.js';
@@ -165,7 +166,7 @@ export function doPass(p,m){
   const d=Math.hypot(tx-p.x,tz-p.z); t=Math.max(0.25,d/spd);
   const err=(0.2+(1-p.stamina)*0.5)*(1.25-p.st.pas)*(0.3+d*0.05);
   tx+=gauss()*err; tz+=gauss()*err;
-  launch(p,tx,PASSAGGIO_ALTEZZA,tz,t,'pass'); ball.target=m; ball.tx=tx; ball.tz=tz; ball.dopoFinta=p.fakeUntil>game.time||game.time<(p.fintaFino||0);
+  launch(p,tx,PASSAGGIO_ALTEZZA,tz,t,'pass'); ball.target=m; ball.tx=tx; ball.tz=tz; ball.dopoFinta=p.fakeUntil>game.time||game.time<(p.fintaFino||0); ball.firma=firma(p,'pass'); if(ball.firma) p.ultimaFintaT=-9;
   game.passaggi=(game.passaggi||0)+1; if(Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1)) game.cambiLato=(game.cambiLato||0)+1;
   m.daChi=p; ball.cambioLato=Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1);      // passaggio da un lato all'altro: chi riceve può tirare al volo
   if(p.team===teams[0]){ setCtrl(m);
@@ -240,6 +241,8 @@ export function doShoot(p,power,lob,aimZ,o){
   // sorpresa per portiere e muro: il polso parte senza caricare (ancora di più dopo una finta); con la torsione il portiere
   // si sposta verso il primo palo e la palla va sull'altro
   ball.sorpresa = o.polso ? (o.dopoFinta?0.26:0.15) : o.torsione ? 0.08 : o.volo ? 0.06 : o.speciale==='schizzo' ? 0.14 : o.speciale==='colonnello' ? 0.1 : 0;
+  // FIRMA (v0.55, finte.js): la finta personale chiusa con il suo seguito tipico spiazza un po' di più portiere e muro
+  { const seguito=lob?'lob':o.polso?'polso':o.volo||o.speciale?null:'shot'; ball.firma=!!seguito&&firma(p,seguito); if(ball.firma){ ball.sorpresa+=FIRMA.sorpresa; p.ultimaFintaT=-9; } }
   ball.elevazione=elev;
   // per il portiere: tiro da lontano o da poco angolo = più tempo e meno porta; tiro "da fermo" con tutti piazzati = facile da
   // leggere; tiro subito dopo un cambio di lato della palla = portiere ancora in viaggio

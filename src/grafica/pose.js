@@ -1,3 +1,4 @@
+import { fintaDi } from '../finte.js';
 import * as THREE from 'three';
 // Pose e animazioni: nuotata, posizione verticale, gesti di tiro e passaggio
 import { BRV, VIS, clamp, dist, rndGrafica } from '../costanti.js';
@@ -311,7 +312,7 @@ function articolaVista(p,J,T,t){
   const volo=a?clamp(tt/fr,0,1):0, busto=ease(clamp((volo-0.02)/0.70,0,1));
   const braccioK=ease(clamp((volo-0.14)/0.86,0,1)), polso=ease(clamp((volo-0.62)/0.38,0,1));
   const chiude=a?clamp((tt-fr)/0.36,0,1):0, rientra=ease(clamp((chiude-0.55)/0.45,0,1));
-  const base0=kind==='shot'||kind==='torsione'||kind==='fake'?-0.84:kind==='beduina'||kind==='rovesciata'?0.72:kind==='sciarpa'?-0.72:th.tw0;
+  const base0=kind==='fake'?-0.84*(fintaDi(p).torsione):kind==='shot'||kind==='torsione'?-0.84:kind==='beduina'||kind==='rovesciata'?0.72:kind==='sciarpa'?-0.72:th.tw0;
   const base1=kind==='shot'?0.48:kind==='torsione'?0.72:th.tw1;
   const twist=(base0*carica*(1-busto)+base1*busto)*(1-ease(chiude))*lato;
   const centro=mix3(V.sL,V.sR,0.5), mezzo=Math.hypot(V.sR[0]-V.sL[0],V.sR[2]-V.sL[2])/2;
@@ -329,7 +330,10 @@ function articolaVista(p,J,T,t){
     const d=Math.sqrt(L1*L1+L2*L2-2*L1*L2*Math.cos(ang))/Math.hypot(...rilascio);
     rilascio=rilascio.map(v=>v*d);
   }
-  let off=mix3(HOLD,CARICA_VISTA[kind]||CARICA_VISTA.shot,carica);
+  // finta personale (finte.js): ogni giocatore ha il suo gesto (larga, a raffica, di polso, mezza, di bomba, di spalla)
+  const fp=kind==='fake'?fintaDi(p):null;
+  if(fp&&fp.alza){ const su=fp.alza*carica*(1-chiude); for(const k of ['head','chest','sR','sL']) V[k][1]+=su; }
+  let off=mix3(HOLD,fp?fp.vista:CARICA_VISTA[kind]||CARICA_VISTA.shot,carica);
   off=mix3(off,rilascio,braccioK);
   off=mix3(off,th.F,ease(clamp(chiude/0.55,0,1)));
   let hint=mix3([-0.65,0.35,0.9],[-0.08,0.05,1],braccioK);

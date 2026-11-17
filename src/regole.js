@@ -11,6 +11,7 @@ import { accentoGol, whistle } from './audio.js';
 import { autoSwitch, resetTap } from './controllo.js';
 import { ARBITRO, ATK, BRV, DEFN, DIFF, EXCL_TIME, FORM, HL, HW, KICK_Z, SHOT_CLOCK, SHOT_RESET, clamp, dist, rnd } from './costanti.js';
 import { annuncia } from './cronaca.js';
+import { fintaDi } from './finte.js';
 import { closestTo } from './ia.js';
 import { rumble } from './input.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, setCtrl, teams } from './stato.js';
@@ -405,7 +406,8 @@ export function doFake(p){
   const gk=ot.players[0];
   if(dG<9 && !gk.excluded && rnd()<0.45*q){ gk.fakedUntil=game.time+1.1; bit++; }
   if(bit) p.fakeUntil=game.time+1.3;
-  annuncia('avviso',bit?'Finta riuscita!':'Finta',{durata:0.8});
+  p.ultimaFintaT=game.time;      // per la firma (finte.js): il seguito tipico entro poco spiazza di più
+  { const f=fintaDi(p); annuncia('avviso',bit?`Finta ${f.nome} riuscita!`:`Finta ${f.nome}`,{durata:0.8}); }
 }
 
 // INTERFERENZA sul tiro libero (WP 20.2 e 22.5, v0.45): chi ha commesso il fallo deve allontanarsi di circa 1 m prima di alzare il

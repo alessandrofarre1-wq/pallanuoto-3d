@@ -1,0 +1,40 @@
+// FINTE PERSONALI (v0.55, idea di Ale: «la finta è il gesto distintivo di un giocatore; riconoscevo i miei compagni dalla finta
+// e dalla padronanza del polso»). Ogni giocatore ha una finta sua, sempre la stessa, scelta dai suoi dati: niente caso del gioco
+// (si ricava dal nome e dalle statistiche), quindi resta uguale da una partita all'altra e nei cambi.
+// - alza: quanto si alza il busto in finta (m, solo disegno); wind: durata del gesto di finta (s); vista: dove va la mano in finta (solo disegno, sistema del giocatore, come CARICA_VISTA);
+//   torsione: quanto ruota il busto (negativo = da destra verso sinistra); pausa: attesa tra una finta e la mossa dopo (computer);
+//   max: quante finte di fila fa il computer; seguito: come la chiude di solito; scarico: quanto spesso il computer scarica dopo.
+// FIRMA (scelta di Ale: «piccolo vantaggio»): chiudere la finta con il suo seguito entro FIRMA.entro secondi spiazza un po' di più
+// portiere e difensori (sorpresa del tiro, oppure passaggio più difficile da intercettare).
+import { game } from './stato.js';
+export const FINTE=Object.freeze({
+  larga:  { alza:0.03, nome:'larga',      wind:0.20, vista:[-0.50,0.50,0.22], torsione:1.25, pausa:[0.5,0.8],  max:2, seguito:'shot',  scarico:0.3,
+            descr:'lenta e larga, braccio teso, poi tiro forte' },
+  raffica:{ alza:0, nome:'a raffica',  wind:0.04, vista:[-0.08,0.40,0.10], torsione:0.40, pausa:[0.12,0.25], max:3, seguito:'polso', scarico:0.3,
+            descr:'strette e frequenti, poi tiro di polso secco' },
+  polso:  { alza:0.01, nome:'di polso',   wind:0.09, vista:[-0.16,0.38,-0.08], torsione:-0.9, pausa:[0.25,0.45], max:2, seguito:'polso', scarico:0.25,
+            descr:'da destra a sinistra, poi il polso la manda dall’altra parte' },
+  mezza:  { alza:0.11, nome:'mezza finta',wind:0.05, vista:[-0.06,0.46,0.06], torsione:0.45, pausa:[0.08,0.18], max:1, seguito:'shot',  scarico:0.2,
+            descr:'si alza, accenno breve e sparo immediato' },
+  bomba:  { alza:0.06, nome:'di bomba',   wind:0.17, vista:[-0.42,0.34,0.14], torsione:1.35, pausa:[0.35,0.6], max:2, seguito:'lob',   scarico:0.25,
+            descr:'carica da tiro potente, poi palombella' },
+  spalla: { alza:0, nome:'di spalla',  wind:0.06, vista:[0.02,0.40,0.12], torsione:0.75, pausa:[0.2,0.4],  max:2, seguito:'pass',  scarico:0.75,
+            descr:'solo spalla e testa, poi scarico al compagno' },
+});
+export const FIRMA=Object.freeze({ entro:1.6, sorpresa:0.08, intercetto:0.7 });
+const v01=(s,k)=>Math.max(0,((s?.[k]??60)-40)/59);
+const hash=str=>{ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return ((h>>>0)%100000)/100000; };
+// pesi dalle statistiche: chi ha Potenza fa più spesso la larga o la bomba, chi ha Precisione il polso, chi è veloce la raffica,
+// chi ha Passaggio e Visione la finta di spalla; poi un numero fisso ricavato dal nome sceglie tra i pesi
+export function stileFinta(g){
+  if(!g) return 'larga';
+  if(g.finta) return g.finta;
+  const s=g.s, pot=v01(s,'pot'), pre=v01(s,'pre'), vel=v01(s,'vel'), pas=(v01(s,'pas')+v01(s,'vis'))/2;
+  const pesi={ larga:0.15+pot*pot, bomba:0.12+0.8*pot*pas, polso:0.15+pre*pre, raffica:0.12+vel*vel, mezza:0.12+0.7*pot*pre, spalla:0.12+pas*pas };
+  const tot=Object.values(pesi).reduce((a,b)=>a+b,0); let r=hash(String(g.id??'')+'|'+(g.nome||'')+'|'+(g.num||''))*tot;
+  for(const [k,w] of Object.entries(pesi)){ if((r-=w)<=0) return (g.finta=k); }
+  return (g.finta='larga');
+}
+export const fintaDi=p=>FINTE[stileFinta(p?.scheda)]||FINTE.larga;
+// chiusura della finta: il seguito tipico entro FIRMA.entro secondi
+export function firma(p,seguito){ return game.time-(p.ultimaFintaT??-9)<FIRMA.entro && fintaDi(p).seguito===seguito; }

@@ -5,6 +5,7 @@ import { closestTo, pallaVagante, startCut } from './ia.js';
 import { inp, inputEpoch, pressed, released } from './input.js';
 import { fightOn, girata } from './lotta.js';
 import { contrasto, doFake } from './regole.js';
+import { fintaDi } from './finte.js';
 import { aggiornaQte, tiroSpeciale } from './controfuga.js';
 import { ball, ctrl, fight, game, goalX, ownGoalX, setCtrl, teams } from './stato.js';
 import { diSchiena, doPass, doShoot, humanPassTarget, shotKind, startAct } from './tiri.js';
@@ -81,7 +82,7 @@ export function humanControl(p,dt){
         if(p.act===desktopShot.act) p.act=null;
         const fintaFatta=!!desktopShot.act; desktopShot=null; p.voloPronto=false; pendingQuick=null;
         // v0.55: anche con Spazio un tocco breve è una finta
-        if(!fintaFatta&&p.chargeT<TOCCO_FINTA){ p.charging=false; p.chargeT=0; startAct(p,'fake',0.06,()=>doFake(p)); p.fintaFino=game.time+1.2; return; }
+        if(!fintaFatta&&p.chargeT<TOCCO_FINTA){ p.charging=false; p.chargeT=0; startAct(p,'fake',fintaDi(p).wind,()=>doFake(p)); p.fintaFino=game.time+1.2; return; }
         const pw=Math.max(0.35,Math.min(1,p.chargeT/0.9));
         p.chargeT=pw*0.9;
         startAct(p,shotKind(p),0,()=>doShoot(p,pw,false,aimZ)); return;
@@ -139,7 +140,7 @@ export function humanControl(p,dt){
       if(p.chargeT<TOCCO_FINTA){
         // v0.55 (scelta di Ale): un tocco breve su TIRO è una FINTA, ripetibile; per tirare si tiene premuto e si lascia
         p.charging=false; p.chargeT=0; tapT=game.time;
-        startAct(p,'fake',0.06,()=>doFake(p)); p.fintaFino=game.time+1.2; return;
+        startAct(p,'fake',fintaDi(p).wind,()=>doFake(p)); p.fintaFino=game.time+1.2; return;
       }
       if(p.chargeT<TIRO_POLSO){
         // tenuto poco: tiro di polso, subito (dopo una finta il polso sorprende di più)

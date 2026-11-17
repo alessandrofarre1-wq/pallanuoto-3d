@@ -18,6 +18,7 @@ import { apriRegistro } from './cronaca.js';
 import { kickoff } from './regole.js';
 import { allPlayers, ball, fight, game, teams } from './stato.js';
 import { iconaMano } from './mano.js';
+import { FINTE, stileFinta } from './finte.js';
 import { chiamaUomo, passaAZona } from './ia.js';
 import { resetTap } from './controllo.js';
 import { COMPETIZIONI, classificaGirone, creaTorneo, prossimaPartita, registraPartita, simulaBronzo } from './tornei.js';
@@ -89,7 +90,9 @@ let postoScelto=null;
 // dati dei tornei (dal database): gol/tiri e assist per chi gioca, parate per i portieri
 const datiTornei=g=>{ const d=g.dati; if(!d) return '<small class="fm-dati">nessun dato nei tornei</small>';
   return `<small class="fm-dati">${d.partite} partite · ${d.parate!=null?`parate ${d.parate}/${d.tiriSubiti}`:`${d.gol}/${d.tiri} al tiro · ${d.assist} assist`}</small>`; };
-const scheda=(g,extra)=>`<span class="ov">${g.ovr}</span><b>#${g.num} ${g.nome}${iconaMano(g.mano)}</b><br>${RUOLI[g.ruolo]}${extra||''}${datiTornei(g)}`+
+// finta personale (v0.55, finte.js): si legge nella scheda, così si impara a riconoscere i giocatori (non per i portieri)
+const fintaScheda=g=>g.ruolo===0?'':`<small class="fm-finta" title="${FINTE[stileFinta(g)].descr}">Finta ${FINTE[stileFinta(g)].nome}</small>`;
+const scheda=(g,extra)=>`<span class="ov">${g.ovr}</span><b>#${g.num} ${g.nome}${iconaMano(g.mano)}</b><br>${RUOLI[g.ruolo]}${extra||''}${fintaScheda(g)}${datiTornei(g)}`+
   `<div class="st">${CHIAVE[g.ruolo].map(k=>`<span>${STAT_NOMI[k].slice(0,3).toUpperCase()} ${g.s[k]}</span>`).join('')}</div>`;
 function disegnaRosa(){
   const t=teams[0], R=t.rosa, inAcqua=t.players.map(p=>p.scheda);
