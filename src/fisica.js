@@ -288,8 +288,10 @@ export function updateBall(dt){
           // conta la Difesa di chi anticipa contro il Passaggio di chi l'ha fatto
           // v0.45: nelle partite vere circa un'azione in parità su cinque finisce con la palla persa (Mondiali 2009): il pressing chiude
           // le linee di passaggio, e il passaggio verso il centroboa marcato è il più rischioso
+          // v0.55: dopo una finta riuscita i difensori hanno abboccato e leggono peggio lo scarico
+          const dopoFinta=ball.kind==='pass'&&ball.dopoFinta?0.6:1;
           const versoBoa=ball.target&&ball.target.i===1&&Math.abs(goalX(ball.target.team)-ball.target.x)<5&&!manUp(ball.target.team);
-          const letto=(0.09+0.3*clamp((ball.flightT-0.2)/0.7,0,1)+(ball.shooter?(p.s.dif-ball.shooter.s.pas)/59*0.12:0))*(p.team.defPlay===2?1.15:1)*(versoBoa?1.3:1);
+          const letto=(0.09+0.3*clamp((ball.flightT-0.2)/0.7,0,1)+(ball.shooter?(p.s.dif-ball.shooter.s.pas)/59*0.12:0))*(p.team.defPlay===2?1.15:1)*(versoBoa?1.3:1)*dopoFinta;
           const pr=(ball.kind==='shot'?muro:clamp(letto,0.04,0.5))*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
           if(rnd()<pr){
             if(ball.kind==='shot'){

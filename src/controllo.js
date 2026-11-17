@@ -8,7 +8,9 @@ import { contrasto, doFake } from './regole.js';
 import { aggiornaQte, tiroSpeciale } from './controfuga.js';
 import { ball, ctrl, fight, game, goalX, ownGoalX, setCtrl, teams } from './stato.js';
 import { diSchiena, doPass, doShoot, humanPassTarget, shotKind, startAct } from './tiri.js';
-export let tapT=-9, pendingQuick=null;   // doppio tocco = finta, tocco singolo = tiro rapido
+export let tapT=-9, pendingQuick=null;
+// v0.55 (scelta di Ale): tocco su TIRO (meno di TOCCO_FINTA secondi) = finta; tenuto fino a TIRO_POLSO = tiro di polso; più a lungo = tiro caricato
+export const TOCCO_FINTA=0.16, TIRO_POLSO=0.36;
 // Una sola intenzione negli ultimi 200 ms del gesto: non si accodano tiri speciali o cariche.
 let intenzione=null;
 let desktopShot=null, desktopPass=null;
@@ -77,7 +79,9 @@ export function humanControl(p,dt){
       const aimZ=Math.abs(iz)>0.3?iz:null;
       if(released('desktopShoot')){
         if(p.act===desktopShot.act) p.act=null;
-        desktopShot=null; p.voloPronto=false; pendingQuick=null;
+        const fintaFatta=!!desktopShot.act; desktopShot=null; p.voloPronto=false; pendingQuick=null;
+        // v0.55: anche con Spazio un tocco breve è una finta
+        if(!fintaFatta&&p.chargeT<TOCCO_FINTA){ p.charging=false; p.chargeT=0; startAct(p,'fake',0.06,()=>doFake(p)); p.fintaFino=game.time+1.2; return; }
         const pw=Math.max(0.35,Math.min(1,p.chargeT/0.9));
         p.chargeT=pw*0.9;
         startAct(p,shotKind(p),0,()=>doShoot(p,pw,false,aimZ)); return;
@@ -90,10 +94,6 @@ export function humanControl(p,dt){
       }
       return;
     }
-  }
-  // secondo tocco rapido mentre parte il tiro di polso: il tiro diventa una finta (il braccio si ferma)
-  if(hasBall && pressed('legacyShoot') && p.act && p.act.kind==='polso' && !p.act.done && game.time-tapT<0.3){
-    p.act.kind='fake'; p.act.frusta=0.09; p.act.fn=()=>doFake(p); p.fintaFino=game.time+1.0; tapT=-9; return;
   }
   if(p.act&&!p.act.done){
     const resto=p.act.wind+p.act.frusta-p.act.t;
@@ -132,12 +132,17 @@ export function humanControl(p,dt){
     if(qte && pressed('legacyShoot')){ pendingQuick=null; p.charging=false; p.chargeT=0; tiroSpeciale(p,qte.tipo,aimZ); return; }
     if(lob&&!p.isGK){ pendingQuick=null; startAct(p,'lob',0.12,()=>doShoot(p,0.4,true,aimZ)); return; }
     // tiro al volo: TIRO tenuto premuto mentre il passaggio era in volo → si tira appena arriva la palla
-    if(p.voloPronto && inp.legacyShoot && ball.holdTime<0.2 && !p.isGK && !ftBlock){ p.voloPronto=false; p.charging=false; p.chargeT=0; startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,aimZ,{volo:true})); return; }
+    if(p.voloPronto && ball.holdTime<0.2 && !p.isGK && !ftBlock){ p.voloPronto=false; p.voloTocco=-9; p.charging=false; p.chargeT=0; startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,aimZ,{volo:true})); return; }
     p.voloPronto=false;
     if(inp.legacyShoot&&!p.isGK){ if(!p.charging) p.mira0=0; p.charging=true; p.chargeT=Math.min(0.9,p.chargeT+dt); if(!p.mira0&&aimZ!=null) p.mira0=Math.sign(aimZ); }
     if(p.charging&&released('legacyShoot')){
-      if(p.chargeT<0.2){
-        // tocco breve: tiro di polso, subito (un secondo tocco rapido lo trasforma in finta; dopo una finta il polso sorprende di più)
+      if(p.chargeT<TOCCO_FINTA){
+        // v0.55 (scelta di Ale): un tocco breve su TIRO è una FINTA, ripetibile; per tirare si tiene premuto e si lascia
+        p.charging=false; p.chargeT=0; tapT=game.time;
+        startAct(p,'fake',0.06,()=>doFake(p)); p.fintaFino=game.time+1.2; return;
+      }
+      if(p.chargeT<TIRO_POLSO){
+        // tenuto poco: tiro di polso, subito (dopo una finta il polso sorprende di più)
         p.charging=false; p.chargeT=0; tapT=game.time;
         const dopoFinta=game.time<(p.fintaFino||0);
         startAct(p,diSchiena(shotKind(p))?shotKind(p):'polso',0.04,()=>doShoot(p,0.42,false,aimZ,{polso:true,dopoFinta})); return;
@@ -152,7 +157,11 @@ export function humanControl(p,dt){
   } else {
     p.qte=null;
     p.charging=false; p.chargeT=0; pendingQuick=null;
-    p.voloPronto = inp.legacyShoot && ball.state==='flight' && ball.kind==='pass' && ball.target===p;
+    // tiro al volo: basta TENERE o anche solo TOCCARE TIRO mentre arriva il passaggio (v0.55, telefono e controller;
+    // con la tastiera resta la regola v0.45: Spazio tenuto prima della ricezione non tira da solo)
+    const inArrivo=ball.state==='flight' && ball.kind==='pass' && ball.target===p;
+    if(inArrivo&&pressed('legacyShoot')) p.voloTocco=game.time;
+    p.voloPronto = inArrivo && (inp.legacyShoot || game.time-(p.voloTocco||-9)<1.5);
     const h=ball.holder;
     const contrasta=pressed('pass')||pressed('desktopPass');
     if(contrasta && h && fightOn(p,h)){ p.aggrT=game.time+0.8; annuncia('avviso','Trattieni il centroboa…',{durata:0.7}); }

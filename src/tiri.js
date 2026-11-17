@@ -2,6 +2,7 @@ import { registraTiroReplay } from './replay.js';
 // ================= PASSAGGI E TIRI =================
 import { registraTiro, tipoDiTiro } from './statistiche.js';
 import { controllaInterferenza } from './regole.js';
+import { annuncia } from './cronaca.js';
 import { ALZATA, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, paloUomo, postoPortiere, setteControSei, viciniUomo } from './ia.js';
 import { faseUomo } from './uomo-in-piu.js';
@@ -153,18 +154,23 @@ export function humanPassTarget(p,ix,iz){
   }
   return best||bestPassTarget(p,false);
 }
+export const PASSAGGIO_ALTEZZA=0.95;
 export function doPass(p,m){
   if(!m) return;
-  const spd=8.5+3.5*p.st.pas;
+  // v0.55 (Ale: «ad alti livelli il palleggio è alto, teso e veloce»): 11-15,5 m/s (prima 8,5-12) e arrivo alla mano alzata
+  // di chi riceve (PASSAGGIO_ALTEZZA, prima 0,45 m: la palla scendeva verso l'acqua)
+  const spd=11+4.5*p.st.pas;
   let tx=m.x, tz=m.z; let t=dist(p,m)/spd;
   tx+=m.vx*t*0.8; tz+=m.vz*t*0.8;
   const d=Math.hypot(tx-p.x,tz-p.z); t=Math.max(0.25,d/spd);
   const err=(0.2+(1-p.stamina)*0.5)*(1.25-p.st.pas)*(0.3+d*0.05);
   tx+=gauss()*err; tz+=gauss()*err;
-  launch(p,tx,0.45,tz,t,'pass'); ball.target=m; ball.tx=tx; ball.tz=tz;
+  launch(p,tx,PASSAGGIO_ALTEZZA,tz,t,'pass'); ball.target=m; ball.tx=tx; ball.tz=tz; ball.dopoFinta=p.fakeUntil>game.time||game.time<(p.fintaFino||0);
   game.passaggi=(game.passaggi||0)+1; if(Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1)) game.cambiLato=(game.cambiLato||0)+1;
   m.daChi=p; ball.cambioLato=Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1);      // passaggio da un lato all'altro: chi riceve può tirare al volo
-  if(p.team===teams[0]) setCtrl(m);
+  if(p.team===teams[0]){ setCtrl(m);
+    // v0.55: suggerimento per il tiro al volo quando il compagno riceve vicino alla porta
+    if(p.team.human&&!m.isGK&&Math.hypot(goalX(m.team)-m.x,m.z)<8) annuncia('avviso','Tocca TIRO: al volo',{durata:0.9}); }
   // Le entrate sono coordinate da aggiornaSchemi: nessun taglio casuale in conflitto con l'editor.
 }
 // Situazione di chi sta per tirare (usata dal tiro e dalle scelte del computer):

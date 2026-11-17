@@ -118,7 +118,9 @@ export function computePose(p,dt,t){
     else { hL=add3(vSL,[su[0],su[1],-su[2]]); hintL=[0,-0.3,-1]; nL=[1,0.1,0]; }
   }
   else if(p.fintaC>game.time&&!hold){ hR=add3(vSR,[0.50,0.04,-0.04]); hintR=[0,-0.6,1]; nR=[0.3,-1,0]; }      // contrasto di disturbo: la mano parte verso la palla
-  else if(hold&&!th){ hR=add3(vSR,HOLD); hintR=[-0.3,-0.6,1]; J.ballHand=true; nR=[0.15,1,0]; }      // palmo sotto la palla
+  // v0.55 (Ale: «tengono la palla come un vassoio»): mano DIETRO la palla, palmo rivolto in avanti e un po' in su, dita aperte;
+  // la palla disegnata si appoggia sul palmo (ballVistaW), la posizione di gioco p.ballW non cambia
+  else if(hold&&!th){ hR=add3(vSR,HOLD); hintR=[-0.3,-0.6,1]; J.ballHand=true; nR=[0.85,0.5,0.12]; }
   if(presa>0.01){ const v=[pallaL[0]-vSR[0],pallaL[1]-vSR[1],pallaL[2]-vSR[2]], l=Math.hypot(v[0],v[1],v[2])||1, m=Math.min(1,0.55/l); hR=mix3(hR,add3(vSR,[v[0]*m,Math.max(0.1,v[1]*m),v[2]*m]),presa); hintR=[0,-0.4,1]; }
   if(presa>0.01) nR=mix3(nR,[pallaL[0]-vSR[0],pallaL[1]-vSR[1],pallaL[2]-vSR[2]],presa);      // palmo verso la palla in arrivo
   if(th){ hL=[vSL[0]+0.36,-0.03,vSL[2]-0.10]; hintL=[0,-1,-0.4]; nL=[0,-1,-0.2]; }      // il braccio libero fa appoggio sull'acqua (a pelo d'acqua)
@@ -241,6 +243,9 @@ function posturaVista(p,J,e){
 // Layer soltanto visuale: J e p.ballW conservano la posa fisica e gli stessi
 // istanti di rilascio. Il gomito caricato è piegato, poi busto, braccio e polso
 // accelerano in successione senza aggiungere un'attesa al comando.
+export const PALMO_PALLA=[0.85,0.5,0.1];
+// onda del corpo in nuotata (rad): ampiezza a piena velocità, in più quando si è trattenuti, ritardo tra spalle, bacino e gambe
+export const ONDA={ nuoto:0.11, presa:0.16, ritardo:0.95 };
 const CARICA_VISTA={
   shot:[-0.20,0.36,0.08],torsione:[-0.22,0.34,0.10],fake:[-0.20,0.36,0.08],
   pass:[-0.12,0.37,0.12],lob:[-0.16,0.36,0.12],polso:[0.04,0.40,0.10],
@@ -268,7 +273,7 @@ function articolaVista(p,J,T,t){
       const a=p.phase+(s>0?0:Math.PI), sn=Math.sin(a), cs=Math.cos(a), recupera=sn<0;
       const corta=(hold?0.8:1)*(1-0.42*clamp((p.curva||0)*s,-0.6,1));
       const spalla=V[s>0?'sR':'sL'];
-      spalla[0]+=e*0.018*cs; spalla[1]+=e*0.025*Math.max(0,-sn);
+      spalla[0]+=e*0.018*cs; spalla[1]+=e*0.025*Math.max(0,-sn)+e*0.03*cs;      // v0.55: rollio delle spalle con la bracciata
       const ingresso=hold?0:0.035*Math.pow(Math.max(0,cs),6);
       const mano=add3(spalla,[0.10+(hold?0.40:0.44)*cs*corta+ingresso,recupera?-0.08*sn:-0.28*sn,s*(0.04+(recupera?-0.14*sn:0.04*sn))]);
       const alto=ease(clamp((-sn+0.12)/0.3,0,1));
@@ -294,8 +299,10 @@ function articolaVista(p,J,T,t){
   }
   if(!th){
     if(hold&&e<0.7){
-      T['n'+suff]=mix3(T['n'+suff],locale([0.12,1,0.08]),1-e);
-      T['polso'+suff]=T['polso'+suff]*e-0.12*(1-e);
+      // v0.55 (Ale: «tengono la palla come un vassoio»): mano dietro la palla, palmo in avanti e un po' in su, polso piegato
+      // all'indietro, come prima di un passaggio o di un tiro (prima palmo rivolto al cielo, palla appoggiata sopra)
+      T['n'+suff]=mix3(T['n'+suff],locale(PALMO_PALLA),1-e);
+      T['polso'+suff]=T['polso'+suff]*e-0.28*(1-e);
     }
     return V;
   }
@@ -360,7 +367,14 @@ export function updateRig(p,dt,t){
   const dPet=segui('petto',0.07,0.3), dBac=segui('bacino',0.17+0.05*disteso,0.42+0.3*disteso), dGam=segui('gambe',0.3+0.1*disteso,0.6+0.5*disteso);
   p.piega={ petto:dPet*forza, bacino:dBac*forza, gambe:dGam*forza };
   p.curva=clamp(dBac*forza/0.5,-1,1);                          // > 0 = sta girando a destra
-  const T=computePose(p,dt,t); T.piega=p.piega; T.curva=p.curva;
+  const T=computePose(p,dt,t); T.curva=p.curva;
+  // NUOTO A SERPENTE (v0.55, Ale: «il nuoto di un pallanuotista è simile a un serpente, fluido anche perché deve divincolarsi
+  // dalla presa»): a ogni bracciata un'onda scorre dalle spalle al bacino e alle gambe, ciascuno un po' in ritardo; più ampia
+  // quando un avversario è addosso (contatto), anche da verticali con la bicicletta. Solo disegno: niente caso, gioco invariato.
+  { const vel=clamp(Math.hypot(p.vx,p.vz)/1.4,0,1), presa=p.contactT>0?1:0, ph=p.phase||0;
+    const A=disteso*(ONDA.nuoto*vel+ONDA.presa*presa), Av=(1-disteso)*ONDA.presa*0.6*presa, pv=t*9+p.uid;
+    const o=k=>A*Math.sin(ph-ONDA.ritardo*k)+Av*Math.sin(pv-1.1*k);
+    T.piega={ petto:p.piega.petto+o(0)*0.35, bacino:p.piega.bacino+o(1), gambe:p.piega.gambe+o(2)*1.45 }; }
   if(!p.J){ p.J={}; for(const k of JK) p.J[k]=T[k].slice(); }
   const J=p.J, k=1-Math.exp(-dt*(p.act?34:16));
   for(const key of JK){ const a=J[key], b=T[key]; a[0]+=(b[0]-a[0])*k; a[1]+=(b[1]-a[1])*k; a[2]+=(b[2]-a[2])*k; }

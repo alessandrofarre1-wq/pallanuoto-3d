@@ -41,6 +41,7 @@ jobs:
       - run: npm run gioco-fermo -- --no-build
       - run: npm run posizioni
       - run: npm run orientamento -- --no-build
+      - run: npm run finta -- --no-build
       - run: npm run desktop -- --no-build
       - run: npm run gesti -- --no-build
       - run: npm run costumi -- --no-build
