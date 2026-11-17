@@ -274,7 +274,8 @@ function separaVista(p){
 function inclinazioneVerticale(p,T,dt){
   const L=lottaVista(p), sep=separaVista(p);
   p.lottaSpinta=L||sep?[(L?L.sx:0)+(sep?sep[0]:0),(L?L.sz:0)+(sep?sep[1]:0)]:null;
-  const tiro=ball.holder===p&&(p.charging||(p.act&&!p.act.done)), voluta=L&&!tiro?L.iv:p.isGK?INCLINA_VERT.portiere:(T.alzato||tiro)?INCLINA_VERT.gesto:T.marca?INCLINA_VERT.marca:INCLINA_VERT.base;
+  // a gioco fermo si torna dritti ad aspettare (regola v0.50 del fischio): l'inclinazione serve per muoversi durante il gioco
+  const tiro=ball.holder===p&&(p.charging||(p.act&&!p.act.done)), voluta=game.state!=='play'?0:L&&!tiro?L.iv:p.isGK?INCLINA_VERT.portiere:(T.alzato||tiro)?INCLINA_VERT.gesto:T.marca?INCLINA_VERT.marca:INCLINA_VERT.base;
   const k=1-Math.exp(-dt*6); p.inclVert=(p.inclVert??voluta)+(voluta-(p.inclVert??voluta))*k; return p.inclVert;
 }
 function posturaVista(p,J,e,iv=0){
