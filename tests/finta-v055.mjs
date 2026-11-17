@@ -68,6 +68,28 @@ const pas = await pg.evaluate(() => { const H = window.__pallanuoto, it = H.team
   return { indietroGK: !!(indietro && indietro.isGK), avantiBoa: !!(avanti && avanti.i === 1) }; });
 prova(!pas.indietroGK, `in attacco la levetta verso la propria porta non passa al portiere`);
 prova(pas.avantiBoa, `levetta verso la porta avversaria: passaggio al centroboa`);
+// palla al centroboa (v0.55): marcato → in acqua davanti; libero → alta in mano; anticipo battuto → rigore o espulsione
+const boa = await pg.evaluate(() => {
+  const H = window.__pallanuoto, it = H.teams[0], hu = H.teams[1], gx = 12.5 * it.dir, p = it.players[4], m = it.players[1], d = hu.players[6];
+  const scena = (dove) => {
+    H.game.state = 'play'; H.game.after = null; H.game.penalty = null; H.fight.active = false; H.game.shot = 28;
+    for (const q of H.allPlayers) { q.act = null; q.excluded = false; q.charging = false; q.vx = q.vz = 0; q.decideT = 99; q.reazioneT = 99; q.stunUntil = 0; q.tackleCD = 99; q.colpi = []; if (!q.isGK) { q.x = -gx * 0.5 + q.i * 0.7; q.z = q.team === it ? 6 : -6; } }
+    m.x = gx - it.dir * 3; m.z = 0; m.fx = -it.dir; m.fz = 0; p.x = gx - it.dir * 8; p.z = 3;
+    if (dove === 'dietro') { d.x = gx - it.dir * 2.25; d.z = 0; } else if (dove === 'anticipo') { const ux = p.x - m.x, uz = p.z - m.z, l = Math.hypot(ux, uz); d.x = m.x + ux / l * 0.75; d.z = m.z + uz / l * 0.75; d.stunUntil = H.game.time + 0.6; }
+    H.regole.giveBall(p); H.__setCtrl(p); p.act = null;
+  };
+  const arrivo = dove => { scena(dove); H.prova.doPass(p, m); let y = null, esito = '';
+    const reg = H.cronaca.registro.length;
+    for (let i = 0; i < 90 && !y; i++) { const prima = H.ball.y; window.__salta(1); if (H.ball.holder === m || H.ball.state !== 'flight') y = prima; }
+    window.__salta(2); esito = H.cronaca.registro.slice(reg).map(e => e.testo).join(',');
+    return { y, esito, tiene: H.ball.holder === m }; };
+  const marcato = arrivo('dietro'), libero = arrivo('libero');
+  let falli = 0; const prove = 20; for (let k = 0; k < prove; k++) { const r = arrivo('anticipo'); if (/Rigore|Espulsione/.test(r.esito)) falli++; }
+  return { marcato, libero, falli, prove };
+});
+prova(boa.marcato.y != null && boa.marcato.y < 0.45, `al centroboa marcato la palla arriva bassa, in acqua davanti a lui (${boa.marcato.y?.toFixed(2)} m)`);
+prova(boa.libero.y != null && boa.libero.y > 0.7, `al centroboa libero arriva alta, in mano (${boa.libero.y?.toFixed(2)} m)`);
+prova(boa.falli >= boa.prove * 0.5, `anticipo battuto: rigore o espulsione ${boa.falli} volte su ${boa.prove}`);
 prova(errori.length === 0, `nessun errore nella pagina${errori.length ? ': ' + errori.join(' | ') : ''}`);
 console.log(ok ? '\nFinta e tiro al volo: tutte le prove superate' : '\nFinta e tiro al volo: prove NON superate');
 await browser.close(); server.httpServer.close(); process.exit(ok ? 0 : 1);

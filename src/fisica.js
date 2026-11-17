@@ -6,7 +6,7 @@ import { ALZATA, ARBITRO, BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd }
 import { annuncia } from './cronaca.js';
 import { QUOTA_GALLEGGIA, passoPalla } from './palla.js';
 import { blockR } from './ia.js';
-import { cornerThrow, giveBall, goalScored, goalThrow, sfondamento, sideOut } from './regole.js';
+import { anticipoBattuto, cornerThrow, giveBall, goalScored, goalThrow, sfondamento, sideOut } from './regole.js';
 import { active, allPlayers, ball, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
 import { diSchiena, shotKind } from './tiri.js';
 import { FIRMA } from './finte.js';
@@ -303,7 +303,7 @@ export function updateBall(dt){
             return;
           }
         }
-        if(ball.kind==='pass' && p===ball.target && hd<0.85 && ball.flightT>0.15){ giveBall(p); return; }
+        if(ball.kind==='pass' && p===ball.target && hd<0.85 && ball.flightT>0.15){ const ab=ball.anticipoBattuto; giveBall(p); if(ab) anticipoBattuto(ab,p); return; }
       }
     }
     // acqua (palla.js calcola le forze; qui solo la regola): la palla che esce dall'acqua dopo averla toccata ha fatto uno

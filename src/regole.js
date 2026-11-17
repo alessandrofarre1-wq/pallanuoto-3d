@@ -114,6 +114,17 @@ export function cornerThrow(att){   // art. 13
     giveBall(w); game.possTeam=att; game.shot=SHOT_RESET;
   });
 }
+// ANTICIPO BATTUTO (v0.55, Ale: «se si gioca pressing il difensore del boa deve stare tra la palla e il centroboa; se la palla
+// dovesse passare e arrivare davanti al centroboa sarebbe rigore»): il passaggio è arrivato al centroboa con il suo difensore in
+// anticipo, che ora è dietro di lui davanti alla porta. Vicino alla porta: ANTICIPO.rigore rigore, poi ANTICIPO.espulsione
+// espulsione, altrimenti il centroboa ha la palla libera (il difensore non riesce a recuperare senza fallo).
+export const ANTICIPO={ rigore:0.45, espulsione:0.35, distanza:5 };
+export function anticipoBattuto(d,boa){
+  if(game.state!=='play'||ball.holder!==boa||d.excluded||Math.hypot(goalX(boa.team)-boa.x,boa.z)>ANTICIPO.distanza) return;
+  const r=rnd();
+  if(r<ANTICIPO.rigore) penalty(d,boa,'anticipo battuto');
+  else if(r<ANTICIPO.rigore+ANTICIPO.espulsione) exclude(d,boa,'anticipo battuto','centro');
+}
 export function penalty(d,c,motivo){       // art. 10.2 (motivo: solo per la notifica)
   chiudiAzione('rigore'); whistle(0.6); d.pf++; registraRigore(c.team);
   annuncia('rigore',`Rigore per ${c.team.short}`,{p:c,dettaglio:`fallo di ${d.team.short} #${d.num}${motivo?' · '+motivo:''}`});

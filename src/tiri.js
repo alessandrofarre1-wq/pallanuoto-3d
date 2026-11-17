@@ -7,7 +7,7 @@ import { FIRMA, firma } from './finte.js';
 import { ALZATA, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, paloUomo, postoPortiere, setteControSei, viciniUomo } from './ia.js';
 import { faseUomo } from './uomo-in-piu.js';
-import { leggiCentro } from './centroboa.js';
+import { difensoreCentro, leggiCentro } from './centroboa.js';
 import { schemaSquadra, viciniPerimetro } from './schemi.js';
 import { velocitaDiLancio } from './palla.js';
 import { paloCoperto } from './muro.js';
@@ -161,7 +161,7 @@ export function humanPassTarget(p,ix,iz){
   }
   return best||portiere||bestPassTarget(p,false);
 }
-export const PASSAGGIO_ALTEZZA=0.95, BOA_PREFERITO=1.2;
+export const PASSAGGIO_ALTEZZA=0.95, BOA_PREFERITO=1.2, BOA_DAVANTI=0.55;
 export function doPass(p,m){
   if(!m) return;
   // v0.55 (Ale: «ad alti livelli il palleggio è alto, teso e veloce»): 11-15,5 m/s (prima 8,5-12) e arrivo alla mano alzata
@@ -172,7 +172,21 @@ export function doPass(p,m){
   const d=Math.hypot(tx-p.x,tz-p.z); t=Math.max(0.25,d/spd);
   const err=(0.2+(1-p.stamina)*0.5)*(1.25-p.st.pas)*(0.3+d*0.05);
   tx+=gauss()*err; tz+=gauss()*err;
-  launch(p,tx,PASSAGGIO_ALTEZZA,tz,t,'pass'); ball.target=m; ball.tx=tx; ball.tz=tz; ball.dopoFinta=p.fakeUntil>game.time||game.time<(p.fintaFino||0); ball.firma=firma(p,'pass'); if(ball.firma) p.ultimaFintaT=-9;
+  // PALLA AL CENTROBOA (v0.55, Ale: «al centroboa la palla va sempre data davanti e in acqua; poi lui la prende e si gira e tira
+  // con una frustata oppure fa una beduina; se gli arriva in mano al volo è perché si è liberato del difensore»): con il marcatore
+  // addosso il passaggio arriva basso, in acqua, BOA_DAVANTI m davanti a lui verso chi passa, e un po' più lento; in mano (alto,
+  // al volo) solo se si è liberato. Se il difensore era in anticipo (tra palla e centroboa) e la palla passa, resta dietro di lui:
+  // fallo da rigore o espulsione (anticipoBattuto in regole.js).
+  let ty=PASSAGGIO_ALTEZZA, anticipo=null;
+  if(!manUp(p.team)&&m.i===1&&!m.isGK&&Math.hypot(goalX(m.team)-m.x,m.z)<6){
+    const def=difensoreCentro(m), lett=leggiCentro(m,def,p);
+    if(lett.tipo!=='libero'){      // libero = difensore a più di 1,8 m (leggiCentro): si è liberato
+      const ux=p.x-m.x, uz=p.z-m.z, l=Math.hypot(ux,uz)||1; tx=m.x+ux/l*BOA_DAVANTI; tz=m.z+uz/l*BOA_DAVANTI; ty=0.12;
+      t=Math.max(0.3,Math.hypot(tx-p.x,tz-p.z)/(spd*0.8));
+    }
+    if(lett.tipo==='anticipo'&&def) anticipo=def;
+  }
+  launch(p,tx,ty,tz,t,'pass'); ball.anticipoBattuto=anticipo; ball.target=m; ball.tx=tx; ball.tz=tz; ball.dopoFinta=p.fakeUntil>game.time||game.time<(p.fintaFino||0); ball.firma=firma(p,'pass'); if(ball.firma) p.ultimaFintaT=-9;
   game.passaggi=(game.passaggi||0)+1; if(Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1)) game.cambiLato=(game.cambiLato||0)+1;
   m.daChi=p; ball.cambioLato=Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1);      // passaggio da un lato all'altro: chi riceve può tirare al volo
   if(p.team===teams[0]){ setCtrl(m);
