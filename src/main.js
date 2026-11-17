@@ -29,6 +29,7 @@ import { LIMITI, gocceAttive, gocceMesh } from './grafica/acqua-eventi.js';
 import { creaCampagna, continuaTorneo, esportaSalvataggi, imposta, scegliSquadre, togglePause } from './menu.js';
 import { modelloPronto } from './grafica/corpo.js';
 import { tickFps, updateHUD } from './hud.js';
+import { aggiornaDiagnosi } from './diagnosi.js';
 import * as cronaca from './cronaca.js';
 import { diagnosi, passoPalla, velocitaDiLancio } from './palla.js';
 import { aggiornaPannelloFisica } from './fisica-palla/pannello.js';
@@ -69,6 +70,7 @@ function loop(now){
   if(nuovoDpr!==dpr){ setDpr(nuovoDpr); renderer.setPixelRatio(dpr); }
   cronaca.tick(dt);
   render(dt,now);
+  aggiornaDiagnosi(raw);
   // Le notifiche evitano porte e palla usando la camera del fotogramma corrente.
   hudT+=raw; if(hudT>0.05){ hudT=0; updateHUD(); }
   tickFps(now);

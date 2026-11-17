@@ -35,16 +35,16 @@ const r = await pg.evaluate(async (secondi) => {
     if (H.game.state !== 'play') continue;
     const F = fasi[fase];
     for (const p of H.allPlayers) {
-      if (p.excluded || p.uscendo || p.isGK) continue;
-      const sp = Math.hypot(p.vx, p.vz); if (sp < 0.8 || (p.oriz || 0) < 0.6) continue;
+      if (p.excluded || p.uscendo) continue;
+      const sp = Math.hypot(p.vx, p.vz); if (sp < 0.5 || (p.oriz || 0) < 0.5) continue;
       const O = p.mesh?.corpo?.ossa; if (!O) continue;
       const h = O.testa.getWorldPosition(new O.testa.position.constructor()), b = O.bacino.getWorldPosition(new O.testa.position.constructor());
       const bx = h.x - b.x, bz = h.z - b.z, L = Math.hypot(bx, bz) || 1;
       const corpo = (bx * p.vx + bz * p.vz) / (L * sp), fisica = (p.fx * p.vx + p.fz * p.vz) / sp;
       F.n++; if (corpo < 0) F.corpoIndietro++; if (fisica < 0) F.fisicaIndietro++;
-      if (corpo < 0 && F.esempi.length < 6) F.esempi.push({ t: +H.game.time.toFixed(2), sq: p.team.short, num: p.num, corpo: +corpo.toFixed(2), fisica: +fisica.toFixed(2), dir: p.team.dir, rotY: +p.mesh.g.rotation.y.toFixed(2), fx: +p.fx.toFixed(2), fz: +p.fz.toFixed(2) });
+      if (corpo < 0 && F.esempi.length < 12) F.esempi.push({ gk: p.isGK, sp: +sp.toFixed(2), oriz: +p.oriz.toFixed(2), st: H.game.state, act: p.act?.kind||null, t: +H.game.time.toFixed(2), sq: p.team.short, num: p.num, corpo: +corpo.toFixed(2), fisica: +fisica.toFixed(2), dir: p.team.dir, rotY: +p.mesh.g.rotation.y.toFixed(2), fx: +p.fx.toFixed(2), fz: +p.fz.toFixed(2) });
     }
-    if (fase === 1 && H.game.time - tGol > 60) break;
+    if (fase === 1 && H.game.time - tGol > 15) break;
   }
   return { fasi, tGol, gol: H.teams.map(t => t.score) };
 }, secondi);
