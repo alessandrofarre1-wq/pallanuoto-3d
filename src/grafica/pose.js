@@ -187,7 +187,7 @@ export function computePose(p,dt,t){
     let off=mix3(HOLD,th.K,c); off=mix3(off,R,w); off=mix3(off,th.F,f);
     hR=add3(J.sR,off); hintR=[-0.4,-0.6,1];
     // palmo: sotto la palla caricando, verso la porta al rilascio, in giù nella chiusura
-    nR=mix3(mix3([0.35,0.95,0],[1,0.15,0],w),[0.3,-0.9,0],f);
+    nR=mix3(mix3([0.85,0.5,0.1],[1,0.15,0],w),[0.3,-0.9,0],f);      // v0.55: palmo dietro la palla, non sotto
     // FIN pp.14–16: il corpo minaccia la porta, il solo braccio indirizza il passaggio.
     // La posa del mancino sarà specchiata sotto: invertiamo prima l'angolo locale.
     if(th===THROW.pass && act?.aim){
@@ -245,6 +245,8 @@ function posturaVista(p,J,e){
 // istanti di rilascio. Il gomito caricato è piegato, poi busto, braccio e polso
 // accelerano in successione senza aggiungere un'attesa al comando.
 export const PALMO_PALLA=[0.85,0.5,0.1];
+// palla tenuta alta (solo disegno): mano sopra il gomito, gomito in fuori all'altezza della spalla (angolo di circa 90°)
+export const HOLD_VISTA=[-0.02,0.42,0.21], GOMITO_FUORI=[-0.1,-0.1,1];
 // onda del corpo in nuotata (rad): ampiezza a piena velocità, in più quando si è trattenuti, ritardo tra spalle, bacino e gambe
 export const ONDA={ nuoto:0.11, presa:0.16, ritardo:0.95 };
 const CARICA_VISTA={
@@ -300,10 +302,10 @@ function articolaVista(p,J,T,t){
   }
   if(!th){
     if(hold&&e<0.7){
-      // v0.55 (Ale: «tengono la palla come un vassoio»): mano dietro la palla, palmo in avanti e un po' in su, polso piegato
-      // all'indietro, come prima di un passaggio o di un tiro (prima palmo rivolto al cielo, palla appoggiata sopra)
-      T['n'+suff]=mix3(T['n'+suff],locale(PALMO_PALLA),1-e);
-      T['polso'+suff]=T['polso'+suff]*e-0.28*(1-e);
+      // v0.55 (Ale: «tengono la palla come un vassoio», «gomito girato al contrario»): palla alta come un pallanuotista, gomito
+      // in fuori all'altezza della spalla, avambraccio dritto, mano DIETRO la palla con il palmo in avanti e il polso piegato
+      // all'indietro (prima: palmo al cielo e gomito basso attaccato al fianco). Solo disegno: p.ballW non cambia.
+      braccio(lato,add3(V['s'+suff],locale(HOLD_VISTA)),locale(GOMITO_FUORI),locale(PALMO_PALLA),-0.28,1-e);
     }
     return V;
   }
@@ -333,12 +335,16 @@ function articolaVista(p,J,T,t){
   // finta personale (finte.js): ogni giocatore ha il suo gesto (larga, a raffica, di polso, mezza, di bomba, di spalla)
   const fp=kind==='fake'?fintaDi(p):null;
   if(fp&&fp.alza){ const su=fp.alza*carica*(1-chiude); for(const k of ['head','chest','sR','sL']) V[k][1]+=su; }
-  let off=mix3(HOLD,fp?fp.vista:CARICA_VISTA[kind]||CARICA_VISTA.shot,carica);
+  let off=mix3(HOLD_VISTA,fp?fp.vista:CARICA_VISTA[kind]||CARICA_VISTA.shot,carica);
   off=mix3(off,rilascio,braccioK);
   off=mix3(off,th.F,ease(clamp(chiude/0.55,0,1)));
-  let hint=mix3([-0.65,0.35,0.9],[-0.08,0.05,1],braccioK);
+  // gomito in fuori e un po' indietro durante la carica (prima indietro e in alto: con la mano davanti il braccio si girava
+  // «ad ala di pollo», gomito sotto e dietro la spalla)
+  let hint=mix3(mix3(GOMITO_FUORI,[-0.3,0.15,1],carica),[-0.08,0.05,1],braccioK);
   hint=mix3(hint,[0.15,-0.7,0.8],ease(chiude));
-  let n=mix3([0.05,0.95,0.15],kind==='beduina'||kind==='sciarpa'||kind==='rovesciata'?[-1,0.15,0.1]:[1,0.1,0],polso);
+  // palmo: dietro la palla, in avanti e un po' in su durante la carica (prima rivolto al cielo, «a vassoio»), verso il bersaglio
+  // al rilascio, in giù nella chiusura
+  let n=mix3(PALMO_PALLA,kind==='beduina'||kind==='sciarpa'||kind==='rovesciata'?[-1,0.15,0.1]:[1,0.1,0],polso);
   n=mix3(n,[0.15,-0.9,-0.2],ease(chiude));
   if(kind==='pass'&&a?.aim){
     const dx=a.aim[0]-p.x,dz=a.aim[1]-p.z, av=dx*p.fx+dz*p.fz, la=(-dx*p.fz+dz*p.fx)*lato;
