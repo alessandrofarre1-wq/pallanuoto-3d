@@ -393,6 +393,18 @@ export function markTarget(p){
   // e ci si sposta di 30 cm verso il palo da coprire, così il braccio alzato sta davanti a quella traiettoria
   const sp=conPalla&&!lasc?paloCoperto(att)*0.3:0;
   if(tira) return { x:ax+dx/l*Math.min(gap,0.75), z:az+dz/l*Math.min(gap,0.75)+sp, sprint:true };
+  // MARCATURA SECONDO LA DISTANZA DALLA PALLA (v0.53, richiesta di Ale: «marcatori incollati»): chi marca un attaccante lontano
+  // dalla palla si stacca verso la porta e verso il lato della palla, pronto ad aiutare; mano a mano che la palla si avvicina
+  // al suo uomo torna a stringere. Tra 5 m (incollato come prima) e 10 m (staccato fino a 1,6 m e 0,4 m verso la palla).
+  const hb=ball.holder;
+  if(hb&&hb.team!==t&&hb!==att&&!hb.isGK&&!lasc&&t.defPlay!==3&&MARK[p.i]!==1){
+    const lontano=clamp((Math.hypot(hb.x-att.x,hb.z-att.z)-5)/5,0,1);
+    if(lontano>0){
+      const g2=Math.max(gap,Math.min(0.8+0.8*lontano,l*0.4)), tx=ax+dx/l*g2, tz=az+dz/l*g2+sp;
+      const vx=hb.x-tx, vz=hb.z-tz, vl=Math.hypot(vx,vz)||1, k=0.4*lontano;
+      return { x:tx+vx/vl*k, z:tz+vz/vl*k };
+    }
+  }
   return { x:ax+dx/l*gap, z:az+dz/l*gap+sp };
 }
 export function blockR(p){ return ball.kind==='shot' && (p.team.defPlay===1 || p.team.defPlay===3 || p.team.players.some(q=>q.excluded)) ? (p.team.defPlay===3?1.0:0.85) : 0.6; }
@@ -627,7 +639,9 @@ export function aiCarrier(p,dt){
   if(game.shot<2 && dGoal<13 && !ft){ aiShoot(p,0.9,false); return; }
   // con l'uomo in più la palla gira in fretta: un tocco e via, per spostare la difesa e il portiere
   const ritmo=schemaSquadra(t).passaggi;
-  const attesa=manUp(t)?0.55+rnd()*0.5:ritmo==='rapidi'?1.1+rnd()*0.6:ritmo==='equilibrati'?1.9+rnd():2.5+rnd()*2;
+  // v0.53 (Ale: «circolazione macchinosa»): prima 2,5-4,5 s con lo stile «vicini» della strategia di partenza; nelle partite vere
+  // sul perimetro la palla resta in mano 1-2 s. Il passaggio parte solo verso un compagno libero (bestPassTarget).
+  const attesa=manUp(t)?0.55+rnd()*0.5:ritmo==='rapidi'?0.8+rnd()*0.4:ritmo==='equilibrati'?1.1+rnd()*0.7:1.3+rnd()*0.9;
   if(p.freeThrow || (press<1.3&&rnd()<0.55) || ball.holdTime>attesa){
     const m=bestPassTarget(p); if(m){ aiPass(p,m); return; }
   }

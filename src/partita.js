@@ -144,6 +144,15 @@ export function update(dt){
     if(d>1.0 && !tg.gk){ const st=steer(p,dx/d,dz/d,d); mx=st[0]; mz=st[1]; }
     // Anticipa l'arresto soltanto per la breve distanza di frenata effettiva.
     if(!tg.gk && !tg.sprint && d<Math.hypot(p.vx,p.vz)/8 && p.vx*dx+p.vz*dz>0){ mx=0; mz=0; }
+    // SCIVOLAMENTO IN VERTICALE (v0.53, richiesta di Ale): gli spostamenti brevi si fanno restando dritti con la bicicletta,
+    // in qualunque direzione, senza distendersi a crawl. Sotto 1,8 m si scivola, oltre 2,8 m si torna a nuotare (in mezzo resta la
+    // scelta di prima, così non si alterna a ogni fotogramma). Ampiezza 0,48: sotto la soglia del nuoto di movePlayer (0,5).
+    // chi difende su chi ha la palla non scivola: deve poter chiudere il tiro con la sua velocità piena
+    const suPortatore=ball.holder&&ball.holder.team!==p.team&&uomoDi(p)===ball.holder;
+    if(!tg.gk&&!tg.sprint&&!p.uscendo&&!p.excluded&&!suPortatore){
+      if(d<1.8) p.scivolaAI=true; else if(d>2.8) p.scivolaAI=false;
+      if(p.scivolaAI){ const k=Math.hypot(mx,mz); if(k>0.48){ mx*=0.48/k; mz*=0.48/k; } }
+    } else p.scivolaAI=false;
     const sprint = tg.gk ? false : ((tg.sprint && d>0.6) || (d>4 && p.stamina>0.35));
     if(tg.gk){ // spostamento laterale del portiere: di posizione (lento o svelto secondo Posizione) oppure in tuffo (Riflessi); stanco è più lento
       const fresco=0.75+0.25*p.stamina, sp=(tg.tuffo ? 1.6+2.2*rif01(p) : 1.1+1.3*pos01(p))*fresco; p.z+=clamp(tg.z-p.z,-sp*dt,sp*dt); mz=0;
