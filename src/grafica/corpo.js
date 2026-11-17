@@ -243,13 +243,18 @@ function preparaBraccio(C,brac,avam,mano){
 }
 const _braccioSu=new THREE.Vector3(), _braccioGiu=new THREE.Vector3();
 const _spallaVera=new THREE.Vector3(),_gomitoVero=new THREE.Vector3(),_manoVera=new THREE.Vector3(),_raggiungi=new THREE.Vector3(),_piegaGomito=new THREE.Vector3(),_scalaCorpo=new THREE.Vector3();
-function braccio(C,brac,avam,mano,S,E,H,palmoLoc,lato,dirMondo,flessione=POLSO_FLEX){
+// morbido (0-1, v0.55, Ale: «finiscila di mettere queste braccia piegate, sembrano cavallette; serve fluidità»): quanto il braccio
+// resta più disteso di quanto chiederebbe la posa. Con 1 la distanza spalla-mano recupera il 42% di quanto manca al braccio teso,
+// quindi il gomito si apre e le braccia girano larghe e morbide; il braccio che tira e la bracciata del crawl lo usano poco.
+export const BRACCIO_MORBIDO=0.42;
+function braccio(C,brac,avam,mano,S,E,H,palmoLoc,lato,dirMondo,flessione=POLSO_FLEX,morbido=0){
   const B=C.bracci[lato];
   brac.getWorldPosition(_spallaVera);C.radice.getWorldScale(_scalaCorpo);
   const l1=B.lunghezzaSu*_scalaCorpo.x,l2=B.lunghezzaGiu*_scalaCorpo.x;
   const distanzaNominale=Math.hypot(H[0]-S[0],H[1]-S[1],H[2]-S[2]);
   const minima=Math.sqrt(l1*l1+l2*l2-2*l1*l2*Math.cos(Math.PI/6));
-  const distanza=Math.max(minima,Math.min(l1+l2-0.001,distanzaNominale/0.59*(l1+l2)));
+  let quota=distanzaNominale/0.59; if(quota<1) quota+=(1-quota)*BRACCIO_MORBIDO*Math.max(0,Math.min(1,morbido||0));
+  const distanza=Math.max(minima,Math.min(l1+l2-0.001,quota*(l1+l2)));
   dirMondo(S,H,_raggiungi);dirMondo(S,E,_piegaGomito);
   _piegaGomito.addScaledVector(_raggiungi,-_piegaGomito.dot(_raggiungi));
   if(_piegaGomito.lengthSq()<1e-8)_piegaGomito.crossVectors(_raggiungi,B.cardine);
@@ -347,9 +352,11 @@ export function muoviCorpo(R,J,T,dt){
     }
   }
   // --- braccia: gomito e mano dove li mette pose.js; gomito che si piega come un cardine, avambraccio e polso che ruotano ---
-  braccio(C,O.bracD,O.avamD,O.manoD,J.sR,J.eR,J.hR,T.nR,1,dirMondo,T.polsoR);
-  braccio(C,O.bracS,O.avamS,O.manoS,J.sL,J.eL,J.hL,T.nL,-1,dirMondo,T.polsoL);
+  braccio(C,O.bracD,O.avamD,O.manoD,J.sR,J.eR,J.hR,T.nR,1,dirMondo,T.polsoR,T.morbidoR??1);
+  braccio(C,O.bracS,O.avamS,O.manoS,J.sL,J.eL,J.hL,T.nL,-1,dirMondo,T.polsoL,T.morbidoL??1);
   // --- testa alta e ferma, che guarda avanti: sia da fermi sia in nuotata ---
-  _qr.copy(_qg).multiply(ROT_MODELLO);
+  // v0.55: la testa può girarsi rispetto al corpo (T.testaGiro, rad attorno alla verticale, smussato in pose.js): per esempio verso
+  // la porta mentre si protegge la palla (Ale: «l'attaccante non può guardare il difensore in faccia con il braccio teso indietro»)
+  _qr.copy(_qg); if(T.testaGiro) _qr.multiply(_qy.setFromAxisAngle(SU,T.testaGiro)); _qr.multiply(ROT_MODELLO);
   orienta(O.collo,_qr,0.5); orienta(O.testa,_qr,0.9);
 }

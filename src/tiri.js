@@ -2,10 +2,12 @@ import { registraTiroReplay } from './replay.js';
 // ================= PASSAGGI E TIRI =================
 import { registraTiro, tipoDiTiro } from './statistiche.js';
 import { controllaInterferenza } from './regole.js';
+import { annuncia } from './cronaca.js';
+import { FIRMA, firma } from './finte.js';
 import { ALZATA, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, paloUomo, postoPortiere, setteControSei, viciniUomo } from './ia.js';
 import { faseUomo } from './uomo-in-piu.js';
-import { leggiCentro } from './centroboa.js';
+import { difensoreCentro, leggiCentro } from './centroboa.js';
 import { schemaSquadra, viciniPerimetro } from './schemi.js';
 import { velocitaDiLancio } from './palla.js';
 import { paloCoperto } from './muro.js';
@@ -143,28 +145,53 @@ export function bestPassTarget(p,variabile=true){
 export function humanPassTarget(p,ix,iz){
   const il=Math.hypot(ix,iz);
   if(il<0.3) return bestPassTarget(p,false);
-  let best=null, bs=-1e9;
+  // v0.55 (Ale: «più di una volta ho passato la palla al portiere quando ero in attacco»; «fatico a dare la palla al centro»):
+  // il proprio portiere si sceglie solo nella propria metà campo e se non c'è nessun altro nella direzione; con la levetta verso
+  // la porta avversaria il centroboa (o il palo con l'uomo in più) ha la precedenza se è nel cono
+  const gx=goalX(p.team), versoPorta=((gx-p.x)*ix+(-p.z)*iz)/((Math.hypot(gx-p.x,p.z)||1)*il), inAttacco=Math.abs(gx-p.x)<12.5;
+  let best=null, bs=-1e9, portiere=null;
   for(const m of p.team.players){
     if(m===p||m.excluded||m.uscendo) continue;
     const dx=m.x-p.x, dz=m.z-p.z, d=Math.hypot(dx,dz)||1;
     const c=(dx*ix+dz*iz)/(d*il); if(c<0.35) continue;
-    const s=c*4 - d*0.07 + (laneClear(p,m.x,m.z,p.team)?0.5:0);
+    if(m.isGK&&!setteControSei(p.team)){ if(!inAttacco&&c>0.8) portiere=m; continue; }
+    const boa=(!manUp(p.team)&&m.i===1)||(manUp(p.team)&&paloUomo(m));
+    const s=c*4 - d*0.07 + (laneClear(p,m.x,m.z,p.team)?0.5:0) + (boa&&versoPorta>0.55&&c>0.5?BOA_PREFERITO:0);
     if(s>bs){ bs=s; best=m; }
   }
-  return best||bestPassTarget(p,false);
+  return best||portiere||bestPassTarget(p,false);
 }
+export const PASSAGGIO_ALTEZZA=0.95, BOA_PREFERITO=1.2, BOA_DAVANTI=0.55;
 export function doPass(p,m){
   if(!m) return;
-  const spd=8.5+3.5*p.st.pas;
+  // v0.55 (Ale: «ad alti livelli il palleggio è alto, teso e veloce»): 11-15,5 m/s (prima 8,5-12) e arrivo alla mano alzata
+  // di chi riceve (PASSAGGIO_ALTEZZA, prima 0,45 m: la palla scendeva verso l'acqua)
+  const spd=11+4.5*p.st.pas;
   let tx=m.x, tz=m.z; let t=dist(p,m)/spd;
   tx+=m.vx*t*0.8; tz+=m.vz*t*0.8;
   const d=Math.hypot(tx-p.x,tz-p.z); t=Math.max(0.25,d/spd);
   const err=(0.2+(1-p.stamina)*0.5)*(1.25-p.st.pas)*(0.3+d*0.05);
   tx+=gauss()*err; tz+=gauss()*err;
-  launch(p,tx,0.45,tz,t,'pass'); ball.target=m; ball.tx=tx; ball.tz=tz;
+  // PALLA AL CENTROBOA (v0.55, Ale: «al centroboa la palla va sempre data davanti e in acqua; poi lui la prende e si gira e tira
+  // con una frustata oppure fa una beduina; se gli arriva in mano al volo è perché si è liberato del difensore»): con il marcatore
+  // addosso il passaggio arriva basso, in acqua, BOA_DAVANTI m davanti a lui verso chi passa, e un po' più lento; in mano (alto,
+  // al volo) solo se si è liberato. Se il difensore era in anticipo (tra palla e centroboa) e la palla passa, resta dietro di lui:
+  // fallo da rigore o espulsione (anticipoBattuto in regole.js).
+  let ty=PASSAGGIO_ALTEZZA, anticipo=null;
+  if(!manUp(p.team)&&m.i===1&&!m.isGK&&Math.hypot(goalX(m.team)-m.x,m.z)<6){
+    const def=difensoreCentro(m), lett=leggiCentro(m,def,p);
+    if(lett.tipo!=='libero'){      // libero = difensore a più di 1,8 m (leggiCentro): si è liberato
+      const ux=p.x-m.x, uz=p.z-m.z, l=Math.hypot(ux,uz)||1; tx=m.x+ux/l*BOA_DAVANTI; tz=m.z+uz/l*BOA_DAVANTI; ty=0.12;
+      t=Math.max(0.3,Math.hypot(tx-p.x,tz-p.z)/(spd*0.8));
+    }
+    if(lett.tipo==='anticipo'&&def) anticipo=def;
+  }
+  launch(p,tx,ty,tz,t,'pass'); ball.anticipoBattuto=anticipo; ball.target=m; ball.tx=tx; ball.tz=tz; ball.dopoFinta=p.fakeUntil>game.time||game.time<(p.fintaFino||0); ball.firma=firma(p,'pass'); if(ball.firma) p.ultimaFintaT=-9;
   game.passaggi=(game.passaggi||0)+1; if(Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1)) game.cambiLato=(game.cambiLato||0)+1;
   m.daChi=p; ball.cambioLato=Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1);      // passaggio da un lato all'altro: chi riceve può tirare al volo
-  if(p.team===teams[0]) setCtrl(m);
+  if(p.team===teams[0]){ setCtrl(m);
+    // v0.55: suggerimento per il tiro al volo quando il compagno riceve vicino alla porta
+    if(p.team.human&&!m.isGK&&Math.hypot(goalX(m.team)-m.x,m.z)<8) annuncia('avviso','Tocca TIRO: al volo',{durata:0.9}); }
   // Le entrate sono coordinate da aggiornaSchemi: nessun taglio casuale in conflitto con l'editor.
 }
 // Situazione di chi sta per tirare (usata dal tiro e dalle scelte del computer):
@@ -234,6 +261,8 @@ export function doShoot(p,power,lob,aimZ,o){
   // sorpresa per portiere e muro: il polso parte senza caricare (ancora di più dopo una finta); con la torsione il portiere
   // si sposta verso il primo palo e la palla va sull'altro
   ball.sorpresa = o.polso ? (o.dopoFinta?0.26:0.15) : o.torsione ? 0.08 : o.volo ? 0.06 : o.speciale==='schizzo' ? 0.14 : o.speciale==='colonnello' ? 0.1 : 0;
+  // FIRMA (v0.55, finte.js): la finta personale chiusa con il suo seguito tipico spiazza un po' di più portiere e muro
+  { const seguito=lob?'lob':o.polso?'polso':o.volo||o.speciale?null:'shot'; ball.firma=!!seguito&&firma(p,seguito); if(ball.firma){ ball.sorpresa+=FIRMA.sorpresa; p.ultimaFintaT=-9; } }
   ball.elevazione=elev;
   // per il portiere: tiro da lontano o da poco angolo = più tempo e meno porta; tiro "da fermo" con tutti piazzati = facile da
   // leggere; tiro subito dopo un cambio di lato della palla = portiere ancora in viaggio

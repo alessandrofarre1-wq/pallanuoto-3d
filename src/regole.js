@@ -11,6 +11,7 @@ import { accentoGol, whistle } from './audio.js';
 import { autoSwitch, resetTap } from './controllo.js';
 import { ARBITRO, ATK, BRV, DEFN, DIFF, EXCL_TIME, FORM, HL, HW, KICK_Z, SHOT_CLOCK, SHOT_RESET, clamp, dist, rnd } from './costanti.js';
 import { annuncia } from './cronaca.js';
+import { fintaDi } from './finte.js';
 import { closestTo } from './ia.js';
 import { rumble } from './input.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, setCtrl, teams } from './stato.js';
@@ -62,7 +63,7 @@ export function giveBall(p){
   ball.state='held'; ball.inUscita=false; ball.toccoDifesa=null; ball.ignora=null; ball.holder=p; ball.holdTime=0; ball.kind=null; ball.target=null; ball.lastTeam=p.team;
   // quando e come è arrivata la palla: un tiro subito dopo un passaggio che ha cambiato lato trova il portiere fuori posto
   p.ricevutoT=game.time; p.ricevutoCambio=!!ball.cambioLato; p.ricevutoPassaggio=daPassaggio; if(!daPassaggio) p.ricevutoCambio=false;
-  p.decideT=0.4+rnd()*0.4; p.alVolo=rnd()<(ball.cambioLato?0.8:0.4); ball.cambioLato=false; p.cut=null; p.act=null; p.fakeCount=0; p.fakeUsed=false; p.shootNext=false; p.fakeUntil=0;
+  p.decideT=0.4+rnd()*0.4; p.alVolo=rnd()<(ball.cambioLato||ball.dopoFinta?0.8:0.4); p.ricevutoDopoFinta=!!ball.dopoFinta&&daPassaggio; ball.cambioLato=false; ball.dopoFinta=false; p.cut=null; p.act=null; p.fakeCount=0; p.fakeUsed=false; p.shootNext=false; p.fakeUntil=0; p.scaricoDopoFinta=false;
   for(const q of allPlayers) q.freeThrow=false;
   resetTap();
   if(changed){
@@ -112,6 +113,17 @@ export function cornerThrow(att){   // art. 13
     w.x=goalX(att)-att.dir*2; w.z=side*(HW-0.5); w.vx=w.vz=0;
     giveBall(w); game.possTeam=att; game.shot=SHOT_RESET;
   });
+}
+// ANTICIPO BATTUTO (v0.55, Ale: «se si gioca pressing il difensore del boa deve stare tra la palla e il centroboa; se la palla
+// dovesse passare e arrivare davanti al centroboa sarebbe rigore»): il passaggio è arrivato al centroboa con il suo difensore in
+// anticipo, che ora è dietro di lui davanti alla porta. Vicino alla porta: ANTICIPO.rigore rigore, poi ANTICIPO.espulsione
+// espulsione, altrimenti il centroboa ha la palla libera (il difensore non riesce a recuperare senza fallo).
+export const ANTICIPO={ rigore:0.45, espulsione:0.35, distanza:5 };
+export function anticipoBattuto(d,boa){
+  if(game.state!=='play'||ball.holder!==boa||d.excluded||Math.hypot(goalX(boa.team)-boa.x,boa.z)>ANTICIPO.distanza) return;
+  const r=rnd();
+  if(r<ANTICIPO.rigore) penalty(d,boa,'anticipo battuto');
+  else if(r<ANTICIPO.rigore+ANTICIPO.espulsione) exclude(d,boa,'anticipo battuto','centro');
 }
 export function penalty(d,c,motivo){       // art. 10.2 (motivo: solo per la notifica)
   chiudiAzione('rigore'); whistle(0.6); d.pf++; registraRigore(c.team);
@@ -405,7 +417,8 @@ export function doFake(p){
   const gk=ot.players[0];
   if(dG<9 && !gk.excluded && rnd()<0.45*q){ gk.fakedUntil=game.time+1.1; bit++; }
   if(bit) p.fakeUntil=game.time+1.3;
-  annuncia('avviso',bit?'Finta riuscita!':'Finta',{durata:0.8});
+  p.ultimaFintaT=game.time;      // per la firma (finte.js): il seguito tipico entro poco spiazza di più
+  { const f=fintaDi(p); annuncia('avviso',bit?`Finta ${f.nome} riuscita!`:`Finta ${f.nome}`,{durata:0.8}); }
 }
 
 // INTERFERENZA sul tiro libero (WP 20.2 e 22.5, v0.45): chi ha commesso il fallo deve allontanarsi di circa 1 m prima di alzare il

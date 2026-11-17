@@ -48,7 +48,7 @@ export function updateHUD(){
   { const q=ctrl&&ctrl.qte&&game.state==='play'?ctrl.qte:null, el=$('qte'), b=document.querySelector('.tb[data-b="shoot"]');
     const t=q?`Premi TIRO<small>(K) · ${q.tipo==="schizzo"?"tiro a schizzo":"colonnello"}</small>`:"";
     if(el.dataset.t!==t){ el.dataset.t=t; el.innerHTML=t; el.classList.toggle('on',!!q); }
-    if(b){ const on=!!q; if(b.classList.contains('premi')!==on){ b.classList.toggle('premi',on); const s=b.querySelector('small'); if(s) s.textContent=on?'Premi!':'2× finta'; } } }
+    if(b){ const on=!!q; if(b.classList.contains('premi')!==on){ b.classList.toggle('premi',on); const s=b.querySelector('small'); if(s) s.textContent=on?'Premi!':'tocco: finta'; } } }
   // pannello del giocatore (v0.44, scelta di Ale): si vede per 3 s quando CAMBI giocatore tu (tasto Cambia) e a inizio partita, poi resta
   // solo la freccia; i passaggi automatici al compagno con la palla o al più vicino non lo riaccendono (in difesa sarebbe sempre acceso);
   // con tastiera/mouse resta anche mentre si carica il tiro (lì c'è la barra della potenza)
@@ -74,7 +74,7 @@ export function updateHUD(){
     const riempimento=pot*100+'%'; if(btn.style.getPropertyValue('--potenza')!==riempimento) btn.style.setProperty('--potenza',riempimento);
     const etichetta=$('power').previousElementSibling, testoPotenza=carica?(max?'Potenza tiro · MAX — rilascia':'Potenza tiro · '+Math.round(pot*100)+'%'):'Potenza tiro';
     if(etichetta.textContent!==testoPotenza) etichetta.textContent=testoPotenza;
-    const label=carica?(max?'MAX':Math.round(pot*100)+'%'):recente&&(nomi[recente.tipo]||recente.forza>=0.98)?(nomi[recente.tipo]||'POTENTE'):ctrl&&ctrl.qte?'Premi!':'2× finta';
+    const label=carica?(max?'MAX':Math.round(pot*100)+'%'):recente&&(nomi[recente.tipo]||recente.forza>=0.98)?(nomi[recente.tipo]||'POTENTE'):ctrl&&ctrl.qte?'Premi!':'tocco: finta';
     const small=btn.querySelector('small'); if(small.textContent!==label) small.textContent=label;
     const aria=carica?(max?'Tiro alla massima potenza: rilascia':'Potenza tiro '+Math.round(pot*100)+'%'):'Tiro';
     if(btn.getAttribute('aria-label')!==aria) btn.setAttribute('aria-label',aria);

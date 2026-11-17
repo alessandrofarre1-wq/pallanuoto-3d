@@ -1,3 +1,4 @@
+import { fintaDi } from '../finte.js';
 import * as THREE from 'three';
 // Pose e animazioni: nuotata, posizione verticale, gesti di tiro e passaggio
 import { BRV, VIS, clamp, dist, rndGrafica } from '../costanti.js';
@@ -5,7 +6,7 @@ import { aggiornaNumero, muoviCorpo } from './corpo.js';
 import { setSeg } from './modello.js';
 import { contatto, spawnFoam } from './scena.js';
 import { evento } from './acqua-eventi.js';
-import { allPlayers, ball, fight, game } from '../stato.js';
+import { allPlayers, ball, fight, game, goalX } from '../stato.js';
 import { shotKind } from '../tiri.js';
 import { braccioMuro } from '../muro.js';
 import { visoGiocatore } from './espressioni.js';
@@ -72,6 +73,7 @@ export function computePose(p,dt,t){
   const defUp = !hold && !p.isGK && h && h.team!==p.team && dist(p,h)<1.7;
   const muro = defUp && (h.charging || (h.act && !h.act.done && h.act.kind!=='pass'));      // l'avversario sta tirando: braccio alto a murare
   const abbocca = p.biteUntil>game.time;
+  J.alzato=muro||abbocca; J.marca=defUp;      // per l'inclinazione disegnata (posturaVista, v0.55)
   let lz=0, ly=0, arrivo=0;
   if(th){ lift+=th.lift*(0.8+0.2*p.stamina)*c*(1-0.8*f); tw=(th.tw0*c*(1-wb)+th.tw1*wb)*(1-f); }      // chi è stanco esce meno dall'acqua
   else if(gkSave){
@@ -118,7 +120,9 @@ export function computePose(p,dt,t){
     else { hL=add3(vSL,[su[0],su[1],-su[2]]); hintL=[0,-0.3,-1]; nL=[1,0.1,0]; }
   }
   else if(p.fintaC>game.time&&!hold){ hR=add3(vSR,[0.50,0.04,-0.04]); hintR=[0,-0.6,1]; nR=[0.3,-1,0]; }      // contrasto di disturbo: la mano parte verso la palla
-  else if(hold&&!th){ hR=add3(vSR,HOLD); hintR=[-0.3,-0.6,1]; J.ballHand=true; nR=[0.15,1,0]; }      // palmo sotto la palla
+  // v0.55 (Ale: «tengono la palla come un vassoio»): mano DIETRO la palla, palmo rivolto in avanti e un po' in su, dita aperte;
+  // la palla disegnata si appoggia sul palmo (ballVistaW), la posizione di gioco p.ballW non cambia
+  else if(hold&&!th){ hR=add3(vSR,HOLD); hintR=[-0.3,-0.6,1]; J.ballHand=true; nR=[0.85,0.5,0.12]; }
   if(presa>0.01){ const v=[pallaL[0]-vSR[0],pallaL[1]-vSR[1],pallaL[2]-vSR[2]], l=Math.hypot(v[0],v[1],v[2])||1, m=Math.min(1,0.55/l); hR=mix3(hR,add3(vSR,[v[0]*m,Math.max(0.1,v[1]*m),v[2]*m]),presa); hintR=[0,-0.4,1]; }
   if(presa>0.01) nR=mix3(nR,[pallaL[0]-vSR[0],pallaL[1]-vSR[1],pallaL[2]-vSR[2]],presa);      // palmo verso la palla in arrivo
   if(th){ hL=[vSL[0]+0.36,-0.03,vSL[2]-0.10]; hintL=[0,-1,-0.4]; nL=[0,-1,-0.2]; }      // il braccio libero fa appoggio sull'acqua (a pelo d'acqua)
@@ -184,7 +188,7 @@ export function computePose(p,dt,t){
     let off=mix3(HOLD,th.K,c); off=mix3(off,R,w); off=mix3(off,th.F,f);
     hR=add3(J.sR,off); hintR=[-0.4,-0.6,1];
     // palmo: sotto la palla caricando, verso la porta al rilascio, in giù nella chiusura
-    nR=mix3(mix3([0.35,0.95,0],[1,0.15,0],w),[0.3,-0.9,0],f);
+    nR=mix3(mix3([0.85,0.5,0.1],[1,0.15,0],w),[0.3,-0.9,0],f);      // v0.55: palmo dietro la palla, non sotto
     // FIN pp.14–16: il corpo minaccia la porta, il solo braccio indirizza il passaggio.
     // La posa del mancino sarà specchiata sotto: invertiamo prima l'angolo locale.
     if(th===THROW.pass && act?.aim){
@@ -230,17 +234,75 @@ const _normalePresa=new THREE.Vector3(), _scalaPresa=new THREE.Vector3(), _quate
 // (bacino, ginocchia, piedi) ruota verso il basso di INCLINA_NUOTO attorno alle spalle; tutto in proporzione a quanto il
 // corpo è disteso, quindi da verticale non cambia nulla e il passaggio resta continuo.
 const SU_NUOTO=0.09, INCLINA_NUOTO=0.42, BASSI=['hip','kL','kR','fL','fR'];
-function posturaVista(p,J,e){
-  if(e<0.001) return J;
-  const V=p.Jv||(p.Jv={}), su=SU_NUOTO*e, a=INCLINA_NUOTO*e, ca=Math.cos(a), sa=Math.sin(a);
+// CORPO INCLINATO ANCHE DA VERTICALI (v0.55, Ale: «chi sta dritto in acqua è un corpo inerme, non riesce a muoversi; sei sempre
+// mezzo inclinato per coprire più spazio con gambe e mani, come un polpo»): bacino e gambe vanno indietro rispetto alle spalle,
+// di più per chi difende sull'uomo; quasi dritti solo per tirare, murare o parare. Smussato nel tempo. Solo disegno.
+export const INCLINA_VERT={ base:0.42, marca:0.62, gesto:0.12, portiere:0.12 };
+// LOTTA AL CENTRO (v0.55, Ale: «l'attaccante è di spalle alla porta e si appoggia al petto del difensore; i due spingono in direzioni
+// opposte, l'attaccante all'indietro e il difensore in avanti»): con il difensore DIETRO il centroboa, il centroboa si inclina
+// all'indietro verso di lui e il difensore in avanti verso il centroboa, e i busti si avvicinano fino al contatto (spostamento
+// della sola parte alta verso l'avversario, LOTTA.contatto). In anticipo (difensore davanti) entrambi si inclinano l'uno verso
+// l'altro. Solo disegno: posizioni e lotta del gioco invariate.
+// I corpi non si compenetrano (v0.55, Ale: «va bene stare vicini ma non ci si può fondere»): la parte alta si avvicina solo fino a
+// LOTTA.schiena tra i centri se l'avversario è dietro (petto contro schiena) e LOTTA.faccia se è davanti (teste e visi in mezzo).
+export const PALLA_FUORI=0.36;
+export const LOTTA={ indietro:0.5, avanti:0.7, contatto:0.17, schiena:0.5, faccia:0.7 };
+function lottaVista(p){
+  if(!fight.active||(p!==fight.boa&&p!==fight.def)) return null;
+  const o=p===fight.boa?fight.def:fight.boa; if(!o) return null;
+  const dx=o.x-p.x,dz=o.z-p.z,l=Math.hypot(dx,dz)||1, av=(dx*p.fx+dz*p.fz)/l, la=(-dx*p.fz+dz*p.fx)/l;
+  // ciascuno fa metà della strada fino alla distanza minima (mai oltre LOTTA.contatto): petto contro schiena se uno dei due ha
+  // l'altro alle spalle, altrimenti faccia a faccia
+  const dietroUno=av<0||((o.fx*-dx+o.fz*-dz)/l)<0, minimo=dietroUno?LOTTA.schiena:LOTTA.faccia;
+  // chi è già mezzo disteso (difensore di traverso) ha la testa in avanti: la spinta di contatto cala con l'assetto
+  const spinta=Math.min(LOTTA.contatto,Math.max(0,(l-minimo)/2))*(1-Math.max(p.oriz||0,o.oriz||0));
+  // inclinazione verso l'avversario: se è davanti ci si inclina in avanti (iv positivo), se è dietro all'indietro (iv negativo)
+  const verso=av>=0?1:-1, iv=verso>0?(p===fight.def?LOTTA.avanti:INCLINA_VERT.marca):-LOTTA.indietro;
+  return { iv:iv*Math.abs(av)+INCLINA_VERT.base*(1-Math.abs(av)), sx:av*spinta, sz:la*spinta };
+}
+// regola generale: due giocatori più vicini di CORPI_MIN (centro a centro) allontanano ciascuno la propria parte alta di metà della
+// differenza, nel sistema del giocatore. Così testa, spalle e braccia non si fondono anche quando il gioco li mette molto vicini.
+export const CORPI_MIN=0.56;
+function separaVista(p){
+  let sx=0, sz=0;
+  for(const q of allPlayers){ if(q===p||q.excluded) continue;
+    const dx=p.x-q.x, dz=p.z-q.z, d=Math.hypot(dx,dz); if(d>=CORPI_MIN) continue;
+    const u=d>1e-3?[dx/d,dz/d]:[p.fz,-p.fx], m=(CORPI_MIN-d)/2;
+    sx+=(u[0]*p.fx+u[1]*p.fz)*m; sz+=(-u[0]*p.fz+u[1]*p.fx)*m; }
+  return sx||sz?[sx,sz]:null;
+}
+function inclinazioneVerticale(p,T,dt){
+  const L=lottaVista(p), sep=separaVista(p);
+  p.lottaSpinta=L||sep?[(L?L.sx:0)+(sep?sep[0]:0),(L?L.sz:0)+(sep?sep[1]:0)]:null;
+  // a gioco fermo si torna dritti ad aspettare (regola v0.50 del fischio): l'inclinazione serve per muoversi durante il gioco
+  const tiro=ball.holder===p&&(p.charging||(p.act&&!p.act.done)), voluta=game.state!=='play'?0:L&&!tiro?L.iv:p.isGK?INCLINA_VERT.portiere:(T.alzato||tiro)?INCLINA_VERT.gesto:T.marca?INCLINA_VERT.marca:INCLINA_VERT.base;
+  const k=1-Math.exp(-dt*6); p.inclVert=(p.inclVert??voluta)+(voluta-(p.inclVert??voluta))*k; return p.inclVert;
+}
+function posturaVista(p,J,e,iv=0){
+  if(e<0.001&&Math.abs(iv)<0.001&&!p.lottaSpinta) return J;
+  const V=p.Jv||(p.Jv={}), su=SU_NUOTO*e, a=INCLINA_NUOTO*e-iv*(1-e), ca=Math.cos(a), sa=Math.sin(a);
   const cx=(J.sL[0]+J.sR[0])/2, cy=(J.sL[1]+J.sR[1])/2;
   for(const k of JK){ const q=J[k], v=V[k]||(V[k]=[0,0,0]); v[0]=q[0]; v[1]=q[1]+su; v[2]=q[2]; }
   for(const k of BASSI){ const q=J[k], v=V[k], dx=q[0]-cx, dy=q[1]-cy; v[0]=cx+dx*ca-dy*sa; v[1]=cy+dx*sa+dy*ca+su; }
+  // lotta al centro: la parte alta va verso l'avversario fino al contatto (spalle, testa, braccia; il bacino la metà)
+  const S=p.lottaSpinta;
+  if(S){ for(const k of JK){ const f=k==='hip'?0.5:BASSI.includes(k)?0:1, v=V[k]; v[0]+=S[0]*f; v[2]+=S[1]*f; } }
   return V;
 }
 // Layer soltanto visuale: J e p.ballW conservano la posa fisica e gli stessi
 // istanti di rilascio. Il gomito caricato è piegato, poi busto, braccio e polso
 // accelerano in successione senza aggiungere un'attesa al comando.
+export const PALMO_PALLA=[0.85,0.5,0.1];
+// ACCOMPAGNAMENTO dopo il rilascio (v0.55, Ale: «non gli sta dando uno schiaffo, è un accompagnamento»): la mano continua verso il
+// bersaglio con il braccio quasi disteso, all'altezza del petto, palmo verso la porta e dita che puntano dove va la palla; poi
+// scende piano (rientra). Prima la mano finiva sotto la spalla e attraverso il corpo con il palmo in giù. Solo disegno.
+export const ACCOMPAGNA={ shot:[0.54,0.20,-0.08], torsione:[0.50,0.18,-0.20], polso:[0.46,0.30,-0.04], pass:[0.48,0.26,-0.02], lob:[0.40,0.46,0.0] };
+export const PALMO_ACCOMPAGNA=[0.85,-0.35,-0.1];
+// palla tenuta alta (solo disegno): mano sopra il gomito, gomito in fuori all'altezza della spalla (angolo di circa 90°)
+export const BOA_ACQUA=[0.40,-0.06,0.08];
+export const HOLD_VISTA=[-0.02,0.42,0.21], GOMITO_FUORI=[-0.1,-0.1,1], PROTEGGI_DIST=1.8, PROTEGGI_GIRO=1.2, TESTA_GIRO=1.1;
+// onda del corpo in nuotata (rad): ampiezza a piena velocità, in più quando si è trattenuti, ritardo tra spalle, bacino e gambe
+export const ONDA={ nuoto:0.11, presa:0.16, ritardo:0.95 };
 const CARICA_VISTA={
   shot:[-0.20,0.36,0.08],torsione:[-0.22,0.34,0.10],fake:[-0.20,0.36,0.08],
   pass:[-0.12,0.37,0.12],lob:[-0.16,0.36,0.12],polso:[0.04,0.40,0.10],
@@ -254,6 +316,8 @@ function articolaVista(p,J,T,t){
   T.nR=T.nR.slice(); T.nL=T.nL.slice();
   const e=T.oriz||0, hold=ball.holder===p, lato=T.manoS?-1:1;
   T.polsoR=0.16+0.06*Math.sin(t*5.5+p.uid); T.polsoL=0.16-0.06*Math.sin(t*5.5+p.uid);
+  // braccia morbide e distese (corpo.js, BRACCIO_MORBIDO): meno nella bracciata del crawl, che vuole il gomito alto
+  T.morbidoR=T.morbidoL=1-0.75*(T.oriz||0);
   T.torsioneVista=Math.sin(p.phase)*0.06*e;
   const braccio=(s,mano,hint,n,polso,k=1)=>{
     const suff=s>0?'R':'L', spalla=V['s'+suff];
@@ -268,7 +332,7 @@ function articolaVista(p,J,T,t){
       const a=p.phase+(s>0?0:Math.PI), sn=Math.sin(a), cs=Math.cos(a), recupera=sn<0;
       const corta=(hold?0.8:1)*(1-0.42*clamp((p.curva||0)*s,-0.6,1));
       const spalla=V[s>0?'sR':'sL'];
-      spalla[0]+=e*0.018*cs; spalla[1]+=e*0.025*Math.max(0,-sn);
+      spalla[0]+=e*0.018*cs; spalla[1]+=e*0.025*Math.max(0,-sn)+e*0.03*cs;      // v0.55: rollio delle spalle con la bracciata
       const ingresso=hold?0:0.035*Math.pow(Math.max(0,cs),6);
       const mano=add3(spalla,[0.10+(hold?0.40:0.44)*cs*corta+ingresso,recupera?-0.08*sn:-0.28*sn,s*(0.04+(recupera?-0.14*sn:0.04*sn))]);
       const alto=ease(clamp((-sn+0.12)/0.3,0,1));
@@ -280,6 +344,7 @@ function articolaVista(p,J,T,t){
   const a=hold&&p.act?.done?null:p.act;
   const kind=a?.kind||(p.charging?shotKind(p):null), th=kind?(THROW[kind]||THROW.shot):null;
   const suff=lato>0?'R':'L', locale=v=>[v[0],v[1],v[2]*lato];
+  if(th) T['morbido'+suff]=0.2; else if(hold) T['morbido'+suff]=Math.min(T['morbido'+suff],0.45);
   if(!th&&p.ricevutoPassaggio&&hold){
     const eta=game.time-p.ricevutoT;
     if(eta>=0&&eta<0.18){
@@ -294,8 +359,48 @@ function articolaVista(p,J,T,t){
   }
   if(!th){
     if(hold&&e<0.7){
-      T['n'+suff]=mix3(T['n'+suff],locale([0.12,1,0.08]),1-e);
-      T['polso'+suff]=T['polso'+suff]*e-0.12*(1-e);
+      // v0.55 (Ale: «tengono la palla come un vassoio», «gomito girato al contrario»): palla alta come un pallanuotista, gomito
+      // in fuori all'altezza della spalla, avambraccio dritto, mano DIETRO la palla con il palmo in avanti e il polso piegato
+      // all'indietro (prima: palmo al cielo e gomito basso attaccato al fianco). Solo disegno: p.ballW non cambia.
+      // PALLA PROTETTA (Ale: «terrei il braccio e la palla dietro la mia testa»): con un avversario vicino la palla va a braccio
+      // teso dietro la testa, dalla parte opposta all'avversario (resta sul lato del braccio che la tiene)
+      let o=null,od=PROTEGGI_DIST;
+      for(const q of allPlayers){ if(q.team===p.team||q.excluded||q.isGK) continue; const d=Math.hypot(q.x-p.x,q.z-p.z); if(d<od){ od=d; o=q; } }
+      // v0.55 (Ale: «posizione del braccio totalmente innaturale; il corpo e la testa devono essere girati»): per proteggere la
+      // palla NON si stende il braccio dietro la schiena a busto fermo; si GIRANO spalle, busto e testa, mettendo la spalla libera
+      // verso l'avversario e la palla dall'altra parte, con il braccio di lato e in alto (rotazione fino a PROTEGGI_GIRO rad)
+      let k=0, giro=0;
+      if(o){ const dx=o.x-p.x,dz=o.z-p.z,l=Math.hypot(dx,dz)||1, av=(dx*p.fx+dz*p.fz)/l, la=(-dx*p.fz+dz*p.fx)/l;
+        k=clamp((PROTEGGI_DIST-od)/0.6,0,1);
+        // la spalla della palla (z = lato) ruota verso la direzione opposta all'avversario
+        let d=Math.atan2(-la,-av)-Math.atan2(lato,0); while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI;
+        giro=clamp(d,-PROTEGGI_GIRO,PROTEGGI_GIRO)*k*(1-e);
+        if(Math.abs(giro)>0.01){ const c=mix3(V.sL,V.sR,0.5), cs=Math.cos(giro), sn=Math.sin(giro);
+          const ruota=v=>{ const x=v[0]-c[0], z=v[2]-c[2]; v[0]=c[0]+x*cs-z*sn; v[2]=c[2]+x*sn+z*cs; };
+          for(const key of ['sR','sL','eR','eL','hR','hL']) ruota(V[key]); ruota(V.head);
+          T.torsioneVista=(T.torsioneVista||0)+giro; }
+        // testa e viso verso la porta (almeno di un quarto), non verso l'avversario: il collo gira fino a TESTA_GIRO oltre il busto
+        { const g=[goalX(p.team)-p.x,-p.z], gl=Math.hypot(g[0],g[1])||1, ga=(g[0]*p.fx+g[1]*p.fz)/gl, gz=(-g[0]*p.fz+g[1]*p.fx)/gl;
+          const versoPorta=clamp(Math.atan2(gz,ga),giro-TESTA_GIRO,giro+TESTA_GIRO);
+          T.testaGiro=-versoPorta*k*(1-e); } }
+      // CENTROBOA CON IL DIFENSORE DIETRO (v0.55, Ale: «la palla non può stare nel dorso della mano: o sta in acqua oppure il
+      // giocatore per tenerla in mano si deve girare o tirare una beduina o una sciarpa»): finché non fa un gesto, la palla resta in
+      // acqua davanti a lui, con la mano sopra (palmo in giù); girata, beduina e sciarpa sono i gesti che la alzano
+      if(fight.active&&fight.boa===p&&fight.def){ const q=fight.def, dx=q.x-p.x, dz=q.z-p.z, l=Math.hypot(dx,dz)||1;
+        if((dx*p.fx+dz*p.fz)/l<-0.3){
+          braccio(lato,add3(V['s'+suff],locale(BOA_ACQUA)),locale([-0.2,-0.6,1]),locale([0.12,-1,0.05]),0.15,1-e);
+          T.pallaInAcqua=1-e; return V; } }
+      const R2=v=>{ const cs=Math.cos(giro), sn=Math.sin(giro); return [v[0]*cs-v[2]*sn,v[1],v[0]*sn+v[2]*cs]; };
+      const mano=R2(locale(mix3(HOLD_VISTA,[-0.06,0.38,0.30],k))), n=R2(locale(mix3(PALMO_PALLA,[0.25,0.85,0.25],k)));
+      braccio(lato,add3(V['s'+suff],mano),R2(locale(GOMITO_FUORI)),n,-0.28*(1-k)+0.1*k,1-e);
+    }
+    // BRACCIA «A POLPO» (v0.55): da verticali, senza palla e senza gesti, le mani remano larghe ai lati per coprire spazio
+    if(!hold&&e<0.7&&!p.isGK){
+      for(const s of [1,-1]){ const sf=s>0?'R':'L', sp=V['s'+sf], h=V['h'+sf];
+        if(h[1]>sp[1]-0.02) continue;      // braccio già alzato (muro, marcatura, cinque): lo lascia com'è
+        const g=Math.sin(t*3.2+p.uid+(s>0?0:1.3));
+        braccio(s,add3(sp,[0.16+0.05*g,-0.13,s*(0.40+0.04*g)]),[0,-1,s*0.8],[0.1*g,-1,s*0.3],0.18,(1-e)*0.85);
+      }
     }
     return V;
   }
@@ -304,7 +409,7 @@ function articolaVista(p,J,T,t){
   const volo=a?clamp(tt/fr,0,1):0, busto=ease(clamp((volo-0.02)/0.70,0,1));
   const braccioK=ease(clamp((volo-0.14)/0.86,0,1)), polso=ease(clamp((volo-0.62)/0.38,0,1));
   const chiude=a?clamp((tt-fr)/0.36,0,1):0, rientra=ease(clamp((chiude-0.55)/0.45,0,1));
-  const base0=kind==='shot'||kind==='torsione'||kind==='fake'?-0.84:kind==='beduina'||kind==='rovesciata'?0.72:kind==='sciarpa'?-0.72:th.tw0;
+  const base0=kind==='fake'?-0.84*(fintaDi(p).torsione):kind==='shot'||kind==='torsione'?-0.84:kind==='beduina'||kind==='rovesciata'?0.72:kind==='sciarpa'?-0.72:th.tw0;
   const base1=kind==='shot'?0.48:kind==='torsione'?0.72:th.tw1;
   const twist=(base0*carica*(1-busto)+base1*busto)*(1-ease(chiude))*lato;
   const centro=mix3(V.sL,V.sR,0.5), mezzo=Math.hypot(V.sR[0]-V.sL[0],V.sR[2]-V.sL[2])/2;
@@ -322,13 +427,20 @@ function articolaVista(p,J,T,t){
     const d=Math.sqrt(L1*L1+L2*L2-2*L1*L2*Math.cos(ang))/Math.hypot(...rilascio);
     rilascio=rilascio.map(v=>v*d);
   }
-  let off=mix3(HOLD,CARICA_VISTA[kind]||CARICA_VISTA.shot,carica);
+  // finta personale (finte.js): ogni giocatore ha il suo gesto (larga, a raffica, di polso, mezza, di bomba, di spalla)
+  const fp=kind==='fake'?fintaDi(p):null;
+  if(fp&&fp.alza){ const su=fp.alza*carica*(1-chiude); for(const k of ['head','chest','sR','sL']) V[k][1]+=su; }
+  let off=mix3(HOLD_VISTA,fp?fp.vista:CARICA_VISTA[kind]||CARICA_VISTA.shot,carica);
   off=mix3(off,rilascio,braccioK);
-  off=mix3(off,th.F,ease(clamp(chiude/0.55,0,1)));
-  let hint=mix3([-0.65,0.35,0.9],[-0.08,0.05,1],braccioK);
+  off=mix3(off,ACCOMPAGNA[kind]||th.F,ease(clamp(chiude/0.55,0,1)));
+  // gomito in fuori e un po' indietro durante la carica (prima indietro e in alto: con la mano davanti il braccio si girava
+  // «ad ala di pollo», gomito sotto e dietro la spalla)
+  let hint=mix3(mix3(GOMITO_FUORI,[-0.3,0.15,1],carica),[-0.08,0.05,1],braccioK);
   hint=mix3(hint,[0.15,-0.7,0.8],ease(chiude));
-  let n=mix3([0.05,0.95,0.15],kind==='beduina'||kind==='sciarpa'||kind==='rovesciata'?[-1,0.15,0.1]:[1,0.1,0],polso);
-  n=mix3(n,[0.15,-0.9,-0.2],ease(chiude));
+  // palmo: dietro la palla, in avanti e un po' in su durante la carica (prima rivolto al cielo, «a vassoio»), verso il bersaglio
+  // al rilascio, in giù nella chiusura
+  let n=mix3(PALMO_PALLA,kind==='beduina'||kind==='sciarpa'||kind==='rovesciata'?[-1,0.15,0.1]:[1,0.1,0],polso);
+  n=mix3(n,ACCOMPAGNA[kind]?PALMO_ACCOMPAGNA:[0.15,-0.9,-0.2],ease(chiude));
   if(kind==='pass'&&a?.aim){
     const dx=a.aim[0]-p.x,dz=a.aim[1]-p.z, av=dx*p.fx+dz*p.fz, la=(-dx*p.fz+dz*p.fx)*lato;
     const ang=Math.atan2(la,av)*carica*(1-chiude), c=Math.cos(ang),s=Math.sin(ang);
@@ -337,7 +449,7 @@ function articolaVista(p,J,T,t){
   }
   const spalla=V['s'+suff], target=add3(spalla,locale(off));
   const mano=mix3(target,V['h'+suff],rientra);
-  const flex=(-0.46*carica*(1-polso)+0.54*polso)*(1-ease(chiude))+0.20*ease(chiude);
+  const flex=(-0.46*carica*(1-polso)+0.54*polso)*(1-ease(chiude))+(ACCOMPAGNA[kind]?0.38:0.20)*ease(chiude);
   braccio(lato,mano,locale(hint),locale(n),flex);
   // Il braccio libero sostiene il sollevamento, senza duplicare il gesto di tiro.
   if(kind!=='schizzo'){
@@ -360,7 +472,14 @@ export function updateRig(p,dt,t){
   const dPet=segui('petto',0.07,0.3), dBac=segui('bacino',0.17+0.05*disteso,0.42+0.3*disteso), dGam=segui('gambe',0.3+0.1*disteso,0.6+0.5*disteso);
   p.piega={ petto:dPet*forza, bacino:dBac*forza, gambe:dGam*forza };
   p.curva=clamp(dBac*forza/0.5,-1,1);                          // > 0 = sta girando a destra
-  const T=computePose(p,dt,t); T.piega=p.piega; T.curva=p.curva;
+  const T=computePose(p,dt,t); T.curva=p.curva;
+  // NUOTO A SERPENTE (v0.55, Ale: «il nuoto di un pallanuotista è simile a un serpente, fluido anche perché deve divincolarsi
+  // dalla presa»): a ogni bracciata un'onda scorre dalle spalle al bacino e alle gambe, ciascuno un po' in ritardo; più ampia
+  // quando un avversario è addosso (contatto), anche da verticali con la bicicletta. Solo disegno: niente caso, gioco invariato.
+  { const vel=clamp(Math.hypot(p.vx,p.vz)/1.4,0,1), presa=p.contactT>0?1:0, ph=p.phase||0;
+    const A=disteso*(ONDA.nuoto*vel+ONDA.presa*presa), Av=(1-disteso)*ONDA.presa*0.6*presa, pv=t*9+p.uid;
+    const o=k=>A*Math.sin(ph-ONDA.ritardo*k)+Av*Math.sin(pv-1.1*k);
+    T.piega={ petto:p.piega.petto+o(0)*0.35, bacino:p.piega.bacino+o(1), gambe:p.piega.gambe+o(2)*1.45 }; }
   if(!p.J){ p.J={}; for(const k of JK) p.J[k]=T[k].slice(); }
   const J=p.J, k=1-Math.exp(-dt*(p.act?34:16));
   for(const key of JK){ const a=J[key], b=T[key]; a[0]+=(b[0]-a[0])*k; a[1]+=(b[1]-a[1])*k; a[2]+=(b[2]-a[2])*k; }
@@ -372,7 +491,8 @@ export function updateRig(p,dt,t){
   // Euler; con la direzione oltre ±90° diventa (π, π-y, π). Impostando solo .y il corpo restava capovolto
   // e girato (v0.51, video e diagnosi di Ale su iPhone: corpo contro moto fino al 35% dopo i replay).
   R.g.position.set(p.x,0,p.z); R.g.rotation.set(0,Math.atan2(-p.fz,p.fx),0);
-  const Jv=articolaVista(p,posturaVista(p,J,T.oriz||0),T,t);
+  const Jv=articolaVista(p,posturaVista(p,J,T.oriz||0,inclinazioneVerticale(p,T,dt)),T,t);
+  { const k=1-Math.exp(-dt*7); p.testaGiro=(p.testaGiro||0)+((T.testaGiro||0)-(p.testaGiro||0))*k; T.testaGiro=p.testaGiro; }
   if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)) muoviCorpo(R,Jv,T,dt); }
   else {
     setSeg(R.torso,J.hip,J.chest); R.chest.position.set(J.chest[0],J.chest[1],J.chest[2]); R.pelvis.position.set(J.hip[0],J.hip[1],J.hip[2]);
@@ -404,7 +524,18 @@ export function updateRig(p,dt,t){
     const avanti=Jv.head[0]+0.30, fianco=Jv.head[2];
     p.ballVistaW=[_mano.x*(1-dv)+(p.x+VIS*(avanti*c+fianco*sn))*dv,
       _mano.y*(1-dv)+VIS*0.05*dv,_mano.z*(1-dv)+(p.z+VIS*(-avanti*sn+fianco*c))*dv];
+    // palla in acqua sotto la mano (centroboa con il difensore dietro): galleggia, un terzo sotto il pelo
+    if(T.pallaInAcqua>0){ const a=p.ballVistaW; a[1]+=(Math.max(a[1],BRV*0.35)-a[1])*T.pallaInAcqua; }
   }
+  // LA PALLA NON ENTRA NEGLI ALTRI CORPI (v0.55): se la palla disegnata finisce dentro la testa o il busto di un altro giocatore
+  // vicino viene spinta fuori, in orizzontale, fino a toccarlo appena (raggio PALLA_FUORI dal suo asse). Solo disegno.
+  if(p.ballVistaW){ const b=p.ballVistaW;
+    for(const q of allPlayers){ if(q===p||q.excluded) continue;
+      // asse del corpo e testa disegnata dell'altro (dal fotogramma più recente): la palla resta fuori da entrambi
+      const h=q.Jv?.head||q.J?.head, c=q.fx, sn=-q.fz, hx=h?q.x+VIS*(h[0]*c+h[2]*sn):q.x, hz=h?q.z+VIS*(-h[0]*sn+h[2]*c):q.z, hy=h?VIS*h[1]:0.35;
+      for(const [cx,cz,r,alto] of [[q.x,q.z,PALLA_FUORI,b[1]<0.75&&b[1]>-0.3],[hx,hz,PALLA_FUORI*0.9,Math.abs(b[1]-hy)<0.3]]){
+        const dx=b[0]-cx, dz=b[2]-cz, d=Math.hypot(dx,dz); if(!alto||d>=r) continue;
+        const ux=d>1e-3?dx:p.x-cx, uz=d>1e-3?dz:p.z-cz, ul=Math.hypot(ux,uz)||1; b[0]=cx+ux/ul*r; b[2]=cz+uz/ul*r; } } }
   // contatto con l'acqua (scena.js), dove il corpo disegnato attraversa la superficie: attorno alle spalle da fermi, attorno a
   // testa e spalle in nuotata (il resto del corpo è sotto). Più forte quanto più ci si muove: da fermi, con la sola bicicletta,
   // resta un bordo leggero; cresce quando ci si alza (tiro, parata, lotta) e con la velocità; onda davanti a chi nuota veloce.

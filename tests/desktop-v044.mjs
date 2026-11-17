@@ -63,9 +63,12 @@ try{
   await up('Space');s=await stato();assert.equal(s.act,'shot','rilascio interrompe la finta e tira');assert.equal(s.potenza,1);
   await frame(45);s=await stato();assert.equal(s.kind,'shot');assert.equal(s.trattenuta,false);assert.equal(s.act,null,'gesto finito senza blocchi');
 
+  // v0.55 (scelta di Ale): un tocco breve di Spazio è una finta, la palla resta in mano; tenuto un po' e lasciato è un tiro
   await prepara();await down('Space');await up('Space');s=await stato();
-  assert.equal(s.act,'shot','pressione breve: tiro normale al rilascio');assert.equal(s.finte,0);assert.ok(s.potenza>0);
-  await down('Space');assert.equal((await stato()).act,'shot','secondo tocco non converte il tiro in finta di polso');await up('Space');await frame(40);
+  assert.equal(s.act,'fake','pressione breve: finta');assert.equal(s.trattenuta,true,'la finta conserva la palla');
+  await frame(30);assert.equal((await stato()).finte,1,'una finta per tocco');assert.equal((await stato()).trattenuta,true);
+  await prepara();await down('Space',15);await up('Space');s=await stato();
+  assert.equal(s.act,'shot','pressione di 0,25 s: tiro al rilascio');assert.ok(s.potenza>0);await frame(40);
 
   for(const vincolo of ['freeThrow','pressatoUntil','excluded','portiere']){
     await prepara();await page.evaluate(v=>{const D=window.__desktop,p=D.S.ctrl;if(v==='freeThrow'){p.freeThrow=true;p.x=9;}else if(v==='pressatoUntil')p.pressatoUntil=D.S.game.time+9;else if(v==='excluded')p.excluded=true;else{D.R.giveBall(D.S.teams[0].players[0]);D.S.setCtrl(D.S.teams[0].players[0]);}},vincolo);

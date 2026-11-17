@@ -3,6 +3,7 @@ import { azioneAperta, difensoriDavanti } from './statistiche.js';
 import { ARBITRO, DEF_DOWN, FORM, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
 import { anticipoTarget, centroTarget, leggiCentro } from './centroboa.js';
 import { numeroPosizione, schemaSquadra } from './schemi.js';
+import { fintaDi } from './finte.js';
 import { avanzaUomo, avviaUomo, ePalo, perimetroUomo, postiUomo, postiUomoDi, scelti as sceltiUomo, trova as trovaUomo, SCELTI_BASE } from './uomo-in-piu.js';
 import { doFake, falloSenzaPalla, timeout } from './regole.js';
 import { annuncia as notifica } from './cronaca.js';
@@ -578,6 +579,13 @@ export function aggiornaDifesa(t,dt){
     passaAZona(t,forte&&rnd()<0.3?3:1,true);
   }
 }
+// finte personali (v0.55, finte.js): il ritmo tra una finta e l'altra e il seguito dipendono dallo stile del giocatore
+function pausaFinta(p,f){ p.decideT=f.pausa[0]+rnd()*(f.pausa[1]-f.pausa[0]); }
+function chiudiFinta(p,f,dGoal){
+  if(f.seguito==='lob'&&dGoal>5&&!p.isGK){ aiShoot(p,0.4,true); return; }
+  if(f.seguito==='polso'){ startAct(p,'polso',0.04,()=>doShoot(p,0.42,false,null,{polso:true,dopoFinta:p.fakeUntil>game.time})); return; }
+  aiShoot(p,0.6+rnd()*0.4,false);
+}
 export function aiShoot(p,power,lob){
   const kind=lob?'lob':shotKind(p), r=kind==='shot'?rnd():1;
   if(r<0.14) startAct(p,'polso',0.04,()=>doShoot(p,0.42,false,null,{polso:true,dopoFinta:p.fakeUntil>game.time}));        // tiro di polso
@@ -609,7 +617,7 @@ export function aiCarrier(p,dt){
   // tranne il «quick» dei primi secondi; tempoSup = secondi da quando è iniziata la superiorità
   const azSup=manUp(t)?azioneAperta():null, tempoSup=azSup&&azSup.tipo==='superiorita'?game.time-azSup.t0:99;
   const supPronta=!manUp(t)||tempoSup>5;
-  if(supPronta&&(p.alVolo||paloUomo(p))&&ball.holdTime<0.15&&manUp(t)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
+  if(supPronta&&(p.alVolo||paloUomo(p))&&ball.holdTime<0.15&&(manUp(t)||p.ricevutoDopoFinta||p.ricevutoCambio)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
     const sit=situazioneTiro(p),gk=other(t).players[0],aim=-Math.sign(gk.z||1);
     p.alVolo=false;
     if(sit.marcato<0.2&&sit.vicino>1.25&&!(p.pressatoUntil>game.time)&&laneClear(p,gx,aim,t,0.7)){
@@ -631,6 +639,11 @@ export function aiCarrier(p,dt){
       else aiShoot(p,0.55+rnd()*0.45,false);
       return;
     }
+    // FINTA E SCARICO (v0.55, Ale): dopo una finta riuscita, se la scelta era di scaricare, la palla va subito al compagno libero
+    if(p.scaricoDopoFinta&&p.fakeUntil>game.time&&!sottoPressione){
+      const m2=bestPassTarget(p,false);
+      if(m2&&laneClear(p,m2.x,m2.z,t)&&openness(m2)>1.3){ p.scaricoDopoFinta=false; aiPass(p,m2); return; }
+    }
     const m=bestPassTarget(p,false);
     if(m&&laneClear(p,m.x,m.z,t)&&openness(m)>1.5){
       const md=Math.hypot(gx-m.x,m.z),ma=Math.abs(gx-m.x)/Math.max(0.1,md);
@@ -650,7 +663,9 @@ export function aiCarrier(p,dt){
   // time-out dell'allenatore: dopo un parziale negativo, dopo una serie di espulsioni subite, o per preparare il 7 contro 6
   if(t.timeouts>0 && !t.human && t.vuoleTimeout && timeout(t)){ t.vuoleTimeout=false; t.parzialeSubito=0; return; }
   if(t.timeouts>0 && !t.human && rnd()<0.25){ let st=0,n=0; for(const q of t.players){ if(!q.isGK&&!q.excluded){ st+=q.stamina; n++; } } if(n&&st/n<0.3&&timeout(t)) return; }
-  if(p.shootNext){ p.shootNext=false; if(dGoal<9&&!ft){ if((p.fakeCount||0)<2&&game.shot>4&&rnd()<0.28){ p.shootNext=true; p.decideT=0.2+rnd()*0.6; startAct(p,'fake',0.08+rnd()*0.1,()=>doFake(p)); return; } aiShoot(p,0.6+rnd()*0.4,false); return; } }
+  if(p.shootNext){ p.shootNext=false; if(dGoal<9&&!ft){ const f=fintaDi(p);
+      if((p.fakeCount||0)<f.max&&game.shot>4&&rnd()<0.42){ p.shootNext=true; pausaFinta(p,f); startAct(p,'fake',f.wind*(0.8+rnd()*0.4),()=>doFake(p)); return; }
+      chiudiFinta(p,f,dGoal); return; } }
   const gk=other(t).players[0];
   const aim=-Math.sign(gk.z||(rnd()-0.5))*(0.9+rnd()*0.4);
   const lane=laneClear(p,gx,aim,t,0.7);
@@ -676,7 +691,10 @@ export function aiCarrier(p,dt){
     const sit=situazioneTiro(p), occasione=(sit.liberato?1.7:1)*(sit.dopoCambio?1.6:1)*(1-0.75*sit.marcato)*(sit.daFermo?0.6:1);
     const want = game.shot<2.5 ? 0.9 : (game.shot<6 ? 0.35 : (lane?0.2+0.36*(1-dGoal/8.5):0.1)*(press>1.5?1.35:press<0.9?0.6:1)*pazienza)*angolo*clamp(occasione,0.12,2.2);
     if(rnd()<want){
-      if((p.fakeCount||0)<2 && game.shot>5 && rnd()<(p.fakeCount?0.3:0.24)){ p.fakeUsed=true; p.shootNext=true; p.decideT=0.2+rnd()*0.75; startAct(p,'fake',0.08+rnd()*0.1,()=>doFake(p)); return; }
+      // v0.55 (Ale: «si finta molto e poi si tira, oppure si finta e si scarica»): finte più frequenti, fino a tre;
+      // dopo la finta, quasi una volta su due la palla va al compagno che si è liberato (aiCarrier, «finta e scarico»)
+      { const f=fintaDi(p);
+        if((p.fakeCount||0)<f.max && game.shot>5 && rnd()<(p.fakeCount?0.4:0.5)){ p.fakeUsed=true; p.shootNext=true; p.scaricoDopoFinta=rnd()<f.scarico; pausaFinta(p,f); startAct(p,'fake',f.wind*(0.8+rnd()*0.4),()=>doFake(p)); return; } }
       const lob = dGoal>5 && rnd()<0.12; aiShoot(p,0.55+rnd()*0.45,lob); return;
     }
   }
@@ -687,6 +705,8 @@ export function aiCarrier(p,dt){
   // sul perimetro la palla resta in mano 1-2 s. Il passaggio parte solo verso un compagno libero (bestPassTarget).
   const attesa=manUp(t)?0.55+rnd()*0.5:ritmo==='rapidi'?0.8+rnd()*0.4:ritmo==='equilibrati'?1.1+rnd()*0.7:1.3+rnd()*0.9;
   if(p.freeThrow || (press<1.3&&rnd()<0.55) || ball.holdTime>attesa){
+    // finta prima dello scarico vicino alla porta (v0.55): sposta i difensori, poi il passaggio parte dalla regola «finta e scarico»
+    if(!p.freeThrow&&!manUp(t)&&dGoal<9.5&&!(p.fakeCount)&&press>1.1&&rnd()<0.3){ const f=fintaDi(p); p.scaricoDopoFinta=true; pausaFinta(p,f); startAct(p,'fake',f.wind*(0.8+rnd()*0.4),()=>doFake(p)); return; }
     const m=bestPassTarget(p); if(m&&(!contropiede(t)||press<1.3||p.freeThrow||Math.abs(gx-m.x)<Math.abs(gx-p.x)-1)){ aiPass(p,m); return; }
   }
 }
