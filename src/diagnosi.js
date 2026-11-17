@@ -32,8 +32,9 @@ export function aggiornaDiagnosi(dt) {
       if (p.fx * p.vx + p.fz * p.vz < 0) tot.fisica++;
       if (bx * p.vx + bz * p.vz < 0) tot.disegno++;
       if ((bx * p.fx + bz * p.fz) / L < 0) tot.disegnoFisica++;
-      const ry = Math.atan2(-p.fz, p.fx), d = Math.atan2(Math.sin(p.mesh.g.rotation.y - ry), Math.cos(p.mesh.g.rotation.y - ry));
-      if (Math.abs(d) > 0.5) tot.radice++;
+      // orientamento VERO del corpo (dalla matrice), non il solo angolo .y: dopo il replay l'Euler poteva valere (π, y, π)
+      p.mesh.g.updateWorldMatrix(true, false); const m = p.mesh.g.matrixWorld.elements;
+      if ((m[0] * p.fx + m[2] * p.fz) / (Math.hypot(m[0], m[2]) || 1) < 0.5) tot.radice++;
     }
   }
   t += dt;
