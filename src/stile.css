@@ -891,7 +891,7 @@ body.touch #tac .chip[data-apri]{max-width:200px}
 .strategia-accesso .strategia-icona{font:800 26px/1 system-ui;color:var(--m-ciano)}
 .strategia-accesso>i{font-style:normal;font-size:23px;margin-left:auto;color:var(--m-ciano)}
 .con-strategie{gap:10px}.con-strategie>.strategia-accesso{width:min(320px,48%)}
-.con-strategie>.m-cta{width:min(320px,48%)}
+.con-strategie>.m-cta{width:min(320px,48%);padding-inline:14px}
 .torneo-azioni>.strategia-accesso{width:min(320px,100%)}
 #menu #vStrategie{padding-top:max(10px,var(--st));padding-bottom:max(20px,var(--sb))}
 #menu .schema-testa{position:sticky;top:calc(-1 * max(10px,var(--st)));z-index:4;grid-template-columns:44px 1fr auto;gap:12px;max-width:1100px;width:100%;margin:0 auto 12px;padding:6px 0;background:#091c27;box-shadow:0 0 0 12px #091c27}
@@ -1024,6 +1024,8 @@ body.touch #tac .chip[data-apri]{max-width:200px}
   .uomo-crea-griglia{grid-template-columns:1fr}
   .uomo-carta{grid-template-columns:110px 1fr}.uomo-mini{width:110px}
   .con-strategie{flex-wrap:wrap}
+  /* v0.50 (Ale): in verticale il pulsante principale va su una riga sua, largo, con margini interni veri */
+  .con-strategie>.m-cta{flex:1 1 100%;max-width:none;padding-inline:20px}
 }
 /* barra dell'uomo in più su schermi bassi (iPhone con le barre di Safari): più compatta, nomi lunghi accorciati, non tocca i comandi */
 #tac .chip.up{max-width:230px;overflow:hidden;text-overflow:ellipsis}
