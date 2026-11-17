@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.52.0",
+  "version": "0.53.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -59,7 +59,9 @@
     "gioco-fermo": "node tests/gioco-fermo-v050.mjs",
     "posizioni": "node tests/posizioni-v050.mjs",
     "orientamento": "node tests/orientamento-v052.mjs",
-    "rotazioni": "node strumenti/misura-rotazioni-v050.mjs"
+    "rotazioni": "node strumenti/misura-rotazioni-v050.mjs",
+    "misura-azione": "node strumenti/misura-azione-v053.mjs",
+    "video-azione": "node strumenti/video-azione-v053.mjs"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",

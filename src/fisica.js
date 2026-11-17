@@ -56,6 +56,9 @@ export function movePlayer(p,dx,dz,sprint,dt){
   else if(p.charging){ tfx=goalX(p.team)-p.x; tfz=-p.z; if(diSchiena(shotKind(p))){ tfx=-tfx; tfz=-tfz; } }
   else if(muroOra){ tfx=hm.x-p.x; tfz=hm.z-p.z; }
   else if(difendeCentro){ tfx=ball.x-p.x;tfz=ball.z-p.z; }
+  // scivolamento in verticale (v0.53): ci si sposta di lato o all'indietro con la bicicletta guardando la palla
+  // (o la porta, se la palla ce l'ha lui), non la direzione in cui si scivola
+  else if(p.scivolaAI&&!swimming&&!p.isGK){ if(hold){ tfx=goalX(p.team)-p.x; tfz=-p.z; } else { tfx=ball.x-p.x; tfz=ball.z-p.z; } }
   else if((p.isGK?swimming:moving) && !giroTarget && !(p.isGK&&ball.state!=='held'&&!sprint)){ tfx=dx; tfz=dz; }
   else if(hold){
     tfx=goalX(p.team)-p.x; tfz=-p.z;
