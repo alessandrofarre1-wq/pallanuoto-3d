@@ -70,6 +70,7 @@ Immagini:
   Senza palla e senza gesti, le braccia remano larghe ai lati, «a polpo».
 - **Palla protetta** (Ale: «terrei il braccio e la palla dietro la mia testa»). Con un avversario entro 1,8 m la palla va a braccio teso dietro la testa, dalla parte opposta all'avversario (`PROTEGGI_DIST`).
   - Correzione dopo lo screenshot di Ale («posizione del braccio totalmente innaturale; il corpo e la testa devono essere girati»): per proteggere la palla non si stende più il braccio dietro la schiena a busto fermo. Si girano spalle, busto e testa fino a 1,2 rad (`PROTEGGI_GIRO`), con la spalla libera verso l'avversario e la palla dall'altra parte; il bacino resta dov'è (torsione in vita).
+  - Centroboa con il difensore dietro (Ale: «la palla non può stare nel dorso della mano: o sta in acqua oppure il giocatore si deve girare o tirare una beduina o una sciarpa»). Finché non fa un gesto la palla resta in acqua davanti a lui, con la mano sopra (`BOA_ACQUA`); girata, beduina e sciarpa la alzano.
 - **Rilascio come accompagnamento** (Ale: «non gli sta dando uno schiaffo, è un accompagnamento»).
   - Prima, dopo il rilascio, la mano finiva sotto la spalla e attraverso il corpo, con il palmo in giù.
   - Ora il braccio prosegue quasi disteso verso il bersaglio, all'altezza del petto, con il palmo verso la porta e le dita che puntano la palla; poi scende (`ACCOMPAGNA`, `PALMO_ACCOMPAGNA`).

@@ -298,6 +298,7 @@ export const PALMO_PALLA=[0.85,0.5,0.1];
 export const ACCOMPAGNA={ shot:[0.54,0.20,-0.08], torsione:[0.50,0.18,-0.20], polso:[0.46,0.30,-0.04], pass:[0.48,0.26,-0.02], lob:[0.40,0.46,0.0] };
 export const PALMO_ACCOMPAGNA=[0.85,-0.35,-0.1];
 // palla tenuta alta (solo disegno): mano sopra il gomito, gomito in fuori all'altezza della spalla (angolo di circa 90°)
+export const BOA_ACQUA=[0.40,-0.06,0.08];
 export const HOLD_VISTA=[-0.02,0.42,0.21], GOMITO_FUORI=[-0.1,-0.1,1], PROTEGGI_DIST=1.8, PROTEGGI_GIRO=1.2;
 // onda del corpo in nuotata (rad): ampiezza a piena velocità, in più quando si è trattenuti, ritardo tra spalle, bacino e gambe
 export const ONDA={ nuoto:0.11, presa:0.16, ritardo:0.95 };
@@ -377,6 +378,13 @@ function articolaVista(p,J,T,t){
           const ruota=v=>{ const x=v[0]-c[0], z=v[2]-c[2]; v[0]=c[0]+x*cs-z*sn; v[2]=c[2]+x*sn+z*cs; };
           for(const key of ['sR','sL','eR','eL','hR','hL']) ruota(V[key]); ruota(V.head);
           T.torsioneVista=(T.torsioneVista||0)+giro; } }
+      // CENTROBOA CON IL DIFENSORE DIETRO (v0.55, Ale: «la palla non può stare nel dorso della mano: o sta in acqua oppure il
+      // giocatore per tenerla in mano si deve girare o tirare una beduina o una sciarpa»): finché non fa un gesto, la palla resta in
+      // acqua davanti a lui, con la mano sopra (palmo in giù); girata, beduina e sciarpa sono i gesti che la alzano
+      if(fight.active&&fight.boa===p&&fight.def){ const q=fight.def, dx=q.x-p.x, dz=q.z-p.z, l=Math.hypot(dx,dz)||1;
+        if((dx*p.fx+dz*p.fz)/l<-0.3){
+          braccio(lato,add3(V['s'+suff],locale(BOA_ACQUA)),locale([-0.2,-0.6,1]),locale([0.12,-1,0.05]),0.15,1-e);
+          T.pallaInAcqua=1-e; return V; } }
       const R2=v=>{ const cs=Math.cos(giro), sn=Math.sin(giro); return [v[0]*cs-v[2]*sn,v[1],v[0]*sn+v[2]*cs]; };
       const mano=R2(locale(mix3(HOLD_VISTA,[-0.06,0.38,0.30],k))), n=R2(locale(mix3(PALMO_PALLA,[0.25,0.85,0.25],k)));
       braccio(lato,add3(V['s'+suff],mano),R2(locale(GOMITO_FUORI)),n,-0.28*(1-k)+0.1*k,1-e);
@@ -510,6 +518,8 @@ export function updateRig(p,dt,t){
     const avanti=Jv.head[0]+0.30, fianco=Jv.head[2];
     p.ballVistaW=[_mano.x*(1-dv)+(p.x+VIS*(avanti*c+fianco*sn))*dv,
       _mano.y*(1-dv)+VIS*0.05*dv,_mano.z*(1-dv)+(p.z+VIS*(-avanti*sn+fianco*c))*dv];
+    // palla in acqua sotto la mano (centroboa con il difensore dietro): galleggia, un terzo sotto il pelo
+    if(T.pallaInAcqua>0){ const a=p.ballVistaW; a[1]+=(Math.max(a[1],BRV*0.35)-a[1])*T.pallaInAcqua; }
   }
   // LA PALLA NON ENTRA NEGLI ALTRI CORPI (v0.55): se la palla disegnata finisce dentro la testa o il busto di un altro giocatore
   // vicino viene spinta fuori, in orizzontale, fino a toccarlo appena (raggio PALLA_FUORI dal suo asse). Solo disegno.
