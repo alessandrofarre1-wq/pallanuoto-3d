@@ -2,7 +2,7 @@
 import { azioneAperta, difensoriDavanti } from './statistiche.js';
 import { ARBITRO, DEF_DOWN, FORM, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
 import { anticipoTarget, centroTarget, leggiCentro } from './centroboa.js';
-import { schemaSquadra } from './schemi.js';
+import { numeroPosizione, schemaSquadra } from './schemi.js';
 import { avanzaUomo, avviaUomo, ePalo, perimetroUomo, postiUomo, postiUomoDi, scelti as sceltiUomo, trova as trovaUomo, SCELTI_BASE } from './uomo-in-piu.js';
 import { doFake, falloSenzaPalla, timeout } from './regole.js';
 import { annuncia as notifica } from './cronaca.js';
@@ -172,7 +172,7 @@ function paloTarget(p,f){
 // regole del vantaggio: palla pressata → i compagni si spostano dal lato della palla; palla libera → si impegna il difensore e ci
 // si allarga; difesa che non si impegna → si accelera. Senza vantaggio (transizione 6 contro 6) la struttura porta comunque
 // all'attacco schierato prima che la difesa sia pronta. Finisce quando la palla arriva ai 5,5 m o dopo CONTRO.durata secondi.
-export const CONTRO={ durata:9, zLati:4.0, dPrima:2.25, dSeconda:5.2, zSeconda:2.3 };
+export const CONTRO={ durata:12, zLati:4.0, dPrima:2.25, dSeconda:5.2, zSeconda:2.3 };
 // STILE PER NAZIONALE (Canossa, Lupo et al. 2022, dopo le regole 2018): Italia, Serbia e Australia segnano fino al 33% dei gol in
 // gioco veloce, Spagna, Croazia e Ungheria il 15% o meno. Probabilità di lanciare la controfuga organizzata dopo il recupero.
 export const STILE_VELOCE={ ITA:1, SRB:1, AUS:1, ESP:0.5, CRO:0.5, HUN:0.5 };
@@ -184,8 +184,47 @@ export function contropiede(t){
 }
 function pressato(h){ if(!h) return false; const gx=goalX(h.team), gd=Math.abs(gx-h.x);
   return other(h.team).players.some(q=>!q.excluded&&!q.isGK&&dist(q,h)<1.9&&Math.abs(gx-q.x)<gd+0.4); }
+// APERTURE DOPO IL RECUPERO (v0.54, indicazioni di Ale). Numeri di posizione come in schemi.js, guardando la porta avversaria:
+// 1 destra vicino, 2 destra fuori, 3 centro, 4 sinistra fuori, 5 sinistra vicino, 6 centroboa. POS_I = indice interno di ogni numero.
+// «base»: la prima linea 1, 6, 5 va il prima possibile ai 2 metri (destra, centro, sinistra); 3 viene incontro al portiere e riceve,
+//   2 e 4 gli fanno da appoggio davanti, sui due lati.
+// «apertura del 2»: 2 scatta verso metà campo a ricevere; 1 lo supera e va ai 2 metri; 6 va a fare il centro ai 2 metri e spinge il
+//   difensore verso la porta; 4 e 5 vanno in posizione; ultimi arrivano 3 e 2, che gestiscono la palla.
+export const POS_I=Object.freeze({1:2,2:4,3:6,4:5,5:3,6:1});
+export const APERTURE=Object.freeze({
+  base:{ nome:'Prima linea ai 2 metri', ricevente:3 },
+  apertura2:{ nome:'Apertura del 2', ricevente:2 },
+});
+// posto di ogni numero: d = distanza dalla linea di porta avversaria, z = lato (positivo = destra guardando la porta)
+function postoApertura(num,schema,ballD,h,t){
+  if(schema==='base'){
+    if(num===1) return {d:CONTRO.dPrima,z:CONTRO.zLati};
+    if(num===5) return {d:CONTRO.dPrima,z:-CONTRO.zLati};
+    if(num===6) return {d:CONTRO.dPrima+0.35,z:0};
+    if(num===3) return h&&h.isGK ? {d:25-6,z:0} : {d:Math.max(CONTRO.dSeconda+2,ballD+3),z:0};      // incontro al portiere, poi dietro la palla
+    const lato=num===2?1:-1;
+    return h&&h.isGK ? {d:25-11,z:lato*3.6} : {d:Math.max(CONTRO.dSeconda,ballD-3),z:lato*CONTRO.zSeconda*1.4};
+  }
+  if(num===1) return {d:CONTRO.dPrima,z:CONTRO.zLati};
+  if(num===6) return {d:CONTRO.dPrima+0.35,z:0};
+  if(num===4) return {d:5.8,z:-4.6};
+  if(num===5) return {d:CONTRO.dPrima,z:-6.2};
+  if(num===2) return h&&h.isGK ? {d:12.5,z:2.5} : {d:Math.max(CONTRO.dSeconda,ballD-2.5),z:3.2};
+  return {d:Math.max(CONTRO.dSeconda+2,ballD+3.5),z:0.5};      // 3: l'ultimo, dietro la palla
+}
+// chi deve ricevere il primo passaggio del portiere nell'apertura in corso
+export function riceventeApertura(t){
+  const c=t.contro; if(!c||!c.schema||t.players.some(q=>q.excluded)) return null;
+  const q=t.players[POS_I[APERTURE[c.schema].ricevente]]; return q&&!q.uscendo?q:null;
+}
 function contropiedeTarget(p,c){
   const t=p.team, gx=goalX(t), h=ball.holder&&ball.holder.team===t?ball.holder:null, ballD=Math.abs(gx-ball.x);
+  if(c.schema&&!t.players.some(q=>q.excluded||q.uscendo)){
+    const num=numeroPosizione(p.i); if(!num) return null;
+    const ps=postoApertura(num,c.schema,ballD,h,t);
+    const sprint=!(ps.d>ballD&&Math.abs(gx-p.x)>ps.d-0.5);      // chi deve stare dietro la palla non scatta
+    return { x:gx-t.dir*ps.d, z:clamp(ps.z*t.dir,-HW+0.5,HW-0.5), sprint };
+  }
   if(c.calcT!==game.time){
     c.calcT=game.time;
     const liberi=t.players.filter(q=>!q.isGK&&!q.excluded&&!q.uscendo&&q!==h).sort((a,b)=>Math.abs(gx-a.x)-Math.abs(gx-b.x));
@@ -551,6 +590,9 @@ export function aiCarrier(p,dt){
   if(p.isGK && !setteControSei(t)){
     p.target={x:p.x,z:p.z};
     if(p.act) return;
+    // apertura (v0.54): appena il ricevente è arrivato al suo posto e libero, il portiere gliela dà subito
+    const r=riceventeApertura(t);
+    if(r&&ball.holdTime>0.45&&ball.holdTime<4){ const tg=contropiedeTarget(r,t.contro); if(tg&&Math.hypot(tg.x-r.x,tg.z-r.z)<2.5&&openness(r)>1.1&&laneClear(p,r.x,r.z,t)){ aiPass(p,r); return; } if(ball.holdTime<(t.contro.schema==='apertura2'?3.6:2.4)) return; }
     if(ball.holdTime>1.0+rnd()*0.05){ const m=bestPassTarget(p); if(m) aiPass(p,m); }
     return;
   }
@@ -597,7 +639,9 @@ export function aiCarrier(p,dt){
       // sotto pressione (contrasto di disturbo) si scarica solo dalla parte opposta al difensore; altrimenti si protegge la palla
       // girandosi di spalle (partita.js) e si aspetta: il passaggio che scavalca chi pressa è quello che viene intercettato
       const dP=p.pressatoDa, scarico=!sottoPressione||!dP||((m.x-p.x)*(p.x-dP.x)+(m.z-p.z)*(p.z-dP.z))>0;
-      if((ft||sottoPressione||press<1.25||vantaggio)&&scarico){ aiPass(p,m); return; }
+      // in ripartenza (v0.54) la palla va avanti: indietro solo se pressati
+      const avanti=!contropiede(t)||sottoPressione||press<1.25||Math.abs(gx-m.x)<Math.abs(gx-p.x)-1;
+      if((ft||sottoPressione||press<1.25||vantaggio)&&scarico&&avanti){ aiPass(p,m); return; }
     }
   }
   p.decideT-=dt;
@@ -643,6 +687,6 @@ export function aiCarrier(p,dt){
   // sul perimetro la palla resta in mano 1-2 s. Il passaggio parte solo verso un compagno libero (bestPassTarget).
   const attesa=manUp(t)?0.55+rnd()*0.5:ritmo==='rapidi'?0.8+rnd()*0.4:ritmo==='equilibrati'?1.1+rnd()*0.7:1.3+rnd()*0.9;
   if(p.freeThrow || (press<1.3&&rnd()<0.55) || ball.holdTime>attesa){
-    const m=bestPassTarget(p); if(m){ aiPass(p,m); return; }
+    const m=bestPassTarget(p); if(m&&(!contropiede(t)||press<1.3||p.freeThrow||Math.abs(gx-m.x)<Math.abs(gx-p.x)-1)){ aiPass(p,m); return; }
   }
 }

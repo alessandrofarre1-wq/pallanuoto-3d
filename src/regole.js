@@ -1,6 +1,6 @@
 import { datiGolReplay, segnalaGolReplay } from './replay.js';
 // ================= REGOLE / FASI =================
-import { CONTRO, chiLasciare, stileVeloce, chiamaUomo, manUp, passaAZona, scegliDifesa, setteControSei } from './ia.js';
+import { CONTRO, chiLasciare, chiamaUomo, manUp, passaAZona, scegliDifesa, setteControSei } from './ia.js';
 import { siglaUomo } from './uomo-in-piu.js';
 import { elevazione } from './tiri.js';
 import { riservaPer, vesti } from './giocatori.js';
@@ -71,7 +71,9 @@ export function giveBall(p){
     for(const q of allPlayers) q.cut=null;
     for(const q of p.team.players) if(q.excluded){ if(q.alPozzetto) reenter(q); else q.puoRientrare=true; }      // art. 9.3c: rientra dal pozzetto (appena ci arriva)
     game.possT=game.time;
-    { const veloce=rnd()<stileVeloce(p.team); p.team.contro=veloce&&Math.abs(goalX(p.team)-p.x)>13?{t0:game.time,fino:game.time+CONTRO.durata}:null; }      // controfuga organizzata (ia.js), più spesso per le squadre «veloci»
+    // controfuga organizzata (ia.js): v0.54, indicazione di Ale, dopo OGNI recupero lontano dalla porta avversaria la squadra
+    // riparte subito con una delle due aperture (prima era solo con una probabilità che dipendeva dalla nazionale, STILE_VELOCE)
+    { const schema=rnd()<0.5?'base':'apertura2'; p.team.contro=Math.abs(goalX(p.team)-p.x)>13?{t0:game.time,fino:game.time+CONTRO.durata,schema}:null; }
     // le squadre guidate dal computer scelgono lo schema a ogni cambio di possesso
     const att=p.team, dif=other(att);
     if(!att.human){ att.atkPlay=[0,0,1,1,3][Math.floor(rnd()*5)]; att.cross=rnd()<0.2; att.nextDrive=game.time+3+rnd()*4; }

@@ -31,10 +31,12 @@ const fuori = await pg.evaluate(() => {
     B.x = gx - att.dir * 1.0; B.y = 0.6; B.z = z; B.vx = att.dir * 6; B.vy = vy; B.vz = 0; B.wx = B.wy = B.wz = 0;
     const traccia = []; let annuncio = '';
     const prima = H.cronaca.registro ? H.cronaca.registro.length : 0;
-    for (let i = 0; i < 160; i++) { window.__salta(1); traccia.push([B.x, B.y, B.z, B.state]); }
+    // v0.54: dopo la rimessa il portiere può già aver lanciato l'apertura: conta chi ha preso palla per primo alla ripresa
+    let primo = null;
+    for (let i = 0; i < 160; i++) { window.__salta(1); traccia.push([B.x, B.y, B.z, B.state]); if (!primo && B.holder) primo = B.holder; }
     const r = H.cronaca.registro || []; annuncio = r.slice(prima).map(e => e.testo + ' ' + (e.dettaglio || '')).join(' | ');
     const oltre = Math.max(...traccia.map(q => Math.abs(q[0])));
-    return { oltre, annuncio, finale: B.state, chi: B.holder ? (B.holder.isGK ? 'portiere' : 'giocatore') + ' ' + B.holder.team.short : '-' };
+    return { oltre, annuncio, finale: B.state, chi: primo ? (primo.isGK ? 'portiere' : 'giocatore') + ' ' + primo.team.short : '-' };
   };
   ris.fuori = tira(false, 2.6, 1.0);
   ris.angolo = tira(true, 0.0, 4.5);
