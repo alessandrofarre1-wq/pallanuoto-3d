@@ -6,7 +6,7 @@ import { aggiornaNumero, muoviCorpo } from './corpo.js';
 import { setSeg } from './modello.js';
 import { contatto, spawnFoam } from './scena.js';
 import { evento } from './acqua-eventi.js';
-import { allPlayers, ball, fight, game } from '../stato.js';
+import { allPlayers, ball, fight, game, goalX } from '../stato.js';
 import { shotKind } from '../tiri.js';
 import { braccioMuro } from '../muro.js';
 import { visoGiocatore } from './espressioni.js';
@@ -299,7 +299,7 @@ export const ACCOMPAGNA={ shot:[0.54,0.20,-0.08], torsione:[0.50,0.18,-0.20], po
 export const PALMO_ACCOMPAGNA=[0.85,-0.35,-0.1];
 // palla tenuta alta (solo disegno): mano sopra il gomito, gomito in fuori all'altezza della spalla (angolo di circa 90°)
 export const BOA_ACQUA=[0.40,-0.06,0.08];
-export const HOLD_VISTA=[-0.02,0.42,0.21], GOMITO_FUORI=[-0.1,-0.1,1], PROTEGGI_DIST=1.8, PROTEGGI_GIRO=1.2;
+export const HOLD_VISTA=[-0.02,0.42,0.21], GOMITO_FUORI=[-0.1,-0.1,1], PROTEGGI_DIST=1.8, PROTEGGI_GIRO=1.2, TESTA_GIRO=1.1;
 // onda del corpo in nuotata (rad): ampiezza a piena velocità, in più quando si è trattenuti, ritardo tra spalle, bacino e gambe
 export const ONDA={ nuoto:0.11, presa:0.16, ritardo:0.95 };
 const CARICA_VISTA={
@@ -377,7 +377,11 @@ function articolaVista(p,J,T,t){
         if(Math.abs(giro)>0.01){ const c=mix3(V.sL,V.sR,0.5), cs=Math.cos(giro), sn=Math.sin(giro);
           const ruota=v=>{ const x=v[0]-c[0], z=v[2]-c[2]; v[0]=c[0]+x*cs-z*sn; v[2]=c[2]+x*sn+z*cs; };
           for(const key of ['sR','sL','eR','eL','hR','hL']) ruota(V[key]); ruota(V.head);
-          T.torsioneVista=(T.torsioneVista||0)+giro; } }
+          T.torsioneVista=(T.torsioneVista||0)+giro; }
+        // testa e viso verso la porta (almeno di un quarto), non verso l'avversario: il collo gira fino a TESTA_GIRO oltre il busto
+        { const g=[goalX(p.team)-p.x,-p.z], gl=Math.hypot(g[0],g[1])||1, ga=(g[0]*p.fx+g[1]*p.fz)/gl, gz=(-g[0]*p.fz+g[1]*p.fx)/gl;
+          const versoPorta=clamp(Math.atan2(gz,ga),giro-TESTA_GIRO,giro+TESTA_GIRO);
+          T.testaGiro=-versoPorta*k*(1-e); } }
       // CENTROBOA CON IL DIFENSORE DIETRO (v0.55, Ale: «la palla non può stare nel dorso della mano: o sta in acqua oppure il
       // giocatore per tenerla in mano si deve girare o tirare una beduina o una sciarpa»): finché non fa un gesto, la palla resta in
       // acqua davanti a lui, con la mano sopra (palmo in giù); girata, beduina e sciarpa sono i gesti che la alzano
@@ -487,6 +491,7 @@ export function updateRig(p,dt,t){
   // e girato (v0.51, video e diagnosi di Ale su iPhone: corpo contro moto fino al 35% dopo i replay).
   R.g.position.set(p.x,0,p.z); R.g.rotation.set(0,Math.atan2(-p.fz,p.fx),0);
   const Jv=articolaVista(p,posturaVista(p,J,T.oriz||0,inclinazioneVerticale(p,T,dt)),T,t);
+  { const k=1-Math.exp(-dt*7); p.testaGiro=(p.testaGiro||0)+((T.testaGiro||0)-(p.testaGiro||0))*k; T.testaGiro=p.testaGiro; }
   if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)) muoviCorpo(R,Jv,T,dt); }
   else {
     setSeg(R.torso,J.hip,J.chest); R.chest.position.set(J.chest[0],J.chest[1],J.chest[2]); R.pelvis.position.set(J.hip[0],J.hip[1],J.hip[2]);

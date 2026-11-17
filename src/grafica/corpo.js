@@ -355,6 +355,8 @@ export function muoviCorpo(R,J,T,dt){
   braccio(C,O.bracD,O.avamD,O.manoD,J.sR,J.eR,J.hR,T.nR,1,dirMondo,T.polsoR,T.morbidoR??1);
   braccio(C,O.bracS,O.avamS,O.manoS,J.sL,J.eL,J.hL,T.nL,-1,dirMondo,T.polsoL,T.morbidoL??1);
   // --- testa alta e ferma, che guarda avanti: sia da fermi sia in nuotata ---
-  _qr.copy(_qg).multiply(ROT_MODELLO);
+  // v0.55: la testa può girarsi rispetto al corpo (T.testaGiro, rad attorno alla verticale, smussato in pose.js): per esempio verso
+  // la porta mentre si protegge la palla (Ale: «l'attaccante non può guardare il difensore in faccia con il braccio teso indietro»)
+  _qr.copy(_qg); if(T.testaGiro) _qr.multiply(_qy.setFromAxisAngle(SU,T.testaGiro)); _qr.multiply(ROT_MODELLO);
   orienta(O.collo,_qr,0.5); orienta(O.testa,_qr,0.9);
 }
