@@ -145,17 +145,23 @@ export function bestPassTarget(p,variabile=true){
 export function humanPassTarget(p,ix,iz){
   const il=Math.hypot(ix,iz);
   if(il<0.3) return bestPassTarget(p,false);
-  let best=null, bs=-1e9;
+  // v0.55 (Ale: «più di una volta ho passato la palla al portiere quando ero in attacco»; «fatico a dare la palla al centro»):
+  // il proprio portiere si sceglie solo nella propria metà campo e se non c'è nessun altro nella direzione; con la levetta verso
+  // la porta avversaria il centroboa (o il palo con l'uomo in più) ha la precedenza se è nel cono
+  const gx=goalX(p.team), versoPorta=((gx-p.x)*ix+(-p.z)*iz)/((Math.hypot(gx-p.x,p.z)||1)*il), inAttacco=Math.abs(gx-p.x)<12.5;
+  let best=null, bs=-1e9, portiere=null;
   for(const m of p.team.players){
     if(m===p||m.excluded||m.uscendo) continue;
     const dx=m.x-p.x, dz=m.z-p.z, d=Math.hypot(dx,dz)||1;
     const c=(dx*ix+dz*iz)/(d*il); if(c<0.35) continue;
-    const s=c*4 - d*0.07 + (laneClear(p,m.x,m.z,p.team)?0.5:0);
+    if(m.isGK&&!setteControSei(p.team)){ if(!inAttacco&&c>0.8) portiere=m; continue; }
+    const boa=(!manUp(p.team)&&m.i===1)||(manUp(p.team)&&paloUomo(m));
+    const s=c*4 - d*0.07 + (laneClear(p,m.x,m.z,p.team)?0.5:0) + (boa&&versoPorta>0.55&&c>0.5?BOA_PREFERITO:0);
     if(s>bs){ bs=s; best=m; }
   }
-  return best||bestPassTarget(p,false);
+  return best||portiere||bestPassTarget(p,false);
 }
-export const PASSAGGIO_ALTEZZA=0.95;
+export const PASSAGGIO_ALTEZZA=0.95, BOA_PREFERITO=1.2;
 export function doPass(p,m){
   if(!m) return;
   // v0.55 (Ale: «ad alti livelli il palleggio è alto, teso e veloce»): 11-15,5 m/s (prima 8,5-12) e arrivo alla mano alzata

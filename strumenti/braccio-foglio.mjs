@@ -21,7 +21,7 @@ await pg.goto(server.resolvedUrls.local[0]);
 await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });
 await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 'HUN'); H.game.autoplay = true; for (const t of H.teams) t.human = false; H.imposta('len', '480'); document.getElementById('goBtn').click(); window.__salta(200); document.body.classList.add('foto'); });
 await pg.addStyleTag({ content: 'body.foto #hud, body.foto #touch, body.foto #player, body.foto #schemi, body.foto #cronaca, body.foto #qte, body.foto #tLog, body.foto #pauseBtn, body.foto .tb, body.foto #fps { display:none !important }' });
-const FASI = [['palla tenuta', null], ['carica a metà', 0.5], ['carica piena', 1], ['rilascio', 1.6]];
+const FASI = [['palla tenuta', null], ['carica a metà', 0.5], ['carica piena', 1], ['rilascio', 1.6], ['accompagnamento', 2.6], ['fine del gesto', 3.6]];
 const CAMERE = [['davanti', [2.3, 1.0, 0.9]], ['di lato', [0.2, 1.0, 2.4]], ['da dietro', [-2.0, 1.2, 1.2]]];
 const scatti = [];
 for (const [, fase] of FASI) for (const [, cam] of CAMERE) {
@@ -31,8 +31,9 @@ for (const [, fase] of FASI) for (const [, cam] of CAMERE) {
     for (const q of H.allPlayers) { q.act = null; q.excluded = false; q.charging = false; q.decideT = 99; q.reazioneT = 99; q.x = -6 + q.i; q.z = (q.team === A ? 6 : -6); q.vx = q.vz = 0; q.oriz = 0; }
     const p = A.players[4];
     for (let i = 0; i < 70; i++) {
-      p.x = 0; p.z = 0; p.fx = A.dir; p.fz = 0; p.vx = p.vz = 0; p.oriz = 0; if (B.holder !== p) H.regole.giveBall(p);
-      p.act = fase == null ? null : { kind: 'shot', t: fase <= 1 ? 0.3 * fase : 0.3 + 0.18 * (fase - 1) / 0.6 * 0.6, wind: 0.3, frusta: 0.18, done: false, fn: () => {} };
+      p.x = 0; p.z = 0; p.fx = A.dir; p.fz = 0; p.vx = p.vz = 0; p.oriz = 0;
+      if (fase == null || fase <= 1) { if (B.holder !== p) H.regole.giveBall(p); } else { B.holder = null; B.state = 'flight'; B.kind = 'shot'; B.x = 8 * A.dir; B.y = 1; B.z = 0; B.vx = B.vy = B.vz = 0; }
+      p.act = fase == null ? null : { kind: 'shot', t: fase <= 1 ? 0.3 * fase : fase <= 1.6 ? 0.3 + 0.18 * (fase - 1) / 0.6 : 0.48 + 0.36 * (fase - 1.6) / 2, wind: 0.3, frusta: 0.18, done: false, fn: () => {} };
       for (const q of H.allPlayers) { q.vx = q.vz = 0; }
       window.__salta(1);
     }
@@ -40,7 +41,7 @@ for (const [, fase] of FASI) for (const [, cam] of CAMERE) {
   }, { fase, cam });
   scatti.push((await pg.locator('canvas').first().screenshot()).toString('base64'));
 }
-const pf = await browser.newPage({ viewport: { width: 1500, height: 1300 } });
+const pf = await browser.newPage({ viewport: { width: 1500, height: 1950 } });
 await pf.setContent(`<body style="margin:0;background:#111;color:#fff;font:600 15px system-ui;display:grid;grid-template-columns:repeat(3,1fr);gap:4px">${scatti.map((f, i) => `<div style="position:relative"><img style="width:100%;display:block" src="data:image/png;base64,${f}"><b style="position:absolute;left:8px;top:6px;text-shadow:0 1px 3px #000">${FASI[Math.floor(i / 3)][0]} · ${CAMERE[i % 3][0]}</b></div>`).join('')}</body>`);
 await pf.screenshot({ path: USCITA, fullPage: true });
 if (errori.length) console.log('errori: ' + errori.slice(0, 2).join(' | '));

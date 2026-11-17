@@ -59,6 +59,15 @@ const v = await pg.evaluate(() => { const H = window.__pallanuoto, m = H.teams[0
   return { velocita: window.__vPass, tipo, stato, tiratore }; });
 prova(v.velocita >= 11, `passaggio teso: ${v.velocita.toFixed(1)} m/s alla partenza (prima 8,5-12)`);
 prova(v.tipo === 'shot' && v.tiratore, `un tocco su TIRO mentre arriva il passaggio = tiro al volo di chi riceve (${v.tipo}, ${v.stato})`);
+// passaggio (v0.55): in attacco mai al proprio portiere; con la levetta verso la porta il centroboa ha la precedenza
+const pas = await pg.evaluate(() => { const H = window.__pallanuoto, it = H.teams[0], gx = 12.5 * it.dir, p = it.players[4];
+  H.game.state = 'play'; H.game.after = null;
+  for (const q of it.players) { if (q.isGK) continue; q.x = gx - it.dir * (q === p ? 7 : 5); q.z = (q.i - 3) * 2.4; }
+  const boa = it.players[1]; boa.x = gx - it.dir * 2.6; boa.z = 0.4; p.x = gx - it.dir * 7; p.z = 2.5; it.players[0].x = -gx + it.dir * 0.6; it.players[0].z = 0;
+  const indietro = H.prova.humanPassTarget(p, -it.dir, 0), avanti = H.prova.humanPassTarget(p, it.dir, -0.25);
+  return { indietroGK: !!(indietro && indietro.isGK), avantiBoa: !!(avanti && avanti.i === 1) }; });
+prova(!pas.indietroGK, `in attacco la levetta verso la propria porta non passa al portiere`);
+prova(pas.avantiBoa, `levetta verso la porta avversaria: passaggio al centroboa`);
 prova(errori.length === 0, `nessun errore nella pagina${errori.length ? ': ' + errori.join(' | ') : ''}`);
 console.log(ok ? '\nFinta e tiro al volo: tutte le prove superate' : '\nFinta e tiro al volo: prove NON superate');
 await browser.close(); server.httpServer.close(); process.exit(ok ? 0 : 1);

@@ -59,6 +59,33 @@ Immagini:
 
 `npm run aspetto -- --confronta=`: partita simulata identica a prima del cambio grafico.
 
+
+## 6. Altre indicazioni di Ale, stesso giorno
+- **«Gomito girato al contrario»**: vedi la sezione 4.
+- **Corpo inclinato** (Ale: «chi sta dritto in acqua è un corpo inerme; sei sempre mezzo inclinato, come un polpo»). Chi è in verticale ha il bacino e le gambe indietro rispetto alle spalle:
+  - circa 24° di base;
+  - circa 36° per chi marca l'uomo;
+  - quasi dritto (7°) solo per tirare, murare o parare (`INCLINA_VERT`, `inclinazioneVerticale` in `pose.js`).
+
+  Senza palla e senza gesti, le braccia remano larghe ai lati, «a polpo».
+- **Palla protetta** (Ale: «terrei il braccio e la palla dietro la mia testa»). Con un avversario entro 1,8 m la palla va a braccio teso dietro la testa, dalla parte opposta all'avversario (`PROTEGGI_DIST`).
+- **Rilascio come accompagnamento** (Ale: «non gli sta dando uno schiaffo, è un accompagnamento»).
+  - Prima, dopo il rilascio, la mano finiva sotto la spalla e attraverso il corpo, con il palmo in giù.
+  - Ora il braccio prosegue quasi disteso verso il bersaglio, all'altezza del petto, con il palmo verso la porta e le dita che puntano la palla; poi scende (`ACCOMPAGNA`, `PALMO_ACCOMPAGNA`).
+  - Immagine `docs/immagini/v055-rilascio-prima-dopo.png`.
+- **Lotta al centro** (Ale: «l'attaccante è di spalle alla porta e si appoggia al petto del difensore; spingono in direzioni opposte»).
+  - Con il difensore dietro, il centroboa si inclina all'indietro e il difensore in avanti, e i busti si avvicinano fino al contatto (`LOTTA`, `lottaVista`).
+  - In anticipo (difensore davanti) si inclinano l'uno verso l'altro.
+  - Solo disegno: posizioni e regole della lotta non cambiano.
+  - Foglio `docs/immagini/v055-lotta.png` (`node strumenti/lotta-foglio.mjs`).
+- **Passaggio al centro e al portiere** (Ale: «più di una volta ho passato la palla al portiere quando ero in attacco»; «fatico a dare la palla al centro»). In `humanPassTarget`:
+  - il proprio portiere si sceglie solo nella propria metà campo e se nella direzione della levetta non c'è nessun altro;
+  - con la levetta verso la porta avversaria il centroboa (con l'uomo in più il palo) ha la precedenza (`BOA_PREFERITO`).
+
+  Due controlli nuovi in `npm run finta`.
+
+Tutte le modifiche di questa sezione sono solo disegno, tranne la scelta del compagno nel passaggio.
+
 ## Misure
 Bilancio, 8 partite ITA–HUN, valori per squadra a partita:
 

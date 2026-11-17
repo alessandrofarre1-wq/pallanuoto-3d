@@ -238,22 +238,46 @@ const SU_NUOTO=0.09, INCLINA_NUOTO=0.42, BASSI=['hip','kL','kR','fL','fR'];
 // mezzo inclinato per coprire più spazio con gambe e mani, come un polpo»): bacino e gambe vanno indietro rispetto alle spalle,
 // di più per chi difende sull'uomo; quasi dritti solo per tirare, murare o parare. Smussato nel tempo. Solo disegno.
 export const INCLINA_VERT={ base:0.42, marca:0.62, gesto:0.12, portiere:0.12 };
+// LOTTA AL CENTRO (v0.55, Ale: «l'attaccante è di spalle alla porta e si appoggia al petto del difensore; i due spingono in direzioni
+// opposte, l'attaccante all'indietro e il difensore in avanti»): con il difensore DIETRO il centroboa, il centroboa si inclina
+// all'indietro verso di lui e il difensore in avanti verso il centroboa, e i busti si avvicinano fino al contatto (spostamento
+// della sola parte alta verso l'avversario, LOTTA.contatto). In anticipo (difensore davanti) entrambi si inclinano l'uno verso
+// l'altro. Solo disegno: posizioni e lotta del gioco invariate.
+export const LOTTA={ indietro:0.5, avanti:0.7, contatto:0.17 };
+function lottaVista(p){
+  if(!fight.active||(p!==fight.boa&&p!==fight.def)) return null;
+  const o=p===fight.boa?fight.def:fight.boa; if(!o) return null;
+  const dx=o.x-p.x,dz=o.z-p.z,l=Math.hypot(dx,dz)||1, av=(dx*p.fx+dz*p.fz)/l, la=(-dx*p.fz+dz*p.fx)/l;
+  const spinta=Math.min(LOTTA.contatto,Math.max(0,(l-0.45)/2));      // metà della distanza in più, fino a LOTTA.contatto
+  // inclinazione verso l'avversario: se è davanti ci si inclina in avanti (iv positivo), se è dietro all'indietro (iv negativo)
+  const verso=av>=0?1:-1, iv=verso>0?(p===fight.def?LOTTA.avanti:INCLINA_VERT.marca):-LOTTA.indietro;
+  return { iv:iv*Math.abs(av)+INCLINA_VERT.base*(1-Math.abs(av)), sx:av*spinta, sz:la*spinta };
+}
 function inclinazioneVerticale(p,T,dt){
-  const tiro=ball.holder===p&&(p.charging||(p.act&&!p.act.done)), voluta=p.isGK?INCLINA_VERT.portiere:(T.alzato||tiro)?INCLINA_VERT.gesto:T.marca?INCLINA_VERT.marca:INCLINA_VERT.base;
+  const L=lottaVista(p); p.lottaSpinta=L?[L.sx,L.sz]:null;
+  const tiro=ball.holder===p&&(p.charging||(p.act&&!p.act.done)), voluta=L&&!tiro?L.iv:p.isGK?INCLINA_VERT.portiere:(T.alzato||tiro)?INCLINA_VERT.gesto:T.marca?INCLINA_VERT.marca:INCLINA_VERT.base;
   const k=1-Math.exp(-dt*6); p.inclVert=(p.inclVert??voluta)+(voluta-(p.inclVert??voluta))*k; return p.inclVert;
 }
 function posturaVista(p,J,e,iv=0){
-  if(e<0.001&&iv<0.001) return J;
+  if(e<0.001&&Math.abs(iv)<0.001&&!p.lottaSpinta) return J;
   const V=p.Jv||(p.Jv={}), su=SU_NUOTO*e, a=INCLINA_NUOTO*e-iv*(1-e), ca=Math.cos(a), sa=Math.sin(a);
   const cx=(J.sL[0]+J.sR[0])/2, cy=(J.sL[1]+J.sR[1])/2;
   for(const k of JK){ const q=J[k], v=V[k]||(V[k]=[0,0,0]); v[0]=q[0]; v[1]=q[1]+su; v[2]=q[2]; }
   for(const k of BASSI){ const q=J[k], v=V[k], dx=q[0]-cx, dy=q[1]-cy; v[0]=cx+dx*ca-dy*sa; v[1]=cy+dx*sa+dy*ca+su; }
+  // lotta al centro: la parte alta va verso l'avversario fino al contatto (spalle, testa, braccia; il bacino la metà)
+  const S=p.lottaSpinta;
+  if(S){ for(const k of JK){ const f=k==='hip'?0.5:BASSI.includes(k)?0:1, v=V[k]; v[0]+=S[0]*f; v[2]+=S[1]*f; } }
   return V;
 }
 // Layer soltanto visuale: J e p.ballW conservano la posa fisica e gli stessi
 // istanti di rilascio. Il gomito caricato è piegato, poi busto, braccio e polso
 // accelerano in successione senza aggiungere un'attesa al comando.
 export const PALMO_PALLA=[0.85,0.5,0.1];
+// ACCOMPAGNAMENTO dopo il rilascio (v0.55, Ale: «non gli sta dando uno schiaffo, è un accompagnamento»): la mano continua verso il
+// bersaglio con il braccio quasi disteso, all'altezza del petto, palmo verso la porta e dita che puntano dove va la palla; poi
+// scende piano (rientra). Prima la mano finiva sotto la spalla e attraverso il corpo con il palmo in giù. Solo disegno.
+export const ACCOMPAGNA={ shot:[0.54,0.20,-0.08], torsione:[0.50,0.18,-0.20], polso:[0.46,0.30,-0.04], pass:[0.48,0.26,-0.02], lob:[0.40,0.46,0.0] };
+export const PALMO_ACCOMPAGNA=[0.85,-0.35,-0.1];
 // palla tenuta alta (solo disegno): mano sopra il gomito, gomito in fuori all'altezza della spalla (angolo di circa 90°)
 export const HOLD_VISTA=[-0.02,0.42,0.21], GOMITO_FUORI=[-0.1,-0.1,1], PROTEGGI_DIST=1.8;
 // onda del corpo in nuotata (rad): ampiezza a piena velocità, in più quando si è trattenuti, ritardo tra spalle, bacino e gambe
@@ -363,7 +387,7 @@ function articolaVista(p,J,T,t){
   if(fp&&fp.alza){ const su=fp.alza*carica*(1-chiude); for(const k of ['head','chest','sR','sL']) V[k][1]+=su; }
   let off=mix3(HOLD_VISTA,fp?fp.vista:CARICA_VISTA[kind]||CARICA_VISTA.shot,carica);
   off=mix3(off,rilascio,braccioK);
-  off=mix3(off,th.F,ease(clamp(chiude/0.55,0,1)));
+  off=mix3(off,ACCOMPAGNA[kind]||th.F,ease(clamp(chiude/0.55,0,1)));
   // gomito in fuori e un po' indietro durante la carica (prima indietro e in alto: con la mano davanti il braccio si girava
   // «ad ala di pollo», gomito sotto e dietro la spalla)
   let hint=mix3(mix3(GOMITO_FUORI,[-0.3,0.15,1],carica),[-0.08,0.05,1],braccioK);
@@ -371,7 +395,7 @@ function articolaVista(p,J,T,t){
   // palmo: dietro la palla, in avanti e un po' in su durante la carica (prima rivolto al cielo, «a vassoio»), verso il bersaglio
   // al rilascio, in giù nella chiusura
   let n=mix3(PALMO_PALLA,kind==='beduina'||kind==='sciarpa'||kind==='rovesciata'?[-1,0.15,0.1]:[1,0.1,0],polso);
-  n=mix3(n,[0.15,-0.9,-0.2],ease(chiude));
+  n=mix3(n,ACCOMPAGNA[kind]?PALMO_ACCOMPAGNA:[0.15,-0.9,-0.2],ease(chiude));
   if(kind==='pass'&&a?.aim){
     const dx=a.aim[0]-p.x,dz=a.aim[1]-p.z, av=dx*p.fx+dz*p.fz, la=(-dx*p.fz+dz*p.fx)*lato;
     const ang=Math.atan2(la,av)*carica*(1-chiude), c=Math.cos(ang),s=Math.sin(ang);
@@ -380,7 +404,7 @@ function articolaVista(p,J,T,t){
   }
   const spalla=V['s'+suff], target=add3(spalla,locale(off));
   const mano=mix3(target,V['h'+suff],rientra);
-  const flex=(-0.46*carica*(1-polso)+0.54*polso)*(1-ease(chiude))+0.20*ease(chiude);
+  const flex=(-0.46*carica*(1-polso)+0.54*polso)*(1-ease(chiude))+(ACCOMPAGNA[kind]?0.38:0.20)*ease(chiude);
   braccio(lato,mano,locale(hint),locale(n),flex);
   // Il braccio libero sostiene il sollevamento, senza duplicare il gesto di tiro.
   if(kind!=='schizzo'){
