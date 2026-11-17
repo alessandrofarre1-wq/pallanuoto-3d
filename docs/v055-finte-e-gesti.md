@@ -89,7 +89,20 @@ Immagini:
   - Ora `braccio` (`corpo.js`) allunga la distanza spalla-mano del 42% di quanto manca al braccio teso (`BRACCIO_MORBIDO`): gomiti più aperti, braccia larghe.
   - Lo fa meno nel braccio che tira (0,2), con la palla in mano (0,45) e nella bracciata del crawl, che vogliono il gomito piegato.
 
-Tutte le modifiche di questa sezione sono solo disegno, tranne la scelta del compagno nel passaggio.
+- **Palla al centroboa** (Ale: «al centroboa la palla va sempre data davanti e in acqua; poi lui la prende e si gira e tira, oppure fa una beduina; se gli arriva in mano al volo è perché si è liberato; se il difensore in anticipo viene superato è rigore»).
+  - Con il marcatore entro 1,8 m il passaggio arriva basso, in acqua, 0,55 m davanti a lui verso chi passa (`BOA_DAVANTI`), e un po' più lento.
+  - Arriva alto, in mano, solo se il centroboa è libero.
+  - Se il difensore era in anticipo e la palla lo supera, resta dietro il centroboa davanti alla porta: entro 5 m rigore nel 45% dei casi, espulsione nel 35% (`anticipoBattuto`, `ANTICIPO` in `regole.js`).
+  - Prove: in acqua a 0,29 m con il marcatore; in mano a 1,07 m da libero; anticipo battuto, rigore o espulsione 18 volte su 20.
+- **Corpi e palla non si compenetrano** (Ale: «va bene stare vicini ma non ci si può fondere»).
+  - La spinta della lotta si ferma a 0,5 m tra i centri petto contro schiena e a 0,7 m faccia a faccia, e cala per chi è mezzo disteso.
+  - Regola generale: due giocatori a meno di 0,56 m allontanano le parti alte (`separaVista`).
+  - La palla disegnata viene spinta fuori dal corpo e dalla testa degli altri (`PALLA_FUORI`).
+  - Misura `node strumenti/sonda-compenetrazione.mjs` (partita vera di 240 s), prima → dopo:
+    - teste a meno di 26 cm: 296 fotogrammi su 6336 (4,7%, distanza minima 9 cm) → 0 su 6421 (minima 34 cm);
+    - palla dentro la testa di un altro: 6 → 0.
+
+Tutte le modifiche di questa sezione sono solo disegno, tranne la scelta del compagno nel passaggio e la palla al centroboa.
 
 ## Misure
 Bilancio, 8 partite ITA–HUN, valori per squadra a partita:

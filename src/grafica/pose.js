@@ -243,18 +243,37 @@ export const INCLINA_VERT={ base:0.42, marca:0.62, gesto:0.12, portiere:0.12 };
 // all'indietro verso di lui e il difensore in avanti verso il centroboa, e i busti si avvicinano fino al contatto (spostamento
 // della sola parte alta verso l'avversario, LOTTA.contatto). In anticipo (difensore davanti) entrambi si inclinano l'uno verso
 // l'altro. Solo disegno: posizioni e lotta del gioco invariate.
-export const LOTTA={ indietro:0.5, avanti:0.7, contatto:0.17 };
+// I corpi non si compenetrano (v0.55, Ale: «va bene stare vicini ma non ci si può fondere»): la parte alta si avvicina solo fino a
+// LOTTA.schiena tra i centri se l'avversario è dietro (petto contro schiena) e LOTTA.faccia se è davanti (teste e visi in mezzo).
+export const PALLA_FUORI=0.36;
+export const LOTTA={ indietro:0.5, avanti:0.7, contatto:0.17, schiena:0.5, faccia:0.7 };
 function lottaVista(p){
   if(!fight.active||(p!==fight.boa&&p!==fight.def)) return null;
   const o=p===fight.boa?fight.def:fight.boa; if(!o) return null;
   const dx=o.x-p.x,dz=o.z-p.z,l=Math.hypot(dx,dz)||1, av=(dx*p.fx+dz*p.fz)/l, la=(-dx*p.fz+dz*p.fx)/l;
-  const spinta=Math.min(LOTTA.contatto,Math.max(0,(l-0.45)/2));      // metà della distanza in più, fino a LOTTA.contatto
+  // ciascuno fa metà della strada fino alla distanza minima (mai oltre LOTTA.contatto): petto contro schiena se uno dei due ha
+  // l'altro alle spalle, altrimenti faccia a faccia
+  const dietroUno=av<0||((o.fx*-dx+o.fz*-dz)/l)<0, minimo=dietroUno?LOTTA.schiena:LOTTA.faccia;
+  // chi è già mezzo disteso (difensore di traverso) ha la testa in avanti: la spinta di contatto cala con l'assetto
+  const spinta=Math.min(LOTTA.contatto,Math.max(0,(l-minimo)/2))*(1-Math.max(p.oriz||0,o.oriz||0));
   // inclinazione verso l'avversario: se è davanti ci si inclina in avanti (iv positivo), se è dietro all'indietro (iv negativo)
   const verso=av>=0?1:-1, iv=verso>0?(p===fight.def?LOTTA.avanti:INCLINA_VERT.marca):-LOTTA.indietro;
   return { iv:iv*Math.abs(av)+INCLINA_VERT.base*(1-Math.abs(av)), sx:av*spinta, sz:la*spinta };
 }
+// regola generale: due giocatori più vicini di CORPI_MIN (centro a centro) allontanano ciascuno la propria parte alta di metà della
+// differenza, nel sistema del giocatore. Così testa, spalle e braccia non si fondono anche quando il gioco li mette molto vicini.
+export const CORPI_MIN=0.56;
+function separaVista(p){
+  let sx=0, sz=0;
+  for(const q of allPlayers){ if(q===p||q.excluded) continue;
+    const dx=p.x-q.x, dz=p.z-q.z, d=Math.hypot(dx,dz); if(d>=CORPI_MIN) continue;
+    const u=d>1e-3?[dx/d,dz/d]:[p.fz,-p.fx], m=(CORPI_MIN-d)/2;
+    sx+=(u[0]*p.fx+u[1]*p.fz)*m; sz+=(-u[0]*p.fz+u[1]*p.fx)*m; }
+  return sx||sz?[sx,sz]:null;
+}
 function inclinazioneVerticale(p,T,dt){
-  const L=lottaVista(p); p.lottaSpinta=L?[L.sx,L.sz]:null;
+  const L=lottaVista(p), sep=separaVista(p);
+  p.lottaSpinta=L||sep?[(L?L.sx:0)+(sep?sep[0]:0),(L?L.sz:0)+(sep?sep[1]:0)]:null;
   const tiro=ball.holder===p&&(p.charging||(p.act&&!p.act.done)), voluta=L&&!tiro?L.iv:p.isGK?INCLINA_VERT.portiere:(T.alzato||tiro)?INCLINA_VERT.gesto:T.marca?INCLINA_VERT.marca:INCLINA_VERT.base;
   const k=1-Math.exp(-dt*6); p.inclVert=(p.inclVert??voluta)+(voluta-(p.inclVert??voluta))*k; return p.inclVert;
 }
@@ -482,6 +501,15 @@ export function updateRig(p,dt,t){
     p.ballVistaW=[_mano.x*(1-dv)+(p.x+VIS*(avanti*c+fianco*sn))*dv,
       _mano.y*(1-dv)+VIS*0.05*dv,_mano.z*(1-dv)+(p.z+VIS*(-avanti*sn+fianco*c))*dv];
   }
+  // LA PALLA NON ENTRA NEGLI ALTRI CORPI (v0.55): se la palla disegnata finisce dentro la testa o il busto di un altro giocatore
+  // vicino viene spinta fuori, in orizzontale, fino a toccarlo appena (raggio PALLA_FUORI dal suo asse). Solo disegno.
+  if(p.ballVistaW){ const b=p.ballVistaW;
+    for(const q of allPlayers){ if(q===p||q.excluded) continue;
+      // asse del corpo e testa disegnata dell'altro (dal fotogramma più recente): la palla resta fuori da entrambi
+      const h=q.Jv?.head||q.J?.head, c=q.fx, sn=-q.fz, hx=h?q.x+VIS*(h[0]*c+h[2]*sn):q.x, hz=h?q.z+VIS*(-h[0]*sn+h[2]*c):q.z, hy=h?VIS*h[1]:0.35;
+      for(const [cx,cz,r,alto] of [[q.x,q.z,PALLA_FUORI,b[1]<0.75&&b[1]>-0.3],[hx,hz,PALLA_FUORI*0.9,Math.abs(b[1]-hy)<0.3]]){
+        const dx=b[0]-cx, dz=b[2]-cz, d=Math.hypot(dx,dz); if(!alto||d>=r) continue;
+        const ux=d>1e-3?dx:p.x-cx, uz=d>1e-3?dz:p.z-cz, ul=Math.hypot(ux,uz)||1; b[0]=cx+ux/ul*r; b[2]=cz+uz/ul*r; } } }
   // contatto con l'acqua (scena.js), dove il corpo disegnato attraversa la superficie: attorno alle spalle da fermi, attorno a
   // testa e spalle in nuotata (il resto del corpo è sotto). Più forte quanto più ci si muove: da fermi, con la sola bicicletta,
   // resta un bordo leggero; cresce quando ci si alza (tiro, parata, lotta) e con la velocità; onda davanti a chi nuota veloce.
