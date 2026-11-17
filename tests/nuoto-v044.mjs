@@ -45,7 +45,7 @@ try{
     const rotonda=v=>Number.isFinite(v)?+v.toFixed(5):null;
     const misure=[];
     for(const ti of [0,1])for(const mano of ['D','S'])for(const hold of [false,true]){
-      const p=prepara(ti,mano,hold),dir=p.team.dir,b=base(p)*(hold?.85:1);
+      const p=prepara(ti,mano,hold),dir=p.team.dir,b=base(p)*(hold?F.CON_PALLA:1);
       for(let i=0;i<180;i++)passo(p,dir,0,{fresco:true});
       const velocita=Math.hypot(p.vx,p.vz),x=p.x,z=p.z;let stop=null,maxPasso=0;
       for(let i=0;i<180;i++){const px=p.x,pz=p.z;passo(p,0,0);maxPasso=Math.max(maxPasso,Math.hypot(p.x-px,p.z-pz));if(stop===null&&Math.hypot(p.vx,p.vz)<.1)stop=(i+1)*dt;}
@@ -111,7 +111,7 @@ try{
     const energie=[];
     for(const res of [40,99])for(const modo of ['sprint','normale','fermo']){
       const p=prepara();p.s.res=res;p.stamina=.7;for(let i=0;i<720;i++)passo(p,modo==='fermo'?0:1,0,{sprint:modo==='sprint'});
-      const f=(res-40)/59,attesa=Math.min(1,.7+12*(modo==='sprint'?-.0092*(1.6-f):(modo==='fermo'?.02:.006)*(.6+.8*f)));
+      const f=(res-40)/59,attesa=Math.min(1,.7+12*(modo==='sprint'?-F.SPRINT_CONSUMO*(1.6-f):(modo==='fermo'?.02:.006)*(.6+.8*f)));
       energie.push({res,modo,stamina:p.stamina,attesa});
     }
     const portieri=[];

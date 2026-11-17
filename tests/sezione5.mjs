@@ -112,6 +112,8 @@ const live = await pg.evaluate(() => {
   const gk = t.players[0], tieni = () => { if (H.ball.holder !== gk) H.regole.giveBall(gk); gk.decideT = 99; gk.reazioneT = 99; gk.act = null; H.ball.holdTime = 0; };
   for (let i = 0; i < 40; i++) { tieni(); window.__salta(1); }
   const b = document.getElementById('tCambi'), r = { vuoto: b.dataset.stato, testoVuoto: b.textContent.trim() };
+  // v0.54: lontano dalla palla (il cambio si propone solo a 6+ m), qualunque sia la posizione lasciata dalla partita precedente
+  t.players[5].x = 0; t.players[5].z = -4; t.players[5].vx = t.players[5].vz = 0;
   t.players[5].stamina = 0.2; for (let i = 0; i < 40; i++) { tieni(); window.__salta(1); }
   r.stato = b.dataset.stato; r.testo = b.textContent.trim().replace(/\s+/g, ' ');
   const prima = t.players.map(p => p.num).join(','), esce = t.players[5].num; b.click(); tieni(); window.__salta(2);

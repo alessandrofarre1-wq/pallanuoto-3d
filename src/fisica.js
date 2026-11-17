@@ -10,6 +10,7 @@ import { cornerThrow, giveBall, goalScored, goalThrow, sfondamento, sideOut } fr
 import { active, allPlayers, ball, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
 import { diSchiena, shotKind } from './tiri.js';
 import { difensoreCentro, leggiCentro, passoGirata } from './centroboa.js';
+export const STANCO=0.82, CON_PALLA=0.93, SPRINT_CONSUMO=0.0098;   // v0.54: consumo +6,5% per restare «visibilmente stanchi» dopo 7 vasche
 export function movePlayer(p,dx,dz,sprint,dt){
   // La girata usa lo stesso movimento e gli stessi collisori del nuoto ordinario.
   const giroTarget=passoGirata(p);
@@ -21,8 +22,11 @@ export function movePlayer(p,dx,dz,sprint,dt){
   const canSprint=sprint&&p.stamina>0.05&&swimming;
   if(canSprint) base*=1.65;                          // sprint ~2.6 m/s da fresco
   p.sprinting=canSprint;
-  base*=0.6+0.4*p.stamina;
-  if(hold) base*=0.85;
+  // v0.54 (Ale: «il giocatore con la palla che nuota è quasi fermo»): la stanchezza toglie al massimo il 18%
+  // (prima il 40%, e i compagni del computer arrivavano spesso a stamina zero già nel primo minuto);
+  // con la palla davanti alla testa si nuota al 93% (prima 85%).
+  base*=STANCO+(1-STANCO)*p.stamina;
+  if(hold) base*=CON_PALLA;
   if(p.charging||(p.act&&!p.act.done&&p.act.kind!=='colonnello'&&p.act.kind!=='schizzo')) base*=0.35;
   // Corpo verticale ↔ orizzontale: il passaggio è rapido e frequentissimo (ci si alza per ricevere, passare, tirare, guardare,
   // e si riparte subito): circa un quarto di secondo per alzarsi, un decimo in più per distendersi.
@@ -104,7 +108,7 @@ export function movePlayer(p,dx,dz,sprint,dt){
   // Resistenza: un giocatore medio è visibilmente stanco dopo 6-7 vasche di sprint di fila (docs/tecnica.md);
   // chi ha più Resistenza si stanca meno e recupera prima
   const fRes=(p.s.res-40)/59;
-  if(canSprint) p.stamina-=dt*0.0092*(1.6-fRes); else p.stamina+=dt*(moving?0.006:0.02)*(0.6+0.8*fRes);
+  if(canSprint) p.stamina-=dt*SPRINT_CONSUMO*(1.6-fRes); else p.stamina+=dt*(moving?0.006:0.02)*(0.6+0.8*fRes);
   if(p.contactT>0) p.stamina-=dt*0.02;
   p.stamina=clamp(p.stamina,0,1);
   p.x+=nuotoDiretto?tvx*dt+(vx0-tvx)*a/ritmo:p.vx*dt;

@@ -112,6 +112,7 @@ const computer = await pg.evaluate(() => {
   O.players.forEach(q => { q.excluded = false; });
   t.human = false;
   const esp = t.players[2]; esp.excluded = true; esp.x = 30;
+  H.game.state = 'play'; H.game.after = null;   // v0.54: la scena parte a gioco in corso anche se la prova precedente si è chiusa su un fischio
   const gk = O.players[0]; H.regole.giveBall(gk); gk.decideT = 99; gk.reazioneT = 99;
   window.__salta(10);
   const r = { scelto: O.uomo && O.uomo.schema.id, tra: H.prova.schemiUomo(O).map(s => s.id) };

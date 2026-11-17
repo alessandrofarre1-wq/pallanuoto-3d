@@ -54,11 +54,16 @@ const dif = await pg.evaluate(() => {
     d.tackleCD=9; d.colpi=[]; window.__salta(20);
     return (c.fx*(c.x-d.x)+c.fz*(c.z-d.z))>0;
   })();
-  ({ c } = prepara()); const r1 = H.cronaca.registro.length;
-  const d0 = H.teams[0].players[3];
-  for (let k = 0; k < 3; k++) { // l'attaccante resta lì (altrimenti passa e la prova perde il bersaglio)
-    c.decideT = 9; c.reazioneT = 9; c.x = 0; c.z = 0; c.vx = c.vz = 0; d0.x = -0.9; d0.z = 0; tocco(); window.__salta(28); }
-  out.falli3 = H.cronaca.registro.slice(r1).filter(e => /Fallo|Espulsione|Rigore/.test(e.testo)).map(e => e.testo);
+  // v0.54: un tocco può anche rubare palla (raro, dipende dal caso): in quel caso la sequenza dei tre tocchi si ripete da capo
+  for (let tentativo = 0; tentativo < 4; tentativo++) {
+    ({ c } = prepara()); const r1 = H.cronaca.registro.length;
+    const d0 = H.teams[0].players[3];
+    for (let k = 0; k < 3; k++) { // l'attaccante resta lì (altrimenti passa e la prova perde il bersaglio)
+      c.decideT = 9; c.reazioneT = 9; c.x = 0; c.z = 0; c.vx = c.vz = 0; d0.x = -0.9; d0.z = 0; tocco(); window.__salta(28); }
+    const ev = H.cronaca.registro.slice(r1);
+    out.falli3 = ev.filter(e => /Fallo|Espulsione|Rigore/.test(e.testo)).map(e => e.testo);
+    if (!ev.some(e => /rubata/i.test(e.testo + ' ' + (e.dettaglio || '')))) break;
+  }
   return out;
 });
 prova(dif.pressato && !dif.puoTirare, `1 tocco: l'attaccante è sotto pressione e non può tirare (pressione ${dif.pressato}, tiro ${dif.puoTirare ? 'permesso' : 'bloccato'})`);
