@@ -295,6 +295,8 @@ function articolaVista(p,J,T,t){
   T.nR=T.nR.slice(); T.nL=T.nL.slice();
   const e=T.oriz||0, hold=ball.holder===p, lato=T.manoS?-1:1;
   T.polsoR=0.16+0.06*Math.sin(t*5.5+p.uid); T.polsoL=0.16-0.06*Math.sin(t*5.5+p.uid);
+  // braccia morbide e distese (corpo.js, BRACCIO_MORBIDO): meno nella bracciata del crawl, che vuole il gomito alto
+  T.morbidoR=T.morbidoL=1-0.75*(T.oriz||0);
   T.torsioneVista=Math.sin(p.phase)*0.06*e;
   const braccio=(s,mano,hint,n,polso,k=1)=>{
     const suff=s>0?'R':'L', spalla=V['s'+suff];
@@ -321,6 +323,7 @@ function articolaVista(p,J,T,t){
   const a=hold&&p.act?.done?null:p.act;
   const kind=a?.kind||(p.charging?shotKind(p):null), th=kind?(THROW[kind]||THROW.shot):null;
   const suff=lato>0?'R':'L', locale=v=>[v[0],v[1],v[2]*lato];
+  if(th) T['morbido'+suff]=0.2; else if(hold) T['morbido'+suff]=Math.min(T['morbido'+suff],0.45);
   if(!th&&p.ricevutoPassaggio&&hold){
     const eta=game.time-p.ricevutoT;
     if(eta>=0&&eta<0.18){

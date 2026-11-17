@@ -84,6 +84,11 @@ Immagini:
 
   Due controlli nuovi in `npm run finta`.
 
+- **Braccia morbide** (Ale: «finiscila di mettere queste braccia piegate, sembrano cavallette; serve fluidità»).
+  - In quasi tutte le pose la mano è vicina alla spalla, e il braccio piegava il gomito per arrivarci.
+  - Ora `braccio` (`corpo.js`) allunga la distanza spalla-mano del 42% di quanto manca al braccio teso (`BRACCIO_MORBIDO`): gomiti più aperti, braccia larghe.
+  - Lo fa meno nel braccio che tira (0,2), con la palla in mano (0,45) e nella bracciata del crawl, che vogliono il gomito piegato.
+
 Tutte le modifiche di questa sezione sono solo disegno, tranne la scelta del compagno nel passaggio.
 
 ## Misure
