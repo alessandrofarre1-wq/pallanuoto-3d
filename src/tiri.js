@@ -48,7 +48,7 @@ export function updateRecuperi(dt){
   }
 }
 export function launch(p,tx,ty,tz,t,kind){
-  ball.tiroReplay=null;
+  ball.tiroReplay=null; ball.raccordoPresa=null;
   ball.state='flight'; ball.holder=null; ball.kind=kind; ball.shooter=p; ball.lastTeam=p.team;
   if(p.ballW){ ball.x=p.ballW[0]; ball.y=Math.max(0.3,p.ballW[1]); ball.z=p.ballW[2]; }
   else { ball.x=p.x+p.fx*0.25; ball.z=p.z+p.fz*0.25; ball.y=1.0; }
@@ -161,6 +161,7 @@ export function humanPassTarget(p,ix,iz){
   }
   return best||portiere||bestPassTarget(p,false);
 }
+export const ERRORE_PASSAGGIO={ base:1.5, pressione:2.5, disteso:0.6 };
 export const PASSAGGIO_ALTEZZA=0.95, BOA_PREFERITO=1.2, BOA_DAVANTI=0.55;
 export function doPass(p,m){
   if(!m) return;
@@ -170,7 +171,11 @@ export function doPass(p,m){
   let tx=m.x, tz=m.z; let t=dist(p,m)/spd;
   tx+=m.vx*t*0.8; tz+=m.vz*t*0.8;
   const d=Math.hypot(tx-p.x,tz-p.z); t=Math.max(0.25,d/spd);
-  const err=(0.2+(1-p.stamina)*0.5)*(1.25-p.st.pas)*(0.3+d*0.05);
+  // v0.56 (taratura, palla persa 9% contro circa 20% delle partite vere): il passaggio fatto con un avversario addosso o da
+  // distesi è meno preciso (ERRORE_PASSAGGIO); con la presa alla mano (fisica.js) quello che passa lontano finisce in acqua
+  let press=99; for(const o of other(p.team).players){ if(!o.excluded) press=Math.min(press,dist(o,p)); }
+  const err=(0.2+(1-p.stamina)*0.5)*(1.25-p.st.pas)*(0.3+d*0.05)*ERRORE_PASSAGGIO.base*
+    (1+ERRORE_PASSAGGIO.pressione*clamp((1.6-press)/1.6,0,1))*(1+ERRORE_PASSAGGIO.disteso*(p.oriz||0));
   tx+=gauss()*err; tz+=gauss()*err;
   // PALLA AL CENTROBOA (v0.55, Ale: «al centroboa la palla va sempre data davanti e in acqua; poi lui la prende e si gira e tira
   // con una frustata oppure fa una beduina; se gli arriva in mano al volo è perché si è liberato del difensore»): con il marcatore

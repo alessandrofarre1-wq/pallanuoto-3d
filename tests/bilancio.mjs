@@ -79,7 +79,8 @@ console.log('  gol per tipo: ' + tipi.map(t => `${t} ${r1(sintesi.golTipo[t])}%`
     const n = tutte.reduce((s, x) => s + x.azioni[tipo].n, 0), d = tutte.reduce((s, x) => s + x.azioni[tipo].durata, 0);
     const pc = Object.fromEntries(ES.map(e => [e, 100 * tutte.reduce((s, x) => s + x.azioni[tipo][e], 0) / Math.max(1, n)]));
     sintesi.azioni[tipo] = { perPartita: n / tutte.length, quota: 100 * n / Math.max(1, totAz), durata: d / Math.max(1, n), ...pc };
-    console.log(`  ${tipo}: ${r1(n / tutte.length)} a partita (${r1(100 * n / Math.max(1, totAz))}%), durata media ${r1(d / Math.max(1, n))} s · ` + ES.map(e => `${NOMI[e]} ${r1(pc[e])}%`).join(' · '));
+    const dEs = Object.fromEntries(ES.map(e => [e, tutte.reduce((s, x) => s + (x.azioni[tipo].durate?.[e] || 0), 0) / Math.max(1, tutte.reduce((s, x) => s + x.azioni[tipo][e], 0))]));
+    console.log(`  ${tipo}: ${r1(n / tutte.length)} a partita (${r1(100 * n / Math.max(1, totAz))}%), durata media ${r1(d / Math.max(1, n))} s · ` + ES.map(e => `${NOMI[e]} ${r1(pc[e])}% (${r1(dEs[e])} s)`).join(' · '));
   }
   { const D = [0, 1, 2, 3].map(i => tutte.reduce((s, x) => s + (x.difesa ? x.difesa[i] : 0), 0)), tot = D.reduce((a, b) => a + b, 0) || 1;
     sintesi.difese = D.map(x => 100 * x / tot);

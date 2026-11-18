@@ -70,7 +70,7 @@ export function apriAzione(t){
 }
 export function chiudiAzione(esito){
   if(!azione) return; const a=azione; azione=null;
-  const r=di(a.t).azioni[a.tipo]; r.n++; r[esito]++; r.durata+=game.time-a.t0;
+  const r=di(a.t).azioni[a.tipo]; r.n++; r[esito]++; r.durata+=game.time-a.t0; r.durate=r.durate||{}; r.durate[esito]=(r.durate[esito]||0)+game.time-a.t0;
   ultimaChiusa={ a, r, esito };
 }
 export const annullaAzione=()=>{ azione=null; };

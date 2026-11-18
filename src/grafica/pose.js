@@ -299,6 +299,7 @@ export const PALMO_PALLA=[0.85,0.5,0.1];
 export const ACCOMPAGNA={ shot:[0.54,0.20,-0.08], torsione:[0.50,0.18,-0.20], polso:[0.46,0.30,-0.04], pass:[0.48,0.26,-0.02], lob:[0.40,0.46,0.0] };
 export const PALMO_ACCOMPAGNA=[0.85,-0.35,-0.1];
 // palla tenuta alta (solo disegno): mano sopra il gomito, gomito in fuori all'altezza della spalla (angolo di circa 90°)
+export const BRACCIA_SMUSSO={ base:14, gesto:40 };      // velocità di smussamento delle braccia disegnate (1/s)
 export const BOA_ACQUA=[0.40,-0.06,0.08];
 export const HOLD_VISTA=[-0.02,0.42,0.21], GOMITO_FUORI=[-0.1,-0.1,1], PROTEGGI_DIST=1.8, PROTEGGI_GIRO=1.2, TESTA_GIRO=1.1;
 // onda del corpo in nuotata (rad): ampiezza a piena velocità, in più quando si è trattenuti, ritardo tra spalle, bacino e gambe
@@ -492,6 +493,16 @@ export function updateRig(p,dt,t){
   // e girato (v0.51, video e diagnosi di Ale su iPhone: corpo contro moto fino al 35% dopo i replay).
   R.g.position.set(p.x,0,p.z); R.g.rotation.set(0,Math.atan2(-p.fz,p.fx),0);
   const Jv=articolaVista(p,posturaVista(p,J,T.oriz||0,inclinazioneVerticale(p,T,dt)),T,t);
+  // BRACCIA SENZA SCATTI (v0.56, Ale: «i passaggi sembrano calamitati»): le pose aggiunte solo nel disegno (palla protetta, palla in
+  // acqua del centroboa, accompagnamento) cambiavano di colpo quando cambiava la situazione, e la palla in mano saltava fino a
+  // 1,4 m in un fotogramma subito dopo la presa. Gomiti e mani disegnati seguono la posa con un breve smussamento (più rapido
+  // durante un gesto); anche la palla che scende in acqua sotto la mano arriva con gradualità.
+  // (non in nuotata: la bracciata del crawl è rapida e va lasciata intera)
+  { const B=p.bracciaVista||(p.bracciaVista={}), k0=1-Math.exp(-dt*(p.act&&!p.act.done?BRACCIA_SMUSSO.gesto:BRACCIA_SMUSSO.base)), kb=k0+(1-k0)*clamp((T.oriz||0)*2,0,1);
+    for(const key of ['eR','eL','hR','hL']){ const v=Jv[key]; if(!v) continue; const a=B[key];
+      if(!a||Math.hypot(a[0]-v[0],a[1]-v[1],a[2]-v[2])>3){ B[key]=v.slice(); continue; }
+      a[0]+=(v[0]-a[0])*kb; a[1]+=(v[1]-a[1])*kb; a[2]+=(v[2]-a[2])*kb; v[0]=a[0]; v[1]=a[1]; v[2]=a[2]; }
+    p.pallaAcquaVista=(p.pallaAcquaVista||0)+((T.pallaInAcqua||0)-(p.pallaAcquaVista||0))*kb; T.pallaInAcqua=p.pallaAcquaVista; }
   { const k=1-Math.exp(-dt*7); p.testaGiro=(p.testaGiro||0)+((T.testaGiro||0)-(p.testaGiro||0))*k; T.testaGiro=p.testaGiro; }
   if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)) muoviCorpo(R,Jv,T,dt); }
   else {
