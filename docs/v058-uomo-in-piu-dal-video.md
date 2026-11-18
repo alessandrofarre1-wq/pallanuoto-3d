@@ -42,6 +42,20 @@ Il primo tentativo falliva sulla palla al 6 per un errore nel codice (confrontav
 Foglio con le sette situazioni: `docs/immagini/v058-uomo-in-meno.png`.
 La prova `v046` controlla ora 10 schemi nella libreria (prima 9), compreso il nuovo.
 
+## Bilancio (8 partite ITA–HUN, per squadra, v0.57 → v0.58)
+- superiorità trasformate 36,1% → 41,3% (Mondiali 2025: 52%);
+- gol 15,5 → 16,5; tiri 53,9 → 51,9; tiri in gol 28,8% → 31,8%; espulsioni 12,6 → 11,2; rigori 2,6 → 2,4; intercetti 4,3 → 4,9;
+  azioni 80,9 → 78,5; parità: palla persa 7,4% → 10,1%.
+- In superiorità i tiri sbagliati arrivano dopo circa 12 s (v0.57: 11 s). La durata media della superiorità resta bassa (6,7 s), anche
+  perché il conteggio delle azioni finite in gol non ne somma la durata (`golDaTiro` sposta l'esito ma non la durata): da correggere.
+
+## Verifiche sul codice finale
+- `npm run lint` PASS.
+- Tutti i passi della CI in locale PASS. `posizioni` falliva perché la sua «impronta» comprendeva tutta la libreria degli schemi:
+  ora l'impronta resta sugli schemi precedenti (identica, quindi non sono cambiati) e lo schema nuovo ha un controllo a parte.
+- `npm run verifica`: sei partite arrivate alla fine, 81 gol su 261 tiri (31%), cinque immagini dentro la tolleranza.
+- `npm run aspetto` PASS: 0 gambe fuori dall'acqua; viste iPhone 54 oggetti / 141.282 triangoli.
+
 ## Non fatto
 - Il 3-3 nasce solo dallo schema «Uscita del 6» e dagli altri schemi con un attaccante al centro dei 5 metri; la difesa non
   distingue ancora uno schema dall'altro.
