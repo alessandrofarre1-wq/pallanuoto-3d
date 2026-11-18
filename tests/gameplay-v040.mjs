@@ -86,7 +86,7 @@ try{
       for(const o of S.teams[0].players){o.x=9;o.z=-8;}S.teams[0].players[0].x=-K.HL;S.teams[0].players[0].z=0;
       if(tipo==='pressione'){S.teams[0].players[4].x=p.x+.8;S.teams[0].players[4].z=p.z;p.pressatoUntil=G.time+1;}
       if(tipo==='libero6'){p.x=-9;p.freeThrow=true;}
-      if(tipo==='tiro'){p.ricevutoPassaggio=true;p.ricevutoT=G.time;p.x=-6.5;m.x=5;m.z=8;}
+      if(tipo==='tiro'){p.ricevutoPassaggio=true;p.ricevutoT=G.time;p.provaLiberato=p.ricevutoT;p.vuoleLiberato=true;/* v0.59: il tiro subito si decide una volta per ricezione (TIRO_LIBERATO): qui la decisione è «tira» */p.x=-6.5;m.x=5;m.z=8;}
       if(tipo==='vantaggio'){S.teams[0].players[4].x=p.x+.8;S.teams[0].players[4].z=p.z+1;m.x=-8;m.z=2;}
       let tempo=null,azione=null;
       for(let i=0;i<42;i++){G.time+=dt;B.holdTime+=dt;A.aiCarrier(p,dt);if(p.act){tempo=+((i+1)*dt).toFixed(3);azione=p.act.kind;break;}}

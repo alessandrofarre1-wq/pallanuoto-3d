@@ -21,8 +21,9 @@ await pg.addInitScript(()=>{
 });
 await pg.goto(server.resolvedUrls.local[0]);
 await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto',null,{timeout:120000,polling:100});
-await pg.evaluate(()=>{ const H=window.__pallanuoto; H.scegliSquadre('ITA','HUN'); H.imposta('len','480'); document.getElementById('goBtn').click();
-  for(const t of H.teams) t.human=false; H.game.autoplay=true; for(let i=0;i<240;i++) window.__passo(); });
+await pg.evaluate(solo=>{ const H=window.__pallanuoto; H.scegliSquadre('ITA','HUN'); H.imposta('len','480'); document.getElementById('goBtn').click();
+  if(solo) H.renderer.render=()=>{};   // solo controlli: niente disegno (molto più veloce)
+  for(const t of H.teams) t.human=false; H.game.autoplay=true; for(let i=0;i<240;i++) window.__passo(); },solo);
 // UI 1..4 → indice di ruolo dell'attaccante (FORM_UP; l'Italia attacca verso +x, la sua destra è +z)
 const CASI=[{n:1,i:2},{n:2,i:4},{n:3,i:5},{n:4,i:3}];
 const esiti=[], foto=[];
@@ -30,7 +31,7 @@ for(const caso of CASI){
   const r=await pg.evaluate(({i})=>{
     const H=window.__pallanuoto, A=H.teams[0], D=H.teams[1], R=H.regole;
     const FORM=[null,[2.1,1.75],[2.0,5.4],[2.0,-5.4],[5.2,2.5],[5.2,-2.5],[2.1,-1.75]];
-    H.game.state='play'; H.game.penalty=null; H.game.shot=25;
+    H.replay.interrompiReplay(); H.game.after=null; H.game.state='play'; H.game.penalty=null; H.game.shot=25;   // un gol in una scena precedente fa partire il replay, che congela il gioco
     for(const q of H.allPlayers){ q.excluded=false; q.act=null; q.charging=false; q.stunUntil=0; q.vx=q.vz=0; q.colpi=[]; q.tackleCD=9; q.cut=null; }
     const esp=D.players[3]; esp.excluded=true; esp.exclUntil=H.game.time+999; esp.alPozzetto=true; esp.x=10; esp.z=-11; D.postiAssegnati=null;
     for(let k=1;k<=6;k++){ const p=A.players[k]; p.x=12.5-FORM[k][0]; p.z=FORM[k][1]; p.fx=1; p.fz=0; }
@@ -65,18 +66,26 @@ for(const caso of CASI33){
   const r=await pg.evaluate(({i})=>{
     const H=window.__pallanuoto, A=H.teams[0], D=H.teams[1], R=H.regole;
     const F33=[null,[2.1,0],[2.0,4.6],[2.0,-4.6],[4.8,3.4],[4.8,-3.4],[5.6,0]];
-    H.game.state='play'; H.game.penalty=null; H.game.shot=25;
+    H.replay.interrompiReplay(); H.game.after=null; H.game.state='play'; H.game.penalty=null; H.game.shot=25;   // un gol in una scena precedente fa partire il replay, che congela il gioco
     for(const q of H.allPlayers){ q.excluded=false; q.act=null; q.charging=false; q.stunUntil=0; q.vx=q.vz=0; q.colpi=[]; q.tackleCD=9; q.cut=null; }
     const esp=D.players[3]; esp.excluded=true; esp.exclUntil=H.game.time+999; esp.alPozzetto=true; esp.x=10; esp.z=-11; D.postiAssegnati=null;
     const ferma=()=>{ for(let k=1;k<=6;k++){ const p=A.players[k]; p.x=12.5-F33[k][0]; p.z=F33[k][1]; p.vx=p.vz=0; p.fx=1; p.fz=0; p.decideT=9; p.reazioneT=9; p.act=null; } };
-    const h0=A.players[4]; ferma(); R.giveBall(h0);
-    for(let f=0;f<240;f++){ ferma(); if(H.ball.holder!==h0) R.giveBall(h0); for(const q of D.players) q.tackleCD=9; window.__passo(); }
-    const h=A.players[i]; R.giveBall(h);
-    for(let f=0;f<150;f++){ ferma(); if(H.ball.holder!==h) R.giveBall(h); for(const q of D.players) q.tackleCD=9; window.__passo(); }
+    // se durante la scena l'arbitro fischia (un difensore che salta sul portatore può fare fallo e viene allontanato), la scena
+    // si ripete: la prova riguarda le posizioni, non il fallo (v0.59)
+    const h=A.players[i]; let fischi=0;
+    for(let prova=0;prova<3;prova++){
+      H.game.state='play'; H.game.after=null; for(const q of H.allPlayers){ q.stunUntil=0; q.colpi=[]; }
+      const falli0=H.cronaca.registro.filter(e=>e.tipo==='fallo').length;
+      const h0=A.players[4]; ferma(); R.giveBall(h0);
+      for(let f=0;f<240;f++){ ferma(); if(H.ball.holder!==h0) R.giveBall(h0); for(const q of D.players){ q.tackleCD=9; q.colpi=[]; } window.__passo(); }
+      R.giveBall(h);
+      for(let f=0;f<150;f++){ ferma(); if(H.ball.holder!==h) R.giveBall(h); for(const q of D.players){ q.tackleCD=9; q.colpi=[]; } window.__passo(); }
+      fischi=H.cronaca.registro.filter(e=>e.tipo==='fallo').length-falli0; if(!fischi&&H.game.state==='play') break;
+    }
     const ogx=12.5, dif=D.players.filter(q=>!q.isGK&&!q.excluded), ruolo=q=>D.postiAssegnati?.get(q);
     const davanti=dif.filter(q=>ruolo(q)===1||ruolo(q)===2);
     const d=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
-    return { h:{x:+(ogx-h.x).toFixed(2),z:+h.z.toFixed(2)}, suPalla:+Math.min(...dif.map(q=>d(q,h))).toFixed(2),
+    return { fischi, h:{x:+(ogx-h.x).toFixed(2),z:+h.z.toFixed(2)}, suPalla:+Math.min(...dif.map(q=>d(q,h))).toFixed(2),
       davanti:davanti.map(q=>({x:+(ogx-q.x).toFixed(2),z:+q.z.toFixed(2),dPalla:+d(q,h).toFixed(2)})) };
   },caso);
   if(!solo){
@@ -88,7 +97,7 @@ for(const caso of CASI33){
 // controlli: braccio a specchio (destro → sinistro); centrale dalla parte giusta e con il braccio verso il palo lungo
 let ok=true; const no=m=>{ ok=false; console.log('  ✗ '+m); }, si=m=>console.log('  ✓ '+m);
 for(const {caso,r} of esiti33){
-  console.log(`3-3, palla a ${caso.n} (a ${r.h.x} m dalla porta, z ${r.h.z}): difensori di mezzo ${r.davanti.map(q=>`(${q.x} m, z ${q.z}, a ${q.dPalla} m dalla palla)`).join(' ')}`);
+  console.log(`3-3, palla a ${caso.n}${r.fischi?` (fischio anche alla terza prova: ${r.fischi})`:""} (a ${r.h.x} m dalla porta, z ${r.h.z}): difensori di mezzo ${r.davanti.map(q=>`(${q.x} m, z ${q.z}, a ${q.dPalla} m dalla palla)`).join(' ')}`);
   (r.suPalla<1.3?si:no)(`3-3, palla a ${caso.n}: un difensore salta su chi ha la palla (a ${r.suPalla} m)`);
   if(caso.n===2){ const altro=r.davanti.find(q=>q.dPalla>1.5);
     (altro&&altro.z<0.4&&altro.z>-3.8&&altro.x>3&&altro.x<5.6?si:no)(`3-3, palla a 2: l'altro difensore sta a metà tra 3 e il 6 (${altro?`${altro.x} m, z ${altro.z}`:'non trovato'})`); }
