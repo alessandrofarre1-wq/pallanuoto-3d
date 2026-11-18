@@ -41,6 +41,6 @@ export function tiroSpeciale(p, tipo, aimZ) {
 export function aiControfuga(p, dt) {
   const tipo = occasioneControfuga(p);
   if (!tipo || p.act || Math.hypot(goalX(p.team) - p.x, p.z) > QTE.maxComputer) return false;      // il computer arriva più vicino
-  if (rnd() < dt * (0.5 + 0.7 * clamp((p.s.pre - 60) / 30, 0, 1))) { tiroSpeciale(p, tipo, null); return true; }
+  if (rnd() < dt * (0.5 + 0.7 * clamp((p.s.pre - 60) / 30, 0, 1))) { p.motivoTiro = 'controfuga'; tiroSpeciale(p, tipo, null); return true; }
   return false;
 }

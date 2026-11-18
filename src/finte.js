@@ -38,3 +38,12 @@ export function stileFinta(g){
 export const fintaDi=p=>FINTE[stileFinta(p?.scheda)]||FINTE.larga;
 // chiusura della finta: il seguito tipico entro FIRMA.entro secondi
 export function firma(p,seguito){ return game.time-(p.ultimaFintaT??-9)<FIRMA.entro && fintaDi(p).seguito===seguito; }
+
+// FINTA DI LATO (v0.59, dal video di Dénes Varga: la seconda finta va verso un palo e poi il tiro sul lato opposto; Ale: «sposta sia
+// il difensore che il portiere»). La prima finta resta dritta; dalla seconda la finta ha un lato (segno della z del mondo, cioè un
+// palo). Chi abbocca non resta fermo: sposta il braccio da quella parte (muro × lontano sul lato opposto, × vicino sullo stesso) e
+// il portiere si sposta davvero verso quel palo di «portiere» metri; per «durata» secondi para meno sul lato opposto (parataLontano)
+// e un po' di più sullo stesso (parataVicino). Il giocatore sceglie il lato con la levetta; senza levetta (e per il computer) i lati
+// si alternano, il primo a caso.
+export const FINTA_LATO={ durata:1.1, portiere:0.45, lontano:0.4, vicino:1.15, parataLontano:0.35, parataVicino:0.08, gesto:0.5 };
+export const fintaLatoAttiva=q=>q?.fintaLato&&game.time<q.fintaLato.fino?q.fintaLato.lato:0;

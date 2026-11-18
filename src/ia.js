@@ -3,7 +3,7 @@ import { azioneAperta, difensoriDavanti } from './statistiche.js';
 import { ARBITRO, DEF_DOWN, FORM, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
 import { anticipoTarget, centroTarget, leggiCentro } from './centroboa.js';
 import { numeroPosizione, schemaSquadra } from './schemi.js';
-import { fintaDi } from './finte.js';
+import { FINTA_LATO, fintaDi, fintaLatoAttiva } from './finte.js';
 import { avanzaUomo, avviaUomo, ePalo, perimetroUomo, postiUomo, postiUomoDi, scelti as sceltiUomo, trova as trovaUomo, SCELTI_COMPUTER } from './uomo-in-piu.js';
 import { doFake, falloSenzaPalla, timeout } from './regole.js';
 import { annuncia as notifica } from './cronaca.js';
@@ -534,6 +534,7 @@ export function gkTarget(p){
   let z=postoPortiere(t,bx,bz);
   const h=ball.holder;
   if(h&&h.team!==t&&Math.abs(h.x-ogx)<9){ const m=muroSu(h); if(m) z-=paloCoperto(h)*0.28; }      // il muro copre un palo (muro.js): mezzo passo verso l'altro
+  { const fl=fintaLatoAttiva(p); if(fl) z+=fl*FINTA_LATO.portiere; }      // ha abboccato alla finta di lato (v0.59): si sposta verso quel palo
   return { x:ogx+t.dir*0.7, z:clamp(z,-GW*0.85,GW*0.85), gk:true };
 }
 // steering behaviors: arrive + separation dai compagni + aggiramento degli avversari sulla traiettoria
@@ -687,7 +688,7 @@ export function aiCarrier(p,dt){
     const sit=situazioneTiro(p),gk=other(t).players[0],aim=-Math.sign(gk.z||1);
     p.alVolo=false;
     if(sit.marcato<0.2&&sit.vicino>1.25&&!(p.pressatoUntil>game.time)&&laneClear(p,gx,aim,t,0.7)){
-      startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,null,{volo:true}));return;
+      p.motivoTiro='al volo'; startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,null,{volo:true}));return;
     }
   }
   const ft=p.freeThrow&&Math.abs(gx-p.x)<6;       // tiro libero dentro i 6 metri: non si può tirare direttamente
@@ -701,6 +702,7 @@ export function aiCarrier(p,dt){
       // Il tiro rapido non deve consumare quasi sempre la controfuga prima che
       // il controllo per fotogramma scelga uno speciale. La decisione resta immediata.
       const speciale=dGoal<=QTE.maxComputer?occasioneControfuga(p):null;
+      p.motivoTiro='liberato';
       if(speciale&&rnd()<0.35) tiroSpeciale(p,speciale,null);
       else aiShoot(p,0.55+rnd()*0.45,false);
       return;
@@ -731,7 +733,7 @@ export function aiCarrier(p,dt){
   if(t.timeouts>0 && !t.human && rnd()<0.25){ let st=0,n=0; for(const q of t.players){ if(!q.isGK&&!q.excluded){ st+=q.stamina; n++; } } if(n&&st/n<0.3&&timeout(t)) return; }
   if(p.shootNext){ p.shootNext=false; if(dGoal<9&&!ft){ const f=fintaDi(p);
       if((p.fakeCount||0)<f.max&&game.shot>4&&rnd()<0.42){ p.shootNext=true; pausaFinta(p,f); startAct(p,'fake',f.wind*(0.8+rnd()*0.4),()=>doFake(p)); return; }
-      chiudiFinta(p,f,dGoal); return; } }
+      p.motivoTiro='dopo finta'; chiudiFinta(p,f,dGoal); return; } }
   const gk=other(t).players[0];
   const aim=-Math.sign(gk.z||(rnd()-0.5))*(0.9+rnd()*0.4);
   const lane=laneClear(p,gx,aim,t,0.7);
@@ -761,10 +763,10 @@ export function aiCarrier(p,dt){
       // dopo la finta, quasi una volta su due la palla va al compagno che si è liberato (aiCarrier, «finta e scarico»)
       { const f=fintaDi(p);
         if((p.fakeCount||0)<f.max && game.shot>5 && rnd()<(p.fakeCount?0.4:0.5)){ p.fakeUsed=true; p.shootNext=true; p.scaricoDopoFinta=rnd()<f.scarico; pausaFinta(p,f); startAct(p,'fake',f.wind*(0.8+rnd()*0.4),()=>doFake(p)); return; } }
-      const lob = dGoal>5 && rnd()<0.12; aiShoot(p,0.55+rnd()*0.45,lob); return;
+      const lob = dGoal>5 && rnd()<0.12; p.motivoTiro=game.shot<6?'fine azione':manUp(t)?'superiorita':davanti===0?'nessuno davanti':libero?'libero':'pazienza'; aiShoot(p,0.55+rnd()*0.45,lob); return;
     }
   }
-  if(game.shot<2 && dGoal<13 && !ft){ aiShoot(p,0.9,false); return; }
+  if(game.shot<2 && dGoal<13 && !ft){ p.motivoTiro='sirena'; aiShoot(p,0.9,false); return; }
   // con l'uomo in più la palla gira in fretta: un tocco e via, per spostare la difesa e il portiere
   const ritmo=schemaSquadra(t).passaggi;
   // v0.53 (Ale: «circolazione macchinosa»): prima 2,5-4,5 s con lo stile «vicini» della strategia di partenza; nelle partite vere

@@ -1,6 +1,6 @@
 import { registraTiroReplay } from './replay.js';
 // ================= PASSAGGI E TIRI =================
-import { registraTiro, tipoDiTiro } from './statistiche.js';
+import { azioneAperta, registraTiro, tipoDiTiro } from './statistiche.js';
 import { controllaInterferenza } from './regole.js';
 import { annuncia } from './cronaca.js';
 import { FIRMA, firma } from './finte.js';
@@ -25,6 +25,10 @@ export function startAct(p,kind,wind,fn,aim){
   // "frusta" = tempo dal braccio caricato al rilascio. Dati riportati nella tesi Patumi (Melchiorri 2015): 166 ms per i
   // professionisti, 189 ms per i semi-professionisti: chi tira meglio rilascia prima. Passaggio e finta sono gesti più corti.
   const frusta = kind==='pass'||kind==='fake' ? 0.09 : kind==='polso' ? 0.11 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
+  // finta di lato (v0.59, finte.js FINTA_LATO): la prima dritta, dalla seconda verso un palo (scelto con la levetta o alternato)
+  if(kind==='fake'){ let lato=0;
+    if((p.fakeCount||0)>0){ lato=p.fintaLatoVoluto||(p.ultimoLatoFinta?-p.ultimoLatoFinta:(rnd()<0.5?1:-1)); p.ultimoLatoFinta=lato; }
+    p.fintaLatoGesto=lato; p.fintaLatoVoluto=0; }
   p.act={t:0,kind,wind,frusta,fn,aim,done:false,potenza:p.charging?Math.min(1,p.chargeT/0.9):0}; p.charging=false; p.chargeT=0;
   if(diSchiena(kind)) p.tiriDiSchiena=(p.tiriDiSchiena||0)+1;
 }
@@ -220,6 +224,9 @@ export function situazioneTiro(p){
 const mira = pre => pre>=90 ? 0.18-(pre-90)/9*0.1 : 0.18+Math.pow((90-pre)/30,1.6)*1.55;
 // o = variante: polso (tiro di solo polso, poco caricato), dopoFinta, torsione (finta di busto sul primo palo e chiusura in diagonale), volo
 export function doShoot(p,power,lob,aimZ,o){
+  // misura (v0.59, solo con window.__logTiri nelle sonde): perché e dopo quanto tempo d'azione tira il computer
+  if(typeof window!=='undefined'&&window.__logTiri){ const az=azioneAperta(); window.__logTiri.push({m:p.motivoTiro||(p.team.human?'giocatore':'altro'),t:az?game.time-az.t0:-1,tipo:az?.tipo||'-',d:Math.hypot(goalX(p.team)-p.x,p.z)}); }
+  p.motivoTiro=null;
   o=o||{};
   const tipoAzione=tipoDiTiro(p,ball);
   const t=p.team, gx=goalX(t), gk=other(t).players[0];

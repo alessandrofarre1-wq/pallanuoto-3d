@@ -31,7 +31,7 @@ const tocco = async (ms) => {
 const prepara = () => pg.evaluate(() => {
   const H = window.__pallanuoto, it = H.teams[0], hu = H.teams[1], gx = 12.5 * it.dir;
   H.game.state = 'play'; H.game.after = null; H.game.penalty = null; H.fight.active = false; H.game.shot = 28;
-  for (const q of H.allPlayers) { q.act = null; q.excluded = false; q.charging = false; q.chargeT = 0; q.pressatoUntil = 0; q.freeThrow = false; q.vx = q.vz = 0; q.fakeCount = 0; }
+  for (const q of H.allPlayers) { q.act = null; q.excluded = false; q.charging = false; q.chargeT = 0; q.pressatoUntil = 0; q.freeThrow = false; q.vx = q.vz = 0; q.fakeCount = 0; q.fintaLatoGesto = 0; q.ultimoLatoFinta = 0; q.fintaLato = null; }
   for (const q of hu.players) { if (q.isGK) continue; q.x = -gx * 0.6; q.z = (q.i - 3) * 2; q.stunUntil = H.game.time + 99; q.tackleCD = 99; }
   const p = it.players[4]; p.x = gx - it.dir * 8; p.z = 2; H.regole.giveBall(p); H.__setCtrl(p); p.decideT = 99;
   window.__salta(5);
@@ -43,10 +43,23 @@ await prepara(); await tocco(80); await pg.evaluate(() => window.__salta(30)); c
 prova(a.tiene && a.finte === 1, `un tocco su TIRO = una finta, palla ancora in mano (finte ${a.finte}, palla ${a.tiene ? 'in mano' : a.palla})`);
 await prepara(); for (let k = 0; k < 3; k++) { await tocco(80); await pg.evaluate(() => window.__salta(28)); } const b = await stato();
 prova(b.tiene && b.finte === 3, `tre tocchi = tre finte di fila (${b.finte})`);
-await prepara(); await tocco(250); await pg.evaluate(() => window.__salta(30)); const c = await stato();
-prova(!c.tiene && c.tipo === 'shot', `tenuto 0,25 s e lasciato = tiro di polso (palla ${c.palla}, ${c.tipo})`);
-await prepara(); await tocco(900); await pg.evaluate(() => window.__salta(40)); const d = await stato();
-prova(!d.tiene && d.tipo === 'shot', `tenuto 0,9 s e lasciato = tiro caricato (palla ${d.palla}, ${d.tipo})`);
+// v0.59 (video di Dénes Varga; Ale: «sposta sia il difensore che il portiere»): la prima finta dritta, poi di lato verso un palo,
+// alternando; il portiere che abbocca alla finta di lato si sposta verso quel palo
+await prepara(); const lati = [];
+for (let k = 0; k < 3; k++) { await tocco(80); lati.push(await pg.evaluate(() => { window.__salta(2); return window.__pallanuoto.teams[0].players[4].fintaLatoGesto || 0; })); await pg.evaluate(() => window.__salta(26)); }
+prova(lati[0] === 0 && Math.abs(lati[1]) === 1 && lati[2] === -lati[1], `finte: la prima dritta, poi di lato alternando (${lati.join(', ')})`);
+const gkSposta = await pg.evaluate(() => { const H = window.__pallanuoto, gk = H.teams[1].players[0];
+  gk.fintaLato = null; const z0 = H.prova.gkTarget(gk).z; gk.fintaLato = { lato: 1, fino: H.game.time + 1 }; const z1 = H.prova.gkTarget(gk).z; gk.fintaLato = null; return z1 - z0; });
+prova(gkSposta > 0.3, `il portiere che abbocca alla finta di lato si sposta verso quel palo (${gkSposta.toFixed(2)} m)`);
+// (v0.59) si guarda se il tiro parte dal giocatore nei fotogrammi dopo il rilascio: dopo 30-40 fotogrammi il portiere o il muro
+// possono già averlo fermato, e lo stato finale della palla dipendeva dal caso
+const partito = n => pg.evaluate(n => { const H = window.__pallanuoto, p = H.teams[0].players[4]; let tiro = false;
+  for (let i = 0; i < n && !tiro; i++) { window.__salta(1); if (H.ball.kind === 'shot' && H.ball.shooter === p && H.ball.holder !== p) tiro = true; }
+  return { tiro, palla: H.ball.state, tipo: H.ball.kind }; }, n);
+await prepara(); await tocco(250); const c = await partito(30);
+prova(c.tiro, `tenuto 0,25 s e lasciato = tiro di polso (partito: ${c.tiro ? 'sì' : 'no'}, palla ${c.palla})`);
+await prepara(); await tocco(900); const d = await partito(40);
+prova(d.tiro, `tenuto 0,9 s e lasciato = tiro caricato (partito: ${d.tiro ? 'sì' : 'no'}, palla ${d.palla})`);
 // tiro al volo: passaggio a un compagno vicino alla porta, un tocco su TIRO mentre la palla vola
 await pg.evaluate(() => { const H = window.__pallanuoto, it = H.teams[0], gx = 12.5 * it.dir, p = it.players[4], m = it.players[2];
   H.game.state = 'play'; H.game.after = null; H.game.penalty = null;

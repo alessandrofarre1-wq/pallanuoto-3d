@@ -1,4 +1,4 @@
-import { fintaDi } from '../finte.js';
+import { FINTA_LATO, fintaDi } from '../finte.js';
 import * as THREE from 'three';
 // Pose e animazioni: nuotata, posizione verticale, gesti di tiro e passaggio
 import { BRV, VIS, clamp, dist, rndGrafica } from '../costanti.js';
@@ -450,6 +450,12 @@ function articolaVista(p,J,T,t){
   // al rilascio, in giù nella chiusura
   let n=mix3(PALMO_PALLA,kind==='beduina'||kind==='sciarpa'||kind==='rovesciata'?[-1,0.15,0.1]:[1,0.1,0],polso);
   n=mix3(n,ACCOMPAGNA[kind]?PALMO_ACCOMPAGNA:[0.15,-0.9,-0.2],ease(chiude));
+  // finta di lato (v0.59, Varga): il braccio va verso il palo scelto, non dritto alla porta
+  if(kind==='fake'&&p.fintaLatoGesto){
+    const la=p.fintaLatoGesto*p.fx*lato, ang=Math.sign(la)*FINTA_LATO.gesto*carica*(1-chiude), c=Math.cos(ang),s=Math.sin(ang);
+    const ruota=v=>[v[0]*c-v[2]*s,v[1],v[0]*s+v[2]*c];
+    off=ruota(off); hint=ruota(hint); n=ruota(n);
+  }
   if(kind==='pass'&&a?.aim){
     const dx=a.aim[0]-p.x,dz=a.aim[1]-p.z, av=dx*p.fx+dz*p.fz, la=(-dx*p.fz+dz*p.fx)*lato;
     const ang=Math.atan2(la,av)*carica*(1-chiude), c=Math.cos(ang),s=Math.sin(ang);

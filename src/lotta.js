@@ -71,7 +71,7 @@ export function boaHold(b,d,dt){
     // La finestra nasce dall'aggiramento fisico. Il rigore richiede un contrasto effettivo,
     // con le condizioni regolamentari comuni, non l'esito casuale della girata.
     if(d===ctrl&&d.aggrT>game.time&&dist(b,d)<1.15){ tackle(d,b,{fallo:true,origine:'centro'});return; }
-    if(b!==ctrl&&!b.freeThrow) aiShoot(b,0.75,false);
+    if(b!==ctrl&&!b.freeThrow){ b.motivoTiro='girata'; aiShoot(b,0.75,false); }
     return;
   }
   const v=fight.v;
@@ -98,7 +98,7 @@ export function boaHold(b,d,dt){
   fight.decT-=dt; if(fight.decT>0) return;
   fight.decT=0.45+rnd()*0.4;
   if(fight.holdT>0.6&&v>-0.1&&rnd()<0.35){ girata(b,d); return; }
-  if(fight.holdT>0.8&&rnd()<0.15&&!b.freeThrow){ aiShoot(b,0.6+rnd()*0.3,false); return; }
+  if(fight.holdT>0.8&&rnd()<0.15&&!b.freeThrow){ b.motivoTiro='centroboa'; aiShoot(b,0.6+rnd()*0.3,false); return; }
   if(fight.holdT>1.8||(v<-0.4&&rnd()<0.5)){ const m=bestPassTarget(b); if(m) aiPass(b,m); }
 }
 export function girata(b,d){
