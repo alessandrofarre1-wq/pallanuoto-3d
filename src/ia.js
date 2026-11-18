@@ -3,7 +3,7 @@ import { azioneAperta, difensoriDavanti } from './statistiche.js';
 import { ARBITRO, DEF_DOWN, FORM, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
 import { anticipoTarget, centroTarget, leggiCentro } from './centroboa.js';
 import { numeroPosizione, schemaSquadra } from './schemi.js';
-import { fintaDi } from './finte.js';
+import { FINTA_LATO, fintaDi, fintaLatoAttiva } from './finte.js';
 import { avanzaUomo, avviaUomo, ePalo, perimetroUomo, postiUomo, postiUomoDi, scelti as sceltiUomo, trova as trovaUomo, SCELTI_COMPUTER } from './uomo-in-piu.js';
 import { doFake, falloSenzaPalla, timeout } from './regole.js';
 import { annuncia as notifica } from './cronaca.js';
@@ -314,7 +314,7 @@ export const TRE_TRE={ centro:1.6, daMin:4.2, daMax:7.5, latoMin:3.6, addosso:0.
 // attacco del computer in superiorità (v0.58): pronta = secondi prima di cercare il tiro; dopoCambio = per quanti secondi dopo
 // aver ricevuto un passaggio che ha cambiato lato si tira subito (da cambioDa secondi in poi); libero = da quando si tira se davvero
 // liberi; attesa/rampa = la voglia di tirare cresce da attesa a attesa+rampa secondi (prima 5 → 9 s)
-export const SUPERIORITA={ pronta:7, dopoCambio:1.6, cambioDa:3, libero:7, attesa:9, rampa:4 };
+export const SUPERIORITA={ pronta:9, dopoCambio:1.6, cambioDa:3, libero:8, attesa:8, rampa:4 };
 export const INFERIORITA={ esterno:3.6, largo:3.4, spalle:1.0, stretto:2.3 };
 function postiInferiorita(t){
   if(t.postiT===game.time) return t.posti;
@@ -534,6 +534,7 @@ export function gkTarget(p){
   let z=postoPortiere(t,bx,bz);
   const h=ball.holder;
   if(h&&h.team!==t&&Math.abs(h.x-ogx)<9){ const m=muroSu(h); if(m) z-=paloCoperto(h)*0.28; }      // il muro copre un palo (muro.js): mezzo passo verso l'altro
+  { const fl=fintaLatoAttiva(p); if(fl) z+=fl*FINTA_LATO.portiere; }      // ha abboccato alla finta di lato (v0.59): si sposta verso quel palo
   return { x:ogx+t.dir*0.7, z:clamp(z,-GW*0.85,GW*0.85), gk:true };
 }
 // steering behaviors: arrive + separation dai compagni + aggiramento degli avversari sulla traiettoria
@@ -653,7 +654,11 @@ export function aiPass(p,m){ startAct(p,'pass',0.08,()=>doPass(p,m),[m.x,m.z]); 
 // COSTRUZIONE (v0.56, taratura): nelle partite vere un'azione in parità dura circa 21 s (Mondiali 2009) e se ne giocano circa 50
 // a partita (Euro League); nel gioco duravano 12,8 s. Nei primi COSTRUZIONE.secondi di un'azione in parità non si tira al volo
 // e il tiro «da libero» si cerca meno (COSTRUZIONE.libero); restano il tiro con nessun difensore davanti e quello vicinissimo
-export const COSTRUZIONE={ secondi:7, libero:0.3, vicino:4.5 };
+export const COSTRUZIONE={ secondi:11, libero:0.3, vicino:4.5 };
+// TIRO SUBITO DOPO LA RICEZIONE (v0.59, taratura): era quasi automatico a ogni ricezione libera e dava un tiro su quattro, a circa
+// 10 s d'azione. Ora si decide una volta per ricezione: in parità si tira subito in TIRO_LIBERATO.parita casi, altrimenti si
+// continua a far girare palla; in superiorità (già paziente) TIRO_LIBERATO.superiorita.
+export const TIRO_LIBERATO={ parita:0.4, superiorita:0.85, quick:0.3 };   // quick = superiorità in cui si cerca il tiro nei primi 3 s
 function inCostruzione(t){ const az=azioneAperta(); return !!az&&az.t===t&&az.tipo==='parita'&&!manUp(t)&&!contropiede(t)&&game.time-az.t0<COSTRUZIONE.secondi&&game.shot>8; }
 export function aiCarrier(p,dt){
   const t=p.team, gx=goalX(t);
@@ -683,11 +688,12 @@ export function aiCarrier(p,dt){
   const dopoCambioSup=manUp(t)&&p.ricevutoCambio&&game.time-(p.ricevutoT||-9)<SUPERIORITA.dopoCambio&&tempoSup>SUPERIORITA.cambioDa;
   const supPronta=!manUp(t)||tempoSup>SUPERIORITA.pronta||dopoCambioSup;
   const costr=inCostruzione(t);
-  if(supPronta&&!costr&&(p.alVolo||paloUomo(p))&&ball.holdTime<0.15&&(manUp(t)||p.ricevutoDopoFinta||p.ricevutoCambio)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
+  if(p.provaLiberato!==p.ricevutoT){ p.provaLiberato=p.ricevutoT; p.vuoleLiberato=rnd()<(manUp(t)?TIRO_LIBERATO.superiorita:contropiede(t)?1:TIRO_LIBERATO.parita); }
+  if(p.vuoleLiberato&&supPronta&&!costr&&(p.alVolo||paloUomo(p))&&ball.holdTime<0.15&&(manUp(t)||p.ricevutoDopoFinta||p.ricevutoCambio)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
     const sit=situazioneTiro(p),gk=other(t).players[0],aim=-Math.sign(gk.z||1);
     p.alVolo=false;
     if(sit.marcato<0.2&&sit.vicino>1.25&&!(p.pressatoUntil>game.time)&&laneClear(p,gx,aim,t,0.7)){
-      startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,null,{volo:true}));return;
+      p.motivoTiro='al volo'; startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,null,{volo:true}));return;
     }
   }
   const ft=p.freeThrow&&Math.abs(gx-p.x)<6;       // tiro libero dentro i 6 metri: non si può tirare direttamente
@@ -697,10 +703,11 @@ export function aiCarrier(p,dt){
     p.reazioneT=0.12;
     const press=openness(p),sottoPressione=p.pressatoUntil>game.time;
     const sit=situazioneTiro(p),angolo=Math.abs(gx-p.x)/Math.max(0.1,dGoal);
-    if(supPronta&&!ft&&!sottoPressione&&dGoal<(costr?COSTRUZIONE.vicino:7)&&angolo>0.68&&sit.liberato&&sit.marcato<0.2&&laneClear(p,gx,0,t,0.7)){
+    if(p.vuoleLiberato&&supPronta&&!ft&&!sottoPressione&&dGoal<(costr?COSTRUZIONE.vicino:7)&&angolo>0.68&&sit.liberato&&sit.marcato<0.2&&laneClear(p,gx,0,t,0.7)){
       // Il tiro rapido non deve consumare quasi sempre la controfuga prima che
       // il controllo per fotogramma scelga uno speciale. La decisione resta immediata.
       const speciale=dGoal<=QTE.maxComputer?occasioneControfuga(p):null;
+      p.motivoTiro='liberato';
       if(speciale&&rnd()<0.35) tiroSpeciale(p,speciale,null);
       else aiShoot(p,0.55+rnd()*0.45,false);
       return;
@@ -731,7 +738,7 @@ export function aiCarrier(p,dt){
   if(t.timeouts>0 && !t.human && rnd()<0.25){ let st=0,n=0; for(const q of t.players){ if(!q.isGK&&!q.excluded){ st+=q.stamina; n++; } } if(n&&st/n<0.3&&timeout(t)) return; }
   if(p.shootNext){ p.shootNext=false; if(dGoal<9&&!ft){ const f=fintaDi(p);
       if((p.fakeCount||0)<f.max&&game.shot>4&&rnd()<0.42){ p.shootNext=true; pausaFinta(p,f); startAct(p,'fake',f.wind*(0.8+rnd()*0.4),()=>doFake(p)); return; }
-      chiudiFinta(p,f,dGoal); return; } }
+      p.motivoTiro='dopo finta'; chiudiFinta(p,f,dGoal); return; } }
   const gk=other(t).players[0];
   const aim=-Math.sign(gk.z||(rnd()-0.5))*(0.9+rnd()*0.4);
   const lane=laneClear(p,gx,aim,t,0.7);
@@ -748,7 +755,8 @@ export function aiCarrier(p,dt){
                             : dGoal<6.5 && press>2.2 && lane && Math.abs(gx-p.x)/Math.max(0.1,dGoal)>0.55;
     // IL «QUICK» (manuale USA Water Polo, 6 contro 5): nei primi secondi della superiorità la difesa non è ancora organizzata;
     // chi è libero vicino alla porta tira subito invece di aspettare la circolazione
-    const az=azioneAperta(), quick=manUp(t)&&az&&az.tipo==='superiorita'&&game.time-az.t0<3&&press>2.4&&lane&&dGoal<6.5;
+    const az=azioneAperta(); if(az&&az.quickOk===undefined) az.quickOk=rnd()<TIRO_LIBERATO.quick;
+    const quick=manUp(t)&&az&&az.tipo==='superiorita'&&az.quickOk&&game.time-az.t0<3&&press>2.4&&lane&&dGoal<6.5;
     const pazienza = quick ? 1 : manUp(t) ? (dopoCambioSup||(libero&&tempoSup>SUPERIORITA.libero)?1:clamp((tempoSup-SUPERIORITA.attesa)/SUPERIORITA.rampa,0,1)) : davanti===0 ? 1 : libero ? (costr&&dGoal>COSTRUZIONE.vicino?COSTRUZIONE.libero:1) : clamp((SHOT_CLOCK-game.shot-PAZIENZA[0])/PAZIENZA[1],0,1);
     // con l'uomo in più l'esterno, che ha poco angolo, tira di rado: cerca l'uomo al palo o chi sta ai 5 metri
     const angolo = manUp(t) ? clamp(Math.abs(gx-p.x)/Math.max(0.1,dGoal)*2,0.15,1) : 1;
@@ -761,10 +769,10 @@ export function aiCarrier(p,dt){
       // dopo la finta, quasi una volta su due la palla va al compagno che si è liberato (aiCarrier, «finta e scarico»)
       { const f=fintaDi(p);
         if((p.fakeCount||0)<f.max && game.shot>5 && rnd()<(p.fakeCount?0.4:0.5)){ p.fakeUsed=true; p.shootNext=true; p.scaricoDopoFinta=rnd()<f.scarico; pausaFinta(p,f); startAct(p,'fake',f.wind*(0.8+rnd()*0.4),()=>doFake(p)); return; } }
-      const lob = dGoal>5 && rnd()<0.12; aiShoot(p,0.55+rnd()*0.45,lob); return;
+      const lob = dGoal>5 && rnd()<0.12; p.motivoTiro=game.shot<6?'fine azione':manUp(t)?'superiorita':davanti===0?'nessuno davanti':libero?'libero':'pazienza'; aiShoot(p,0.55+rnd()*0.45,lob); return;
     }
   }
-  if(game.shot<2 && dGoal<13 && !ft){ aiShoot(p,0.9,false); return; }
+  if(game.shot<2 && dGoal<13 && !ft){ p.motivoTiro='sirena'; aiShoot(p,0.9,false); return; }
   // con l'uomo in più la palla gira in fretta: un tocco e via, per spostare la difesa e il portiere
   const ritmo=schemaSquadra(t).passaggi;
   // v0.53 (Ale: «circolazione macchinosa»): prima 2,5-4,5 s con lo stile «vicini» della strategia di partenza; nelle partite vere

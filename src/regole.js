@@ -11,7 +11,7 @@ import { accentoGol, whistle } from './audio.js';
 import { autoSwitch, resetTap } from './controllo.js';
 import { ARBITRO, ATK, BRV, DEFN, DIFF, EXCL_TIME, FORM, HL, HW, KICK_Z, SHOT_CLOCK, SHOT_RESET, clamp, dist, rnd } from './costanti.js';
 import { annuncia } from './cronaca.js';
-import { fintaDi } from './finte.js';
+import { FINTA_LATO, fintaDi } from './finte.js';
 import { closestTo } from './ia.js';
 import { rumble } from './input.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, setCtrl, teams } from './stato.js';
@@ -63,7 +63,7 @@ export function giveBall(p){
   ball.state='held'; ball.inUscita=false; ball.toccoDifesa=null; ball.toccoPortiere=false; ball.ignora=null; ball.holder=p; ball.holdTime=0; ball.kind=null; ball.target=null; ball.lastTeam=p.team;
   // quando e come è arrivata la palla: un tiro subito dopo un passaggio che ha cambiato lato trova il portiere fuori posto
   p.ricevutoT=game.time; p.ricevutoCambio=!!ball.cambioLato; p.ricevutoPassaggio=daPassaggio; if(!daPassaggio) p.ricevutoCambio=false;
-  p.decideT=0.4+rnd()*0.4; p.alVolo=rnd()<(ball.cambioLato||ball.dopoFinta?0.8:0.4); p.ricevutoDopoFinta=!!ball.dopoFinta&&daPassaggio; ball.cambioLato=false; ball.dopoFinta=false; p.cut=null; p.act=null; p.fakeCount=0; p.fakeUsed=false; p.shootNext=false; p.fakeUntil=0; p.scaricoDopoFinta=false;
+  p.decideT=0.4+rnd()*0.4; p.alVolo=rnd()<(ball.cambioLato||ball.dopoFinta?0.8:0.4); p.ricevutoDopoFinta=!!ball.dopoFinta&&daPassaggio; ball.cambioLato=false; ball.dopoFinta=false; p.cut=null; p.act=null; p.fakeCount=0; p.ultimoLatoFinta=0; p.fakeUsed=false; p.shootNext=false; p.fakeUntil=0; p.scaricoDopoFinta=false;
   for(const q of allPlayers) q.freeThrow=false;
   resetTap();
   if(changed){
@@ -402,7 +402,7 @@ export function tackle(d,c,o){
 }
 // finta di tiro: i difensori vicini possono abboccare (e restare fuori tempo) oppure andare addosso al tiratore
 export function doFake(p){
-  const t=p.team, ot=other(t), dG=Math.hypot(goalX(t)-p.x,p.z);
+  const t=p.team, ot=other(t), dG=Math.hypot(goalX(t)-p.x,p.z), lato=p.fintaLatoGesto||0;
   // la finta riesce se il tiratore resta alto e stabile sulle gambe
   const q=(0.7+0.3*p.st.sht)*(0.65+0.6*elevazione(p))*Math.pow(0.5,p.fakeCount||0)*(dG<9?1:0.4);
   p.fakeCount=(p.fakeCount||0)+1;
@@ -411,14 +411,18 @@ export function doFake(p){
     if(d.excluded||d.isGK||d===ctrl) continue;
     const dd=dist(d,p); if(dd>2.4) continue;
     const pb=clamp(0.6*q-(dd<1.0?0.25:0)-0.15*d.st.def*(d.team.human?1:DIFF())+(d.team.defPlay===1?0.1:0),0.05,0.8);
-    if(rnd()<pb){ d.stunUntil=game.time+0.9; d.biteUntil=game.time+0.7; bit++; }
+    if(rnd()<pb){
+      // finta di lato: chi abbocca non resta fermo, sposta il braccio verso quel palo (v0.59); finta dritta: resta fermo come prima
+      if(lato){ d.biteUntil=game.time+0.7; d.fintaLato={lato,fino:game.time+FINTA_LATO.durata}; }
+      else { d.stunUntil=game.time+0.9; d.biteUntil=game.time+0.7; }
+      bit++; }
     else if(dd<1.5){ d.tackleCD=0; if(tackle(d,p,{stealMul:1.8})) return; }
   }
   const gk=ot.players[0];
-  if(dG<9 && !gk.excluded && rnd()<0.45*q){ gk.fakedUntil=game.time+1.1; bit++; }
+  if(dG<9 && !gk.excluded && rnd()<0.45*q){ gk.fakedUntil=game.time+1.1; if(lato) gk.fintaLato={lato,fino:game.time+FINTA_LATO.durata}; bit++; }
   if(bit) p.fakeUntil=game.time+1.3;
   p.ultimaFintaT=game.time;      // per la firma (finte.js): il seguito tipico entro poco spiazza di più
-  { const f=fintaDi(p); annuncia('avviso',bit?`Finta ${f.nome} riuscita!`:`Finta ${f.nome}`,{durata:0.8}); }
+  { const f=fintaDi(p); annuncia('avviso',bit?`Finta ${f.nome}${lato?' di lato':''} riuscita!`:`Finta ${f.nome}`,{durata:0.8}); }
 }
 
 // INTERFERENZA sul tiro libero (WP 20.2 e 22.5, v0.45): chi ha commesso il fallo deve allontanarsi di circa 1 m prima di alzare il

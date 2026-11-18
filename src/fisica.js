@@ -9,7 +9,7 @@ import { blockR } from './ia.js';
 import { anticipoBattuto, cornerThrow, giveBall, goalScored, goalThrow, sfondamento, sideOut } from './regole.js';
 import { active, allPlayers, ball, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
 import { diSchiena, shotKind } from './tiri.js';
-import { FIRMA } from './finte.js';
+import { FIRMA, FINTA_LATO, fintaLatoAttiva } from './finte.js';
 import { difensoreCentro, leggiCentro, passoGirata } from './centroboa.js';
 export const STANCO=0.82, CON_PALLA=0.93, SPRINT_CONSUMO=0.0098;   // v0.54: consumo +6,5% per restare «visibilmente stanchi» dopo 7 vasche
 export function movePlayer(p,dx,dz,sprint,dt){
@@ -201,6 +201,13 @@ function lineaDiPorta(px){
 // presa del passaggio: distanza orizzontale massima dal corpo (braccio teso verso la palla) e altezza massima della palla
 export const PRESA={ raggio:0.55, portiere:0.9, alto:1.5 };      // v0.57: 0,5 → 0,55; il portiere arriva più lontano (due mani, tuffo)
 function distSegmento(x,z,ax,az,bx,bz){ const dx=bx-ax, dz=bz-az, L2=dx*dx+dz*dz; const u=L2>1e-9?clamp(((x-ax)*dx+(z-az)*dz)/L2,0,1):0; return Math.hypot(x-ax-u*dx,z-az-u*dz); }
+// finta e portiere: dritta = para un quarto in meno (come prima); di lato (v0.59) = para molto meno sul lato opposto, un po' di più
+// sullo stesso lato
+function gkFinta(gk){
+  const fl=fintaLatoAttiva(gk);
+  if(fl) return Math.sign(ball.crossZ||0)===fl?-FINTA_LATO.parataVicino:FINTA_LATO.parataLontano;
+  return gk.fakedUntil>game.time?0.25:0;
+}
 export function updateBall(dt){
   if(ball.state==='held'){
     const p=ball.holder; ball.holdTime+=dt; ball.x=p.x; ball.z=p.z; ball.y=BRV;
@@ -242,7 +249,7 @@ export function updateBall(dt){
         // tiro da vicino: la palla arriva in meno di un quarto di secondo e il portiere non fa in tempo a reagire
         const vicino=clamp((0.26-ball.flightT)/0.26,0,1)*0.42;
         if(lontano<reach && ball.y<1.9){
-          let prob=(1.07-0.30*ball.shotPower*(1.25-0.5*R)-lontano*(0.7-0.3*R)-(ball.lob?0.2:0)-(gk.fakedUntil>game.time?0.25:0)-(ball.skipped?0.12:0)-(ball.sorpresa||0)-vicino+facile)*fresco*(def.human?1:DIFF_GK())
+          let prob=(1.07-0.30*ball.shotPower*(1.25-0.5*R)-lontano*(0.7-0.3*R)-(ball.lob?0.2:0)-gkFinta(gk)-(ball.skipped?0.12:0)-(ball.sorpresa||0)-vicino+facile)*fresco*(def.human?1:DIFF_GK())
             *(ball.rigore?0.41:1);      // sul rigore il portiere para molto meno: negli studi citati dalla tesi ne entra l'80%
           // PORTIERE FUORI POSTO O ANCORA IN MOVIMENTO (Berlino 2018: si segna di più tirando mentre il portiere scivola di lato e
           // quando c'è più spazio tra lui e il palo vicino): para meno se al tiro era lontano dal suo posto o andava dall'altra parte
@@ -294,7 +301,9 @@ export function updateBall(dt){
           const finta=ball.shooter&&ball.shooter.fakeUntil>game.time?0.45:1;
           // (v0.56) il centrale tra i pali con l'uomo in meno copre il palo lungo: sul tiro da quella parte il braccio è già alto
           const cl=p.copreLungo, lungoCoperto=ball.kind==='shot'&&cl&&game.time-cl.t<0.3&&Math.sign(ball.crossZ||0)===cl.lato;
-          const muro=(primoPalo||lungoCoperto?0.42:0.34*braccioAlto)*finta*(1-2*(ball.sorpresa||0))*(1.3-0.6*(ball.elevazione||0.5));
+          // finta di lato (v0.59): chi ha abboccato ha il braccio verso quel palo; sul lato opposto mura molto meno
+          const fl=ball.kind==='shot'?fintaLatoAttiva(p):0, fintaL=fl?(Math.sign(ball.crossZ||0)===fl?FINTA_LATO.vicino:FINTA_LATO.lontano):1;
+          const muro=(primoPalo||lungoCoperto?0.42:0.34*braccioAlto)*fintaL*finta*(1-2*(ball.sorpresa||0))*(1.3-0.6*(ball.elevazione||0.5));
           // intercetto: è da qui che nasce la maggior parte delle palle rubate. Un passaggio lungo e lento dà il tempo di leggerlo;
           // conta la Difesa di chi anticipa contro il Passaggio di chi l'ha fatto
           // v0.45: nelle partite vere circa un'azione in parità su cinque finisce con la palla persa (Mondiali 2009): il pressing chiude

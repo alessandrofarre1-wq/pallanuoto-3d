@@ -48,7 +48,7 @@ const aggressivita=d=>d===ctrl ? (d.aggrT>game.time?1.6:0.35) : (d.team.defPlay=
 // attacco dopo 13 s e le azioni erano 80 a squadra contro circa 50 (Euro League). Nei primi secondi la squadra in attacco si sta
 // ancora schierando e il centroboa non ha preso posizione: espulsioni e falli al centro partono a LOTTA_FASE.minimo e crescono
 // fino al pieno tra LOTTA_FASE.da e LOTTA_FASE.a secondi dall'inizio dell'azione (solo in parità)
-export const LOTTA_FASE={ minimo:0.2, da:5, a:16 };
+export const LOTTA_FASE={ minimo:0.2, da:8, a:20 };   // v0.59: da 5-16 a 8-20 s (espulsioni troppe e troppo presto)
 function faseLotta(t){ const az=azioneAperta(); if(!az||az.t!==t||az.tipo!=='parita') return 1; const e=game.time-az.t0; return clamp(LOTTA_FASE.minimo+(1-LOTTA_FASE.minimo)*(e-LOTTA_FASE.da)/(LOTTA_FASE.a-LOTTA_FASE.da),LOTTA_FASE.minimo,1); }
 export const CENTRO_SENZA_PALLA={ espulsione:0.07, inArrivo:0.9, fallo:0.18, contro:0.05 };
 function lottaSenzaPalla(b,d,lettura,dt){
@@ -71,7 +71,7 @@ export function boaHold(b,d,dt){
     // La finestra nasce dall'aggiramento fisico. Il rigore richiede un contrasto effettivo,
     // con le condizioni regolamentari comuni, non l'esito casuale della girata.
     if(d===ctrl&&d.aggrT>game.time&&dist(b,d)<1.15){ tackle(d,b,{fallo:true,origine:'centro'});return; }
-    if(b!==ctrl&&!b.freeThrow) aiShoot(b,0.75,false);
+    if(b!==ctrl&&!b.freeThrow){ b.motivoTiro='girata'; aiShoot(b,0.75,false); }
     return;
   }
   const v=fight.v;
@@ -98,7 +98,7 @@ export function boaHold(b,d,dt){
   fight.decT-=dt; if(fight.decT>0) return;
   fight.decT=0.45+rnd()*0.4;
   if(fight.holdT>0.6&&v>-0.1&&rnd()<0.35){ girata(b,d); return; }
-  if(fight.holdT>0.8&&rnd()<0.15&&!b.freeThrow){ aiShoot(b,0.6+rnd()*0.3,false); return; }
+  if(fight.holdT>0.8&&rnd()<0.15&&!b.freeThrow){ b.motivoTiro='centroboa'; aiShoot(b,0.6+rnd()*0.3,false); return; }
   if(fight.holdT>1.8||(v<-0.4&&rnd()<0.5)){ const m=bestPassTarget(b); if(m) aiPass(b,m); }
 }
 export function girata(b,d){
