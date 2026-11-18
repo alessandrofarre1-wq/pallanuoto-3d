@@ -71,7 +71,7 @@ export function apriAzione(t){
 export function chiudiAzione(esito){
   if(!azione) return; const a=azione; azione=null;
   const r=di(a.t).azioni[a.tipo]; r.n++; r[esito]++; r.durata+=game.time-a.t0; r.durate=r.durate||{}; r.durate[esito]=(r.durate[esito]||0)+game.time-a.t0;
-  ultimaChiusa={ a, r, esito };
+  ultimaChiusa={ a, r, esito, d:game.time-a.t0 };
 }
 export const annullaAzione=()=>{ azione=null; };
 // a ogni fotogramma di gioco: apre l'azione se manca e riconosce la controfuga
@@ -87,4 +87,4 @@ export function aggiornaAzione(dt=0){
 }
 // il tiro chiude l'azione; se poi è gol, l'esito diventa «gol»
 function tiroChiude(){ chiudiAzione('tiro'); }
-function golDaTiro(t){ if(ultimaChiusa&&ultimaChiusa.a.t===t&&ultimaChiusa.esito==='tiro'){ ultimaChiusa.r.tiro--; ultimaChiusa.r.gol++; ultimaChiusa.esito='gol'; } }
+function golDaTiro(t){ if(ultimaChiusa&&ultimaChiusa.a.t===t&&ultimaChiusa.esito==='tiro'){ ultimaChiusa.r.tiro--; ultimaChiusa.r.gol++; ultimaChiusa.esito='gol'; { const D=ultimaChiusa.r.durate||(ultimaChiusa.r.durate={}); D.tiro=(D.tiro||0)-ultimaChiusa.d; D.gol=(D.gol||0)+ultimaChiusa.d; } } }

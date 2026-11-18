@@ -46,8 +46,9 @@ La prova `v046` controlla ora 10 schemi nella libreria (prima 9), compreso il nu
 - superiorità trasformate 36,1% → 41,3% (Mondiali 2025: 52%);
 - gol 15,5 → 16,5; tiri 53,9 → 51,9; tiri in gol 28,8% → 31,8%; espulsioni 12,6 → 11,2; rigori 2,6 → 2,4; intercetti 4,3 → 4,9;
   azioni 80,9 → 78,5; parità: palla persa 7,4% → 10,1%.
-- In superiorità i tiri sbagliati arrivano dopo circa 12 s (v0.57: 11 s). La durata media della superiorità resta bassa (6,7 s), anche
-  perché il conteggio delle azioni finite in gol non ne somma la durata (`golDaTiro` sposta l'esito ma non la durata): da correggere.
+- La durata media delle superiorità resta 6,7 s (nelle partite vere circa 15): la pazienza in più non basta, il computer tira
+  ancora presto. Il dettaglio della durata per esito era falsato (le azioni finite in gol tenevano la durata tra i tiri sbagliati):
+  corretto in `statistiche.js` (`golDaTiro`), solo conteggio, nessun effetto sul gioco.
 
 ## Verifiche sul codice finale
 - `npm run lint` PASS.
