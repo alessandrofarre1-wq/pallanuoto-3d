@@ -8,7 +8,7 @@ import { contatto, spawnFoam } from './scena.js';
 import { evento } from './acqua-eventi.js';
 import { allPlayers, ball, fight, game, goalX } from '../stato.js';
 import { shotKind } from '../tiri.js';
-import { braccioMuro } from '../muro.js';
+import { braccioMuro, braccioVerso } from '../muro.js';
 import { visoGiocatore } from './espressioni.js';
 //<POSE>
 export const L1=0.30, L2=0.29;
@@ -73,7 +73,10 @@ export function computePose(p,dt,t){
   const defUp = !hold && !p.isGK && h && h.team!==p.team && dist(p,h)<1.7;
   const muro = defUp && (h.charging || (h.act && !h.act.done && h.act.kind!=='pass'));      // l'avversario sta tirando: braccio alto a murare
   const abbocca = p.biteUntil>game.time;
-  J.alzato=muro||abbocca; J.marca=defUp;      // per l'inclinazione disegnata (posturaVista, v0.55)
+  // il centrale tra i pali con l'uomo in meno (v0.56, ia.js postiInferiorita): copre il palo lungo con il braccio di quella parte
+  const cl=p.copreLungo, copre = !hold && !p.isGK && !defUp && cl && game.time-cl.t<0.3 && h && h.team!==p.team && game.state==='play';
+  const copreAlto = copre && (h.charging || (h.act && !h.act.done && h.act.kind!=='pass'));
+  J.alzato=muro||abbocca||copreAlto; J.marca=defUp||copre;      // per l'inclinazione disegnata (posturaVista, v0.55)
   let lz=0, ly=0, arrivo=0;
   if(th){ lift+=th.lift*(0.8+0.2*p.stamina)*c*(1-0.8*f); tw=(th.tw0*c*(1-wb)+th.tw1*wb)*(1-f); }      // chi è stanco esce meno dall'acqua
   else if(gkSave){
@@ -119,6 +122,11 @@ export function computePose(p,dt,t){
     if(!h||h.team===p.team||braccioMuro(p,h)==='D'){ hR=add3(vSR,[su[0],su[1],su[2]]); hintR=[0,-0.3,1]; nR=[1,0.1,0]; }
     else { hL=add3(vSL,[su[0],su[1],-su[2]]); hintL=[0,-0.3,-1]; nL=[1,0.1,0]; }
   }
+  else if(copre){
+    const su=copreAlto?[0.16,0.74,0.10]:[0.24,0.46,0.08];
+    if(braccioVerso(p,cl.lato,h.team.dir||1)==='D'){ hR=add3(vSR,su); hintR=[0,-0.3,1]; nR=[1,0.1,0]; }
+    else { hL=add3(vSL,[su[0],su[1],-su[2]]); hintL=[0,-0.3,-1]; nL=[1,0.1,0]; }
+  }
   else if(p.fintaC>game.time&&!hold){ hR=add3(vSR,[0.50,0.04,-0.04]); hintR=[0,-0.6,1]; nR=[0.3,-1,0]; }      // contrasto di disturbo: la mano parte verso la palla
   // v0.55 (Ale: «tengono la palla come un vassoio»): mano DIETRO la palla, palmo rivolto in avanti e un po' in su, dita aperte;
   // la palla disegnata si appoggia sul palmo (ballVistaW), la posizione di gioco p.ballW non cambia
@@ -136,7 +144,7 @@ export function computePose(p,dt,t){
   }
   // dorso di attesa: semi-seduti sul dorso, gambe a bicicletta, braccia larghe che remano ai lati, sguardo alla palla.
   // Lo usa chi arretra piano e chi, sul perimetro, aspetta il passaggio da un compagno lontano.
-  const libero = !th && !hold && !p.isGK && !defUp && !abbocca && !p.excluded && o<0.05 && !(fight.active&&(p===fight.def||p===fight.boa));
+  const libero = !th && !hold && !p.isGK && !defUp && !copre && !abbocca && !p.excluded && o<0.05 && !(fight.active&&(p===fight.def||p===fight.boa));
   let vuoleDorso=false;
   if(libero){
     const indietro = sp>0.22 && (p.vx*p.fx+p.vz*p.fz) < -0.3*sp;

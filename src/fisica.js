@@ -287,7 +287,9 @@ export function updateBall(dt){
           // riuscita lo abbassa per un attimo; il polso non dà il tempo di alzarlo; chi tira più alto passa sopra
           const dif01=(p.s.dif-40)/59, braccioAlto=0.2+0.7*dif01;
           const finta=ball.shooter&&ball.shooter.fakeUntil>game.time?0.45:1;
-          const muro=(primoPalo?0.42:0.34*braccioAlto)*finta*(1-2*(ball.sorpresa||0))*(1.3-0.6*(ball.elevazione||0.5));
+          // (v0.56) il centrale tra i pali con l'uomo in meno copre il palo lungo: sul tiro da quella parte il braccio è già alto
+          const cl=p.copreLungo, lungoCoperto=ball.kind==='shot'&&cl&&game.time-cl.t<0.3&&Math.sign(ball.crossZ||0)===cl.lato;
+          const muro=(primoPalo||lungoCoperto?0.42:0.34*braccioAlto)*finta*(1-2*(ball.sorpresa||0))*(1.3-0.6*(ball.elevazione||0.5));
           // intercetto: è da qui che nasce la maggior parte delle palle rubate. Un passaggio lungo e lento dà il tempo di leggerlo;
           // conta la Difesa di chi anticipa contro il Passaggio di chi l'ha fatto
           // v0.45: nelle partite vere circa un'azione in parità su cinque finisce con la palla persa (Mondiali 2009): il pressing chiude

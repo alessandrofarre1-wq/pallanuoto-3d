@@ -293,6 +293,10 @@ export function attackTarget(p){
 // Difesa con l'uomo in meno. Posizione di partenza: tre difensori sulla linea dei 2 metri, ciascuno in mezzo tra due dei quattro
 // attaccanti; gli altri due davanti ai pali, a metà tra gli attaccanti ai 2 metri e quelli a 5. Ognuno prende il posto più vicino.
 // Poi la zona scivola verso il lato della palla e chi sta davanti al palo esce con il braccio alto su chi ha palla ai 5 metri.
+// misure della difesa con l'uomo in meno (v0.56): esterno = l'attaccante con palla è «all'esterno dei 2 metri» se è entro
+// questa distanza dalla porta e oltre «largo» dal centro; spalle = dove sta il centrale dietro il difensore del palo;
+// stretto = dove si stringe chi difende sull'esterno quando il suo uomo non ha palla
+export const INFERIORITA={ esterno:3.6, largo:3.4, spalle:1.0, stretto:2.3 };
 function postiInferiorita(t){
   if(t.postiT===game.time) return t.posti;
   const ogx=ownGoalX(t),defs=t.players.filter(q=>!q.excluded&&!q.isGK),m=new Map(),h=riferimentoPalla(other(t));
@@ -314,17 +318,30 @@ function postiInferiorita(t){
   for(const [q,i] of ruoli){
     const s=DEF_DOWN[i];
     let x=s[0], z=s[1]+sciv;
-    if(s[0]>3&&h&&Math.abs(ogx-h.x)>4&&Math.sign(h.z||1)===Math.sign(s[1])){
+    if(i!==0) q.copreLungo=null;
+    if(Math.abs(s[1])>3&&h&&Math.abs(ogx-h.x)<INFERIORITA.esterno&&Math.abs(h.z)>INFERIORITA.largo&&Math.sign(h.z)===Math.sign(s[1])){
+      // palla all'esterno dei 2 metri dalla sua parte: esce sul suo uomo tra lui e il palo corto (con il portiere)
+      x=Math.max(1.4,Math.abs(ogx-h.x)-0.2); z=h.z-Math.sign(h.z)*0.8;
+    }else if(s[0]>3&&h&&Math.abs(ogx-h.x)>4&&Math.sign(h.z||1)===Math.sign(s[1])){
       x=Math.min(Math.abs(ogx-h.x)-(anticipo?0.7:0.95),anticipo?5.6:5);z=s[1]+(h.z-s[1])*(anticipo?0.8:0.7);
     }else if(Math.abs(s[1])>3&&h){
       const palo=other(t).players.find(p=>!p.excluded&&(p.i===1||p.i===6)&&Math.sign(p.z)===Math.sign(s[1]));
       if(palo&&Math.abs(ogx-palo.x)>2.7&&Math.sign(h.z||1)===Math.sign(s[1])&&Math.abs(ogx-h.x)>4){
         x=Math.max(1.8,Math.abs(ogx-palo.x)-0.7);z=palo.z+(s[1]-palo.z)*0.25;
+      }else{
+        // (v0.56) il suo uomo all'esterno non ha la palla: si stringe verso il palo, di più con la palla dalla sua parte, mentre il
+        // centrale copre l'incrociato
+        x=1.9; z=s[1]+(Math.sign(s[1])*INFERIORITA.stretto-s[1])*(Math.sign(h.z||1)===Math.sign(s[1])?1:0.5);
       }
     }else if(i===0&&h){
-      // Il centrale prende il palo vicino alla palla: quello lontano può scorrere nella finestra lasciata.
-      const palo=other(t).players.find(p=>!p.excluded&&(p.i===1||p.i===6)&&Math.sign(p.z)===Math.sign(h.z||1));
-      if(palo){z=clamp(palo.z*0.55,-1.6,1.6);x=Math.max(1.8,Math.min(2.7,Math.abs(ogx-palo.x)-0.8));}
+      // IL CENTRALE TRA I PALI (v0.56, Ale: «ha il ruolo più scomodo: salta da un palo all'altro senza fare fallo»). Con la palla
+      // all'esterno dei 2 metri (1 o 4) sta sulle spalle del difensore del palo dalla parte della palla e difende con il braccio
+      // il palo lungo (il palo corto lo coprono il portiere e il difensore dell'esterno); con la palla ai 5 metri (2 o 3) copre
+      // il tiro incrociato: si mette sulla linea tra il tiratore e il palo lungo, la parte di porta lasciata dal portiere.
+      const hx=Math.abs(ogx-h.x), lato=Math.sign(h.z||1);
+      if(hx<INFERIORITA.esterno&&Math.abs(h.z)>INFERIORITA.largo){ z=lato*INFERIORITA.spalle; x=1.7; }
+      else if(hx<9){ const lungo=-lato*GW*0.8, k=2.0/Math.max(2.2,hx); z=lungo+(h.z-lungo)*k; x=2.0; }
+      q.copreLungo=hx<9?{lato:-lato,t:game.time}:null;
     }
     const px=ogx+t.dir*x,bd=Math.hypot(q.x-px,q.z-z);
     m.set(q,{x:px,z:clamp(z,-HW+0.5,HW-0.5),sprint:bd>2.5});

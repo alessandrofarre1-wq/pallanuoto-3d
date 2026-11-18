@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.56.0",
+  "version": "0.57.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -58,6 +58,7 @@
     "nuoto-coerente": "node tests/nuoto-coerente-v050.mjs",
     "gioco-fermo": "node tests/gioco-fermo-v050.mjs",
     "posizioni": "node tests/posizioni-v050.mjs",
+    "inferiorita": "node strumenti/inferiorita-foglio.mjs --prova",
     "finta": "node tests/finta-v055.mjs",
     "orientamento": "node tests/orientamento-v052.mjs",
     "rotazioni": "node strumenti/misura-rotazioni-v050.mjs",
