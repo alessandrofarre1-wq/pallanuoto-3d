@@ -52,6 +52,21 @@ Sonda sulla v0.59 (3 partite): tiri «liberato» dal 26% al 17% del totale; il g
 
 Le partite cambiano con ogni ritocco e tra due giri da 8 partite c'è qualche punto di variazione (soprattutto conversioni e rigori).
 
+## Prove adattate
+- `gameplay`: controllava che il computer tirasse sempre subito a ogni ricezione libera, cioè proprio la regola cambiata. Ora la
+  scena fissa la decisione «tira subito» e controlla che il tiro parta entro 0,15 s (stessa soglia).
+- `inferiorita`: nella CI locale restava bloccata. Era così anche con la v0.58: in una scena un tiro finiva in gol e partiva il
+  replay, che congelava il gioco e disegnava a fotogrammi lentissimi; la scena «palla al 6» contro il 3-3 trovava poi il difensore
+  allontanato da un fallo (terzo tocco ravvicinato del contrasto, che la prova non escludeva). Ora ogni scena interrompe il replay,
+  in modalità prova non si disegna, i tocchi dei difensori si azzerano come in `sezione3` e la scena si ripete se l'arbitro
+  fischia. Soglie invariate: 20 controlli su 20, in circa 10 s.
+
+## Verifiche sul codice finale
+- `npm run lint` PASS; tutti i passi della CI in locale PASS.
+- `npm run verifica`: sei partite arrivate alla fine, 71 gol su 205 tiri (35%). Tre immagini diverse dal riferimento solo per le
+  posizioni dei giocatori in quel momento (interfaccia, campo e corpi uguali): controllate e aggiornate, poi `--partite=0` PASS.
+- `npm run aspetto` PASS: 0 gambe fuori dall'acqua; viste iPhone 56 oggetti / 141.794 triangoli.
+
 ## Non fatto
 - Le azioni in parità durano ancora 14 s (21 nelle partite vere) e sono 71 a partita (50): il tempo si perde soprattutto nella
   ripartenza veloce (v0.57), che porta subito in attacco. Va ripensata a parte: l'attacco arriva presto e poi l'azione dura poco.
