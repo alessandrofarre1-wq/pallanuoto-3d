@@ -39,8 +39,13 @@ for(const forma of [FORM,FORM_UP]) for(const i of interni){
 }
 
 // Le fasi e i riferimenti palla precedenti alla rinumerazione restano identici.
-const dati=JSON.stringify(LIBRERIA.map(({id,fasi})=>({id,fasi})));
+// (v0.58: l'impronta resta sugli schemi precedenti; l'«Uscita del 6» aggiunta dal video della finale olimpica ha un controllo suo)
+const NUOVI=['u6esce'];
+const dati=JSON.stringify(LIBRERIA.filter(s=>!NUOVI.includes(s.id)).map(({id,fasi})=>({id,fasi})));
 const impronta=createHash('sha256').update(dati).digest('hex');
+const tutti=JSON.stringify(LIBRERIA.map(({id,fasi})=>({id,fasi})));
+{ const u6=LIBRERIA.find(s=>s.id==='u6esce');
+  assert.ok(u6&&u6.fasi.length===3&&u6.fasi[1].posti[5][0]>=5&&Math.abs(u6.fasi[1].posti[5][1])<0.5&&Math.abs(u6.fasi[1].posti[0][1])<0.5,'uscita del 6: il 6 al centro dei 5 metri e il 5 al centro della porta'); }
 assert.equal(impronta,'a201d75cc39f33a1c293ec494b1447759b5d038a0894e755169cae1796bbd3e6','nessun cambio di indici, coordinate, durata o destinatario della palla');
 for(const schema of LIBRERIA){
   for(const fase of schema.fasi){
@@ -55,7 +60,7 @@ for(const schema of LIBRERIA){
     }
   }
 }
-assert.equal(JSON.stringify(LIBRERIA.map(({id,fasi})=>({id,fasi}))),dati,'il disegno non modifica gli schemi');
+assert.equal(JSON.stringify(LIBRERIA.map(({id,fasi})=>({id,fasi}))),tutti,'il disegno non modifica gli schemi');
 assert.equal(LIBRERIA.find(s=>s.id==='uscivola5').nome,'Uscita del 4','ID storico conservato con nome corretto');
 assert.equal(LIBRERIA.find(s=>s.id==='urot1').nome,'Rotazione verso Pos. 5','destinatario coerente con la nuova posizione');
 

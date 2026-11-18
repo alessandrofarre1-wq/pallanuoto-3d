@@ -51,8 +51,18 @@ export const LIBRERIA = [
   { id: 'u33-entra', sigla: '3-3 entra', nome: '3-3 con entrata della Pos. 1', fonte: 'Manuale USA Water Polo 2021, 6x5 «1 in, 2 down»',
     descrizione: 'Dal 3-3 la palla va alla Pos. 6; la Pos. 1 entra sul palo destro, la Pos. 5 scivola sul sinistro e la Pos. 2 scende larga: due 2 contro 1 in alto.',
     fasi: [fase(P33, 2.5, 6), fase([[2.1, -1.8], [2.1, 1.8], [2.0, -4.6], [2.4, 4.9], [5.2, -2.5], [5.6, 1.0]], 5)] },
+  // v0.58, dal video di Ale (finale olimpica Parigi 2024, Serbia–Croazia, gol croato a 7:14 del 2° tempo): dal 4-2 la Pos. 6 esce al
+  // centro dei 5 metri e la Pos. 5 si sposta al centro della porta; palla 4 → 1 attraverso la porta («rischioso, ma a quei livelli si
+  // fa spesso», Ale), poi 1 → 2 e passaggio lungo che scavalca il 6 fino alla Pos. 3, lasciata libera dalla difesa: tiro sul primo palo
+  { id: 'u6esce', sigla: 'Esce il 6', nome: 'Uscita del 6 (4-2 › 3-3)', fonte: 'Finale olimpica 2024, Serbia–Croazia (video di Ale)',
+    descrizione: 'Dal 4-2 la Pos. 6 esce al centro dei 5 metri e la Pos. 5 va al centro della porta. La palla attraversa: 4 → 1 → 2 e poi il passaggio lungo alla Pos. 3, che tira subito.',
+    fasi: [fase(P42, 1.5, 2),
+      fase([[2.1, 0], [2.0, 4.6], [2.0, -4.6], [4.8, 3.4], [4.8, -3.4], [5.6, 0]], 2.5, 4),
+      fase([[2.1, 0], [2.0, 4.6], [2.0, -4.6], [4.8, 3.4], [4.8, -3.4], [5.6, 0]], 5, 5)] },
 ];
 export const SCELTI_BASE = ['u42', 'u33-42', 'u42-33-42'];
+// schemi tra cui sceglie il computer: quelli di partenza più l'uscita del 6 vista nella finale olimpica (v0.58)
+export const SCELTI_COMPUTER = [...SCELTI_BASE, 'u6esce'];
 
 // ---------------------------------------------------------------- validazione
 // Ogni posto resta in vasca e fuori dall'area di porta (dentro i 3,58 m dal centro non si sta sotto i 2,1 m: art. 8.2.8,

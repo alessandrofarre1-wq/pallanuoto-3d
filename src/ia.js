@@ -4,7 +4,7 @@ import { ARBITRO, DEF_DOWN, FORM, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp
 import { anticipoTarget, centroTarget, leggiCentro } from './centroboa.js';
 import { numeroPosizione, schemaSquadra } from './schemi.js';
 import { fintaDi } from './finte.js';
-import { avanzaUomo, avviaUomo, ePalo, perimetroUomo, postiUomo, postiUomoDi, scelti as sceltiUomo, trova as trovaUomo, SCELTI_BASE } from './uomo-in-piu.js';
+import { avanzaUomo, avviaUomo, ePalo, perimetroUomo, postiUomo, postiUomoDi, scelti as sceltiUomo, trova as trovaUomo, SCELTI_COMPUTER } from './uomo-in-piu.js';
 import { doFake, falloSenzaPalla, timeout } from './regole.js';
 import { annuncia as notifica } from './cronaca.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
@@ -45,7 +45,7 @@ export function viciniUomo(t,a,b){
   return ia>=0&&ib>=0&&Math.abs(ia-ib)===1;
 }
 // schemi del computer: i tre di base (la squadra umana usa i tre scelti nella sezione «Uomo in più»)
-export const schemiUomo = t => t.human ? sceltiUomo() : SCELTI_BASE.map(trovaUomo).filter(Boolean);
+export const schemiUomo = t => t.human ? sceltiUomo() : SCELTI_COMPUTER.map(trovaUomo).filter(Boolean);
 // il giocatore chiama uno dei suoi schemi (i = 0, 1, 2); null = torna al 4-2 della strategia
 export function chiamaUomo(t,i){
   const sc=schemiUomo(t)[i]||null; avviaUomo(t,sc,game.time); if(t.uomo) t.uomo.possT=game.possT; t.uomoPossT=game.possT; return sc;
@@ -306,6 +306,15 @@ export function attackTarget(p){
 // misure della difesa con l'uomo in meno (v0.56): esterno = l'attaccante con palla è «all'esterno dei 2 metri» se è entro
 // questa distanza dalla porta e oltre «largo» dal centro; spalle = dove sta il centrale dietro il difensore del palo;
 // stretto = dove si stringe chi difende sull'esterno quando il suo uomo non ha palla
+// difesa contro il 3-3 (v0.58): centro = |z| sotto cui un attaccante tra daMin e daMax metri dalla porta è «il 6 al centro dei 5 metri»;
+// latoMin = da quanti metri dalla porta un attaccante di lato conta come tiratore dei 5 metri; addosso = distanza da chi ha palla
+// quando si salta su di lui; dentro = quanto la posizione di mezzo sta più vicina alla porta; versoTiratore/aiuto = quanto ci si
+// sposta dal punto di mezzo verso il proprio tiratore (palla vicina) o verso il 6 (palla dall'altra parte)
+export const TRE_TRE={ centro:1.6, daMin:4.2, daMax:7.5, latoMin:3.6, addosso:0.9, dentro:0.6, versoTiratore:0.35, aiuto:0.25 };
+// attacco del computer in superiorità (v0.58): pronta = secondi prima di cercare il tiro; dopoCambio = per quanti secondi dopo
+// aver ricevuto un passaggio che ha cambiato lato si tira subito (da cambioDa secondi in poi); libero = da quando si tira se davvero
+// liberi; attesa/rampa = la voglia di tirare cresce da attesa a attesa+rampa secondi (prima 5 → 9 s)
+export const SUPERIORITA={ pronta:7, dopoCambio:1.6, cambioDa:3, libero:7, attesa:9, rampa:4 };
 export const INFERIORITA={ esterno:3.6, largo:3.4, spalle:1.0, stretto:2.3 };
 function postiInferiorita(t){
   if(t.postiT===game.time) return t.posti;
@@ -325,6 +334,16 @@ function postiInferiorita(t){
   }
   const anticipo=t.difesaMeno==='anticipo';
   const sciv=clamp((h?h.z:ball.z)*(anticipo?0.29:0.18),-1.4,1.4);
+  // CONTRO IL 3-3 (v0.58, Ale: «quando l'attacco si posiziona in 3-3 i difensori che prima stavano davanti ai pali si devono mettere
+  // in mezzo tra 2-3 e il 6 uscito ai 5 metri e si devono fare il mazzo saltando da un giocatore all'altro seguendo la palla; di
+  // solito si lascia il tiro al giocatore più lontano, ma bisogna disturbarlo»). 3-3 = un attaccante al centro dei 5 metri.
+  const avv=other(t).players.filter(p=>!p.excluded&&!p.isGK), dist5=p=>Math.abs(ogx-p.x);
+  const centro5=h?avv.find(p=>dist5(p)>TRE_TRE.daMin&&dist5(p)<TRE_TRE.daMax&&Math.abs(p.z)<TRE_TRE.centro):null;
+  const lato5=L=>avv.filter(p=>p!==centro5&&dist5(p)>TRE_TRE.latoMin&&dist5(p)<TRE_TRE.daMax&&Math.sign(p.z)===L&&Math.abs(p.z)>=TRE_TRE.centro)
+    .sort((a,b)=>Math.abs(a.z-L*3)-Math.abs(b.z-L*3))[0]||null;
+  // chi dei due esce sul 6 quando ha la palla: il più vicino a lui
+  let suCentro=null;
+  if(centro5&&h===centro5){ let bd=Infinity; for(const [q,i] of ruoli){ if(DEF_DOWN[i][0]<3) continue; const d=Math.hypot(q.x-h.x,q.z-h.z); if(d<bd){ bd=d; suCentro=q; } } }
   for(const [q,i] of ruoli){
     const s=DEF_DOWN[i];
     let x=s[0], z=s[1]+sciv;
@@ -332,6 +351,17 @@ function postiInferiorita(t){
     if(Math.abs(s[1])>3&&h&&Math.abs(ogx-h.x)<INFERIORITA.esterno&&Math.abs(h.z)>INFERIORITA.largo&&Math.sign(h.z)===Math.sign(s[1])){
       // palla all'esterno dei 2 metri dalla sua parte: esce sul suo uomo tra lui e il palo corto (con il portiere)
       x=Math.max(1.4,Math.abs(ogx-h.x)-0.2); z=h.z-Math.sign(h.z)*0.8;
+    }else if(s[0]>3&&centro5&&lato5(Math.sign(s[1]))){
+      const L=Math.sign(s[1]), mio=lato5(L), hd=dist5(h);
+      if(h===mio||q===suCentro){ x=Math.max(2.4,hd-TRE_TRE.addosso); z=h.z*0.85; }      // salta su chi ha la palla
+      else{
+        // a metà tra il suo tiratore ai 5 metri e il 6 uscito al centro, un po' più vicino alla porta; spostato verso il tiratore se
+        // la palla è dalla sua parte o se l'altro difensore è uscito sul 6 (deve disturbare il tiro lasciato), verso il 6 se la palla
+        // è dall'altra parte (aiuto)
+        const lontano=Math.sign(h.z||0)===-L&&h!==centro5, k=h===centro5?TRE_TRE.versoTiratore:lontano?-TRE_TRE.aiuto:TRE_TRE.versoTiratore*0.6;
+        const mx=(dist5(mio)+dist5(centro5))/2-TRE_TRE.dentro, mz=(mio.z+centro5.z)/2;
+        x=mx+(dist5(mio)-mx)*Math.max(0,k)+(dist5(centro5)-mx)*Math.max(0,-k); z=mz+(mio.z-mz)*Math.max(0,k)+(centro5.z-mz)*Math.max(0,-k);
+      }
     }else if(s[0]>3&&h&&Math.abs(ogx-h.x)>4&&Math.sign(h.z||1)===Math.sign(s[1])){
       x=Math.min(Math.abs(ogx-h.x)-(anticipo?0.7:0.95),anticipo?5.6:5);z=s[1]+(h.z-s[1])*(anticipo?0.8:0.7);
     }else if(Math.abs(s[1])>3&&h){
@@ -648,7 +678,10 @@ export function aiCarrier(p,dt){
   // superiorità: nelle partite vere dura circa 15 s (Mondiali 2009): si fa girare palla e si tira dopo almeno 5-6 passaggi di tempo,
   // tranne il «quick» dei primi secondi; tempoSup = secondi da quando è iniziata la superiorità
   const azSup=manUp(t)?azioneAperta():null, tempoSup=azSup&&azSup.tipo==='superiorita'?game.time-azSup.t0:99;
-  const supPronta=!manUp(t)||tempoSup>5;
+  // v0.58 (video di Ale, finale olimpica 2024: 3 passaggi in circa 6 s e tiro dopo il passaggio lungo che cambia lato, gol a circa
+  // 15 s dall'inizio della superiorità; nel gioco le superiorità duravano circa 7 s): si tira presto solo subito dopo un cambio di lato
+  const dopoCambioSup=manUp(t)&&p.ricevutoCambio&&game.time-(p.ricevutoT||-9)<SUPERIORITA.dopoCambio&&tempoSup>SUPERIORITA.cambioDa;
+  const supPronta=!manUp(t)||tempoSup>SUPERIORITA.pronta||dopoCambioSup;
   const costr=inCostruzione(t);
   if(supPronta&&!costr&&(p.alVolo||paloUomo(p))&&ball.holdTime<0.15&&(manUp(t)||p.ricevutoDopoFinta||p.ricevutoCambio)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
     const sit=situazioneTiro(p),gk=other(t).players[0],aim=-Math.sign(gk.z||1);
@@ -716,7 +749,7 @@ export function aiCarrier(p,dt){
     // IL «QUICK» (manuale USA Water Polo, 6 contro 5): nei primi secondi della superiorità la difesa non è ancora organizzata;
     // chi è libero vicino alla porta tira subito invece di aspettare la circolazione
     const az=azioneAperta(), quick=manUp(t)&&az&&az.tipo==='superiorita'&&game.time-az.t0<3&&press>2.4&&lane&&dGoal<6.5;
-    const pazienza = quick ? 1 : manUp(t) ? (libero&&tempoSup>3.5?1:clamp((tempoSup-5)/4,0,1)) : davanti===0 ? 1 : libero ? (costr&&dGoal>COSTRUZIONE.vicino?COSTRUZIONE.libero:1) : clamp((SHOT_CLOCK-game.shot-PAZIENZA[0])/PAZIENZA[1],0,1);
+    const pazienza = quick ? 1 : manUp(t) ? (dopoCambioSup||(libero&&tempoSup>SUPERIORITA.libero)?1:clamp((tempoSup-SUPERIORITA.attesa)/SUPERIORITA.rampa,0,1)) : davanti===0 ? 1 : libero ? (costr&&dGoal>COSTRUZIONE.vicino?COSTRUZIONE.libero:1) : clamp((SHOT_CLOCK-game.shot-PAZIENZA[0])/PAZIENZA[1],0,1);
     // con l'uomo in più l'esterno, che ha poco angolo, tira di rado: cerca l'uomo al palo o chi sta ai 5 metri
     const angolo = manUp(t) ? clamp(Math.abs(gx-p.x)/Math.max(0.1,dGoal)*2,0.15,1) : 1;
     // si tira quando si è liberi: subito dopo un passaggio che ha liberato il tiratore o cambiato lato; con il difensore davanti
