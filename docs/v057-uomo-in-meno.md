@@ -110,24 +110,24 @@ difensore la lancia lui oltre la linea (art. 14.1). Corretto in `fuoriDalFondo` 
 `sezione1`.
 
 ## Effetto sul gioco (8 partite ITA–HUN, per squadra)
-| | v0.56 | v0.57 senza le correzioni di Ale | v0.57 finale |
-|---|---|---|---|
-| superiorità trasformate | 43,4% | 35,4% | 46,6% (Mondiali 52%) |
-| gol | 14,1 | 15,7 | 16,4 |
-| tiri | 43,1 | 43,6 | 48,4 |
-| tiri in gol | 32,8% | 36,0% | 34,0% |
-| espulsioni | 11,4 | 10,9 | 11,1 |
-| intercetti | 4,3 | 4,6 | 4,1 |
-| azioni | 75,2 | 77,1 | 73,4 |
-| parità: palla persa | 16,5% | 16,9% | 7,4% |
+| | v0.56 | v0.57 prima versione | v0.57 con passaggi precisi | v0.57 finale (ripartenza) |
+|---|---|---|---|---|
+| superiorità trasformate | 43,4% | 35,4% | 46,6% (Mondiali 52%) | 36,1% |
+| gol | 14,1 | 15,7 | 16,4 | 15,5 |
+| tiri | 43,1 | 43,6 | 48,4 | 53,9 |
+| tiri in gol | 32,8% | 36,0% | 34,0% | 28,8% |
+| espulsioni | 11,4 | 10,9 | 11,1 | 12,6 |
+| intercetti | 4,3 | 4,6 | 4,1 | 4,3 |
+| azioni | 75,2 | 77,1 | 73,4 | 80,9 |
+| parità: palla persa | 16,5% | 16,9% | 7,4% | 7,4% |
 
-Con passaggi di nuovo precisi le palle perse in parità tornano basse (7,4% contro circa 20% delle partite vere) e i tiri risalgono
+Con la ripartenza i compagni arrivano prima in attacco: le azioni si accorciano (80,9 a partita) e i tiri salgono a 53,9, con il 28,8% in gol. È il prossimo punto da tarare (più costruzione prima del tiro, più anticipi della difesa). Con passaggi di nuovo precisi le palle perse in parità tornano basse (7,4% contro circa 20% delle partite vere) e i tiri risalgono
 a 48. Va bene così: come dice Ale, la palla persa deve nascere dalla difesa (anticipo, intercetti, contrasti), non da passaggi
 semplici sbagliati. Le partite cambiano dalla prima superiorità e dal primo passaggio in poi: tra una colonna e l'altra c'è anche
 variazione casuale.
 
 ## Non fatto
-- Palle perse in parità 7,4% (circa 20% nelle partite vere) e tiri 48 (33): servono più anticipi e intercetti della difesa, non
+- Palle perse in parità 7,4% (circa 20% nelle partite vere), tiri 53,9 (33) e tiri in gol 28,8% (40%): servono più anticipi e intercetti della difesa, non
   passaggi sbagliati.
 - La difesa contro gli schemi dell'uomo in più (rotazioni, cambi da 4-2 a 3-3) resta quella di prima, che scivola con la palla.
   La «difesa di partenza» è quella descritta da Ale; adattarla a ogni schema va progettato a parte.
