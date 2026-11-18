@@ -44,15 +44,46 @@ la palla passa all'uomo del caso (1, 2, 3, 4), che carica il tiro. Per ogni caso
 Risultato: 16 controlli su 16. Sulla build della v0.56 la stessa prova ne fallisce 13 su 16.
 Foglio con le quattro situazioni viste da dietro la porta: `docs/immagini/v057-uomo-in-meno.png` (senza `--prova`).
 
-## Effetto sul gioco (8 partite ITA–HUN, per squadra, v0.56 → v0.57)
-- superiorità trasformate 43,4% → 35,4% (Mondiali 2025: 52%): con la difesa di partenza giusta l'uomo in più rende meno;
-- gol 14,1 → 15,7; tiri 43,1 → 43,6; tiri in gol 32,8% → 36,0%; espulsioni 11,4 → 10,9; rigori 1,9 → 1,9; azioni 75,2 → 77,1;
-- in parità: palla persa 16,5% → 16,9%, gol 13,6% → 16,9%. Le partite cambiano dalla prima superiorità in poi (la difesa nuova
-  sposta i giocatori e il caso prende un'altra strada), quindi le differenze in parità sono in buona parte variazione casuale.
+## Correzioni dopo la prova di Ale sul telefono (stessa versione)
+Ale: «il portiere ha la palla e il giocatore nuota dentro la porta; sono aumentati a dismisura i passaggi sbagliati, anche
+semplici (qui c'è il meglio del meglio: l'errore può capitare ma deve essere verosimile); un mio passaggio al portiere è uscito
+dal fondo e il gioco è ripreso con la palla al mio portiere, ma è cambio possesso».
+
+- **Palla oltre la linea di fondo** (`fisica.js`): un passaggio o un rimbalzo che supera la linea di fondo è fuori subito. Prima
+  solo i tiri erano controllati sulla linea: il passaggio restava «in volo» fino a 1,2 m oltre e i giocatori lo inseguivano dentro
+  la porta.
+- **Chi riprende** (`fuoriDalFondo`): tiro d'angolo agli avversari anche quando l'ultimo a lanciare la palla è la squadra che
+  difende quella porta (prima solo se un difensore aveva murato). Il passaggio sbagliato verso il proprio portiere che esce dal
+  fondo dà quindi l'angolo all'avversario. Due controlli nuovi in `npm run sezione1`: sulla v0.57 prima della correzione il primo
+  falliva («Rimessa dal portiere → palla al portiere USA»), ora passano tutti e due.
+- **Passaggi sbagliati** (`tiri.js`, `controllo.js`, `fisica.js`): l'errore aggiunto nella v0.56 era troppo forte. Ora vale ×1,0
+  di base (era ×1,5), al massimo ×1,8 con un avversario addosso (era ×3,5), +30% da distesi (era +60%), e non supera mai due
+  volte l'errore tipico, così gli sbagli grossi diventano rari. Il giocatore comandato che riceve, se la levetta è ferma, va da
+  solo incontro alla palla, sul punto più vicino della sua traiettoria: con la presa alla mano chi restava fermo se la lasciava
+  sfuggire. Il portiere prende la palla fino a 0,9 m (due mani), gli altri fino a 0,55 m (era 0,5).
+- Misura (`strumenti/sonda-passaggi.mjs --umano`: Italia comandata con la levetta ferma, chi ha palla passa dopo 1,2 s; 300 s di
+  gioco): prima 73 passaggi presi su 77, con 2 intercettati e 2 finiti in acqua; dopo 102 su 102.
+
+## Effetto sul gioco (8 partite ITA–HUN, per squadra)
+| | v0.56 | v0.57 senza le correzioni di Ale | v0.57 finale |
+|---|---|---|---|
+| superiorità trasformate | 43,4% | 35,4% | 46,6% (Mondiali 52%) |
+| gol | 14,1 | 15,7 | 16,4 |
+| tiri | 43,1 | 43,6 | 48,4 |
+| tiri in gol | 32,8% | 36,0% | 34,0% |
+| espulsioni | 11,4 | 10,9 | 11,1 |
+| intercetti | 4,3 | 4,6 | 4,1 |
+| azioni | 75,2 | 77,1 | 73,4 |
+| parità: palla persa | 16,5% | 16,9% | 7,4% |
+
+Con passaggi di nuovo precisi le palle perse in parità tornano basse (7,4% contro circa 20% delle partite vere) e i tiri risalgono
+a 48. Va bene così: come dice Ale, la palla persa deve nascere dalla difesa (anticipo, intercetti, contrasti), non da passaggi
+semplici sbagliati. Le partite cambiano dalla prima superiorità e dal primo passaggio in poi: tra una colonna e l'altra c'è anche
+variazione casuale.
 
 ## Non fatto
-- L'attacco del computer con l'uomo in più ora segna meno del reale: andrà rivisto (circolazione più rapida per aprire la difesa,
-  come dice Ale) insieme alla difesa sugli schemi.
+- Palle perse in parità 7,4% (circa 20% nelle partite vere) e tiri 48 (33): servono più anticipi e intercetti della difesa, non
+  passaggi sbagliati.
 - La difesa contro gli schemi dell'uomo in più (rotazioni, cambi da 4-2 a 3-3) resta quella di prima, che scivola con la palla.
   La «difesa di partenza» è quella descritta da Ale; adattarla a ogni schema va progettato a parte.
 - I difensori umani non hanno ancora un aiuto per il posto in inferiorità: lo fanno solo i difensori guidati dal computer.

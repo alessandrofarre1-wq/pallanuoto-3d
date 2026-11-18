@@ -180,9 +180,11 @@ function passo(dt,corpiAttivi){
 }
 // palla uscita dalla linea di fondo (art. 12-13): tiro d'angolo se l'ha toccata per ultimo un difensore (portiere compreso),
 // altrimenti rimessa del portiere
+// v0.57 (Ale: «un mio passaggio al portiere è uscito dal fondo e il gioco è ripreso con la palla al mio portiere: è cambio
+// possesso»): conta anche chi l'ha lanciata per ultima (ball.lastTeam), non solo il difensore che ha murato
 function fuoriDalFondo(att){
   const def=other(att);
-  if(ball.toccoDifesa===def) cornerThrow(att); else goalThrow(def,'Fuori! Rimessa dal portiere');
+  if(ball.toccoDifesa===def||ball.lastTeam===def) cornerThrow(att); else goalThrow(def,'Fuori! Rimessa dal portiere');
 }
 // la palla ha passato la linea di porta in questo passo? (px = posizione prima del passo)
 function lineaDiPorta(px){
@@ -195,7 +197,7 @@ function lineaDiPorta(px){
   return null;
 }
 // presa del passaggio: distanza orizzontale massima dal corpo (braccio teso verso la palla) e altezza massima della palla
-export const PRESA={ raggio:0.5, alto:1.5 };
+export const PRESA={ raggio:0.55, portiere:0.9, alto:1.5 };      // v0.57: 0,5 → 0,55; il portiere arriva più lontano (due mani, tuffo)
 function distSegmento(x,z,ax,az,bx,bz){ const dx=bx-ax, dz=bz-az, L2=dx*dx+dz*dz; const u=L2>1e-9?clamp(((x-ax)*dx+(z-az)*dz)/L2,0,1):0; return Math.hypot(x-ax-u*dx,z-az-u*dz); }
 export function updateBall(dt){
   if(ball.state==='held'){
@@ -266,8 +268,9 @@ export function updateBall(dt){
       }
     }
     // linea di porta: gol se passa tra i pali e sotto la traversa (anche dopo aver toccato un legno), altrimenti fuori
-    if(ball.daTiro){
-      const l=lineaDiPorta(px);
+    // (v0.57) vale anche per passaggi e rimbalzi: prima un passaggio oltre la linea di fondo restava in gioco fino a 1,2 m oltre
+    // la linea e i giocatori lo inseguivano dentro la porta
+    { const l=lineaDiPorta(px);
       if(l){
         if(l.dentro){ ball.inRete=true; goalScored(l.att); return; }
         fuoriDalFondo(l.att); return;
@@ -312,7 +315,7 @@ export function updateBall(dt){
         // (PRESA.raggio dal corpo, sul tratto percorso in questo fotogramma), non più entro 0,85 m dal centro del corpo, che
         // faceva saltare la palla disegnata di circa un metro verso la mano. Il passaggio che passa più lontano non si
         // ferma: va avanti, cade in acqua e diventa una palla vagante
-        if(ball.kind==='pass' && p===ball.target && ball.flightT>0.15 && ball.y<PRESA.alto && distSegmento(p.x,p.z,px,pz,ball.x,ball.z)<PRESA.raggio){
+        if(ball.kind==='pass' && p===ball.target && ball.flightT>0.15 && ball.y<PRESA.alto && distSegmento(p.x,p.z,px,pz,ball.x,ball.z)<(p.isGK?PRESA.portiere:PRESA.raggio)){
           ball.raccordoPresa={x:ball.x,y:ball.y,z:ball.z,t:game.time};
           const ab=ball.anticipoBattuto; giveBall(p); if(ab) anticipoBattuto(ab,p); return; }
       }

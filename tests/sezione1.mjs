@@ -23,11 +23,13 @@ let ok = true; const prova = (bene, testo) => { console.log(`${bene ? '✓' : '�
 // ---------- 1.1 palla fuori dal fondo: continua a volare, poi la ripresa giusta ----------
 const fuori = await pg.evaluate(() => {
   const H = window.__pallanuoto, B = H.ball, ris = {};
-  const tira = (toccoDifesa, z, vy) => {
+  const tira = (toccoDifesa, z, vy, passaggioDi = null) => {
     const att = H.teams[0], p = att.players[6], gx = 12.5 * att.dir;
     H.game.state = 'play'; H.game.after = null; for (const q of H.allPlayers) { q.act = null; q.excluded = false; }
     B.holder = null; B.state = 'flight'; B.kind = 'rebound'; B.daTiro = true; B.shooter = p; B.intercept = new Set(); B.flightT = 0.5; B.saveChecked = true; B.pickupCD = 9;
     B.lastTeam = att; B.toccoDifesa = toccoDifesa ? H.teams[1] : null; B.ignora = null; B.inRete = false; B.inUscita = false;
+    // v0.57: passaggio (non tiro) che esce dal fondo; passaggioDi = squadra che l'ha lanciato
+    if (passaggioDi) { const chi = passaggioDi === 'dif' ? H.teams[1] : att; B.kind = 'pass'; B.daTiro = false; B.lastTeam = chi; B.shooter = chi.players[3]; B.target = chi.players[0]; B.pickupCD = 0; }
     B.x = gx - att.dir * 1.0; B.y = 0.6; B.z = z; B.vx = att.dir * 6; B.vy = vy; B.vz = 0; B.wx = B.wy = B.wz = 0;
     const traccia = []; let annuncio = '';
     const prima = H.cronaca.registro ? H.cronaca.registro.length : 0;
@@ -40,11 +42,17 @@ const fuori = await pg.evaluate(() => {
   };
   ris.fuori = tira(false, 2.6, 1.0);
   ris.angolo = tira(true, 0.0, 4.5);
+  ris.passDif = tira(false, 2.6, 1.0, 'dif');
+  ris.passAtt = tira(false, 2.6, 1.0, 'att');
   return ris;
 });
 prova(fuori.fuori.oltre > 13.5, `tiro fuori: la palla vola oltre la linea fino a ${fuori.fuori.oltre.toFixed(1)} m (linea a 12,5)`);
 prova(/Rimessa dal portiere/.test(fuori.fuori.annuncio) && fuori.fuori.chi === 'portiere USA', `tiro fuori: ${fuori.fuori.annuncio} → palla al ${fuori.fuori.chi}`);
 prova(fuori.angolo.oltre > 13.0 && /angolo/i.test(fuori.angolo.annuncio), `deviata sopra la traversa dal difensore: vola fino a ${fuori.angolo.oltre.toFixed(1)} m · ${fuori.angolo.annuncio}`);
+
+// v0.57 (Ale: «un passaggio al mio portiere è uscito dal fondo e il gioco è ripreso con la palla al mio portiere: è cambio possesso»)
+prova(/angolo/i.test(fuori.passDif.annuncio) && fuori.passDif.chi === 'giocatore ITA', `passaggio della difesa verso il proprio portiere oltre la linea di fondo: ${fuori.passDif.annuncio} → palla al ${fuori.passDif.chi}`);
+prova(/Rimessa dal portiere/.test(fuori.passAtt.annuncio) && fuori.passAtt.chi === 'portiere USA', `passaggio dell'attacco oltre la linea di fondo: ${fuori.passAtt.annuncio} → palla al ${fuori.passAtt.chi}`);
 
 // ---------- 1.2 Cambia: sempre al compagno più vicino alla palla, anche durante un gesto ----------
 const cambio = await pg.evaluate(() => {

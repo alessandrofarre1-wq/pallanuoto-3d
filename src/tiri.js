@@ -161,7 +161,9 @@ export function humanPassTarget(p,ix,iz){
   }
   return best||portiere||bestPassTarget(p,false);
 }
-export const ERRORE_PASSAGGIO={ base:1.5, pressione:2.5, disteso:0.6 };
+// v0.57 (Ale: «sono aumentati a dismisura i passaggi sbagliati, anche semplici: qui c'è il meglio del meglio; l'errore può
+// capitare ma deve essere verosimile»): base 1,5 → 1,0, pressione 2,5 → 0,8, disteso 0,6 → 0,3; errore limitato a 2 deviazioni
+export const ERRORE_PASSAGGIO={ base:1.0, pressione:0.8, disteso:0.3, limite:2 };
 export const PASSAGGIO_ALTEZZA=0.95, BOA_PREFERITO=1.2, BOA_DAVANTI=0.55;
 export function doPass(p,m){
   if(!m) return;
@@ -176,7 +178,7 @@ export function doPass(p,m){
   let press=99; for(const o of other(p.team).players){ if(!o.excluded) press=Math.min(press,dist(o,p)); }
   const err=(0.2+(1-p.stamina)*0.5)*(1.25-p.st.pas)*(0.3+d*0.05)*ERRORE_PASSAGGIO.base*
     (1+ERRORE_PASSAGGIO.pressione*clamp((1.6-press)/1.6,0,1))*(1+ERRORE_PASSAGGIO.disteso*(p.oriz||0));
-  tx+=gauss()*err; tz+=gauss()*err;
+  { const L=ERRORE_PASSAGGIO.limite, g=()=>clamp(gauss(),-L,L); tx+=g()*err; tz+=g()*err; }
   // PALLA AL CENTROBOA (v0.55, Ale: «al centroboa la palla va sempre data davanti e in acqua; poi lui la prende e si gira e tira
   // con una frustata oppure fa una beduina; se gli arriva in mano al volo è perché si è liberato del difensore»): con il marcatore
   // addosso il passaggio arriva basso, in acqua, BOA_DAVANTI m davanti a lui verso chi passa, e un po' più lento; in mano (alto,
