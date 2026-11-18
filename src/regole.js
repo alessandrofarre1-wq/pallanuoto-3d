@@ -55,12 +55,12 @@ export function giveBall(p){
       concludiRigoreFinale(false,p.isGK?'parata':'respinta'); return;
     }
     ball.state='held'; ball.holder=p; ball.holdTime=0; ball.kind=null; ball.target=null; ball.lastTeam=p.team;
-    ball.afterShot=false; ball.inUscita=false; ball.inRete=false; ball.toccoDifesa=null; ball.ignora=null;
+    ball.afterShot=false; ball.inUscita=false; ball.inRete=false; ball.toccoDifesa=null; ball.toccoPortiere=false; ball.ignora=null;
     game.possTeam=p.team; resetTap(); return;
   }
   const changed = game.possTeam!==p.team; if(changed) chiudiAzione('persa');
   const daPassaggio = ball.kind==='pass' && ball.state==='flight' && !changed;
-  ball.state='held'; ball.inUscita=false; ball.toccoDifesa=null; ball.ignora=null; ball.holder=p; ball.holdTime=0; ball.kind=null; ball.target=null; ball.lastTeam=p.team;
+  ball.state='held'; ball.inUscita=false; ball.toccoDifesa=null; ball.toccoPortiere=false; ball.ignora=null; ball.holder=p; ball.holdTime=0; ball.kind=null; ball.target=null; ball.lastTeam=p.team;
   // quando e come è arrivata la palla: un tiro subito dopo un passaggio che ha cambiato lato trova il portiere fuori posto
   p.ricevutoT=game.time; p.ricevutoCambio=!!ball.cambioLato; p.ricevutoPassaggio=daPassaggio; if(!daPassaggio) p.ricevutoCambio=false;
   p.decideT=0.4+rnd()*0.4; p.alVolo=rnd()<(ball.cambioLato||ball.dopoFinta?0.8:0.4); p.ricevutoDopoFinta=!!ball.dopoFinta&&daPassaggio; ball.cambioLato=false; ball.dopoFinta=false; p.cut=null; p.act=null; p.fakeCount=0; p.fakeUsed=false; p.shootNext=false; p.fakeUntil=0; p.scaricoDopoFinta=false;

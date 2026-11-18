@@ -180,9 +180,13 @@ function passo(dt,corpiAttivi){
 }
 // palla uscita dalla linea di fondo (art. 12-13): tiro d'angolo se l'ha toccata per ultimo un difensore (portiere compreso),
 // altrimenti rimessa del portiere
+// Regolamento World Aquatics 18/02/2026, art. 13-14: tiro d'angolo se l'ultimo a toccarla è il PORTIERE della difesa (anche per
+// caso) o un difensore che l'ha lanciata lui oltre la linea (v0.57, Ale: «un mio passaggio al portiere è uscito dal fondo e si è
+// ripreso con la palla al mio portiere: è cambio possesso»); un TIRO deviato da un difensore di movimento (il muro) dà invece la
+// rimessa del portiere (art. 13.1.2.2.3: prima nel gioco era angolo)
 function fuoriDalFondo(att){
   const def=other(att);
-  if(ball.toccoDifesa===def) cornerThrow(att); else goalThrow(def,'Fuori! Rimessa dal portiere');
+  if((ball.toccoDifesa===def&&ball.toccoPortiere)||ball.lastTeam===def) cornerThrow(att); else goalThrow(def,'Fuori! Rimessa dal portiere');
 }
 // la palla ha passato la linea di porta in questo passo? (px = posizione prima del passo)
 function lineaDiPorta(px){
@@ -195,7 +199,7 @@ function lineaDiPorta(px){
   return null;
 }
 // presa del passaggio: distanza orizzontale massima dal corpo (braccio teso verso la palla) e altezza massima della palla
-export const PRESA={ raggio:0.5, alto:1.5 };
+export const PRESA={ raggio:0.55, portiere:0.9, alto:1.5 };      // v0.57: 0,5 → 0,55; il portiere arriva più lontano (due mani, tuffo)
 function distSegmento(x,z,ax,az,bx,bz){ const dx=bx-ax, dz=bz-az, L2=dx*dx+dz*dz; const u=L2>1e-9?clamp(((x-ax)*dx+(z-az)*dz)/L2,0,1):0; return Math.hypot(x-ax-u*dx,z-az-u*dz); }
 export function updateBall(dt){
   if(ball.state==='held'){
@@ -251,13 +255,13 @@ export function updateBall(dt){
             if(ball.shotPower>0.55&&r<0.25){
               // deviata in angolo: il portiere la alza sopra la traversa; uscirà dal fondo toccata per ultimo da lui (tiro d'angolo)
               const gx=ownGoalX(def), dx=Math.max(0.25,Math.abs(gx-ball.x)), vxs=3.2, t=dx/vxs, y0=Math.max(0.3,ball.y);
-              ball.kind='rebound'; ball.toccoDifesa=def; ball.ignora=gk; ball.vx=Math.sign(gx-ball.x||1)*vxs; ball.vz=ball.vz*0.15+(rnd()-0.5)*1.5;
+              ball.kind='rebound'; ball.toccoDifesa=def; ball.toccoPortiere=true; ball.ignora=gk; ball.vx=Math.sign(gx-ball.x||1)*vxs; ball.vz=ball.vz*0.15+(rnd()-0.5)*1.5;
               ball.vy=(GH+0.45-y0+4.9*t*t)/t; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=9;
               annuncia('parata','Parata!',{p:gk,dettaglio:"deviata in angolo"});
             }
             else if(ball.shotPower>0.7&&r<0.65){
               // respinta: la palla schizza via dalle mani del portiere, verso il campo e verso l'alto
-              ball.kind='rebound'; ball.toccoDifesa=def; ball.ignora=gk; ball.vx=-ball.vx*0.22; ball.vz=ball.vz*0.3+(rnd()-0.5)*4; ball.vy=1.5+rnd()*2; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.25;
+              ball.kind='rebound'; ball.toccoDifesa=def; ball.toccoPortiere=true; ball.ignora=gk; ball.vx=-ball.vx*0.22; ball.vz=ball.vz*0.3+(rnd()-0.5)*4; ball.vy=1.5+rnd()*2; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.25;
               annuncia('parata','Parata!',{p:gk,dettaglio:'respinta'});
             } else { giveBall(gk); annuncia('parata','Parata!',{p:gk}); }
             return;
@@ -266,8 +270,9 @@ export function updateBall(dt){
       }
     }
     // linea di porta: gol se passa tra i pali e sotto la traversa (anche dopo aver toccato un legno), altrimenti fuori
-    if(ball.daTiro){
-      const l=lineaDiPorta(px);
+    // (v0.57) vale anche per passaggi e rimbalzi: prima un passaggio oltre la linea di fondo restava in gioco fino a 1,2 m oltre
+    // la linea e i giocatori lo inseguivano dentro la porta
+    { const l=lineaDiPorta(px);
       if(l){
         if(l.dentro){ ball.inRete=true; goalScored(l.att); return; }
         fuoriDalFondo(l.att); return;
@@ -287,7 +292,9 @@ export function updateBall(dt){
           // riuscita lo abbassa per un attimo; il polso non dà il tempo di alzarlo; chi tira più alto passa sopra
           const dif01=(p.s.dif-40)/59, braccioAlto=0.2+0.7*dif01;
           const finta=ball.shooter&&ball.shooter.fakeUntil>game.time?0.45:1;
-          const muro=(primoPalo?0.42:0.34*braccioAlto)*finta*(1-2*(ball.sorpresa||0))*(1.3-0.6*(ball.elevazione||0.5));
+          // (v0.56) il centrale tra i pali con l'uomo in meno copre il palo lungo: sul tiro da quella parte il braccio è già alto
+          const cl=p.copreLungo, lungoCoperto=ball.kind==='shot'&&cl&&game.time-cl.t<0.3&&Math.sign(ball.crossZ||0)===cl.lato;
+          const muro=(primoPalo||lungoCoperto?0.42:0.34*braccioAlto)*finta*(1-2*(ball.sorpresa||0))*(1.3-0.6*(ball.elevazione||0.5));
           // intercetto: è da qui che nasce la maggior parte delle palle rubate. Un passaggio lungo e lento dà il tempo di leggerlo;
           // conta la Difesa di chi anticipa contro il Passaggio di chi l'ha fatto
           // v0.45: nelle partite vere circa un'azione in parità su cinque finisce con la palla persa (Mondiali 2009): il pressing chiude
@@ -300,7 +307,7 @@ export function updateBall(dt){
           if(rnd()<pr){
             if(ball.kind==='shot'){
               // muro: la palla rimbalza sul braccio alzato e resta in gioco
-              ball.kind='rebound'; ball.toccoDifesa=p.team; ball.ignora=p; ball.vx*=-0.2; ball.vz=ball.vz*0.3+(rnd()-0.5)*3; ball.vy=1+rnd()*1.5; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.2; annuncia('parata','Muro!',{p}); ball.afterShot=true;
+              ball.kind='rebound'; ball.toccoDifesa=p.team; ball.toccoPortiere=false; ball.ignora=p; ball.vx*=-0.2; ball.vz=ball.vz*0.3+(rnd()-0.5)*3; ball.vy=1+rnd()*1.5; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.2; annuncia('parata','Muro!',{p}); ball.afterShot=true;
             }
             else { ball.raccordoPresa={x:ball.x,y:ball.y,z:ball.z,t:game.time}; registraIntercetto(p.team); giveBall(p); annuncia('possesso','Intercetto!',{p}); }
             return;
@@ -310,7 +317,7 @@ export function updateBall(dt){
         // (PRESA.raggio dal corpo, sul tratto percorso in questo fotogramma), non più entro 0,85 m dal centro del corpo, che
         // faceva saltare la palla disegnata di circa un metro verso la mano. Il passaggio che passa più lontano non si
         // ferma: va avanti, cade in acqua e diventa una palla vagante
-        if(ball.kind==='pass' && p===ball.target && ball.flightT>0.15 && ball.y<PRESA.alto && distSegmento(p.x,p.z,px,pz,ball.x,ball.z)<PRESA.raggio){
+        if(ball.kind==='pass' && p===ball.target && ball.flightT>0.15 && ball.y<PRESA.alto && distSegmento(p.x,p.z,px,pz,ball.x,ball.z)<(p.isGK?PRESA.portiere:PRESA.raggio)){
           ball.raccordoPresa={x:ball.x,y:ball.y,z:ball.z,t:game.time};
           const ab=ball.anticipoBattuto; giveBall(p); if(ab) anticipoBattuto(ab,p); return; }
       }

@@ -173,6 +173,10 @@ function paloTarget(p,f){
 // regole del vantaggio: palla pressata → i compagni si spostano dal lato della palla; palla libera → si impegna il difensore e ci
 // si allarga; difesa che non si impegna → si accelera. Senza vantaggio (transizione 6 contro 6) la struttura porta comunque
 // all'attacco schierato prima che la difesa sia pronta. Finisce quando la palla arriva ai 5,5 m o dopo CONTRO.durata secondi.
+// RIPARTENZA CON LA PALLA A UN GIOCATORE DI MOVIMENTO (v0.58): d3 = dove va il 3 (metri dalla porta avversaria); arrivato = sotto
+// questa distanza dal posto non si scatta più; transizione = finché la palla è oltre questa distanza dalla porta avversaria
+// i compagni vanno dritti ai loro posti d'attacco scattando (fuori dalla controfuga organizzata)
+export const RIPARTENZA={ d3:7.0, arrivato:2.5, transizione:10 };
 export const CONTRO={ durata:12, zLati:4.0, dPrima:2.25, dSeconda:5.2, zSeconda:2.3 };
 // STILE PER NAZIONALE (Canossa, Lupo et al. 2022, dopo le regole 2018): Italia, Serbia e Australia segnano fino al 33% dei gol in
 // gioco veloce, Spagna, Croazia e Ungheria il 15% o meno. Probabilità di lanciare la controfuga organizzata dopo il recupero.
@@ -202,16 +206,19 @@ function postoApertura(num,schema,ballD,h,t){
     if(num===1) return {d:CONTRO.dPrima,z:CONTRO.zLati};
     if(num===5) return {d:CONTRO.dPrima,z:-CONTRO.zLati};
     if(num===6) return {d:CONTRO.dPrima+0.35,z:0};
-    if(num===3) return h&&h.isGK ? {d:25-6,z:0} : {d:Math.max(CONTRO.dSeconda+2,ballD+3),z:0};      // incontro al portiere, poi dietro la palla
+    // v0.58 (Ale: «quando prendo la palla i compagni non possono stare fermi ad aspettarmi: devono nuotare il più velocemente
+    // possibile verso le posizioni d'attacco; invece mi stanno intorno»): incontro e appoggio servono solo al PORTIERE che deve
+    // lanciare; se la palla l'ha un giocatore di movimento, 2, 3 e 4 vanno subito ai loro posti d'attacco
+    if(num===3) return h&&h.isGK ? {d:25-6,z:0} : {d:RIPARTENZA.d3,z:0};
     const lato=num===2?1:-1;
-    return h&&h.isGK ? {d:25-11,z:lato*3.6} : {d:Math.max(CONTRO.dSeconda,ballD-3),z:lato*CONTRO.zSeconda*1.4};
+    return h&&h.isGK ? {d:25-11,z:lato*3.6} : {d:CONTRO.dSeconda,z:lato*CONTRO.zSeconda*1.4};
   }
   if(num===1) return {d:CONTRO.dPrima,z:CONTRO.zLati};
   if(num===6) return {d:CONTRO.dPrima+0.35,z:0};
   if(num===4) return {d:5.8,z:-4.6};
   if(num===5) return {d:CONTRO.dPrima,z:-6.2};
-  if(num===2) return h&&h.isGK ? {d:12.5,z:2.5} : {d:Math.max(CONTRO.dSeconda,ballD-2.5),z:3.2};
-  return {d:Math.max(CONTRO.dSeconda+2,ballD+3.5),z:0.5};      // 3: l'ultimo, dietro la palla
+  if(num===2) return h&&h.isGK ? {d:12.5,z:2.5} : {d:CONTRO.dSeconda,z:3.2};
+  return h&&h.isGK ? {d:Math.max(CONTRO.dSeconda+2,ballD+3.5),z:0.5} : {d:RIPARTENZA.d3,z:0.5};      // 3: l'ultimo, dietro la palla del portiere
 }
 // chi deve ricevere il primo passaggio del portiere nell'apertura in corso
 export function riceventeApertura(t){
@@ -223,7 +230,7 @@ function contropiedeTarget(p,c){
   if(c.schema&&!t.players.some(q=>q.excluded||q.uscendo)){
     const num=numeroPosizione(p.i); if(!num) return null;
     const ps=postoApertura(num,c.schema,ballD,h,t);
-    const sprint=!(ps.d>ballD&&Math.abs(gx-p.x)>ps.d-0.5);      // chi deve stare dietro la palla non scatta
+    const sprint=!(ps.d>ballD&&Math.abs(gx-p.x)>ps.d-0.5)&&Math.hypot(gx-t.dir*ps.d-p.x,ps.z*t.dir-p.z)>RIPARTENZA.arrivato;      // chi deve stare dietro la palla non scatta
     return { x:gx-t.dir*ps.d, z:clamp(ps.z*t.dir,-HW+0.5,HW-0.5), sprint };
   }
   if(c.calcT!==game.time){
@@ -281,18 +288,25 @@ export function attackTarget(p){
   }
   // la squadra sale insieme alla palla: nessuno può stare troppo avanti rispetto a chi la porta
   // ognuno sale lungo la propria corsia, scaglionato per ruolo (boa e ali avanti, mezzi a metà, punto in copertura)
-  const ballD=Math.abs(gx-ball.x), lead=[0,14,12,12,8,8,4][p.i];
+  const ballD=Math.abs(gx-ball.x), transizione=!sup&&ballD>RIPARTENZA.transizione&&ball.holder?.team===t&&!ball.holder.isGK;
+  // v0.58: in transizione con la palla a un giocatore di movimento solo il punto resta un po' più vicino (al massimo 8 m davanti
+  // alla palla, per lo scarico); gli altri vanno dritti al loro posto. Prima nessuno poteva stare più di 4-14 m davanti alla palla
+  const lead=transizione?[0,99,99,99,99,99,8][p.i]:[0,14,12,12,8,8,4][p.i];
   let f0=f[0], fz=f[1];
   if(ballD-lead>f0) f0=ballD-lead;
   if(sup&&ePalo(f)&&ballD<9) return paloTarget(p,[f0,fz]);
   const x=gx-t.dir*f0,z=clamp(fz*t.dir+(sup?0:Math.sin(game.time*0.6+p.uid)*0.35),-HW+0.5,HW-0.5);
   const a=appoggio(p,x,z,sup),ax=x+(a?a.dx:0),az=z+(a?a.dz:0);
   if(sup) return { x:ax, z:az, sprint:Math.hypot(ax-p.x,az-p.z)>1.5 };
-  return { x:ax, z:az, sprint:(t.atkPlay===2&&(p.i===4||p.i===5))||game.time<(t.fugaFino||0) };
+  return { x:ax, z:az, sprint:(t.atkPlay===2&&(p.i===4||p.i===5))||game.time<(t.fugaFino||0)||(transizione&&Math.hypot(ax-p.x,az-p.z)>RIPARTENZA.arrivato) };
 }
 // Difesa con l'uomo in meno. Posizione di partenza: tre difensori sulla linea dei 2 metri, ciascuno in mezzo tra due dei quattro
 // attaccanti; gli altri due davanti ai pali, a metà tra gli attaccanti ai 2 metri e quelli a 5. Ognuno prende il posto più vicino.
 // Poi la zona scivola verso il lato della palla e chi sta davanti al palo esce con il braccio alto su chi ha palla ai 5 metri.
+// misure della difesa con l'uomo in meno (v0.56): esterno = l'attaccante con palla è «all'esterno dei 2 metri» se è entro
+// questa distanza dalla porta e oltre «largo» dal centro; spalle = dove sta il centrale dietro il difensore del palo;
+// stretto = dove si stringe chi difende sull'esterno quando il suo uomo non ha palla
+export const INFERIORITA={ esterno:3.6, largo:3.4, spalle:1.0, stretto:2.3 };
 function postiInferiorita(t){
   if(t.postiT===game.time) return t.posti;
   const ogx=ownGoalX(t),defs=t.players.filter(q=>!q.excluded&&!q.isGK),m=new Map(),h=riferimentoPalla(other(t));
@@ -314,17 +328,30 @@ function postiInferiorita(t){
   for(const [q,i] of ruoli){
     const s=DEF_DOWN[i];
     let x=s[0], z=s[1]+sciv;
-    if(s[0]>3&&h&&Math.abs(ogx-h.x)>4&&Math.sign(h.z||1)===Math.sign(s[1])){
+    if(i!==0) q.copreLungo=null;
+    if(Math.abs(s[1])>3&&h&&Math.abs(ogx-h.x)<INFERIORITA.esterno&&Math.abs(h.z)>INFERIORITA.largo&&Math.sign(h.z)===Math.sign(s[1])){
+      // palla all'esterno dei 2 metri dalla sua parte: esce sul suo uomo tra lui e il palo corto (con il portiere)
+      x=Math.max(1.4,Math.abs(ogx-h.x)-0.2); z=h.z-Math.sign(h.z)*0.8;
+    }else if(s[0]>3&&h&&Math.abs(ogx-h.x)>4&&Math.sign(h.z||1)===Math.sign(s[1])){
       x=Math.min(Math.abs(ogx-h.x)-(anticipo?0.7:0.95),anticipo?5.6:5);z=s[1]+(h.z-s[1])*(anticipo?0.8:0.7);
     }else if(Math.abs(s[1])>3&&h){
       const palo=other(t).players.find(p=>!p.excluded&&(p.i===1||p.i===6)&&Math.sign(p.z)===Math.sign(s[1]));
       if(palo&&Math.abs(ogx-palo.x)>2.7&&Math.sign(h.z||1)===Math.sign(s[1])&&Math.abs(ogx-h.x)>4){
         x=Math.max(1.8,Math.abs(ogx-palo.x)-0.7);z=palo.z+(s[1]-palo.z)*0.25;
+      }else{
+        // (v0.56) il suo uomo all'esterno non ha la palla: si stringe verso il palo, di più con la palla dalla sua parte, mentre il
+        // centrale copre l'incrociato
+        x=1.9; z=s[1]+(Math.sign(s[1])*INFERIORITA.stretto-s[1])*(Math.sign(h.z||1)===Math.sign(s[1])?1:0.5);
       }
     }else if(i===0&&h){
-      // Il centrale prende il palo vicino alla palla: quello lontano può scorrere nella finestra lasciata.
-      const palo=other(t).players.find(p=>!p.excluded&&(p.i===1||p.i===6)&&Math.sign(p.z)===Math.sign(h.z||1));
-      if(palo){z=clamp(palo.z*0.55,-1.6,1.6);x=Math.max(1.8,Math.min(2.7,Math.abs(ogx-palo.x)-0.8));}
+      // IL CENTRALE TRA I PALI (v0.56, Ale: «ha il ruolo più scomodo: salta da un palo all'altro senza fare fallo»). Con la palla
+      // all'esterno dei 2 metri (1 o 4) sta sulle spalle del difensore del palo dalla parte della palla e difende con il braccio
+      // il palo lungo (il palo corto lo coprono il portiere e il difensore dell'esterno); con la palla ai 5 metri (2 o 3) copre
+      // il tiro incrociato: si mette sulla linea tra il tiratore e il palo lungo, la parte di porta lasciata dal portiere.
+      const hx=Math.abs(ogx-h.x), lato=Math.sign(h.z||1);
+      if(hx<INFERIORITA.esterno&&Math.abs(h.z)>INFERIORITA.largo){ z=lato*INFERIORITA.spalle; x=1.7; }
+      else if(hx<9){ const lungo=-lato*GW*0.8, k=2.0/Math.max(2.2,hx); z=lungo+(h.z-lungo)*k; x=2.0; }
+      q.copreLungo=hx<9?{lato:-lato,t:game.time}:null;
     }
     const px=ogx+t.dir*x,bd=Math.hypot(q.x-px,q.z-z);
     m.set(q,{x:px,z:clamp(z,-HW+0.5,HW-0.5),sprint:bd>2.5});

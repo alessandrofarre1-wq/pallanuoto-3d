@@ -184,7 +184,16 @@ export function humanControl(p,dt){
 const _g=[0,0];
 export function aiutoGuida(p,ix,iz){
   _g[0]=ix; _g[1]=iz;
-  const m=Math.hypot(ix,iz); if(m<0.3||ball.holder===p) return _g;
+  const m=Math.hypot(ix,iz);
+  // PASSAGGIO IN ARRIVO E LEVETTA FERMA (v0.57): il ricevente va da solo incontro alla palla, sul punto della sua traiettoria più
+  // vicino a lui (con la presa alla mano della v0.56 chi restava fermo se la lasciava sfuggire)
+  if(m<0.3&&ball.state==='flight'&&ball.kind==='pass'&&ball.target===p){
+    const vx=ball.vx, vz=ball.vz, v2=vx*vx+vz*vz||1, u=Math.max(0,((p.x-ball.x)*vx+(p.z-ball.z)*vz)/v2);
+    const dx=ball.x+vx*u-p.x, dz=ball.z+vz*u-p.z, d=Math.hypot(dx,dz);
+    if(d>0.2){ const k=Math.min(1,d/0.6); _g[0]=dx/d*k; _g[1]=dz/d*k; }
+    return _g;
+  }
+  if(m<0.3||ball.holder===p) return _g;
   let tx=null, tz=0;
   const h=ball.holder;
   if(pallaVagante()){ const tt=Math.min(0.6,dist(p,ball)/3); tx=ball.x+ball.vx*tt; tz=ball.z+ball.vz*tt; }

@@ -13,9 +13,17 @@ export function paloCoperto(h){
   return (h.mano==='S'?-1:1)*dir;
 }
 // braccio da alzare: 'D' (destro) o 'S' (sinistro), secondo come il difensore d è girato
+// UOMO IN MENO (v0.56, Ale: «chi difende sul 3 alza il braccio destro anziché il sinistro; difende il suo palo con una posizione a
+// specchio rispetto all'avversario»): in inferiorità chi esce sul tiratore alza il braccio A SPECCHIO del suo braccio di tiro
+// (destro → braccio sinistro del difensore, mancino → destro), proprio davanti alla palla; l'incrociato lo copre il centrale
+// tra i pali (braccioVerso con il palo lontano). In parità resta la regola v0.30 (braccio dalla parte del palo coperto).
 export function braccioMuro(d,h){
-  const palo=paloCoperto(h), fx=d.fx||-(h.team.dir||1);
-  const destraZ=fx;      // il lato destro di chi guarda verso (fx,fz) è (-fz, fx): qui conta solo la z
-  const lato=Math.abs(destraZ)>0.2?Math.sign(destraZ):-(h.team.dir||1);
+  if(d.team&&d.team.players&&d.team.players.some(q=>q.excluded)) return h.mano==='S'?'D':'S';
+  return braccioVerso(d,paloCoperto(h),h.team.dir||1);
+}
+// braccio dalla parte del palo con z di segno «palo», per il difensore d girato come (fx, fz); dirAtt = verso dell'attacco
+export function braccioVerso(d,palo,dirAtt=1){
+  const destraZ=d.fx||-dirAtt;      // il lato destro di chi guarda verso (fx,fz) è (-fz, fx): qui conta solo la z
+  const lato=Math.abs(destraZ)>0.2?Math.sign(destraZ):-dirAtt;
   return lato===palo?'D':'S';
 }
