@@ -194,6 +194,9 @@ function lineaDiPorta(px){
   }
   return null;
 }
+// presa del passaggio: distanza orizzontale massima dal corpo (braccio teso verso la palla) e altezza massima della palla
+export const PRESA={ raggio:0.5, alto:1.5 };
+function distSegmento(x,z,ax,az,bx,bz){ const dx=bx-ax, dz=bz-az, L2=dx*dx+dz*dz; const u=L2>1e-9?clamp(((x-ax)*dx+(z-az)*dz)/L2,0,1):0; return Math.hypot(x-ax-u*dx,z-az-u*dz); }
 export function updateBall(dt){
   if(ball.state==='held'){
     const p=ball.holder; ball.holdTime+=dt; ball.x=p.x; ball.z=p.z; ball.y=BRV;
@@ -210,7 +213,7 @@ export function updateBall(dt){
   }
   ball.pickupCD-=dt;
   if(ball.state==='flight'){
-    const px=ball.x;
+    const px=ball.x, pz=ball.z;
     const e=passo(dt,ball.kind==='rebound'); ball.flightT+=dt;
     // pali e traversa: l'urto è vero, qui si annuncia soltanto
     if(ball.daTiro){
@@ -299,11 +302,17 @@ export function updateBall(dt){
               // muro: la palla rimbalza sul braccio alzato e resta in gioco
               ball.kind='rebound'; ball.toccoDifesa=p.team; ball.ignora=p; ball.vx*=-0.2; ball.vz=ball.vz*0.3+(rnd()-0.5)*3; ball.vy=1+rnd()*1.5; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.2; annuncia('parata','Muro!',{p}); ball.afterShot=true;
             }
-            else { registraIntercetto(p.team); giveBall(p); annuncia('possesso','Intercetto!',{p}); }
+            else { ball.raccordoPresa={x:ball.x,y:ball.y,z:ball.z,t:game.time}; registraIntercetto(p.team); giveBall(p); annuncia('possesso','Intercetto!',{p}); }
             return;
           }
         }
-        if(ball.kind==='pass' && p===ball.target && hd<0.85 && ball.flightT>0.15){ const ab=ball.anticipoBattuto; giveBall(p); if(ab) anticipoBattuto(ab,p); return; }
+        // PRESA (v0.56, Ale: «i passaggi sembrano calamitati»): la palla si prende solo quando passa a portata della mano
+        // (PRESA.raggio dal corpo, sul tratto percorso in questo fotogramma), non più entro 0,85 m dal centro del corpo, che
+        // faceva saltare la palla disegnata di circa un metro verso la mano. Il passaggio che passa più lontano non si
+        // ferma: va avanti, cade in acqua e diventa una palla vagante
+        if(ball.kind==='pass' && p===ball.target && ball.flightT>0.15 && ball.y<PRESA.alto && distSegmento(p.x,p.z,px,pz,ball.x,ball.z)<PRESA.raggio){
+          ball.raccordoPresa={x:ball.x,y:ball.y,z:ball.z,t:game.time};
+          const ab=ball.anticipoBattuto; giveBall(p); if(ab) anticipoBattuto(ab,p); return; }
       }
     }
     // acqua (palla.js calcola le forze; qui solo la regola): la palla che esce dall'acqua dopo averla toccata ha fatto uno

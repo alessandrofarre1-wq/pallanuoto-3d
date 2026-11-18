@@ -538,7 +538,7 @@ export function aiTarget(p){
   return {x:-t.dir*FORM[p.i][0]*0.8, z:KICK_Z[p.i]*t.dir, sprint:true};   // palla contesa: ci si ferma a metà campo
 }
 // ultimo minuto dell'ultimo tempo, sotto di un gol: la squadra del computer attacca in 7 contro 6 con il portiere avanzato
-const PAZIENZA=[23,4];      // secondi di possesso prima di cominciare a cercare il tiro, e secondi per arrivare alla piena voglia di tirare
+const PAZIENZA=[24,3];      // secondi di possesso prima di cominciare a cercare il tiro, e secondi per arrivare alla piena voglia di tirare
 export function setteControSei(t){
   return !t.human && game.period===4 && game.clock<60 && other(t).score-t.score===1;
 }
@@ -593,6 +593,11 @@ export function aiShoot(p,power,lob){
   else startAct(p, kind, lob?0.1:0.12+rnd()*0.1, ()=>doShoot(p,power,lob,null));
 }
 export function aiPass(p,m){ startAct(p,'pass',0.08,()=>doPass(p,m),[m.x,m.z]); }
+// COSTRUZIONE (v0.56, taratura): nelle partite vere un'azione in parità dura circa 21 s (Mondiali 2009) e se ne giocano circa 50
+// a partita (Euro League); nel gioco duravano 12,8 s. Nei primi COSTRUZIONE.secondi di un'azione in parità non si tira al volo
+// e il tiro «da libero» si cerca meno (COSTRUZIONE.libero); restano il tiro con nessun difensore davanti e quello vicinissimo
+export const COSTRUZIONE={ secondi:7, libero:0.3, vicino:4.5 };
+function inCostruzione(t){ const az=azioneAperta(); return !!az&&az.t===t&&az.tipo==='parita'&&!manUp(t)&&!contropiede(t)&&game.time-az.t0<COSTRUZIONE.secondi&&game.shot>8; }
 export function aiCarrier(p,dt){
   const t=p.team, gx=goalX(t);
   if(p.isGK && !setteControSei(t)){
@@ -617,7 +622,8 @@ export function aiCarrier(p,dt){
   // tranne il «quick» dei primi secondi; tempoSup = secondi da quando è iniziata la superiorità
   const azSup=manUp(t)?azioneAperta():null, tempoSup=azSup&&azSup.tipo==='superiorita'?game.time-azSup.t0:99;
   const supPronta=!manUp(t)||tempoSup>5;
-  if(supPronta&&(p.alVolo||paloUomo(p))&&ball.holdTime<0.15&&(manUp(t)||p.ricevutoDopoFinta||p.ricevutoCambio)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
+  const costr=inCostruzione(t);
+  if(supPronta&&!costr&&(p.alVolo||paloUomo(p))&&ball.holdTime<0.15&&(manUp(t)||p.ricevutoDopoFinta||p.ricevutoCambio)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
     const sit=situazioneTiro(p),gk=other(t).players[0],aim=-Math.sign(gk.z||1);
     p.alVolo=false;
     if(sit.marcato<0.2&&sit.vicino>1.25&&!(p.pressatoUntil>game.time)&&laneClear(p,gx,aim,t,0.7)){
@@ -631,7 +637,7 @@ export function aiCarrier(p,dt){
     p.reazioneT=0.12;
     const press=openness(p),sottoPressione=p.pressatoUntil>game.time;
     const sit=situazioneTiro(p),angolo=Math.abs(gx-p.x)/Math.max(0.1,dGoal);
-    if(supPronta&&!ft&&!sottoPressione&&dGoal<7&&angolo>0.68&&sit.liberato&&sit.marcato<0.2&&laneClear(p,gx,0,t,0.7)){
+    if(supPronta&&!ft&&!sottoPressione&&dGoal<(costr?COSTRUZIONE.vicino:7)&&angolo>0.68&&sit.liberato&&sit.marcato<0.2&&laneClear(p,gx,0,t,0.7)){
       // Il tiro rapido non deve consumare quasi sempre la controfuga prima che
       // il controllo per fotogramma scelga uno speciale. La decisione resta immediata.
       const speciale=dGoal<=QTE.maxComputer?occasioneControfuga(p):null;
@@ -683,7 +689,7 @@ export function aiCarrier(p,dt){
     // IL «QUICK» (manuale USA Water Polo, 6 contro 5): nei primi secondi della superiorità la difesa non è ancora organizzata;
     // chi è libero vicino alla porta tira subito invece di aspettare la circolazione
     const az=azioneAperta(), quick=manUp(t)&&az&&az.tipo==='superiorita'&&game.time-az.t0<3&&press>2.4&&lane&&dGoal<6.5;
-    const pazienza = quick ? 1 : manUp(t) ? (libero&&tempoSup>3.5?1:clamp((tempoSup-5)/4,0,1)) : davanti===0||libero ? 1 : clamp((SHOT_CLOCK-game.shot-PAZIENZA[0])/PAZIENZA[1],0,1);
+    const pazienza = quick ? 1 : manUp(t) ? (libero&&tempoSup>3.5?1:clamp((tempoSup-5)/4,0,1)) : davanti===0 ? 1 : libero ? (costr&&dGoal>COSTRUZIONE.vicino?COSTRUZIONE.libero:1) : clamp((SHOT_CLOCK-game.shot-PAZIENZA[0])/PAZIENZA[1],0,1);
     // con l'uomo in più l'esterno, che ha poco angolo, tira di rado: cerca l'uomo al palo o chi sta ai 5 metri
     const angolo = manUp(t) ? clamp(Math.abs(gx-p.x)/Math.max(0.1,dGoal)*2,0.15,1) : 1;
     // si tira quando si è liberi: subito dopo un passaggio che ha liberato il tiratore o cambiato lato; con il difensore davanti

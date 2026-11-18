@@ -1,7 +1,7 @@
 // ================= LOTTA AL CENTRO (centroboa contro il suo marcatore) =================
 import { ARBITRO } from './costanti.js';
 import { whistle } from './audio.js';
-import { BRV, DIFF, MARK, dist, rnd } from './costanti.js';
+import { BRV, DIFF, MARK, clamp, dist, rnd } from './costanti.js';
 import { spawnFoam } from './grafica/scena.js';
 import { annuncia } from './cronaca.js';
 import { aiPass, aiShoot, closestTo } from './ia.js';
@@ -10,7 +10,7 @@ import { ESPULSIONI, deadBall, exclude, foul, giveBall, tackle } from './regole.
 import { ball, ctrl, fight, game, goalX, other } from './stato.js';
 import { bestPassTarget } from './tiri.js';
 import { avviaGirata, leggiCentro } from './centroboa.js';
-import { chiudiAzione } from './statistiche.js';
+import { azioneAperta, chiudiAzione } from './statistiche.js';
 export const boaDef = t => other(t).players.find(q=>MARK[q.i]===1);
 export function fightOn(a,b){ return fight.active && ((fight.boa===a&&fight.def===b)||(fight.boa===b&&fight.def===a)); }
 export function updateFight(dt){
@@ -44,13 +44,19 @@ const aggressivita=d=>d===ctrl ? (d.aggrT>game.time?1.6:0.35) : (d.team.defPlay=
 // 10 espulsioni o rigori procurati in parità sono del centroboa). Trattenere, affondare o tirare indietro chi NON ha la palla è
 // espulsione; affondarlo mentre la palla gli sta arrivando è sempre espulsione; un fallo semplice è possibile quando non c'è
 // minaccia immediata; la spinta all'indietro del centroboa è fallo in attacco (contro-fallo).
+// LA LOTTA CRESCE CON L'AZIONE (v0.56, taratura): nel gioco le espulsioni procurate in parità arrivavano dopo 10,6 s, i falli in
+// attacco dopo 13 s e le azioni erano 80 a squadra contro circa 50 (Euro League). Nei primi secondi la squadra in attacco si sta
+// ancora schierando e il centroboa non ha preso posizione: espulsioni e falli al centro partono a LOTTA_FASE.minimo e crescono
+// fino al pieno tra LOTTA_FASE.da e LOTTA_FASE.a secondi dall'inizio dell'azione (solo in parità)
+export const LOTTA_FASE={ minimo:0.2, da:5, a:16 };
+function faseLotta(t){ const az=azioneAperta(); if(!az||az.t!==t||az.tipo!=='parita') return 1; const e=game.time-az.t0; return clamp(LOTTA_FASE.minimo+(1-LOTTA_FASE.minimo)*(e-LOTTA_FASE.da)/(LOTTA_FASE.a-LOTTA_FASE.da),LOTTA_FASE.minimo,1); }
 export const CENTRO_SENZA_PALLA={ espulsione:0.07, inArrivo:0.9, fallo:0.18, contro:0.05 };
 function lottaSenzaPalla(b,d,lettura,dt){
   const h=ball.holder, inArrivo=ball.state==='flight'&&ball.kind==='pass'&&ball.target===b;
   if(!(inArrivo||(h&&h.team===b.team&&h!==b))||dist(b,d)>1.15||game.state!=='play') return;
   const ag=aggressivita(d), sev=Math.pow(ARBITRO,1.5)*(1.5-(d.s.dis-40)/59);
   const posizione=lettura.ricevibile?1:0.35+0.4*Math.max(0,fight.v);      // chi ha preso posizione davanti al difensore lo obbliga a trattenere
-  const C=CENTRO_SENZA_PALLA, rE=(inArrivo?C.inArrivo:C.espulsione)*posizione*ag*sev*(ESPULSIONI.centro/7), rF=C.fallo*ag*(1-posizione*0.5), rO=C.contro*(1+Math.max(0,-fight.v));
+  const fl=faseLotta(b.team), C=CENTRO_SENZA_PALLA, rE=(inArrivo?C.inArrivo:C.espulsione)*posizione*ag*sev*(ESPULSIONI.centro/7)*fl, rF=C.fallo*ag*(1-posizione*0.5)*fl, rO=C.contro*(1+Math.max(0,-fight.v))*fl;
   const r=rnd();
   if(r<rE*dt){ if(h&&h.team===b.team) h.freeThrow=true; exclude(d,b,inArrivo?'affonda il centroboa sul passaggio':'trattiene il centroboa','centro'); return; }
   if(!inArrivo&&r<(rE+rF)*dt&&h){ foul(d,h); return; }      // fallo semplice al centro: nessuna minaccia immediata, tiro libero
@@ -73,7 +79,7 @@ export function boaHold(b,d,dt){
   const ag=aggressivita(d);
   // Restano i contatti del duello; un semplice cambio di postura non assegna rigori.
   const sev=Math.pow(ARBITRO,1.5);
-  const rE=Math.max(0.12,0.42+0.5*v)*ESPULSIONI.centro*ag*(1.5-(d.s.dis-40)/59)*sev, rF=0.5*ag, rO=0.14+0.3*Math.max(0,-v), rS=(0.08+0.25*Math.max(0,-v))*(d===ctrl&&d.aggrT>game.time?1.5:1);
+  const fl=faseLotta(b.team), rE=Math.max(0.12,0.42+0.5*v)*ESPULSIONI.centro*ag*(1.5-(d.s.dis-40)/59)*sev*fl, rF=0.5*ag*fl, rO=(0.14+0.3*Math.max(0,-v))*fl, rS=(0.08+0.25*Math.max(0,-v))*(d===ctrl&&d.aggrT>game.time?1.5:1);
   if(fight.holdT>0.35&&dist(b,d)<1.15){
     const r=rnd();
     if(r<rE*dt){

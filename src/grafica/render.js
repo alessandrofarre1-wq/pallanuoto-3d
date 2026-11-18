@@ -10,6 +10,7 @@ import { inp } from '../input.js';
 import { allPlayers, ball, ctrl, game, teams } from '../stato.js';
 import { humanPassTarget } from '../tiri.js';
 import { comparseVisibili } from '../panchina.js';
+export const RACCORDO_PRESA=0.12;      // secondi in cui la palla disegnata arriva nella mano dopo la presa (v0.56)
 export const camPos=new THREE.Vector3(0,10.5,16), camLook=new THREE.Vector3(), _cv=new THREE.Vector3();
 export let prevBY=BRV;
 let camLargo=0;
@@ -26,7 +27,11 @@ export function render(dt,now){
   for(const c of comparseVisibili()) updateRig(c,dt,t);      // chi entra o esce con un cambio
   // palla
   const h=ball.holder; let by;
-  if(ball.state==='held'&&h&&h.ballW){ const w=h.ballVistaW||h.ballW; by=Math.max(BRV,w[1]); ball3d.position.set(w[0],by,w[2]); }
+  if(ball.state==='held'&&h&&h.ballW){ const w=h.ballVistaW||h.ballW; by=Math.max(BRV,w[1]); ball3d.position.set(w[0],by,w[2]);
+    // presa (v0.56): la palla disegnata non salta nella mano, ci arriva in RACCORDO_PRESA secondi da dove l'ha presa
+    const rp=ball.raccordoPresa, u=rp?(game.time-rp.t)/RACCORDO_PRESA:1;
+    if(rp&&u>=0&&u<1){ const k=1-u*u*(3-2*u); ball3d.position.x+=(rp.x-ball3d.position.x)*k; ball3d.position.y+=(rp.y-ball3d.position.y)*k; ball3d.position.z+=(rp.z-ball3d.position.z)*k; by=ball3d.position.y; }
+    else if(rp) ball.raccordoPresa=null; }
   else { by=ball.y; ball3d.position.set(ball.x,ball.y,ball.z); }
   const raccordo=ball.raccordoVista;
   if(ball.state==='flight'&&raccordo&&ball.flightT<raccordo.durata){
