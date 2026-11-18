@@ -173,6 +173,10 @@ function paloTarget(p,f){
 // regole del vantaggio: palla pressata → i compagni si spostano dal lato della palla; palla libera → si impegna il difensore e ci
 // si allarga; difesa che non si impegna → si accelera. Senza vantaggio (transizione 6 contro 6) la struttura porta comunque
 // all'attacco schierato prima che la difesa sia pronta. Finisce quando la palla arriva ai 5,5 m o dopo CONTRO.durata secondi.
+// RIPARTENZA CON LA PALLA A UN GIOCATORE DI MOVIMENTO (v0.58): d3 = dove va il 3 (metri dalla porta avversaria); arrivato = sotto
+// questa distanza dal posto non si scatta più; transizione = finché la palla è oltre questa distanza dalla porta avversaria
+// i compagni vanno dritti ai loro posti d'attacco scattando (fuori dalla controfuga organizzata)
+export const RIPARTENZA={ d3:7.0, arrivato:2.5, transizione:10 };
 export const CONTRO={ durata:12, zLati:4.0, dPrima:2.25, dSeconda:5.2, zSeconda:2.3 };
 // STILE PER NAZIONALE (Canossa, Lupo et al. 2022, dopo le regole 2018): Italia, Serbia e Australia segnano fino al 33% dei gol in
 // gioco veloce, Spagna, Croazia e Ungheria il 15% o meno. Probabilità di lanciare la controfuga organizzata dopo il recupero.
@@ -202,16 +206,19 @@ function postoApertura(num,schema,ballD,h,t){
     if(num===1) return {d:CONTRO.dPrima,z:CONTRO.zLati};
     if(num===5) return {d:CONTRO.dPrima,z:-CONTRO.zLati};
     if(num===6) return {d:CONTRO.dPrima+0.35,z:0};
-    if(num===3) return h&&h.isGK ? {d:25-6,z:0} : {d:Math.max(CONTRO.dSeconda+2,ballD+3),z:0};      // incontro al portiere, poi dietro la palla
+    // v0.58 (Ale: «quando prendo la palla i compagni non possono stare fermi ad aspettarmi: devono nuotare il più velocemente
+    // possibile verso le posizioni d'attacco; invece mi stanno intorno»): incontro e appoggio servono solo al PORTIERE che deve
+    // lanciare; se la palla l'ha un giocatore di movimento, 2, 3 e 4 vanno subito ai loro posti d'attacco
+    if(num===3) return h&&h.isGK ? {d:25-6,z:0} : {d:RIPARTENZA.d3,z:0};
     const lato=num===2?1:-1;
-    return h&&h.isGK ? {d:25-11,z:lato*3.6} : {d:Math.max(CONTRO.dSeconda,ballD-3),z:lato*CONTRO.zSeconda*1.4};
+    return h&&h.isGK ? {d:25-11,z:lato*3.6} : {d:CONTRO.dSeconda,z:lato*CONTRO.zSeconda*1.4};
   }
   if(num===1) return {d:CONTRO.dPrima,z:CONTRO.zLati};
   if(num===6) return {d:CONTRO.dPrima+0.35,z:0};
   if(num===4) return {d:5.8,z:-4.6};
   if(num===5) return {d:CONTRO.dPrima,z:-6.2};
-  if(num===2) return h&&h.isGK ? {d:12.5,z:2.5} : {d:Math.max(CONTRO.dSeconda,ballD-2.5),z:3.2};
-  return {d:Math.max(CONTRO.dSeconda+2,ballD+3.5),z:0.5};      // 3: l'ultimo, dietro la palla
+  if(num===2) return h&&h.isGK ? {d:12.5,z:2.5} : {d:CONTRO.dSeconda,z:3.2};
+  return h&&h.isGK ? {d:Math.max(CONTRO.dSeconda+2,ballD+3.5),z:0.5} : {d:RIPARTENZA.d3,z:0.5};      // 3: l'ultimo, dietro la palla del portiere
 }
 // chi deve ricevere il primo passaggio del portiere nell'apertura in corso
 export function riceventeApertura(t){
@@ -223,7 +230,7 @@ function contropiedeTarget(p,c){
   if(c.schema&&!t.players.some(q=>q.excluded||q.uscendo)){
     const num=numeroPosizione(p.i); if(!num) return null;
     const ps=postoApertura(num,c.schema,ballD,h,t);
-    const sprint=!(ps.d>ballD&&Math.abs(gx-p.x)>ps.d-0.5);      // chi deve stare dietro la palla non scatta
+    const sprint=!(ps.d>ballD&&Math.abs(gx-p.x)>ps.d-0.5)&&Math.hypot(gx-t.dir*ps.d-p.x,ps.z*t.dir-p.z)>RIPARTENZA.arrivato;      // chi deve stare dietro la palla non scatta
     return { x:gx-t.dir*ps.d, z:clamp(ps.z*t.dir,-HW+0.5,HW-0.5), sprint };
   }
   if(c.calcT!==game.time){
@@ -281,14 +288,17 @@ export function attackTarget(p){
   }
   // la squadra sale insieme alla palla: nessuno può stare troppo avanti rispetto a chi la porta
   // ognuno sale lungo la propria corsia, scaglionato per ruolo (boa e ali avanti, mezzi a metà, punto in copertura)
-  const ballD=Math.abs(gx-ball.x), lead=[0,14,12,12,8,8,4][p.i];
+  const ballD=Math.abs(gx-ball.x), transizione=!sup&&ballD>RIPARTENZA.transizione&&ball.holder?.team===t&&!ball.holder.isGK;
+  // v0.58: in transizione con la palla a un giocatore di movimento solo il punto resta un po' più vicino (al massimo 8 m davanti
+  // alla palla, per lo scarico); gli altri vanno dritti al loro posto. Prima nessuno poteva stare più di 4-14 m davanti alla palla
+  const lead=transizione?[0,99,99,99,99,99,8][p.i]:[0,14,12,12,8,8,4][p.i];
   let f0=f[0], fz=f[1];
   if(ballD-lead>f0) f0=ballD-lead;
   if(sup&&ePalo(f)&&ballD<9) return paloTarget(p,[f0,fz]);
   const x=gx-t.dir*f0,z=clamp(fz*t.dir+(sup?0:Math.sin(game.time*0.6+p.uid)*0.35),-HW+0.5,HW-0.5);
   const a=appoggio(p,x,z,sup),ax=x+(a?a.dx:0),az=z+(a?a.dz:0);
   if(sup) return { x:ax, z:az, sprint:Math.hypot(ax-p.x,az-p.z)>1.5 };
-  return { x:ax, z:az, sprint:(t.atkPlay===2&&(p.i===4||p.i===5))||game.time<(t.fugaFino||0) };
+  return { x:ax, z:az, sprint:(t.atkPlay===2&&(p.i===4||p.i===5))||game.time<(t.fugaFino||0)||(transizione&&Math.hypot(ax-p.x,az-p.z)>RIPARTENZA.arrivato) };
 }
 // Difesa con l'uomo in meno. Posizione di partenza: tre difensori sulla linea dei 2 metri, ciascuno in mezzo tra due dei quattro
 // attaccanti; gli altri due davanti ai pali, a metà tra gli attaccanti ai 2 metri e quelli a 5. Ognuno prende il posto più vicino.

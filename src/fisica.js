@@ -180,11 +180,13 @@ function passo(dt,corpiAttivi){
 }
 // palla uscita dalla linea di fondo (art. 12-13): tiro d'angolo se l'ha toccata per ultimo un difensore (portiere compreso),
 // altrimenti rimessa del portiere
-// v0.57 (Ale: «un mio passaggio al portiere è uscito dal fondo e il gioco è ripreso con la palla al mio portiere: è cambio
-// possesso»): conta anche chi l'ha lanciata per ultima (ball.lastTeam), non solo il difensore che ha murato
+// Regolamento World Aquatics 18/02/2026, art. 13-14: tiro d'angolo se l'ultimo a toccarla è il PORTIERE della difesa (anche per
+// caso) o un difensore che l'ha lanciata lui oltre la linea (v0.57, Ale: «un mio passaggio al portiere è uscito dal fondo e si è
+// ripreso con la palla al mio portiere: è cambio possesso»); un TIRO deviato da un difensore di movimento (il muro) dà invece la
+// rimessa del portiere (art. 13.1.2.2.3: prima nel gioco era angolo)
 function fuoriDalFondo(att){
   const def=other(att);
-  if(ball.toccoDifesa===def||ball.lastTeam===def) cornerThrow(att); else goalThrow(def,'Fuori! Rimessa dal portiere');
+  if((ball.toccoDifesa===def&&ball.toccoPortiere)||ball.lastTeam===def) cornerThrow(att); else goalThrow(def,'Fuori! Rimessa dal portiere');
 }
 // la palla ha passato la linea di porta in questo passo? (px = posizione prima del passo)
 function lineaDiPorta(px){
@@ -253,13 +255,13 @@ export function updateBall(dt){
             if(ball.shotPower>0.55&&r<0.25){
               // deviata in angolo: il portiere la alza sopra la traversa; uscirà dal fondo toccata per ultimo da lui (tiro d'angolo)
               const gx=ownGoalX(def), dx=Math.max(0.25,Math.abs(gx-ball.x)), vxs=3.2, t=dx/vxs, y0=Math.max(0.3,ball.y);
-              ball.kind='rebound'; ball.toccoDifesa=def; ball.ignora=gk; ball.vx=Math.sign(gx-ball.x||1)*vxs; ball.vz=ball.vz*0.15+(rnd()-0.5)*1.5;
+              ball.kind='rebound'; ball.toccoDifesa=def; ball.toccoPortiere=true; ball.ignora=gk; ball.vx=Math.sign(gx-ball.x||1)*vxs; ball.vz=ball.vz*0.15+(rnd()-0.5)*1.5;
               ball.vy=(GH+0.45-y0+4.9*t*t)/t; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=9;
               annuncia('parata','Parata!',{p:gk,dettaglio:"deviata in angolo"});
             }
             else if(ball.shotPower>0.7&&r<0.65){
               // respinta: la palla schizza via dalle mani del portiere, verso il campo e verso l'alto
-              ball.kind='rebound'; ball.toccoDifesa=def; ball.ignora=gk; ball.vx=-ball.vx*0.22; ball.vz=ball.vz*0.3+(rnd()-0.5)*4; ball.vy=1.5+rnd()*2; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.25;
+              ball.kind='rebound'; ball.toccoDifesa=def; ball.toccoPortiere=true; ball.ignora=gk; ball.vx=-ball.vx*0.22; ball.vz=ball.vz*0.3+(rnd()-0.5)*4; ball.vy=1.5+rnd()*2; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.25;
               annuncia('parata','Parata!',{p:gk,dettaglio:'respinta'});
             } else { giveBall(gk); annuncia('parata','Parata!',{p:gk}); }
             return;
@@ -305,7 +307,7 @@ export function updateBall(dt){
           if(rnd()<pr){
             if(ball.kind==='shot'){
               // muro: la palla rimbalza sul braccio alzato e resta in gioco
-              ball.kind='rebound'; ball.toccoDifesa=p.team; ball.ignora=p; ball.vx*=-0.2; ball.vz=ball.vz*0.3+(rnd()-0.5)*3; ball.vy=1+rnd()*1.5; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.2; annuncia('parata','Muro!',{p}); ball.afterShot=true;
+              ball.kind='rebound'; ball.toccoDifesa=p.team; ball.toccoPortiere=false; ball.ignora=p; ball.vx*=-0.2; ball.vz=ball.vz*0.3+(rnd()-0.5)*3; ball.vy=1+rnd()*1.5; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.2; annuncia('parata','Muro!',{p}); ball.afterShot=true;
             }
             else { ball.raccordoPresa={x:ball.x,y:ball.y,z:ball.z,t:game.time}; registraIntercetto(p.team); giveBall(p); annuncia('possesso','Intercetto!',{p}); }
             return;
