@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.62.0",
+  "version": "0.63.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -64,6 +64,7 @@
     "finta": "node tests/finta-v055.mjs",
     "orientamento": "node tests/orientamento-v052.mjs",
     "rotazioni": "node strumenti/misura-rotazioni-v050.mjs",
+    "gesti-foglio": "node strumenti/gesti-foglio.mjs",
     "misura-azione": "node strumenti/misura-azione-v053.mjs",
     "video-azione": "node strumenti/video-azione-v053.mjs"
   },

@@ -315,7 +315,15 @@ export const PREPARA_GK={ su:0.2, mano:[0.12,0.36,0.40], entro:10, tiri:['shot',
 // ACCOMPAGNAMENTO dopo il rilascio (v0.55, Ale: «non gli sta dando uno schiaffo, è un accompagnamento»): la mano continua verso il
 // bersaglio con il braccio quasi disteso, all'altezza del petto, palmo verso la porta e dita che puntano dove va la palla; poi
 // scende piano (rientra). Prima la mano finiva sotto la spalla e attraverso il corpo con il palmo in giù. Solo disegno.
-export const ACCOMPAGNA={ shot:[0.54,0.20,-0.08], torsione:[0.50,0.18,-0.20], polso:[0.46,0.30,-0.04], pass:[0.48,0.26,-0.02], lob:[0.40,0.46,0.0] };
+// v0.63: palombella con il gomito appena piegato (circa 155°) nell'accompagnamento; prima il braccio restava teso come un bastone
+export const ACCOMPAGNA={ shot:[0.54,0.20,-0.08], torsione:[0.50,0.18,-0.20], polso:[0.46,0.30,-0.04], pass:[0.48,0.26,-0.02], lob:[0.38,0.43,0.0] };
+// passaggio di lato (v0.63): quota dell'angolo verso il compagno fatta girando il busto (opposto = dalla parte opposta al braccio che
+// passa, stesso = dalla sua parte), giro massimo del busto e della testa (rad)
+export const PASSAGGIO_VISTA={ opposto:0.7, stesso:0.35, max:1.1, testa:1.3 };
+// ricezione (v0.63): chi aspetta un passaggio gira la testa verso la palla in volo, fino a RICEZIONE_TESTA rad
+export const RICEZIONE_TESTA=1.2;
+// fine di passaggio e palombella (v0.63): dove torna la mano, rispetto alla spalla (in acqua, di lato, come per remare)
+export const FINE_LEGGERO=[0.18,-0.12,0.38];
 export const PALMO_ACCOMPAGNA=[0.85,-0.35,-0.1];
 // palla tenuta alta (solo disegno): mano sopra il gomito, gomito in fuori all'altezza della spalla (angolo di circa 90°)
 export const BRACCIA_SMUSSO={ base:14, gesto:40 };      // velocità di smussamento delle braccia disegnate (1/s)
@@ -379,6 +387,11 @@ function articolaVista(p,J,T,t){
     }
   }
   if(!th){
+    // RICEZIONE (v0.63, foglio a tre lati): chi aspetta il passaggio guarda la palla che arriva (prima guardava dritto davanti a sé)
+    if(!hold&&ball.state==='flight'&&ball.kind==='pass'&&ball.target===p){
+      const dx=ball.x-p.x, dz=ball.z-p.z;
+      T.testaGiro=clamp(-Math.atan2(-dx*p.fz+dz*p.fx,dx*p.fx+dz*p.fz),-RICEZIONE_TESTA,RICEZIONE_TESTA)*(1-e);
+    }
     if(hold&&e<0.7){
       // v0.55 (Ale: «tengono la palla come un vassoio», «gomito girato al contrario»): palla alta come un pallanuotista, gomito
       // in fuori all'altezza della spalla, avambraccio dritto, mano DIETRO la palla con il palmo in avanti e il polso piegato
@@ -432,7 +445,18 @@ function articolaVista(p,J,T,t){
   const chiude=a?clamp((tt-fr)/0.36,0,1):0, rientra=ease(clamp((chiude-0.55)/0.45,0,1));
   const base0=kind==='fake'?-0.84*(fintaDi(p).torsione):kind==='shot'||kind==='torsione'?-0.84:kind==='beduina'||kind==='rovesciata'?0.72:kind==='sciarpa'?-0.72:th.tw0;
   const base1=kind==='shot'?0.48:kind==='torsione'?0.72:th.tw1;
-  const twist=(base0*carica*(1-busto)+base1*busto)*(1-ease(chiude))*lato;
+  // PASSAGGIO DI LATO (v0.63, foglio a tre lati): verso il compagno il busto gira (di più se il passaggio va dalla parte opposta al
+  // braccio, dove prima l'avambraccio passava davanti al viso e la mano finiva sulla faccia), la testa lo guarda e la mano lo segue
+  // anche nell'accompagnamento. Le gambe e il bacino restano verso la porta. Solo disegno.
+  let angPass=0, giroPass=0;
+  if(kind==='pass'&&a?.aim){
+    const dx=a.aim[0]-p.x, dz=a.aim[1]-p.z, av=dx*p.fx+dz*p.fz, laM=-dx*p.fz+dz*p.fx;
+    angPass=Math.atan2(laM*lato,av);      // nel sistema del destro: positivo = dalla parte del braccio che passa
+    const k=(angPass<0?PASSAGGIO_VISTA.opposto:PASSAGGIO_VISTA.stesso)*carica*(1-rientra);
+    giroPass=clamp(-angPass*k,-PASSAGGIO_VISTA.max,PASSAGGIO_VISTA.max);
+    T.testaGiro=clamp(-Math.atan2(laM,av),-PASSAGGIO_VISTA.testa,PASSAGGIO_VISTA.testa)*carica*(1-rientra);
+  }
+  const twist=((base0*carica*(1-busto)+base1*busto)*(1-ease(chiude))+giroPass)*lato;
   const centro=mix3(V.sL,V.sR,0.5), mezzo=Math.hypot(V.sR[0]-V.sL[0],V.sR[2]-V.sL[2])/2;
   for(const s of [1,-1]){
     const spalla=V[s>0?'sR':'sL'];
@@ -477,13 +501,15 @@ function articolaVista(p,J,T,t){
     off=ruota(off); hint=ruota(hint); n=ruota(n);
   }
   if(kind==='pass'&&a?.aim){
-    const dx=a.aim[0]-p.x,dz=a.aim[1]-p.z, av=dx*p.fx+dz*p.fz, la=(-dx*p.fz+dz*p.fx)*lato;
-    const ang=Math.atan2(la,av)*carica*(1-chiude), c=Math.cos(ang),s=Math.sin(ang);
+    // il braccio punta al compagno fino al rientro (prima tornava dritto già nell'accompagnamento e attraversava la faccia)
+    const ang=angPass*carica*(1-rientra), c=Math.cos(ang),s=Math.sin(ang);
     const ruota=v=>[v[0]*c-v[2]*s,v[1],v[0]*s+v[2]*c];
     off=ruota(off); hint=ruota(hint); n=ruota(n);
   }
   const spalla=V['s'+suff], target=add3(spalla,locale(off));
-  const mano=mix3(target,V['h'+suff],rientra);
+  // v0.63: dopo passaggio e palombella la mano rientra in acqua di lato (FINE_LEGGERO) invece di tornare davanti al mento
+  const fine=kind==='pass'||kind==='lob'?add3(spalla,locale(FINE_LEGGERO)):V['h'+suff];
+  const mano=mix3(target,fine,rientra);
   const flex=(-0.46*carica*(1-polso)+0.54*polso)*(1-ease(chiude))+(ACCOMPAGNA[kind]?0.38:0.20)*ease(chiude);
   braccio(lato,mano,locale(hint),locale(n),flex);
   // Il braccio libero sostiene il sollevamento, senza duplicare il gesto di tiro.
