@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.62). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.63). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -37,7 +37,8 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   `--confronta=` per il prima e dopo), `npm run bilancio` (`--partite=8 --squadre=ITA,HUN --paralleli=3`, anche `--dist=` e
   `--porta=` per girare in sottofondo), sonde in `strumenti/` (`sonda-tiri`, `sonda-azioni`, `misura-azione-v053`, `sonda-passaggi`,
   `sonda-ripartenza`, `foglio-tiro-v061`). Tra due giri da 8 partite c'è qualche punto di variazione. Per i movimenti
-  `npm run primi-piani` (primi piani e sequenze), `npm run gesti` e i fogli in `strumenti/` (`finte-foglio`, `lotta-foglio`).
+  `npm run primi-piani` (primi piani e sequenze), `npm run gesti`, `npm run gesti-foglio` (otto gesti da tre lati in sei momenti,
+  con misure di gomiti, mani, gambe e compenetrazioni) e i fogli in `strumenti/` (`finte-foglio`, `lotta-foglio`).
 - **Prove nel browser** (Playwright, Chromium senza scheda grafica): il `requestAnimationFrame` è finto, quindi ogni
   `waitForFunction` vuole `{timeout:60000,polling:100}`; con il tempo finto la cattura della pagina può bloccarsi: le foto si
   prendono dalla tela (`__ridisegna()` + `toDataURL`); un gol in una scena fa partire il replay che congela il gioco
@@ -74,9 +75,10 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   giocatore solo per 3 s dopo un cambio manuale e a inizio partita; CAMBI in basso al centro solo con un consiglio urgente o un
   cambio in corso (area di tocco 44 px); registro degli eventi dal menu di pausa; notifiche in stile telecronaca ai margini, mai al
   centro (`cronaca.js`); colori con significato fisso (oro = tu e azioni richieste, rosso = sanzioni e urgenza, ciano = servizio).
-- Replay del gol: 7 s saltabili (0,6 s diretta + 5,2 s replay + 1,2 s ripresa), motore fermo durante la clip; camera che gira di
-  circa 35° attorno all'azione e scende, poi taglio con lampo sul primo piano a pelo d'acqua del marcatore che esulta (niente primo
-  piano se è appena stato sostituito). Prova `npm run replay`.
+- Replay del gol: 7,6 s saltabili (1,2 s diretta + 5,2 s replay + 1,2 s ripresa), motore fermo durante la clip; camera che gira di
+  circa 35° attorno all'azione e scende, poi taglio con lampo sul primo piano a pelo d'acqua del marcatore che esulta (si alza e
+  agita il pugno; 1,15 s registrati dopo la rete, 38% del replay; niente primo piano se è appena stato sostituito). Prova
+  `npm run replay`.
 - Menu: home con logo C «Flusso», Partita veloce, Mondiali, Europei, Comandi, Informazioni; Squadre (formazione dei 7, strategie
   prepartita: cinque preset e una personale, schemi dell'uomo in più) → Impostazioni (durata, difficoltà, arbitro) → Gioca.
 ### Comandi
@@ -102,7 +104,10 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   accompagnamento; con un avversario vicino si protegge la palla girando busto e testa; il centroboa marcato tiene la palla in acqua
   finché non fa un gesto. Mancini con i gesti allo specchio.
 - Passaggi alti e tesi (11-15,5 m/s); presa alla mano (0,55 m, portiere 0,9 m); errore verosimile, mai grossi sbagli su passaggi
-  semplici; al centroboa marcato la palla arriva in acqua davanti a lui; mai al proprio portiere in attacco.
+  semplici; al centroboa marcato la palla arriva in acqua davanti a lui; mai al proprio portiere in attacco. Nel passaggio di lato
+  busto e testa girano verso il compagno e la mano non passa davanti al viso; chi riceve guarda la palla (solo disegno).
+- Chi nuota con la palla davanti alla testa, prima di tirare, passare o fintare la pesca dall'acqua e la porta di lato all'altezza
+  della spalla (solo disegno, dentro i tempi del gesto).
 - Finte: un tocco; sei stili personali (larga, a raffica, di polso, mezza, di bomba, di spalla) con un piccolo vantaggio sul
   seguito tipico; dalla seconda finta il braccio va di lato e sposta difensore e portiere.
 - Portiere: segue il passaggio, para in base a posizione, Riflessi, stanchezza, sorpresa e muro; para meno dopo un cambio di lato,
@@ -149,7 +154,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   bacheca e premiazione.
 
 ## Numeri: gioco contro realtà
-8 partite ITA–HUN, per squadra, v0.62 (identiche alla v0.61). Riferimenti: Mondiali 2025, Mondiali 2009, Euro League, video della
+8 partite ITA–HUN, per squadra, v0.63 (identiche alla v0.61: da allora sono cambiati solo disegno e documenti). Riferimenti: Mondiali 2025, Mondiali 2009, Euro League, video della
 finale olimpica. La tabella completa (15 voci, con lo stato e i numeri da guardare) la stampa `npm run taratura`.
 
 | | gioco | reale |
@@ -171,8 +176,8 @@ finale olimpica. La tabella completa (15 voci, con lo stato e i numeri da guarda
 - Gioco: azioni ancora corte e troppi tiri (va ripensato il ritmo dell'attacco schierato); palle perse basse; superiorità sotto il
   52%; gol da entrata quasi zero; il computer scatta molto e si stanca; difesa adattata agli schemi dell'uomo in più; aiuto al
   posto per i difensori comandati con l'uomo in meno; 7 contro 6 chiamabile dal giocatore.
-- Gesti: presa della palla dall'acqua prima del tiro; esultanza più lunga nel replay; revisione con i fogli a tre lati di
-  passaggio, beduina, palombella, ricezione, parata, muro e nuoto con palla.
+- Gesti: giudizio di Ale sui fogli della v0.63 (passaggio di lato, ricezione, pesca della palla, esultanza); muro e parata a
+  braccio del tutto teso; corpo in nuotata con la palla forse troppo inclinato (da confrontare con un video).
 - Riordino: prove con nomi per argomento (oggi si chiamano con la versione in cui sono nate); semplificare `aiCarrier`.
 - Da Ale: prova su iPhone (FPS, sensazioni), giudizi sulla naturalezza, nuovi video, scelta dei tasti per comandi nuovi.
 

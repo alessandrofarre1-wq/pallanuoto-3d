@@ -90,7 +90,7 @@ try{
     need(recuperoGol&&callback===0&&G.time===tempoGol&&G.clock===clockGol,'follow-through gol preservato, nessun nuovo rilascio');
     // Il playback congela il mondo: anche il nuovo arresto non deve consumare altri secondi di gioco.
     prepara();H.replay.forzaRegistrazione=true;step(55);
-    H.prova.doShoot(p,.8,false,0);B.inRete=true;H.regole.goalScored(p.team);step(40);
+    H.prova.doShoot(p,.8,false,0);B.inRete=true;H.regole.goalScored(p.team);step(76);      // v0.63: 1,2 s di diretta prima del replay
     const congelato=H.replay.trattieniMondoReplay();
     const snapshot=()=>JSON.stringify({timer:G.timer,clock:G.clock,time:G.time,corpi:P.map(q=>[q.x,q.z,q.vx,q.vz,q.oriz,q.phase,q.act?.t])});
     const fermo=snapshot();step(10);need(congelato&&H.replay.trattieniMondoReplay()&&snapshot()===fermo,'replay: mondo e assetto restano congelati');

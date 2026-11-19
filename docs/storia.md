@@ -10,6 +10,32 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- v0.63 (Claude Code, 19/11/2026; rapporto `docs/versioni/v063-gesti.md`). RICHIESTA: Ale, sulla lista dei prossimi punti: «Io farei
+  questo partendo dal punto 11» (gesti: 11 fogli a tre lati, 9 palla pescata dall'acqua, 10 esultanza più lunga nel replay).
+  CAMBIAMENTI: (1) `npm run gesti-foglio` (`strumenti/gesti-foglio.mjs`): otto scene (passaggio verso sinistra, ricezione,
+  palombella, beduina con la lotta vera, parata, muro, nuoto con palla, tiro dal nuoto) fotografate in sei momenti da tre lati,
+  con misure di gomiti, mani, testa, bacino, gambe, palla-palmo, compenetrazioni, lotta e palla in acqua; fogli JPEG e riassunto.
+  Visti: nel passaggio verso il lato opposto al braccio l'avambraccio passava davanti al viso e la mano finiva sulla faccia;
+  chi riceve non guardava la palla; palombella a braccio teso (174°); beduina, parata, muro e nuoto senza compenetrazioni e
+  con le gambe sotto. (2) Correzioni in `grafica/pose.js`, solo disegno: `PASSAGGIO_VISTA` (busto verso il compagno 70%/35%
+  dell'angolo, al massimo 1,1 rad, testa fino a 1,3 rad, braccio verso il compagno fino al rientro, mano che rientra in acqua
+  di lato, `FINE_LEGGERO`), `RICEZIONE_TESTA` 1,2 rad, `ACCOMPAGNA.lob` con il gomito appena piegato. (3) `PESCA`: chi nuota con
+  la palla davanti alla testa e tira, passa o finta prima la pesca dall'acqua (mano sulla palla, sotto, di lato alla spalla; al
+  massimo 0,32 s e l'80% della carica; la palla disegnata resta in acqua finché la mano non la raccoglie). (4) Replay
+  (`replay.js`, `grafica/replay.js`): diretta dopo il gol 0,6 → 1,2 s, `DOPO_GOL` 0,56 → 1,15 s, archivio 3,5 → 4,2 s, clip
+  fino a 3,6 s, `QUOTA_AZIONE` 0,7 → 0,62 (primo piano circa 2 s); `ESULTA`: chi ha segnato si alza e agita il pugno; replay
+  di 7,6 s in tutto; prova `replay-v048` aggiornata ai tempi nuovi. NUMERI: tiro dal nuoto, a 0,1 s mano a 0,59 m con la
+  palla (prima) e a 0,15 m sulla palla in acqua (dopo), carica piena a 0,45 s come prima; replay: memoria massima 19,6 MB
+  (limite 24), al massimo 49 oggetti e 146.360 triangoli. GIOCO IDENTICO: 3 partite col caso bloccato con la build di main e
+  con la nuova, riassunto uguale byte per byte. DECISIONI SUPERATE: replay 7 s → 7,6 s (1,2 diretta + 5,2 + 1,2); esultanza
+  solo braccio → si alza e agita il pugno; passaggio con il braccio che tornava dritto e attraversava il viso → busto e testa
+  verso il compagno; palla che saltava dall'acqua alla mano → pescata (elenco in `docs/decisioni-superate.md`). VERIFICHE:
+  lint PASS; `npm run prove` 36 PASS su 36 (al primo giro `gioco-fermo` aspettava il replay a 0,67 s: attesa portata a
+  1,27 s); `npm run verifica` sei partite come prima (54 gol su 211 tiri), foto iPhone diverse dello 0,92% e 0,76% solo nelle pose
+  (controllate, riferimenti aggiornati, poi identiche); `npm run aspetto` partita identica, 0 gambe fuori, viste iPhone 55/141.778;
+  `npm run replay` PASS. NON FATTO: giudizio di Ale; muro e parata a braccio teso; nuoto con palla forse troppo inclinato; un solo modo
+  di esultare, nessuna espressione nuova del viso.
+
 - v0.62 (Claude Code, 19/11/2026; rapporto `docs/versioni/v062-riordino.md`). RICHIESTA: Ale nella v0.60 («se pensi che il gioco
   sia una cozzaglia di versioni forse è meglio che pensi a un modo per mettere ordine»), proposta in tre passi in
   `docs/proposte/riordino.md`, Ale: «Procedi». Passi 1 e 2 e il comando `npm run prove` del passo 3 in una PR sola (un ramo solo:

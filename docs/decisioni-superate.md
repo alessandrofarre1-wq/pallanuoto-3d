@@ -3,6 +3,18 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.63
+- Replay del gol di 7 s (0,6 s di diretta + 5,2 s di replay + 1,2 s di ripresa, v0.48) → 7,6 s (1,2 s di diretta + 5,2 + 1,2); dopo
+  la rete si registrano 1,15 s (prima 0,56) e il primo piano di chi esulta occupa il 38% del replay (prima il 30%).
+- Esultanza: solo il braccio alzato (v0.61) → chi ha segnato si alza con la bicicletta e agita il pugno.
+- Passaggio di lato: busto quasi fermo e braccio che tornava dritto già nell'accompagnamento (l'avambraccio passava davanti al viso
+  e la mano finiva sulla faccia) → busto e testa girano verso il compagno, il braccio lo segue fino al rientro, poi la mano rientra
+  in acqua di lato.
+- Chi nuota con la palla e tira, passa o finta: la palla saltava dall'acqua alla mano → la mano la pesca dall'acqua e la porta di
+  lato all'altezza della spalla (al massimo 0,32 s, dentro i tempi del gesto).
+- Chi riceve guardava dritto davanti a sé → gira la testa verso la palla in arrivo. Palombella: accompagnamento a braccio teso →
+  gomito appena piegato.
+
 ## v0.62
 - Memoria (`CLAUDE.md`, 213 KB) con tutta la storia di 61 versioni, decisioni superate comprese → memoria corta con le sole regole
   e decisioni in vigore; la storia in `docs/storia.md`, le decisioni cambiate qui.

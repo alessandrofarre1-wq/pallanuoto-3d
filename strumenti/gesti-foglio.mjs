@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const arg = k => process.argv.find(x => x.startsWith('--' + k + '='))?.slice(k.length + 3);
 const dist = arg('dist'), porta = +(arg('porta') || 4528), uscita = path.resolve(ROOT, arg('uscita') || 'docs/immagini'), tag = arg('tag') || 'prima';
-const GESTI = ['passaggio', 'ricezione', 'palombella', 'beduina', 'parata', 'muro', 'nuoto'];
+const GESTI = ['passaggio', 'ricezione', 'palombella', 'beduina', 'parata', 'muro', 'nuoto', 'pesca'];
 const solo = arg('solo') ? arg('solo').split(',') : GESTI;
 if (!dist && !process.argv.includes('--no-build')) await build({ root: ROOT, logLevel: 'warn' });
 const server = await preview({ root: ROOT, logLevel: 'warn', build: { outDir: dist || 'dist' }, preview: { port: porta, host: '127.0.0.1', strictPort: true } });
@@ -43,7 +43,9 @@ for (const gesto of solo) {
     H.replay.interrompiReplay(); H.game.penalty = null; H.game.after = null; H.fight.active = false;
     H.game.state = pausa ? 'paused' : 'play';
     const attori = new Map();      // giocatore -> posto fisso {x, z, fx, fz, oriz, v}
-    const metti = (q, x, z, fx, fz, oriz = 0, v = 0) => attori.set(q, { x, z, fx, fz, oriz, v });
+    // libero = dopo l'avvio del gesto assetto e velocità li decide il gioco (chi nuotava si raddrizza da sé)
+    const metti = (q, x, z, fx, fz, oriz = 0, v = 0, libero = false) => attori.set(q, { x, z, fx, fz, oriz, v, libero });
+    let partito = false;
     // posti delle scene (A attacca la porta in gx; il portiere di D sta in porta)
     const pas = A.players[4], ric = A.players[5], boa = A.players[1], dif = D.players[6], tir = A.players[3];
     metti(gkD, gx - A.dir * 0.6, 0, -A.dir, 0);
@@ -94,6 +96,12 @@ for (const gesto of solo) {
       avvio = () => P.startAct(tir, 'shot', 0.36, () => P.doShoot(tir, 0.9, false, -0.6));
       momenti = [['marca', s => s.f === 0], ['carica 30%', s => tir.act && tir.act.t >= 0.11], ['carica 70%', s => tir.act && tir.act.t >= 0.25],
         ['carica piena', s => tir.act && tir.act.t >= 0.36], ['rilascio', s => B.state === 'flight' || s.volo > 0], ['dopo il tiro', s => s.volo >= 0.2]];
+    } else if (gesto === 'pesca') {
+      // punto 9: nuota con la palla davanti alla testa e tira; prima la pesca dall'acqua
+      metti(tir, gx - A.dir * 7.5, 1.0, A.dir, 0, 1, 1.6, true); attore = tir;
+      avvio = () => P.startAct(tir, 'shot', 0.18, () => P.doShoot(tir, 0.9, false, null));
+      momenti = [['nuota con la palla', s => s.f === 0], ['la mano arriva', s => tir.act && tir.act.t >= 0.07], ['sotto la palla', s => tir.act && tir.act.t >= 0.14],
+        ['palla alla spalla', s => tir.act && tir.act.t >= 0.26], ['carica piena', s => tir.act && tir.act.t >= tir.act.wind], ['rilascio', s => B.state === 'flight']];
     } else {
       // nuoto con palla: a gioco fermo (come npm run gesti) per avere la bracciata intera senza che il gioco lo muova
       metti(pas, gx - A.dir * 9, 1.5, A.dir, 0, 1, 1.8); attore = pas; avvio = null;
@@ -104,20 +112,21 @@ for (const gesto of solo) {
       for (const q of H.allPlayers) {
         q.colpi = []; q.tackleCD = 99; q.stunUntil = 0; q.cut = null; q.excluded = false; q.pressatoUntil = 0;
         const a = attori.get(q);
-        if (a) { q.x = a.x; q.z = a.z; q.fx = a.fx; q.fz = a.fz; q.vx = a.fx * a.v; q.vz = a.fz * a.v; q.oriz = a.oriz; q.decideT = 99; q.reazioneT = 99; if (!q.act) q.charging = false; }
+        if (a && a.libero && partito) { q.x = a.x; q.z = a.z; q.decideT = 99; q.reazioneT = 99; }
+        else if (a) { q.x = a.x; q.z = a.z; q.fx = a.fx; q.fz = a.fz; q.vx = a.fx * a.v; q.vz = a.fz * a.v; q.oriz = a.oriz; q.decideT = 99; q.reazioneT = 99; if (!q.act) q.charging = false; }
         else { const i = H.allPlayers.indexOf(q); q.x = -A.dir * (3 + (i % 7) * 1.3); q.z = -8.7 + Math.floor(i / 7) * 1.4; q.vx = q.vz = 0; q.oriz = 0; q.decideT = 99; q.act = null; q.charging = false; }
       }
       H.fight.active = false; H.game.shot = 25;
     };
     // prima della scena: tutti fermi, la palla a chi deve averla, un secondo per assestare pose e smussamenti
     for (const q of H.allPlayers) { q.act = null; q.charging = false; q.J = null; q.palmi = null; q.spina = null; q.bracciaVista = null; q.inclVert = undefined; }
-    const portatore = gesto === 'beduina' ? boa : gesto === 'parata' || gesto === 'muro' || gesto === 'palombella' ? tir : pas;
+    const portatore = gesto === 'beduina' ? boa : gesto === 'parata' || gesto === 'muro' || gesto === 'palombella' || gesto === 'pesca' ? tir : pas;
     tieni(); R.giveBall(portatore);
     if (pausa) { B.state = 'held'; B.holder = portatore; }
     for (let i = 0; i < 60; i++) { tieni(); window.__passo(); }
     window.__fase0 = pas.phase;
     const foto = [], misure = [], viste = [];
-    let volo = 0, presaT = null, f = 0, partito = false, fischio = null;
+    let volo = 0, presaT = null, f = 0, fischio = null;
     const v3 = new C.position.constructor();
     const misura = () => {
       const O = attore.mesh.corpo?.ossa; if (!O) return null;
@@ -193,9 +202,9 @@ for (const [gesto, r] of Object.entries(risultati)) {
   console.log('foglio: ' + path.relative(ROOT, file));
 }
 // foglio riassuntivo: una riga per gesto, con la vista che lo mostra meglio
-{ const vista = { passaggio: 0, ricezione: 0, palombella: 1, beduina: 0, parata: 0, muro: 1, nuoto: 1 }, lati = ['davanti', 'di lato', 'da dietro'];
+{ const vista = { passaggio: 0, ricezione: 0, palombella: 1, beduina: 0, parata: 0, muro: 1, nuoto: 1, pesca: 1 }, lati = ['davanti', 'di lato', 'da dietro'];
   const righe = Object.entries(risultati).map(([g, r]) => `<div style="writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;padding:4px;font-size:15px">${g}<br>${lati[vista[g] ?? 0]}</div>${r.foto.map(x => `<div style="position:relative"><img src="${x.img[vista[g] ?? 0]}" style="width:100%;display:block"><span style="position:absolute;left:4px;top:2px;font-size:13px;background:#0009;padding:1px 4px">${x.nome} · ${x.t} s</span></div>`).join('')}`).join('');
-  await p2.setContent(`<body style="margin:0;background:#0b1b29;font:600 17px system-ui;color:#fff"><div style="padding:8px 12px;font-size:22px">I sette gesti · ${tag} · sei momenti ciascuno</div><div style="display:grid;grid-template-columns:70px repeat(6,1fr);gap:4px;padding:0 6px 6px">${righe}</div></body>`);
+  await p2.setContent(`<body style="margin:0;background:#0b1b29;font:600 17px system-ui;color:#fff"><div style="padding:8px 12px;font-size:22px">Gesti messi in scena (${Object.keys(risultati).length}) · ${tag} · sei momenti ciascuno</div><div style="display:grid;grid-template-columns:70px repeat(6,1fr);gap:4px;padding:0 6px 6px">${righe}</div></body>`);
   await p2.waitForTimeout(200);
   if (Object.keys(risultati).length > 1) { const file = path.join(uscita, `v063-gesti-${tag}.jpg`); await p2.screenshot({ path: file, fullPage: true, type: 'jpeg', quality: 82 }); console.log('riassunto: ' + path.relative(ROOT, file)); } }
 fs.writeFileSync(path.join(uscita, `v063-gesti-${tag}.json`), JSON.stringify(Object.fromEntries(Object.entries(risultati).map(([g, r]) => [g, { attore: r.attore, mancanti: r.mancanti, fischio: r.fischio, momenti: r.foto.map(x => ({ nome: x.nome, t: x.t, ...x.misure })) }])), null, 1));

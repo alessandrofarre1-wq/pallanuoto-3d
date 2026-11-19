@@ -9,7 +9,9 @@ import { gocceMesh } from './acqua-eventi.js';
 import { tempoAcqua } from './sottacqua.js';
 import { applicaCameraReplay, FASCIA_REPLAY, preparaCameraReplay, preparaPrimoPiano, REGIA_REPLAY } from './replay-camera.js';
 
-const HZ=30, PASSO=1/HZ, CAPACITA=Math.ceil(3.5*HZ)+1, SECONDI_CLIP=3;
+// v0.63 (punto 10, esultanza più lunga): archivio di 4,2 s (prima 3,5) e clip fino a 3,6 s (prima 3), perché dopo la rete si
+// registra 1,15 s di esultanza invece di 0,56 senza togliere azione prima del gol
+const HZ=30, PASSO=1/HZ, CAPACITA=Math.ceil(4.2*HZ)+1, SECONDI_CLIP=3.6;
 const MAX_CLIP=Math.ceil(SECONDI_CLIP*HZ)+3, MAX_TEXTURE=32, TRASFORMA=11;
 const corpi=[...allPlayers,...comparsePerReplay];
 const tempi=new Float64Array(CAPACITA), tempiClip=new Float64Array(MAX_CLIP);
@@ -23,8 +25,10 @@ const posizioni=new Float32Array(CAPACITA*POSIZIONI), posizioniClip=new Float32A
 const tempoSchermo=new Float64Array(MAX_CLIP);
 const puntiPrincipali=new Float32Array((MAX_CLIP*32+16)*3), puntiTiro=new Float32Array(puntiPrincipali.length);
 // v0.61: il replay è diviso in due inquadrature (replay-camera.js): l'azione fino a poco dopo la rete (TAGLIO s dopo il gol) occupa
-// la prima parte dello schermo (QUOTA_AZIONE), il primo piano di chi esulta il resto, al rallentatore
-const TAGLIO=0.1, QUOTA_AZIONE=0.7, DOPO_GOL=0.56, m12=new Float64Array(12);
+// la prima parte dello schermo (QUOTA_AZIONE), il primo piano di chi esulta il resto, al rallentatore.
+// v0.63 (Ale: «esultanza più lunga nel replay»): 1,15 s registrati dopo la rete (prima 0,56) e primo piano al 38% del replay
+// (prima 30%): circa 2 s di schermo per l'esultanza
+const TAGLIO=0.1, QUOTA_AZIONE=0.62, DOPO_GOL=1.15, m12=new Float64Array(12);
 const nomiBersagli=['palla','testa','manoDestra','manoSinistra','tiratore','portaBassoSinistra','portaAltoSinistra','portaBassoDestra','portaAltoDestra'];
 const bersagliUltimi=new Float64Array(nomiBersagli.length*6), posizioneCameraUltima=new Float64Array(3);
 let nodi=[], numerici=[], materiali=[], scheletri=[], skinned=[], derivati=[], riferimenti=[], effetti=[], istanze=[];
@@ -234,7 +238,7 @@ export function preparaClipReplay(info={}){
       }
     }
   }
-  // Poco più di mezzo secondo reale dopo il gol conserva anche la reazione, senza inventare pose.
+  // Poco più di un secondo reale dopo il gol (DOPO_GOL) conserva anche l'esultanza, senza inventare pose.
   const fine=gol>=0?tempi[indice(gol)]+DOPO_GOL:tempi[indice(count-1)]-0.1;
   let ultimo=count-1;
   while(ultimo>1&&tempi[indice(ultimo)]>fine+1e-9) ultimo--;
