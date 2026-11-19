@@ -172,6 +172,7 @@ export function aggiornaNumero(R,num){
 const _a=new THREE.Vector3(), _b=new THREE.Vector3(), _d=new THREE.Vector3(), _d2=new THREE.Vector3(), _v=new THREE.Vector3();
 const _q=new THREE.Quaternion(), _qp=new THREE.Quaternion(), _qd=new THREE.Quaternion(), _qg=new THREE.Quaternion(), _qr=new THREE.Quaternion();
 const _su=new THREE.Vector3(), _av=new THREE.Vector3(), _de=new THREE.Vector3(), _m=new THREE.Matrix4(), _inv=new THREE.Matrix4();
+export const BACINO_TIRO=-0.14;      // v0.61: quota massima del bacino nel tiro da fuori (m sull'acqua; di solito -0,22)
 const SU=new THREE.Vector3(0,1,0), _qy=new THREE.Quaternion(), _qg2=new THREE.Quaternion(), PIEGA0={petto:0,bacino:0,gambe:0};
 const ROT_MODELLO=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),Math.PI/2);
 // gira l'osso in modo che punti (verso il figlio) nella direzione data, in coordinate del mondo
@@ -316,9 +317,12 @@ export function muoviCorpo(R,J,T,dt){
   pv.set(-(J.sL[2]+J.sR[2])/2/s-_a.x, (J.sL[1]+J.sR[1])/2/s-_a.y, (J.sL[0]+J.sR[0])/2/s-_a.z);
   // solo per il disegno: il personaggio ha il busto più corto delle giunture di pose.js, quindi quando il portiere si alza tutto
   // per parare il bacino arriverebbe quasi in superficie e le cosce uscirebbero dall'acqua. Il bacino non sale mai sopra i 22 cm
-  // sotto il pelo dell'acqua (il corpo si abbassa di quel poco, senza scatti); gli altri giocatori non ci arrivano mai.
+  // sotto il pelo dell'acqua (il corpo si abbassa di quel poco, senza scatti).
+  // v0.61 (Mandić, Varga): nel tiro forte da fuori si esce quasi fino ai fianchi: il limite sale fino a BACINO_TIRO (ginocchia e
+  // piedi restano comunque sotto, sottoIlPelo); T.alzataTiro viene da pose.js (0 fuori dal tiro da fuori)
+  const limiteBacino=-0.22+(BACINO_TIRO+0.22)*Math.max(0,Math.min(1,T.alzataTiro||0));
   O.bacino.getWorldPosition(_b);
-  if(_b.y>-0.22){ _b.y=-0.22; O.bacino.parent.worldToLocal(_b); pv.copy(_b); }
+  if(_b.y>limiteBacino){ _b.y=limiteBacino; O.bacino.parent.worldToLocal(_b); pv.copy(_b); }
   // --- gambe: bicicletta (calcio a rana alternato) da verticali, battuta a gambe unite da distesi, con passaggio continuo ---
   const sforzo=Math.min(1,Math.max(0,(J.chest[1]+0.06)/0.26))*(1-e);
   // girandosi da verticali le gambe cambiano ritmo e ampiezza (è la bicicletta che fa ruotare il corpo)

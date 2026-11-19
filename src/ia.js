@@ -654,6 +654,7 @@ export function aiPass(p,m){ startAct(p,'pass',0.08,()=>doPass(p,m),[m.x,m.z]); 
 // COSTRUZIONE (v0.56, taratura): nelle partite vere un'azione in parità dura circa 21 s (Mondiali 2009) e se ne giocano circa 50
 // a partita (Euro League); nel gioco duravano 12,8 s. Nei primi COSTRUZIONE.secondi di un'azione in parità non si tira al volo
 // e il tiro «da libero» si cerca meno (COSTRUZIONE.libero); restano il tiro con nessun difensore davanti e quello vicinissimo
+export const CIRCOLAZIONE={ superiorita:[0.4,0.35], rapidi:[0.4,0.25], equilibrati:[0.55,0.4], vicini:[0.7,0.45] };     // v0.61 (prima 0,55+0,5 / 0,8+0,4 / 1,1+0,7 / 1,3+0,9)
 export const COSTRUZIONE={ secondi:15, libero:0.3, vicino:4.5 };   // v0.60: 11 → 15 s (circa 5,5 s di transizione + 9,5 s di attacco schierato)
 // TIRO SUBITO DOPO LA RICEZIONE (v0.59, taratura): era quasi automatico a ogni ricezione libera e dava un tiro su quattro, a circa
 // 10 s d'azione. Ora si decide una volta per ricezione: in parità si tira subito in TIRO_LIBERATO.parita casi, altrimenti si
@@ -777,7 +778,9 @@ export function aiCarrier(p,dt){
   const ritmo=schemaSquadra(t).passaggi;
   // v0.53 (Ale: «circolazione macchinosa»): prima 2,5-4,5 s con lo stile «vicini» della strategia di partenza; nelle partite vere
   // sul perimetro la palla resta in mano 1-2 s. Il passaggio parte solo verso un compagno libero (bestPassTarget).
-  const attesa=manUp(t)?0.55+rnd()*0.5:ritmo==='rapidi'?0.8+rnd()*0.4:ritmo==='equilibrati'?1.1+rnd()*0.7:1.3+rnd()*0.9;
+  // v0.61 (video della finale olimpica, Ale: «cerchiamo di velocizzare»): sul perimetro la palla resta in mano 0,6-1 s per tocco,
+  // nel gioco 1,3 s in media: tempi accorciati di circa un terzo (CIRCOLAZIONE, secondi minimi e variazione per stile)
+  const C=CIRCOLAZIONE[manUp(t)?'superiorita':ritmo]||CIRCOLAZIONE.vicini, attesa=C[0]+rnd()*C[1];
   if(p.freeThrow || (press<1.3&&rnd()<0.55) || ball.holdTime>attesa){
     // finta prima dello scarico vicino alla porta (v0.55): sposta i difensori, poi il passaggio parte dalla regola «finta e scarico»
     if(!p.freeThrow&&!manUp(t)&&dGoal<9.5&&!(p.fakeCount)&&press>1.1&&rnd()<0.3){ const f=fintaDi(p); p.scaricoDopoFinta=true; pausaFinta(p,f); startAct(p,'fake',f.wind*(0.8+rnd()*0.4),()=>doFake(p)); return; }

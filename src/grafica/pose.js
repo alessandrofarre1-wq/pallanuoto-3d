@@ -77,12 +77,17 @@ export function computePose(p,dt,t){
   const cl=p.copreLungo, copre = !hold && !p.isGK && !defUp && cl && game.time-cl.t<0.3 && h && h.team!==p.team && game.state==='play';
   const copreAlto = copre && (h.charging || (h.act && !h.act.done && h.act.kind!=='pass'));
   J.alzato=muro||abbocca||copreAlto; J.marca=defUp||copre;      // per l'inclinazione disegnata (posturaVista, v0.55)
+  // SALTO DI PREPARAZIONE del portiere (v0.61, replay del tiro di Mandić alle Olimpiadi): mentre l'avversario carica il tiro
+  // il portiere sale fuori dall'acqua con le braccia spalancate e alte, poi si allunga sulla palla. Solo disegno.
+  const gkPrep = p.isGK && !hold && !gkSave && h && h.team!==p.team && game.state==='play' &&
+    (h.charging || (h.act && !h.act.done && PREPARA_GK.tiri.includes(h.act.kind))) && Math.abs(h.x+12.5*p.team.dir)<PREPARA_GK.entro;
   let lz=0, ly=0, arrivo=0;
   if(th){ lift+=th.lift*(0.8+0.2*p.stamina)*c*(1-0.8*f); tw=(th.tw0*c*(1-wb)+th.tw1*wb)*(1-f); }      // chi è stanco esce meno dall'acqua
   else if(gkSave){
     lz=clamp((ball.crossZ-p.z)*Math.sign(p.fx||1),-1.25,1.25)/VIS; ly=clamp(ball.y,0.25,1.5)/VIS;      // mani fino a 1,5 m (salto con la mano tesa: 1,56 ± 0,09 m, Zinner 2015)      // dove passerà la palla, nel sistema del portiere
     arrivo=ease(clamp(ball.flightT/0.22,0,1)); lean=clamp(lz/0.7,-1,1); lift+=0.34;
   }
+  else if(gkPrep) lift+=PREPARA_GK.su;
   else if(p.isGK) lift+=0.10*vicinaGK-0.03*(1-vicinaGK);      // palla lontana: basso, rema e guarda; palla vicina: alto, pronto
   else if(muro) lift+=0.2;
   else if(hold||defUp) lift+=0.06;
@@ -112,6 +117,8 @@ export function computePose(p,dt,t){
     hintR=[0,-0.3,1]; hintL=[0,-0.3,-1];
     nR=[1,0.15,0.2]; nL=[1,0.15,-0.2];      // palmi verso la palla
   }
+  else if(gkPrep){ hR=add3(vSR,PREPARA_GK.mano); hL=add3(vSL,[PREPARA_GK.mano[0],PREPARA_GK.mano[1],-PREPARA_GK.mano[2]]);
+    hintR=[0,-0.3,1]; hintL=[0,-0.3,-1]; nR=[1,0.15,0.25]; nL=[1,0.15,-0.25]; }      // palmi verso il tiratore
   // palla vicina: portiere pronto, gomiti piegati e larghi, mani avanti all'altezza delle spalle con i palmi verso il tiratore
   else if(p.isGK&&!hold&&vicinaGK>0.02){ hR=mix3(hR,add3(vSR,[0.24,0.10,0.24]),vicinaGK); hL=mix3(hL,add3(vSL,[0.24,0.10,-0.24]),vicinaGK);
     hintR=[-0.2,-1,0.7]; hintL=[-0.2,-1,-0.7]; nR=mix3(nR,[1,-0.1,0.15],vicinaGK); nL=mix3(nL,[1,-0.1,-0.15],vicinaGK); }
@@ -301,6 +308,10 @@ function posturaVista(p,J,e,iv=0){
 // istanti di rilascio. Il gomito caricato è piegato, poi busto, braccio e polso
 // accelerano in successione senza aggiungere un'attesa al comando.
 export const PALMO_PALLA=[0.85,0.5,0.1];
+// v0.61: alzata del tiro da fuori (unità del corpo, ×1,45 = metri: 0,12 = 17 cm in più) da ALZATA_TIRO.da metri dalla porta,
+// piena dopo altri ALZATA_TIRO.rampa metri; salto di preparazione del portiere (su, mani rispetto alle spalle, entro quanti metri)
+export const ALZATA_TIRO={ su:0.12, da:5, rampa:2 };
+export const PREPARA_GK={ su:0.2, mano:[0.12,0.36,0.40], entro:10, tiri:['shot','torsione','polso','lob','beduina','sciarpa','rovesciata','colonnello','schizzo'] };
 // ACCOMPAGNAMENTO dopo il rilascio (v0.55, Ale: «non gli sta dando uno schiaffo, è un accompagnamento»): la mano continua verso il
 // bersaglio con il braccio quasi disteso, all'altezza del petto, palmo verso la porta e dita che puntano dove va la palla; poi
 // scende piano (rientra). Prima la mano finiva sotto la spalla e attraverso il corpo con il palmo in giù. Solo disegno.
@@ -328,6 +339,7 @@ function articolaVista(p,J,T,t){
   // braccia morbide e distese (corpo.js, BRACCIO_MORBIDO): meno nella bracciata del crawl, che vuole il gomito alto
   T.morbidoR=T.morbidoL=1-0.75*(T.oriz||0);
   T.torsioneVista=Math.sin(p.phase)*0.06*e;
+  T.alzataTiro=0;
   const braccio=(s,mano,hint,n,polso,k=1)=>{
     const suff=s>0?'R':'L', spalla=V['s'+suff];
     const h=mix3(V['h'+suff],mano,k), piega=ik(spalla,h,L1,L2,hint);
@@ -439,6 +451,14 @@ function articolaVista(p,J,T,t){
   // finta personale (finte.js): ogni giocatore ha il suo gesto (larga, a raffica, di polso, mezza, di bomba, di spalla)
   const fp=kind==='fake'?fintaDi(p):null;
   if(fp&&fp.alza){ const su=fp.alza*carica*(1-chiude); for(const k of ['head','chest','sR','sL']) V[k][1]+=su; }
+  // TIRO DA FUORI (v0.61, Mandić e Varga nei video di Ale): chi tira forte da lontano esce dall'acqua molto di più, quasi fino ai
+  // fianchi, in circa 0,4 s. Solo il corpo disegnato: la palla parte sempre da p.ballW (il raccordo di render.js unisce i due).
+  if((kind==='shot'||kind==='torsione')&&a){
+    const lontano=clamp((Math.hypot(12.5*p.team.dir-p.x,p.z)-ALZATA_TIRO.da)/ALZATA_TIRO.rampa,0,1);
+    const k=lontano*carica*(1-0.7*chiude), su=ALZATA_TIRO.su*k;
+    if(su>0) for(const j of JK) V[j][1]+=su;
+    T.alzataTiro=k;      // corpo.js lascia salire il bacino fin quasi al pelo dell'acqua (le gambe restano sotto)
+  }
   let off=mix3(HOLD_VISTA,fp?fp.vista:CARICA_VISTA[kind]||CARICA_VISTA.shot,carica);
   off=mix3(off,rilascio,braccioK);
   off=mix3(off,ACCOMPAGNA[kind]||th.F,ease(clamp(chiude/0.55,0,1)));
