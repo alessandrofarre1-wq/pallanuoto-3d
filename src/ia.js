@@ -505,7 +505,7 @@ export function markTarget(p){
   return { x:ax+dx/l*gap, z:az+dz/l*gap+sp };
 }
 export function blockR(p){ return ball.kind==='shot' && (p.team.defPlay===1 || p.team.defPlay===3 || p.team.players.some(q=>q.excluded)) ? (p.team.defPlay===3?1.0:0.85) : 0.6; }
-// Portiere. L'80% del lavoro è la posizione (docs/tecnica.md): sta sulla linea tra la palla e il centro della porta e la segue
+// Portiere. L'80% del lavoro è la posizione (docs/riferimenti/tecnica.md): sta sulla linea tra la palla e il centro della porta e la segue
 // spostandosi DURANTE i passaggi, non quando sono già arrivati. Quanto in fretta lo capisce e quanto velocemente si sposta
 // dipendono dalla statistica Posizione: sulle diagonali lunghe (da 2 a 5, da 4 a 1) un portiere scarso resta indietro.
 export const pos01 = gk => (gk.s.pos-40)/59, rif01 = gk => (gk.s.rif-40)/59;

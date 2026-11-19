@@ -108,7 +108,7 @@ export function movePlayer(p,dx,dz,sprint,dt){
   // L'esponenziale e l'integrale dello spostamento mantengono la stessa frenata a 30, 60 e 120 Hz.
   const a=nuotoDiretto?1-Math.exp(-dt*ritmo):Math.min(1,dt*ritmo),vx0=p.vx,vz0=p.vz;
   p.vx+=(tvx-p.vx)*a; p.vz+=(tvz-p.vz)*a;
-  // Resistenza: un giocatore medio è visibilmente stanco dopo 6-7 vasche di sprint di fila (docs/tecnica.md);
+  // Resistenza: un giocatore medio è visibilmente stanco dopo 6-7 vasche di sprint di fila (docs/riferimenti/tecnica.md);
   // chi ha più Resistenza si stanca meno e recupera prima
   const fRes=(p.s.res-40)/59;
   if(canSprint) p.stamina-=dt*SPRINT_CONSUMO*(1.6-fRes); else p.stamina+=dt*(moving?0.006:0.02)*(0.6+0.8*fRes);

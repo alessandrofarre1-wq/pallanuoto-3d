@@ -6,7 +6,7 @@
 //  - src/dati/rose-db.json: per ogni nazionale 13 giocatori veri (numero di calottina, nome, ruolo, mano, altezza, nascita)
 //    con le statistiche di gioco 40-99 calcolate qui e il riassunto dei dati dei tornei.
 //
-// METODO (in parole semplici; dettagli in docs/valutazioni.md):
+// METODO (in parole semplici; dettagli in docs/riferimenti/valutazioni.md):
 //  1. La forza della squadra resta quella del ranking (src/dati/squadre.json): le statistiche dei tornei NON la cambiano,
 //     decidono chi è più forte DENTRO la squadra (ogni voce viene ricentrata sulla media della propria squadra).
 //  2. Per ogni giocatore si sommano i tornei con la nazionale (Mondiali 2025, Europei 2026, Coppa del Mondo 2026).
@@ -16,7 +16,7 @@
 //     Difesa = palle rubate e tiri murati; Disciplina = espulsioni e rigori causati; Velocità = gol in controfuga e sprint
 //     vinti; Resistenza = minuti giocati a partita; Forza = gol dal centro e altezza (centroboa e difensori).
 //     Portieri: Riflessi e Posizione = percentuale di parate; Rigori = parate sui rigori; Uscita = parate in controfuga.
-//  5. Età come in docs/valutazioni.md.
+//  5. Età come in docs/riferimenti/valutazioni.md.
 // Il database stesso avverte: sono osservazioni, non misure ufficiali di bravura. Nel gioco sono stime, correggibili da Ale.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -205,7 +205,7 @@ for (const sq of SQ_DATABASE) {
     for (const st of ['vel', 'res', 'pot', 'pre', 'pas', 'vis', 'dif', 'dis', 'frz']) s[st] = base + P[st] + (D[i][st] || 0);
     const gkb = ruolo === 0 ? base + 3 : base - 28;
     for (const st of ['rif', 'pos', 'usc', 'rig']) s[st] = gkb + (D[i][st] || 0);
-    // età (docs/valutazioni.md, punto 5)
+    // età (docs/riferimenti/valutazioni.md, punto 5)
     const e = eta(x.r.birth_date);
     if (e != null) {
       if (e <= 21) { s.vel += 2; s.vis -= 4; s.dis -= 3; }
@@ -298,7 +298,7 @@ for (const sq of SQ) {
 }
 const risultato = {
   fonte: 'waterpolo_database di Ale, 13 novembre 2026 (World Aquatics, Microplus, Omega), per le 16 nazionali originali; rapporto ufficiale European Aquatics / Microplus del 9 gennaio 2026 per le 8 aggiunte europee.',
-  metodo: '16 rose originali: strumenti/rose-dal-database.mjs; docs/valutazioni.md. 8 aggiunte europee: dati-sorgente/europei-2026-aggiunte.json; statistiche stimate per squadra e ruolo, senza dati individuali di prestazione.',
+  metodo: '16 rose originali: strumenti/rose-dal-database.mjs; docs/riferimenti/valutazioni.md. 8 aggiunte europee: dati-sorgente/europei-2026-aggiunte.json; statistiche stimate per squadra e ruolo, senza dati individuali di prestazione.',
   rose,
   aggiunteEuropei2026: { fonte: SUPPLEMENTO.fonte.url, metodo: 'dati-sorgente/europei-2026-aggiunte.json: identita ufficiali, 13 selezionati per il gioco; statistiche e formazione STIMATE. Le rose precedenti dal database di Ale non sono state ricalcolate.' },
 };

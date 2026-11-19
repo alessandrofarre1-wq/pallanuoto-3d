@@ -17,7 +17,7 @@ Base integrata: main `1b0946a` (v0.44, PR #40 di Claude Code). Confronto inizial
 ## Risultati mirati
 
 - Lint e build PASS (0 errori/0 warning).
-- Nuoto PRIMA e DOPO PASS, con dati e provenienza in `docs/misure-nuoto-v045.json`. Arresto1,174→0,192m, tempo2,017→0,333s; cambio90° all'80%1,333→0,217s, deriva1,271→0,215m; ripartenza con palla contro direzione0,40→0,05s. Velocità massime, curve di stamina e risposta del portiere conservate. Sono misure di scene controllate, non tempi fisiologici ricavati dai manuali né FPS Apple.
+- Nuoto PRIMA e DOPO PASS, con dati e provenienza in `docs/verifiche/misure-nuoto-v045.json`. Arresto1,174→0,192m, tempo2,017→0,333s; cambio90° all'80%1,333→0,217s, deriva1,271→0,215m; ripartenza con palla contro direzione0,40→0,05s. Velocità massime, curve di stamina e risposta del portiere conservate. Sono misure di scene controllate, non tempi fisiologici ricavati dai manuali né FPS Apple.
 - Desktop PASS su eventi reali keydown/up: nessun passaggio alla pressione di D, finte durante Space tenuto, tiro al rilascio senza autotiro, annullamento su pausa/blur/cambio possesso/focus, conservazione touch e sprint a tocchi.
 - Home PASS: quattro taglie,11insets, copy24, input testuali liberi, nove carte/SVG e Riprendi visibile; tre immagini reali visionate.
 - Tornei PASS:17gruppi,288sorteggi e80campagne; integrazione UI selezione FRA/MLT, reload, torneo16, Euro senza nazionali extraeuropee, slot indipendenti e bacheca.
@@ -39,7 +39,7 @@ Fixture migrate ai nuovi comandi anche in regia, sequenze e simulatore casuale; 
 
 `npm run aspetto -- --no-build` PASS dopo integrazione: partita finita, gambe fuori acqua0/4582 verticali,0/7638 nuoto,0/1290 transizione. Schermate iPhone:62chiamate/142316tri (844×390),59/141616 (667×375). I primi piani diagnostici desktop arrivano a153306tri; non sono la visuale iPhone di gioco.
 
-`strumenti/misura-fluidita.mjs` PASS, seed33, DPR1,50, azione e due cambi simultanei:844×390 max64chiamate/146228tri,667×375 max63/146216. Dati completi in `docs/misure-fluidita-v045.json`. Nessuna riduzione dei14corpi in campo, nessuna deroga.
+`strumenti/misura-fluidita.mjs` PASS, seed33, DPR1,50, azione e due cambi simultanei:844×390 max64chiamate/146228tri,667×375 max63/146216. Dati completi in `docs/verifiche/misure-fluidita-v045.json`. Nessuna riduzione dei14corpi in campo, nessuna deroga.
 
 Il logo C è una modifica DOM/SVG: non cambia geometria, simulazione o misura dell’immersione. Home, pausa e fine usano copie con ID distinti; favicon coerente. Immagini della home aggiornate dopo la scelta di Ale. I nomi storici v044 dei file di test/proposte rimangono; la versione del gioco è0.45.
 

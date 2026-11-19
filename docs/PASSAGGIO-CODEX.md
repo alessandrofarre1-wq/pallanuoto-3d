@@ -7,7 +7,7 @@ Continua alessandrofarre1-wq/pallanuoto-3d, branch
 codex/v049-gesti-articolati, versione0.49. Prima controlla main, PR recenti,
 diff locale, CLAUDE.md e CI: Claude e Codex lavorano in parallelo.
 Base19c213d dopo PR44 v0.48. Non duplicare o sovrascrivere lavoro altrui.
-Leggi docs/verifiche-v049.md e docs/misure-gesti-v049.json.
+Leggi docs/verifiche/verifiche-v049.md e docs/verifiche/misure-gesti-v049.json.
 
 Ale chiedeva di correggere i manichini: gomiti/polsi/busto e gesti in acqua.
 Implementato: bind corretto del rig, asse mano anatomico separato dalla
@@ -62,7 +62,7 @@ PRIMA DI TUTTO, CONTROLLA LO STATO REALE (non fidarti di questo testo):
   v0.41) è SUPERATA dalla 37: non riaprirla e non ripartire dal suo ramo.
 - Se la 37 è unita: nuovo ramo da main aggiornato. Se non è unita: chiedi
   ad Ale se unirla prima, non duplicare il lavoro.
-- Leggi CLAUDE.md (memoria del progetto), docs/verifiche-v041.md (sezione
+- Leggi CLAUDE.md (memoria del progetto), docs/verifiche/verifiche-v041.md (sezione
   finale «Chiusura dei punti aperti») e il codice ATTUALE dei file che tocchi
   e di chi li usa. Anche Claude Code lavora sul progetto: il codice può essere
   cambiato rispetto a quanto ricordi.
@@ -88,7 +88,7 @@ COSA HA FATTO CLAUDE CODE SULLA v0.41 (nessuna modifica al codice del gioco):
 MISURE DI PARTENZA (8 partite ITA–HUN, per squadra; Mondiali 2025 tra
 parentesi): gol 17,4 (13,3), tiri 44,2 (33), espulsioni 7,7 (11), rigori 2,3
 (1,8), superiorità trasformate 63% (52%), controfuga 8,6% dei tiri (3%).
-Dettagli in docs/verifiche-v041.md. Corretta anche la home su iPhone (fascia
+Dettagli in docs/verifiche/verifiche-v041.md. Corretta anche la home su iPhone (fascia
 in fondo, versione nascosta, immagine tagliata): non rimettere #menu a
 inset:0 senza 100lvh/100dvh.
 
@@ -99,7 +99,7 @@ menu che sfuma verso #07131d in basso per nascondere la striscia di iOS 26
 nelle app aggiunte alla Home. Dettagli in CLAUDE.md.
 
 v0.44 (Claude Code): SCHEMI DELL'UOMO IN PIÙ a fasi (src/uomo-in-piu.js,
-src/uomo-editor.js, docs/uomo-in-piu.md). In superiorità i pali NON sono
+src/uomo-editor.js, docs/riferimenti/uomo-in-piu.md). In superiorità i pali NON sono
 più fissi (ruoli 1 e 6): sono chi nella fase in corso sta davanti alla porta
 (paloUomo in ia.js). Prova: npm run uomo.
 
@@ -120,7 +120,7 @@ REGOLE FISSE DI ALE (da rispettare sempre):
   dell'espulso, palla senza contorno, carica 0,9 s e tiro al rilascio, CAMBI
   in basso al centro con area di tocco 44 px (dalla v0.44 visibile SOLO con
   un consiglio urgente o un cambio in corso), regolamento World Aquatics
-  18 febbraio 2026. Cosa si vede in partita e quando: docs/hud-priorita.md.
+  18 febbraio 2026. Cosa si vede in partita e quando: docs/riferimenti/hud-priorita.md.
 - Il caso del gioco passa solo da rnd(); la grafica usa rndGrafica().
 - Nessun merge o pubblicazione senza istruzione di Ale. Prima di cambiare
   direzione in modo grosso, chiedi ad Ale.

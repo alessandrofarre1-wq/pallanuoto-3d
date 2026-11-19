@@ -14,7 +14,7 @@
 - Editor e pausa su 667×320, 852×393, 393×852: PASS, nessun overflow orizzontale o errore pagina; Riprendi sempre visibile dopo scroll, almeno 44 px. Tre foto per schermata in `docs/immagini/v041-*`.
 - `npm run sezione4 -- --no-build`: PASS, inclusi schizzo/colonnello AI e vincoli negativi.
 - `npm run aspetto -- --no-build`: PASS completo. Partita terminata; gambe sopra acqua 0/4.558 verticali, 0/7.582 nuotata, 0/1.300 transizione. Viste iPhone 57 chiamate/141.358 triangoli e 56/141.346. Primi piani diagnostici desktop fino a 156.066 triangoli: non sono le viste iPhone cui si applica il budget.
-- Misura fluidità touch 844×390 e 667×375 DPR1,50: azione fino a 65/142.622; due cambi contemporanei fino a **69/148.734**, sotto entrambi i limiti. Traccia `docs/misure-fluidita-v041.json`. Chromium SwiftShader, non una misura FPS su hardware Apple.
+- Misura fluidità touch 844×390 e 667×375 DPR1,50: azione fino a 65/142.622; due cambi contemporanei fino a **69/148.734**, sotto entrambi i limiti. Traccia `docs/verifiche/misure-fluidita-v041.json`. Chromium SwiftShader, non una misura FPS su hardware Apple.
 
 ## Verifica completa eseguita: partite PASS, riferimenti grafici da chiudere
 

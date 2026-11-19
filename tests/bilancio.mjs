@@ -1,6 +1,6 @@
 // Bilanciamento: partite "computer contro computer" a durata vera (4 tempi da 8 minuti) e tabella dei numeri per squadra.
 // Uso: node tests/bilancio.mjs [--partite=20] [--squadre=ITA,HUN] [--tempo=480] [--no-build] [--salva=file.json]
-// Obiettivi (docs/tattica.md): 7-13 espulsioni per squadra, superiorità trasformate 30-60%, 1-2 rigori per squadra,
+// Obiettivi (docs/riferimenti/tattica.md): 7-13 espulsioni per squadra, superiorità trasformate 30-60%, 1-2 rigori per squadra,
 // circa 40% dei tiri in gol, gol soprattutto dal perimetro e in superiorità.
 import { chromium } from 'playwright';
 import { build, preview } from 'vite';
