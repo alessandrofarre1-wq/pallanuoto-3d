@@ -43,9 +43,9 @@ solo un avvicinamento dopo la rete. Su indicazione di Ale ora la camera si muove
 ## Misure
 - **Replay** (`npm run replay`, prova aggiornata alla nuova regola):
   - in sei scenari (tiro da fuori, dall'ala, palombella; due direzioni) e tre schermi la camera dell'azione gira di 0,62 rad
-    (35°), al massimo 0,055 rad e 0,95 m tra due campioni, quindi senza scatti;
+    (35°), al massimo 0,055 rad e 1,42 m tra due campioni, quindi senza scatti;
   - c'è un solo taglio;
-  - nel primo piano la testa del marcatore è 2,5-5,5 volte più grande che nell'azione;
+  - nel primo piano la testa del marcatore è 2,3-5,4 volte più grande che nell'azione;
   - palla, testa, mano e porta restano in vista e fuori dall'interfaccia per tutta l'azione;
   - costo grafico invariato: 48-49 oggetti, 146 mila triangoli.
 - **Tiro e portiere** (`strumenti/foglio-tiro-v061.mjs`, altezze delle ossa sull'acqua prima del rilascio, tiro da 7 m):
@@ -75,6 +75,13 @@ Con i tempi di circolazione finali (i cambi successivi sono solo di disegno: par
 
 Un giro intermedio con tempi un po' più lunghi (0,7-1,15 s con lo stile equilibrato) aveva dato tiri in gol 38,4% e superiorità
 43,7%: tra due giri da 8 partite c'è qualche punto di variazione. La palla che gira più veloce non aumenta i tiri.
+
+## Verifiche sul codice finale
+- `npm run lint` PASS; tutti i 34 passi della CI in locale PASS (compresa la prova del replay aggiornata).
+- `npm run verifica`: sei partite arrivate alla fine, 54 gol su 211 tiri (26%). Tre immagini diverse dal riferimento solo per le
+  posizioni dei giocatori (palla che gira più veloce; tabellone e minuto uguali): controllate, riferimenti aggiornati, poi
+  `--partite=0` PASS.
+- `npm run aspetto` PASS: 0 gambe fuori dall'acqua; viste iPhone 55 oggetti / 141.778 triangoli.
 
 ## Non fatto
 - La presa della palla dall'acqua prima del tiro (Mandić la pesca dal dorso) non ha un gesto dedicato: il tiro parte dalla palla
