@@ -11,6 +11,8 @@ import { active, allPlayers, ball, fight, game, goalX, other, ownGoalX, teams } 
 import { diSchiena, shotKind } from './tiri.js';
 import { FIRMA, FINTA_LATO, fintaLatoAttiva } from './finte.js';
 import { difensoreCentro, leggiCentro, passoGirata } from './centroboa.js';
+export const INTERCETTO={ base:0.12, lungo:0.36 };      // probabilità che chi è sulla linea legga il passaggio (v0.60, prima 0,09/0,3)
+export const PARATA_SUP=0.3;      // in superiorità il portiere para meno: la difesa in 5 lascia più spazio (v0.60: 0,2 → 0,3, superiorità trasformate 32-40% contro 52% dei Mondiali)
 export const STANCO=0.82, CON_PALLA=0.93, SPRINT_CONSUMO=0.0098;   // v0.54: consumo +6,5% per restare «visibilmente stanchi» dopo 7 vasche
 export function movePlayer(p,dx,dz,sprint,dt){
   // La girata usa lo stesso movimento e gli stessi collisori del nuoto ordinario.
@@ -243,7 +245,7 @@ export function updateBall(dt){
         // da poco angolo vede poca porta da coprire
         const tempo=clamp((ball.flightT-0.28)/0.3,0,1), dT=ball.distTiro||6, ang=ball.angoloTiro==null?1:ball.angoloTiro;
         // v0.45: in parità a difesa schierata il tiro dal perimetro segna circa il 25% (Berlino 2018): il portiere è piazzato
-        const facile=(ball.tipoTiro==='perimetro'?0.12:0)+0.3*tempo+Math.max(0,dT-7.5)*0.2+Math.max(0,0.6-ang)*0.8+0.1*(ball.marcato||0)+(ball.daFermo?0.1:0)-(ball.dopoCambio?0.16:0)-(ball.liberato?0.05:0)-(ball.tipoTiro==='superiorita'?0.2:0);
+        const facile=(ball.tipoTiro==='perimetro'?0.12:0)+0.3*tempo+Math.max(0,dT-7.5)*0.2+Math.max(0,0.6-ang)*0.8+0.1*(ball.marcato||0)+(ball.daFermo?0.1:0)-(ball.dopoCambio?0.16:0)-(ball.liberato?0.05:0)-(ball.tipoTiro==='superiorita'?PARATA_SUP:0);
         const lontano=Math.max(0,Math.abs(ball.z-ball.gkZ0)-braccia), reach=(0.5+0.8*R)*fresco+0.7*tempo+Math.max(0,dT-7.5)*0.3;
         gk.stamina=Math.max(0,gk.stamina-0.035*(1.5-(gk.s.res-40)/59));          // ogni salto costa
         // tiro da vicino: la palla arriva in meno di un quarto di secondo e il portiere non fa in tempo a reagire
@@ -310,8 +312,9 @@ export function updateBall(dt){
           // le linee di passaggio, e il passaggio verso il centroboa marcato è il più rischioso
           // v0.55: dopo una finta riuscita i difensori hanno abboccato e leggono peggio lo scarico
           const dopoFinta=(ball.kind==='pass'&&ball.dopoFinta?0.6:1)*(ball.kind==='pass'&&ball.firma?FIRMA.intercetto:1);
+          // v0.60 (taratura): palle perse in parità 8% contro circa 20% delle partite vere; base 0,09 → 0,12, passaggio lungo 0,3 → 0,36
           const versoBoa=ball.target&&ball.target.i===1&&Math.abs(goalX(ball.target.team)-ball.target.x)<5&&!manUp(ball.target.team);
-          const letto=(0.09+0.3*clamp((ball.flightT-0.2)/0.7,0,1)+(ball.shooter?(p.s.dif-ball.shooter.s.pas)/59*0.12:0))*(p.team.defPlay===2?1.15:1)*(versoBoa?1.3:1)*dopoFinta;
+          const letto=(INTERCETTO.base+INTERCETTO.lungo*clamp((ball.flightT-0.2)/0.7,0,1)+(ball.shooter?(p.s.dif-ball.shooter.s.pas)/59*0.12:0))*(p.team.defPlay===2?1.15:1)*(versoBoa?1.3:1)*dopoFinta;
           const pr=(ball.kind==='shot'?muro:clamp(letto,0.04,0.5))*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
           if(rnd()<pr){
             if(ball.kind==='shot'){

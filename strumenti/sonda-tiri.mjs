@@ -34,6 +34,6 @@ for(const x of tutti){ const k=x.tipo+' · '+x.m; (per[k]=per[k]||[]).push(x); }
 console.log(`${tutti.length} tiri in ${partite} partite (${(tutti.length/partite/2).toFixed(1)} per squadra a partita)`);
 for(const [k,v] of Object.entries(per).sort((a,b)=>b[1].length-a[1].length)){
   const tm=v.reduce((s,x)=>s+x.t,0)/v.length, dm=v.reduce((s,x)=>s+x.d,0)/v.length;
-  console.log(`  ${k.padEnd(34)} ${String(v.length).padStart(4)} (${(100*v.length/tutti.length).toFixed(1)}%) · dopo ${tm.toFixed(1)} s d'azione · da ${dm.toFixed(1)} m`);
+  console.log(`  ${k.padEnd(34)} ${String(v.length).padStart(4)} (${(100*v.length/tutti.length).toFixed(1)}%) · dopo ${tm.toFixed(1)} s d'azione · da ${dm.toFixed(1)} m · entro 10 s: ${v.filter(x=>x.t>=0&&x.t<10).length}`);
 }
 await browser.close(); server.httpServer.close();

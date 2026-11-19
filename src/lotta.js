@@ -48,7 +48,7 @@ const aggressivita=d=>d===ctrl ? (d.aggrT>game.time?1.6:0.35) : (d.team.defPlay=
 // attacco dopo 13 s e le azioni erano 80 a squadra contro circa 50 (Euro League). Nei primi secondi la squadra in attacco si sta
 // ancora schierando e il centroboa non ha preso posizione: espulsioni e falli al centro partono a LOTTA_FASE.minimo e crescono
 // fino al pieno tra LOTTA_FASE.da e LOTTA_FASE.a secondi dall'inizio dell'azione (solo in parità)
-export const LOTTA_FASE={ minimo:0.2, da:8, a:20 };   // v0.59: da 5-16 a 8-20 s (espulsioni troppe e troppo presto)
+export const LOTTA_FASE={ minimo:0.15, da:10, a:24 };   // v0.59: 5-16 → 8-20 s; v0.60: 10-24 s (espulsioni procurate a 11,8 s di media)
 function faseLotta(t){ const az=azioneAperta(); if(!az||az.t!==t||az.tipo!=='parita') return 1; const e=game.time-az.t0; return clamp(LOTTA_FASE.minimo+(1-LOTTA_FASE.minimo)*(e-LOTTA_FASE.da)/(LOTTA_FASE.a-LOTTA_FASE.da),LOTTA_FASE.minimo,1); }
 export const CENTRO_SENZA_PALLA={ espulsione:0.07, inArrivo:0.9, fallo:0.18, contro:0.05 };
 function lottaSenzaPalla(b,d,lettura,dt){

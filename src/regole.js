@@ -358,7 +358,7 @@ export function contrasto(d,c){
 // Da dove nascono le espulsioni (indicazione di Ale, 13/11/2026): circa il 70% dalla lotta tra centroboa e marcatore,
 // il resto da falli tattici (fermare una controfuga) o da interventi irruenti. Tarati sui Mondiali 2025 (World Aquatics, uomini):
 // circa 11 espulsioni per squadra a partita, 66% dal centroboa. Moltiplicatori della probabilità:
-export const ESPULSIONI={ centro:5.6, contrasto:0.24 };      // v0.56: centro 7 → 5,6, con la lotta che cresce con l'azione (LOTTA_FASE in lotta.js) (espulsioni 14 a partita contro 11 dei Mondiali 2025)
+export const ESPULSIONI={ centro:6.5, contrasto:0.24 };      // v0.60: 5,6 → 6,5 (la lotta piena arriva più tardi, LOTTA_FASE 10-24 s); v0.56: centro 7 → 5,6, con la lotta che cresce con l'azione (LOTTA_FASE in lotta.js) (espulsioni 14 a partita contro 11 dei Mondiali 2025)
 // Regole d'arbitraggio aggiunte nella v0.45 (manuale arbitri FINA 2019-21 adattato al regolamento World Aquatics 2026):
 // palleggio = probabilità di espulsione per il fallo su chi palleggia; interferenza = per chi resta entro 1 m da chi batte il tiro libero
 export const ARBITRI={ palleggio:0.35, interferenza:0.45 };
