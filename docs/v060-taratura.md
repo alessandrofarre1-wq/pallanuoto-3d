@@ -37,6 +37,12 @@ Sulla v0.59 (3 partite):
 Tra due giri da 8 partite c'è qualche punto di variazione. Durante la taratura sono stati provati anche passi intermedi (per esempio
 azioni 65,8 e tiri 42,7 prima di alzare le espulsioni, che allungano di nuovo il numero di azioni con le superiorità).
 
+## Verifiche sul codice finale
+- `npm run lint` PASS; tutti i 34 passi della CI in locale PASS.
+- `npm run verifica`: sei partite arrivate alla fine, 65 gol su 218 tiri (30%); cinque immagini nella tolleranza, riferimenti
+  invariati.
+- `npm run aspetto` PASS: 0 gambe fuori dall'acqua; viste iPhone 56 oggetti / 141.794 triangoli.
+
 ## Non fatto
 - La durata media in parità resta 14,5 s: le azioni hanno due gruppi (molte finiscono entro 10 s, molte arrivano a 20-25 s). Le
   brevi sono in buona parte giuste (rigori, tiri vicinissimi, espulsioni e palle perse); per allungare davvero la media va
