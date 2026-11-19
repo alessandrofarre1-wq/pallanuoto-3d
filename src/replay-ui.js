@@ -22,6 +22,7 @@ function creaUI() {
   el.setAttribute('aria-modal', 'true');
   el.setAttribute('aria-label', 'Replay del gol');
   el.innerHTML = `
+    <div class="replay-lampo" aria-hidden="true"></div>
     <div class="replay-testa">
       <span class="replay-badge"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4 1 10l6 6V4Zm9 0-6 6 6 6V4Z" fill="currentColor"/></svg>REPLAY</span>
       <div class="replay-score" aria-label="Punteggio"><span id="replaySquadra"></span><b id="replayPunteggio"></b><span id="replayAvversaria"></span></div>
@@ -119,6 +120,15 @@ export function nascondiReplay() {
     else ui.salta.blur();
   }
   focusPrima = null;
+}
+
+// v0.61: lampo bianco breve al cambio d'inquadratura (azione → primo piano), come la dissolvenza dei replay in TV
+export function lampoReplay() {
+  const l = ui?.el.querySelector('.replay-lampo');
+  if (!l || !visibile) return;
+  l.classList.remove('vai');
+  void l.offsetWidth;
+  l.classList.add('vai');
 }
 
 export function registraSalto(fn) {

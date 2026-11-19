@@ -7,7 +7,7 @@ import { comparsePerReplay } from '../panchina.js';
 import { ball3d, camera, contatti, freccia, mirino, passMark, ring, scene, schiuma, shadow } from './scena.js';
 import { gocceMesh } from './acqua-eventi.js';
 import { tempoAcqua } from './sottacqua.js';
-import { applicaCameraReplay, FASCIA_REPLAY, preparaCameraReplay } from './replay-camera.js';
+import { applicaCameraReplay, FASCIA_REPLAY, preparaCameraReplay, preparaPrimoPiano, REGIA_REPLAY } from './replay-camera.js';
 
 const HZ=30, PASSO=1/HZ, CAPACITA=Math.ceil(3.5*HZ)+1, SECONDI_CLIP=3;
 const MAX_CLIP=Math.ceil(SECONDI_CLIP*HZ)+3, MAX_TEXTURE=32, TRASFORMA=11;
@@ -21,7 +21,10 @@ const numeri=new Uint16Array(CAPACITA*corpi.length), numeriClip=new Uint16Array(
 const nomi=new Array(CAPACITA*corpi.length).fill(null),nomiClip=new Array(MAX_CLIP*corpi.length).fill(null);
 const posizioni=new Float32Array(CAPACITA*POSIZIONI), posizioniClip=new Float32Array(MAX_CLIP*POSIZIONI);
 const tempoSchermo=new Float64Array(MAX_CLIP);
-const puntiPrincipali=new Float32Array((MAX_CLIP*32+16)*3), puntiReazione=new Float32Array(puntiPrincipali.length);
+const puntiPrincipali=new Float32Array((MAX_CLIP*32+16)*3), puntiTiro=new Float32Array(puntiPrincipali.length);
+// v0.61: il replay è diviso in due inquadrature (replay-camera.js): l'azione fino a poco dopo la rete (TAGLIO s dopo il gol) occupa
+// la prima parte dello schermo (QUOTA_AZIONE), il primo piano di chi esulta il resto, al rallentatore
+const TAGLIO=0.1, QUOTA_AZIONE=0.7, DOPO_GOL=0.56, m12=new Float64Array(12);
 const nomiBersagli=['palla','testa','manoDestra','manoSinistra','tiratore','portaBassoSinistra','portaAltoSinistra','portaBassoDestra','portaAltoDestra'];
 const bersagliUltimi=new Float64Array(nomiBersagli.length*6), posizioneCameraUltima=new Float64Array(3);
 let nodi=[], numerici=[], materiali=[], scheletri=[], skinned=[], derivati=[], riferimenti=[], effetti=[], istanze=[];
@@ -32,7 +35,7 @@ let mappe=[], mappeClip=[], mappeAttuali=[];
 let stride=0, testa=0, count=0, countClip=0, tempo=0, accumulo=PASSO, inDisegno=false;
 const textureCongelate=[];
 let eventi={ricezione:null,rilascio:null,gol:null}, infoClip=null, pianoCamera=null, marcatore=-1;
-let reazioneIdentificata=false, ultimoDisegno=null;
+let reazioneIdentificata=false, ultimoDisegno=null, taglio=null;
 
 function liberaMappe(a){
   for(let i=0;i<a.length;i++){
@@ -231,8 +234,8 @@ export function preparaClipReplay(info={}){
       }
     }
   }
-  // Mezzo secondo reale dopo il gol conserva anche la reazione, senza inventare pose.
-  const fine=gol>=0?tempi[indice(gol)]+0.5:tempi[indice(count-1)]-0.1;
+  // Poco più di mezzo secondo reale dopo il gol conserva anche la reazione, senza inventare pose.
+  const fine=gol>=0?tempi[indice(gol)]+DOPO_GOL:tempi[indice(count-1)]-0.1;
   let ultimo=count-1;
   while(ultimo>1&&tempi[indice(ultimo)]>fine+1e-9) ultimo--;
   let limite=tempi[indice(ultimo)]-SECONDI_CLIP;
@@ -286,9 +289,9 @@ function preparaRegia(info){
   const dir=Math.sign(infoClip.dir)||1, gx=dir*HL;
   const offsetPalla=nodi.find(n=>n.oggetto===ball3d).offset;
   const portiere=corpi.findIndex(p=>p.isGK&&(marcatore>=0?p.team!==corpi[marcatore].team:p.team.dir===-dir));
-  let n=0,nReazione=0,minDist=Infinity,maxZ=0;
+  let n=0,nTiro=0,minDist=Infinity,maxZ=0;
   const aggiungi=(dest,x,y,z)=>{
-    let i=dest===puntiPrincipali?n++:nReazione++;
+    let i=dest===puntiPrincipali?n++:nTiro++;
     i*=3;dest[i]=x;dest[i+1]=y;dest[i+2]=z;
   };
   const sfera=(dest,x,y,z,r)=>{
@@ -299,13 +302,18 @@ function preparaRegia(info){
   };
   const porta=dest=>{for(const y of [-0.06,GH+0.1])for(const z of [-GW-0.12,GW+0.12])aggiungi(dest,gx,y,z);};
   porta(puntiPrincipali);
-  reazioneIdentificata=marcatore>=0&&eventi.gol!==null;
+  const fineClip=tempiClip[countClip-1]-tempiClip[0];
+  taglio=eventi.gol!==null&&eventi.gol+TAGLIO<fineClip-0.15?eventi.gol+TAGLIO:null;
+  reazioneIdentificata=marcatore>=0&&taglio!==null;
+  const inizioTiro=eventi.rilascio!==null?eventi.rilascio-REGIA_REPLAY.stretta.prima:Infinity;
   for(let f=0;f<countClip;f++){
-    const t=tempiClip[f]-tempiClip[0], dopo=eventi.gol!==null&&t>=eventi.gol;
+    const t=tempiClip[f]-tempiClip[0], dopo=taglio!==null&&t>=taglio-PASSO;
     const capGiusto=identitaCorretta(f);
     const visibile=marcatore>=0&&!!clip[f*stride+riferimenti[marcatore].offset+10];
     if(dopo&&(!capGiusto||!visibile)) reazioneIdentificata=false;
-    for(const dest of dopo?[puntiPrincipali,puntiReazione]:[puntiPrincipali]){
+    // l'azione si inquadra fino al taglio; la ripresa del tiro solo dal rilascio in poi
+    if(taglio!==null&&t>taglio+PASSO) continue;
+    for(const dest of t>=inizioTiro-PASSO?[puntiPrincipali,puntiTiro]:[puntiPrincipali]){
       const b=f*stride+offsetPalla;
       sfera(dest,clip[b],clip[b+1],clip[b+2],0.23);
       if(marcatore>=0){
@@ -319,15 +327,29 @@ function preparaRegia(info){
         const sx=Number.isFinite(infoClip.tiroX)?infoClip.tiroX:gx-dir*5,sz=Number.isFinite(infoClip.tiroZ)?infoClip.tiroZ:0;
         sfera(dest,sx,0.8,sz,0.5);
       }
-      if(portiere>=0&&dest===puntiPrincipali){const p=f*POSIZIONI+portiere*12+3;sfera(dest,posizioniClip[p],posizioniClip[p+1],posizioniClip[p+2],0.22);}
+      if(portiere>=0){const p=f*POSIZIONI+portiere*12+3;sfera(dest,posizioniClip[p],posizioniClip[p+1],posizioniClip[p+2],0.22);}
     }
   }
-  if(reazioneIdentificata) porta(puntiReazione);else nReazione=0;
+  if(nTiro) porta(puntiTiro);
   // La piccola diagonale non deve invertire un tiro da posizione molto laterale.
   const laterale=Number.isFinite(minDist)?Math.max(0,Math.min(0.18,minDist*0.3/(maxZ+1))):0.12;
-  pianoCamera=preparaCameraReplay(puntiPrincipali,n,puntiReazione,nReazione,dir,laterale);
+  pianoCamera=preparaCameraReplay(puntiPrincipali,n,puntiTiro,nTiro,dir,laterale);
+  if(reazioneIdentificata){
+    // angolo del primo piano scelto sul fotogramma del taglio, con le teste e i corpi degli altri come possibili ostacoli
+    let f=0;while(f<countClip-1&&tempiClip[f]-tempiClip[0]<taglio)f++;
+    const base=f*POSIZIONI, altri=[];
+    for(let i=0;i<corpi.length;i++){
+      if(i===marcatore||!clip[f*stride+riferimenti[i].offset+10]) continue;
+      for(const o of [0,3]) altri.push(posizioniClip[base+i*12+o],Math.max(posizioniClip[base+i*12+o+1],0.15),posizioniClip[base+i*12+o+2]);
+    }
+    // direzione del corpo registrata: l'asse x locale del gruppo è il fronte del giocatore (updateRig in pose.js)
+    const o=f*stride+riferimenti[marcatore].offset+3;
+    qA.set(clip[o],clip[o+1],clip[o+2],clip[o+3]); punto.set(1,0,0).applyQuaternion(qA);
+    const faccia=Math.hypot(punto.x,punto.z)>0.2?Math.atan2(punto.z,punto.x):undefined;
+    if(!preparaPrimoPiano(pianoCamera,posizioniClip.subarray(base+marcatore*12,base+marcatore*12+12),altri,gx,faccia)) reazioneIdentificata=false;
+  }
   tempoSchermo[0]=0;
-  let indiceGol=-1;
+  let indiceTaglio=-1;
   for(let f=1;f<countClip;f++){
     const a=tempiClip[f-1]-tempiClip[0],b=tempiClip[f]-tempiClip[0],m=(a+b)/2;
     let peso=1;
@@ -337,12 +359,12 @@ function preparaRegia(info){
       peso+=2.4*entra*esce;
     }
     tempoSchermo[f]=tempoSchermo[f-1]+(b-a)*peso;
-    if(eventi.gol!==null&&Math.abs(b-eventi.gol)<1e-7) indiceGol=f;
+    if(taglio!==null&&indiceTaglio<0&&b>=taglio-1e-7) indiceTaglio=f;
   }
-  const totale=tempoSchermo[countClip-1],pre=indiceGol>0?tempoSchermo[indiceGol]:0,post=totale-pre;
+  const totale=tempoSchermo[countClip-1],pre=indiceTaglio>0?tempoSchermo[indiceTaglio]:0,post=totale-pre;
   for(let f=0;f<countClip;f++){
-    // L'ultimo quinto appartiene alla reazione registrata, solo dopo la rete.
-    tempoSchermo[f]=pre>0&&post>0?(f<=indiceGol?tempoSchermo[f]/pre*0.8:0.8+(tempoSchermo[f]-pre)/post*0.2):tempoSchermo[f]/totale;
+    // L'azione fino al taglio occupa QUOTA_AZIONE dello schermo; il resto è il primo piano della reazione registrata.
+    tempoSchermo[f]=pre>0&&post>0?(f<=indiceTaglio?tempoSchermo[f]/pre*QUOTA_AZIONE:QUOTA_AZIONE+(tempoSchermo[f]-pre)/post*(1-QUOTA_AZIONE)):tempoSchermo[f]/totale;
   }
 }
 
@@ -358,11 +380,13 @@ function identitaCorretta(frame){
     (!infoClip.nome||nomiClip[frame*corpi.length+marcatore]===infoClip.nome);
 }
 
+function primoPianoAttivo(s){ return reazioneIdentificata&&taglio!==null&&s.t>=taglio; }
 function descriviRegia(s,cameraK=0){
   const fase=eventi.gol!==null&&s.t>=eventi.gol?(s.t<eventi.gol+0.06?'gol':'reazione'):
     eventi.rilascio!==null&&s.t>=eventi.rilascio?'tiro':'ricezione';
+  const primo=primoPianoAttivo(s);
   return {fase,sorgente:s.t,ricezione:eventi.ricezione,rilascio:eventi.rilascio,gol:eventi.gol,
-    taglio:false,faseCamera:cameraK>0?'avvicinamento':'principale',avvicinamento:cameraK,
+    taglio:primo,tempoTaglio:taglio,faseCamera:primo?'primoPiano':'principale',avvicinamento:cameraK,
     marcatoreIdentificato:marcatore>=0,durataClip:tempiClip[countClip-1]-tempiClip[0]};
 }
 
@@ -405,9 +429,18 @@ export function disegnaClipReplay(progresso,info,draw){
   try{
     applica(a,b,k);
     for(const e of effetti) e.visible=false;
-    const fine=tempiClip[countClip-1]-tempiClip[0];
-    const reazione=reazioneIdentificata&&eventi.gol!==null?THREE.MathUtils.clamp((s.t-eventi.gol)/Math.max(1e-9,fine-eventi.gol),0,1):0;
-    const cameraK=applicaCameraReplay(camera,pianoCamera,reazione);
+    const S=REGIA_REPLAY.stretta;
+    const tiro=eventi.rilascio!==null?THREE.MathUtils.smootherstep(s.t,eventi.rilascio-S.prima,eventi.rilascio+S.dopo):0;
+    let primo=null;
+    if(primoPianoAttivo(s)){
+      const pa=a*POSIZIONI+marcatore*12,pb=b*POSIZIONI+marcatore*12;
+      for(let j=0;j<12;j++) m12[j]=THREE.MathUtils.lerp(posizioniClip[pa+j],posizioniClip[pb+j],k);
+      primo={m:m12,k:THREE.MathUtils.clamp((s.p-QUOTA_AZIONE)/(1-QUOTA_AZIONE),0,1)};
+      // da vicino i numeri sopra le teste sarebbero enormi: nel primo piano si leggono quelli sulla cuffia
+      // (sono nodi registrati: il finally li riporta come erano)
+      for(const p of corpi) if(p.mesh?.spr) p.mesh.spr.visible=false;
+    }
+    const cameraK=applicaCameraReplay(camera,pianoCamera,{azione:THREE.MathUtils.clamp(s.p/QUOTA_AZIONE,0,1),tiro,primo});
     scene.updateMatrixWorld(true);
     ultimoDisegno=descriviRegia(s,cameraK);
     const frame=k<0.5?a:b;
@@ -459,7 +492,7 @@ export function diagnosticaReplay(){
     durataClip:countClip>1?tempiClip[countClip-1]-tempiClip[0]:0,
     bytes:dati.byteLength+clip.byteLength+attuale.byteLength+matrici.byteLength+matriciDisegno.byteLength+tempi.byteLength+tempiClip.byteLength+
       metadati.byteLength+metaClip.byteLength+numeri.byteLength+numeriClip.byteLength+posizioni.byteLength+posizioniClip.byteLength+
-      tempoSchermo.byteLength+puntiPrincipali.byteLength+puntiReazione.byteLength+bersagliUltimi.byteLength+posizioneCameraUltima.byteLength+(nomi.length+nomiClip.length)*8+
+      tempoSchermo.byteLength+puntiPrincipali.byteLength+puntiTiro.byteLength+bersagliUltimi.byteLength+posizioneCameraUltima.byteLength+(nomi.length+nomiClip.length)*8+
       istanze.reduce((n,i)=>n+i.blocchi.reduce((s,b)=>s+b.salvati.byteLength,0),0)+textureCongelate.reduce((n,r)=>n+r.tex.image.width*r.tex.image.height*4,0),
   };
 }

@@ -1048,6 +1048,8 @@ body:not(.nostra-palla) .tb[data-b="lob"]{display:none}
 body.replay :is(#hud,#espulsioni,#tac,#cronaca,#qte,#fight,#player,#tCambi,#tLog,#registro,#touch,#fps,#cambiBox,#pannelloFisica){visibility:hidden!important;pointer-events:none!important}
 #replayOverlay{--r-ciano:#57e2df;--r-oro:#ffd465;position:fixed;inset:0;z-index:35;color:#f4faff;background:linear-gradient(180deg,#07131d52,transparent 28%,transparent 65%,#07131d52);touch-action:none;isolation:isolate}
 #replayOverlay[hidden]{display:none}
+.replay-lampo{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}.replay-lampo.vai{animation:replayLampo .26s ease-out}
+@keyframes replayLampo{0%{opacity:.6}100%{opacity:0}}
 .replay-testa{position:absolute;left:calc(14px + var(--sl));top:calc(12px + var(--st));display:flex;align-items:center;gap:8px;max-width:calc(100% - 180px - var(--sl) - var(--sr))}
 .replay-badge{display:flex;align-items:center;gap:5px;min-height:29px;padding:0 9px;border-radius:4px;background:var(--r-ciano);color:#06232e;font-size:10px;font-weight:900;letter-spacing:.1em;white-space:nowrap}
 .replay-badge svg{width:14px;height:14px;flex:none}

@@ -237,31 +237,47 @@ try{
         const coperture=['.replay-testa','.replay-marchio','.replay-fascia','#replaySalta'].map(sel=>document.querySelector(sel).getBoundingClientRect());
         const proietta=p=>{const v=p.clone().project(D.W.camera);return {x:(v.x+1)*innerWidth/2,y:(1-v.y)*innerHeight/2,z:v.z};};
         const css=getComputedStyle(document.documentElement),inset=k=>parseFloat(css.getPropertyValue(k))||0;
-        let pallaMin=Infinity,principale=null,rotazione=null,campioni=0,postGol=0;
+        // v0.61 (Ale: «ha senso che l'inquadratura cambi, non statica»): nell'azione la camera si muove senza scatti e tiene in
+        // vista palla, tiratore e porta; dopo la rete un solo taglio sul primo piano del marcatore (testa e mano in vista, grandi)
+        let pallaMin=Infinity,campioni=0,postGol=0,primi=0,tagli=0,prima=null,ultima=null,passoMax=0,giroMax=0,testaAzione=0,testaPrimo=Infinity,fasePrec=null;
         for(let n=0;n<=30;n++)D.A.disegnaClipReplay(n/30,info,()=>{
           const c=D.W.camera,r=D.A.ultimaRegiaReplay();
           D.need(Number.isFinite(r.rilascio)&&Number.isFinite(r.gol)&&r.gol>r.rilascio,'rilascio e gol riconosciuti dalla sequenza reale');
           const v=c.position.clone(),testa=D.p.mesh.corpo.ossa.testa.getWorldPosition(v.clone());
           const mano=D.p.mesh.corpo.ossa[D.p.mano==='S'?'manoS':'manoD'].getWorldPosition(v.clone());
-          const punti=[['palla',D.W.ball3d.position],['testa',testa],['mano',mano]];
-          for(const y of [0,.9])for(const z of [-1.5,1.5])punti.push(['porta',v.clone().set(dir*12.5,y,z)]);
+          const primo=r.faseCamera==='primoPiano';
+          const punti=[['testa',testa],['mano',mano]];
+          if(!primo){punti.push(['palla',D.W.ball3d.position]);for(const y of [0,.9])for(const z of [-1.5,1.5])punti.push(['porta',v.clone().set(dir*12.5,y,z)]);}
           for(const [etichetta,p] of punti){
             const q=proietta(p);
-            D.need(q.z>-1&&q.z<1&&q.x>=inset('--sl')+8&&q.x<=innerWidth-inset('--sr')-8&&q.y>=8&&q.y<=innerHeight-inset('--sb')-8,`${nome} dir${dir} p${n}/30: ${etichetta} fuori schermo ${JSON.stringify(q)}`);
-            D.need(!coperture.some(b=>q.x>b.left-5&&q.x<b.right+5&&q.y>b.top-5&&q.y<b.bottom+5),`${nome} dir${dir} p${n}/30: ${etichetta} sotto overlay ${JSON.stringify(q)}`);
+            D.need(q.z>-1&&q.z<1&&q.x>=inset('--sl')+8&&q.x<=innerWidth-inset('--sr')-8&&q.y>=8&&q.y<=innerHeight-inset('--sb')-8,`${nome} dir${dir} p${n}/30 ${r.faseCamera}: ${etichetta} fuori schermo ${JSON.stringify(q)}`);
+            D.need(!coperture.some(b=>q.x>b.left-5&&q.x<b.right+5&&q.y>b.top-5&&q.y<b.bottom+5),`${nome} dir${dir} p${n}/30 ${r.faseCamera}: ${etichetta} sotto overlay ${JSON.stringify(q)}`);
           }
-          const centro=proietta(D.W.ball3d.position),bordo=proietta(v.clone().set(.195,0,0).applyQuaternion(c.quaternion).add(D.W.ball3d.position));
-          const diametro=2*Math.hypot(bordo.x-centro.x,bordo.y-centro.y);pallaMin=Math.min(pallaMin,diametro);
-          D.need(diametro>=4,'palla leggibile '+nome+': '+diametro+'px');
-          if(r.sorgente<=r.gol+1e-8){
-            if(!principale)principale=c.position.clone();
-            D.need(c.position.distanceTo(principale)<1e-6,'camera ferma durante ricezione e intero volo');
-          }else postGol++;
-          if(!rotazione)rotazione=c.quaternion.clone();
-          D.need(c.quaternion.angleTo(rotazione)<1e-6&&c.position.z>0,'camera conserva lato del campo e orientamento');campioni++;
+          const qt=proietta(testa),bt=proietta(v.clone().set(.12,0,0).applyQuaternion(c.quaternion).add(testa)),dt=2*Math.hypot(bt.x-qt.x,bt.y-qt.y);
+          if(primo){
+            primi++;testaPrimo=Math.min(testaPrimo,dt);
+            if(fasePrec==='principale')tagli++;
+          }else{
+            D.need(fasePrec!=='primoPiano','un solo taglio: dal primo piano non si torna all\'azione');
+            const centro=proietta(D.W.ball3d.position),bordo=proietta(v.clone().set(.195,0,0).applyQuaternion(c.quaternion).add(D.W.ball3d.position));
+            const diametro=2*Math.hypot(bordo.x-centro.x,bordo.y-centro.y);pallaMin=Math.min(pallaMin,diametro);
+            D.need(diametro>=4,'palla leggibile '+nome+': '+diametro+'px');
+            D.need(c.position.z>0,'nell\'azione la camera resta sul lato della giuria (mai girata di 180°)');
+            testaAzione=Math.max(testaAzione,dt);
+            if(ultima){passoMax=Math.max(passoMax,c.position.distanceTo(ultima.p));giroMax=Math.max(giroMax,c.quaternion.angleTo(ultima.q));}
+            if(!prima)prima={p:c.position.clone(),q:c.quaternion.clone()};
+            ultima={p:c.position.clone(),q:c.quaternion.clone()};
+          }
+          if(r.sorgente>r.gol+1e-8)postGol++;
+          fasePrec=r.faseCamera;campioni++;
         });
+        const giro=prima&&ultima?prima.q.angleTo(ultima.q):0;
+        D.need(giro>=0.25,`${nome} dir${dir}: la camera dell'azione gira davvero (${giro.toFixed(3)} rad)`);
+        D.need(giroMax<=0.16&&passoMax<=1.6,`${nome} dir${dir}: nessuno scatto nell'azione (giro max ${giroMax.toFixed(3)} rad, passo max ${passoMax.toFixed(2)} m)`);
+        D.need(tagli===1&&primi>=5,`${nome} dir${dir}: un taglio sul primo piano (${tagli} tagli, ${primi} campioni)`);
+        D.need(testaPrimo>=2*testaAzione,`${nome} dir${dir}: nel primo piano la testa è almeno il doppio (${testaPrimo.toFixed(1)} contro ${testaAzione.toFixed(1)} px)`);
         D.need(campioni===31&&postGol>0,'azione e reazione entrambe verificate');
-        risultati.push({nome,dir,campioni,pallaMin,postGol});
+        risultati.push({nome,dir,campioni,pallaMin:+pallaMin.toFixed(2),postGol,giro:+giro.toFixed(3),giroMax:+giroMax.toFixed(3),passoMax:+passoMax.toFixed(2),primi,testaAzione:+testaAzione.toFixed(1),testaPrimo:+testaPrimo.toFixed(1)});
       }
       return risultati;
     });

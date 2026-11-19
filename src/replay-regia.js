@@ -2,10 +2,10 @@
 import { game } from './stato.js';
 import { resetInput } from './input.js';
 import { attivaRiproduzioneReplay, generazioneReplay, interrompiReplay, richiediSaltoReplay, statoReplay } from './replay.js';
-import { aggiornaReplay, mostraReplay, nascondiReplay, registraSalto } from './replay-ui.js';
-import { azzeraArchivioReplay, disegnaClipReplay, preparaClipReplay, registraFotogrammaReplay } from './grafica/replay.js';
+import { aggiornaReplay, lampoReplay, mostraReplay, nascondiReplay, registraSalto } from './replay-ui.js';
+import { azzeraArchivioReplay, disegnaClipReplay, preparaClipReplay, registraFotogrammaReplay, ultimaRegiaReplay } from './grafica/replay.js';
 
-let generazione=-1, clipId=0, ultimoCampione=null;
+let generazione=-1, clipId=0, ultimoCampione=null, ultimaFase=null;
 registraSalto(richiediSaltoReplay);
 
 export function chiudiPresentazioneReplay(){
@@ -29,10 +29,14 @@ export function presentaReplay(draw,now){
   }
   if(clipId!==s.id){
     if(ultimoCampione===null||now-ultimoCampione>120||!preparaClipReplay(s.info)){ interrompiReplay(); chiudiPresentazioneReplay(); return false; }
-    clipId=s.id; attivaRiproduzioneReplay(); resetInput(); mostraReplay(s.info);
+    clipId=s.id; attivaRiproduzioneReplay(); resetInput(); mostraReplay(s.info); ultimaFase=null;
   }
   aggiornaReplay(s.progresso);
-  if(disegnaClipReplay(s.progresso,s.info,draw)) return true;
+  if(disegnaClipReplay(s.progresso,s.info,draw)){
+    const fase=ultimaRegiaReplay()?.faseCamera;
+    if(fase==='primoPiano'&&ultimaFase!=='primoPiano') lampoReplay();
+    ultimaFase=fase; return true;
+  }
   interrompiReplay(); chiudiPresentazioneReplay(); return false;
 }
 
