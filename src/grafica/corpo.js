@@ -172,7 +172,7 @@ export function aggiornaNumero(R,num){
 const _a=new THREE.Vector3(), _b=new THREE.Vector3(), _d=new THREE.Vector3(), _d2=new THREE.Vector3(), _v=new THREE.Vector3();
 const _q=new THREE.Quaternion(), _qp=new THREE.Quaternion(), _qd=new THREE.Quaternion(), _qg=new THREE.Quaternion(), _qr=new THREE.Quaternion();
 const _su=new THREE.Vector3(), _av=new THREE.Vector3(), _de=new THREE.Vector3(), _m=new THREE.Matrix4(), _inv=new THREE.Matrix4();
-export const BACINO_TIRO=-0.14;      // v0.61: quota massima del bacino nel tiro da fuori (m sull'acqua; di solito -0,22)
+export const BACINO_TIRO=-0.16;      // v0.61: quota massima del bacino nel tiro da fuori (m sull'acqua; di solito -0,22); v0.64: -0,14 → -0,16 (un campione a 1 cm)
 const SU=new THREE.Vector3(0,1,0), _qy=new THREE.Quaternion(), _qg2=new THREE.Quaternion(), PIEGA0={petto:0,bacino:0,gambe:0};
 const ROT_MODELLO=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),Math.PI/2);
 // gira l'osso in modo che punti (verso il figlio) nella direzione data, in coordinate del mondo

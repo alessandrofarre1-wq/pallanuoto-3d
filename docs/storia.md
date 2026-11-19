@@ -10,6 +10,26 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- v0.64 (Claude Code, 19/11/2026; rapporto `docs/versioni/v064-ritmo-attacco.md`). RICHIESTA: Ale, sui cinque punti di gioco:
+  qui i primi due (ritmo dell'attacco in parità; palle perse e falli in attacco). MISURE: sonda dei tiri, un tiro su sei in parità
+  era «da libero» subito dopo la ricezione a 11 s di media (la ripartenza toglieva la costruzione per 12 s e in ripartenza si
+  tirava sempre da libero); sonda delle azioni, 5,3 s per arrivare in attacco e 10,5 s di attacco, un'azione su tre chiusa prima
+  dei 10 s. CAMBIAMENTI: costruzione anche nella ripartenza alla pari e tiro subito sicuro solo nella controfuga con l'uomo in più
+  (`ia.js`); vantaggio del passaggio al centroboa che cresce dai 7 ai 15 s (`CENTRO_ATTESA`, `tiri.js`); nel pannello
+  `FINE_AZIONE`, `LOTTA_PALLA`, `RIGORI` (prima scritti nel codice). Sei giri di taratura (8 partite ciascuno); valori finali:
+  `COSTRUZIONE.secondi` 18, `FINE_AZIONE.secondi` 4,5, `PAZIENZA` [25, 2,5], `CIRCOLAZIONE` 0,32-0,5 / 0,4-0,7 / 0,55-0,9 s,
+  `INTERCETTO.base` 0,14, `LOTTA_PALLA` contro 0,45 e ruba 0,14, `CENTRO_SENZA_PALLA.contro` 0,12, `LOTTA_FASE` 0,1 e 12-26 s,
+  `ESPULSIONI` 9 e 0,21, `ARBITRI.palleggio` 0,28, `RIGORI` 0,45/0,25/0,5. NUMERI (8 partite ITA–HUN, per squadra, v0.63 →
+  v0.64; reale tra parentesi): tiri 43,6 → 35,3 (33), gol 15,3 → 12,9 (13,3), tiri in gol 35,0% → 36,5% (40%), espulsioni 11,6 →
+  11,4 (11), dalla lotta al centro 74,7% → 66,5% (66%), superiorità 43,0% → 40,1% (52%), rigori 2,2 → 1,6 (1,8), azioni 70,0 →
+  66,3 (50); parità: durata 14,4 → 15,4 s (21), tiro sbagliato 38,0% → 28,8% (32%), palla persa 11,7% → 16,3% (20%), fallo in
+  attacco 8,5% → 14,4% (15%), espulsione 20,1% → 20,6% (22%); palla in mano 1,07 → 1,01 s (0,6-1). A posto 11 voci su 15 (erano
+  6). DECISIONI SUPERATE: elenco in `docs/decisioni-superate.md`. VERIFICHE: lint PASS;
+  `npm run prove` 36 PASS su 36; `npm run verifica` sei partite (49 gol su 195 tiri), foto «azione» diversa per la partita
+  cambiata, controllata e riferimenti aggiornati; `npm run aspetto` 0 gambe fuori dopo il ritocco di `BACINO_TIRO` (−0,14 →
+  −0,16: un campione di coscia usciva di 1 cm), viste iPhone 56/141.794. NON FATTO: durata dell'azione e numero
+  di azioni ancora lontani (va ripensata la ripartenza, insieme al punto 5); superiorità sotto il 52% (punto 3).
+
 - v0.63 (Claude Code, 19/11/2026; rapporto `docs/versioni/v063-gesti.md`). RICHIESTA: Ale, sulla lista dei prossimi punti: «Io farei
   questo partendo dal punto 11» (gesti: 11 fogli a tre lati, 9 palla pescata dall'acqua, 10 esultanza più lunga nel replay).
   CAMBIAMENTI: (1) `npm run gesti-foglio` (`strumenti/gesti-foglio.mjs`): otto scene (passaggio verso sinistra, ricezione,

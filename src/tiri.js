@@ -10,7 +10,7 @@ import { faseUomo } from './uomo-in-piu.js';
 import { difensoreCentro, leggiCentro } from './centroboa.js';
 import { schemaSquadra, viciniPerimetro } from './schemi.js';
 import { velocitaDiLancio } from './palla.js';
-import { ERRORE_PASSAGGIO } from './taratura.js';      // numeri del bilanciamento
+import { CENTRO_ATTESA, ERRORE_PASSAGGIO } from './taratura.js';      // numeri del bilanciamento
 export { ERRORE_PASSAGGIO };
 import { paloCoperto } from './muro.js';
 import { P } from './fisica-palla/parametri.js';
@@ -113,6 +113,9 @@ export function shotKind(p){
   // colonnello e schizzo: solo in controfuga, con il tasto a comparsa (controfuga.js)
   return 'shot';
 }
+// v0.64 (taratura): in parità il vantaggio di dare la palla al centroboa cresce con i secondi d'azione (CENTRO_ATTESA)
+function attesaCentro(t,sup){ if(sup) return 1; const az=azioneAperta(); if(!az||az.t!==t||az.tipo!=='parita') return 1;
+  return clamp((game.time-az.t0-CENTRO_ATTESA.da)/(CENTRO_ATTESA.a-CENTRO_ATTESA.da),0,1); }
 export function bestPassTarget(p,variabile=true){
   let best=null,bs=-1e9; const sup=manUp(p.team),schema=schemaSquadra(p.team),gx=goalX(p.team),press=openness(p);
   for(const m of p.team.players){
@@ -134,7 +137,7 @@ export function bestPassTarget(p,variabile=true){
     }
     let s=Math.min(aperto,3)*1.2-dg*0.14-d*0.07-risk*6+(linea?0.8:-2.8);
     if(vicino) s+=schema.passaggi==='vicini'?2.4:schema.passaggi==='equilibrati'?1.7:1.25;
-    if(interno) s+=1.6+(schema.id==='boa'&&!sup?0.8:0);
+    if(interno) s+=(1.6+(schema.id==='boa'&&!sup?0.8:0))*attesaCentro(p.team,sup);
     // uomo in più: la fase in corso dello schema chiamato indica a chi dare la palla
     if(sup&&faseUomo(p.team)?.palla===m.i) s+=1.8;
     // Una ricezione che libera un tiro ravvicinato prevale sul semplice appoggio laterale.

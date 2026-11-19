@@ -3,6 +3,22 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.64
+- La ripartenza (fino a 12 s dopo ogni recupero) toglieva il freno della costruzione e chi riceveva libero entro 7 m tirava sempre
+  → la costruzione vale anche nella ripartenza alla pari; il tiro subito dopo la ricezione è sicuro solo nella controfuga con l'uomo
+  in più.
+- Palla al centroboa con lo stesso vantaggio in tutta l'azione → in parità il vantaggio cresce dai 7 ai 15 s d'azione
+  (`CENTRO_ATTESA`).
+- Costruzione 15 s (v0.60) → 18 s; tiro di fine azione negli ultimi 6 s → 4,5 s; pazienza da 24 s → 25 s.
+- Palla in mano sul perimetro 0,55-0,95 s (v0.61, stile equilibrato) → 0,4-0,7 s.
+- Lotta al centro piena tra 10 e 24 s (v0.60) → tra 12 e 26 s; `ESPULSIONI.centro` 6,5 → 9, contrasto 0,24 → 0,21; espulsione per
+  il fallo su chi palleggia 0,35 → 0,28.
+- Falli in attacco del centroboa: con la palla 0,14 → 0,45, senza palla 0,05 → 0,12; palle rubate al centroboa 0,08 → 0,14;
+  intercetto 0,12 → 0,14.
+- Rigore per un fallo grave su chi sta per segnare: 0,6 da dietro e 0,35 negli altri casi → 0,45 e 0,25 (fallo voluto 0,6 → 0,5).
+- Bacino disegnato nel tiro da fuori fino a 14 cm sotto il pelo (v0.61) → 16 cm (con le azioni nuove un campione di coscia usciva
+  di 1 cm).
+
 ## v0.63
 - Replay del gol di 7 s (0,6 s di diretta + 5,2 s di replay + 1,2 s di ripresa, v0.48) → 7,6 s (1,2 s di diretta + 5,2 + 1,2); dopo
   la rete si registrano 1,15 s (prima 0,56) e il primo piano di chi esulta occupa il 38% del replay (prima il 30%).

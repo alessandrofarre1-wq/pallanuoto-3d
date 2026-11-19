@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.63). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.64). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -96,7 +96,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   per chi marca; dritto a gioco fermo); in nuotata corpo orizzontale appena sotto la superficie con onda «a serpente».
 - Alzata in 0,25 s, distensione poco di più, transizioni sempre continue; controllo preciso con una piccola inerzia; il corpo si
   piega nelle curve (testa e spalle guidano, bacino e gambe seguono); bicicletta da fermi; braccia morbide, mai «a cavalletta».
-- Corpi e palla non si compenetrano; gambe mai fuori dall'acqua (bacino disegnato al massimo 22 cm sotto il pelo, 14 nel tiro da
+- Corpi e palla non si compenetrano; gambe mai fuori dall'acqua (bacino disegnato al massimo 22 cm sotto il pelo, 16 nel tiro da
   fuori). Stanchezza al massimo −18% di velocità, con la palla −7%.
 ### Gesti: tiro, passaggio, finta, portiere
 - Tiro (tesi Patumi): 20-25 m/s al rilascio, frusta 166-189 ms, gomito 147-157°, il classico è il più preciso; nel tiro da fuori
@@ -113,8 +113,10 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 - Portiere: segue il passaggio, para in base a posizione, Riflessi, stanchezza, sorpresa e muro; para meno dopo un cambio di lato,
   in superiorità, dopo una finta o su tiri vicini; mentre l'avversario carica sale a braccia larghe (solo disegno).
 ### Attacco del computer
-- Circolazione: palla in mano 0,55-0,95 s sul perimetro (`CIRCOLAZIONE`); costruzione di 15 s prima di cercare il tiro da libero;
-  tiro subito dopo una ricezione libera deciso una volta (circa 1 su 3 in parità); pazienza fino a fine azione.
+- Circolazione: palla in mano 0,4-0,7 s sul perimetro (`CIRCOLAZIONE`); costruzione di 18 s prima di cercare il tiro da libero,
+  anche nella ripartenza alla pari (il tiro subito dopo la ricezione è sicuro solo nella controfuga con l'uomo in più); palla al
+  centroboa dopo la costruzione (vantaggio che cresce dai 7 ai 15 s, `CENTRO_ATTESA`); tiro subito dopo una ricezione libera
+  deciso una volta (circa 1 su 3 in parità); pazienza fino a fine azione (tiro di fine azione negli ultimi 4,5 s, `FINE_AZIONE`).
 - La squadra sale per corsie, scaglionata per ruolo: nessuno va tutto sulla palla (richiesta di Ale).
 - Ripartenza dopo ogni recupero: compagni che scattano ai posti, aperture del portiere («base» e «apertura2»); controfuga
   organizzata in corsie.
@@ -154,29 +156,29 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   bacheca e premiazione.
 
 ## Numeri: gioco contro realtà
-8 partite ITA–HUN, per squadra, v0.63 (identiche alla v0.61: da allora sono cambiati solo disegno e documenti). Riferimenti:
-Mondiali 2025, Mondiali 2009, Euro League, video della finale olimpica. La tabella completa (15 voci, con lo stato e i numeri da
-guardare) la stampa `npm run taratura`.
+8 partite ITA–HUN, per squadra, v0.64. Riferimenti: Mondiali 2025, Mondiali 2009, Euro League, video della finale olimpica. La
+tabella completa (15 voci, con lo stato e i numeri da guardare) la stampa `npm run taratura`.
 
 | | gioco | reale |
 |---|---|---|
-| tiri | 43,6 | 33 |
-| gol | 15,3 | 13,3 |
-| tiri in gol | 35,0% | 40% |
-| espulsioni | 11,6 | 11 (66% dal centroboa) |
-| superiorità trasformate | 43,0% | 52% |
-| rigori | 2,2 | 1,8 |
-| azioni a partita | 70 | circa 50 |
-| azione in parità: durata | 14,4 s | circa 21 s (con 30 s di possesso) |
-| azione in parità: tiro sbagliato | 38,0% | circa 32% |
-| azione in parità: palla persa | 11,7% | circa 20% |
-| azione in parità: fallo in attacco | 8,5% | circa 15% |
-| palla in mano prima del passaggio | 1,07 s | 0,6-1 s (finale olimpica) |
+| tiri | 35,3 | 33 |
+| gol | 12,9 | 13,3 |
+| tiri in gol | 36,5% | 40% |
+| espulsioni | 11,4 | 11 (66% dal centroboa; in gioco 66,5%) |
+| superiorità trasformate | 40,1% | 52% |
+| rigori | 1,6 | 1,8 |
+| azioni a partita | 66 | circa 50 |
+| azione in parità: durata | 15,4 s | circa 21 s (con 30 s di possesso) |
+| azione in parità: tiro sbagliato | 28,8% | circa 32% |
+| azione in parità: palla persa | 16,3% | circa 20% |
+| azione in parità: fallo in attacco | 14,4% | circa 15% |
+| palla in mano prima del passaggio | 1,01 s | 0,6-1 s (finale olimpica) |
 
 ## Cosa resta da fare
-- Gioco: azioni ancora corte e troppi tiri (va ripensato il ritmo dell'attacco schierato); palle perse basse; superiorità sotto il
-  52%; gol da entrata quasi zero; il computer scatta molto e si stanca; difesa adattata agli schemi dell'uomo in più; aiuto al
-  posto per i difensori comandati con l'uomo in meno; 7 contro 6 chiamabile dal giocatore.
+- Gioco: azioni ancora corte (15 s invece di 21, 66 invece di 50): va ripensata la ripartenza, dove tutti scattano subito ai
+  posti (insieme al computer che scatta molto e si stanca); superiorità sotto il 52%; gol da entrata quasi zero; difesa
+  adattata agli schemi dell'uomo in più; aiuto al posto per i difensori comandati con l'uomo in meno; 7 contro 6 chiamabile dal
+  giocatore.
 - Gesti: giudizio di Ale sui fogli della v0.63 (passaggio di lato, ricezione, pesca della palla, esultanza); muro e parata a
   braccio del tutto teso; corpo in nuotata con la palla forse troppo inclinato (da confrontare con un video).
 - Riordino: prove con nomi per argomento (oggi si chiamano con la versione in cui sono nate); semplificare `aiCarrier`.

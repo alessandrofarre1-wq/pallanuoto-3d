@@ -11,8 +11,8 @@ import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } fr
 import { paloCoperto } from './muro.js';
 import { QTE, aiControfuga, occasioneControfuga, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, laneClear, openness, shotKind, situazioneTiro, startAct } from './tiri.js';
-import { CIRCOLAZIONE, COSTRUZIONE, PAZIENZA, RIPARTENZA, SUPERIORITA, TIRO_LIBERATO } from './taratura.js';      // numeri del bilanciamento
-export { CIRCOLAZIONE, COSTRUZIONE, PAZIENZA, RIPARTENZA, SUPERIORITA, TIRO_LIBERATO };
+import { CIRCOLAZIONE, COSTRUZIONE, FINE_AZIONE, PAZIENZA, RIPARTENZA, SUPERIORITA, TIRO_LIBERATO } from './taratura.js';      // numeri del bilanciamento
+export { CIRCOLAZIONE, COSTRUZIONE, FINE_AZIONE, PAZIENZA, RIPARTENZA, SUPERIORITA, TIRO_LIBERATO };
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 // l'uomo che marca p: di regola quello del ruolo (MARK); dopo un CAMBIO DI MARCATURA su un'entrata («time switching», Nitzkowski e
 // manuale USA Water Polo) i due difensori si scambiano gli uomini per qualche secondo
@@ -648,7 +648,8 @@ export function aiShoot(p,power,lob){
 export function aiPass(p,m){ startAct(p,'pass',0.08,()=>doPass(p,m),[m.x,m.z]); }
 // COSTRUZIONE dell'azione in parità (v0.56), CIRCOLAZIONE sul perimetro (v0.61) e TIRO_LIBERATO dopo la ricezione (v0.59):
 // numeri e motivi in taratura.js
-function inCostruzione(t){ const az=azioneAperta(); return !!az&&az.t===t&&az.tipo==='parita'&&!manUp(t)&&!contropiede(t)&&game.time-az.t0<COSTRUZIONE.secondi&&game.shot>8; }
+// v0.64: la costruzione vale anche nella ripartenza alla pari (prima la ripartenza la toglieva per 12 s e in parità si tirava a 11 s)
+function inCostruzione(t){ const az=azioneAperta(); return !!az&&az.t===t&&az.tipo==='parita'&&!manUp(t)&&game.time-az.t0<COSTRUZIONE.secondi&&game.shot>8; }
 export function aiCarrier(p,dt){
   const t=p.team, gx=goalX(t);
   if(p.isGK && !setteControSei(t)){
@@ -677,7 +678,9 @@ export function aiCarrier(p,dt){
   const dopoCambioSup=manUp(t)&&p.ricevutoCambio&&game.time-(p.ricevutoT||-9)<SUPERIORITA.dopoCambio&&tempoSup>SUPERIORITA.cambioDa;
   const supPronta=!manUp(t)||tempoSup>SUPERIORITA.pronta||dopoCambioSup;
   const costr=inCostruzione(t);
-  if(p.provaLiberato!==p.ricevutoT){ p.provaLiberato=p.ricevutoT; p.vuoleLiberato=rnd()<(manUp(t)?TIRO_LIBERATO.superiorita:contropiede(t)?1:TIRO_LIBERATO.parita); }
+  // v0.64: il tiro subito dopo la ricezione è sicuro solo nella controfuga vera (con l'uomo in più); nella ripartenza alla pari si
+  // decide come in parità
+  if(p.provaLiberato!==p.ricevutoT){ p.provaLiberato=p.ricevutoT; p.vuoleLiberato=rnd()<(manUp(t)?TIRO_LIBERATO.superiorita:contropiede(t)&&azioneAperta()?.tipo==='controfuga'?1:TIRO_LIBERATO.parita); }
   if(p.vuoleLiberato&&supPronta&&!costr&&(p.alVolo||paloUomo(p))&&ball.holdTime<0.15&&(manUp(t)||p.ricevutoDopoFinta||p.ricevutoCambio)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
     const sit=situazioneTiro(p),gk=other(t).players[0],aim=-Math.sign(gk.z||1);
     p.alVolo=false;
@@ -752,13 +755,13 @@ export function aiCarrier(p,dt){
     // si tira quando si è liberi: subito dopo un passaggio che ha liberato il tiratore o cambiato lato; con il difensore davanti
     // a braccio alto e tutti piazzati si aspetta, si finta o si fa girare palla (il tiro arriva comunque a fine azione)
     const sit=situazioneTiro(p), occasione=(sit.liberato?1.7:1)*(sit.dopoCambio?1.6:1)*(1-0.75*sit.marcato)*(sit.daFermo?0.6:1);
-    const want = game.shot<2.5 ? 0.9 : (game.shot<6 ? 0.35 : (lane?0.2+0.36*(1-dGoal/8.5):0.1)*(press>1.5?1.35:press<0.9?0.6:1)*pazienza)*angolo*clamp(occasione,0.12,2.2);
+    const want = game.shot<FINE_AZIONE.ultimi ? FINE_AZIONE.ultima : (game.shot<FINE_AZIONE.secondi ? FINE_AZIONE.voglia : (lane?0.2+0.36*(1-dGoal/8.5):0.1)*(press>1.5?1.35:press<0.9?0.6:1)*pazienza)*angolo*clamp(occasione,0.12,2.2);
     if(rnd()<want){
       // v0.55 (Ale: «si finta molto e poi si tira, oppure si finta e si scarica»): finte più frequenti, fino a tre;
       // dopo la finta, quasi una volta su due la palla va al compagno che si è liberato (aiCarrier, «finta e scarico»)
       { const f=fintaDi(p);
         if((p.fakeCount||0)<f.max && game.shot>5 && rnd()<(p.fakeCount?0.4:0.5)){ p.fakeUsed=true; p.shootNext=true; p.scaricoDopoFinta=rnd()<f.scarico; pausaFinta(p,f); startAct(p,'fake',f.wind*(0.8+rnd()*0.4),()=>doFake(p)); return; } }
-      const lob = dGoal>5 && rnd()<0.12; p.motivoTiro=game.shot<6?'fine azione':manUp(t)?'superiorita':davanti===0?'nessuno davanti':libero?'libero':'pazienza'; aiShoot(p,0.55+rnd()*0.45,lob); return;
+      const lob = dGoal>5 && rnd()<0.12; p.motivoTiro=game.shot<FINE_AZIONE.secondi?'fine azione':manUp(t)?'superiorita':davanti===0?'nessuno davanti':libero?'libero':'pazienza'; aiShoot(p,0.55+rnd()*0.45,lob); return;
     }
   }
   if(game.shot<2 && dGoal<13 && !ft){ p.motivoTiro='sirena'; aiShoot(p,0.9,false); return; }

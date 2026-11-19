@@ -14,20 +14,25 @@
 // ---------- ATTACCO DEL COMPUTER (ia.js) ----------
 // CIRCOLAZIONE: secondi di palla in mano sul perimetro prima di passare, [minimo, variazione casuale], per ritmo della squadra
 // («rapidi», «equilibrati», «vicini») e in superiorità. Reale 0,6-1 s (finale olimpica Parigi 2024, video di Ale).
-// v0.61: prima 0,55+0,5 / 0,8+0,4 / 1,1+0,7 / 1,3+0,9.
-export const CIRCOLAZIONE={ superiorita:[0.4,0.35], rapidi:[0.4,0.25], equilibrati:[0.55,0.4], vicini:[0.7,0.45] };
+// v0.61: prima 0,55+0,5 / 0,8+0,4 / 1,1+0,7 / 1,3+0,9. v0.64: rapidi 0,4+0,25 → 0,32+0,18, equilibrati 0,55+0,4 → 0,4+0,3,
+// vicini 0,7+0,45 → 0,55+0,35 (palla in mano prima del passaggio 1,07 → 1,01 s).
+export const CIRCOLAZIONE={ superiorita:[0.4,0.35], rapidi:[0.32,0.18], equilibrati:[0.4,0.3], vicini:[0.55,0.35] };
 // COSTRUZIONE (v0.56): nelle partite vere un'azione in parità dura circa 21 s (Mondiali 2009) e se ne giocano circa 50 a partita
 // (Euro League). Nei primi COSTRUZIONE.secondi di un'azione in parità non si tira al volo e il tiro «da libero» si cerca meno
 // (COSTRUZIONE.libero) oltre COSTRUZIONE.vicino metri dalla porta; restano il tiro senza difensori davanti e quello vicinissimo.
-// v0.59: 7 → 11 s; v0.60: 11 → 15 s (circa 5,5 s di transizione + 9,5 s di attacco schierato).
-export const COSTRUZIONE={ secondi:15, libero:0.3, vicino:4.5 };
+// v0.59: 7 → 11 s; v0.60: 11 → 15 s (circa 5,5 s di transizione + 9,5 s di attacco schierato); v0.64: 15 → 18 s, e vale anche
+// nella ripartenza alla pari (prima la ripartenza la toglieva per 12 s: tiri «da libero» a 11 s di media).
+export const COSTRUZIONE={ secondi:18, libero:0.3, vicino:4.5 };
 // TIRO SUBITO DOPO LA RICEZIONE (v0.59): si decide una volta per ricezione; in parità si tira subito in TIRO_LIBERATO.parita casi,
 // altrimenti si continua a far girare palla; in superiorità TIRO_LIBERATO.superiorita; quick = quota delle superiorità in cui si
 // cerca il tiro nei primi 3 s. v0.60: parità 0,4 → 0,3, superiorità 0,85 → 1.
 export const TIRO_LIBERATO={ parita:0.3, superiorita:1, quick:0.3 };
 // PAZIENZA in parità: secondi di possesso (su 28) prima di cominciare a cercare il tiro anche senza occasioni, e secondi per
-// arrivare alla piena voglia di tirare.
-export const PAZIENZA=[24,3];
+// arrivare alla piena voglia di tirare. v0.64: [24, 3] → [25, 2,5].
+export const PAZIENZA=[25,2.5];
+// FINE_AZIONE (v0.64, prima scritti in ia.js): negli ultimi «secondi» del possesso si tira con probabilità «voglia» a ogni decisione,
+// negli ultimi «ultimi» secondi con probabilità «ultima» (qualunque sia l'occasione). v0.64: secondi 6 → 4,5.
+export const FINE_AZIONE={ secondi:4.5, voglia:0.35, ultimi:2.5, ultima:0.9 };
 // SUPERIORITÀ del computer (v0.58): pronta = secondi prima di cercare il tiro; dopoCambio = per quanti secondi dopo un passaggio
 // che ha cambiato lato si tira subito (da cambioDa secondi in poi); libero = da quando si tira se davvero liberi; attesa/rampa = la
 // voglia di tirare cresce da «attesa» ad «attesa + rampa» secondi. Reale: 52% di superiorità trasformate (Mondiali 2025).
@@ -37,11 +42,14 @@ export const SUPERIORITA={ pronta:9, dopoCambio:1.6, cambioDa:3, libero:8, attes
 // questa distanza dal posto non si scatta più; transizione = finché la palla è oltre questi metri dalla porta avversaria i
 // compagni vanno dritti ai loro posti d'attacco scattando (fuori dalla controfuga organizzata).
 export const RIPARTENZA={ d3:7.0, arrivato:2.5, transizione:10 };
+// CENTRO_ATTESA (v0.64): in parità la palla entra al centroboa dopo la costruzione: il vantaggio di passarla al centro cresce da
+// «da» ad «a» secondi d'azione (prima c'era subito, e l'azione finiva presto con espulsione, girata o fallo).
+export const CENTRO_ATTESA={ da:7, a:15 };
 
 // ---------- PASSAGGI, INTERCETTI E PALLE PERSE (fisica.js, tiri.js) ----------
 // INTERCETTO: probabilità che un difensore sulla linea legga il passaggio (base, più «lungo» per i passaggi che volano a lungo).
-// Reale: palla persa in circa il 20% delle azioni in parità (Mondiali 2009). v0.60: 0,09/0,3 → 0,12/0,36.
-export const INTERCETTO={ base:0.12, lungo:0.36 };
+// Reale: palla persa in circa il 20% delle azioni in parità (Mondiali 2009). v0.60: 0,09/0,3 → 0,12/0,36; v0.64: base 0,12 → 0,14.
+export const INTERCETTO={ base:0.14, lungo:0.36 };
 // ERRORE_PASSAGGIO (v0.57, Ale: «sono aumentati a dismisura i passaggi sbagliati, anche semplici: qui c'è il meglio del meglio;
 // l'errore può capitare ma deve essere verosimile»): base 1,5 → 1,0, pressione 2,5 → 0,8, disteso 0,6 → 0,3; errore limitato a
 // «limite» deviazioni tipiche.
@@ -58,22 +66,32 @@ export const PARATA_SUP=0.3;
 // ---------- ARBITRO (regole.js, lotta.js, partita.js) ----------
 // ESPULSIONI (indicazione di Ale, 13/11/2026: circa il 70% dalla lotta tra centroboa e marcatore, il resto da falli tattici o
 // interventi irruenti): moltiplicatori della probabilità di espulsione nella lotta al centro e negli altri contrasti. Reale: circa
-// 11 espulsioni per squadra a partita, 66% dal centroboa (Mondiali 2025). v0.56: centro 7 → 5,6; v0.60: 5,6 → 6,5.
-export const ESPULSIONI={ centro:6.5, contrasto:0.24 };
+// 11 espulsioni per squadra a partita, 66% dal centroboa (Mondiali 2025). v0.56: centro 7 → 5,6; v0.60: 5,6 → 6,5; v0.64: centro
+// 6,5 → 9 (la lotta piena arriva ancora più tardi), contrasto 0,24 → 0,21.
+export const ESPULSIONI={ centro:9, contrasto:0.21 };
 // LOTTA_FASE (v0.56): nei primi secondi di un'azione in parità la squadra si sta schierando e il centroboa non ha preso posizione:
 // espulsioni e falli al centro partono da «minimo» e arrivano al pieno tra «da» e «a» secondi d'azione.
-// v0.59: 5-16 → 8-20 s; v0.60: 10-24 s (espulsioni procurate a 11,8 s di media).
-export const LOTTA_FASE={ minimo:0.15, da:10, a:24 };
+// v0.59: 5-16 → 8-20 s; v0.60: 10-24 s (espulsioni procurate a 11,8 s di media); v0.64: minimo 0,15 → 0,1, pieno tra 12 e 26 s.
+export const LOTTA_FASE={ minimo:0.1, da:12, a:26 };
 // CENTRO_SENZA_PALLA (v0.45): lotta al centro mentre il centroboa non ha la palla, probabilità al secondo: espulsione = trattenere
 // o affondare chi non ha palla; inArrivo = affondarlo mentre il passaggio gli arriva; fallo = fallo semplice (tiro libero);
-// contro = spinta all'indietro del centroboa (fallo in attacco).
-export const CENTRO_SENZA_PALLA={ espulsione:0.07, inArrivo:0.9, fallo:0.18, contro:0.05 };
+// contro = spinta all'indietro del centroboa (fallo in attacco). v0.64: contro 0,05 → 0,12 (falli in attacco 8,5% → 14%, reale 15%).
+export const CENTRO_SENZA_PALLA={ espulsione:0.07, inArrivo:0.9, fallo:0.18, contro:0.12 };
+// LOTTA_PALLA (v0.64, prima scritti in lotta.js): lotta al centro con la palla al centroboa, probabilità al secondo (per la fase
+// della lotta e l'aggressività del difensore): espulsione + vantaggio × lettura della posizione; fallo semplice; contro + spinta ×
+// svantaggio = fallo in attacco del centroboa; ruba + spinta × svantaggio = palla rubata dal difensore. v0.64: contro 0,14 → 0,45,
+// ruba 0,08 → 0,14.
+export const LOTTA_PALLA={ espulsione:0.42, vantaggio:0.5, fallo:0.5, contro:0.45, controSpinta:0.3, ruba:0.14, rubaSpinta:0.25 };
 // ARBITRI (v0.45, manuale arbitri FINA 2019-21 adattato al regolamento World Aquatics 2026): palleggio = probabilità di espulsione
-// per il fallo su chi palleggia; interferenza = per chi resta entro 1 m da chi batte il tiro libero.
-export const ARBITRI={ palleggio:0.35, interferenza:0.45 };
+// per il fallo su chi palleggia; interferenza = per chi resta entro 1 m da chi batte il tiro libero. v0.64: palleggio 0,35 → 0,28.
+export const ARBITRI={ palleggio:0.28, interferenza:0.45 };
 // ANTICIPO BATTUTO al centroboa (v0.55, Ale: «se la palla dovesse passare e arrivare davanti al centroboa sarebbe rigore»): entro
 // «distanza» metri dalla porta rigore in ANTICIPO.rigore casi, poi espulsione in ANTICIPO.espulsione casi, altrimenti palla libera.
 export const ANTICIPO={ rigore:0.45, espulsione:0.35, distanza:5 };
+// RIGORI (v0.64, prima scritti in regole.js): probabilità di rigore per un fallo grave su chi sta per segnare entro i 6 m (dietro =
+// fallo da dietro, altri = di lato o davanti, voluto = fallo voluto). Reale: 1,8 rigori per squadra a partita (Mondiali 2025).
+// v0.64: 0,6/0,35/0,6 → 0,45/0,25/0,5 (con l'attacco più paziente i falli vicino alla porta erano saliti a 3,7 rigori a partita).
+export const RIGORI={ dietro:0.45, altri:0.25, voluto:0.5 };
 // CONTR_AI: contrasto del computer (sezione 2): ritmo = tentativi al secondo, insiste = moltiplicatore dopo un tocco recente,
 // fallo + indisciplina × (1 − Disciplina) = probabilità di arrivare al terzo tocco ravvicinato, che è fallo.
 export const CONTR_AI={ ritmo:1.5, insiste:2.0, fallo:0.2, indisciplina:0.4 };
@@ -108,19 +126,19 @@ export const PANCHINA = { recupero: 0.025, stanco: 0.42, fresco: 0.7, controllo:
 // centro Ale indica circa il 70%.
 // (/*#__PURE__*/: il gioco non la usa, così non finisce nel pacchetto che si scarica sull'iPhone)
 export const REALE=/*#__PURE__*/Object.freeze([
-  { voce:'tiri', dato:'tiri', reale:33, banda:[29,37], fonte:'Mondiali 2025', numeri:['COSTRUZIONE','TIRO_LIBERATO','PAZIENZA','SUPERIORITA'] },
+  { voce:'tiri', dato:'tiri', reale:33, banda:[29,37], fonte:'Mondiali 2025', numeri:['COSTRUZIONE','TIRO_LIBERATO','FINE_AZIONE','PAZIENZA','SUPERIORITA'] },
   { voce:'gol', dato:'gol', reale:13.3, banda:[11,15.5], fonte:'Mondiali 2025', numeri:['PARATA_SUP','TIRO_LIBERATO','COSTRUZIONE'] },
   { voce:'tiri in gol', dato:'conversione', unita:'%', reale:40, banda:[36,44], fonte:'Mondiali 2025', numeri:['COSTRUZIONE','PARATA_SUP','TIRO_LIBERATO'] },
   { voce:'espulsioni', dato:'espulsioni', reale:11, banda:[9.5,12.5], fonte:'Mondiali 2025', numeri:['ESPULSIONI','LOTTA_FASE','CENTRO_SENZA_PALLA','CONTR_AI'] },
   { voce:'espulsioni dalla lotta al centro', dato:'espCentro', unita:'%', reale:66, banda:[60,75], fonte:'Mondiali 2025', numeri:['ESPULSIONI','LOTTA_FASE','CENTRO_SENZA_PALLA'] },
   { voce:'superiorità trasformate', dato:'superioritaTrasformate', unita:'%', reale:52, banda:[45,58], fonte:'Mondiali 2025', numeri:['SUPERIORITA','PARATA_SUP','TIRO_LIBERATO'] },
-  { voce:'rigori', dato:'rigori', reale:1.8, banda:[1,2.5], fonte:'Mondiali 2025', numeri:['ANTICIPO','CENTRO_SENZA_PALLA','ESPULSIONI'] },
-  { voce:'azioni a partita', dato:'azioniTotali', reale:50, banda:[45,56], fonte:'Euro League', numeri:['COSTRUZIONE','PAZIENZA','LOTTA_FASE'] },
-  { voce:'parità: durata dell\'azione', dato:'azioni.parita.durata', unita:'s', reale:21, banda:[18,24], fonte:'Mondiali 2009', numeri:['COSTRUZIONE','PAZIENZA','LOTTA_FASE','CIRCOLAZIONE'] },
+  { voce:'rigori', dato:'rigori', reale:1.8, banda:[1,2.5], fonte:'Mondiali 2025', numeri:['RIGORI','ANTICIPO'] },
+  { voce:'azioni a partita', dato:'azioniTotali', reale:50, banda:[45,56], fonte:'Euro League', numeri:['FINE_AZIONE','CENTRO_ATTESA','LOTTA_FASE','RIPARTENZA'] },
+  { voce:'parità: durata dell\'azione', dato:'azioni.parita.durata', unita:'s', reale:21, banda:[18,24], fonte:'Mondiali 2009', numeri:['FINE_AZIONE','CENTRO_ATTESA','LOTTA_FASE','RIPARTENZA'] },
   { voce:'parità: gol', dato:'azioni.parita.gol', unita:'%', reale:[6,19], banda:[6,19], fonte:'Mondiali 2009', numeri:['COSTRUZIONE','TIRO_LIBERATO'] },
   { voce:'parità: tiro sbagliato', dato:'azioni.parita.tiro', unita:'%', reale:32, banda:[27,37], fonte:'Mondiali 2009', numeri:['COSTRUZIONE','TIRO_LIBERATO','PAZIENZA'] },
-  { voce:'parità: palla persa', dato:'azioni.parita.persa', unita:'%', reale:20, banda:[15,25], fonte:'Mondiali 2009', numeri:['INTERCETTO','ERRORE_PASSAGGIO','PRESA'] },
-  { voce:'parità: fallo in attacco', dato:'azioni.parita.falloAttacco', unita:'%', reale:15, banda:[10,20], fonte:'Mondiali 2009', numeri:['CENTRO_SENZA_PALLA','LOTTA_FASE'] },
+  { voce:'parità: palla persa', dato:'azioni.parita.persa', unita:'%', reale:20, banda:[15,25], fonte:'Mondiali 2009', numeri:['INTERCETTO','LOTTA_PALLA','ERRORE_PASSAGGIO'] },
+  { voce:'parità: fallo in attacco', dato:'azioni.parita.falloAttacco', unita:'%', reale:15, banda:[10,20], fonte:'Mondiali 2009', numeri:['LOTTA_PALLA','CENTRO_SENZA_PALLA','LOTTA_FASE'] },
   { voce:'parità: espulsione procurata', dato:'azioni.parita.espulsione', unita:'%', reale:22, banda:[17,27], fonte:'Mondiali 2009', numeri:['ESPULSIONI','LOTTA_FASE','CENTRO_SENZA_PALLA'] },
   { voce:'palla in mano prima del passaggio', dato:'manoPassaggio', unita:'s', reale:[0.6,1], banda:[0.6,1], fonte:'finale olimpica Parigi 2024 (video di Ale)', numeri:['CIRCOLAZIONE'] },
 ]);

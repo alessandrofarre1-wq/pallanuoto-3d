@@ -11,8 +11,8 @@ import { ball, ctrl, fight, game, goalX, other } from './stato.js';
 import { bestPassTarget } from './tiri.js';
 import { avviaGirata, leggiCentro } from './centroboa.js';
 import { azioneAperta, chiudiAzione } from './statistiche.js';
-import { CENTRO_SENZA_PALLA, LOTTA_FASE } from './taratura.js';      // numeri del bilanciamento
-export { CENTRO_SENZA_PALLA, LOTTA_FASE };
+import { CENTRO_SENZA_PALLA, LOTTA_FASE, LOTTA_PALLA } from './taratura.js';      // numeri del bilanciamento
+export { CENTRO_SENZA_PALLA, LOTTA_FASE, LOTTA_PALLA };
 export const boaDef = t => other(t).players.find(q=>MARK[q.i]===1);
 export function fightOn(a,b){ return fight.active && ((fight.boa===a&&fight.def===b)||(fight.boa===b&&fight.def===a)); }
 export function updateFight(dt){
@@ -77,7 +77,7 @@ export function boaHold(b,d,dt){
   const ag=aggressivita(d);
   // Restano i contatti del duello; un semplice cambio di postura non assegna rigori.
   const sev=Math.pow(ARBITRO,1.5);
-  const fl=faseLotta(b.team), rE=Math.max(0.12,0.42+0.5*v)*ESPULSIONI.centro*ag*(1.5-(d.s.dis-40)/59)*sev*fl, rF=0.5*ag*fl, rO=(0.14+0.3*Math.max(0,-v))*fl, rS=(0.08+0.25*Math.max(0,-v))*(d===ctrl&&d.aggrT>game.time?1.5:1);
+  const L=LOTTA_PALLA, fl=faseLotta(b.team), rE=Math.max(0.12,L.espulsione+L.vantaggio*v)*ESPULSIONI.centro*ag*(1.5-(d.s.dis-40)/59)*sev*fl, rF=L.fallo*ag*fl, rO=(L.contro+L.controSpinta*Math.max(0,-v))*fl, rS=(L.ruba+L.rubaSpinta*Math.max(0,-v))*(d===ctrl&&d.aggrT>game.time?1.5:1);
   if(fight.holdT>0.35&&dist(b,d)<1.15){
     const r=rnd();
     if(r<rE*dt){
