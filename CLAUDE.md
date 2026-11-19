@@ -33,9 +33,11 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 - **Numeri**: quelli del bilanciamento stanno in `src/taratura.js` con il valore reale accanto (`npm run taratura` stampa gioco
   contro realtà); quelli della palla in `src/fisica-palla/parametri.js` con la fonte. Effetti d'acqua solo da `evento(...)` in
   `grafica/acqua-eventi.js` (con i `LIMITI`); ogni materiale che va in acqua passa da `sottAcqua()`.
-- **Misurare prima di correggere**: `npm run bilancio` (`--partite=8 --squadre=ITA,HUN`, anche `--dist=` e `--porta=` per girare in
-  sottofondo), `npm run taratura`, sonde in `strumenti/` (`sonda-tiri`, `sonda-azioni`, `misura-azione-v053`, `sonda-passaggi`,
-  `sonda-ripartenza`, `foglio-tiro-v061`). Tra due giri da 8 partite c'è qualche punto di variazione.
+- **Misurare prima di correggere**: `npm run taratura` (8 partite ITA–HUN tre alla volta, gioco contro realtà; `--salva=` e
+  `--confronta=` per il prima e dopo), `npm run bilancio` (`--partite=8 --squadre=ITA,HUN --paralleli=3`, anche `--dist=` e
+  `--porta=` per girare in sottofondo), sonde in `strumenti/` (`sonda-tiri`, `sonda-azioni`, `misura-azione-v053`, `sonda-passaggi`,
+  `sonda-ripartenza`, `foglio-tiro-v061`). Tra due giri da 8 partite c'è qualche punto di variazione. Per i movimenti
+  `npm run primi-piani` (primi piani e sequenze), `npm run gesti` e i fogli in `strumenti/` (`finte-foglio`, `lotta-foglio`).
 - **Prove nel browser** (Playwright, Chromium senza scheda grafica): il `requestAnimationFrame` è finto, quindi ogni
   `waitForFunction` vuole `{timeout:60000,polling:100}`; con il tempo finto la cattura della pagina può bloccarsi: le foto si
   prendono dalla tela (`__ridisegna()` + `toDataURL`); un gol in una scena fa partire il replay che congela il gioco
@@ -108,22 +110,28 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 ### Attacco del computer
 - Circolazione: palla in mano 0,55-0,95 s sul perimetro (`CIRCOLAZIONE`); costruzione di 15 s prima di cercare il tiro da libero;
   tiro subito dopo una ricezione libera deciso una volta (circa 1 su 3 in parità); pazienza fino a fine azione.
+- La squadra sale per corsie, scaglionata per ruolo: nessuno va tutto sulla palla (richiesta di Ale).
 - Ripartenza dopo ogni recupero: compagni che scattano ai posti, aperture del portiere («base» e «apertura2»); controfuga
   organizzata in corsie.
 - Superiorità: schemi a fasi (libreria di 10, il giocatore ne sceglie 3; il computer usa i tre di partenza e «Uscita del 6»),
   «quick» in 3 superiorità su 10, tiro al volo dopo il cambio di lato.
 ### Difesa
-- Pressing di base, zona e zona a M che scelgono chi lasciare tirare, cambio di marcatura, rientro difensivo, marcatura staccata
-  lontano dalla palla, scivolamento in verticale, intercetti che nascono dalla difesa.
+- A uomo il punto marca il centroboa (`MARK`); pressing di base, zona e zona a M che scelgono chi lasciare tirare, cambio di
+  marcatura, rientro difensivo, marcatura staccata lontano dalla palla, scivolamento in verticale, intercetti che nascono dalla
+  difesa.
 - Muro: braccio dalla parte del palo coperto in parità; con l'uomo in meno braccio a specchio del braccio di tiro e centrale tra i
   pali sul palo lungo; contro il 3-3 i due davanti ai pali stanno a metà tra il loro tiratore e il 6 e saltano su chi ha palla.
 ### Regole (World Aquatics 18 febbraio 2026; FIN 2026-27 non importato)
 - Campo 25 m, porta 3 × 0,90 m; linee 2, 5 e 6 m. Possesso 28 s, 18 s dopo espulsione, angolo, rigore senza cambio o rimbalzo
-  ripreso. Espulsione 18 s (rientro anticipato su gol o palla riconquistata), terzo fallo grave = fuori, cambi illimitati.
-- Rigore dai 5 m con gli altri sulla linea dei 6; tiro libero: dentro i 6 m si passa, fuori si può tirare subito; area di porta
-  (2 m, fino a 2 m oltre i pali). Fuori dal fondo: angolo se tocca per ultimo il portiere o se lancia la squadra che difende;
-  tiro murato da un difensore di movimento = rimessa del portiere. Nessun tempo per superare la metà campo; passare indietro e
-  al portiere è permesso; fallo per chi rinuncia apposta al possesso. Time-out 2 a squadra; rigori finali nei tornei.
+  ripreso dall'attacco; dopo un tiro respinto il cronometro resta fermo finché qualcuno riprende palla. Espulsione 18 s (rientro
+  anticipato su gol o palla riconquistata), terzo fallo grave = fuori per il resto della partita (entra un sostituto); cambi
+  illimitati.
+- Rigore dai 5 m con gli altri sulla linea dei 6 ad almeno 3 m dal tiratore; tiro libero: dentro i 6 m si passa, fuori si può
+  tirare subito; area di porta (2 m, fino a 2 m oltre i pali): attaccante dentro l'area davanti alla linea della palla = fallo.
+  Fuori dal fondo: angolo se tocca per ultimo il portiere o se lancia la squadra che difende; tiro murato da un difensore di
+  movimento = rimessa del portiere; fuori di lato = tiro libero agli avversari di chi ha toccato per ultimo. Nessun tempo per
+  superare la metà campo; passare indietro e al portiere è permesso; fallo per chi rinuncia apposta al possesso. Time-out 2 a
+  squadra, solo in possesso, ripresa da metà campo; rigori finali nei tornei.
 - Arbitro: circa 70% delle espulsioni dalla lotta al centro (cresce con l'azione), contrasto a tre livelli, sfondamento, vantaggio
   in controfuga, simulazione, interferenza sul tiro libero, anticipo battuto al centroboa (rigore o espulsione).
 - Espulso che nuota al pozzetto e rientra solo da lì; cambio dal pozzetto senza «cinque»; cambi volanti con il cinque, immediati
@@ -141,7 +149,8 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   bacheca e premiazione.
 
 ## Numeri: gioco contro realtà
-8 partite ITA–HUN, per squadra, v0.61 (tra parentesi il riferimento: Mondiali 2025, Mondiali 2009, Euro League).
+8 partite ITA–HUN, per squadra, v0.62 (identiche alla v0.61). Riferimenti: Mondiali 2025, Mondiali 2009, Euro League, video della
+finale olimpica. La tabella completa (15 voci, con lo stato e i numeri da guardare) la stampa `npm run taratura`.
 
 | | gioco | reale |
 |---|---|---|
@@ -153,8 +162,10 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 | rigori | 2,2 | 1,8 |
 | azioni a partita | 70 | circa 50 |
 | azione in parità: durata | 14,4 s | circa 21 s (con 30 s di possesso) |
+| azione in parità: tiro sbagliato | 38,0% | circa 32% |
 | azione in parità: palla persa | 11,7% | circa 20% |
-| palla in mano prima del passaggio | 1,1 s | 0,6-1 s (finale olimpica) |
+| azione in parità: fallo in attacco | 8,5% | circa 15% |
+| palla in mano prima del passaggio | 1,07 s | 0,6-1 s (finale olimpica) |
 
 ## Cosa resta da fare
 - Gioco: azioni ancora corte e troppi tiri (va ripensato il ritmo dell'attacco schierato); palle perse basse; superiorità sotto il

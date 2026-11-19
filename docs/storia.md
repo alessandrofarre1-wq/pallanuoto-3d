@@ -10,6 +10,36 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- v0.62 (Claude Code, 19/11/2026; rapporto `docs/versioni/v062-riordino.md`). RICHIESTA: Ale nella v0.60 («se pensi che il gioco
+  sia una cozzaglia di versioni forse è meglio che pensi a un modo per mettere ordine»), proposta in tre passi in
+  `docs/proposte/riordino.md`, Ale: «Procedi». Passi 1 e 2 e il comando `npm run prove` del passo 3 in una PR sola (un ramo solo:
+  due PR si sarebbero aspettate), con commit separati. CAMBIAMENTI: (1) `CLAUDE.md` da 213 KB a circa 17 KB, solo regole e
+  decisioni in vigore; questa storia (archivio intero fino alla v0.61 qui sotto); `docs/decisioni-superate.md`; `docs/` in
+  cartelle `versioni/`, `verifiche/`, `riferimenti/`, `proposte/` con indice `docs/README.md` e percorsi aggiornati nel codice e
+  nei dati. (2) `src/taratura.js`: 22 numeri del bilanciamento presi da `ia.js` (`CIRCOLAZIONE`, `COSTRUZIONE`, `TIRO_LIBERATO`,
+  `PAZIENZA`, `SUPERIORITA`, `RIPARTENZA`), `fisica.js` (`INTERCETTO`, `PRESA`, `PARATA_SUP`, `STANCO`, `CON_PALLA`,
+  `SPRINT_CONSUMO`), `tiri.js` (`ERRORE_PASSAGGIO`), `regole.js` (`ESPULSIONI`, `ARBITRI`, `ANTICIPO`), `lotta.js` (`LOTTA_FASE`,
+  `CENTRO_SENZA_PALLA`), `partita.js` (`CONTR_AI`), `finte.js` (`FIRMA`, `FINTA_LATO`), `panchina.js` (`PANCHINA`), con motivi e
+  valori di prima; i moduli li importano e li riesportano con lo stesso nome; `REALE` con 15 voci (valore vero, intervallo a
+  posto, fonte, numeri da guardare). (3) `npm run taratura` (`strumenti/taratura.mjs`): bilancio di 8 partite tre alla volta e
+  tabella gioco contro realtà, `--salva`, `--confronta`, `--da`, `--dettagli`. (4) `tests/bilancio.mjs`: `--paralleli=K`, nel
+  riassunto `azioniTotali` e `manoPassaggio`. (5) `npm run prove` (`tests/prove.mjs`): i passi «npm run» letti dal file della CI,
+  una build all'inizio, PASS/FAIL, tempi e riepilogo; la verifica a parte (`--con-verifica`). Nota per Codex in cima a
+  `docs/PASSAGGIO-CODEX.md`. GIOCO IDENTICO: 3 partite col caso bloccato con la build di main e con la nuova, riassunto uguale byte per
+  byte; `aspetto --confronta` «partita simulata identica», 0 pixel diversi sulle sei foto, viste iPhone 55/141.778; le 8 partite della
+  taratura danno gli stessi numeri del bilancio della v0.61. NUMERI (8 partite ITA–HUN, per squadra; reale tra parentesi): tiri 43,6
+  (33), gol 15,3 (13,3), tiri in gol 35,0% (40%), espulsioni 11,6 (11), dalla lotta al centro 74,7% (66%), superiorità
+  trasformate 43,0% (52%), rigori 2,2 (1,8), azioni 70,0 (50); parità: durata 14,4 s (21), gol 16,5% (6-19%), tiro sbagliato
+  38,0% (32%), palla persa 11,7% (20%), fallo in attacco 8,5% (15%), espulsione 20,1% (22%); palla in mano prima del passaggio
+  1,07 s (0,6-1). A posto 6 voci su 15. DECISIONI SUPERATE: memoria lunga con tutta la storia → memoria corta e storia a parte;
+  numeri sparsi in otto moduli → `src/taratura.js`; passi della CI a mano → `npm run prove` (elenco in
+  `docs/decisioni-superate.md`). VERIFICHE: lint PASS; `npm run prove` 36 PASS su 36 in 11,2 minuti;
+  `npm run verifica` sei partite arrivate alla fine, 54 gol su 211 tiri (come la v0.61), quattro immagini identiche e il menu diverso
+  solo per «v0.62» (riferimenti non aggiornati); `npm run aspetto` PASS (0 gambe fuori, viste iPhone 55/141.778); la tabella `REALE`
+  segnata «pura» non entra nel pacchetto del gioco, controlli rifatti sulla build finale (partite identiche, 315 pixel diversi solo
+  sui bordi animati del tabellone in una foto). NON FATTO: prove con nomi per argomento e `aiCarrier` più semplice
+  (dopo, come nella proposta); nessun numero ritoccato (la taratura vera è il prossimo lavoro).
+
 ## Archivio fino alla v0.61 (testo originale della memoria)
 
 ### Stato attuale (v0.61, novembre 2026)

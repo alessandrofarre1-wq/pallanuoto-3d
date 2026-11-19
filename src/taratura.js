@@ -103,17 +103,20 @@ export const PANCHINA = { recupero: 0.025, stanco: 0.42, fresco: 0.7, controllo:
 // voce = come la stampa `npm run taratura`; dato = dove sta nel riassunto di tests/bilancio.mjs (--salva); reale = riferimento
 // (un numero o un intervallo); banda = intervallo che consideriamo a posto; numeri = i numeri qui sopra che la spostano di più.
 // Fonti: Results Report dei Mondiali 2025 (World Aquatics, uomini); Lupo, Condello, Tessitore 2012 (Mondiali 2009); Lupo et al.
-// 2012 (Euro League); video di Ale della finale olimpica Parigi 2024 (v0.58-v0.61).
-export const REALE=Object.freeze([
+// 2012 (Euro League: circa 50 azioni, 37 in parità, 2 controfughe, 11 superiorità); video di Ale della finale olimpica Parigi 2024
+// (v0.58-v0.61). Le azioni dei Mondiali 2009 duravano circa 21 s con 30 s di possesso (oggi 28); per le espulsioni dalla lotta al
+// centro Ale indica circa il 70%.
+// (/*#__PURE__*/: il gioco non la usa, così non finisce nel pacchetto che si scarica sull'iPhone)
+export const REALE=/*#__PURE__*/Object.freeze([
   { voce:'tiri', dato:'tiri', reale:33, banda:[29,37], fonte:'Mondiali 2025', numeri:['COSTRUZIONE','TIRO_LIBERATO','PAZIENZA','SUPERIORITA'] },
   { voce:'gol', dato:'gol', reale:13.3, banda:[11,15.5], fonte:'Mondiali 2025', numeri:['PARATA_SUP','TIRO_LIBERATO','COSTRUZIONE'] },
   { voce:'tiri in gol', dato:'conversione', unita:'%', reale:40, banda:[36,44], fonte:'Mondiali 2025', numeri:['COSTRUZIONE','PARATA_SUP','TIRO_LIBERATO'] },
   { voce:'espulsioni', dato:'espulsioni', reale:11, banda:[9.5,12.5], fonte:'Mondiali 2025', numeri:['ESPULSIONI','LOTTA_FASE','CENTRO_SENZA_PALLA','CONTR_AI'] },
-  { voce:'espulsioni dalla lotta al centro', dato:'espCentro', unita:'%', reale:66, banda:[60,75], fonte:'Mondiali 2025 (Ale: circa 70%)', numeri:['ESPULSIONI','LOTTA_FASE','CENTRO_SENZA_PALLA'] },
+  { voce:'espulsioni dalla lotta al centro', dato:'espCentro', unita:'%', reale:66, banda:[60,75], fonte:'Mondiali 2025', numeri:['ESPULSIONI','LOTTA_FASE','CENTRO_SENZA_PALLA'] },
   { voce:'superiorità trasformate', dato:'superioritaTrasformate', unita:'%', reale:52, banda:[45,58], fonte:'Mondiali 2025', numeri:['SUPERIORITA','PARATA_SUP','TIRO_LIBERATO'] },
   { voce:'rigori', dato:'rigori', reale:1.8, banda:[1,2.5], fonte:'Mondiali 2025', numeri:['ANTICIPO','CENTRO_SENZA_PALLA','ESPULSIONI'] },
-  { voce:'azioni a partita', dato:'azioniTotali', reale:50, banda:[45,56], fonte:'Euro League: 37 in parità, 2 controfughe, 11 superiorità', numeri:['COSTRUZIONE','PAZIENZA','LOTTA_FASE'] },
-  { voce:'parità: durata dell\'azione', dato:'azioni.parita.durata', unita:'s', reale:21, banda:[18,24], fonte:'Mondiali 2009, con 30 s di possesso', numeri:['COSTRUZIONE','PAZIENZA','LOTTA_FASE','CIRCOLAZIONE'] },
+  { voce:'azioni a partita', dato:'azioniTotali', reale:50, banda:[45,56], fonte:'Euro League', numeri:['COSTRUZIONE','PAZIENZA','LOTTA_FASE'] },
+  { voce:'parità: durata dell\'azione', dato:'azioni.parita.durata', unita:'s', reale:21, banda:[18,24], fonte:'Mondiali 2009', numeri:['COSTRUZIONE','PAZIENZA','LOTTA_FASE','CIRCOLAZIONE'] },
   { voce:'parità: gol', dato:'azioni.parita.gol', unita:'%', reale:[6,19], banda:[6,19], fonte:'Mondiali 2009', numeri:['COSTRUZIONE','TIRO_LIBERATO'] },
   { voce:'parità: tiro sbagliato', dato:'azioni.parita.tiro', unita:'%', reale:32, banda:[27,37], fonte:'Mondiali 2009', numeri:['COSTRUZIONE','TIRO_LIBERATO','PAZIENZA'] },
   { voce:'parità: palla persa', dato:'azioni.parita.persa', unita:'%', reale:20, banda:[15,25], fonte:'Mondiali 2009', numeri:['INTERCETTO','ERRORE_PASSAGGIO','PRESA'] },
