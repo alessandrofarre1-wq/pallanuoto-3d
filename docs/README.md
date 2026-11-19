@@ -12,5 +12,8 @@
 | `PASSAGGIO-CLAUDE-CODE.md`, `PASSAGGIO-CODEX.md` | Passaggi di consegne tra Claude Code e Codex. |
 | `immagini/`, `filmati/` | Fogli, foto e video prodotti dalle prove e dagli strumenti (molte prove scrivono qui: non spostare). |
 
+I numeri del bilanciamento, con accanto i valori delle partite vere, sono nel codice in `../src/taratura.js` (`npm run taratura`
+stampa gioco contro realtà).
+
 Regola per i nuovi documenti: il rapporto di una versione va in `versioni/vXXX-argomento.md`; una conoscenza da riusare va in
 `riferimenti/`; una proposta da approvare va in `proposte/`.

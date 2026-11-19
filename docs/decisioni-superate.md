@@ -3,6 +3,16 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.62
+- Memoria (`CLAUDE.md`, 213 KB) con tutta la storia di 61 versioni, decisioni superate comprese → memoria corta con le sole regole
+  e decisioni in vigore; la storia in `docs/storia.md`, le decisioni cambiate qui.
+- Tutti i documenti allo stesso livello in `docs/` → cartelle `versioni/`, `verifiche/`, `riferimenti/`, `proposte/`.
+- Numeri del bilanciamento sparsi in otto moduli (`ia.js`, `fisica.js`, `lotta.js`, `regole.js`, `tiri.js`, `partita.js`,
+  `finte.js`, `panchina.js`) → tutti in `src/taratura.js` con accanto i riferimenti reali (`npm run taratura`); il gioco è identico.
+- Passi della CI lanciati a mano uno per uno → `npm run prove` (stessi passi, letti dal file della CI, con il riepilogo).
+- Palla in mano prima del passaggio misurata solo con la sonda della v0.53 (ogni volta che la palla lascia la mano) → anche nel
+  bilancio, solo sui passaggi dei giocatori di movimento a gioco in corso.
+
 ## v0.61
 - Replay: camera ferma durante ricezione e volo, sempre con lo stesso orientamento, e solo un avvicinamento dopo la rete (v0.48) →
   camera che gira di circa 35° attorno all'azione e scende, poi taglio con lampo su un primo piano a pelo d'acqua di chi esulta.

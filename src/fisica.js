@@ -11,9 +11,8 @@ import { active, allPlayers, ball, fight, game, goalX, other, ownGoalX, teams } 
 import { diSchiena, shotKind } from './tiri.js';
 import { FIRMA, FINTA_LATO, fintaLatoAttiva } from './finte.js';
 import { difensoreCentro, leggiCentro, passoGirata } from './centroboa.js';
-export const INTERCETTO={ base:0.12, lungo:0.36 };      // probabilità che chi è sulla linea legga il passaggio (v0.60, prima 0,09/0,3)
-export const PARATA_SUP=0.3;      // in superiorità il portiere para meno: la difesa in 5 lascia più spazio (v0.60: 0,2 → 0,3, superiorità trasformate 32-40% contro 52% dei Mondiali)
-export const STANCO=0.82, CON_PALLA=0.93, SPRINT_CONSUMO=0.0098;   // v0.54: consumo +6,5% per restare «visibilmente stanchi» dopo 7 vasche
+import { CON_PALLA, INTERCETTO, PARATA_SUP, PRESA, SPRINT_CONSUMO, STANCO } from './taratura.js';      // numeri del bilanciamento
+export { CON_PALLA, INTERCETTO, PARATA_SUP, PRESA, SPRINT_CONSUMO, STANCO };
 export function movePlayer(p,dx,dz,sprint,dt){
   // La girata usa lo stesso movimento e gli stessi collisori del nuoto ordinario.
   const giroTarget=passoGirata(p);
@@ -200,8 +199,7 @@ function lineaDiPorta(px){
   }
   return null;
 }
-// presa del passaggio: distanza orizzontale massima dal corpo (braccio teso verso la palla) e altezza massima della palla
-export const PRESA={ raggio:0.55, portiere:0.9, alto:1.5 };      // v0.57: 0,5 → 0,55; il portiere arriva più lontano (due mani, tuffo)
+// presa del passaggio: distanza massima dal corpo e altezza massima della palla (PRESA in taratura.js)
 function distSegmento(x,z,ax,az,bx,bz){ const dx=bx-ax, dz=bz-az, L2=dx*dx+dz*dz; const u=L2>1e-9?clamp(((x-ax)*dx+(z-az)*dz)/L2,0,1):0; return Math.hypot(x-ax-u*dx,z-az-u*dz); }
 // finta e portiere: dritta = para un quarto in meno (come prima); di lato (v0.59) = para molto meno sul lato opposto, un po' di più
 // sullo stesso lato

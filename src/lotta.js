@@ -11,6 +11,8 @@ import { ball, ctrl, fight, game, goalX, other } from './stato.js';
 import { bestPassTarget } from './tiri.js';
 import { avviaGirata, leggiCentro } from './centroboa.js';
 import { azioneAperta, chiudiAzione } from './statistiche.js';
+import { CENTRO_SENZA_PALLA, LOTTA_FASE } from './taratura.js';      // numeri del bilanciamento
+export { CENTRO_SENZA_PALLA, LOTTA_FASE };
 export const boaDef = t => other(t).players.find(q=>MARK[q.i]===1);
 export function fightOn(a,b){ return fight.active && ((fight.boa===a&&fight.def===b)||(fight.boa===b&&fight.def===a)); }
 export function updateFight(dt){
@@ -44,13 +46,9 @@ const aggressivita=d=>d===ctrl ? (d.aggrT>game.time?1.6:0.35) : (d.team.defPlay=
 // 10 espulsioni o rigori procurati in parità sono del centroboa). Trattenere, affondare o tirare indietro chi NON ha la palla è
 // espulsione; affondarlo mentre la palla gli sta arrivando è sempre espulsione; un fallo semplice è possibile quando non c'è
 // minaccia immediata; la spinta all'indietro del centroboa è fallo in attacco (contro-fallo).
-// LA LOTTA CRESCE CON L'AZIONE (v0.56, taratura): nel gioco le espulsioni procurate in parità arrivavano dopo 10,6 s, i falli in
-// attacco dopo 13 s e le azioni erano 80 a squadra contro circa 50 (Euro League). Nei primi secondi la squadra in attacco si sta
-// ancora schierando e il centroboa non ha preso posizione: espulsioni e falli al centro partono a LOTTA_FASE.minimo e crescono
-// fino al pieno tra LOTTA_FASE.da e LOTTA_FASE.a secondi dall'inizio dell'azione (solo in parità)
-export const LOTTA_FASE={ minimo:0.15, da:10, a:24 };   // v0.59: 5-16 → 8-20 s; v0.60: 10-24 s (espulsioni procurate a 11,8 s di media)
+// LA LOTTA CRESCE CON L'AZIONE (v0.56): nei primi secondi di un'azione in parità la squadra si sta schierando, espulsioni e falli
+// al centro crescono fino al pieno (LOTTA_FASE in taratura.js)
 function faseLotta(t){ const az=azioneAperta(); if(!az||az.t!==t||az.tipo!=='parita') return 1; const e=game.time-az.t0; return clamp(LOTTA_FASE.minimo+(1-LOTTA_FASE.minimo)*(e-LOTTA_FASE.da)/(LOTTA_FASE.a-LOTTA_FASE.da),LOTTA_FASE.minimo,1); }
-export const CENTRO_SENZA_PALLA={ espulsione:0.07, inArrivo:0.9, fallo:0.18, contro:0.05 };
 function lottaSenzaPalla(b,d,lettura,dt){
   const h=ball.holder, inArrivo=ball.state==='flight'&&ball.kind==='pass'&&ball.target===b;
   if(!(inArrivo||(h&&h.team===b.team&&h!==b))||dist(b,d)>1.15||game.state!=='play') return;

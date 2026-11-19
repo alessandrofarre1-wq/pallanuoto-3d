@@ -10,6 +10,8 @@ import { faseUomo } from './uomo-in-piu.js';
 import { difensoreCentro, leggiCentro } from './centroboa.js';
 import { schemaSquadra, viciniPerimetro } from './schemi.js';
 import { velocitaDiLancio } from './palla.js';
+import { ERRORE_PASSAGGIO } from './taratura.js';      // numeri del bilanciamento
+export { ERRORE_PASSAGGIO };
 import { paloCoperto } from './muro.js';
 import { P } from './fisica-palla/parametri.js';
 import { allPlayers, ball, game, goalX, other, setCtrl, teams } from './stato.js';
@@ -165,9 +167,7 @@ export function humanPassTarget(p,ix,iz){
   }
   return best||portiere||bestPassTarget(p,false);
 }
-// v0.57 (Ale: «sono aumentati a dismisura i passaggi sbagliati, anche semplici: qui c'è il meglio del meglio; l'errore può
-// capitare ma deve essere verosimile»): base 1,5 → 1,0, pressione 2,5 → 0,8, disteso 0,6 → 0,3; errore limitato a 2 deviazioni
-export const ERRORE_PASSAGGIO={ base:1.0, pressione:0.8, disteso:0.3, limite:2 };
+// errore dei passaggi (v0.57, Ale: «l'errore può capitare ma deve essere verosimile»): ERRORE_PASSAGGIO in taratura.js
 export const PASSAGGIO_ALTEZZA=0.95, BOA_PREFERITO=1.2, BOA_DAVANTI=0.55;
 export function doPass(p,m){
   if(!m) return;

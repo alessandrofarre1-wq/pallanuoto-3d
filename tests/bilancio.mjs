@@ -1,5 +1,6 @@
 // Bilanciamento: partite "computer contro computer" a durata vera (4 tempi da 8 minuti) e tabella dei numeri per squadra.
-// Uso: node tests/bilancio.mjs [--partite=20] [--squadre=ITA,HUN] [--tempo=480] [--no-build] [--salva=file.json]
+// Uso: node tests/bilancio.mjs [--partite=20] [--squadre=ITA,HUN] [--tempo=480] [--no-build] [--dist=cartella] [--porta=4175] [--paralleli=3] [--salva=file.json]
+// Il riassunto salvato con --salva è quello che legge `npm run taratura` (strumenti/taratura.mjs) per il confronto con la realtà.
 // Obiettivi (docs/riferimenti/tattica.md): 7-13 espulsioni per squadra, superiorità trasformate 30-60%, 1-2 rigori per squadra,
 // circa 40% dei tiri in gol, gol soprattutto dal perimetro e in superiorità.
 import { chromium } from 'playwright';
@@ -14,7 +15,11 @@ if (!process.argv.includes('--no-build') && !arg('dist', '')) await build({ root
 const server = await preview({ root: ROOT, logLevel: 'warn', build: arg('dist', '') ? { outDir: arg('dist', '') } : {}, preview: { port: +arg('porta', 4175), host: '127.0.0.1' } });
 const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 const errori = [], partite = [];
-for (let n = 1; n <= N; n++) {
+// --paralleli=K gioca K partite insieme (una pagina ciascuna, ognuna con il suo caso bloccato): risultati identici, solo più veloce
+const PARALLELI = Math.max(1, Math.min(N, +arg('paralleli', 1) || 1));
+let prossima = 1;
+async function giocatore() { for (let n = prossima++; n <= N; n = prossima++) await gioca(n); }
+async function gioca(n) {
   const pg = await browser.newPage();
   pg.on('console', m => { const t = m.text(); if (m.type() === 'error' && /Error/.test(t) && !/Failed to load resource/.test(t)) { const e = t.split('\n')[0]; if (!errori.includes(e)) { errori.push(e); console.log('  errore nel gioco:', t.slice(0, 300)); } } });
   pg.on('pageerror', e => { errori.push(e.message); console.log('  errore nella pagina:', e.message, (e.stack || '').split('\n').slice(1, 4).join(' ')); });
@@ -36,20 +41,28 @@ for (let n = 1; n <= N; n++) {
     document.getElementById('goBtn').click();
     // palla vagante: quanto resta ferma in acqua senza che nessuno ci vada (nessuno entro un metro e mezzo né in nuotata verso di lei)
     let f = 0, sola = 0, solaMax = 0, vag = 0, vagMax = 0; const B = H.ball;
+    // palla in mano prima del passaggio (v0.62): da quando un giocatore di movimento prende la palla a quando la passa, solo a gioco in corso
+    let tieneChi = null, tieneDa = 0, mano = 0, nMano = 0;
     for (; f < 60 * 60 * 90 && H.game.state !== 'over'; f++) {
       window.__step(1);
+      if (H.game.state !== 'play') tieneChi = null;
+      else if (B.holder !== tieneChi) {
+        if (tieneChi && !B.holder && B.kind === 'pass' && B.shooter === tieneChi && !tieneChi.isGK) { mano += H.game.time - tieneDa; nMano++; }
+        tieneChi = B.holder; tieneDa = H.game.time;
+      }
       if (H.game.state === 'play' && B.state === 'free') {
         vag++; if (vag > vagMax) vagMax = vag;
         const va = H.allPlayers.some(p => { if (p.excluded) return false; const dx = B.x - p.x, dz = B.z - p.z, d = Math.hypot(dx, dz), v = Math.hypot(p.vx, p.vz); return d < 1.5 || (v > 0.25 && (p.vx * dx + p.vz * dz) / (v * d) > 0.6); });
         sola = va ? 0 : sola + 1; if (sola > solaMax) solaMax = sola;
       } else { vag = 0; sola = 0; }
     }
-    return { finita: H.game.state === 'over', secondi: Math.round(f / 60), squadre: H.statistiche, pallaSola: solaMax / 60, pallaVagante: vagMax / 60 };
+    return { finita: H.game.state === 'over', secondi: Math.round(f / 60), squadre: H.statistiche, pallaSola: solaMax / 60, pallaVagante: vagMax / 60, mano, nMano };
   }, { durata: DURATA, sq: SQ, arb: ARB });
   await pg.close();
-  partite.push(r);
+  partite[n - 1] = r;
   console.log(`  partita ${n}: ${r.squadre.map(s => `${s.nome} ${s.gol}`).join(' - ')}${r.finita ? '' : '  (NON finita)'}`);
 }
+await Promise.all(Array.from({ length: PARALLELI }, giocatore));
 await browser.close(); await new Promise(r => server.httpServer.close(r));
 // medie per squadra a partita
 const tutte = partite.flatMap(p => p.squadre), M = k => tutte.reduce((s, x) => s + x[k], 0) / tutte.length, S = k => tutte.reduce((s, x) => s + x[k], 0);
@@ -74,6 +87,7 @@ console.log('  gol per tipo: ' + tipi.map(t => `${t} ${r1(sintesi.golTipo[t])}%`
   const ES = ['gol', 'tiro', 'persa', 'falloAttacco', 'espulsione', 'rigore', 'tempo'], NOMI = { gol: 'gol', tiro: 'tiro sbagliato', persa: 'palla persa', falloAttacco: 'fallo in attacco', espulsione: 'espulsione procurata', rigore: 'rigore', tempo: 'tempo scaduto' };
   sintesi.azioni = {};
   let totAz = 0; for (const tipo of ['parita', 'controfuga', 'superiorita']) totAz += tutte.reduce((s, x) => s + x.azioni[tipo].n, 0);
+  sintesi.azioniTotali = totAz / tutte.length;
   console.log(`  azioni per squadra a partita: ${r1(totAz / tutte.length)} (Euro League circa 50: 37 parità, 2 controfughe, 11 superiorità)`);
   for (const tipo of ['parita', 'controfuga', 'superiorita']) {
     const n = tutte.reduce((s, x) => s + x.azioni[tipo].n, 0), d = tutte.reduce((s, x) => s + x.azioni[tipo].durata, 0);
@@ -89,6 +103,8 @@ console.log('  gol per tipo: ' + tipi.map(t => `${t} ${r1(sintesi.golTipo[t])}%`
 }
 if (errori.length) console.log('ERRORI nella pagina:\n  ' + [...new Set(errori)].slice(0, 10).join('\n  '));
 sintesi.pallaSola = Math.max(...partite.map(p => p.pallaSola)); sintesi.pallaVagante = Math.max(...partite.map(p => p.pallaVagante));
+sintesi.manoPassaggio = partite.reduce((s, p) => s + p.mano, 0) / Math.max(1, partite.reduce((s, p) => s + p.nMano, 0));
+console.log(`  palla in mano prima del passaggio ${sintesi.manoPassaggio.toFixed(2)} s (giocatori di movimento, a gioco in corso; finale olimpica 0,6-1 s)`);
 console.log(`  palla vagante: al massimo ${r1(sintesi.pallaSola)} s ferma senza che nessuno ci vada (limite 2 s) · al massimo ${r1(sintesi.pallaVagante)} s prima che qualcuno la prenda`);
 const salva = arg('salva', ''); if (salva) fs.writeFileSync(salva, JSON.stringify(sintesi, null, 1));
 process.exit(errori.length || partite.some(p => !p.finita) || sintesi.pallaSola > 2 ? 1 : 0);

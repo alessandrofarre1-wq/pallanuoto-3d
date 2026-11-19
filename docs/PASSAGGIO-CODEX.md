@@ -1,3 +1,8 @@
+> **Dalla v0.62 (riordino)**: la memoria `CLAUDE.md` contiene solo le regole e le decisioni in vigore; la storia completa è in
+> `docs/storia.md`, le decisioni cambiate in `docs/decisioni-superate.md`, l'indice in `docs/README.md`. I numeri del
+> bilanciamento stanno in `src/taratura.js` (i moduli li importano e li riesportano con lo stesso nome; `npm run taratura` per
+> gioco contro realtà) e `npm run prove` esegue in locale gli stessi passi della CI.
+
 > Passaggio più recente: [v0.50 sospesa, checkpoint per Claude Code](PASSAGGIO-CLAUDE-CODE.md). Il testo v0.49 sotto è storico; non usarlo per riprendere il lavoro corrente.
 
 # Passaggio corrente — WATERPOLO 7 v0.49

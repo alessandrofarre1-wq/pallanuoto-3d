@@ -11,6 +11,8 @@ import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } fr
 import { paloCoperto } from './muro.js';
 import { QTE, aiControfuga, occasioneControfuga, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, laneClear, openness, shotKind, situazioneTiro, startAct } from './tiri.js';
+import { CIRCOLAZIONE, COSTRUZIONE, PAZIENZA, RIPARTENZA, SUPERIORITA, TIRO_LIBERATO } from './taratura.js';      // numeri del bilanciamento
+export { CIRCOLAZIONE, COSTRUZIONE, PAZIENZA, RIPARTENZA, SUPERIORITA, TIRO_LIBERATO };
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 // l'uomo che marca p: di regola quello del ruolo (MARK); dopo un CAMBIO DI MARCATURA su un'entrata («time switching», Nitzkowski e
 // manuale USA Water Polo) i due difensori si scambiano gli uomini per qualche secondo
@@ -173,10 +175,7 @@ function paloTarget(p,f){
 // regole del vantaggio: palla pressata → i compagni si spostano dal lato della palla; palla libera → si impegna il difensore e ci
 // si allarga; difesa che non si impegna → si accelera. Senza vantaggio (transizione 6 contro 6) la struttura porta comunque
 // all'attacco schierato prima che la difesa sia pronta. Finisce quando la palla arriva ai 5,5 m o dopo CONTRO.durata secondi.
-// RIPARTENZA CON LA PALLA A UN GIOCATORE DI MOVIMENTO (v0.58): d3 = dove va il 3 (metri dalla porta avversaria); arrivato = sotto
-// questa distanza dal posto non si scatta più; transizione = finché la palla è oltre questa distanza dalla porta avversaria
-// i compagni vanno dritti ai loro posti d'attacco scattando (fuori dalla controfuga organizzata)
-export const RIPARTENZA={ d3:7.0, arrivato:2.5, transizione:10 };
+// RIPARTENZA con la palla a un giocatore di movimento (v0.58): numeri e motivi in taratura.js
 export const CONTRO={ durata:12, zLati:4.0, dPrima:2.25, dSeconda:5.2, zSeconda:2.3 };
 // STILE PER NAZIONALE (Canossa, Lupo et al. 2022, dopo le regole 2018): Italia, Serbia e Australia segnano fino al 33% dei gol in
 // gioco veloce, Spagna, Croazia e Ungheria il 15% o meno. Probabilità di lanciare la controfuga organizzata dopo il recupero.
@@ -311,10 +310,7 @@ export function attackTarget(p){
 // quando si salta su di lui; dentro = quanto la posizione di mezzo sta più vicina alla porta; versoTiratore/aiuto = quanto ci si
 // sposta dal punto di mezzo verso il proprio tiratore (palla vicina) o verso il 6 (palla dall'altra parte)
 export const TRE_TRE={ centro:1.6, daMin:4.2, daMax:7.5, latoMin:3.6, addosso:0.9, dentro:0.6, versoTiratore:0.35, aiuto:0.25 };
-// attacco del computer in superiorità (v0.58): pronta = secondi prima di cercare il tiro; dopoCambio = per quanti secondi dopo
-// aver ricevuto un passaggio che ha cambiato lato si tira subito (da cambioDa secondi in poi); libero = da quando si tira se davvero
-// liberi; attesa/rampa = la voglia di tirare cresce da attesa a attesa+rampa secondi (prima 5 → 9 s)
-export const SUPERIORITA={ pronta:9, dopoCambio:1.6, cambioDa:3, libero:8, attesa:8, rampa:4 };
+// attacco del computer in superiorità (v0.58): numeri SUPERIORITA in taratura.js
 export const INFERIORITA={ esterno:3.6, largo:3.4, spalle:1.0, stretto:2.3 };
 function postiInferiorita(t){
   if(t.postiT===game.time) return t.posti;
@@ -596,7 +592,6 @@ export function aiTarget(p){
   return {x:-t.dir*FORM[p.i][0]*0.8, z:KICK_Z[p.i]*t.dir, sprint:true};   // palla contesa: ci si ferma a metà campo
 }
 // ultimo minuto dell'ultimo tempo, sotto di un gol: la squadra del computer attacca in 7 contro 6 con il portiere avanzato
-const PAZIENZA=[24,3];      // secondi di possesso prima di cominciare a cercare il tiro, e secondi per arrivare alla piena voglia di tirare
 export function setteControSei(t){
   return !t.human && game.period===4 && game.clock<60 && other(t).score-t.score===1;
 }
@@ -651,15 +646,8 @@ export function aiShoot(p,power,lob){
   else startAct(p, kind, lob?0.1:0.12+rnd()*0.1, ()=>doShoot(p,power,lob,null));
 }
 export function aiPass(p,m){ startAct(p,'pass',0.08,()=>doPass(p,m),[m.x,m.z]); }
-// COSTRUZIONE (v0.56, taratura): nelle partite vere un'azione in parità dura circa 21 s (Mondiali 2009) e se ne giocano circa 50
-// a partita (Euro League); nel gioco duravano 12,8 s. Nei primi COSTRUZIONE.secondi di un'azione in parità non si tira al volo
-// e il tiro «da libero» si cerca meno (COSTRUZIONE.libero); restano il tiro con nessun difensore davanti e quello vicinissimo
-export const CIRCOLAZIONE={ superiorita:[0.4,0.35], rapidi:[0.4,0.25], equilibrati:[0.55,0.4], vicini:[0.7,0.45] };     // v0.61 (prima 0,55+0,5 / 0,8+0,4 / 1,1+0,7 / 1,3+0,9)
-export const COSTRUZIONE={ secondi:15, libero:0.3, vicino:4.5 };   // v0.60: 11 → 15 s (circa 5,5 s di transizione + 9,5 s di attacco schierato)
-// TIRO SUBITO DOPO LA RICEZIONE (v0.59, taratura): era quasi automatico a ogni ricezione libera e dava un tiro su quattro, a circa
-// 10 s d'azione. Ora si decide una volta per ricezione: in parità si tira subito in TIRO_LIBERATO.parita casi, altrimenti si
-// continua a far girare palla; in superiorità (già paziente) TIRO_LIBERATO.superiorita.
-export const TIRO_LIBERATO={ parita:0.3, superiorita:1, quick:0.3 };   // quick = superiorità in cui si cerca il tiro nei primi 3 s
+// COSTRUZIONE dell'azione in parità (v0.56), CIRCOLAZIONE sul perimetro (v0.61) e TIRO_LIBERATO dopo la ricezione (v0.59):
+// numeri e motivi in taratura.js
 function inCostruzione(t){ const az=azioneAperta(); return !!az&&az.t===t&&az.tipo==='parita'&&!manUp(t)&&!contropiede(t)&&game.time-az.t0<COSTRUZIONE.secondi&&game.shot>8; }
 export function aiCarrier(p,dt){
   const t=p.team, gx=goalX(t);

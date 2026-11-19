@@ -52,6 +52,8 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 ## Mappa del codice (`src/`)
 - Partita e regole: `partita.js` (ciclo di gioco), `regole.js` (falli, espulsioni, rigori, possesso, `giveBall`), `stato.js`,
   `costanti.js`, `statistiche.js` (contatori ed esiti delle azioni), `gioco-fermo.js`, `pozzetto.js`, `panchina.js`.
+- Numeri del bilanciamento: `taratura.js` (con i riferimenti reali; `ia.js`, `fisica.js`, `lotta.js`, `regole.js`, `tiri.js`,
+  `partita.js`, `finte.js` e `panchina.js` li importano e li riesportano con lo stesso nome).
 - Movimento e palla: `fisica.js` (nuoto, parata, muro, intercetto, presa, uscite), `palla.js` (Rapier), `fisica-palla/`.
 - Computer: `ia.js` (attacco `aiCarrier`, posti, marcature, difese, ripartenza), `lotta.js` (centroboa), `centroboa.js`,
   `tiri.js` (gesti, tiri, passaggi), `finte.js`, `muro.js`, `controfuga.js`, `uomo-in-piu.js` e `schemi.js`.
