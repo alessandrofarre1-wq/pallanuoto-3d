@@ -154,8 +154,9 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   bacheca e premiazione.
 
 ## Numeri: gioco contro realtà
-8 partite ITA–HUN, per squadra, v0.63 (identiche alla v0.61: da allora sono cambiati solo disegno e documenti). Riferimenti: Mondiali 2025, Mondiali 2009, Euro League, video della
-finale olimpica. La tabella completa (15 voci, con lo stato e i numeri da guardare) la stampa `npm run taratura`.
+8 partite ITA–HUN, per squadra, v0.63 (identiche alla v0.61: da allora sono cambiati solo disegno e documenti). Riferimenti:
+Mondiali 2025, Mondiali 2009, Euro League, video della finale olimpica. La tabella completa (15 voci, con lo stato e i numeri da
+guardare) la stampa `npm run taratura`.
 
 | | gioco | reale |
 |---|---|---|
