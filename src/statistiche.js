@@ -74,6 +74,7 @@ export function chiudiAzione(esito){
   ultimaChiusa={ a, r, esito, d:game.time-a.t0 };
 }
 export const annullaAzione=()=>{ azione=null; };
+export const ultimaAzioneChiusa=()=>ultimaChiusa;      // per le sonde (solo lettura)
 // a ogni fotogramma di gioco: apre l'azione se manca e riconosce la controfuga
 export function aggiornaAzione(dt=0){
   if(game.state!=='play'||!game.possTeam) return;
