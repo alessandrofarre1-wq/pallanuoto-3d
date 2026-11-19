@@ -27,7 +27,7 @@ Le coordinate del 4-2 esistente sono già coerenti: pali a 2,1 m e tiratori fuor
   - Checkpoint Codex: 24 scatti, tutti in nuotata, fino a 1,27 rad (73°) in un fotogramma; 2 fotogrammi all'indietro. Il limite di ±60° tagliava di colpo la direzione del corpo.
   - Dopo la correzione: 0 scatti, rotazione massima 0,267 rad per fotogramma come nella v0.49, 1 fotogramma all'indietro.
 
-  `fisica.js` ora porta il corpo dentro il settore di ±60° girando al massimo di 16 rad/s in tutto, la stessa velocità dei gesti, invece di tagliare. `docs/misure-nuoto-v050.json` riporta il nuovo hash di `fisica.js` e il riepilogo rifatto: 96 casi, 0 su 4.286 inversi, palla dietro 0 su 1.996.
+  `fisica.js` ora porta il corpo dentro il settore di ±60° girando al massimo di 16 rad/s in tutto, la stessa velocità dei gesti, invece di tagliare. `docs/verifiche/misure-nuoto-v050.json` riporta il nuovo hash di `fisica.js` e il riepilogo rifatto: 96 casi, 0 su 4.286 inversi, palla dietro 0 su 1.996.
 - **Prove sul codice finale**, tutte PASS:
   - lint e build;
   - replay, replay-ui, gesti, sezione1-6, strategie, uomo;
@@ -41,9 +41,9 @@ Le coordinate del 4-2 esistente sono già coerenti: pali a 2,1 m e tiratori fuor
   - Riferimenti aggiornati, poi `--partite=0` PASS con cinque immagini identiche.
 - **`npm run aspetto -- --no-build`**: PASS. Gambe fuori dall'acqua 0/4.058 in verticale, 0/8.070 in nuotata, 0/1.354 a metà. Viste iPhone 56 oggetti e 141.794 triangoli. I primi piani desktop restano a 154–155 mila triangoli, fuori dal budget specifico iPhone come nelle versioni precedenti.
 
-Stop reale: velocità max al fischio1.4→0 immediatamente; dopo.3s oriz1→0 e deltafase1.299112→0, asse verticale testa-bacino.698→.982. Dati `docs/misure-stop-v050.json`. Filmato prima/dopo `docs/filmati/v050-nuoto-e-fischio.mp4`,8s controllati con fisica e camera vere, acquisizione30fps senza IA; tavola `docs/immagini/v050-nuoto-e-fischio.jpg`. Non è una gara completa o misura FPS.
+Stop reale: velocità max al fischio1.4→0 immediatamente; dopo.3s oriz1→0 e deltafase1.299112→0, asse verticale testa-bacino.698→.982. Dati `docs/verifiche/misure-stop-v050.json`. Filmato prima/dopo `docs/filmati/v050-nuoto-e-fischio.mp4`,8s controllati con fisica e camera vere, acquisizione30fps senza IA; tavola `docs/immagini/v050-nuoto-e-fischio.jpg`. Non è una gara completa o misura FPS.
 
-- Nuoto dinamico: 96 casi, 30/60/120 Hz, D/S e due lati; 90°, 180°, rilascio con palla alle spalle, ricezione, colonnello opposto/avanti e inversione durante colonnello/schizzo. Ossa reali del GLB e palla confrontate con la velocità ad ogni campione, non soltanto dopo l'assestamento. Prima 100 campioni inversi su 4.366; dopo 0 su 4.286. Palla davanti durante crawl: 0 campioni dietro su 1.996. Dati `docs/misure-nuoto-v050.json` con provenienza prima/dopo.
+- Nuoto dinamico: 96 casi, 30/60/120 Hz, D/S e due lati; 90°, 180°, rilascio con palla alle spalle, ricezione, colonnello opposto/avanti e inversione durante colonnello/schizzo. Ossa reali del GLB e palla confrontate con la velocità ad ogni campione, non soltanto dopo l'assestamento. Prima 100 campioni inversi su 4.366; dopo 0 su 4.286. Palla davanti durante crawl: 0 campioni dietro su 1.996. Dati `docs/verifiche/misure-nuoto-v050.json` con provenienza prima/dopo.
 - Regressione nuoto v0.44: PASS, stop libero 0,19178 m / 0,33333 s, cambio a 90° 0,21667 s, ricezione→movimento 0,05 s; stamina e portieri conservati.
 
 ## Confronto Splash Land e limite del risultato

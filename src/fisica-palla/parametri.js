@@ -1,5 +1,5 @@
 // Parametri della fisica della palla, in un posto solo, con unità, fonte, intervallo e tipo.
-// Rapporto completo (fonti, modello, piano): docs/fisica-palla.md.
+// Rapporto completo (fonti, modello, piano): docs/riferimenti/fisica-palla.md.
 //
 // tipo:  'misurato'     = viene da una misura o da una regola ufficiale
 //        'derivato'     = calcolato da valori misurati

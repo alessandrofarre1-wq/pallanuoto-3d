@@ -7,7 +7,7 @@
 //    numero di calottina o dalla squadra in cui gioca) → tipo 'generated'. Pelle e colore dei capelli mancanti sono scelti con
 //    probabilità per nazionalità (decisione di Ale): sono una scelta per il disegno, NON un dato sul giocatore vero.
 // Stesso giocatore = stesso aspetto in ogni partita e sessione. Cambia solo se cambiano i dati o VERSIONE_ASPETTO.
-// Vedi docs/aspetto-giocatori.md.
+// Vedi docs/riferimenti/aspetto-giocatori.md.
 export const VERSIONE_ASPETTO = 1;
 export const MODELLO_BASE = 'pallanuotista-v2';
 

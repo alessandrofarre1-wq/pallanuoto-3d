@@ -1,5 +1,5 @@
 // Scena di prova della palla con l'acqua, separata dalla partita e senza browser (gira in Node con Rapier).
-// I 10 scenari del rapporto docs/fisica-palla.md: per ognuno stampa i numeri misurati accanto al riferimento
+// I 10 scenari del rapporto docs/riferimenti/fisica-palla.md: per ognuno stampa i numeri misurati accanto al riferimento
 // (de Mestre 2004, tesi Patumi) quando esiste, e disegna le traiettorie viste di lato in tests/screenshot/fisica-acqua.svg.
 //
 // Esce con errore solo per comportamenti impossibili: numeri non validi, palla che attraversa palo o traversa,

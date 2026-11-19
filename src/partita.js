@@ -15,7 +15,8 @@ import { doShoot, startAct, updateActs, updateRecuperi } from './tiri.js';
 import { aggiornaPanchina, obiettivoUscita } from './panchina.js';
 import { obiettivoEspulso, obiettivoRientro, recuperoPozzetto } from './pozzetto.js';
 import { aggiornaGiocoFermo } from './gioco-fermo.js';
-export const CONTR_AI={ ritmo:1.5, insiste:2.0, fallo:0.2, indisciplina:0.4 };      // contrasto del computer (sezione 2)
+import { CONTR_AI } from './taratura.js';      // contrasto del computer (sezione 2): numeri del bilanciamento
+export { CONTR_AI };
 export function aggiornaRigoriFinali(dt){
   const serie=game.rigoriFinali;
   if(serie.fase==='attesa'){

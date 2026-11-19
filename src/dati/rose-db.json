@@ -1,6 +1,6 @@
 {
  "fonte": "waterpolo_database di Ale, 13 novembre 2026 (World Aquatics, Microplus, Omega), per le 16 nazionali originali; rapporto ufficiale European Aquatics / Microplus del 9 gennaio 2026 per le 8 aggiunte europee.",
- "metodo": "16 rose originali: strumenti/rose-dal-database.mjs; docs/valutazioni.md. 8 aggiunte europee: dati-sorgente/europei-2026-aggiunte.json; statistiche stimate per squadra e ruolo, senza dati individuali di prestazione.",
+ "metodo": "16 rose originali: strumenti/rose-dal-database.mjs; docs/riferimenti/valutazioni.md. 8 aggiunte europee: dati-sorgente/europei-2026-aggiunte.json; statistiche stimate per squadra e ruolo, senza dati individuali di prestazione.",
  "rose": {
   "ESP": [
    {

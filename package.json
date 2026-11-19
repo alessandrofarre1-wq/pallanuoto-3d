@@ -1,13 +1,14 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.61.0",
+  "version": "0.62.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint src tests strumenti",
+    "prove": "node tests/prove.mjs",
     "verifica": "node tests/qualita.mjs && node tests/tornei.mjs && node tests/verifica.mjs --no-legacy",
     "verifica:legacy": "node tests/verifica.mjs",
     "occasioni": "node tests/occasioni.mjs",
@@ -36,6 +37,7 @@
     "mani": "node tests/mani.mjs",
     "dati-tesi": "node tests/dati-tesi.mjs",
     "bilancio": "node tests/bilancio.mjs",
+    "taratura": "node strumenti/taratura.mjs",
     "statistiche": "node tests/statistiche.mjs",
     "vetrina": "node tests/vetrina.mjs",
     "verifica:aggiorna": "node tests/verifica.mjs --no-legacy --aggiorna",

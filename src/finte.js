@@ -5,8 +5,10 @@
 //   torsione: quanto ruota il busto (negativo = da destra verso sinistra); pausa: attesa tra una finta e la mossa dopo (computer);
 //   max: quante finte di fila fa il computer; seguito: come la chiude di solito; scarico: quanto spesso il computer scarica dopo.
 // FIRMA (scelta di Ale: «piccolo vantaggio»): chiudere la finta con il suo seguito entro FIRMA.entro secondi spiazza un po' di più
-// portiere e difensori (sorpresa del tiro, oppure passaggio più difficile da intercettare).
+// portiere e difensori (sorpresa del tiro, oppure passaggio più difficile da intercettare). Numeri FIRMA e FINTA_LATO in taratura.js.
 import { game } from './stato.js';
+import { FINTA_LATO, FIRMA } from './taratura.js';      // numeri del bilanciamento
+export { FINTA_LATO, FIRMA };
 export const FINTE=Object.freeze({
   larga:  { alza:0.03, nome:'larga',      wind:0.20, vista:[-0.50,0.50,0.22], torsione:1.25, pausa:[0.5,0.8],  max:2, seguito:'shot',  scarico:0.3,
             descr:'lenta e larga, braccio teso, poi tiro forte' },
@@ -21,7 +23,6 @@ export const FINTE=Object.freeze({
   spalla: { alza:0, nome:'di spalla',  wind:0.06, vista:[0.02,0.40,0.12], torsione:0.75, pausa:[0.2,0.4],  max:2, seguito:'pass',  scarico:0.75,
             descr:'solo spalla e testa, poi scarico al compagno' },
 });
-export const FIRMA=Object.freeze({ entro:1.6, sorpresa:0.08, intercetto:0.7 });
 const v01=(s,k)=>Math.max(0,((s?.[k]??60)-40)/59);
 const hash=str=>{ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return ((h>>>0)%100000)/100000; };
 // pesi dalle statistiche: chi ha Potenza fa più spesso la larga o la bomba, chi ha Precisione il polso, chi è veloce la raffica,
@@ -44,6 +45,5 @@ export function firma(p,seguito){ return game.time-(p.ultimaFintaT??-9)<FIRMA.en
 // palo). Chi abbocca non resta fermo: sposta il braccio da quella parte (muro × lontano sul lato opposto, × vicino sullo stesso) e
 // il portiere si sposta davvero verso quel palo di «portiere» metri; per «durata» secondi para meno sul lato opposto (parataLontano)
 // e un po' di più sullo stesso (parataVicino). Il giocatore sceglie il lato con la levetta; senza levetta (e per il computer) i lati
-// si alternano, il primo a caso.
-export const FINTA_LATO={ durata:1.1, portiere:0.45, lontano:0.4, vicino:1.15, parataLontano:0.35, parataVicino:0.08, gesto:0.5 };
+// si alternano, il primo a caso. Numeri FINTA_LATO in taratura.js.
 export const fintaLatoAttiva=q=>q?.fintaLato&&game.time<q.fintaLato.fino?q.fintaLato.lato:0;

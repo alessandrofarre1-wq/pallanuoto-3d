@@ -13,7 +13,8 @@ import { makePlayerMesh } from './grafica/modello.js';
 import { valoriMotore } from './dati/rose.js';
 import { ball, ctrl, game, ownGoalX, setCtrl, teams } from './stato.js';
 import { puntoPozzetto } from './pozzetto.js';
-export const PANCHINA = { recupero: 0.025, stanco: 0.42, fresco: 0.7, controllo: 2, pausaComputer: 55, stancoComputer: 0.34, stancoPozzetto: 0.8, velBordo: 0.9, cinque: 0.5, distZona: 3.2 };
+import { PANCHINA } from './taratura.js';      // soglie e tempi dei cambi: numeri del bilanciamento
+export { PANCHINA };
 // punti della propria metà (lato lontano dalla telecamera): A = dietro la linea di porta, dove compare chi entra;
 // Z = zona dei cambi lungo il bordo
 export const puntoIngresso = t => ({ x: ownGoalX(t) - t.dir * 0.4, z: -HW + 0.35 });

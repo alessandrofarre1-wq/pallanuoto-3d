@@ -6,7 +6,7 @@ Stato: **solo analisi**. Nessuna riga del gioco è stata cambiata per questo rap
 ## 0. Come leggere questo rapporto e limiti della verifica
 
 - **[CODICE]** = verificato leggendo il codice (con file e funzione).
-- **[LOCALE]** = verificato sulla documentazione installata con il progetto (Rapier 0.21 in `node_modules`, Three.js 0.187) o sui documenti già raccolti nel repository (`docs/tattica.md`, `docs/tecnica.md`, dati della tesi Patumi in `CLAUDE.md`).
+- **[LOCALE]** = verificato sulla documentazione installata con il progetto (Rapier 0.21 in `node_modules`, Three.js 0.187) o sui documenti già raccolti nel repository (`docs/riferimenti/tattica.md`, `docs/riferimenti/tecnica.md`, dati della tesi Patumi in `CLAUDE.md`).
 - **[FONTE]** = verificato su una fonte esterna, letta il 13 novembre 2026 dopo che Ale ha autorizzato gli indirizzi nell'ambiente cloud (citata per esteso al §3).
 - **[DA VERIFICARE]** = fonte non leggibile: i due studi su PubMed (22212254 e 25369278) sono protetti da un controllo anti-robot che non va aggirato; servono gli abstract (o i PDF) da Ale. **Nessun valore di quegli studi è riportato qui come certo.**
 - **[PROPOSTA]** = cosa suggerisco di fare.
@@ -79,7 +79,7 @@ Stato: **solo analisi**. Nessuna riga del gioco è stata cambiata per questo rap
 - [FONTE] Studio PMC10142048 («Influence of Surface Structure on Ball Properties during a Professional Water Polo Game»), che riporta il regolamento FINA: palla maschile da **400–450 g**, circonferenza **0,68–0,71 m** (raggio 0,108–0,113 m), pressione **90–97 kPa** secondo lo studio, ma il regolamento World Aquatics 2025 (art. 20.4.3.3, verificato il 13/11/2026) dice **7,5–8,5 psi, cioè circa 52–59 kPa** (donne 6,5–7,5 psi): lo studio su questo punto è sbagliato; femminile 0,65–0,67 m. Lo studio misura l'energia superficiale di due palloni (32,16 e 36,48 mJ/m²), non coefficienti di attrito o rimbalzo: per quelli restano parametri da calibrare. Nel gioco: massa 0,43 kg conforme; raggio di collisione 0,12 m un po' più grande del regolamento (proposta B5: 0,11 m).
 - [FONTE] World Aquatics, Competition Regulations versione febbraio 2026 (aggiornata il 18.02.2026; letto l'estratto della Parte Sesta) e riepilogo WWPRA del 9 maggio 2025: confronto al §1.5.
 - [FONTE] Rapier (guida «Rigid bodies», rapier.rs): ogni corpo dinamico veloce viene già controllato contro i corpi FISSI (pali, traversa, rete) senza bisogno di attivare nulla; il CCD esplicito (`setCcdEnabled`, il «proiettile») serve contro i corpi CINEMATICI e dinamici, cioè i corpi dei giocatori, ed è più costoso. Nel gioco la palla lo ha attivo: corretto. Due corpi entrambi con CCD possono ancora attraversarsi. [LOCALE] soft CCD (`setSoftCcdPrediction`) per oggetti moderatamente veloci; restitution in [0,1] con regola di combinazione (`setRestitutionCombineRule`).
-- [LOCALE] Tattica e tecnica moderne (`docs/tattica.md`, `docs/tecnica.md`): più lotta ai 2 metri e gol dal perimetro con le regole attuali; tempi in verticale e in orizzontale; posizionamento del portiere con il passaggio.
+- [LOCALE] Tattica e tecnica moderne (`docs/riferimenti/tattica.md`, `docs/riferimenti/tecnica.md`): più lotta ai 2 metri e gol dal perimetro con le regole attuali; tempi in verticale e in orizzontale; posizionamento del portiere con il passaggio.
 
 ## 4. Affollamento davanti alla porta: cause
 
