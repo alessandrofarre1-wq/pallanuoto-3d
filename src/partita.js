@@ -15,8 +15,8 @@ import { doShoot, startAct, updateActs, updateRecuperi } from './tiri.js';
 import { aggiornaPanchina, obiettivoUscita } from './panchina.js';
 import { obiettivoEspulso, obiettivoRientro, recuperoPozzetto } from './pozzetto.js';
 import { aggiornaGiocoFermo } from './gioco-fermo.js';
-import { CONTR_AI } from './taratura.js';      // contrasto del computer (sezione 2): numeri del bilanciamento
-export { CONTR_AI };
+import { CONTR_AI, PRESSING_CONSUMO } from './taratura.js';      // contrasto del computer (sezione 2) e fatica del pressing: numeri del bilanciamento
+export { CONTR_AI, PRESSING_CONSUMO };
 export function aggiornaRigoriFinali(dt){
   const serie=game.rigoriFinali;
   if(serie.fase==='attesa'){
@@ -154,12 +154,14 @@ export function update(dt){
       if(d<1.8) p.scivolaAI=true; else if(d>2.8) p.scivolaAI=false;
       if(p.scivolaAI){ const k=Math.hypot(mx,mz); if(k>0.48){ mx*=0.48/k; mz*=0.48/k; } }
     } else p.scivolaAI=false;
-    const sprint = tg.gk ? false : ((tg.sprint && d>0.6) || (d>4 && p.stamina>0.35));
+    // v0.67: chi è lontano dal suo posto (oltre 4 m) scatta da solo, tranne nelle transizioni quando il posto dice «nuota» (SCATTI):
+    // prima la regola dei 4 m faceva scattare tutti in ripartenza e in rientro fino a stamina 0,35, la soglia dei cambi
+    const sprint = tg.gk ? false : ((tg.sprint && d>0.6) || (!tg.nuota && d>4 && p.stamina>0.35));
     if(tg.gk){ // spostamento laterale del portiere: di posizione (lento o svelto secondo Posizione) oppure in tuffo (Riflessi); stanco è più lento
       const fresco=0.75+0.25*p.stamina, sp=(tg.tuffo ? 1.6+2.2*rif01(p) : 1.1+1.3*pos01(p))*fresco; p.z+=clamp(tg.z-p.z,-sp*dt,sp*dt); mz=0;
     }
     movePlayer(p,mx,mz,sprint,dt);
-    if(p.team.defPlay===2 && game.possTeam===other(p.team) && !p.isGK) p.stamina=Math.max(0,p.stamina-dt*0.012);  // il pressing stanca
+    if(p.team.defPlay===2 && game.possTeam===other(p.team) && !p.isGK) p.stamina=Math.max(0,p.stamina-dt*PRESSING_CONSUMO);  // il pressing stanca (taratura.js)
     // pressing e contrasti dei difensori controllati dall'IA
     if(ball.holder && ball.holder.team!==p.team && !p.isGK && !ball.holder.isGK){
       if(fightOn(p,ball.holder)) continue;

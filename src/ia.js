@@ -11,8 +11,8 @@ import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } fr
 import { paloCoperto } from './muro.js';
 import { QTE, aiControfuga, occasioneControfuga, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, entrataPronta, laneClear, openness, shotKind, situazioneTiro, startAct } from './tiri.js';
-import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, PAZIENZA, RIPARTENZA, SUPERIORITA, TIRO_LIBERATO } from './taratura.js';      // numeri del bilanciamento
-export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, PAZIENZA, RIPARTENZA, SUPERIORITA, TIRO_LIBERATO };
+import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, PAZIENZA, RIPARTENZA, SCATTI, SUPERIORITA, TIRO_LIBERATO } from './taratura.js';      // numeri del bilanciamento
+export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, PAZIENZA, RIPARTENZA, SCATTI, SUPERIORITA, TIRO_LIBERATO };
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 // l'uomo che marca p: di regola quello del ruolo (MARK); dopo un CAMBIO DI MARCATURA su un'entrata («time switching», Nitzkowski e
 // manuale USA Water Polo) i due difensori si scambiano gli uomini per qualche secondo
@@ -192,6 +192,13 @@ export function contropiede(t){
   if(game.possTeam!==t||game.time>c.fino||manUp(t)||Math.abs(goalX(t)-ball.x)<5.5){ t.contro=null; return null; }
   return c;
 }
+// v0.67 (SCATTI): in ripartenza scatta solo chi può guadagnare un vantaggio: nessun difensore entro SCATTI.spazio metri, oppure
+// non più di SCATTI.ripartenza metri dietro al difensore più vicino (rispetto alla porta avversaria); gli altri nuotano senza scatto
+function scattoUtile(p){
+  const t=p.team, gx=goalX(t); let d=null, dd=99;
+  for(const o of other(t).players){ if(o.excluded||o.isGK) continue; const k=dist(o,p); if(k<dd){ dd=k; d=o; } }
+  return !d||dd>SCATTI.spazio||Math.abs(gx-p.x)<=Math.abs(gx-d.x)+SCATTI.ripartenza;
+}
 function pressato(h){ if(!h) return false; const gx=goalX(h.team), gd=Math.abs(gx-h.x);
   return other(h.team).players.some(q=>!q.excluded&&!q.isGK&&dist(q,h)<1.9&&Math.abs(gx-q.x)<gd+0.4); }
 // APERTURE DOPO IL RECUPERO (v0.54, indicazioni di Ale). Numeri di posizione come in schemi.js, guardando la porta avversaria:
@@ -235,8 +242,8 @@ function contropiedeTarget(p,c){
   if(c.schema&&!t.players.some(q=>q.excluded||q.uscendo)){
     const num=numeroPosizione(p.i); if(!num) return null;
     const ps=postoApertura(num,c.schema,ballD,h,t);
-    const sprint=!(ps.d>ballD&&Math.abs(gx-p.x)>ps.d-0.5)&&Math.hypot(gx-t.dir*ps.d-p.x,ps.z*t.dir-p.z)>RIPARTENZA.arrivato;      // chi deve stare dietro la palla non scatta
-    return { x:gx-t.dir*ps.d, z:clamp(ps.z*t.dir,-HW+0.5,HW-0.5), sprint };
+    const sprint=!(ps.d>ballD&&Math.abs(gx-p.x)>ps.d-0.5)&&Math.hypot(gx-t.dir*ps.d-p.x,ps.z*t.dir-p.z)>RIPARTENZA.arrivato&&scattoUtile(p);      // chi deve stare dietro la palla non scatta; v0.67: scatta solo chi può guadagnare un vantaggio
+    return { x:gx-t.dir*ps.d, z:clamp(ps.z*t.dir,-HW+0.5,HW-0.5), sprint, nuota:!sprint };      // nuota = niente scatto automatico da lontano (partita.js)
   }
   if(c.calcT!==game.time){
     c.calcT=game.time;
@@ -252,7 +259,9 @@ function contropiedeTarget(p,c){
       c.posti.set(q,{d:Math.max(CONTRO.dSeconda,ballD-1.5),z}); });
   }
   const ps=c.posti.get(p); if(!ps) return null;
-  return { x:gx-t.dir*ps.d, z:clamp(ps.z*t.dir,-HW+0.5,HW-0.5), sprint:true };
+  // v0.67: partono tutti subito, ma scatta solo chi può guadagnare un vantaggio (SCATTI); prima scattavano sempre tutti
+  const sc=scattoUtile(p);
+  return { x:gx-t.dir*ps.d, z:clamp(ps.z*t.dir,-HW+0.5,HW-0.5), sprint:sc, nuota:!sc };
 }
 // chi porta palla in controfuga: risale la sua corsia; 1 contro 0 verso il palo del braccio forte, palla in mano dentro i 5 metri,
 // poi scivolamento laterale verso l'altro palo dopo la finta al portiere (manuale USA: «1v0 counter attack»)
@@ -303,7 +312,11 @@ export function attackTarget(p){
   const x=gx-t.dir*f0,z=clamp(fz*t.dir+(sup?0:Math.sin(game.time*0.6+p.uid)*0.35),-HW+0.5,HW-0.5);
   const a=appoggio(p,x,z,sup),ax=x+(a?a.dx:0),az=z+(a?a.dz:0);
   if(sup) return { x:ax, z:az, sprint:Math.hypot(ax-p.x,az-p.z)>1.5 };
-  return { x:ax, z:az, sprint:(t.atkPlay===2&&(p.i===4||p.i===5))||game.time<(t.fugaFino||0)||(transizione&&Math.hypot(ax-p.x,az-p.z)>RIPARTENZA.arrivato) };
+  // v0.67: in transizione scatta solo chi non è ancora arrivato e può guadagnare un vantaggio (SCATTI); nell'«Incrocio» i due mezzi
+  // scattano solo finché non sono al loro posto (prima scattavano sempre)
+  const lontano=Math.hypot(ax-p.x,az-p.z)>RIPARTENZA.arrivato;
+  const corre=(t.atkPlay===2&&(p.i===4||p.i===5)&&lontano)||game.time<(t.fugaFino||0)||(transizione&&lontano&&scattoUtile(p));
+  return { x:ax, z:az, sprint:corre, nuota:transizione&&!corre };
 }
 // Difesa con l'uomo in meno. Posizione di partenza: tre difensori sulla linea dei 2 metri, ciascuno in mezzo tra due dei quattro
 // attaccanti; gli altri due davanti ai pali, a metà tra gli attaccanti ai 2 metri e quelli a 5. Ognuno prende il posto più vicino.
@@ -429,7 +442,10 @@ function rientro(p){
   let d=trans ? Math.min(RIENTRO_BASE[p.i]+1.2, Math.max(RIENTRO_BASE[p.i], ballD-2.2)) : Math.max(RIENTRO_BASE[p.i], Math.min(ballD-2.2, attD-0.8));
   if(scappato) d=Math.max(1.6,Math.min(d,attD-0.7));
   const z=clamp((a&&!a.excluded?a.z:p.z)*(scappato?0.85:trans?0.55:0.85),-6.5,6.5);
-  return { x:ogx+t.dir*d, z, sprint:myD>d+0.8 };
+  // v0.67: in rientro scatta solo chi deve coprire: il suo uomo è più vicino alla porta di lui o meno di SCATTI.rientro metri dietro
+  // (prima scattava chiunque fosse più di 0,8 m lontano dal suo posto, anche dall'altra metà campo)
+  const corre=myD>d+0.8&&(scappato||attD<myD+SCATTI.rientro);
+  return { x:ogx+t.dir*d, z, sprint:corre, nuota:trans&&!corre };
 }
 function aiutoDifensivo(p){
   const t=p.team;

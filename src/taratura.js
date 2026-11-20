@@ -46,6 +46,15 @@ export const SUPERIORITA={ pronta:7, dopoCambio:1.6, cambioDa:3, libero:8, attes
 // questa distanza dal posto non si scatta più; transizione = finché la palla è oltre questi metri dalla porta avversaria i
 // compagni vanno dritti ai loro posti d'attacco scattando (fuori dalla controfuga organizzata).
 export const RIPARTENZA={ d3:7.0, arrivato:2.5, transizione:10 };
+// SCATTI (v0.67, punto 5 di Ale: «il computer scatta troppo e si stanca»; `strumenti/sonda-scatti.mjs`): dopo ogni cambio di
+// possesso partono tutti subito (richiesta della v0.54), ma scatta solo chi serve (scelta di Ale, 20/11/2026). Prima i giocatori
+// di movimento scattavano per il 27% del tempo, due scatti su tre nelle transizioni (ripartenza e rientro), e passavano il 37% del
+// tempo sotto la soglia dei cambi: in partita.js chi aveva il posto a più di 4 m scattava comunque fino a stamina 0,35.
+// ripartenza = in ripartenza scatta chi non è più di questi metri dietro al difensore più vicino (rispetto alla porta avversaria) o
+// non ha nessun difensore entro «spazio» metri; gli altri nuotano senza scatto. rientro = in rientro scatta chi ha il suo uomo più
+// vicino alla propria porta di lui (o meno di questi metri dietro), o che gli è scappato.
+// Prove su 16 partite: −0,5 / 4 m: controfughe da 3,5 a 0,9 a partita (reale circa 2); 0 / 3 m: 1,5 a partita.
+export const SCATTI={ ripartenza:0, spazio:3, rientro:0 };
 // CENTRO_ATTESA (v0.64): in parità la palla entra al centroboa dopo la costruzione: il vantaggio di passarla al centro cresce da
 // «da» ad «a» secondi d'azione (prima c'era subito, e l'azione finiva presto con espulsione, girata o fallo).
 export const CENTRO_ATTESA={ da:7, a:15 };
@@ -126,6 +135,9 @@ export const FINTA_LATO={ durata:1.1, portiere:0.45, lontano:0.4, vicino:1.15, p
 // al secondo in sprint. v0.54: stanchezza −40% → −18%, con la palla −15% → −7%; consumo +6,5% per restare «visibilmente stanchi»
 // dopo 7 vasche.
 export const STANCO=0.82, CON_PALLA=0.93, SPRINT_CONSUMO=0.0098;
+// PRESSING_CONSUMO = fatica al secondo di chi difende a pressing (in più di scatti e contatti; partita.js, prima scritto nel codice).
+// v0.67: 0,012 → 0,008 (sonda degli scatti: anche con meno scatti i giocatori passavano un quarto del tempo sotto la soglia dei cambi).
+export const PRESSING_CONSUMO=0.008;
 // PANCHINA (v0.32): recupero = stamina recuperata al secondo in panchina; stanco/fresco = soglie del consiglio di cambio;
 // controllo = ogni quanti secondi il computer guarda la panchina; pausaComputer = secondi minimi tra due cambi del computer;
 // stancoComputer = sotto questa stamina il computer cambia; stancoPozzetto = soglia del cambio dal pozzetto; velBordo, cinque,
