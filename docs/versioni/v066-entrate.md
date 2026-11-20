@@ -101,6 +101,19 @@ altre voci tornano come nella v0.65.
 ricezioni a 3,7 m dalla porta, 5 gol su 9 tiri d'entrata.
 
 ## Verifiche
+- `npm run lint`: PASS.
+- `npm run prove`: **36 PASS, 0 FAIL** su 36 passi in 7,8 minuti.
+  - Con il sorteggio dell'entrata in ogni azione, `npm run inferiorita` falliva per 7 cm: il centrale dell'uomo in meno stava a
+    0,43 m dal centro invece di oltre 0,5 m.
+  - La stessa prova fallisce con lo stesso valore anche sulla v0.65 con un solo numero casuale in più: la scena è sensibile alla
+    sequenza del caso, non alle entrate.
+  - Con il sorteggio solo in parità passa.
+- `npm run verifica`: sei partite arrivate alla fine, 57 gol su 181 tiri (v0.65: 52 su 189).
+  - Le foto «azione» e le due iPhone sono diverse dai riferimenti (54%, 40% e 44% dei punti): il sorteggio dell'entrata nella prima
+    azione del computer cambia il seguito della partita.
+  - Le ho guardate: grafica e interfaccia normali, giocatori in altri posti. Riferimenti aggiornati con `--partite=0`.
+  - Verifica ripetuta: superata, cinque immagini identiche.
+- `npm run aspetto`: «Tutto a posto», 0 gambe fuori dall'acqua, viste iPhone 59 oggetti e 142.480 triangoli, 58 e 142.224.
 
 ## Non fatto
 - **Il blocco non riesce mai**: il compagno che dovrebbe bloccare il difensore di chi entra non arriva mai a meno di 0,75 m (0%

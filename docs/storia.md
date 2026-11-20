@@ -30,7 +30,9 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
   → 15,0% (15%), espulsione 19,3% → 19,8% (22%). A posto 12 voci su 15, come prima. Sonda (altre 6 partite): 4,7 entrate a
   squadra per partita, prese a 3,7 m dalla porta, 5 gol su 9 tiri d'entrata. La prova dell'uomo in meno (`npm run inferiorita`)
   falliva per 7 cm con il sorteggio in ogni azione (è sensibile alla sequenza del caso): con il sorteggio solo in parità passa.
-  DECISIONI SUPERATE: elenco in `docs/decisioni-superate.md`. VERIFICHE: vedi il rapporto. NON FATTO: il blocco del compagno sul
+  DECISIONI SUPERATE: elenco in `docs/decisioni-superate.md`. VERIFICHE: lint PASS; `npm run prove` 36 PASS su 36; `npm run
+  verifica` sei partite (57 gol su 181 tiri), foto «azione» e iPhone diverse per la partita cambiata, guardate e riferimenti
+  aggiornati, verifica ripetuta superata; `npm run aspetto` 0 gambe fuori, viste iPhone 59/142.480 e 58/142.224. NON FATTO: il blocco del compagno sul
   difensore di chi entra non riesce mai (già prima); superiorità al 46%; perché entrate più frequenti abbassano la superiorità.
 
 - v0.65 (Claude Code, 20/11/2026; rapporto `docs/versioni/v065-superiorita.md`). RICHIESTA: Ale, punto 3 dei cinque punti di
