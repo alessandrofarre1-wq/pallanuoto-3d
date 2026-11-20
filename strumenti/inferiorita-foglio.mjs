@@ -37,10 +37,12 @@ for(const caso of CASI){
     for(let k=1;k<=6;k++){ const p=A.players[k]; p.x=12.5-FORM[k][0]; p.z=FORM[k][1]; p.fx=1; p.fz=0; }
     // la difesa si schiera con la palla al 2 (fuori palo destro), poi la palla arriva all'uomo del caso
     const h0=A.players[4]; R.giveBall(h0);
-    for(let f=0;f<240;f++){ for(let k=1;k<=6;k++){ const p=A.players[k]; p.x=12.5-FORM[k][0]; p.z=FORM[k][1]; p.vx=p.vz=0; p.fx=1; p.fz=0; p.decideT=9; p.reazioneT=9; p.act=null; } if(H.ball.holder!==h0) R.giveBall(h0); for(const q of D.players) q.tackleCD=9; window.__passo(); }
+    // v0.67: l'espulso resta fuori per tutta la scena (se la difesa tocca palla, la regola lo farebbe rientrare prima: sei difensori)
+    const fuori=()=>{ esp.excluded=true; esp.exclUntil=H.game.time+999; esp.alPozzetto=true; esp.x=10; esp.z=-11; esp.vx=esp.vz=0; };
+    for(let f=0;f<240;f++){ for(let k=1;k<=6;k++){ const p=A.players[k]; p.x=12.5-FORM[k][0]; p.z=FORM[k][1]; p.vx=p.vz=0; p.fx=1; p.fz=0; p.decideT=9; p.reazioneT=9; p.act=null; } if(H.ball.holder!==h0) R.giveBall(h0); for(const q of D.players) q.tackleCD=9; fuori(); window.__passo(); }
     const h=A.players[i]; R.giveBall(h);
     const ferma=()=>{ for(let k=1;k<=6;k++){ const p=A.players[k]; p.x=12.5-FORM[k][0]; p.z=FORM[k][1]; p.vx=p.vz=0; p.fx=1; p.fz=0; p.decideT=9; p.reazioneT=9; p.act=null; } };
-    for(let f=0;f<240;f++){ ferma(); h.charging=f>190; h.chargeT=f>190?0.3:0; if(H.ball.holder!==h) R.giveBall(h); for(const q of D.players) q.tackleCD=9; window.__passo(); }
+    for(let f=0;f<240;f++){ ferma(); h.charging=f>190; h.chargeT=f>190?0.3:0; if(H.ball.holder!==h) R.giveBall(h); for(const q of D.players) q.tackleCD=9; fuori(); window.__passo(); }
     const ogx=12.5, dif=D.players.filter(q=>!q.isGK&&!q.excluded);
     const ruolo=q=>D.postiAssegnati?.get(q);
     const alto=q=>{ const J=q.J; return J.hR[1]>J.hL[1]+0.08?'destro':J.hL[1]>J.hR[1]+0.08?'sinistro':'nessuno'; };

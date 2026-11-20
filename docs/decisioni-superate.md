@@ -3,6 +3,16 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.67
+- Dopo ogni recupero scattavano tutti verso i posti d'attacco (v0.54, v0.58) → partono tutti subito, ma scatta solo chi può
+  guadagnare un vantaggio: non è dietro al difensore più vicino o non ha nessuno entro 3 m (`SCATTI`, scelta di Ale «Partono tutti,
+  scatta chi serve»).
+- In rientro scattava chiunque fosse più di 0,8 m lontano dal suo posto → solo chi ha il suo uomo più vicino alla propria porta o
+  che gli è scappato.
+- Chi aveva il posto a più di 4 m scattava sempre, fino a stamina 0,35 (`partita.js`) → non più nelle transizioni.
+- «Incrocio dei lati»: i due mezzi scattavano sempre → solo finché non sono al loro posto.
+- Fatica del pressing 0,012 al secondo (scritta nel codice) → 0,008 (`PRESSING_CONSUMO`).
+
 ## v0.66
 - Il computer non aveva uno schema d'attacco suo: giocava sempre l'«Arco», senza tagliante, e non entrava mai → nell'8% delle sue
   azioni in parità manda in entrata un mezzo, Pos. 2 o 3 (`ENTRATA.azione`); lo schema del giocatore resta quello scelto.

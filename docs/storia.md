@@ -10,6 +10,36 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- v0.67 (Claude Code, 20/11/2026; rapporto `docs/versioni/v067-scatti.md`). RICHIESTA: Ale, punto 5 dei cinque punti di gioco:
+  «Il computer scatta troppo e si stanca». Toccando la ripartenza (sua richiesta della v0.54) gli ho chiesto come procedere: scelta
+  «Partono tutti, scatta chi serve». MISURE: sonda nuova `strumenti/sonda-scatti.mjs` (tempo in scatto e in contatto per situazione,
+  tempo sotto la soglia dei cambi, cambi). Nella v0.66 i giocatori di movimento scattavano il 27% del tempo, due scatti su tre nelle
+  transizioni (rientro 63% del tempo in scatto, ripartenza 65%), ed erano sotto la soglia dei cambi il 37% del tempo; 69 cambi a
+  partita. CAUSE: in `partita.js` chi aveva il posto a più di 4 m scattava comunque fino a stamina 0,35; corsie della controfuga e
+  posti in transizione sempre in scatto; in rientro scattava chiunque fosse a più di 0,8 m dal posto; il pressing toglieva 0,012
+  al secondo. CAMBIAMENTI (`ia.js`, `partita.js`, `taratura.js`): `SCATTI` (in ripartenza scatta chi non è dietro al difensore più
+  vicino o non ha nessuno entro 3 m; in rientro chi ha il suo uomo più vicino alla porta o scappato); il posto dice «nuota» e nelle
+  transizioni non c'è più lo scatto automatico da lontano; nell'«Incrocio» i mezzi scattano solo finché non sono al posto;
+  `PRESSING_CONSUMO` 0,012 → 0,008 (prima nel codice). PROVE: s1 (soglie larghe) quasi nessun effetto per lo scatto automatico;
+  s3 scatto 17%, soglia 25%, controfughe 0,9 a partita; s4 (pressing 0,008) soglia 8%; s5 (scelto: ripartenza 0 m e 3 m) scatto
+  20%, soglia 14%, cambi 58, controfughe 1,5 (reale circa 2); s6 (occasioni con l'uomo in più dai 6 s) superiorità 41,6%, nel
+  caso: non tenuto. NUMERI (16 partite ITA–HUN, per squadra, v0.66 → v0.67; reale tra parentesi): tiri 36,3 → 33,5 (33), gol 13,8
+  → 13,7 (13,3), tiri in gol 38,1% → 40,9% (40%), espulsioni 10,8 → 11,4 (11), dalla lotta al centro 74,0% → 62,2% (66%),
+  superiorità 46,2% → 40,3% (52%), rigori 1,8 → 2,0 (1,8), azioni 66,3 → 66,3 (50); parità: durata 15,1 → 14,7 s (21), tiro
+  sbagliato 30,3% → 25,8% (32%), palla persa 15,0% → 19,4% (20%), fallo in attacco 15,0% → 12,8% (15%), espulsione 19,8% → 20,8%
+  (22%); palla in mano 1,01 → 0,97 s. A posto 11 voci su 15 (erano 12): con i difensori meno stanchi la superiorità scende.
+  Con i difensori meno stanchi il computer contrasta di più: falli fischiati 28,0 → 35,3 per squadra (+3 senza lo scatto
+  automatico, giro s3; +5 con il pressing 0,008, giro s4), palle rubate 2,7 → 3,9, intercetti 6,7 → 8,1; per i falli manca un
+  riferimento reale (nella v0.28 circa 30). DECISIONI SUPERATE: elenco in `docs/decisioni-superate.md`. VERIFICHE: lint PASS;
+  prove al primo giro 34 PASS e 2 FAIL per due scene di prova: `inferiorita` (un difensore toccava palla e per la regola 9.3c
+  l'espulso rientrava: ora resta fuori per tutta la scena; il cambio dal pozzetto è corretto) e `sezione2` (contava tutti i falli
+  fischiati, anche degli altri difensori, in attacco e della controfuga; con sei semi v0.66 da 5 a 14 su 30, v0.67 da 6 a 17: ora
+  conta solo i falli del difensore su chi ha palla, a azione avviata: v0.66 da 2 a 5, v0.67 da 1 a 13); secondo giro
+  36 PASS, 0 FAIL in 10,8 minuti; verifica: sei partite, 53 gol su 176 tiri, foto «azione» e iPhone diverse perché la partita va diversamente,
+  guardate e aggiornate (`--partite=0`), verifica ripetuta superata; aspetto «Tutto a posto», viste iPhone 56 oggetti e
+  141.794 triangoli. NON FATTO: superiorità da ritarare (40%); azioni ancora corte (non dipende dagli scatti); il contatto costa
+  0,02 al secondo e non è stato toccato; falli da confrontare con un riferimento reale.
+
 - v0.66 (Claude Code, 20/11/2026; rapporto `docs/versioni/v066-entrate.md`). RICHIESTA: Ale, punto 4 dei cinque punti di gioco:
   «Gol su entrata (il taglio verso la porta): oggi sono quasi zero». MISURE: sonda nuova `strumenti/sonda-entrate.mjs` (tempo per
   schema, entrate, spazio sul difensore, passaggi, prese, tiri e conteggio). Nella v0.65 nessuna entrata in 6 partite: il computer
