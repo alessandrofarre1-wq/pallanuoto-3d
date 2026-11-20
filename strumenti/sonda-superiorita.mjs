@@ -29,7 +29,7 @@ async function partita(k){
     const H=window.__pallanuoto, b=H.ball, g=H.game;
     H.scegliSquadre('ITA','HUN'); H.imposta('len','480'); document.getElementById('goBtn').click();
     g.autoplay=true; for(const t of H.teams) t.human=false; H.renderer.render=()=>{};
-    const tiri=[], passaggi=[], inizioSup=new Map(); let cur=null, prima=false, primaPass=false, espulsioni=0; const perSquadra={};
+    const tiri=[], passaggi=[], inizioSup=new Map(), daEntrata=new Map(); let cur=null, prima=false, primaPass=false, espulsioni=0; const perSquadra={};
     // esito del tiro: il primo evento della cronaca dopo il tiro (il legno aspetta quello che succede dopo)
     H.cronaca.ascoltatori.push((tipo,testo)=>{
       if(tipo==='espulsione') espulsioni++;
@@ -46,17 +46,20 @@ async function partita(k){
     });
     for(let i=0;i<60*60*40&&g.state!=='over';i++){
       window.__passo();
-      for(const t of H.teams){ const n=t.players.some(q=>q.excluded); if(n&&!inizioSup.has(t)) inizioSup.set(t,g.time); else if(!n) inizioSup.delete(t); }
+      for(const t of H.teams){ const n=t.players.some(q=>q.excluded); if(n&&!inizioSup.has(t)){ inizioSup.set(t,g.time);
+          // superiorità nata durante un'entrata (o entro 3 s dall'inizio di un taglio) della squadra che attacca
+          const a=H.teams.find(x=>x!==t); daEntrata.set(t,a.players.some(q=>q.cut||g.time-(q.cutT||-99)<3)); }
+        else if(!n){ inizioSup.delete(t); daEntrata.delete(t); } }
       const ora=b.state==='flight'&&b.kind==='shot';
       if(ora&&!prima&&b.shooter){
         if(cur&&!cur.esito) cur.esito=cur.legno?'legno':'altro';
         const p=b.shooter, t=p.team, dif=H.teams.find(x=>x!==t), gx=t.dir*12.5, log=window.__logTiri[window.__logTiri.length-1]||{};
         const sup=dif.players.some(q=>q.excluded), u=sup&&t.uomo&&t.uomo.schema;
         const vicino=Math.min(...dif.players.filter(q=>!q.isGK&&!q.excluded).map(q=>Math.hypot(q.x-p.x,q.z-p.z)));
-        cur={ squadra:t.short, sup, tipo:b.tipoTiro||'-', m:log.m||'-', az:log.tipo||'-', i:p.i, d:Math.hypot(gx-p.x,p.z), z:p.z*t.dir,
+        cur={ squadra:t.short, nome:p.name, pre:p.s.pre, stamina:+p.stamina.toFixed(2), sup, tipo:b.tipoTiro||'-', m:log.m||'-', az:log.tipo||'-', i:p.i, d:Math.hypot(gx-p.x,p.z), z:p.z*t.dir,
           gesto:p.act?p.act.kind:'-', potenza:b.shotPower||0, lob:!!b.lob, dopoCambio:!!b.dopoCambio, liberato:!!b.liberato,
           marcato:b.marcato||0, vicino, gkFuori:b.gkFuoriPosto||0, schema:u?u.id:'-', fase:u?t.uomo.fase:-1,
-          tSup:sup&&inizioSup.has(dif)?g.time-inizioSup.get(dif):-1, esito:null, legno:false };
+          tSup:sup&&inizioSup.has(dif)?g.time-inizioSup.get(dif):-1, daEntrata:sup&&!!daEntrata.get(dif), esito:null, legno:false };
         tiri.push(cur);
       }
       prima=ora;
@@ -110,6 +113,8 @@ for(const [nome,l] of [['UOMO IN PIÙ',sup],['PARITÀ (confronto)',par]]){
   if(l===sup){
     tabella('per schema',l,x=>x.schema,3);
     tabella('secondi dall\'inizio della superiorità',l,x=>fascia(x.tSup,[[0,'?'],[5,'0-5 s'],[10,'5-10 s'],[15,'10-15 s'],[99,'oltre 15 s']]));
+    tabella('superiorità nata durante un\'entrata',l,x=>x.daEntrata?'sì':'no');
+    tabella('stamina di chi tira',l,x=>fascia(x.stamina,[[0.4,'sotto 0,4'],[0.6,'0,4-0,6'],[0.8,'0,6-0,8'],[9,'oltre 0,8']]));
   }
 }
 // passaggi con l'uomo in più, per fascia di tempo: quanti e quanti cambiano lato

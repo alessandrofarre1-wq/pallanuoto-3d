@@ -3,6 +3,16 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.66
+- Il computer non aveva uno schema d'attacco suo: giocava sempre l'«Arco», senza tagliante, e non entrava mai → nell'8% delle sue
+  azioni in parità manda in entrata un mezzo, Pos. 2 o 3 (`ENTRATA.azione`); lo schema del giocatore resta quello scelto.
+- Con lo schema «Entrata» o «Incrocio» un'entrata ogni 7 s (81 a partita) → al massimo una ogni 12 s (`ENTRATA.ogni`).
+- A chi entrava si poteva passare in ogni momento: di solito gli arrivava appena partito, a 7,7 m dalla porta, e il taglio finiva
+  lì → solo a meno di 5 m dalla porta e con almeno 1 m di vantaggio sul difensore o 2 m di spazio (`ENTRATA.vicino`, `vantaggio`,
+  `libero`); in quel momento è il passaggio preferito. Chi riceve così tira subito (`ENTRATA.tiro`).
+- Era «entrata» il tiro partito entro 3 s dall'inizio del taglio → il tiro di chi ha ricevuto tagliando, entro 2,5 s.
+- Un'entrata in corso continuava anche con l'uomo in più o in meno → finisce subito: si va ai posti del 6 contro 5.
+
 ## v0.65
 - Con l'uomo in più le occasioni chiare (tiro al volo, tiro da liberato) si prendevano dai 9 s (v0.59), prima solo subito dopo un
   cambio di lato → dai 7 s (`SUPERIORITA.pronta`): i tiri dei primi 10 s andavano in gol il 60-65% delle volte, quelli dopo il 30%.

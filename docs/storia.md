@@ -10,6 +10,29 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- v0.66 (Claude Code, 20/11/2026; rapporto `docs/versioni/v066-entrate.md`). RICHIESTA: Ale, punto 4 dei cinque punti di gioco:
+  «Gol su entrata (il taglio verso la porta): oggi sono quasi zero». MISURE: sonda nuova `strumenti/sonda-entrate.mjs` (tempo per
+  schema, entrate, spazio sul difensore, passaggi, prese, tiri e conteggio). Nella v0.65 nessuna entrata in 6 partite: il computer
+  non ha uno schema suo e usa l'«Arco», senza tagliante. Con lo schema «Entrata» per tutte e due le squadre: 81 entrate a partita
+  (una ogni 7 s); chi entra riceveva nel 41% dei casi ma a 7,7 m dalla porta, 2 s dopo l'inizio del taglio, che finiva lì (un tiro
+  ogni 25 entrate); il tiro valeva come «entrata» solo entro 3 s dall'inizio del taglio. CAMBIAMENTI: il computer manda in entrata
+  un mezzo nell'8% delle azioni in parità (`ENTRATA.azione`; il sorteggio solo in parità); al massimo un'entrata ogni 12 s
+  (`ENTRATA.ogni`); a chi entra si passa solo a meno di 5 m dalla porta e con 1 m di vantaggio sul difensore o 2 m di spazio
+  (`entrataPronta` in `tiri.js`, passaggio preferito e immediato); chi riceve così tira subito (`ENTRATA.tiro`); «entrata» = tiro
+  di chi ha ricevuto tagliando, entro 2,5 s (`statistiche.js`, flag `ricevutoInEntrata` in `giveBall`); con l'uomo in più o in
+  meno l'entrata finisce. PROVE: 35% → 24% dei gol su entrata; 20% e 15% → 7-9%, ma su 16 partite con il 15% espulsioni da 10,5 a
+  9,2 e superiorità dal 46% al 40%; il codice nuovo con le entrate spente dà 46,0% e 10,6 (innocuo); la prova del caso conferma
+  il 46% della v0.65; escluse superiorità nate durante un'entrata, stanchezza, Precisione di chi tira, posizione del portiere;
+  causa non trovata. Con l'8%: NUMERI (16 partite ITA–HUN, per squadra, v0.65 → v0.66; reale tra parentesi): gol su entrata 0% →
+  6,1% dei gol, tiri 36,0 → 36,3 (33), gol 13,5 → 13,8 (13,3), tiri in gol 37,6% → 38,1% (40%), espulsioni 10,5 → 10,8 (11),
+  dalla lotta al centro 70,0% → 74,0% (66%), superiorità 46,3% → 46,2% (52%), rigori 2,0 → 1,8 (1,8), azioni 65,8 → 66,3 (50);
+  parità: durata 15,4 → 15,1 s (21), tiro sbagliato 31,1% → 30,3% (32%), palla persa 15,5% → 15,0% (20%), fallo in attacco 13,6%
+  → 15,0% (15%), espulsione 19,3% → 19,8% (22%). A posto 12 voci su 15, come prima. Sonda (altre 6 partite): 4,7 entrate a
+  squadra per partita, prese a 3,7 m dalla porta, 5 gol su 9 tiri d'entrata. La prova dell'uomo in meno (`npm run inferiorita`)
+  falliva per 7 cm con il sorteggio in ogni azione (è sensibile alla sequenza del caso): con il sorteggio solo in parità passa.
+  DECISIONI SUPERATE: elenco in `docs/decisioni-superate.md`. VERIFICHE: vedi il rapporto. NON FATTO: il blocco del compagno sul
+  difensore di chi entra non riesce mai (già prima); superiorità al 46%; perché entrate più frequenti abbassano la superiorità.
+
 - v0.65 (Claude Code, 20/11/2026; rapporto `docs/versioni/v065-superiorita.md`). RICHIESTA: Ale, punto 3 dei cinque punti di
   gioco: «Superiorità numerica: oggi va a segno il 43% delle superiorità, nella realtà il 52%». MISURE: sonda nuova
   `strumenti/sonda-superiorita.mjs` (per ogni tiro con l'uomo in più esito, posto, apertura, motivo, gesto, schema e secondi

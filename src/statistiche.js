@@ -32,7 +32,9 @@ export function tipoDiTiro(p,ball){
   if(p.i===1 && dPorta<4.6) return 'centroboa';
   // controfuga: possesso appena conquistato e al massimo due difensori (portiere escluso) tra chi tira e la porta
   if(game.time-(game.possT||0)<6 && vantaggioNumerico(t)) return 'controfuga';
-  if((p.cut||game.time-(p.cutT||-99)<3) && dPorta<5.5) return 'entrata';
+  // entrata (v0.66): tiro di chi ha ricevuto mentre tagliava verso la porta, entro 2,5 s; prima contava solo chi tirava entro 3 s
+  // dall'inizio del taglio, ma di solito si riceve dopo e quei tiri finivano tra quelli dal perimetro
+  if((p.cut||(p.ricevutoInEntrata&&game.time-(p.ricevutoT||-99)<2.5)) && dPorta<5.5) return 'entrata';
   return 'perimetro';
 }
 // in più: tiri da oltre 8 metri, tiri senza nessun difensore tra chi tira e la porta (rigori esclusi)

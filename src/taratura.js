@@ -49,6 +49,16 @@ export const RIPARTENZA={ d3:7.0, arrivato:2.5, transizione:10 };
 // CENTRO_ATTESA (v0.64): in parità la palla entra al centroboa dopo la costruzione: il vantaggio di passarla al centro cresce da
 // «da» ad «a» secondi d'azione (prima c'era subito, e l'azione finiva presto con espulsione, girata o fallo).
 export const CENTRO_ATTESA={ da:7, a:15 };
+// ENTRATA, il taglio verso la porta (v0.66, punto 4 di Ale: «gol su entrata quasi zero»; `strumenti/sonda-entrate.mjs`): il
+// computer non entrava mai (giocava sempre l'«Arco», che non ha tagliante) e, con lo schema «Entrata», a chi entrava la palla
+// arrivava appena partito, a 7,7 m dalla porta, e il taglio finiva lì (una entrata su 25 finiva con un tiro).
+// azione = quota delle azioni in parità in cui il computer manda in entrata un mezzo (Pos. 2 o 3; prove: 0,35 → 24% dei gol su
+// entrata; 0,15 → 7%, ma espulsioni da 10,5 a 9,2 e superiorità dal 46 al 40% su 16 partite; 0,08 → 6%, il resto come prima);
+// ogni = secondi tra due entrate
+// della stessa squadra (prima 7: 81 entrate a partita con lo schema «Entrata»); vicino = metri dalla porta entro cui chi entra
+// riceve, se ha almeno «vantaggio» metri sul difensore più vicino (che gli resta alle spalle) o almeno «libero» metri di spazio;
+// tiro = secondi dalla ricezione in cui tira subito.
+export const ENTRATA={ azione:0.08, ogni:12, vicino:5, vantaggio:1.0, libero:2.0, tiro:1.2 };
 
 // ---------- PASSAGGI, INTERCETTI E PALLE PERSE (fisica.js, tiri.js) ----------
 // INTERCETTO: probabilità che un difensore sulla linea legga il passaggio (base, più «lungo» per i passaggi che volano a lungo).
