@@ -37,7 +37,11 @@ export const FINE_AZIONE={ secondi:4.5, voglia:0.35, ultimi:2.5, ultima:0.9 };
 // che ha cambiato lato si tira subito (da cambioDa secondi in poi); libero = da quando si tira se davvero liberi; attesa/rampa = la
 // voglia di tirare cresce da «attesa» ad «attesa + rampa» secondi. Reale: 52% di superiorità trasformate (Mondiali 2025).
 // v0.58: pronta 5 → 7 s, voglia da 5-9 a 9-13 s; v0.59: pronta 9 s, voglia da 8 a 12 s.
-export const SUPERIORITA={ pronta:9, dopoCambio:1.6, cambioDa:3, libero:8, attesa:8, rampa:4 };
+// v0.65 (`strumenti/sonda-superiorita.mjs`): i tiri dei primi 10 s andavano in gol il 60-65% delle volte, quelli dopo i 10 s il
+// 30% (difesa e portiere ormai piazzati) → pronta 9 → 7 s; le ali sui 2 metri facevano quasi metà dei tiri con il 27% di gol (i
+// tiri frontali il 57%) → sotto «stretto» di apertura (distanza dalla linea di porta divisa per la distanza dalla porta: 1 = di
+// fronte, 0,35 = ala sui 2 metri) non si tira al volo e la voglia si moltiplica per «strettoVoglia»: la palla va a chi vede più porta.
+export const SUPERIORITA={ pronta:7, dopoCambio:1.6, cambioDa:3, libero:8, attesa:8, rampa:4, stretto:0.5, strettoVoglia:0.25 };
 // RIPARTENZA con la palla a un giocatore di movimento (v0.58): d3 = dove va il 3 (metri dalla porta avversaria); arrivato = sotto
 // questa distanza dal posto non si scatta più; transizione = finché la palla è oltre questi metri dalla porta avversaria i
 // compagni vanno dritti ai loro posti d'attacco scattando (fuori dalla controfuga organizzata).
@@ -60,8 +64,9 @@ export const PRESA={ raggio:0.55, portiere:0.9, alto:1.5 };
 
 // ---------- PORTIERE (fisica.js) ----------
 // PARATA_SUP: in superiorità il portiere para meno, la difesa in cinque lascia più spazio. Reale: 52% di superiorità trasformate
-// (Mondiali 2025). v0.60: 0,2 → 0,3 (prima il gioco era al 32-40%).
-export const PARATA_SUP=0.3;
+// (Mondiali 2025). v0.60: 0,2 → 0,3 (prima il gioco era al 32-40%). v0.65: 0,3 → 0,38 (sonda della superiorità: sui tiri nello
+// specchio con l'uomo in più il portiere ne parava il 47%; provato anche 0,46, ma il portiere parava solo l'11% dei tiri).
+export const PARATA_SUP=0.38;
 
 // ---------- ARBITRO (regole.js, lotta.js, partita.js) ----------
 // ESPULSIONI (indicazione di Ale, 13/11/2026: circa il 70% dalla lotta tra centroboa e marcatore, il resto da falli tattici o

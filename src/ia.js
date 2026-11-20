@@ -681,7 +681,9 @@ export function aiCarrier(p,dt){
   // v0.64: il tiro subito dopo la ricezione è sicuro solo nella controfuga vera (con l'uomo in più); nella ripartenza alla pari si
   // decide come in parità
   if(p.provaLiberato!==p.ricevutoT){ p.provaLiberato=p.ricevutoT; p.vuoleLiberato=rnd()<(manUp(t)?TIRO_LIBERATO.superiorita:contropiede(t)&&azioneAperta()?.tipo==='controfuga'?1:TIRO_LIBERATO.parita); }
-  if(p.vuoleLiberato&&supPronta&&!costr&&(p.alVolo||paloUomo(p))&&ball.holdTime<0.15&&(manUp(t)||p.ricevutoDopoFinta||p.ricevutoCambio)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
+  // v0.65: con l'uomo in più chi vede poca porta (ala sui 2 metri) non tira al volo (SUPERIORITA.stretto)
+  const strettoSup=manUp(t)&&Math.abs(gx-p.x)/Math.max(0.1,dGoal)<SUPERIORITA.stretto;
+  if(p.vuoleLiberato&&supPronta&&!costr&&!strettoSup&&(p.alVolo||paloUomo(p))&&ball.holdTime<0.15&&(manUp(t)||p.ricevutoDopoFinta||p.ricevutoCambio)&&dGoal<7.5&&!(p.freeThrow&&Math.abs(gx-p.x)<6)){
     const sit=situazioneTiro(p),gk=other(t).players[0],aim=-Math.sign(gk.z||1);
     p.alVolo=false;
     if(sit.marcato<0.2&&sit.vicino>1.25&&!(p.pressatoUntil>game.time)&&laneClear(p,gx,aim,t,0.7)){
@@ -751,7 +753,8 @@ export function aiCarrier(p,dt){
     const quick=manUp(t)&&az&&az.tipo==='superiorita'&&az.quickOk&&game.time-az.t0<3&&press>2.4&&lane&&dGoal<6.5;
     const pazienza = quick ? 1 : manUp(t) ? (dopoCambioSup||(libero&&tempoSup>SUPERIORITA.libero)?1:clamp((tempoSup-SUPERIORITA.attesa)/SUPERIORITA.rampa,0,1)) : davanti===0 ? 1 : libero ? (costr&&dGoal>COSTRUZIONE.vicino?COSTRUZIONE.libero:1) : clamp((SHOT_CLOCK-game.shot-PAZIENZA[0])/PAZIENZA[1],0,1);
     // con l'uomo in più l'esterno, che ha poco angolo, tira di rado: cerca l'uomo al palo o chi sta ai 5 metri
-    const angolo = manUp(t) ? clamp(Math.abs(gx-p.x)/Math.max(0.1,dGoal)*2,0.15,1) : 1;
+    // v0.65: sotto SUPERIORITA.stretto la voglia scende ancora (SUPERIORITA.strettoVoglia) e la palla gira verso chi vede più porta
+    const angolo = manUp(t) ? clamp(Math.abs(gx-p.x)/Math.max(0.1,dGoal)*2,0.15,1)*(strettoSup?SUPERIORITA.strettoVoglia:1) : 1;
     // si tira quando si è liberi: subito dopo un passaggio che ha liberato il tiratore o cambiato lato; con il difensore davanti
     // a braccio alto e tutti piazzati si aspetta, si finta o si fa girare palla (il tiro arriva comunque a fine azione)
     const sit=situazioneTiro(p), occasione=(sit.liberato?1.7:1)*(sit.dopoCambio?1.6:1)*(1-0.75*sit.marcato)*(sit.daFermo?0.6:1);

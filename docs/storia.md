@@ -10,6 +10,31 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- v0.65 (Claude Code, 20/11/2026; rapporto `docs/versioni/v065-superiorita.md`). RICHIESTA: Ale, punto 3 dei cinque punti di
+  gioco: «Superiorità numerica: oggi va a segno il 43% delle superiorità, nella realtà il 52%». MISURE: sonda nuova
+  `strumenti/sonda-superiorita.mjs` (per ogni tiro con l'uomo in più esito, posto, apertura, motivo, gesto, schema e secondi
+  dall'inizio della superiorità; espulsioni e superiorità trasformate anche per squadra; passaggi e cambi di lato). Nella v0.64 va
+  in gol il 44% dei tiri con l'uomo in più (in parità il 25%); le ali sui 2 metri facevano 45 tiri su 101 con il 27% di gol (i
+  frontali il 57%); i tiri dei primi 10 s andavano in gol il 60-65% delle volte, quelli dopo il 30%; i cambi di lato restavano al
+  7-17% dei passaggi per tutta la superiorità. CAMBIAMENTI: in `ia.js` con l'uomo in più chi vede poca porta non tira al volo e ha
+  meno voglia di tirare (`SUPERIORITA.stretto` 0,5, `strettoVoglia` 0,25); `SUPERIORITA.pronta` 9 → 7 s; `PARATA_SUP` 0,3 → 0,38.
+  Provati e scartati: il passaggio che cambia lato «sempre un guadagno» in `bestPassTarget` (non ha mai cambiato una scelta:
+  partite identiche) e il portiere a 0,42-0,46 (con 0,46 parava l'11% dei tiri con l'uomo in più). Sei giri di taratura (tabella
+  nel rapporto): il punto decisivo è prendere le occasioni dai 7 s (+10 punti a parità del resto); togliere i tiri delle ali da
+  solo peggiora (34%). NUMERI (8 partite ITA–HUN, per squadra, v0.64 → v0.65; reale tra parentesi): superiorità trasformate
+  40,1% → 47,1% (52%), tiri 35,3 → 36,3 (33), gol 12,9 → 13,9 (13,3), tiri in gol 36,5% → 38,3% (40%), espulsioni 11,4 → 11,8
+  (11), dalla lotta al centro 66,5% → 73,0% (66%), rigori 1,6 → 2,0 (1,8), azioni 66,3 → 66,9 (50); parità: durata 15,4 → 15,5 s
+  (21), tiro sbagliato 28,8% → 30,2% (32%), palla persa 16,3% → 16,0% (20%), fallo in attacco 14,4% → 12,3% (15%), espulsione
+  20,6% → 22,0% (22%); superiorità: gol 38,1% → 46,3%, tiro sbagliato 52,0% → 39,5%, durata 8,8 → 8,9 s. A posto 12 voci su 15
+  (erano 11). SOLIDITÀ: su tre campioni (taratura ITA–HUN 40,1% → 47,1%, sonda ITA–HUN 41% → 45%, taratura ESP–HUN 44,8% →
+  45,3%) la superiorità sale di circa 4 punti, da circa il 42% a circa il 46%. SCARTO TRA LE SQUADRE: nella taratura HUN (forza
+  90) batte ITA (79) 8 volte su 8 con 8 gol di scarto (v0.64: 6 su 8, 4,5 gol), ma nella sonda lo scarto va da 9,2 a 1,3 gol
+  (14 partite insieme: 6,5 → 5,2) e in ESP–HUN i gol in più vengono dalla parità, che la v0.65 non tocca: è il caso. DECISIONI
+  SUPERATE: elenco in `docs/decisioni-superate.md`. VERIFICHE: lint PASS;
+  `npm run prove` 36 PASS su 36; `npm run verifica` sei partite (52 gol su 189 tiri), cinque immagini identiche ai riferimenti
+  (menu 0,00%); `npm run aspetto` 0 gambe fuori, viste iPhone 56/141.794. NON FATTO: superiorità al 45-47%, sotto il 52%; pali al
+  13% dei tiri con l'uomo in più e al 9% in parità (mira di tutti i tiri, da guardare a parte).
+
 - v0.64 (Claude Code, 19/11/2026; rapporto `docs/versioni/v064-ritmo-attacco.md`). RICHIESTA: Ale, sui cinque punti di gioco:
   qui i primi due (ritmo dell'attacco in parità; palle perse e falli in attacco). MISURE: sonda dei tiri, un tiro su sei in parità
   era «da libero» subito dopo la ricezione a 11 s di media (la ripartenza toglieva la costruzione per 12 s e in ripartenza si

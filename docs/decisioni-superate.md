@@ -3,6 +3,14 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.65
+- Con l'uomo in più le occasioni chiare (tiro al volo, tiro da liberato) si prendevano dai 9 s (v0.59), prima solo subito dopo un
+  cambio di lato → dai 7 s (`SUPERIORITA.pronta`): i tiri dei primi 10 s andavano in gol il 60-65% delle volte, quelli dopo il 30%.
+- Con l'uomo in più poteva tirare al volo chiunque, anche l'ala sui 2 metri con poca porta (27% di gol) → sotto un'apertura di 0,5
+  (distanza dalla linea di porta divisa per la distanza dalla porta) niente tiro al volo e voglia di tirare per 0,25
+  (`SUPERIORITA.stretto`, `SUPERIORITA.strettoVoglia`): la palla va a chi vede più porta.
+- Portiere in superiorità: `PARATA_SUP` 0,3 (v0.60) → 0,38.
+
 ## v0.64
 - La ripartenza (fino a 12 s dopo ogni recupero) toglieva il freno della costruzione e chi riceveva libero entro 7 m tirava sempre
   → la costruzione vale anche nella ripartenza alla pari; il tiro subito dopo la ricezione è sicuro solo nella controfuga con l'uomo

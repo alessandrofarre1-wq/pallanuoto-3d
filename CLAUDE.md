@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.64). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.65). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -35,8 +35,8 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   `grafica/acqua-eventi.js` (con i `LIMITI`); ogni materiale che va in acqua passa da `sottAcqua()`.
 - **Misurare prima di correggere**: `npm run taratura` (8 partite ITA–HUN tre alla volta, gioco contro realtà; `--salva=` e
   `--confronta=` per il prima e dopo), `npm run bilancio` (`--partite=8 --squadre=ITA,HUN --paralleli=3`, anche `--dist=` e
-  `--porta=` per girare in sottofondo), sonde in `strumenti/` (`sonda-tiri`, `sonda-azioni`, `misura-azione-v053`, `sonda-passaggi`,
-  `sonda-ripartenza`, `foglio-tiro-v061`). Tra due giri da 8 partite c'è qualche punto di variazione. Per i movimenti
+  `--porta=` per girare in sottofondo), sonde in `strumenti/` (`sonda-tiri`, `sonda-azioni`, `sonda-superiorita`,
+  `misura-azione-v053`, `sonda-passaggi`, `sonda-ripartenza`, `foglio-tiro-v061`). Tra due giri da 8 partite c'è qualche punto di variazione. Per i movimenti
   `npm run primi-piani` (primi piani e sequenze), `npm run gesti`, `npm run gesti-foglio` (otto gesti da tre lati in sei momenti,
   con misure di gomiti, mani, gambe e compenetrazioni) e i fogli in `strumenti/` (`finte-foglio`, `lotta-foglio`).
 - **Prove nel browser** (Playwright, Chromium senza scheda grafica): il `requestAnimationFrame` è finto, quindi ogni
@@ -121,7 +121,8 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 - Ripartenza dopo ogni recupero: compagni che scattano ai posti, aperture del portiere («base» e «apertura2»); controfuga
   organizzata in corsie.
 - Superiorità: schemi a fasi (libreria di 10, il giocatore ne sceglie 3; il computer usa i tre di partenza e «Uscita del 6»),
-  «quick» in 3 superiorità su 10, tiro al volo dopo il cambio di lato.
+  «quick» in 3 superiorità su 10, tiro al volo dopo il cambio di lato; occasioni chiare dai 7 s (prima solo subito dopo un cambio
+  di lato); chi vede poca porta (l'ala sui 2 metri) non tira al volo e passa a chi ne vede di più (`SUPERIORITA`).
 ### Difesa
 - A uomo il punto marca il centroboa (`MARK`); pressing di base, zona e zona a M che scelgono chi lasciare tirare, cambio di
   marcatura, rientro difensivo, marcatura staccata lontano dalla palla, scivolamento in verticale, intercetti che nascono dalla
@@ -156,27 +157,28 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   bacheca e premiazione.
 
 ## Numeri: gioco contro realtà
-8 partite ITA–HUN, per squadra, v0.64. Riferimenti: Mondiali 2025, Mondiali 2009, Euro League, video della finale olimpica. La
+8 partite ITA–HUN, per squadra, v0.65. Riferimenti: Mondiali 2025, Mondiali 2009, Euro League, video della finale olimpica. La
 tabella completa (15 voci, con lo stato e i numeri da guardare) la stampa `npm run taratura`.
 
 | | gioco | reale |
 |---|---|---|
-| tiri | 35,3 | 33 |
-| gol | 12,9 | 13,3 |
-| tiri in gol | 36,5% | 40% |
-| espulsioni | 11,4 | 11 (66% dal centroboa; in gioco 66,5%) |
-| superiorità trasformate | 40,1% | 52% |
-| rigori | 1,6 | 1,8 |
+| tiri | 36,3 | 33 |
+| gol | 13,9 | 13,3 |
+| tiri in gol | 38,3% | 40% |
+| espulsioni | 11,8 | 11 (66% dal centroboa; in gioco 73%) |
+| superiorità trasformate | 47,1% | 52% |
+| rigori | 2,0 | 1,8 |
 | azioni a partita | 66 | circa 50 |
-| azione in parità: durata | 15,4 s | circa 21 s (con 30 s di possesso) |
-| azione in parità: tiro sbagliato | 28,8% | circa 32% |
-| azione in parità: palla persa | 16,3% | circa 20% |
-| azione in parità: fallo in attacco | 14,4% | circa 15% |
+| azione in parità: durata | 15,5 s | circa 21 s (con 30 s di possesso) |
+| azione in parità: tiro sbagliato | 30,2% | circa 32% |
+| azione in parità: palla persa | 16,0% | circa 20% |
+| azione in parità: fallo in attacco | 12,3% | circa 15% |
 | palla in mano prima del passaggio | 1,01 s | 0,6-1 s (finale olimpica) |
 
 ## Cosa resta da fare
 - Gioco: azioni ancora corte (15 s invece di 21, 66 invece di 50): va ripensata la ripartenza, dove tutti scattano subito ai
-  posti (insieme al computer che scatta molto e si stanca); superiorità sotto il 52%; gol da entrata quasi zero; difesa
+  posti (insieme al computer che scatta molto e si stanca); superiorità al 45-47% (reale 52%); pali forse troppi (13% dei tiri con
+  l'uomo in più, 9% in parità: mira a 0,85-1,23 m dal centro della porta); gol da entrata quasi zero; difesa
   adattata agli schemi dell'uomo in più; aiuto al posto per i difensori comandati con l'uomo in meno; 7 contro 6 chiamabile dal
   giocatore.
 - Gesti: giudizio di Ale sui fogli della v0.63 (passaggio di lato, ricezione, pesca della palla, esultanza); muro e parata a
