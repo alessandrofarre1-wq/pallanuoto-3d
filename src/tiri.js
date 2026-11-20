@@ -10,7 +10,7 @@ import { faseUomo } from './uomo-in-piu.js';
 import { difensoreCentro, leggiCentro } from './centroboa.js';
 import { schemaSquadra, viciniPerimetro } from './schemi.js';
 import { velocitaDiLancio } from './palla.js';
-import { ERRORE_PASSAGGIO } from './taratura.js';      // numeri del bilanciamento
+import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO } from './taratura.js';      // numeri del bilanciamento
 export { ERRORE_PASSAGGIO };
 import { paloCoperto } from './muro.js';
 import { P } from './fisica-palla/parametri.js';
@@ -78,6 +78,14 @@ export function laneClear(a,bx,bz,team,rad=0.6){
   return true;
 }
 export function openness(m){ let best=99; for(const o of other(m.team).players){ if(o.excluded) continue; best=Math.min(best,dist(o,m)); } return best; }
+// v0.66: chi entra (taglio) è pronto a ricevere quando è vicino alla porta (ENTRATA.vicino) e il difensore più vicino gli è alle
+// spalle di almeno ENTRATA.vantaggio metri o ad almeno ENTRATA.libero metri; prima la palla gli arrivava appena partito
+export function entrataPronta(m){
+  if(!m.cut||m.isGK) return false;
+  const gx=goalX(m.team), dg=Math.hypot(gx-m.x,m.z); if(dg>ENTRATA.vicino) return false;
+  let d=null, dd=99; for(const o of other(m.team).players){ if(o.excluded||o.isGK) continue; const k=dist(o,m); if(k<dd){ dd=k; d=o; } }
+  return !d||dd>ENTRATA.libero||Math.hypot(gx-d.x,d.z)>dg+ENTRATA.vantaggio;
+}
 // Corridoio al tempo di arrivo: una diagonale lunga dà al difensore il tempo di entrarci.
 // Il rischio guida le scelte; intercetti e traiettoria restano quelli della fisica di gioco.
 export function passLaneRisk(p,m){
@@ -113,6 +121,9 @@ export function shotKind(p){
   // colonnello e schizzo: solo in controfuga, con il tasto a comparsa (controfuga.js)
   return 'shot';
 }
+// v0.64 (taratura): in parità il vantaggio di dare la palla al centroboa cresce con i secondi d'azione (CENTRO_ATTESA)
+function attesaCentro(t,sup){ if(sup) return 1; const az=azioneAperta(); if(!az||az.t!==t||az.tipo!=='parita') return 1;
+  return clamp((game.time-az.t0-CENTRO_ATTESA.da)/(CENTRO_ATTESA.a-CENTRO_ATTESA.da),0,1); }
 export function bestPassTarget(p,variabile=true){
   let best=null,bs=-1e9; const sup=manUp(p.team),schema=schemaSquadra(p.team),gx=goalX(p.team),press=openness(p);
   for(const m of p.team.players){
@@ -120,12 +131,15 @@ export function bestPassTarget(p,variabile=true){
     const d=dist(p,m); if(d<1.2) continue;
     const dg=Math.hypot(gx-m.x,m.z),aperto=openness(m),risk=passLaneRisk(p,m),linea=laneClear(p,m.x,m.z,p.team,0.55);
     const interno=(!sup&&m.i===1)||(sup&&paloUomo(m));
+    // v0.66: a chi sta entrando la palla va solo quando è pronto (vicino alla porta e davanti al suo difensore)
+    const taglio=!!m.cut&&entrataPronta(m);
+    if(m.cut&&(!taglio||!linea||risk>0.25)) continue;
     if(interno){
       const def=other(p.team).players.filter(q=>!q.excluded&&!q.isGK).sort((a,b)=>dist(a,m)-dist(b,m))[0];
       if(!leggiCentro(m,def,p).ricevibile||!linea||risk>0.3) continue;
     }
     const vicino=sup?viciniUomo(p.team,p.i,m.i):viciniPerimetro(p.i,m.i,false),perimetro=!interno&&!p.isGK&&!(sup?paloUomo(p):p.i===1);
-    if(perimetro&&!vicino){
+    if(perimetro&&!vicino&&!taglio){
       const gk=other(p.team).players[0];
       const fuoriPosto=Math.abs(gk.z-postoPortiere(gk.team,m.x,m.z));
       const guadagno=aperto>2&&(aperto>Math.min(press,3)+0.8||fuoriPosto>0.65||dg<Math.hypot(gx-p.x,p.z)-1.8);
@@ -134,7 +148,8 @@ export function bestPassTarget(p,variabile=true){
     }
     let s=Math.min(aperto,3)*1.2-dg*0.14-d*0.07-risk*6+(linea?0.8:-2.8);
     if(vicino) s+=schema.passaggi==='vicini'?2.4:schema.passaggi==='equilibrati'?1.7:1.25;
-    if(interno) s+=1.6+(schema.id==='boa'&&!sup?0.8:0);
+    if(interno) s+=(1.6+(schema.id==='boa'&&!sup?0.8:0))*attesaCentro(p.team,sup);
+    if(taglio) s+=4.5;      // l'entrata riuscita è l'occasione migliore: la palla va lì
     // uomo in più: la fase in corso dello schema chiamato indica a chi dare la palla
     if(sup&&faseUomo(p.team)?.palla===m.i) s+=1.8;
     // Una ricezione che libera un tiro ravvicinato prevale sul semplice appoggio laterale.

@@ -10,6 +10,132 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- v0.67 (Claude Code, 20/11/2026; rapporto `docs/versioni/v067-scatti.md`). RICHIESTA: Ale, punto 5 dei cinque punti di gioco:
+  «Il computer scatta troppo e si stanca». Toccando la ripartenza (sua richiesta della v0.54) gli ho chiesto come procedere: scelta
+  «Partono tutti, scatta chi serve». MISURE: sonda nuova `strumenti/sonda-scatti.mjs` (tempo in scatto e in contatto per situazione,
+  tempo sotto la soglia dei cambi, cambi). Nella v0.66 i giocatori di movimento scattavano il 27% del tempo, due scatti su tre nelle
+  transizioni (rientro 63% del tempo in scatto, ripartenza 65%), ed erano sotto la soglia dei cambi il 37% del tempo; 69 cambi a
+  partita. CAUSE: in `partita.js` chi aveva il posto a più di 4 m scattava comunque fino a stamina 0,35; corsie della controfuga e
+  posti in transizione sempre in scatto; in rientro scattava chiunque fosse a più di 0,8 m dal posto; il pressing toglieva 0,012
+  al secondo. CAMBIAMENTI (`ia.js`, `partita.js`, `taratura.js`): `SCATTI` (in ripartenza scatta chi non è dietro al difensore più
+  vicino o non ha nessuno entro 3 m; in rientro chi ha il suo uomo più vicino alla porta o scappato); il posto dice «nuota» e nelle
+  transizioni non c'è più lo scatto automatico da lontano; nell'«Incrocio» i mezzi scattano solo finché non sono al posto;
+  `PRESSING_CONSUMO` 0,012 → 0,008 (prima nel codice). PROVE: s1 (soglie larghe) quasi nessun effetto per lo scatto automatico;
+  s3 scatto 17%, soglia 25%, controfughe 0,9 a partita; s4 (pressing 0,008) soglia 8%; s5 (scelto: ripartenza 0 m e 3 m) scatto
+  20%, soglia 14%, cambi 58, controfughe 1,5 (reale circa 2); s6 (occasioni con l'uomo in più dai 6 s) superiorità 41,6%, nel
+  caso: non tenuto. NUMERI (16 partite ITA–HUN, per squadra, v0.66 → v0.67; reale tra parentesi): tiri 36,3 → 33,5 (33), gol 13,8
+  → 13,7 (13,3), tiri in gol 38,1% → 40,9% (40%), espulsioni 10,8 → 11,4 (11), dalla lotta al centro 74,0% → 62,2% (66%),
+  superiorità 46,2% → 40,3% (52%), rigori 1,8 → 2,0 (1,8), azioni 66,3 → 66,3 (50); parità: durata 15,1 → 14,7 s (21), tiro
+  sbagliato 30,3% → 25,8% (32%), palla persa 15,0% → 19,4% (20%), fallo in attacco 15,0% → 12,8% (15%), espulsione 19,8% → 20,8%
+  (22%); palla in mano 1,01 → 0,97 s. A posto 11 voci su 15 (erano 12): con i difensori meno stanchi la superiorità scende.
+  Con i difensori meno stanchi il computer contrasta di più: falli fischiati 28,0 → 35,3 per squadra (+3 senza lo scatto
+  automatico, giro s3; +5 con il pressing 0,008, giro s4), palle rubate 2,7 → 3,9, intercetti 6,7 → 8,1; per i falli manca un
+  riferimento reale (nella v0.28 circa 30). DECISIONI SUPERATE: elenco in `docs/decisioni-superate.md`. VERIFICHE: lint PASS;
+  prove al primo giro 34 PASS e 2 FAIL per due scene di prova: `inferiorita` (un difensore toccava palla e per la regola 9.3c
+  l'espulso rientrava: ora resta fuori per tutta la scena; il cambio dal pozzetto è corretto) e `sezione2` (contava tutti i falli
+  fischiati, anche degli altri difensori, in attacco e della controfuga; con sei semi v0.66 da 5 a 14 su 30, v0.67 da 6 a 17: ora
+  conta solo i falli del difensore su chi ha palla, a azione avviata: v0.66 da 2 a 5, v0.67 da 1 a 13); secondo giro
+  36 PASS, 0 FAIL in 10,8 minuti; verifica: sei partite, 53 gol su 176 tiri, foto «azione» e iPhone diverse perché la partita va diversamente,
+  guardate e aggiornate (`--partite=0`), verifica ripetuta superata; aspetto «Tutto a posto», viste iPhone 56 oggetti e
+  141.794 triangoli. NON FATTO: superiorità da ritarare (40%); azioni ancora corte (non dipende dagli scatti); il contatto costa
+  0,02 al secondo e non è stato toccato; falli da confrontare con un riferimento reale.
+
+- v0.66 (Claude Code, 20/11/2026; rapporto `docs/versioni/v066-entrate.md`). RICHIESTA: Ale, punto 4 dei cinque punti di gioco:
+  «Gol su entrata (il taglio verso la porta): oggi sono quasi zero». MISURE: sonda nuova `strumenti/sonda-entrate.mjs` (tempo per
+  schema, entrate, spazio sul difensore, passaggi, prese, tiri e conteggio). Nella v0.65 nessuna entrata in 6 partite: il computer
+  non ha uno schema suo e usa l'«Arco», senza tagliante. Con lo schema «Entrata» per tutte e due le squadre: 81 entrate a partita
+  (una ogni 7 s); chi entra riceveva nel 41% dei casi ma a 7,7 m dalla porta, 2 s dopo l'inizio del taglio, che finiva lì (un tiro
+  ogni 25 entrate); il tiro valeva come «entrata» solo entro 3 s dall'inizio del taglio. CAMBIAMENTI: il computer manda in entrata
+  un mezzo nell'8% delle azioni in parità (`ENTRATA.azione`; il sorteggio solo in parità); al massimo un'entrata ogni 12 s
+  (`ENTRATA.ogni`); a chi entra si passa solo a meno di 5 m dalla porta e con 1 m di vantaggio sul difensore o 2 m di spazio
+  (`entrataPronta` in `tiri.js`, passaggio preferito e immediato); chi riceve così tira subito (`ENTRATA.tiro`); «entrata» = tiro
+  di chi ha ricevuto tagliando, entro 2,5 s (`statistiche.js`, flag `ricevutoInEntrata` in `giveBall`); con l'uomo in più o in
+  meno l'entrata finisce. PROVE: 35% → 24% dei gol su entrata; 20% e 15% → 7-9%, ma su 16 partite con il 15% espulsioni da 10,5 a
+  9,2 e superiorità dal 46% al 40%; il codice nuovo con le entrate spente dà 46,0% e 10,6 (innocuo); la prova del caso conferma
+  il 46% della v0.65; escluse superiorità nate durante un'entrata, stanchezza, Precisione di chi tira, posizione del portiere;
+  causa non trovata. Con l'8%: NUMERI (16 partite ITA–HUN, per squadra, v0.65 → v0.66; reale tra parentesi): gol su entrata 0% →
+  6,1% dei gol, tiri 36,0 → 36,3 (33), gol 13,5 → 13,8 (13,3), tiri in gol 37,6% → 38,1% (40%), espulsioni 10,5 → 10,8 (11),
+  dalla lotta al centro 70,0% → 74,0% (66%), superiorità 46,3% → 46,2% (52%), rigori 2,0 → 1,8 (1,8), azioni 65,8 → 66,3 (50);
+  parità: durata 15,4 → 15,1 s (21), tiro sbagliato 31,1% → 30,3% (32%), palla persa 15,5% → 15,0% (20%), fallo in attacco 13,6%
+  → 15,0% (15%), espulsione 19,3% → 19,8% (22%). A posto 12 voci su 15, come prima. Sonda (altre 6 partite): 4,7 entrate a
+  squadra per partita, prese a 3,7 m dalla porta, 5 gol su 9 tiri d'entrata. La prova dell'uomo in meno (`npm run inferiorita`)
+  falliva per 7 cm con il sorteggio in ogni azione (è sensibile alla sequenza del caso): con il sorteggio solo in parità passa.
+  DECISIONI SUPERATE: elenco in `docs/decisioni-superate.md`. VERIFICHE: lint PASS; `npm run prove` 36 PASS su 36; `npm run
+  verifica` sei partite (57 gol su 181 tiri), foto «azione» e iPhone diverse per la partita cambiata, guardate e riferimenti
+  aggiornati, verifica ripetuta superata; `npm run aspetto` 0 gambe fuori, viste iPhone 59/142.480 e 58/142.224. NON FATTO: il blocco del compagno sul
+  difensore di chi entra non riesce mai (già prima); superiorità al 46%; perché entrate più frequenti abbassano la superiorità.
+
+- v0.65 (Claude Code, 20/11/2026; rapporto `docs/versioni/v065-superiorita.md`). RICHIESTA: Ale, punto 3 dei cinque punti di
+  gioco: «Superiorità numerica: oggi va a segno il 43% delle superiorità, nella realtà il 52%». MISURE: sonda nuova
+  `strumenti/sonda-superiorita.mjs` (per ogni tiro con l'uomo in più esito, posto, apertura, motivo, gesto, schema e secondi
+  dall'inizio della superiorità; espulsioni e superiorità trasformate anche per squadra; passaggi e cambi di lato). Nella v0.64 va
+  in gol il 44% dei tiri con l'uomo in più (in parità il 25%); le ali sui 2 metri facevano 45 tiri su 101 con il 27% di gol (i
+  frontali il 57%); i tiri dei primi 10 s andavano in gol il 60-65% delle volte, quelli dopo il 30%; i cambi di lato restavano al
+  7-17% dei passaggi per tutta la superiorità. CAMBIAMENTI: in `ia.js` con l'uomo in più chi vede poca porta non tira al volo e ha
+  meno voglia di tirare (`SUPERIORITA.stretto` 0,5, `strettoVoglia` 0,25); `SUPERIORITA.pronta` 9 → 7 s; `PARATA_SUP` 0,3 → 0,38.
+  Provati e scartati: il passaggio che cambia lato «sempre un guadagno» in `bestPassTarget` (non ha mai cambiato una scelta:
+  partite identiche) e il portiere a 0,42-0,46 (con 0,46 parava l'11% dei tiri con l'uomo in più). Sei giri di taratura (tabella
+  nel rapporto): il punto decisivo è prendere le occasioni dai 7 s (+10 punti a parità del resto); togliere i tiri delle ali da
+  solo peggiora (34%). NUMERI (8 partite ITA–HUN, per squadra, v0.64 → v0.65; reale tra parentesi): superiorità trasformate
+  40,1% → 47,1% (52%), tiri 35,3 → 36,3 (33), gol 12,9 → 13,9 (13,3), tiri in gol 36,5% → 38,3% (40%), espulsioni 11,4 → 11,8
+  (11), dalla lotta al centro 66,5% → 73,0% (66%), rigori 1,6 → 2,0 (1,8), azioni 66,3 → 66,9 (50); parità: durata 15,4 → 15,5 s
+  (21), tiro sbagliato 28,8% → 30,2% (32%), palla persa 16,3% → 16,0% (20%), fallo in attacco 14,4% → 12,3% (15%), espulsione
+  20,6% → 22,0% (22%); superiorità: gol 38,1% → 46,3%, tiro sbagliato 52,0% → 39,5%, durata 8,8 → 8,9 s. A posto 12 voci su 15
+  (erano 11). SOLIDITÀ: su tre campioni (taratura ITA–HUN 40,1% → 47,1%, sonda ITA–HUN 41% → 45%, taratura ESP–HUN 44,8% →
+  45,3%) la superiorità sale di circa 4 punti, da circa il 42% a circa il 46%. SCARTO TRA LE SQUADRE: nella taratura HUN (forza
+  90) batte ITA (79) 8 volte su 8 con 8 gol di scarto (v0.64: 6 su 8, 4,5 gol), ma nella sonda lo scarto va da 9,2 a 1,3 gol
+  (14 partite insieme: 6,5 → 5,2) e in ESP–HUN i gol in più vengono dalla parità, che la v0.65 non tocca: è il caso. DECISIONI
+  SUPERATE: elenco in `docs/decisioni-superate.md`. VERIFICHE: lint PASS;
+  `npm run prove` 36 PASS su 36; `npm run verifica` sei partite (52 gol su 189 tiri), cinque immagini identiche ai riferimenti
+  (menu 0,00%); `npm run aspetto` 0 gambe fuori, viste iPhone 56/141.794. NON FATTO: superiorità al 45-47%, sotto il 52%; pali al
+  13% dei tiri con l'uomo in più e al 9% in parità (mira di tutti i tiri, da guardare a parte).
+
+- v0.64 (Claude Code, 19/11/2026; rapporto `docs/versioni/v064-ritmo-attacco.md`). RICHIESTA: Ale, sui cinque punti di gioco:
+  qui i primi due (ritmo dell'attacco in parità; palle perse e falli in attacco). MISURE: sonda dei tiri, un tiro su sei in parità
+  era «da libero» subito dopo la ricezione a 11 s di media (la ripartenza toglieva la costruzione per 12 s e in ripartenza si
+  tirava sempre da libero); sonda delle azioni, 5,3 s per arrivare in attacco e 10,5 s di attacco, un'azione su tre chiusa prima
+  dei 10 s. CAMBIAMENTI: costruzione anche nella ripartenza alla pari e tiro subito sicuro solo nella controfuga con l'uomo in più
+  (`ia.js`); vantaggio del passaggio al centroboa che cresce dai 7 ai 15 s (`CENTRO_ATTESA`, `tiri.js`); nel pannello
+  `FINE_AZIONE`, `LOTTA_PALLA`, `RIGORI` (prima scritti nel codice). Sei giri di taratura (8 partite ciascuno); valori finali:
+  `COSTRUZIONE.secondi` 18, `FINE_AZIONE.secondi` 4,5, `PAZIENZA` [25, 2,5], `CIRCOLAZIONE` 0,32-0,5 / 0,4-0,7 / 0,55-0,9 s,
+  `INTERCETTO.base` 0,14, `LOTTA_PALLA` contro 0,45 e ruba 0,14, `CENTRO_SENZA_PALLA.contro` 0,12, `LOTTA_FASE` 0,1 e 12-26 s,
+  `ESPULSIONI` 9 e 0,21, `ARBITRI.palleggio` 0,28, `RIGORI` 0,45/0,25/0,5. NUMERI (8 partite ITA–HUN, per squadra, v0.63 →
+  v0.64; reale tra parentesi): tiri 43,6 → 35,3 (33), gol 15,3 → 12,9 (13,3), tiri in gol 35,0% → 36,5% (40%), espulsioni 11,6 →
+  11,4 (11), dalla lotta al centro 74,7% → 66,5% (66%), superiorità 43,0% → 40,1% (52%), rigori 2,2 → 1,6 (1,8), azioni 70,0 →
+  66,3 (50); parità: durata 14,4 → 15,4 s (21), tiro sbagliato 38,0% → 28,8% (32%), palla persa 11,7% → 16,3% (20%), fallo in
+  attacco 8,5% → 14,4% (15%), espulsione 20,1% → 20,6% (22%); palla in mano 1,07 → 1,01 s (0,6-1). A posto 11 voci su 15 (erano
+  6). DECISIONI SUPERATE: elenco in `docs/decisioni-superate.md`. VERIFICHE: lint PASS;
+  `npm run prove` 36 PASS su 36; `npm run verifica` sei partite (49 gol su 195 tiri), foto «azione» diversa per la partita
+  cambiata, controllata e riferimenti aggiornati; `npm run aspetto` 0 gambe fuori dopo il ritocco di `BACINO_TIRO` (−0,14 →
+  −0,16: un campione di coscia usciva di 1 cm), viste iPhone 56/141.794. NON FATTO: durata dell'azione e numero
+  di azioni ancora lontani (va ripensata la ripartenza, insieme al punto 5); superiorità sotto il 52% (punto 3).
+
+- v0.63 (Claude Code, 19/11/2026; rapporto `docs/versioni/v063-gesti.md`). RICHIESTA: Ale, sulla lista dei prossimi punti: «Io farei
+  questo partendo dal punto 11» (gesti: 11 fogli a tre lati, 9 palla pescata dall'acqua, 10 esultanza più lunga nel replay).
+  CAMBIAMENTI: (1) `npm run gesti-foglio` (`strumenti/gesti-foglio.mjs`): otto scene (passaggio verso sinistra, ricezione,
+  palombella, beduina con la lotta vera, parata, muro, nuoto con palla, tiro dal nuoto) fotografate in sei momenti da tre lati,
+  con misure di gomiti, mani, testa, bacino, gambe, palla-palmo, compenetrazioni, lotta e palla in acqua; fogli JPEG e riassunto.
+  Visti: nel passaggio verso il lato opposto al braccio l'avambraccio passava davanti al viso e la mano finiva sulla faccia;
+  chi riceve non guardava la palla; palombella a braccio teso (174°); beduina, parata, muro e nuoto senza compenetrazioni e
+  con le gambe sotto. (2) Correzioni in `grafica/pose.js`, solo disegno: `PASSAGGIO_VISTA` (busto verso il compagno 70%/35%
+  dell'angolo, al massimo 1,1 rad, testa fino a 1,3 rad, braccio verso il compagno fino al rientro, mano che rientra in acqua
+  di lato, `FINE_LEGGERO`), `RICEZIONE_TESTA` 1,2 rad, `ACCOMPAGNA.lob` con il gomito appena piegato. (3) `PESCA`: chi nuota con
+  la palla davanti alla testa e tira, passa o finta prima la pesca dall'acqua (mano sulla palla, sotto, di lato alla spalla; al
+  massimo 0,32 s e l'80% della carica; la palla disegnata resta in acqua finché la mano non la raccoglie). (4) Replay
+  (`replay.js`, `grafica/replay.js`): diretta dopo il gol 0,6 → 1,2 s, `DOPO_GOL` 0,56 → 1,15 s, archivio 3,5 → 4,2 s, clip
+  fino a 3,6 s, `QUOTA_AZIONE` 0,7 → 0,62 (primo piano circa 2 s); `ESULTA`: chi ha segnato si alza e agita il pugno; replay
+  di 7,6 s in tutto; prova `replay-v048` aggiornata ai tempi nuovi. NUMERI: tiro dal nuoto, a 0,1 s mano a 0,59 m con la
+  palla (prima) e a 0,15 m sulla palla in acqua (dopo), carica piena a 0,45 s come prima; replay: memoria massima 19,6 MB
+  (limite 24), al massimo 49 oggetti e 146.360 triangoli. GIOCO IDENTICO: 3 partite col caso bloccato con la build di main e
+  con la nuova, riassunto uguale byte per byte. DECISIONI SUPERATE: replay 7 s → 7,6 s (1,2 diretta + 5,2 + 1,2); esultanza
+  solo braccio → si alza e agita il pugno; passaggio con il braccio che tornava dritto e attraversava il viso → busto e testa
+  verso il compagno; palla che saltava dall'acqua alla mano → pescata (elenco in `docs/decisioni-superate.md`). VERIFICHE:
+  lint PASS; `npm run prove` 36 PASS su 36 (al primo giro `gioco-fermo` aspettava il replay a 0,67 s: attesa portata a
+  1,27 s); `npm run verifica` sei partite come prima (54 gol su 211 tiri), foto iPhone diverse dello 0,92% e 0,76% solo nelle pose
+  (controllate, riferimenti aggiornati, poi identiche); `npm run aspetto` partita identica, 0 gambe fuori, viste iPhone 55/141.778;
+  `npm run replay` PASS. NON FATTO: giudizio di Ale; muro e parata a braccio teso; nuoto con palla forse troppo inclinato; un solo modo
+  di esultare, nessuna espressione nuova del viso.
+
 - v0.62 (Claude Code, 19/11/2026; rapporto `docs/versioni/v062-riordino.md`). RICHIESTA: Ale nella v0.60 («se pensi che il gioco
   sia una cozzaglia di versioni forse è meglio che pensi a un modo per mettere ordine»), proposta in tre passi in
   `docs/proposte/riordino.md`, Ale: «Procedi». Passi 1 e 2 e il comando `npm run prove` del passo 3 in una PR sola (un ramo solo:

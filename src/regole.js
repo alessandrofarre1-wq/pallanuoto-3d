@@ -18,8 +18,8 @@ import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, setCtrl, t
 import { creaSerieRigori, preparaRigoreFinale as preparaTiroSerie, registraRigoreFinale } from './rigoriFinali.js';
 import { applicaSchema, copiaSchema } from './schemi.js';
 import { aggiornaGiocoFermo } from './gioco-fermo.js';
-import { ANTICIPO, ARBITRI, ESPULSIONI } from './taratura.js';      // numeri del bilanciamento
-export { ANTICIPO, ARBITRI, ESPULSIONI };
+import { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI } from './taratura.js';      // numeri del bilanciamento
+export { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI };
 const serieAttiva = () => game.rigoriFinali && !game.rigoriFinali.terminati;
 export function deadBall(t,fn){ game.state='stop'; game.timer=t; game.after=fn||null; aggiornaGiocoFermo(); }
 // gioco fermo per palla fuori: se la palla si sta ancora muovendo (tiro fuori, deviazione del portiere, rimbalzo sul palo)
@@ -65,7 +65,7 @@ export function giveBall(p){
   ball.state='held'; ball.inUscita=false; ball.toccoDifesa=null; ball.toccoPortiere=false; ball.ignora=null; ball.holder=p; ball.holdTime=0; ball.kind=null; ball.target=null; ball.lastTeam=p.team;
   // quando e come è arrivata la palla: un tiro subito dopo un passaggio che ha cambiato lato trova il portiere fuori posto
   p.ricevutoT=game.time; p.ricevutoCambio=!!ball.cambioLato; p.ricevutoPassaggio=daPassaggio; if(!daPassaggio) p.ricevutoCambio=false;
-  p.decideT=0.4+rnd()*0.4; p.alVolo=rnd()<(ball.cambioLato||ball.dopoFinta?0.8:0.4); p.ricevutoDopoFinta=!!ball.dopoFinta&&daPassaggio; ball.cambioLato=false; ball.dopoFinta=false; p.cut=null; p.act=null; p.fakeCount=0; p.ultimoLatoFinta=0; p.fakeUsed=false; p.shootNext=false; p.fakeUntil=0; p.scaricoDopoFinta=false;
+  p.decideT=0.4+rnd()*0.4; p.alVolo=rnd()<(ball.cambioLato||ball.dopoFinta?0.8:0.4); p.ricevutoDopoFinta=!!ball.dopoFinta&&daPassaggio; ball.cambioLato=false; ball.dopoFinta=false; p.ricevutoInEntrata=!!p.cut&&daPassaggio; p.cut=null; p.act=null; p.fakeCount=0; p.ultimoLatoFinta=0; p.fakeUsed=false; p.shootNext=false; p.fakeUntil=0; p.scaricoDopoFinta=false;
   for(const q of allPlayers) q.freeThrow=false;
   resetTap();
   if(changed){
@@ -368,7 +368,7 @@ export function tackle(d,c,o){
   const lato=latoContrasto(d,c), palla=pallaEsposta(c), gol=probabileGol(d,c);
   // Disciplina: chi ne ha poca sbaglia più spesso il contrasto e commette più falli gravi
   const fDis=1.5-(d.s.dis-40)/59, sev=fDis*ARBITRO;
-  const grave=()=>{ if(gol&&rnd()<(lato==='dietro'?0.6:0.35)){ penalty(d,c); return 'rigore'; }
+  const grave=()=>{ if(gol&&rnd()<(lato==='dietro'?RIGORI.dietro:RIGORI.altri)){ penalty(d,c); return 'rigore'; }
     // chi palleggia NON tiene la palla (WP 22.8, manuale arbitri FINA): chi lo ferma con un fallo viene espulso, soprattutto in controfuga
     if(palla==='palleggio'&&rnd()<ARBITRI.palleggio*sev){ exclude(d,c,'fallo su chi palleggia',azioneAperta()?.tipo==='controfuga'?'fuga':o.origine); return 'espulsione'; }
     if(rnd()<(lato==='dietro'?0.55:lato==='lato'?0.24:0.12)*(palla==='alzata'?1.3:1)*(press?1:0.85)*sev*ESPULSIONI.contrasto){ exclude(d,c,undefined,o.origine); return 'espulsione'; }
@@ -376,7 +376,7 @@ export function tackle(d,c,o){
   if(o.voluto){
     // fallo voluto: ferma il gioco; da dietro o su chi è in posizione di tiro si rischia l'espulsione (o il rigore)
     const inTiro=Math.abs(ownGoalX(d.team)-c.x)<7.5&&palla==='alzata';
-    if(gol&&rnd()<0.6){ penalty(d,c); return 'rigore'; }
+    if(gol&&rnd()<RIGORI.voluto){ penalty(d,c); return 'rigore'; }
     if(rnd()<(o.origine==='fuga'?(lato==='dietro'?0.8:lato==='lato'?0.5:0.2):(lato==='dietro'?0.42:inTiro?0.36:0.07))*sev){ exclude(d,c,undefined,o.origine); return 'espulsione'; }      // in controfuga il fallo per fermare l'azione è quasi sempre espulsione
     foul(d,c); return 'fallo';
   }

@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.62). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.67). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -35,15 +35,18 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   `grafica/acqua-eventi.js` (con i `LIMITI`); ogni materiale che va in acqua passa da `sottAcqua()`.
 - **Misurare prima di correggere**: `npm run taratura` (8 partite ITA–HUN tre alla volta, gioco contro realtà; `--salva=` e
   `--confronta=` per il prima e dopo), `npm run bilancio` (`--partite=8 --squadre=ITA,HUN --paralleli=3`, anche `--dist=` e
-  `--porta=` per girare in sottofondo), sonde in `strumenti/` (`sonda-tiri`, `sonda-azioni`, `misura-azione-v053`, `sonda-passaggi`,
-  `sonda-ripartenza`, `foglio-tiro-v061`). Tra due giri da 8 partite c'è qualche punto di variazione. Per i movimenti
-  `npm run primi-piani` (primi piani e sequenze), `npm run gesti` e i fogli in `strumenti/` (`finte-foglio`, `lotta-foglio`).
+  `--porta=` per girare in sottofondo), sonde in `strumenti/` (`sonda-tiri`, `sonda-azioni`, `sonda-superiorita`, `sonda-entrate`, `sonda-scatti`,
+  `misura-azione-v053`, `sonda-passaggi`, `sonda-ripartenza`, `foglio-tiro-v061`). Tra due giri da 8 partite c'è qualche punto di variazione:
+  per decidere su differenze di pochi punti servono 16 partite (`--partite=16`) o più campioni (le sonde, `--squadre=ESP,HUN`). Per i movimenti
+  `npm run primi-piani` (primi piani e sequenze), `npm run gesti`, `npm run gesti-foglio` (otto gesti da tre lati in sei momenti,
+  con misure di gomiti, mani, gambe e compenetrazioni) e i fogli in `strumenti/` (`finte-foglio`, `lotta-foglio`).
 - **Prove nel browser** (Playwright, Chromium senza scheda grafica): il `requestAnimationFrame` è finto, quindi ogni
   `waitForFunction` vuole `{timeout:60000,polling:100}`; con il tempo finto la cattura della pagina può bloccarsi: le foto si
   prendono dalla tela (`__ridisegna()` + `toDataURL`); un gol in una scena fa partire il replay che congela il gioco
-  (`replay.interrompiReplay()`); per escludere i contrasti del computer azzerare `tackleCD` e `colpi`; `cp -r dist cartella` su una
-  cartella esistente copia dentro; un processo lanciato con `&` dentro un comando viene chiuso a fine comando (usare l'esecuzione
-  in sottofondo dello strumento).
+  (`replay.interrompiReplay()`); per escludere i contrasti del computer azzerare `tackleCD` e `colpi`; se la difesa tocca palla
+  l'espulso rientra subito dal pozzetto (9.3c): nelle scene con l'uomo in meno va tenuto fuori a ogni fotogramma; `cp -r dist
+  cartella` su una cartella esistente copia dentro; un processo lanciato con `&` dentro un comando viene chiuso a fine comando
+  (usare l'esecuzione in sottofondo dello strumento).
 - **Video di Ale**: `ffprobe` per durata e risoluzione, `ffmpeg -vf "fps=4,crop=…,scale=…,tile=…"` in una cartella dello
   scratchpad, poi ingrandimenti a 8-15 fotogrammi al secondo dei momenti chiave; le registrazioni a 60 fps permettono di misurare
   tempi e velocità. YouTube da qui non si scarica: chiedere registrazioni dello schermo. WebFetch non raggiunge i siti delle
@@ -74,9 +77,10 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   giocatore solo per 3 s dopo un cambio manuale e a inizio partita; CAMBI in basso al centro solo con un consiglio urgente o un
   cambio in corso (area di tocco 44 px); registro degli eventi dal menu di pausa; notifiche in stile telecronaca ai margini, mai al
   centro (`cronaca.js`); colori con significato fisso (oro = tu e azioni richieste, rosso = sanzioni e urgenza, ciano = servizio).
-- Replay del gol: 7 s saltabili (0,6 s diretta + 5,2 s replay + 1,2 s ripresa), motore fermo durante la clip; camera che gira di
-  circa 35° attorno all'azione e scende, poi taglio con lampo sul primo piano a pelo d'acqua del marcatore che esulta (niente primo
-  piano se è appena stato sostituito). Prova `npm run replay`.
+- Replay del gol: 7,6 s saltabili (1,2 s diretta + 5,2 s replay + 1,2 s ripresa), motore fermo durante la clip; camera che gira di
+  circa 35° attorno all'azione e scende, poi taglio con lampo sul primo piano a pelo d'acqua del marcatore che esulta (si alza e
+  agita il pugno; 1,15 s registrati dopo la rete, 38% del replay; niente primo piano se è appena stato sostituito). Prova
+  `npm run replay`.
 - Menu: home con logo C «Flusso», Partita veloce, Mondiali, Europei, Comandi, Informazioni; Squadre (formazione dei 7, strategie
   prepartita: cinque preset e una personale, schemi dell'uomo in più) → Impostazioni (durata, difficoltà, arbitro) → Gioca.
 ### Comandi
@@ -94,27 +98,38 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   per chi marca; dritto a gioco fermo); in nuotata corpo orizzontale appena sotto la superficie con onda «a serpente».
 - Alzata in 0,25 s, distensione poco di più, transizioni sempre continue; controllo preciso con una piccola inerzia; il corpo si
   piega nelle curve (testa e spalle guidano, bacino e gambe seguono); bicicletta da fermi; braccia morbide, mai «a cavalletta».
-- Corpi e palla non si compenetrano; gambe mai fuori dall'acqua (bacino disegnato al massimo 22 cm sotto il pelo, 14 nel tiro da
-  fuori). Stanchezza al massimo −18% di velocità, con la palla −7%.
+- Corpi e palla non si compenetrano; gambe mai fuori dall'acqua (bacino disegnato al massimo 22 cm sotto il pelo, 16 nel tiro da
+  fuori). Stanchezza al massimo −18% di velocità, con la palla −7%; il pressing stanca 0,008 al secondo (`PRESSING_CONSUMO`).
 ### Gesti: tiro, passaggio, finta, portiere
 - Tiro (tesi Patumi): 20-25 m/s al rilascio, frusta 166-189 ms, gomito 147-157°, il classico è il più preciso; nel tiro da fuori
   il corpo esce quasi fino ai fianchi (solo disegno). Palla tenuta alta, mano dietro la palla, gomito in fuori; rilascio come
   accompagnamento; con un avversario vicino si protegge la palla girando busto e testa; il centroboa marcato tiene la palla in acqua
   finché non fa un gesto. Mancini con i gesti allo specchio.
 - Passaggi alti e tesi (11-15,5 m/s); presa alla mano (0,55 m, portiere 0,9 m); errore verosimile, mai grossi sbagli su passaggi
-  semplici; al centroboa marcato la palla arriva in acqua davanti a lui; mai al proprio portiere in attacco.
+  semplici; al centroboa marcato la palla arriva in acqua davanti a lui; mai al proprio portiere in attacco. Nel passaggio di lato
+  busto e testa girano verso il compagno e la mano non passa davanti al viso; chi riceve guarda la palla (solo disegno).
+- Chi nuota con la palla davanti alla testa, prima di tirare, passare o fintare la pesca dall'acqua e la porta di lato all'altezza
+  della spalla (solo disegno, dentro i tempi del gesto).
 - Finte: un tocco; sei stili personali (larga, a raffica, di polso, mezza, di bomba, di spalla) con un piccolo vantaggio sul
   seguito tipico; dalla seconda finta il braccio va di lato e sposta difensore e portiere.
 - Portiere: segue il passaggio, para in base a posizione, Riflessi, stanchezza, sorpresa e muro; para meno dopo un cambio di lato,
   in superiorità, dopo una finta o su tiri vicini; mentre l'avversario carica sale a braccia larghe (solo disegno).
 ### Attacco del computer
-- Circolazione: palla in mano 0,55-0,95 s sul perimetro (`CIRCOLAZIONE`); costruzione di 15 s prima di cercare il tiro da libero;
-  tiro subito dopo una ricezione libera deciso una volta (circa 1 su 3 in parità); pazienza fino a fine azione.
+- Circolazione: palla in mano 0,4-0,7 s sul perimetro (`CIRCOLAZIONE`); costruzione di 18 s prima di cercare il tiro da libero,
+  anche nella ripartenza alla pari (il tiro subito dopo la ricezione è sicuro solo nella controfuga con l'uomo in più); palla al
+  centroboa dopo la costruzione (vantaggio che cresce dai 7 ai 15 s, `CENTRO_ATTESA`); tiro subito dopo una ricezione libera
+  deciso una volta (circa 1 su 3 in parità); pazienza fino a fine azione (tiro di fine azione negli ultimi 4,5 s, `FINE_AZIONE`).
 - La squadra sale per corsie, scaglionata per ruolo: nessuno va tutto sulla palla (richiesta di Ale).
-- Ripartenza dopo ogni recupero: compagni che scattano ai posti, aperture del portiere («base» e «apertura2»); controfuga
-  organizzata in corsie.
+- Ripartenza dopo ogni recupero: partono tutti subito verso i posti, ma scatta solo chi può guadagnare un vantaggio (non è dietro
+  al difensore più vicino o non ha nessuno entro 3 m); in rientro scatta solo chi ha il suo uomo più vicino alla porta (`SCATTI`,
+  scelta di Ale v0.67); nelle transizioni niente scatto automatico da lontano; aperture del portiere («base» e «apertura2»);
+  controfuga organizzata in corsie.
 - Superiorità: schemi a fasi (libreria di 10, il giocatore ne sceglie 3; il computer usa i tre di partenza e «Uscita del 6»),
-  «quick» in 3 superiorità su 10, tiro al volo dopo il cambio di lato.
+  «quick» in 3 superiorità su 10, tiro al volo dopo il cambio di lato; occasioni chiare dai 7 s (prima solo subito dopo un cambio
+  di lato); chi vede poca porta (l'ala sui 2 metri) non tira al volo e passa a chi ne vede di più (`SUPERIORITA`).
+- Entrate (`ENTRATA`): il computer, nell'8% delle azioni in parità, manda in entrata un mezzo (lo schema del giocatore resta il
+  suo); al massimo un'entrata ogni 12 s; a chi entra la palla arriva solo a meno di 5 m dalla porta e con almeno 1 m di vantaggio
+  sul difensore (o 2 m di spazio), e chi riceve così tira subito; con l'uomo in più o in meno l'entrata finisce.
 ### Difesa
 - A uomo il punto marca il centroboa (`MARK`); pressing di base, zona e zona a M che scelgono chi lasciare tirare, cambio di
   marcatura, rientro difensivo, marcatura staccata lontano dalla palla, scivolamento in verticale, intercetti che nascono dalla
@@ -149,30 +164,38 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   bacheca e premiazione.
 
 ## Numeri: gioco contro realtà
-8 partite ITA–HUN, per squadra, v0.62 (identiche alla v0.61). Riferimenti: Mondiali 2025, Mondiali 2009, Euro League, video della
-finale olimpica. La tabella completa (15 voci, con lo stato e i numeri da guardare) la stampa `npm run taratura`.
+16 partite ITA–HUN, per squadra, v0.67 (`npm run taratura -- --partite=16`: con 8 partite il caso sposta le voci di qualche punto).
+Riferimenti: Mondiali 2025, Mondiali 2009, Euro League, video della finale olimpica. La tabella completa (15 voci, con lo stato e i
+numeri da guardare) la stampa `npm run taratura`.
 
 | | gioco | reale |
 |---|---|---|
-| tiri | 43,6 | 33 |
-| gol | 15,3 | 13,3 |
-| tiri in gol | 35,0% | 40% |
-| espulsioni | 11,6 | 11 (66% dal centroboa) |
-| superiorità trasformate | 43,0% | 52% |
-| rigori | 2,2 | 1,8 |
-| azioni a partita | 70 | circa 50 |
-| azione in parità: durata | 14,4 s | circa 21 s (con 30 s di possesso) |
-| azione in parità: tiro sbagliato | 38,0% | circa 32% |
-| azione in parità: palla persa | 11,7% | circa 20% |
-| azione in parità: fallo in attacco | 8,5% | circa 15% |
-| palla in mano prima del passaggio | 1,07 s | 0,6-1 s (finale olimpica) |
+| tiri | 33,5 | 33 |
+| gol | 13,7 | 13,3 |
+| tiri in gol | 40,9% | 40% |
+| espulsioni | 11,4 | 11 (66% dal centroboa; in gioco 62%) |
+| superiorità trasformate | 40,3% | 52% |
+| rigori | 2,0 | 1,8 |
+| azioni a partita | 66 | circa 50 |
+| azione in parità: durata | 14,7 s | circa 21 s (con 30 s di possesso) |
+| azione in parità: tiro sbagliato | 25,8% | circa 32% |
+| azione in parità: palla persa | 19,4% | circa 20% |
+| azione in parità: fallo in attacco | 12,8% | circa 15% |
+| gol su entrata | 7,1% dei gol | pochi (in calo nel 2025) |
+| controfughe | 1,5 a partita | circa 2 (Euro League) |
+| tempo in scatto / sotto la soglia dei cambi | 20% / 14% | — |
+| palla in mano prima del passaggio | 0,97 s | 0,6-1 s (finale olimpica) |
 
 ## Cosa resta da fare
-- Gioco: azioni ancora corte e troppi tiri (va ripensato il ritmo dell'attacco schierato); palle perse basse; superiorità sotto il
-  52%; gol da entrata quasi zero; il computer scatta molto e si stanca; difesa adattata agli schemi dell'uomo in più; aiuto al
-  posto per i difensori comandati con l'uomo in meno; 7 contro 6 chiamabile dal giocatore.
-- Gesti: presa della palla dall'acqua prima del tiro; esultanza più lunga nel replay; revisione con i fogli a tre lati di
-  passaggio, beduina, palombella, ricezione, parata, muro e nuoto con palla.
+- Gioco: azioni ancora corte (15 s invece di 21, 66 invece di 50): non dipende dagli scatti in ripartenza (v0.67), l'azione
+  finisce presto per palle perse, espulsioni e falli; superiorità al 40% (reale 52%), da ritarare con i difensori meno stanchi
+  (v0.67); il contatto costa 0,02 di stamina al secondo, più dello scatto; falli fischiati saliti a 35 per squadra a partita
+  con i difensori meno stanchi (v0.66: 28; nella v0.28 circa 30): manca un riferimento reale; pali forse troppi (13% dei tiri con
+  l'uomo in più, 9% in parità: mira a 0,85-1,23 m dal centro della porta); il blocco del compagno sul difensore di chi entra
+  non riesce mai; difesa adattata agli schemi dell'uomo in più; aiuto al posto per i difensori comandati con l'uomo in meno;
+  7 contro 6 chiamabile dal giocatore.
+- Gesti: giudizio di Ale sui fogli della v0.63 (passaggio di lato, ricezione, pesca della palla, esultanza); muro e parata a
+  braccio del tutto teso; corpo in nuotata con la palla forse troppo inclinato (da confrontare con un video).
 - Riordino: prove con nomi per argomento (oggi si chiamano con la versione in cui sono nate); semplificare `aiCarrier`.
 - Da Ale: prova su iPhone (FPS, sensazioni), giudizi sulla naturalezza, nuovi video, scelta dei tasti per comandi nuovi.
 

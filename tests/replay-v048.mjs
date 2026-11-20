@@ -82,11 +82,11 @@ try{
     need(B.inRete&&S.teams[0].score===1&&G.state==='stop','gol reale dal rilascio e dal volo della palla');
     need(nuoto.dx>1&&nuoto.oriz>.7,'movimento vero prima del gol');
     const clock=G.clock,score=S.teams.map(t=>t.score),stat=JSON.stringify(D.H.v046.statPartita),after=G.after;
-    need(Q.statoReplay()?.fase==='diretta','inizio: diretta');D.step(34);need(Q.statoReplay()?.fase==='diretta','0,57 s: ancora diretta');
+    need(Q.statoReplay()?.fase==='diretta','inizio: diretta');D.step(70);need(Q.statoReplay()?.fase==='diretta','1,17 s: ancora diretta');
     // Cambio regolamentare immediato dopo gol: stesso corpo, atleta e numero diversi.
     const riserva=S.teams[0].rosa.find(g=>!g.inAcqua&&!g.fuori&&g.ruolo!==0);
     D.H.panchina.chiediCambio(S.teams[0],D.p,riserva,true);D.step(4);
-    need(Q.statoReplay()?.fase==='replay'&&document.body.classList.contains('replay'),'0,63 s: playback');
+    need(Q.statoReplay()?.fase==='replay'&&document.body.classList.contains('replay'),'1,23 s: playback');
     const info=Q.statoReplay().info;need(info.numero===old.num&&info.nome===old.name&&D.p.num!==old.num,'identità al rilascio conservata dopo cambio');
     const fermo=D.engine(),timerFermo=G.timer;D.step(60);need(D.engine()===fermo&&G.timer===timerFermo,'il replay non recupera stamina o consuma espulsioni/cambi/cronometri');
     const engine=D.engine(),visual=D.visual(),map=D.capMat(D.p).map;let copie=0,hash=0,ballA,ballB,poseA,poseB,fxA,fxB;
@@ -106,8 +106,8 @@ try{
     need(A.diagnosticaReplay().effettiRegistrati>=4&&JSON.stringify(fxA)!==JSON.stringify(fxB),'schiuma e spruzzi appartengono alla sequenza registrata');
     let errore=false;try{A.disegnaClipReplay(.4,info,()=>{throw new Error('draw intenzionale');});}catch(e){errore=e.message==='draw intenzionale';}
     need(errore&&D.engine()===engine&&D.visual()===visual,'finally ripristina anche quando draw lancia');
-    let stop=98/60;while(G.state==='stop'&&stop<8){const t=G.timer;D.step();stop+=Math.min(1/60,t);}
-    need(G.state==='play'&&Math.abs(stop-7.0)<1/60+1e-8&&G.clock===clock&&G.shot===28,'0,6 diretta +5,2 replay +1,2 ripresa; cronometro invariato');
+    let stop=134/60;while(G.state==='stop'&&stop<8){const t=G.timer;D.step();stop+=Math.min(1/60,t);}
+    need(G.state==='play'&&Math.abs(stop-7.6)<1/60+1e-8&&G.clock===clock&&G.shot===28,'1,2 diretta +5,2 replay +1,2 ripresa (v0.63); cronometro invariato');
     need(JSON.stringify(S.teams.map(t=>t.score))===JSON.stringify(score)&&JSON.stringify(D.H.v046.statPartita)===stat&&D.riprese===1,'gol/statistiche non duplicati e una sola ripresa');
     return {nuoto,stop,archivio:A.diagnosticaReplay(),marcatore:info.nome};
   });
@@ -121,18 +121,18 @@ try{
       const info=Q.datiGolReplay(S.teams[0]);need(info.firma===attesa,'firma dal rilascio senza act: '+tipo);firme.push(info.firma);
       const avversario=Q.datiGolReplay(S.teams[1]);need(avversario.numero===null&&avversario.nome===''&&avversario.firma==='GOL','nessuna attribuzione al tiratore avversario');
     }
-    D.prepare();D.step(70);D.manualGoal();const prima=D.riprese,clock=G.clock;D.step(38);Q.richiediSaltoReplay();
-    const saltati=Q.eseguiSaltoReplay(P.update);need(saltati>1.8&&G.state==='stop'&&Math.abs(G.timer-1.2)<1e-9&&G.shot===28,'Salta usa callback originale e lascia ripresa 1,2 s');
+    D.prepare();D.step(70);D.manualGoal();const prima=D.riprese,clock=G.clock;D.step(74);Q.richiediSaltoReplay();
+    const saltati=Q.eseguiSaltoReplay(P.update);need(saltati>1.3&&G.state==='stop'&&Math.abs(G.timer-1.2)<1e-9&&G.shot===28,'Salta usa callback originale e lascia ripresa 1,2 s');
     need(D.riprese===prima+1&&Q.eseguiSaltoReplay(P.update)===0&&S.teams[0].score===1,'Salta non ripete callback né gol');
     while(G.state==='stop')D.step();need(G.clock===clock,'Salta non consuma cronometro');
-    D.prepare();D.step(70);G.clock=0;D.manualGoal();D.M.endMatch();D.step(38);
+    D.prepare();D.step(70);G.clock=0;D.manualGoal();D.M.endMatch();D.step(74);
     need(G.state==='over'&&document.body.classList.contains('replay'),'gol sulla sirena: replay prima del risultato');
     const scoreFine=S.teams[0].score;Q.richiediSaltoReplay();Q.eseguiSaltoReplay(P.update);D.paint();
     need(G.state==='over'&&!document.body.classList.contains('replay')&&S.teams[0].score===scoreFine,'Salta finale restituisce il risultato senza ripresa o gol duplicato');
-    D.prepare();D.step(70);D.manualGoal();D.step(38);G.prevState='stop';G.state='paused';const timer=G.timer;D.step(20);
+    D.prepare();D.step(70);D.manualGoal();D.step(74);G.prevState='stop';G.state='paused';const timer=G.timer;D.step(20);
     need(G.timer===timer&&!document.body.classList.contains('replay'),'pausa conserva timer e chiude presentazione');
     D.M.newMatch();D.paint();need(A.diagnosticaReplay().count===0&&!Q.statoReplay(),'nuova partita elimina archivio e sessione');
-    D.prepare();A.azzeraArchivioReplay();D.H.replay.forzaRegistrazione=false;D.manualGoal();D.step(38);
+    D.prepare();A.azzeraArchivioReplay();D.H.replay.forzaRegistrazione=false;D.manualGoal();D.step(74);
     need(!document.body.classList.contains('replay')&&A.diagnosticaReplay().count===0,'nessun buffer: prosegue la diretta');
     D.H.replay.forzaRegistrazione=true;D.prepare();D.step(50);R.avviaRigoriFinali();D.paint();need(!Q.statoReplay()&&!document.body.classList.contains('replay'),'serie rigori esclusa');
     D.prepare();R.giveBall(D.p);D.step(70);T.startAct(D.p,'shot',.2,()=>T.doShoot(D.p,.85,false,0));
@@ -152,19 +152,19 @@ try{
       for(let k=0;k<32;k++){p.x+=.002;D.paint(1/30);}
       need(A.preparaClipReplay(),'clip disponibile nell’episodio '+e);
       const prima=D.engine();A.disegnaClipReplay(.4,{dir:1,tiroX:8,tiroZ:0,xGol:12.5,zGol:0},()=>{});need(D.engine()===prima,'nessun RNG durante episodio '+e);
-      const d=A.diagnosticaReplay();need(d.count<=106&&d.textures<=32&&d.bytes<24*1024*1024,'memoria limitata episodio '+e);memoria.push(d.bytes);
+      const d=A.diagnosticaReplay();need(d.count<=127&&d.textures<=32&&d.bytes<24*1024*1024,'memoria limitata episodio '+e);memoria.push(d.bytes);
     }
     return {firme,saltati,maxBytes:Math.max(...memoria),textures:A.diagnosticaReplay().textures};
   });
   console.log('✓ firme, skip, pausa, reset, buffer, rigori e memoria',JSON.stringify(casi));
-  await page.evaluate(()=>{const D=window.__replay048;D.prepare();D.step(70);D.G.clock=0;D.manualGoal();D.M.endMatch();D.step(38);});
+  await page.evaluate(()=>{const D=window.__replay048;D.prepare();D.step(70);D.G.clock=0;D.manualGoal();D.M.endMatch();D.step(74);});
   await page.waitForTimeout(1650);
   assert.equal(await page.evaluate(()=>document.getElementById('menu').style.display==='none'&&document.body.classList.contains('replay')),true,'risultato e premiazione aspettano la fine del replay');
   await page.setViewportSize({width:390,height:844});await page.evaluate(()=>window.__frame());
   assert.equal(await page.evaluate(()=>window.__replay048.G.state==='over'&&!document.body.classList.contains('replay')),true,'rotazione dopo sirena chiude il replay');
   await page.waitForFunction(()=>document.getElementById('menu').style.display!=='none',null,{polling:100,timeout:2000});
   await page.setViewportSize({width:844,height:390});
-  await page.evaluate(()=>{const D=window.__replay048;D.prepare();D.step(70);D.manualGoal();D.step(38);window.__timerRotazione=D.G.timer;});
+  await page.evaluate(()=>{const D=window.__replay048;D.prepare();D.step(70);D.manualGoal();D.step(74);window.__timerRotazione=D.G.timer;});
   await page.setViewportSize({width:390,height:844});await page.evaluate(()=>window.__frame());
   assert.equal(await page.evaluate(()=>window.__replay048.G.timer===window.__timerRotazione&&!document.body.classList.contains('replay')),true,'rotazione sospende il mondo e chiude replay');
   // Due comparse vere del cambio, registrate prima del gol; sei draw GPU complessivi.
@@ -184,7 +184,7 @@ try{
       D.T.startAct(D.p,'beduina',.12,()=>D.T.doShoot(D.p,.85,false,0));
       for(let i=0;i<180&&D.S.teams[0].score===0;i++)D.step();
       D.need(D.B.inRete&&D.S.teams[0].score===1,'beduina reale in porta nel filmato');
-      D.step(38);const out=[];
+      D.step(74);const out=[];
       for(let i=0;i<3;i++){
         const obiettivo=[.1,.65,.95][i],attuale=D.Q.statoReplay().progresso;
         D.gpu=false;D.step(Math.max(0,Math.ceil((obiettivo-attuale)*D.Q.TEMPI_REPLAY.clip*60)));D.gpu=true;D.paint();
@@ -233,7 +233,7 @@ try{
         D.T.startAct(D.p,lob?'lob':'shot',.3,()=>D.T.doShoot(D.p,.85,lob,0));
         for(let i=0;i<240&&D.S.teams[0].score===0;i++)D.step();
         D.need(D.B.inRete&&D.S.teams[0].score===1,'scenario fisico '+nome+' dir'+dir+' '+JSON.stringify({state:D.B.state,kind:D.B.kind,x:D.B.x,y:D.B.y,z:D.B.z,save:D.B.saveChecked,score:D.S.teams[0].score}));
-        D.step(38);const info=D.Q.statoReplay()?.info;D.need(!!info,'replay disponibile '+nome);
+        D.step(74);const info=D.Q.statoReplay()?.info;D.need(!!info,'replay disponibile '+nome);
         const coperture=['.replay-testa','.replay-marchio','.replay-fascia','#replaySalta'].map(sel=>document.querySelector(sel).getBoundingClientRect());
         const proietta=p=>{const v=p.clone().project(D.W.camera);return {x:(v.x+1)*innerWidth/2,y:(1-v.y)*innerHeight/2,z:v.z};};
         const css=getComputedStyle(document.documentElement),inset=k=>parseFloat(css.getPropertyValue(k))||0;

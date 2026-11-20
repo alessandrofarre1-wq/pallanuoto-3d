@@ -1,7 +1,8 @@
 // Regia del replay: osserva il gol, senza cambiare tiri, probabilità o cronometri.
 import { ball, game, teams } from './stato.js';
 
-export const TEMPI_REPLAY=Object.freeze({diretta:0.6,clip:5.2,attesaGol:2.6});
+// v0.63 (punto 10): diretta dopo il gol 1,2 s (prima 0,6), così l'archivio contiene l'esultanza da mostrare nel primo piano
+export const TEMPI_REPLAY=Object.freeze({diretta:1.2,clip:5.2,attesaGol:2.6});
 const FIRME={beduina:'BEDUINA',schizzo:'SCHIZZO',colonnello:'COLONNELLO',rovesciata:'ROVESCIATA',sciarpa:'SCIARPA'};
 let sessione=null, progressivo=0, salto=false;
 export let generazioneReplay=0;

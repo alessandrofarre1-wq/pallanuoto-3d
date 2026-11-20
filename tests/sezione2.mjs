@@ -80,13 +80,21 @@ const ia = await pg.evaluate(() => {
     // marcatore arriva o no addosso a seconda del caso: 8-13 volte su 30 anche nella v0.55)
     const gx = Math.sign(H.teams[0].dir || 1) * 12.5, sx = Math.sign(gx);
     const c = H.teams[0].players[3]; R.giveBall(c); c.x = gx - sx * 7; c.z = 0; c.vx = c.vz = 0; c.fx = sx; c.fz = 0;
+    // v0.67: azione già avviata. Se la palla cambiava squadra il possesso ripartiva da zero e, con un solo difensore davanti, poteva
+    // scattare il fallo tattico della controfuga (un'altra regola: nel seme della prova succedeva alla prima scena)
+    H.game.possT = H.game.time - 30;
     // MARK[2] === 3: è il vero marcatore dell'ala sinistra, non l'ala
     // omologa che deve abbandonare la scena per seguire un altro uomo.
     const d = H.teams[1].players[2]; d.x = c.x + sx * 0.8; d.z = 0; d.vx=d.vz=0; d.lagX=c.x; d.lagZ=c.z;
     const r0 = H.cronaca.registro.length; let visto = false;
     // v0.56: l'attaccante tiene la palla (prima poteva passarla prima dell'arrivo del difensore e la prova dipendeva dal caso)
     for (let i = 0; i < 90; i++) { c.decideT = 9; c.reazioneT = 9; window.__salta(1); if (c.pressatoUntil > H.game.time) visto = true; if (H.ball.holder !== c) break; }
-    if (visto) pressioni++; falli += H.cronaca.registro.slice(r0).filter(e => /Fallo|Espulsione|Rigore/.test(e.testo)).length ? 1 : 0;
+    // v0.67: contano solo i falli del difensore che contrasta chi ha palla (il rigore nomina chi lo subisce e il difensore nel
+    // dettaglio). Prima contavano anche i falli degli altri difensori, per esempio nella lotta al centro, e i falli in attacco: con
+    // sei semi diversi da 5 a 14 scene su 30 nella v0.66 e da 6 a 17 nella v0.67 (media 10 e 11): il limite dipendeva dal caso
+    const suo = e => !/in attacco/.test(e.testo) && (/Fallo|Espulsione/.test(e.testo) && e.chi === `${d.team.short} #${d.num} ${d.name}`
+      || /Rigore/.test(e.testo) && new RegExp(`^fallo di ${d.team.short} #${d.num}( |$)`).test(e.dettaglio));
+    if (visto) pressioni++; falli += H.cronaca.registro.slice(r0).some(suo) ? 1 : 0;
     window.__salta(60);
   }
   return { pressioni, falli, prove };

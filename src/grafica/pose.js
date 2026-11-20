@@ -315,7 +315,21 @@ export const PREPARA_GK={ su:0.2, mano:[0.12,0.36,0.40], entro:10, tiri:['shot',
 // ACCOMPAGNAMENTO dopo il rilascio (v0.55, Ale: «non gli sta dando uno schiaffo, è un accompagnamento»): la mano continua verso il
 // bersaglio con il braccio quasi disteso, all'altezza del petto, palmo verso la porta e dita che puntano dove va la palla; poi
 // scende piano (rientra). Prima la mano finiva sotto la spalla e attraverso il corpo con il palmo in giù. Solo disegno.
-export const ACCOMPAGNA={ shot:[0.54,0.20,-0.08], torsione:[0.50,0.18,-0.20], polso:[0.46,0.30,-0.04], pass:[0.48,0.26,-0.02], lob:[0.40,0.46,0.0] };
+// v0.63: palombella con il gomito appena piegato (circa 155°) nell'accompagnamento; prima il braccio restava teso come un bastone
+export const ACCOMPAGNA={ shot:[0.54,0.20,-0.08], torsione:[0.50,0.18,-0.20], polso:[0.46,0.30,-0.04], pass:[0.48,0.26,-0.02], lob:[0.38,0.43,0.0] };
+// passaggio di lato (v0.63): quota dell'angolo verso il compagno fatta girando il busto (opposto = dalla parte opposta al braccio che
+// passa, stesso = dalla sua parte), giro massimo del busto e della testa (rad)
+export const PASSAGGIO_VISTA={ opposto:0.7, stesso:0.35, max:1.1, testa:1.3 };
+// ricezione (v0.63): chi aspetta un passaggio gira la testa verso la palla in volo, fino a RICEZIONE_TESTA rad
+export const RICEZIONE_TESTA=1.2;
+// fine di passaggio e palombella (v0.63): dove torna la mano, rispetto alla spalla (in acqua, di lato, come per remare)
+export const FINE_LEGGERO=[0.18,-0.12,0.38];
+// PESCA DELLA PALLA DALL'ACQUA (v0.63, punto 9: Mandić nel video di Ale): durata massima (s, al massimo 0,8 della carica del gesto),
+// fasi (la mano arriva sulla palla, ci passa sotto, la porta su) e dove la porta: di lato, all'altezza della spalla
+export const PESCA={ durata:0.32, arriva:0.32, sotto:0.52, spalla:[0.06,0.16,0.27] };
+// ESULTANZA (v0.63, punto 10): quanto si alza il corpo (unità del corpo, ×1,45 = metri), altezza della mano sopra la spalla, ampiezza
+// e ritmo (colpi al secondo) del pugno agitato
+export const ESULTA={ su:0.08, alto:0.48, pugno:0.07, ritmo:2.2 };
 export const PALMO_ACCOMPAGNA=[0.85,-0.35,-0.1];
 // palla tenuta alta (solo disegno): mano sopra il gomito, gomito in fuori all'altezza della spalla (angolo di circa 90°)
 export const BRACCIA_SMUSSO={ base:14, gesto:40 };      // velocità di smussamento delle braccia disegnate (1/s)
@@ -379,6 +393,19 @@ function articolaVista(p,J,T,t){
     }
   }
   if(!th){
+    // RICEZIONE (v0.63, foglio a tre lati): chi aspetta il passaggio guarda la palla che arriva (prima guardava dritto davanti a sé)
+    if(!hold&&ball.state==='flight'&&ball.kind==='pass'&&ball.target===p){
+      const dx=ball.x-p.x, dz=ball.z-p.z;
+      T.testaGiro=clamp(-Math.atan2(-dx*p.fz+dz*p.fx,dx*p.fx+dz*p.fz),-RICEZIONE_TESTA,RICEZIONE_TESTA)*(1-e);
+    }
+    // ESULTANZA (v0.63, punto 10): dopo il gol chi ha segnato si alza con la bicicletta e agita il pugno con il braccio alzato
+    // (prima alzava solo il braccio). È quello che il replay mostra nel primo piano. Solo disegno, a gioco fermo.
+    if(!hold&&ball.inRete&&ball.shooter===p&&game.state==='stop'&&!p.excluded&&!p.isGK&&e<0.4&&ball.tiroReplay?.uid===p.uid&&ball.tiroReplay.numero===p.num){
+      const te=2.6-game.timer, k=ease(clamp((te-0.06)/0.3,0,1))*(1-e), pugno=ease(clamp((te-0.35)/0.25,0,1));
+      for(const j of JK) V[j][1]+=ESULTA.su*k;
+      const batte=Math.sin(Math.max(0,te-0.35)*2*Math.PI*ESULTA.ritmo)*pugno;
+      braccio(1,add3(V.sR,[0.08,ESULTA.alto+ESULTA.pugno*batte,0.14]),[-0.4,0.1,1],[0.2,0.8,0.3],0.1,k);
+    }
     if(hold&&e<0.7){
       // v0.55 (Ale: «tengono la palla come un vassoio», «gomito girato al contrario»): palla alta come un pallanuotista, gomito
       // in fuori all'altezza della spalla, avambraccio dritto, mano DIETRO la palla con il palmo in avanti e il polso piegato
@@ -432,7 +459,18 @@ function articolaVista(p,J,T,t){
   const chiude=a?clamp((tt-fr)/0.36,0,1):0, rientra=ease(clamp((chiude-0.55)/0.45,0,1));
   const base0=kind==='fake'?-0.84*(fintaDi(p).torsione):kind==='shot'||kind==='torsione'?-0.84:kind==='beduina'||kind==='rovesciata'?0.72:kind==='sciarpa'?-0.72:th.tw0;
   const base1=kind==='shot'?0.48:kind==='torsione'?0.72:th.tw1;
-  const twist=(base0*carica*(1-busto)+base1*busto)*(1-ease(chiude))*lato;
+  // PASSAGGIO DI LATO (v0.63, foglio a tre lati): verso il compagno il busto gira (di più se il passaggio va dalla parte opposta al
+  // braccio, dove prima l'avambraccio passava davanti al viso e la mano finiva sulla faccia), la testa lo guarda e la mano lo segue
+  // anche nell'accompagnamento. Le gambe e il bacino restano verso la porta. Solo disegno.
+  let angPass=0, giroPass=0;
+  if(kind==='pass'&&a?.aim){
+    const dx=a.aim[0]-p.x, dz=a.aim[1]-p.z, av=dx*p.fx+dz*p.fz, laM=-dx*p.fz+dz*p.fx;
+    angPass=Math.atan2(laM*lato,av);      // nel sistema del destro: positivo = dalla parte del braccio che passa
+    const k=(angPass<0?PASSAGGIO_VISTA.opposto:PASSAGGIO_VISTA.stesso)*carica*(1-rientra);
+    giroPass=clamp(-angPass*k,-PASSAGGIO_VISTA.max,PASSAGGIO_VISTA.max);
+    T.testaGiro=clamp(-Math.atan2(laM,av),-PASSAGGIO_VISTA.testa,PASSAGGIO_VISTA.testa)*carica*(1-rientra);
+  }
+  const twist=((base0*carica*(1-busto)+base1*busto)*(1-ease(chiude))+giroPass)*lato;
   const centro=mix3(V.sL,V.sR,0.5), mezzo=Math.hypot(V.sR[0]-V.sL[0],V.sR[2]-V.sL[2])/2;
   for(const s of [1,-1]){
     const spalla=V[s>0?'sR':'sL'];
@@ -477,15 +515,41 @@ function articolaVista(p,J,T,t){
     off=ruota(off); hint=ruota(hint); n=ruota(n);
   }
   if(kind==='pass'&&a?.aim){
-    const dx=a.aim[0]-p.x,dz=a.aim[1]-p.z, av=dx*p.fx+dz*p.fz, la=(-dx*p.fz+dz*p.fx)*lato;
-    const ang=Math.atan2(la,av)*carica*(1-chiude), c=Math.cos(ang),s=Math.sin(ang);
+    // il braccio punta al compagno fino al rientro (prima tornava dritto già nell'accompagnamento e attraversava la faccia)
+    const ang=angPass*carica*(1-rientra), c=Math.cos(ang),s=Math.sin(ang);
     const ruota=v=>[v[0]*c-v[2]*s,v[1],v[0]*s+v[2]*c];
     off=ruota(off); hint=ruota(hint); n=ruota(n);
   }
   const spalla=V['s'+suff], target=add3(spalla,locale(off));
-  const mano=mix3(target,V['h'+suff],rientra);
-  const flex=(-0.46*carica*(1-polso)+0.54*polso)*(1-ease(chiude))+(ACCOMPAGNA[kind]?0.38:0.20)*ease(chiude);
-  braccio(lato,mano,locale(hint),locale(n),flex);
+  // v0.63: dopo passaggio e palombella la mano rientra in acqua di lato (FINE_LEGGERO) invece di tornare davanti al mento
+  const fine=kind==='pass'||kind==='lob'?add3(spalla,locale(FINE_LEGGERO)):V['h'+suff];
+  let mano=mix3(target,fine,rientra), hintM=locale(hint), nM=locale(n);
+  let flex=(-0.46*carica*(1-polso)+0.54*polso)*(1-ease(chiude))+(ACCOMPAGNA[kind]?0.38:0.20)*ease(chiude);
+  // PESCA (v0.63, punto 9: Mandić nel video di Ale). Chi tira, passa o finta mentre nuota con la palla davanti alla testa prima la
+  // prende dall'acqua: la mano arriva sulla palla, ci passa sotto e la porta di lato all'altezza della spalla, poi la carica di
+  // sempre. La palla disegnata resta in acqua finché la mano non la raccoglie (prima saltava di colpo nella mano). Solo disegno: la
+  // palla del gioco (p.ballW) e i tempi del gesto non cambiano; la pesca dura al massimo 0,8 della carica.
+  const gestoId=a||(p.charging?'carica':null);
+  if(gestoId!==p.pescaDi){ p.pescaDi=gestoId;
+    // una pesca già cominciata continua anche se la carica del giocatore diventa un gesto (tocco breve di TIRO)
+    const inCorso=p.pesca&&game.time-p.pesca.t0<p.pesca.D*1.35;
+    if(!inCorso) p.pesca=gestoId&&kind!=='colonnello'&&kind!=='schizzo'&&hold&&(p.davantiVista||0)>0.5&&p.pallaDavantiLocale
+      ? { t0:game.time, D:a?Math.min(PESCA.durata,0.8*Math.max(0.05,a.wind)):PESCA.durata, Pl:p.pallaDavantiLocale.slice() } : null; }
+  if(p.pesca){
+    const pe=p.pesca, u=(game.time-pe.t0)/pe.D;
+    if(u<1.35&&hold){
+      const sopra=add3(pe.Pl,[-0.03,0.07,0.03*lato]), sotto=add3(pe.Pl,[-0.07,-0.05,0.04*lato]), su=add3(V['s'+suff],locale(PESCA.spalla));
+      const giu=[0.3,-1,0], palmoSu=[0.2,1,0.1*lato];
+      let h, nn;
+      if(u<PESCA.arriva){ h=sopra; nn=giu; }
+      else if(u<PESCA.sotto){ const k=ease((u-PESCA.arriva)/(PESCA.sotto-PESCA.arriva)); h=mix3(sopra,sotto,k); nn=mix3(giu,palmoSu,k); }
+      else { const k=ease(clamp((u-PESCA.sotto)/(1-PESCA.sotto),0,1)); h=mix3(sotto,su,k); nn=mix3(palmoSu,[0.5,0.7,0.2*lato],k); }
+      const w=1-ease(clamp((u-1)/0.35,0,1));      // finita la pesca si passa con gradualità alla carica di sempre
+      mano=mix3(mano,h,w); nM=mix3(nM,nn,w); hintM=mix3(hintM,[-0.1,0.2,lato],w); flex=flex*(1-w)+0.1*w;
+      T.pescaPalla=u<PESCA.arriva?1:u<PESCA.sotto?1-ease((u-PESCA.arriva)/(PESCA.sotto-PESCA.arriva)):0; T.pescaPl=pe.Pl;
+    } else p.pesca=null;
+  }
+  braccio(lato,mano,hintM,nM,flex);
   // Il braccio libero sostiene il sollevamento, senza duplicare il gesto di tiro.
   if(kind!=='schizzo'){
     const libero=-lato, sl=V[libero>0?'sR':'sL'];
@@ -571,7 +635,13 @@ export function updateRig(p,dt,t){
       _mano.y*(1-dv)+VIS*0.05*dv,_mano.z*(1-dv)+(p.z+VIS*(-avanti*sn+fianco*c))*dv];
     // palla in acqua sotto la mano (centroboa con il difensore dietro): galleggia, un terzo sotto il pelo
     if(T.pallaInAcqua>0){ const a=p.ballVistaW; a[1]+=(Math.max(a[1],BRV*0.35)-a[1])*T.pallaInAcqua; }
+    // pesca (v0.63): finché la mano non l'ha raccolta la palla resta dov'era, in acqua davanti alla testa
+    if(T.pescaPalla>0&&T.pescaPl){ const P=T.pescaPl, a=p.ballVistaW, w=[p.x+VIS*(P[0]*c+P[2]*sn),VIS*P[1],p.z+VIS*(-P[0]*sn+P[2]*c)];
+      for(let i=0;i<3;i++) a[i]+=(w[i]-a[i])*T.pescaPalla; }
   }
+  // per la pesca (v0.63): quanto la palla è in acqua davanti alla testa e dove, nel sistema del giocatore
+  p.davantiVista=T.ballHand?(T.ballDavanti||0):0;
+  if(p.davantiVista>0) p.pallaDavantiLocale=[Jv.head[0]+0.30,0.05,Jv.head[2]];
   // LA PALLA NON ENTRA NEGLI ALTRI CORPI (v0.55): se la palla disegnata finisce dentro la testa o il busto di un altro giocatore
   // vicino viene spinta fuori, in orizzontale, fino a toccarlo appena (raggio PALLA_FUORI dal suo asse). Solo disegno.
   if(p.ballVistaW){ const b=p.ballVistaW;

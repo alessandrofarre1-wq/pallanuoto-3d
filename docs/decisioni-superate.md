@@ -3,6 +3,62 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.67
+- Dopo ogni recupero scattavano tutti verso i posti d'attacco (v0.54, v0.58) → partono tutti subito, ma scatta solo chi può
+  guadagnare un vantaggio: non è dietro al difensore più vicino o non ha nessuno entro 3 m (`SCATTI`, scelta di Ale «Partono tutti,
+  scatta chi serve»).
+- In rientro scattava chiunque fosse più di 0,8 m lontano dal suo posto → solo chi ha il suo uomo più vicino alla propria porta o
+  che gli è scappato.
+- Chi aveva il posto a più di 4 m scattava sempre, fino a stamina 0,35 (`partita.js`) → non più nelle transizioni.
+- «Incrocio dei lati»: i due mezzi scattavano sempre → solo finché non sono al loro posto.
+- Fatica del pressing 0,012 al secondo (scritta nel codice) → 0,008 (`PRESSING_CONSUMO`).
+
+## v0.66
+- Il computer non aveva uno schema d'attacco suo: giocava sempre l'«Arco», senza tagliante, e non entrava mai → nell'8% delle sue
+  azioni in parità manda in entrata un mezzo, Pos. 2 o 3 (`ENTRATA.azione`); lo schema del giocatore resta quello scelto.
+- Con lo schema «Entrata» o «Incrocio» un'entrata ogni 7 s (81 a partita) → al massimo una ogni 12 s (`ENTRATA.ogni`).
+- A chi entrava si poteva passare in ogni momento: di solito gli arrivava appena partito, a 7,7 m dalla porta, e il taglio finiva
+  lì → solo a meno di 5 m dalla porta e con almeno 1 m di vantaggio sul difensore o 2 m di spazio (`ENTRATA.vicino`, `vantaggio`,
+  `libero`); in quel momento è il passaggio preferito. Chi riceve così tira subito (`ENTRATA.tiro`).
+- Era «entrata» il tiro partito entro 3 s dall'inizio del taglio → il tiro di chi ha ricevuto tagliando, entro 2,5 s.
+- Un'entrata in corso continuava anche con l'uomo in più o in meno → finisce subito: si va ai posti del 6 contro 5.
+
+## v0.65
+- Con l'uomo in più le occasioni chiare (tiro al volo, tiro da liberato) si prendevano dai 9 s (v0.59), prima solo subito dopo un
+  cambio di lato → dai 7 s (`SUPERIORITA.pronta`): i tiri dei primi 10 s andavano in gol il 60-65% delle volte, quelli dopo il 30%.
+- Con l'uomo in più poteva tirare al volo chiunque, anche l'ala sui 2 metri con poca porta (27% di gol) → sotto un'apertura di 0,5
+  (distanza dalla linea di porta divisa per la distanza dalla porta) niente tiro al volo e voglia di tirare per 0,25
+  (`SUPERIORITA.stretto`, `SUPERIORITA.strettoVoglia`): la palla va a chi vede più porta.
+- Portiere in superiorità: `PARATA_SUP` 0,3 (v0.60) → 0,38.
+
+## v0.64
+- La ripartenza (fino a 12 s dopo ogni recupero) toglieva il freno della costruzione e chi riceveva libero entro 7 m tirava sempre
+  → la costruzione vale anche nella ripartenza alla pari; il tiro subito dopo la ricezione è sicuro solo nella controfuga con l'uomo
+  in più.
+- Palla al centroboa con lo stesso vantaggio in tutta l'azione → in parità il vantaggio cresce dai 7 ai 15 s d'azione
+  (`CENTRO_ATTESA`).
+- Costruzione 15 s (v0.60) → 18 s; tiro di fine azione negli ultimi 6 s → 4,5 s; pazienza da 24 s → 25 s.
+- Palla in mano sul perimetro 0,55-0,95 s (v0.61, stile equilibrato) → 0,4-0,7 s.
+- Lotta al centro piena tra 10 e 24 s (v0.60) → tra 12 e 26 s; `ESPULSIONI.centro` 6,5 → 9, contrasto 0,24 → 0,21; espulsione per
+  il fallo su chi palleggia 0,35 → 0,28.
+- Falli in attacco del centroboa: con la palla 0,14 → 0,45, senza palla 0,05 → 0,12; palle rubate al centroboa 0,08 → 0,14;
+  intercetto 0,12 → 0,14.
+- Rigore per un fallo grave su chi sta per segnare: 0,6 da dietro e 0,35 negli altri casi → 0,45 e 0,25 (fallo voluto 0,6 → 0,5).
+- Bacino disegnato nel tiro da fuori fino a 14 cm sotto il pelo (v0.61) → 16 cm (con le azioni nuove un campione di coscia usciva
+  di 1 cm).
+
+## v0.63
+- Replay del gol di 7 s (0,6 s di diretta + 5,2 s di replay + 1,2 s di ripresa, v0.48) → 7,6 s (1,2 s di diretta + 5,2 + 1,2); dopo
+  la rete si registrano 1,15 s (prima 0,56) e il primo piano di chi esulta occupa il 38% del replay (prima il 30%).
+- Esultanza: solo il braccio alzato (v0.61) → chi ha segnato si alza con la bicicletta e agita il pugno.
+- Passaggio di lato: busto quasi fermo e braccio che tornava dritto già nell'accompagnamento (l'avambraccio passava davanti al viso
+  e la mano finiva sulla faccia) → busto e testa girano verso il compagno, il braccio lo segue fino al rientro, poi la mano rientra
+  in acqua di lato.
+- Chi nuota con la palla e tira, passa o finta: la palla saltava dall'acqua alla mano → la mano la pesca dall'acqua e la porta di
+  lato all'altezza della spalla (al massimo 0,32 s, dentro i tempi del gesto).
+- Chi riceve guardava dritto davanti a sé → gira la testa verso la palla in arrivo. Palombella: accompagnamento a braccio teso →
+  gomito appena piegato.
+
 ## v0.62
 - Memoria (`CLAUDE.md`, 213 KB) con tutta la storia di 61 versioni, decisioni superate comprese → memoria corta con le sole regole
   e decisioni in vigore; la storia in `docs/storia.md`, le decisioni cambiate qui.
