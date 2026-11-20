@@ -9,6 +9,7 @@ import { manUp, paloUomo, postoPortiere, setteControSei, viciniUomo } from './ia
 import { faseUomo } from './uomo-in-piu.js';
 import { difensoreCentro, leggiCentro } from './centroboa.js';
 import { schemaSquadra, viciniPerimetro } from './schemi.js';
+import { centroAttacco, postoAttacco, registraPassaggioEntrata } from './entrate.js';
 import { velocitaDiLancio } from './palla.js';
 import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO } from './taratura.js';      // numeri del bilanciamento
 export { ERRORE_PASSAGGIO };
@@ -82,6 +83,8 @@ export function openness(m){ let best=99; for(const o of other(m.team).players){
 // spalle di almeno ENTRATA.vantaggio metri o ad almeno ENTRATA.libero metri; prima la palla gli arrivava appena partito
 export function entrataPronta(m){
   if(!m.cut||m.isGK) return false;
+  const linea=(goalX(m.team)-ball.x)*m.team.dir,md=(goalX(m.team)-m.x)*m.team.dir;
+  if(Math.abs(m.z)<3.58&&md<2&&md<linea-0.05)return false;
   const gx=goalX(m.team), dg=Math.hypot(gx-m.x,m.z); if(dg>ENTRATA.vicino) return false;
   let d=null, dd=99; for(const o of other(m.team).players){ if(o.excluded||o.isGK) continue; const k=dist(o,m); if(k<dd){ dd=k; d=o; } }
   return !d||dd>ENTRATA.libero||Math.hypot(gx-d.x,d.z)>dg+ENTRATA.vantaggio;
@@ -130,7 +133,7 @@ export function bestPassTarget(p,variabile=true){
     if(m===p||m.excluded||m.uscendo||(m.isGK&&!setteControSei(p.team))) continue;
     const d=dist(p,m); if(d<1.2) continue;
     const dg=Math.hypot(gx-m.x,m.z),aperto=openness(m),risk=passLaneRisk(p,m),linea=laneClear(p,m.x,m.z,p.team,0.55);
-    const interno=(!sup&&m.i===1)||(sup&&paloUomo(m));
+    const interno=(!sup&&centroAttacco(p.team)===m)||(sup&&paloUomo(m));
     // v0.66: a chi sta entrando la palla va solo quando è pronto (vicino alla porta e davanti al suo difensore)
     const taglio=!!m.cut&&entrataPronta(m);
     if(m.cut&&(!taglio||!linea||risk>0.25)) continue;
@@ -138,7 +141,7 @@ export function bestPassTarget(p,variabile=true){
       const def=other(p.team).players.filter(q=>!q.excluded&&!q.isGK).sort((a,b)=>dist(a,m)-dist(b,m))[0];
       if(!leggiCentro(m,def,p).ricevibile||!linea||risk>0.3) continue;
     }
-    const vicino=sup?viciniUomo(p.team,p.i,m.i):viciniPerimetro(p.i,m.i,false),perimetro=!interno&&!p.isGK&&!(sup?paloUomo(p):p.i===1);
+    const vicino=sup?viciniUomo(p.team,p.i,m.i):viciniPerimetro(postoAttacco(p),postoAttacco(m),false),perimetro=!interno&&!p.isGK&&!(sup?paloUomo(p):centroAttacco(p.team)===p);
     if(perimetro&&!vicino&&!taglio){
       const gk=other(p.team).players[0];
       const fuoriPosto=Math.abs(gk.z-postoPortiere(gk.team,m.x,m.z));
@@ -176,7 +179,7 @@ export function humanPassTarget(p,ix,iz){
     const dx=m.x-p.x, dz=m.z-p.z, d=Math.hypot(dx,dz)||1;
     const c=(dx*ix+dz*iz)/(d*il); if(c<0.35) continue;
     if(m.isGK&&!setteControSei(p.team)){ if(!inAttacco&&c>0.8) portiere=m; continue; }
-    const boa=(!manUp(p.team)&&m.i===1)||(manUp(p.team)&&paloUomo(m));
+    const boa=(!manUp(p.team)&&centroAttacco(p.team)===m)||(manUp(p.team)&&paloUomo(m));
     const s=c*4 - d*0.07 + (laneClear(p,m.x,m.z,p.team)?0.5:0) + (boa&&versoPorta>0.55&&c>0.5?BOA_PREFERITO:0);
     if(s>bs){ bs=s; best=m; }
   }
@@ -204,7 +207,7 @@ export function doPass(p,m){
   // al volo) solo se si è liberato. Se il difensore era in anticipo (tra palla e centroboa) e la palla passa, resta dietro di lui:
   // fallo da rigore o espulsione (anticipoBattuto in regole.js).
   let ty=PASSAGGIO_ALTEZZA, anticipo=null;
-  if(!manUp(p.team)&&m.i===1&&!m.isGK&&Math.hypot(goalX(m.team)-m.x,m.z)<6){
+  if(!manUp(p.team)&&centroAttacco(p.team)===m&&!m.isGK&&Math.hypot(goalX(m.team)-m.x,m.z)<6){
     const def=difensoreCentro(m), lett=leggiCentro(m,def,p);
     if(lett.tipo!=='libero'){      // libero = difensore a più di 1,8 m (leggiCentro): si è liberato
       const ux=p.x-m.x, uz=p.z-m.z, l=Math.hypot(ux,uz)||1; tx=m.x+ux/l*BOA_DAVANTI; tz=m.z+uz/l*BOA_DAVANTI; ty=0.12;
@@ -212,6 +215,7 @@ export function doPass(p,m){
     }
     if(lett.tipo==='anticipo'&&def) anticipo=def;
   }
+  registraPassaggioEntrata(p,m);
   launch(p,tx,ty,tz,t,'pass'); ball.anticipoBattuto=anticipo; ball.target=m; ball.tx=tx; ball.tz=tz; ball.dopoFinta=p.fakeUntil>game.time||game.time<(p.fintaFino||0); ball.firma=firma(p,'pass'); if(ball.firma) p.ultimaFintaT=-9;
   game.passaggi=(game.passaggi||0)+1; if(Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1)) game.cambiLato=(game.cambiLato||0)+1;
   m.daChi=p; ball.cambioLato=Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1);      // passaggio da un lato all'altro: chi riceve può tirare al volo

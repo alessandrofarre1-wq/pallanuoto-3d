@@ -1,0 +1,1232 @@
+{
+  "provenienza": {
+    "base": "c11f93d2a0cc79af67f66d04ebc624f4cd964172",
+    "versione": "0.68.0",
+    "sha256_produzione": {
+      "src/centroboa.js": "4fd5728ba95eaeda06a65e7f1a7c4f86bea023a0e9cc105a930e7faf92fd73f4",
+      "src/difesa-cambi.js": "a622d8f76e8065fb92dcc01089b3170742da1bc0ec6c7beecaca671c8e243567",
+      "src/entrate.js": "78716bc148931d1a6aca46a32913647c37fb7946c2e659b183c61c366309245f",
+      "src/fisica.js": "6236d062d934147b88285a55b50f17439ffb71a2b8111e53ee8622c4059bf5d6",
+      "src/grafica/arena.js": "bcd2f0a3476df8d05013d72314c9189941bcdccaab7a534471ba74aa0ba3f59f",
+      "src/grafica/pose.js": "855664c785b8d53bcc04eb0c0fca218059beca0cc60196714fb2fc22d1b96b65",
+      "src/hud.js": "4c09f6dc76d603167dcdcb0e0542a23ebffef2c88149acb8201346fa896cdb28",
+      "src/ia.js": "82359a22e1e519b59a05b08cd4ca3c91a269e0d594f8e12bb87bcab246827e5a",
+      "src/lotta.js": "512b41053a73140730515ee396cb29820af444f0a99b766afdadcb035444de44",
+      "src/menu.js": "e051480553b0c532b97f7444e15277a95acc88efc72b0fa60f15a4ce541676eb",
+      "src/panchina.js": "35f5e2fc4c946745573ee143968ae6a062a4260675270de239ddd15d65bf0252",
+      "src/partita.js": "6b6a6e828b664d1912d1273795b3e80890eb079b78d42d70285f2ab113aeb6a3",
+      "src/regole.js": "e1b5e37c0582e2f27e1e128154d40130e4872260baf5f7be79213e7cf172350e",
+      "src/schemi.js": "8381fe8cea32bf3e01d558504987eef5c9578b170ec0302570d629cdba40a274",
+      "src/statistiche.js": "fd8f4d3f62c8bf9e63c40a31cec45e50e0fc81d88e06756c435cbd2136918144",
+      "src/taratura.js": "aa41576f941230a29375b3e7c47a9c4410dd491cd22acec0b813823e61387806",
+      "src/tiri.js": "c2cead5e88db50f6cb1537acd628a6f14ad699a8da2e844fadfa326ab48f01d5"
+    }
+  },
+  "misure": {
+    "zone": [
+      {
+        "dir": 1,
+        "lasciaPeriferico": true,
+        "escludeBoa": true,
+        "latoDopoRotazione": true,
+        "zonaMControBoaForte": true
+      },
+      {
+        "dir": -1,
+        "lasciaPeriferico": true,
+        "escludeBoa": true,
+        "latoDopoRotazione": true,
+        "zonaMControBoaForte": true
+      }
+    ],
+    "scene": [
+      {
+        "tipo": "A",
+        "dir": 1,
+        "difesa": "testa-avanti",
+        "chiuso": false,
+        "mano": "D",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "A",
+        "appoggioRiceve": true,
+        "ritorno": 1.8833333333316205,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 6,
+            "a": 4,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 4,
+            "a": 6,
+            "t": 1.883,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.04833797249034659,
+        "stato": "play",
+        "attesaCoperto": 62,
+        "decisioniNonPronte": 0,
+        "nuotoD": 3.1319779260069995,
+        "nuotoM": 1.0126940721318383,
+        "metriH": 4.696908402062959,
+        "metriD": 3.082542266202987,
+        "metriM": 0.5551324113041071,
+        "fine": {
+          "holder": 6,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": false,
+          "pronto": false,
+          "posH": [
+            9.279527995029254,
+            -1.9356106729222484
+          ],
+          "posD": [
+            6.800436869497206,
+            -0.4437361019118557
+          ]
+        }
+      },
+      {
+        "tipo": "A",
+        "dir": 1,
+        "difesa": "davanti",
+        "chiuso": true,
+        "mano": "D",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "A",
+        "appoggioRiceve": true,
+        "ritorno": 2.199999999997999,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 6,
+            "a": 4,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 4,
+            "a": 6,
+            "t": 2.2,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.04816468701858772,
+        "stato": "play",
+        "attesaCoperto": 76,
+        "decisioniNonPronte": 0,
+        "nuotoD": 2.251050187727512,
+        "nuotoM": 1.143898297016151,
+        "metriH": 4.9124815433139215,
+        "metriD": 2.021112609066299,
+        "metriM": 0.5471200405178096,
+        "fine": {
+          "holder": 6,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": false,
+          "pronto": false,
+          "posH": [
+            9.543409892426943,
+            -1.8681277961630234
+          ],
+          "posD": [
+            7.828953410143641,
+            -0.6033530641523276
+          ]
+        }
+      },
+      {
+        "tipo": "A",
+        "dir": 1,
+        "difesa": "schierata",
+        "chiuso": true,
+        "mano": "D",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "A",
+        "appoggioRiceve": true,
+        "ritorno": 2.3833333333311657,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 6,
+            "a": 4,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 4,
+            "a": 6,
+            "t": 2.383,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.0481649988930591,
+        "stato": "play",
+        "attesaCoperto": 92,
+        "decisioniNonPronte": 0,
+        "nuotoD": 1.8222730687484743,
+        "nuotoM": 0.7719951456796984,
+        "metriH": 5.366261323416405,
+        "metriD": 1.2659731162865013,
+        "metriM": 0.2241965114516114,
+        "fine": {
+          "holder": 6,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": true,
+          "pronto": false,
+          "posH": [
+            10.073477166802167,
+            -1.748310621466291
+          ],
+          "posD": [
+            7.029326140737629,
+            -0.5721104779732752
+          ]
+        }
+      },
+      {
+        "tipo": "A",
+        "dir": -1,
+        "difesa": "testa-avanti",
+        "chiuso": false,
+        "mano": "D",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "A",
+        "appoggioRiceve": true,
+        "ritorno": 1.8833333333316205,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 6,
+            "a": 4,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 4,
+            "a": 6,
+            "t": 1.883,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.04833910682811536,
+        "stato": "play",
+        "attesaCoperto": 63,
+        "decisioniNonPronte": 0,
+        "nuotoD": 3.10926475437565,
+        "nuotoM": 1.0876552162290638,
+        "metriH": 4.700391092494285,
+        "metriD": 3.0623851678705543,
+        "metriM": 0.5668411613610091,
+        "fine": {
+          "holder": 6,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": false,
+          "pronto": false,
+          "posH": [
+            9.301631356975179,
+            -1.8946356090519083
+          ],
+          "posD": [
+            6.779906204022011,
+            -0.44482728246195447
+          ]
+        }
+      },
+      {
+        "tipo": "A",
+        "dir": -1,
+        "difesa": "davanti",
+        "chiuso": true,
+        "mano": "D",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "A",
+        "appoggioRiceve": true,
+        "ritorno": 2.133333333331393,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 6,
+            "a": 4,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 4,
+            "a": 6,
+            "t": 2.133,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.04815686274421106,
+        "stato": "play",
+        "attesaCoperto": 78,
+        "decisioniNonPronte": 0,
+        "nuotoD": 2.1093885682002615,
+        "nuotoM": 1.0766363363390354,
+        "metriH": 4.707518571702809,
+        "metriD": 1.8512523625563981,
+        "metriM": 0.59319640165303,
+        "fine": {
+          "holder": 6,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": false,
+          "pronto": false,
+          "posH": [
+            9.309427347948695,
+            -1.8946152737901
+          ],
+          "posD": [
+            7.6351127835166315,
+            -0.6453827843596498
+          ]
+        }
+      },
+      {
+        "tipo": "A",
+        "dir": -1,
+        "difesa": "schierata",
+        "chiuso": true,
+        "mano": "D",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "A",
+        "appoggioRiceve": true,
+        "ritorno": null,
+        "ricezione": false,
+        "passaggi": [
+          {
+            "da": 6,
+            "a": 4,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 4,
+            "a": 5,
+            "t": 3.2,
+            "pronto": null
+          },
+          {
+            "da": 5,
+            "a": 3,
+            "t": 4.15,
+            "pronto": null
+          },
+          {
+            "da": 3,
+            "a": 5,
+            "t": 5.2,
+            "pronto": null
+          },
+          {
+            "da": 5,
+            "a": 3,
+            "t": 6.283,
+            "pronto": null
+          }
+        ],
+        "maxPasso": 0.048157192197012824,
+        "stato": "play",
+        "attesaCoperto": 153,
+        "decisioniNonPronte": 0,
+        "nuotoD": 4.049754919090175,
+        "nuotoM": 2.016656405040749,
+        "metriH": 5.369670123915077,
+        "metriD": 0.2116362995517619,
+        "metriM": 0.6068645318924172,
+        "fine": {
+          "holder": 3,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "pronto": false,
+          "posH": [
+            9.992956620464115,
+            -1.9757888110397095
+          ],
+          "posD": [
+            6.106834209594843,
+            0.04482781535207607
+          ]
+        }
+      },
+      {
+        "tipo": "B",
+        "dir": 1,
+        "difesa": "testa-avanti",
+        "chiuso": false,
+        "mano": "S",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "B",
+        "appoggioRiceve": true,
+        "ritorno": 1.8833333333316205,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 6,
+            "a": 5,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 5,
+            "a": 6,
+            "t": 1.883,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.048333413955862284,
+        "stato": "play",
+        "attesaCoperto": 62,
+        "decisioniNonPronte": 0,
+        "nuotoD": 3.0821868408704,
+        "nuotoM": 1.0621015036460446,
+        "metriH": 4.666470988514449,
+        "metriD": 3.033415232621304,
+        "metriM": 0.599470883518818,
+        "fine": {
+          "holder": 6,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": false,
+          "pronto": false,
+          "posH": [
+            9.262641648883104,
+            1.8989043314117116
+          ],
+          "posD": [
+            6.753665937053276,
+            0.4237911184591165
+          ]
+        }
+      },
+      {
+        "tipo": "B",
+        "dir": 1,
+        "difesa": "davanti",
+        "chiuso": true,
+        "mano": "S",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "B",
+        "appoggioRiceve": true,
+        "ritorno": 2.1499999999980446,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 6,
+            "a": 5,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 5,
+            "a": 6,
+            "t": 2.15,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.04812369974048732,
+        "stato": "play",
+        "attesaCoperto": 77,
+        "decisioniNonPronte": 0,
+        "nuotoD": 2.104649009460182,
+        "nuotoM": 1.0153347106518469,
+        "metriH": 4.709039282481705,
+        "metriD": 1.8646609357717108,
+        "metriM": 0.5818953691560774,
+        "fine": {
+          "holder": 6,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": false,
+          "pronto": false,
+          "posH": [
+            9.319787580658563,
+            1.8746963012562463
+          ],
+          "posD": [
+            7.6654677671782645,
+            0.6000699696265649
+          ]
+        }
+      },
+      {
+        "tipo": "B",
+        "dir": 1,
+        "difesa": "schierata",
+        "chiuso": true,
+        "mano": "S",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "B",
+        "appoggioRiceve": true,
+        "ritorno": null,
+        "ricezione": false,
+        "passaggi": [
+          {
+            "da": 6,
+            "a": 5,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 5,
+            "a": 4,
+            "t": 3.2,
+            "pronto": null
+          },
+          {
+            "da": 4,
+            "a": 2,
+            "t": 4.133,
+            "pronto": null
+          },
+          {
+            "da": 2,
+            "a": 4,
+            "t": 5.333,
+            "pronto": null
+          },
+          {
+            "da": 4,
+            "a": 5,
+            "t": 6.433,
+            "pronto": null
+          }
+        ],
+        "maxPasso": 0.04815043120924104,
+        "stato": "play",
+        "attesaCoperto": 112,
+        "decisioniNonPronte": 0,
+        "nuotoD": 4.994892262331089,
+        "nuotoM": 1.7371438908667918,
+        "metriH": 5.419693829813353,
+        "metriD": 0.37196305108975647,
+        "metriM": 0.12013801776563783,
+        "fine": {
+          "holder": 5,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "pronto": false,
+          "posH": [
+            10.05416119702068,
+            1.9566644585741881
+          ],
+          "posD": [
+            6.247777659789831,
+            0.13193638894220835
+          ]
+        }
+      },
+      {
+        "tipo": "B",
+        "dir": -1,
+        "difesa": "testa-avanti",
+        "chiuso": false,
+        "mano": "S",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "B",
+        "appoggioRiceve": true,
+        "ritorno": 1.8833333333316205,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 6,
+            "a": 5,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 5,
+            "a": 6,
+            "t": 1.883,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.04833983391138537,
+        "stato": "play",
+        "attesaCoperto": 63,
+        "decisioniNonPronte": 0,
+        "nuotoD": 3.119274774547652,
+        "nuotoM": 1.1288247886555214,
+        "metriH": 4.741003115068223,
+        "metriD": 3.0706924808105316,
+        "metriM": 0.5163562805744971,
+        "fine": {
+          "holder": 6,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": false,
+          "pronto": false,
+          "posH": [
+            9.329637359561833,
+            1.9316704873691641
+          ],
+          "posD": [
+            6.788054101404282,
+            0.4465194157558621
+          ]
+        }
+      },
+      {
+        "tipo": "B",
+        "dir": -1,
+        "difesa": "davanti",
+        "chiuso": true,
+        "mano": "S",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "B",
+        "appoggioRiceve": true,
+        "ritorno": 2.1166666666647416,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 6,
+            "a": 5,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 5,
+            "a": 6,
+            "t": 2.117,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.04816143195868322,
+        "stato": "play",
+        "attesaCoperto": 77,
+        "decisioniNonPronte": 0,
+        "nuotoD": 2.101107225185268,
+        "nuotoM": 1.124363589385869,
+        "metriH": 4.712254289685243,
+        "metriD": 1.8336062774439124,
+        "metriM": 0.5566655657078406,
+        "fine": {
+          "holder": 6,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": false,
+          "pronto": false,
+          "posH": [
+            9.29938951640029,
+            1.9288831682930554
+          ],
+          "posD": [
+            7.610155221332879,
+            0.6614235402747731
+          ]
+        }
+      },
+      {
+        "tipo": "B",
+        "dir": -1,
+        "difesa": "schierata",
+        "chiuso": true,
+        "mano": "S",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "B",
+        "appoggioRiceve": true,
+        "ritorno": null,
+        "ricezione": false,
+        "passaggi": [
+          {
+            "da": 6,
+            "a": 5,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 5,
+            "a": 4,
+            "t": 3.2,
+            "pronto": null
+          },
+          {
+            "da": 4,
+            "a": 2,
+            "t": 4.133,
+            "pronto": null
+          },
+          {
+            "da": 2,
+            "a": 4,
+            "t": 5.183,
+            "pronto": null
+          },
+          {
+            "da": 4,
+            "a": 5,
+            "t": 6.267,
+            "pronto": null
+          }
+        ],
+        "maxPasso": 0.04814616490087093,
+        "stato": "play",
+        "attesaCoperto": 153,
+        "decisioniNonPronte": 0,
+        "nuotoD": 4.377377643233118,
+        "nuotoM": 1.6274093944804242,
+        "metriH": 5.346129288477062,
+        "metriD": 0.1585088294667046,
+        "metriM": 0.35014942903041757,
+        "fine": {
+          "holder": 5,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "pronto": false,
+          "posH": [
+            10.001174910358236,
+            1.889271786989778
+          ],
+          "posD": [
+            6.053609046112598,
+            0.03910639297202822
+          ]
+        }
+      },
+      {
+        "tipo": "C",
+        "dir": 1,
+        "difesa": "testa-avanti",
+        "chiuso": false,
+        "mano": "D",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "C",
+        "appoggioRiceve": true,
+        "ritorno": 1.3666666666654237,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 4,
+            "a": 6,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 6,
+            "a": 4,
+            "t": 1.367,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.04835486743671534,
+        "stato": "play",
+        "attesaCoperto": 31,
+        "decisioniNonPronte": 0,
+        "nuotoD": 1.227365612130295,
+        "nuotoM": 0.8177707193984654,
+        "metriH": 3.374764645476643,
+        "metriD": 1.220215559692363,
+        "metriM": 0.5048628493486103,
+        "fine": {
+          "holder": 4,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": false,
+          "pronto": false,
+          "posH": [
+            9.282123481496011,
+            2.4270585054663774
+          ],
+          "posD": [
+            6.561107312149741,
+            4.0956523490659205
+          ]
+        }
+      },
+      {
+        "tipo": "C",
+        "dir": 1,
+        "difesa": "davanti",
+        "chiuso": true,
+        "mano": "D",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "C",
+        "appoggioRiceve": true,
+        "ritorno": 1.966666666664878,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 4,
+            "a": 6,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 6,
+            "a": 4,
+            "t": 1.967,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.0479193906111112,
+        "stato": "play",
+        "attesaCoperto": 68,
+        "decisioniNonPronte": 0,
+        "nuotoD": 1.1938283243790089,
+        "nuotoM": 0.9944525110744523,
+        "metriH": 3.3433037985502985,
+        "metriD": 1.1052641889029926,
+        "metriM": 0.6862949464538637,
+        "fine": {
+          "holder": 4,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": false,
+          "pronto": false,
+          "posH": [
+            9.142004554470617,
+            2.316517123921088
+          ],
+          "posD": [
+            7.979059800177526,
+            3.5617694884271773
+          ]
+        }
+      },
+      {
+        "tipo": "C",
+        "dir": 1,
+        "difesa": "schierata",
+        "chiuso": true,
+        "mano": "D",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "C",
+        "appoggioRiceve": true,
+        "ritorno": 1.966666666664878,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 4,
+            "a": 6,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 6,
+            "a": 4,
+            "t": 1.967,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.04791938666804436,
+        "stato": "play",
+        "attesaCoperto": 68,
+        "decisioniNonPronte": 0,
+        "nuotoD": 1.480690013945755,
+        "nuotoM": 0.5642015744712439,
+        "metriH": 3.3447846790610747,
+        "metriD": 1.4083770514567546,
+        "metriM": 0.36159926905695305,
+        "fine": {
+          "holder": 4,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": false,
+          "pronto": false,
+          "posH": [
+            9.13966035240903,
+            2.3118474888755447
+          ],
+          "posD": [
+            7.948511008889854,
+            3.235424609721911
+          ]
+        }
+      },
+      {
+        "tipo": "C",
+        "dir": -1,
+        "difesa": "testa-avanti",
+        "chiuso": false,
+        "mano": "D",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "C",
+        "appoggioRiceve": true,
+        "ritorno": 1.3666666666654237,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 4,
+            "a": 6,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 6,
+            "a": 4,
+            "t": 1.367,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.048354971804662146,
+        "stato": "play",
+        "attesaCoperto": 32,
+        "decisioniNonPronte": 0,
+        "nuotoD": 1.2256312273605052,
+        "nuotoM": 0.6869330123275255,
+        "metriH": 3.368212734866356,
+        "metriD": 1.2185837016941978,
+        "metriM": 0.460305930561477,
+        "fine": {
+          "holder": 4,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": false,
+          "pronto": false,
+          "posH": [
+            9.289653379211336,
+            2.446270118409644
+          ],
+          "posD": [
+            6.557732052765419,
+            4.092185134807138
+          ]
+        }
+      },
+      {
+        "tipo": "C",
+        "dir": -1,
+        "difesa": "davanti",
+        "chiuso": true,
+        "mano": "D",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "C",
+        "appoggioRiceve": true,
+        "ritorno": 1.966666666664878,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 4,
+            "a": 6,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 6,
+            "a": 4,
+            "t": 1.967,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.04791951747532877,
+        "stato": "play",
+        "attesaCoperto": 67,
+        "decisioniNonPronte": 0,
+        "nuotoD": 1.1736761684480304,
+        "nuotoM": 0.9749528606322717,
+        "metriH": 3.3531381777201537,
+        "metriD": 1.0883437018027473,
+        "metriM": 0.6441003015475171,
+        "fine": {
+          "holder": 4,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": false,
+          "pronto": false,
+          "posH": [
+            9.167590612095045,
+            2.3296405108474927
+          ],
+          "posD": [
+            7.981176722788667,
+            3.5805902103384524
+          ]
+        }
+      },
+      {
+        "tipo": "C",
+        "dir": -1,
+        "difesa": "schierata",
+        "chiuso": true,
+        "mano": "D",
+        "palmoReale": true,
+        "preparato": true,
+        "primaDelRilascio": true,
+        "rilascio": 0.1999999999998181,
+        "taglio": "C",
+        "appoggioRiceve": true,
+        "ritorno": 1.999999999998181,
+        "ricezione": true,
+        "passaggi": [
+          {
+            "da": 4,
+            "a": 6,
+            "t": 0.2,
+            "pronto": null
+          },
+          {
+            "da": 6,
+            "a": 4,
+            "t": 2,
+            "pronto": true
+          }
+        ],
+        "maxPasso": 0.04780254057437443,
+        "stato": "play",
+        "attesaCoperto": 69,
+        "decisioniNonPronte": 0,
+        "nuotoD": 1.1809191818089797,
+        "nuotoM": 0.6896446530543731,
+        "metriH": 3.3471071564982977,
+        "metriD": 1.0081341062107168,
+        "metriM": 0.36930842918261486,
+        "fine": {
+          "holder": 4,
+          "team": 0,
+          "state": "held",
+          "cut": false,
+          "allargata": true,
+          "pronto": false,
+          "posH": [
+            9.165028996922528,
+            2.3357653917022563
+          ],
+          "posD": [
+            8.078877534348056,
+            3.7128637741575377
+          ]
+        }
+      }
+    ],
+    "qualifiche": [
+      {
+        "dir": 1,
+        "primoToccoFermo": true,
+        "primaCircolazioneFerma": true,
+        "costruita": true,
+        "ripartenzaConservata": true,
+        "dopoFallo": true
+      },
+      {
+        "dir": -1,
+        "primoToccoFermo": true,
+        "primaCircolazioneFerma": true,
+        "costruita": true,
+        "ripartenzaConservata": true,
+        "dopoFallo": true
+      }
+    ],
+    "riposizionamenti": [
+      {
+        "dir": 1,
+        "schema": "arco",
+        "ripresa": "placeHalves",
+        "liveConservaMappe": true,
+        "liveConservaCoordinate": true,
+        "resetMappe": true,
+        "resetAzione": true,
+        "invarianti": true,
+        "memoriaCambioPrima": true,
+        "memoriaCambioPulita": true,
+        "riferimentiAllineati": true,
+        "primaForte": 4,
+        "centro": 1,
+        "dopoForte": 1,
+        "forteSulCentro": true,
+        "postiRicostruiti": true
+      },
+      {
+        "dir": 1,
+        "schema": "arco",
+        "ripresa": "kickoff",
+        "liveConservaMappe": true,
+        "liveConservaCoordinate": true,
+        "resetMappe": true,
+        "resetAzione": true,
+        "invarianti": true,
+        "memoriaCambioPrima": true,
+        "memoriaCambioPulita": true,
+        "riferimentiAllineati": true,
+        "primaForte": 4,
+        "centro": 1,
+        "dopoForte": 1,
+        "forteSulCentro": true,
+        "postiRicostruiti": true
+      },
+      {
+        "dir": 1,
+        "schema": "falso-centro",
+        "ripresa": "placeHalves",
+        "liveConservaMappe": true,
+        "liveConservaCoordinate": true,
+        "resetMappe": true,
+        "resetAzione": true,
+        "invarianti": true,
+        "memoriaCambioPrima": true,
+        "memoriaCambioPulita": true,
+        "riferimentiAllineati": true,
+        "primaForte": 4,
+        "centro": 6,
+        "dopoForte": 6,
+        "forteSulCentro": true,
+        "postiRicostruiti": true
+      },
+      {
+        "dir": 1,
+        "schema": "falso-centro",
+        "ripresa": "kickoff",
+        "liveConservaMappe": true,
+        "liveConservaCoordinate": true,
+        "resetMappe": true,
+        "resetAzione": true,
+        "invarianti": true,
+        "memoriaCambioPrima": true,
+        "memoriaCambioPulita": true,
+        "riferimentiAllineati": true,
+        "primaForte": 4,
+        "centro": 6,
+        "dopoForte": 6,
+        "forteSulCentro": true,
+        "postiRicostruiti": true
+      },
+      {
+        "dir": -1,
+        "schema": "arco",
+        "ripresa": "placeHalves",
+        "liveConservaMappe": true,
+        "liveConservaCoordinate": true,
+        "resetMappe": true,
+        "resetAzione": true,
+        "invarianti": true,
+        "memoriaCambioPrima": true,
+        "memoriaCambioPulita": true,
+        "riferimentiAllineati": true,
+        "primaForte": 4,
+        "centro": 1,
+        "dopoForte": 1,
+        "forteSulCentro": true,
+        "postiRicostruiti": true
+      },
+      {
+        "dir": -1,
+        "schema": "arco",
+        "ripresa": "kickoff",
+        "liveConservaMappe": true,
+        "liveConservaCoordinate": true,
+        "resetMappe": true,
+        "resetAzione": true,
+        "invarianti": true,
+        "memoriaCambioPrima": true,
+        "memoriaCambioPulita": true,
+        "riferimentiAllineati": true,
+        "primaForte": 4,
+        "centro": 1,
+        "dopoForte": 1,
+        "forteSulCentro": true,
+        "postiRicostruiti": true
+      },
+      {
+        "dir": -1,
+        "schema": "falso-centro",
+        "ripresa": "placeHalves",
+        "liveConservaMappe": true,
+        "liveConservaCoordinate": true,
+        "resetMappe": true,
+        "resetAzione": true,
+        "invarianti": true,
+        "memoriaCambioPrima": true,
+        "memoriaCambioPulita": true,
+        "riferimentiAllineati": true,
+        "primaForte": 4,
+        "centro": 6,
+        "dopoForte": 6,
+        "forteSulCentro": true,
+        "postiRicostruiti": true
+      },
+      {
+        "dir": -1,
+        "schema": "falso-centro",
+        "ripresa": "kickoff",
+        "liveConservaMappe": true,
+        "liveConservaCoordinate": true,
+        "resetMappe": true,
+        "resetAzione": true,
+        "invarianti": true,
+        "memoriaCambioPrima": true,
+        "memoriaCambioPulita": true,
+        "riferimentiAllineati": true,
+        "primaForte": 4,
+        "centro": 6,
+        "dopoForte": 6,
+        "forteSulCentro": true,
+        "postiRicostruiti": true
+      }
+    ]
+  }
+}

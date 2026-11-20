@@ -14,6 +14,7 @@ import { valoriMotore } from './dati/rose.js';
 import { ball, ctrl, game, ownGoalX, setCtrl, teams } from './stato.js';
 import { puntoPozzetto } from './pozzetto.js';
 import { PANCHINA } from './taratura.js';      // soglie e tempi dei cambi: numeri del bilanciamento
+import { registraEntranteCambio } from './difesa-cambi.js';
 export { PANCHINA };
 // punti della propria metà (lato lontano dalla telecamera): A = dietro la linea di porta, dove compare chi entra;
 // Z = zona dei cambi lungo il bordo
@@ -147,6 +148,7 @@ export function aggiornaPanchina(dt, liberi = false) {
         const vecchio = scambia(t, p, C.entra);
         mostra(c, vecchio, { x: c.x, z: c.z }); c.x = p.x; c.z = p.z;      // chi esce prende il posto: ora la comparsa è lui
         p.x = Z.x - t.dir * 0.5; p.z = Z.z + 0.3;
+        registraEntranteCambio(p);
         C.fase = 'uscita';
       }
     } else if (C.fase === 'uscita') {

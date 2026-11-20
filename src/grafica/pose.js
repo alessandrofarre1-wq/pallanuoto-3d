@@ -393,6 +393,13 @@ function articolaVista(p,J,T,t){
     }
   }
   if(!th){
+    // Nel taglio coordinato il collo segue il portatore o la palla in volo;
+    // busto e direzione fisica del nuoto restano quelli dell'avanzamento.
+    if(!hold&&p.cut?.coordinata&&p.cut.guarda&&game.state==='play'){
+      const riferimento=ball.state==='flight'?ball:p.cut.guarda;
+      const dx=riferimento.x-p.x,dz=riferimento.z-p.z;
+      T.testaGiro=clamp(-Math.atan2(-dx*p.fz+dz*p.fx,dx*p.fx+dz*p.fz),-1.1,1.1);
+    }
     // RICEZIONE (v0.63, foglio a tre lati): chi aspetta il passaggio guarda la palla che arriva (prima guardava dritto davanti a sé)
     if(!hold&&ball.state==='flight'&&ball.kind==='pass'&&ball.target===p){
       const dx=ball.x-p.x, dz=ball.z-p.z;

@@ -1,0 +1,161 @@
+{
+  "provenienza": {
+    "base": "c11f93d2a0cc79af67f66d04ebc624f4cd964172",
+    "versione": "0.68.0",
+    "sha256_produzione": {
+      "src/centroboa.js": "4fd5728ba95eaeda06a65e7f1a7c4f86bea023a0e9cc105a930e7faf92fd73f4",
+      "src/difesa-cambi.js": "a622d8f76e8065fb92dcc01089b3170742da1bc0ec6c7beecaca671c8e243567",
+      "src/entrate.js": "03dd0fd00ef3d97074e24076280473d01659631e0eccf4ce5d9579a713b22532",
+      "src/fisica.js": "6236d062d934147b88285a55b50f17439ffb71a2b8111e53ee8622c4059bf5d6",
+      "src/grafica/arena.js": "bcd2f0a3476df8d05013d72314c9189941bcdccaab7a534471ba74aa0ba3f59f",
+      "src/grafica/pose.js": "855664c785b8d53bcc04eb0c0fca218059beca0cc60196714fb2fc22d1b96b65",
+      "src/hud.js": "4c09f6dc76d603167dcdcb0e0542a23ebffef2c88149acb8201346fa896cdb28",
+      "src/ia.js": "82359a22e1e519b59a05b08cd4ca3c91a269e0d594f8e12bb87bcab246827e5a",
+      "src/lotta.js": "512b41053a73140730515ee396cb29820af444f0a99b766afdadcb035444de44",
+      "src/menu.js": "e051480553b0c532b97f7444e15277a95acc88efc72b0fa60f15a4ce541676eb",
+      "src/panchina.js": "35f5e2fc4c946745573ee143968ae6a062a4260675270de239ddd15d65bf0252",
+      "src/partita.js": "6b6a6e828b664d1912d1273795b3e80890eb079b78d42d70285f2ab113aeb6a3",
+      "src/regole.js": "e1b5e37c0582e2f27e1e128154d40130e4872260baf5f7be79213e7cf172350e",
+      "src/schemi.js": "8381fe8cea32bf3e01d558504987eef5c9578b170ec0302570d629cdba40a274",
+      "src/statistiche.js": "fd8f4d3f62c8bf9e63c40a31cec45e50e0fc81d88e06756c435cbd2136918144",
+      "src/taratura.js": "4d4a7d598675bfa7e4986da0a3e824738b629c9ea7fa092593f4fceccd4c7526",
+      "src/tiri.js": "c2cead5e88db50f6cb1537acd628a6f14ad699a8da2e844fadfa326ab48f01d5"
+    }
+  },
+  "baseline": {
+    "commit": "c11f93d2a0cc79af67f66d04ebc624f4cd964172",
+    "completo": true,
+    "sintesi": {
+      "partite": 2,
+      "tempo": 480,
+      "gol": 13.75,
+      "tiri": 32.75,
+      "conversione": 41.98473282442748,
+      "inPorta": 79.38931297709924,
+      "parate": 12.25,
+      "espulsioni": 11.75,
+      "espCentro": 61.702127659574465,
+      "espFuga": 4.25531914893617,
+      "superiorita": 11.75,
+      "superioritaTrasformate": 42.5531914893617,
+      "rigori": 2,
+      "rigoriSegnati": 75,
+      "palleRubate": 5,
+      "falli": 37,
+      "intercetti": 5.25,
+      "tiriLontani": 0,
+      "golLontani": 0,
+      "tiriSoli": 3.5,
+      "golCostruiti": 100,
+      "passaggiGol": 15.8,
+      "timeout": 1.75,
+      "golTipo": {
+        "perimetro": 36.36363636363637,
+        "superiorita": 36.36363636363637,
+        "controfuga": 0,
+        "entrata": 3.6363636363636362,
+        "centroboa": 12.727272727272727,
+        "rigore": 10.909090909090908
+      },
+      "vittorie": [
+        0,
+        2
+      ],
+      "nomi": [
+        "Italia",
+        "Ungheria"
+      ],
+      "golPerSquadra": [
+        12,
+        15.5
+      ],
+      "espulsioniPerSquadra": [
+        12.5,
+        11
+      ],
+      "azioni": {
+        "parita": {
+          "perPartita": 51.75,
+          "quota": 78.70722433460077,
+          "durata": 14.706360708502535,
+          "gol": 15.458937198067632,
+          "tiro": 24.154589371980677,
+          "persa": 19.32367149758454,
+          "falloAttacco": 13.043478260869565,
+          "espulsione": 21.73913043478261,
+          "rigore": 3.864734299516908,
+          "tempo": 2.4154589371980677
+        },
+        "controfuga": {
+          "perPartita": 1.25,
+          "quota": 1.9011406844106464,
+          "durata": 5.32999999997877,
+          "gol": 20,
+          "tiro": 60,
+          "persa": 0,
+          "falloAttacco": 0,
+          "espulsione": 20,
+          "rigore": 0,
+          "tempo": 0
+        },
+        "superiorita": {
+          "perPartita": 12.75,
+          "quota": 19.39163498098859,
+          "durata": 11.519281045737564,
+          "gol": 43.13725490196079,
+          "tiro": 45.09803921568628,
+          "persa": 3.9215686274509802,
+          "falloAttacco": 1.9607843137254901,
+          "espulsione": 1.9607843137254901,
+          "rigore": 0,
+          "tempo": 3.9215686274509802
+        }
+      },
+      "azioniTotali": 65.75,
+      "difese": [
+        0,
+        27.92854936682647,
+        65.39843508700139,
+        6.673015546172138
+      ],
+      "pallaSola": 0.03333333333333333,
+      "pallaVagante": 4.833333333333333,
+      "manoPassaggio": 0.9615920763003365
+    },
+    "risultati": [
+      [
+        12,
+        14
+      ],
+      [
+        12,
+        17
+      ]
+    ]
+  },
+  "candidato_senza_qualifica": {
+    "completo": false,
+    "campionePrevisto": 8,
+    "campioneCompletato": 4,
+    "risultati": [
+      [
+        14,
+        24
+      ],
+      [
+        16,
+        29
+      ],
+      [
+        8,
+        29
+      ],
+      [
+        15,
+        18
+      ]
+    ],
+    "mediaPrimiDuePerSquadra": 20.75,
+    "nota": "Interrotto per indagare i gol eccessivi. Non \u00e8 il codice finale e non \u00e8 un PASS su otto partite."
+  }
+}

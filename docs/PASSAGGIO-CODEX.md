@@ -1,11 +1,51 @@
+# Passaggio WATERPOLO 7 — v0.68
+
+Repository `alessandrofarre1-wq/pallanuoto-3d`, branch `codex/v068-difesa-entrate-arena`, base main `c11f93d` (PR #58, v0.67 di Claude). Versione `0.68.0`. Prima di proseguire riallinea main, PR recenti, CI, questo branch e diff locale. L'archivio v0.49/v0.50 sotto non è il punto da cui ripartire.
+
+Leggi [CLAUDE.md](../CLAUDE.md), [rapporto v0.68](versioni/v068-cambi-entrate-arena.md), [decisioni cambiate](decisioni-superate.md) e [misure con provenienza](verifiche/v068/). Esiti della CI sull'ultimo SHA e stato del campione e della consegna sono nella descrizione della PR v0.68; controllarli prima di dichiarare pronto un seguito. Nessun merge/deploy eseguito da Codex.
+
+## Implementato
+
+- Cambio volante avversario: il marcatore copre temporaneamente palla-centroboa/porta, senza inseguire l'uscente al bordo; due coperture si dividono gli spazi. Riprende il sostituto quando entra nella zona d'attacco, entro 10,5 m dalla porta. Pressing/zona e controllo umano conservati.
+- Entrate A/B/C: 3→2 e taglio verso 5; specchio 3→4 e taglio verso 1 con mano/abilità adatte; 2 al palo. Taglio al rilascio effettivo. L'appoggio legge entrante pronto, ala salita a 3,25 m sulla chiusura del suo difensore, oppure circolazione. Mezze entrate 1/5 richiedono testa davanti e marcatore vicino poco attento. Nessuna sanzione o rete garantita.
+- L'innesco A/B/C richiede 6 s di possesso e due passaggi; mezza D con obiettivo max1,4m e almeno0,6m utile; non interrompe la controfuga organizzata. Dopo un fallo recente può partire subito sul passaggio. Cooldown automatico 12 s, comandi manuali conservati. Il primo candidato partiva troppo presto: sui due semi di controllo 20,75 gol per squadra contro 13,75 della v0.67. Non riattivare quell'innesco precoce.
+- Identità, calotta, mano e specialità separate dal posto tattico. Occupanti e consegne persistono durante il gioco vivo; rientri dalle posizioni raggiunte. Quando le regole ricollocano le squadre dopo gol/time-out o a inizio tempo, si ricostruiscono mappe e riferimenti, pulendo anche la memoria dell'entrante. Nessun reset sui recuperi vivi.
+- Preset **Falso centro**: non specialista esce, boa vera attende il corridoio e subentra; difesa può consegnare o aiutare temporaneamente a M/raddoppio. Centro effettivo usato da lotta, fisica, zona e statistiche. HUD con posto attuale distinto dal numero di calotta.
+- Rimossa la correzione istantanea degli NPC sotto i 2 m: tornano nuotando. Sguardo del tagliante verso il portatore solo visuale, direzione fisica coerente.
+- Arena: sedute, pensilina, corrimani, panchine/attrezzature, tavolo e ufficiali 3D, pontoni/supporti/rete e rulli. Sei mesh statiche, atlante 1024²; CPU 8.084→8.296 triangoli. Nessun modello/controllo/camera/acqua sostituito.
+
+## Verifiche da conservare
+
+- Primo giro completo40PASS/1FAIL immagini su41, sei gare78gol/233tiri: precedente ai fix finali, non attribuirlo al codice finale.
+- Dopo i fix14/14 mirate PASS; dopo ultimo limite D6/6 PASS (lint, entrate, integrazione, nuoto coerente, gioco fermo, replay).25scene difesa ripetute PASS.
+- Aspetto finale completo PASS: gambe0/7513,0/4840,0/1129; iPhone56/142116. Arena con due cambi64/148852, replay49/146682.
+- PR DRAFT: CI in corso/da consultare nella PR, non dichiararla pronta al merge.
+- Otto partite prima della mezza corta:16,875gol,39,31tiri per squadra,38,15%gol da entrata,6/15voci in fascia. Bilancio dopo ultimo limite1,4m NON completato. D ora richiede anche0,6m di spostamento utile.
+- Punto concreto da verificare: ala a6,2m, mezza1,4m, `entrataPronta` richiede distanza porta<=5m; il target può rimanere fuori finestra. Risolvere con prova di ricezione/tiro reale prima di tarare8/16gare. Non allargare soglie senza verificare il comportamento.
+
+I filmati sono verifiche: quello del cambio parte da una scena preparata (portatore comandato senza tiri, caso 0,5), poi usa il motore reale per 24 s e viene accelerato 3×. Quello dell'entrata cerca una vera azione CPU, senza imporre passaggi o posizioni; cerchi/etichette sono solo annotazioni del filmato. Non sono misure degli FPS di un iPhone fisico né prova di naturalezza professionale. Vedi rapporto e metadati.
+
+## Da continuare con Ale / Claude
+
+1. Completare e valutare il campione di otto partite sul codice finale e la frequenza delle entrate giocando. Conservare circolazione e ripartenze di Claude; non compensare un problema di scelta tattica alterando alla cieca precisione/potenza. La taratura non è dichiarata conclusa dai test geometrici.
+2. La CPU riconosce un falso centro già disposto o nato dai movimenti, ma **non costruisce autonomamente la preparazione da un piano ordinario**. Il preset è disponibile al giocatore. Se completi la preparazione, conserva mano/specialità, tempi e lettura difensiva; nessun esito garantito.
+3. Restano i problemi v0.67 di durata delle azioni, superiorità, fatica da contatto e riferimento reale dei falli. Non sono automaticamente risolti dalla v0.68.
+4. Ale deve giudicare la resa artistica dell'arena e la naturalezza in partita. Il dettaglio è migliorato in modo incrementale; per il livello professionale serve ancora una valutazione artistica, non altre sole misure geometriche.
+
+Se la PR v0.68 non è unita, prosegui dal suo branch senza duplicarla. Se è unita, parti da main aggiornato e alza la versione della nuova PR. Preserva tutto il lavoro successivo di Claude. Limiti iPhone sempre <100 chiamate e <150.000 triangoli anche con due cambi/replay, 14 corpi completi; nessuna deroga. Una sola istanza Chromium pesante per volta. Browser locale: `PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers`. Non aggiungere prove delle espressioni facciali senza richiesta di Ale.
+
+---
+
+# Archivio delle consegne precedenti
+
 > **Dalla v0.62 (riordino)**: la memoria `CLAUDE.md` contiene solo le regole e le decisioni in vigore; la storia completa è in
 > `docs/storia.md`, le decisioni cambiate in `docs/decisioni-superate.md`, l'indice in `docs/README.md`. I numeri del
 > bilanciamento stanno in `src/taratura.js` (i moduli li importano e li riesportano con lo stesso nome; `npm run taratura` per
 > gioco contro realtà) e `npm run prove` esegue in locale gli stessi passi della CI.
 
-> Passaggio più recente: [v0.50 sospesa, checkpoint per Claude Code](PASSAGGIO-CLAUDE-CODE.md). Il testo v0.49 sotto è storico; non usarlo per riprendere il lavoro corrente.
+> Archivio v0.50: checkpoint per Claude Code conservato sotto la consegna v0.68 in [PASSAGGIO-CLAUDE-CODE.md](PASSAGGIO-CLAUDE-CODE.md). Il testo v0.49 sotto è storico; non usarlo per riprendere il lavoro corrente.
 
-# Passaggio corrente — WATERPOLO 7 v0.49
+# Archivio — WATERPOLO 7 v0.49
 
 ```text
 Continua alessandrofarre1-wq/pallanuoto-3d, branch

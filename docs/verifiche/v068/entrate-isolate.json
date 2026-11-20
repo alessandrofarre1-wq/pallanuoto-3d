@@ -1,0 +1,275 @@
+{
+  "provenienza": {
+    "base": "c11f93d2a0cc79af67f66d04ebc624f4cd964172",
+    "versione": "0.68.0",
+    "sha256_produzione": {
+      "src/centroboa.js": "4fd5728ba95eaeda06a65e7f1a7c4f86bea023a0e9cc105a930e7faf92fd73f4",
+      "src/difesa-cambi.js": "a622d8f76e8065fb92dcc01089b3170742da1bc0ec6c7beecaca671c8e243567",
+      "src/entrate.js": "78716bc148931d1a6aca46a32913647c37fb7946c2e659b183c61c366309245f",
+      "src/fisica.js": "6236d062d934147b88285a55b50f17439ffb71a2b8111e53ee8622c4059bf5d6",
+      "src/grafica/arena.js": "bcd2f0a3476df8d05013d72314c9189941bcdccaab7a534471ba74aa0ba3f59f",
+      "src/grafica/pose.js": "855664c785b8d53bcc04eb0c0fca218059beca0cc60196714fb2fc22d1b96b65",
+      "src/hud.js": "4c09f6dc76d603167dcdcb0e0542a23ebffef2c88149acb8201346fa896cdb28",
+      "src/ia.js": "82359a22e1e519b59a05b08cd4ca3c91a269e0d594f8e12bb87bcab246827e5a",
+      "src/lotta.js": "512b41053a73140730515ee396cb29820af444f0a99b766afdadcb035444de44",
+      "src/menu.js": "e051480553b0c532b97f7444e15277a95acc88efc72b0fa60f15a4ce541676eb",
+      "src/panchina.js": "35f5e2fc4c946745573ee143968ae6a062a4260675270de239ddd15d65bf0252",
+      "src/partita.js": "6b6a6e828b664d1912d1273795b3e80890eb079b78d42d70285f2ab113aeb6a3",
+      "src/regole.js": "e1b5e37c0582e2f27e1e128154d40130e4872260baf5f7be79213e7cf172350e",
+      "src/schemi.js": "8381fe8cea32bf3e01d558504987eef5c9578b170ec0302570d629cdba40a274",
+      "src/statistiche.js": "fd8f4d3f62c8bf9e63c40a31cec45e50e0fc81d88e06756c435cbd2136918144",
+      "src/taratura.js": "aa41576f941230a29375b3e7c47a9c4410dd491cd22acec0b813823e61387806",
+      "src/tiri.js": "c2cead5e88db50f6cb1537acd628a6f14ad699a8da2e844fadfa326ab48f01d5"
+    }
+  },
+  "misure": {
+    "A1": {
+      "gesto": "pass",
+      "tipo": "A",
+      "partito": true,
+      "primo": true,
+      "secondo": true,
+      "profondita": 3.5883904477368667,
+      "z": -2.0527763961339245,
+      "maxStep": 0.04662701496320239,
+      "posti": [
+        1,
+        2,
+        6,
+        4,
+        3,
+        5
+      ],
+      "identita": 6,
+      "mano": "D"
+    },
+    "A-1": {
+      "gesto": "pass",
+      "tipo": "A",
+      "partito": true,
+      "primo": true,
+      "secondo": true,
+      "profondita": 3.490552433312434,
+      "z": -1.9774302433093913,
+      "maxStep": 0.04660293317122214,
+      "posti": [
+        1,
+        2,
+        6,
+        4,
+        3,
+        5
+      ],
+      "identita": 6,
+      "mano": "D"
+    },
+    "B1": {
+      "gesto": "pass",
+      "tipo": "B",
+      "partito": true,
+      "primo": true,
+      "secondo": true,
+      "profondita": 3.5083805860404755,
+      "z": 1.9715401169718627,
+      "maxStep": 0.04662570372463874,
+      "posti": [
+        1,
+        6,
+        3,
+        2,
+        5,
+        4
+      ],
+      "identita": 6,
+      "mano": "S"
+    },
+    "B-1": {
+      "gesto": "pass",
+      "tipo": "B",
+      "partito": true,
+      "primo": true,
+      "secondo": true,
+      "profondita": 3.558467716505479,
+      "z": 2.0500749131544955,
+      "maxStep": 0.04661124942954986,
+      "posti": [
+        1,
+        6,
+        3,
+        2,
+        5,
+        4
+      ],
+      "identita": 6,
+      "mano": "S"
+    },
+    "C1": {
+      "gesto": "pass",
+      "tipo": "C",
+      "partito": true,
+      "primo": true,
+      "secondo": true,
+      "profondita": 3.521072461074967,
+      "z": 2.5159244806597973,
+      "maxStep": 0.04653889926584742,
+      "posti": [
+        1,
+        4,
+        3,
+        2,
+        5,
+        6
+      ],
+      "identita": 4,
+      "mano": "D"
+    },
+    "C-1": {
+      "gesto": "pass",
+      "tipo": "C",
+      "partito": true,
+      "primo": true,
+      "secondo": true,
+      "profondita": 3.5141826156132456,
+      "z": 2.5760495674566557,
+      "maxStep": 0.04653889926584742,
+      "posti": [
+        1,
+        4,
+        3,
+        2,
+        5,
+        6
+      ],
+      "identita": 4,
+      "mano": "D"
+    },
+    "alaSale": {
+      "primo": true,
+      "pronta": true,
+      "passAla": true,
+      "allargata": true,
+      "alaD": 3.4879697108411882,
+      "alaZ": -3.4531696906216554,
+      "riceve": true,
+      "taglioRicevibile": true
+    },
+    "doppiaCopertura": {
+      "primo": true,
+      "pronta": true,
+      "passAla": false,
+      "allargata": true,
+      "alaD": 3.365489265585225,
+      "alaZ": -3.3049726320139685,
+      "riceve": false,
+      "taglioRicevibile": true
+    },
+    "consegna": {
+      "assegnato": true,
+      "fermo": true,
+      "persistente": true,
+      "prima": {
+        "ax": 5.85,
+        "az": 0,
+        "bx": -8,
+        "bz": 7.253176219761372
+      }
+    },
+    "tiroLibero": {
+      "fermo": true,
+      "nienteDuranteStop": true,
+      "ancoraFermo": true,
+      "ripreso": true,
+      "gesto": "pass",
+      "primaRilascio": true,
+      "dopoRilascio": true,
+      "ricevuto": true
+    },
+    "mezzaNo": {
+      "taglio": null,
+      "metri": 0
+    },
+    "mezzaSi": {
+      "taglio": "D",
+      "metri": 1.4
+    },
+    "mezzaNoSpecchio": {
+      "taglio": null,
+      "metri": 0
+    },
+    "mezzaSiSpecchio": {
+      "taglio": "D",
+      "metri": 1.4
+    },
+    "mezzaGiaArrivato1": {
+      "taglio": null
+    },
+    "mezzaGiaArrivato-1": {
+      "taglio": null
+    },
+    "mano": {
+      "debole": false,
+      "mancina": true,
+      "abile": true
+    },
+    "mismatch1": {
+      "partito": true,
+      "centro": true,
+      "attesa": true,
+      "uscita": true,
+      "boaDentro": true,
+      "forteSegue": true,
+      "deboleSuBoa": true,
+      "massimo": 0.04673874617762041,
+      "schema": true,
+      "identita": true
+    },
+    "mismatch-1": {
+      "partito": true,
+      "centro": true,
+      "attesa": true,
+      "uscita": true,
+      "boaDentro": true,
+      "forteSegue": true,
+      "deboleSuBoa": true,
+      "massimo": 0.04680611407847322,
+      "schema": true,
+      "identita": true
+    },
+    "preset1": {
+      "salvato": true,
+      "nome": "Falso centro",
+      "accoppia": true,
+      "nienteSalti": true,
+      "chiamata": true,
+      "controllato": true,
+      "rientraBoa": true,
+      "esceFake": true,
+      "stessoPiano": true,
+      "centro": true,
+      "persiste": true
+    },
+    "preset-1": {
+      "salvato": true,
+      "nome": "Falso centro",
+      "accoppia": true,
+      "nienteSalti": true,
+      "chiamata": true,
+      "controllato": true,
+      "rientraBoa": true,
+      "esceFake": true,
+      "stessoPiano": true,
+      "centro": true,
+      "persiste": true
+    },
+    "recupero": {
+      "immediato": true,
+      "occ": true,
+      "nessunTaglio": true,
+      "nuota": true
+    },
+    "area": {
+      "vietata": true,
+      "limite": 2.120000000000001
+    }
+  }
+}

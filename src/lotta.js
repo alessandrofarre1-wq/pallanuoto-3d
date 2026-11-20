@@ -1,7 +1,7 @@
 // ================= LOTTA AL CENTRO (centroboa contro il suo marcatore) =================
 import { ARBITRO } from './costanti.js';
 import { whistle } from './audio.js';
-import { BRV, DIFF, MARK, clamp, dist, rnd } from './costanti.js';
+import { BRV, DIFF, clamp, dist, rnd } from './costanti.js';
 import { spawnFoam } from './grafica/scena.js';
 import { annuncia } from './cronaca.js';
 import { aiPass, aiShoot, closestTo } from './ia.js';
@@ -9,11 +9,12 @@ import { inp } from './input.js';
 import { ESPULSIONI, deadBall, exclude, foul, giveBall, tackle } from './regole.js';
 import { ball, ctrl, fight, game, goalX, other } from './stato.js';
 import { bestPassTarget } from './tiri.js';
-import { avviaGirata, leggiCentro } from './centroboa.js';
+import { avviaGirata, difensoreCentro, leggiCentro } from './centroboa.js';
+import { centroAttacco } from './entrate.js';
 import { azioneAperta, chiudiAzione } from './statistiche.js';
 import { CENTRO_SENZA_PALLA, LOTTA_FASE, LOTTA_PALLA } from './taratura.js';      // numeri del bilanciamento
 export { CENTRO_SENZA_PALLA, LOTTA_FASE, LOTTA_PALLA };
-export const boaDef = t => other(t).players.find(q=>MARK[q.i]===1);
+export const boaDef = t => difensoreCentro(centroAttacco(t));
 export function fightOn(a,b){ return fight.active && ((fight.boa===a&&fight.def===b)||(fight.boa===b&&fight.def===a)); }
 export function updateFight(dt){
   const at=game.possTeam;
@@ -22,7 +23,7 @@ export function updateFight(dt){
   if(!at||game.penalty) return;
   // Il boa è un uomo al palo nel 4–2; quel compito non è il duello del 6 contro 6.
   if(other(at).players.some(p=>p.excluded)) return;
-  const boa=at.players[1], def=boaDef(at);
+  const boa=centroAttacco(at), def=boaDef(at);
   if(!boa||!def||boa.excluded||def.excluded||game.time<def.stunUntil) return;
   const gx=goalX(at);
   if(Math.abs(gx-boa.x)>5||Math.abs(boa.z)>3.2||dist(boa,def)>1.8) return;

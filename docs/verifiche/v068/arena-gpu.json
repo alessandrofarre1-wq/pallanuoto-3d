@@ -1,0 +1,755 @@
+{
+  "provenienza": {
+    "base": "c11f93d2a0cc79af67f66d04ebc624f4cd964172",
+    "versione": "0.68.0",
+    "sha256_produzione": {
+      "src/centroboa.js": "4fd5728ba95eaeda06a65e7f1a7c4f86bea023a0e9cc105a930e7faf92fd73f4",
+      "src/difesa-cambi.js": "a622d8f76e8065fb92dcc01089b3170742da1bc0ec6c7beecaca671c8e243567",
+      "src/entrate.js": "78716bc148931d1a6aca46a32913647c37fb7946c2e659b183c61c366309245f",
+      "src/fisica.js": "6236d062d934147b88285a55b50f17439ffb71a2b8111e53ee8622c4059bf5d6",
+      "src/grafica/arena.js": "bcd2f0a3476df8d05013d72314c9189941bcdccaab7a534471ba74aa0ba3f59f",
+      "src/grafica/pose.js": "855664c785b8d53bcc04eb0c0fca218059beca0cc60196714fb2fc22d1b96b65",
+      "src/hud.js": "4c09f6dc76d603167dcdcb0e0542a23ebffef2c88149acb8201346fa896cdb28",
+      "src/ia.js": "82359a22e1e519b59a05b08cd4ca3c91a269e0d594f8e12bb87bcab246827e5a",
+      "src/lotta.js": "512b41053a73140730515ee396cb29820af444f0a99b766afdadcb035444de44",
+      "src/menu.js": "e051480553b0c532b97f7444e15277a95acc88efc72b0fa60f15a4ce541676eb",
+      "src/panchina.js": "35f5e2fc4c946745573ee143968ae6a062a4260675270de239ddd15d65bf0252",
+      "src/partita.js": "6b6a6e828b664d1912d1273795b3e80890eb079b78d42d70285f2ab113aeb6a3",
+      "src/regole.js": "e1b5e37c0582e2f27e1e128154d40130e4872260baf5f7be79213e7cf172350e",
+      "src/schemi.js": "8381fe8cea32bf3e01d558504987eef5c9578b170ec0302570d629cdba40a274",
+      "src/statistiche.js": "fd8f4d3f62c8bf9e63c40a31cec45e50e0fc81d88e06756c435cbd2136918144",
+      "src/taratura.js": "aa41576f941230a29375b3e7c47a9c4410dd491cd22acec0b813823e61387806",
+      "src/tiri.js": "c2cead5e88db50f6cb1537acd628a6f14ad699a8da2e844fadfa326ab48f01d5"
+    }
+  },
+  "prima": {
+    "dist": "/tmp/waterpolo-v067-dist",
+    "results": [
+      {
+        "viewport": 844,
+        "scena": "tv",
+        "calls": 57,
+        "tri": 141796,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 844,
+        "scena": "arena",
+        "calls": 61,
+        "tri": 142498,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 844,
+        "scena": "porta",
+        "calls": 55,
+        "tri": 140308,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 844,
+        "scena": "bordo",
+        "calls": 46,
+        "tri": 140250,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 844,
+        "scena": "cambi",
+        "calls": 64,
+        "tri": 148640,
+        "samples": [
+          {
+            "frame": 59,
+            "calls": 64,
+            "triangles": 148640,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 60,
+            "calls": 64,
+            "triangles": 148640,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 61,
+            "calls": 64,
+            "triangles": 148640,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 62,
+            "calls": 64,
+            "triangles": 148640,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 63,
+            "calls": 64,
+            "triangles": 148640,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 64,
+            "calls": 64,
+            "triangles": 148640,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 65,
+            "calls": 64,
+            "triangles": 148640,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 66,
+            "calls": 64,
+            "triangles": 148640,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 67,
+            "calls": 64,
+            "triangles": 148640,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 68,
+            "calls": 62,
+            "triangles": 145584,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 69,
+            "calls": 62,
+            "triangles": 145584,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 70,
+            "calls": 62,
+            "triangles": 145584,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 71,
+            "calls": 62,
+            "triangles": 145584,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 72,
+            "calls": 62,
+            "triangles": 145584,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 73,
+            "calls": 62,
+            "triangles": 145584,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 74,
+            "calls": 60,
+            "triangles": 142528,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 75,
+            "calls": 60,
+            "triangles": 142528,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 76,
+            "calls": 60,
+            "triangles": 142528,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 77,
+            "calls": 60,
+            "triangles": 142528,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 78,
+            "calls": 60,
+            "triangles": 142528,
+            "points": 0,
+            "lines": 0
+          }
+        ]
+      },
+      {
+        "viewport": 667,
+        "scena": "tv",
+        "calls": 57,
+        "tri": 141796,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 667,
+        "scena": "arena",
+        "calls": 61,
+        "tri": 142498,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 667,
+        "scena": "porta",
+        "calls": 49,
+        "tri": 139280,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 667,
+        "scena": "bordo",
+        "calls": 43,
+        "tri": 139990,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 667,
+        "scena": "cambi",
+        "calls": 62,
+        "tri": 148196,
+        "samples": [
+          {
+            "frame": 59,
+            "calls": 61,
+            "triangles": 147940,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 60,
+            "calls": 61,
+            "triangles": 147940,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 61,
+            "calls": 62,
+            "triangles": 148196,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 62,
+            "calls": 62,
+            "triangles": 148196,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 63,
+            "calls": 62,
+            "triangles": 148196,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 64,
+            "calls": 62,
+            "triangles": 148196,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 65,
+            "calls": 62,
+            "triangles": 148196,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 66,
+            "calls": 62,
+            "triangles": 148196,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 67,
+            "calls": 62,
+            "triangles": 148196,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 68,
+            "calls": 60,
+            "triangles": 145140,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 69,
+            "calls": 60,
+            "triangles": 145140,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 70,
+            "calls": 60,
+            "triangles": 145140,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 71,
+            "calls": 60,
+            "triangles": 145140,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 72,
+            "calls": 60,
+            "triangles": 145140,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 73,
+            "calls": 59,
+            "triangles": 144884,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 74,
+            "calls": 58,
+            "triangles": 142084,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 75,
+            "calls": 58,
+            "triangles": 142084,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 76,
+            "calls": 58,
+            "triangles": 142084,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 77,
+            "calls": 58,
+            "triangles": 142084,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 78,
+            "calls": 58,
+            "triangles": 142084,
+            "points": 0,
+            "lines": 0
+          }
+        ]
+      }
+    ]
+  },
+  "dopo": {
+    "dist": "dist",
+    "results": [
+      {
+        "viewport": 844,
+        "scena": "tv",
+        "calls": 57,
+        "tri": 142118,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 844,
+        "scena": "arena",
+        "calls": 61,
+        "tri": 142710,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 844,
+        "scena": "porta",
+        "calls": 55,
+        "tri": 140630,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 844,
+        "scena": "bordo",
+        "calls": 46,
+        "tri": 140572,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 844,
+        "scena": "cambi",
+        "calls": 64,
+        "tri": 148852,
+        "samples": [
+          {
+            "frame": 59,
+            "calls": 64,
+            "triangles": 148852,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 60,
+            "calls": 64,
+            "triangles": 148852,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 61,
+            "calls": 64,
+            "triangles": 148852,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 62,
+            "calls": 64,
+            "triangles": 148852,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 63,
+            "calls": 64,
+            "triangles": 148852,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 64,
+            "calls": 64,
+            "triangles": 148852,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 65,
+            "calls": 64,
+            "triangles": 148852,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 66,
+            "calls": 64,
+            "triangles": 148852,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 67,
+            "calls": 64,
+            "triangles": 148852,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 68,
+            "calls": 62,
+            "triangles": 145796,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 69,
+            "calls": 62,
+            "triangles": 145796,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 70,
+            "calls": 62,
+            "triangles": 145796,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 71,
+            "calls": 62,
+            "triangles": 145796,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 72,
+            "calls": 62,
+            "triangles": 145796,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 73,
+            "calls": 62,
+            "triangles": 145796,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 74,
+            "calls": 60,
+            "triangles": 142740,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 75,
+            "calls": 60,
+            "triangles": 142740,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 76,
+            "calls": 60,
+            "triangles": 142740,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 77,
+            "calls": 60,
+            "triangles": 142740,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 78,
+            "calls": 60,
+            "triangles": 142740,
+            "points": 0,
+            "lines": 0
+          }
+        ]
+      },
+      {
+        "viewport": 667,
+        "scena": "tv",
+        "calls": 57,
+        "tri": 142118,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 667,
+        "scena": "arena",
+        "calls": 61,
+        "tri": 142710,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 667,
+        "scena": "porta",
+        "calls": 49,
+        "tri": 139602,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 667,
+        "scena": "bordo",
+        "calls": 43,
+        "tri": 140312,
+        "dpr": 1.5,
+        "corpi": 14
+      },
+      {
+        "viewport": 667,
+        "scena": "cambi",
+        "calls": 62,
+        "tri": 148518,
+        "samples": [
+          {
+            "frame": 59,
+            "calls": 61,
+            "triangles": 148262,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 60,
+            "calls": 61,
+            "triangles": 148262,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 61,
+            "calls": 62,
+            "triangles": 148518,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 62,
+            "calls": 62,
+            "triangles": 148518,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 63,
+            "calls": 62,
+            "triangles": 148518,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 64,
+            "calls": 62,
+            "triangles": 148518,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 65,
+            "calls": 62,
+            "triangles": 148518,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 66,
+            "calls": 62,
+            "triangles": 148518,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 67,
+            "calls": 62,
+            "triangles": 148518,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 68,
+            "calls": 60,
+            "triangles": 145462,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 69,
+            "calls": 60,
+            "triangles": 145462,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 70,
+            "calls": 60,
+            "triangles": 145462,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 71,
+            "calls": 60,
+            "triangles": 145462,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 72,
+            "calls": 60,
+            "triangles": 145462,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 73,
+            "calls": 59,
+            "triangles": 145206,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 74,
+            "calls": 58,
+            "triangles": 142406,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 75,
+            "calls": 58,
+            "triangles": 142406,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 76,
+            "calls": 58,
+            "triangles": 142406,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 77,
+            "calls": 58,
+            "triangles": 142406,
+            "points": 0,
+            "lines": 0
+          },
+          {
+            "frame": 78,
+            "calls": 58,
+            "triangles": 142406,
+            "points": 0,
+            "lines": 0
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -11,6 +11,7 @@ import { manUp, schemiUomo } from './ia.js';
 import { siglaUomo } from './uomo-in-piu.js';
 import { ultimoCambioManuale } from './controllo.js';
 import { nomePosizione, numeroPosizione } from './schemi.js';
+import { postoAttacco } from './entrate.js';
 export const $ = id => document.getElementById(id);
 let tacKey='', schedaVista=null, ultimoBip=null, uomoAperto=null, uomoChiudi=null;
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
@@ -58,8 +59,9 @@ export function updateHUD(){
   { const nostra=game.possTeam===teams[0]; if(document.body.classList.contains('nostra-palla')!==nostra) document.body.classList.toggle('nostra-palla',nostra); }
   if(ctrl){
     { const sup=game.possTeam===ctrl.team&&manUp(ctrl.team);
-      const posizione=ctrl.isGK?'Portiere':!sup&&ctrl.i===6&&game.possTeam&&game.possTeam!==ctrl.team?'Pos. 3 · Difensore del centroboa':nomePosizione(ctrl.i,sup);
-      const t=`<span class="posto">${ctrl.isGK?'POR':`Pos. ${numeroPosizione(ctrl.i,sup)}`}</span><span class="identita">#${ctrl.num} ${ctrl.name}${iconaMano(ctrl.mano)}</span><span class="ruolo"> · ${posizione.replace(/^Pos\. \d+ · /,'')}${sup?' · 6c5':''}</span>${ctrl.sprinting?' <span class="sp">⚡</span>':''}`;
+      const posto=!sup&&game.possTeam===ctrl.team?postoAttacco(ctrl):ctrl.i;
+      const posizione=ctrl.isGK?'Portiere':!sup&&ctrl.i===6&&game.possTeam&&game.possTeam!==ctrl.team?'Pos. 3 · Difensore del centroboa':nomePosizione(posto,sup);
+      const t=`<span class="posto">${ctrl.isGK?'POR':`Pos. ${numeroPosizione(posto,sup)}`}</span><span class="identita">#${ctrl.num} ${ctrl.name}${iconaMano(ctrl.mano)}</span><span class="ruolo"> · ${posizione.replace(/^Pos\. \d+ · /,'')}${sup?' · 6c5':''}</span>${ctrl.sprinting?' <span class="sp">⚡</span>':''}`;
       $('pname').setAttribute('aria-label',`Calotta ${ctrl.num}, ${ctrl.name}. ${posizione}${sup?', uomo in più':''}`);
       if($('pname').innerHTML!==t) $('pname').innerHTML=t; }
     if(ctrl.scheda!==schedaVista){ schedaVista=ctrl.scheda; const s=ctrl.s; $('pstat').innerHTML=`<b>${ctrl.ovr}</b> · `+CHIAVE[ctrl.i].map(k=>`${STAT_NOMI[k].slice(0,3).toUpperCase()} ${s[k]}`).join(' · ')+` · mano ${ctrl.mano==='S'?'sinistra':'destra'}`; }

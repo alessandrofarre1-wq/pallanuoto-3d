@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.67.0",
+  "version": "0.68.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -66,7 +66,11 @@
     "rotazioni": "node strumenti/misura-rotazioni-v050.mjs",
     "gesti-foglio": "node strumenti/gesti-foglio.mjs",
     "misura-azione": "node strumenti/misura-azione-v053.mjs",
-    "video-azione": "node strumenti/video-azione-v053.mjs"
+    "video-azione": "node strumenti/video-azione-v053.mjs",
+    "difesa-cambi": "node tests/difesa-cambi-v068.mjs",
+    "entrate": "node tests/entrate-v068.mjs",
+    "area-movimento": "node tests/area-movimento-v068.mjs",
+    "entrate-integrazione": "node tests/entrate-integrazione-v068.mjs"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",

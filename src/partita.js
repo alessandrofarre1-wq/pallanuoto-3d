@@ -139,6 +139,12 @@ export function update(dt){
     if(ball.holder===p && p.team.human && p!==ctrl){ aiCarrier(p,dt); tg=p.target; }
     if(p.uscendo && ball.holder!==p) tg=obiettivoUscita(p);      // cambio volante: va alla zona dei cambi
     { const r=obiettivoRientro(p); if(r) tg=r; }      // appena rientrato dal pozzetto: controfuga o difesa sul portatore
+    // Chi taglia troppo presto sotto i 2 m rientra nuotando: nessuno spostamento
+    // istantaneo dei compagni per correggere la posizione rispetto alla palla.
+    if(!p.isGK&&!p.uscendo&&!game.penalty&&game.possTeam===p.team&&ball.state==='held'&&ball.holder!==p){
+      const gx=goalX(p.team),qd=Math.abs(gx-p.x),bd=Math.abs(gx-ball.x);
+      if(qd<2&&Math.abs(p.z)<GW+2&&qd<bd-0.3) tg={x:gx-p.team.dir*2.15,z:p.z,sprint:true};
+    }
     if(!tg){ movePlayer(p,0,0,false,dt); continue; }
     const dx=tg.x-p.x, dz=tg.z-p.z, d=Math.hypot(dx,dz);
     let mx=0,mz=0; if(d>0.12){ const s=Math.min(1,d/0.8); mx=dx/d*s; mz=dz/d*s; }
@@ -195,7 +201,6 @@ export function update(dt){
     for(const q of t.players){
       const qd=Math.abs(gx-q.x);
       if(q.excluded||q.isGK||ball.holder===q||ball.state==='flight'||!(qd<2&&Math.abs(q.z)<GW+2&&qd<bd-0.3)){ q.areaT=0; continue; }
-      if(q!==ctrl){ q.x=gx-t.dir*2.05; q.areaT=0; continue; }      // i compagni gestiti dal computer ne restano fuori
       q.areaT=(q.areaT||0)+dt;
       if(q.areaT>1.2){ q.areaT=0; areaFoul(q); return; }
     }

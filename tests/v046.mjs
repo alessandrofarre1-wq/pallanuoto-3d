@@ -71,9 +71,17 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
 
 // 4. difesa: cambio di marcatura; controfuga organizzata (tre corsie, prima linea sui 2 metri)
 { const r = await pg.evaluate(() => { const H = window.__pallanuoto, V = H.v046, it = H.teams[0], hu = H.teams[1];
-    window.__scena(0); const a = hu.players[2], b = hu.players[3];
-    const primaA = V.uomoDi(a), primaB = V.uomoDi(b); hu.scambio = { a, b, fino: H.game.time + 5 };
-    const scambiato = V.uomoDi(a) === primaB && V.uomoDi(b) === primaA; hu.scambio = null;
+    const porta=12.5*it.dir;
+    window.__scena(porta-it.dir*6);H.prova.aggiornaSchemi(it);
+    for(const q of H.allPlayers){q.cut=null;q.vx=q.vz=0;q.tackleCD=999;q.colpi=[];}
+    hu.accoppiamenti=null;hu.scambio=null;hu.adattamentoEntrata=null;
+    const a = hu.players[2], b = hu.players[3],primaA=V.uomoDi(a),primaB=V.uomoDi(b);
+    for(const q of hu.players){q.x=porta-it.dir*8;q.z=7;}
+    Object.assign(primaA,{x:porta-it.dir*3,z:-2,cut:{t0:H.game.time,phase:0,x:porta-it.dir*2.6,z:-1.7}});
+    Object.assign(a,{x:porta-it.dir*5.1,z:-2});Object.assign(b,{x:porta-it.dir*2.7,z:-1.2});
+    // La consegna nasce dalla lettura reale del taglio, non scrivendo soltanto la diagnostica t.scambio.
+    H.__setCtrl(null);window.__salta(1);
+    const scambiato=V.uomoDi(a)===primaB&&V.uomoDi(b)===primaA;
     // controfuga: l'Italia recupera palla vicino alla propria porta
     const gk = it.players[0]; for (const q of H.allPlayers) { q.excluded = false; } H.ball.x = -10 * it.dir;
     gk.x = -11.5 * it.dir; gk.z = 0; H.game.possTeam = hu; H.regole.giveBall(gk); const c = V.contropiede(it);
