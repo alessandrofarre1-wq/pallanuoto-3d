@@ -1,0 +1,17 @@
+
+> pallanuoto-3d@0.70.0 aspetto
+> node tests/aspetto.mjs --no-build
+
+OK  partita simulata arrivata alla fine
+   gambe sopra l'acqua (verticale): 0 campioni su 8282 (0%)
+   gambe sopra l'acqua (in nuotata): 0 campioni su 4689 (0%)
+   gambe sopra l'acqua (a metà): 0 campioni su 1113 (0%)
+   punto delle gambe più alto: 0 cm sopra la superficie
+   iphone-orizzontale: 55 oggetti disegnati, 142100 triangoli
+   iphone-piccolo: 55 oggetti disegnati, 142100 triangoli
+   nuoto-lato: 46 oggetti disegnati, 154946 triangoli
+   nuoto-alto: 40 oggetti disegnati, 154172 triangoli
+   verticale-lato: 46 oggetti disegnati, 154946 triangoli
+   gruppo-alto: 54 oggetti disegnati, 156308 triangoli
+
+Tutto a posto.

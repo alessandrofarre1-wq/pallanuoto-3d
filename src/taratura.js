@@ -81,6 +81,14 @@ export const ENTRATE_REATTIVE={ pressing:1.55, attacco:8.5, appoggio:6.8, fondo:
   // senza restare appena fuori dai 5 m richiesti per decidere il passaggio.
   circolazione:6, passaggi:2, mezzaMetri:1.4, mezzaMin:0.6, mezzaMargine:0.2 };
 
+// Servizio alla boa v0.70: qualifiche geometriche del gioco, non dati di frequenza
+// reale. Nessun bonus nuovo al gol: si riusano i punteggi del passaggio già libero.
+// Il portiere resta un rischio sulla presa: raggio PRESA.portiere + margine, poi
+// proiezione della sua velocità verso la boa sul tempo di volo (massimo 0,8 m).
+export const SERVIZIO_BOA={ passaggio:8.5, porta:6, spazio:2.1, fronte:.65,
+  corridoio:.55, rischio:.18, dietroNonCopre:.25, areaLaterale:3.58, lineaPalla:.05,
+  portiereMargine:.35, portiereAnticipo:.8, voloMinimo:.25 };
+
 // ---------- PASSAGGI, INTERCETTI E PALLE PERSE (fisica.js, tiri.js) ----------
 // INTERCETTO: probabilità che un difensore sulla linea legga il passaggio (base, più «lungo» per i passaggi che volano a lungo).
 // Reale: palla persa in circa il 20% delle azioni in parità (Mondiali 2009). v0.60: 0,09/0,3 → 0,12/0,36; v0.64: base 0,12 → 0,14.

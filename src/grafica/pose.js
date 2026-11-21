@@ -10,6 +10,8 @@ import { allPlayers, ball, fight, game, goalX } from '../stato.js';
 import { shotKind } from '../tiri.js';
 import { braccioMuro, braccioVerso } from '../muro.js';
 import { visoGiocatore } from './espressioni.js';
+import { puoMuoversiSuFallo } from '../gioco-fermo.js';
+import { conservaGestoVista, frustaVista, preparaGestoVista, raccordaGestoVista, smussoGestoVista } from './gesto-vista.js';
 //<POSE>
 export const L1=0.30, L2=0.29;
 export function ik(S,H,l1,l2,hint){
@@ -60,7 +62,7 @@ export function computePose(p,dt,t){
   // quanto il corpo è disteso (lo decide la fisica: fisica.js): 0 verticale, 1 orizzontale. Tutto sfuma tra le due pose.
   const o=p.excluded&&p.alPozzetto?0:(p.oriz||0), e=ease(o);      // l'espulso nuota fino al pozzetto, poi aspetta in verticale
   const frena=(p.orizPrec||0)>o+1e-6 ? Math.sin(Math.PI*o) : 0; p.orizPrec=o;      // sta tornando verticale: remata di freno
-  if(o>0.02&&(p.comparsa||game.state==='play'||game.state==='paused')) p.phase+=dt*(3.2+sp*1.9);
+  if(o>0.02&&(p.comparsa||game.state==='play'||game.state==='paused'||puoMuoversiSuFallo(p))) p.phase+=dt*(3.2+sp*1.9);
   const bob=Math.sin(t*2.2+p.uid)*0.02, eg=t*5.5+p.uid;
 
   // ================= POSA VERTICALE: bicicletta, acqua alle spalle =================
@@ -289,8 +291,8 @@ function separaVista(p){
 function inclinazioneVerticale(p,T,dt){
   const L=lottaVista(p), sep=separaVista(p);
   p.lottaSpinta=L||sep?[(L?L.sx:0)+(sep?sep[0]:0),(L?L.sz:0)+(sep?sep[1]:0)]:null;
-  // a gioco fermo si torna dritti ad aspettare (regola v0.50 del fischio): l'inclinazione serve per muoversi durante il gioco
-  const tiro=ball.holder===p&&(p.charging||(p.act&&!p.act.done)), voluta=game.state!=='play'?0:L&&!tiro?L.iv:p.isGK?INCLINA_VERT.portiere:(T.alzato||tiro)?INCLINA_VERT.gesto:T.marca?INCLINA_VERT.marca:INCLINA_VERT.base;
+  // Al fischio si alzano soltanto gli attori del fallo; gli altri conservano l'assetto utile al movimento.
+  const tiro=ball.holder===p&&(p.charging||(p.act&&!p.act.done)), voluta=game.state!=='play'&&!puoMuoversiSuFallo(p)?0:L&&!tiro?L.iv:p.isGK?INCLINA_VERT.portiere:(T.alzato||tiro)?INCLINA_VERT.gesto:T.marca?INCLINA_VERT.marca:INCLINA_VERT.base;
   const k=1-Math.exp(-dt*6); p.inclVert=(p.inclVert??voluta)+(voluta-(p.inclVert??voluta))*k; return p.inclVert;
 }
 function posturaVista(p,J,e,iv=0){
@@ -343,7 +345,7 @@ const CARICA_VISTA={
   beduina:[0.29,0.08,0.28],sciarpa:[0.27,0.09,0.30],rovesciata:[0.27,0.14,0.27],
   colonnello:[0.05,0.30,0.22],schizzo:[-0.22,0.02,0.28]
 };
-function articolaVista(p,J,T,t){
+function articolaVista(p,J,T,t,gestoVista){
   const V=p.giuntiVista||(p.giuntiVista={});
   for(const key of JK){ const q=J[key],v=V[key]||(V[key]=[0,0,0]); v[0]=q[0]; v[1]=q[1]; v[2]=q[2]; }
   // Copie: i palmi smussati della posa originale non diventano stato della nuova animazione.
@@ -395,7 +397,7 @@ function articolaVista(p,J,T,t){
   if(!th){
     // Nel taglio coordinato il collo segue il portatore o la palla in volo;
     // busto e direzione fisica del nuoto restano quelli dell'avanzamento.
-    if(!hold&&p.cut?.coordinata&&p.cut.guarda&&game.state==='play'){
+    if(!hold&&p.cut?.coordinata&&p.cut.guarda&&(game.state==='play'||puoMuoversiSuFallo(p))){
       const riferimento=ball.state==='flight'?ball:p.cut.guarda;
       const dx=riferimento.x-p.x,dz=riferimento.z-p.z;
       T.testaGiro=clamp(-Math.atan2(-dx*p.fz+dz*p.fx,dx*p.fx+dz*p.fz),-1.1,1.1);
@@ -460,7 +462,7 @@ function articolaVista(p,J,T,t){
     return V;
   }
   const fr=a?.frusta||0.18, tt=a?a.t-a.wind:0;
-  const carica=a?(a.wind>0?ease(clamp(a.t/a.wind,0,1)):1):ease(clamp(p.chargeT/0.5,0,1));
+  const carica=gestoVista.carica;
   const volo=a?clamp(tt/fr,0,1):0, busto=ease(clamp((volo-0.02)/0.70,0,1));
   const braccioK=ease(clamp((volo-0.14)/0.86,0,1)), polso=ease(clamp((volo-0.62)/0.38,0,1));
   const chiude=a?clamp((tt-fr)/0.36,0,1):0, rientra=ease(clamp((chiude-0.55)/0.45,0,1));
@@ -504,9 +506,11 @@ function articolaVista(p,J,T,t){
     if(su>0) for(const j of JK) V[j][1]+=su;
     T.alzataTiro=k;      // corpo.js lascia salire il bacino fin quasi al pelo dell'acqua (le gambe restano sotto)
   }
-  let off=mix3(HOLD_VISTA,fp?fp.vista:CARICA_VISTA[kind]||CARICA_VISTA.shot,carica);
-  off=mix3(off,rilascio,braccioK);
-  off=mix3(off,ACCOMPAGNA[kind]||th.F,ease(clamp(chiude/0.55,0,1)));
+  const caricata=mix3(HOLD_VISTA,fp?fp.vista:CARICA_VISTA[kind]||CARICA_VISTA.shot,carica);
+  let off=tt>=0&&a&&kind!=='fake'
+    ? frustaVista(gestoVista.off,caricata,rilascio,ACCOMPAGNA[kind]||th.F,tt,fr)
+    : mix3(caricata,rilascio,braccioK);
+  if(kind==='fake')off=mix3(off,ACCOMPAGNA[kind]||th.F,ease(clamp(chiude/0.55,0,1)));
   // gomito in fuori e un po' indietro durante la carica (prima indietro e in alto: con la mano davanti il braccio si girava
   // «ad ala di pollo», gomito sotto e dietro la spalla)
   let hint=mix3(mix3(GOMITO_FUORI,[-0.3,0.15,1],carica),[-0.08,0.05,1],braccioK);
@@ -597,18 +601,21 @@ export function updateRig(p,dt,t){
   // Euler; con la direzione oltre ±90° diventa (π, π-y, π). Impostando solo .y il corpo restava capovolto
   // e girato (v0.51, video e diagnosi di Ale su iPhone: corpo contro moto fino al 35% dopo i replay).
   R.g.position.set(p.x,0,p.z); R.g.rotation.set(0,Math.atan2(-p.fz,p.fx),0);
-  const Jv=articolaVista(p,posturaVista(p,J,T.oriz||0,inclinazioneVerticale(p,T,dt)),T,t);
+  const resetVista=!p.giuntiVista||game.state==='countdown'||(!p.act&&!p.charging&&game.state!=='play'&&!puoMuoversiSuFallo(p));
+  const gestoVista=preparaGestoVista(p,ball.holder===p&&p.act?.done?null:p.act,ball.holder===p,game.time,dt,t,resetVista);
+  const Jv=raccordaGestoVista(gestoVista,articolaVista(p,posturaVista(p,J,T.oriz||0,inclinazioneVerticale(p,T,dt)),T,t,gestoVista),T);
   // BRACCIA SENZA SCATTI (v0.56, Ale: «i passaggi sembrano calamitati»): le pose aggiunte solo nel disegno (palla protetta, palla in
   // acqua del centroboa, accompagnamento) cambiavano di colpo quando cambiava la situazione, e la palla in mano saltava fino a
   // 1,4 m in un fotogramma subito dopo la presa. Gomiti e mani disegnati seguono la posa con un breve smussamento (più rapido
   // durante un gesto); anche la palla che scende in acqua sotto la mano arriva con gradualità.
   // (non in nuotata: la bracciata del crawl è rapida e va lasciata intera)
-  { const B=p.bracciaVista||(p.bracciaVista={}), k0=1-Math.exp(-dt*(p.act&&!p.act.done?BRACCIA_SMUSSO.gesto:BRACCIA_SMUSSO.base)), kb=k0+(1-k0)*clamp((T.oriz||0)*2,0,1);
+  { const B=p.bracciaVista||(p.bracciaVista={}), k0=1-Math.exp(-dt*smussoGestoVista(p.act,BRACCIA_SMUSSO.base,BRACCIA_SMUSSO.gesto)), kb=k0+(1-k0)*clamp((T.oriz||0)*2,0,1);
     for(const key of ['eR','eL','hR','hL']){ const v=Jv[key]; if(!v) continue; const a=B[key];
       if(!a||Math.hypot(a[0]-v[0],a[1]-v[1],a[2]-v[2])>3){ B[key]=v.slice(); continue; }
       a[0]+=(v[0]-a[0])*kb; a[1]+=(v[1]-a[1])*kb; a[2]+=(v[2]-a[2])*kb; v[0]=a[0]; v[1]=a[1]; v[2]=a[2]; }
     p.pallaAcquaVista=(p.pallaAcquaVista||0)+((T.pallaInAcqua||0)-(p.pallaAcquaVista||0))*kb; T.pallaInAcqua=p.pallaAcquaVista; }
   { const k=1-Math.exp(-dt*7); p.testaGiro=(p.testaGiro||0)+((T.testaGiro||0)-(p.testaGiro||0))*k; T.testaGiro=p.testaGiro; }
+  conservaGestoVista(gestoVista,Jv,T);
   if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)) muoviCorpo(R,Jv,T,dt); }
   else {
     setSeg(R.torso,J.hip,J.chest); R.chest.position.set(J.chest[0],J.chest[1],J.chest[2]); R.pelvis.position.set(J.hip[0],J.hip[1],J.hip[2]);

@@ -5,7 +5,8 @@ import { annuncia } from './cronaca.js';
 import { togglePause } from './menu.js';
 import { apriRegistro, chiudiRegistro, registroAperto } from './cronaca.js';
 import { callPlay } from './regole.js';
-import { ctrl, game } from './stato.js';
+import { ctrl, game, teams } from './stato.js';
+import { CHIAMATE, chiamaAttacco } from './chiamate-attacco.js';
 import { cambioRapido } from './panchinaVista.js';
 export const keys={};
 // I campi dell'editor e le finestre di dialogo conservano frecce, spazio e scorciatoie.
@@ -119,6 +120,17 @@ if('ontouchstart' in window || navigator.maxTouchPoints>0) document.body.classLi
   const endJ=e=>{ for(const t of e.changedTouches) if(t.identifier===jid) resetJoystick(); };
   document.addEventListener('touchend',endJ); document.addEventListener('touchcancel',endJ);
   $('tac').addEventListener('pointerdown',e=>{ if(e.target.closest('[data-apri]')){ e.preventDefault(); apriSchemi(); return; } const c=e.target.closest('[data-i]'); if(c&&game.state==='play'){ e.preventDefault(); callPlay(+c.dataset.i); apriSchemi(false); } });
+  const chiama=e=>{
+    if(e.type==='keydown'&&!['Enter',' '].includes(e.key))return;
+    const b=e.target.closest('[data-chiamata]');if(!b)return;
+    e.preventDefault();e.stopPropagation();
+    if(chiamaAttacco(teams[0],b.dataset.chiamata)){
+      $('chiamateAttacco').hidden=true;document.body.classList.remove('chiamate-visibili');
+      annuncia('avviso',`${CHIAMATE[b.dataset.chiamata].nome}: prepara l’appoggio`,{durata:1.4,registro:false});
+    }
+  };
+  $('chiamateAttacco').addEventListener('pointerdown',chiama);
+  $('chiamateAttacco').addEventListener('keydown',chiama);
   document.querySelectorAll('.tb').forEach(b=>{
     const k=b.dataset.b;
     if(k==='sprint') sprintBtn=b;      // sprint a tocchi: il pulsante resta acceso (classe «scatto») finché lo scatto dura

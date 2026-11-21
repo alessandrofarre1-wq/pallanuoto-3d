@@ -1,0 +1,233 @@
+PASS helper gesti: ancore, velocità al rilascio, niente overshoot, carica e filtro continui, reset e fisica intatta
+{
+  "prima": "6d7b563ef20a7a7ff02986340f7fda54c9c909ee",
+  "casi": [
+    {
+      "tipo": "polso-caricato",
+      "dir": 1,
+      "mano": "D",
+      "primo": 0.12792663495702478,
+      "massimo": 0.14833219350312604,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "polso-caricato",
+      "dir": 1,
+      "mano": "S",
+      "primo": 0.12873104756205123,
+      "massimo": 0.14720412542967198,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "polso-caricato",
+      "dir": -1,
+      "mano": "D",
+      "primo": 0.12772721821087493,
+      "massimo": 0.1454763318279515,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "polso-caricato",
+      "dir": -1,
+      "mano": "S",
+      "primo": 0.12850409165278032,
+      "massimo": 0.13298928224926118,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "tiro-caricato",
+      "dir": 1,
+      "mano": "D",
+      "primo": 0.02206212696049393,
+      "massimo": 0.17367426178573253,
+      "rilascio": 10,
+      "supFisica": 0
+    },
+    {
+      "tipo": "tiro-caricato",
+      "dir": 1,
+      "mano": "S",
+      "primo": 0.06400143867160558,
+      "massimo": 0.1743902647529422,
+      "rilascio": 10,
+      "supFisica": 0
+    },
+    {
+      "tipo": "tiro-caricato",
+      "dir": -1,
+      "mano": "D",
+      "primo": 0.02910173559561851,
+      "massimo": 0.17367409311342363,
+      "rilascio": 10,
+      "supFisica": 0
+    },
+    {
+      "tipo": "tiro-caricato",
+      "dir": -1,
+      "mano": "S",
+      "primo": 0.07050681391274276,
+      "massimo": 0.17440149773938496,
+      "rilascio": 10,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-avanti",
+      "dir": 1,
+      "mano": "D",
+      "primo": 0.03689438677112965,
+      "massimo": 0.1658445967053377,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-avanti",
+      "dir": 1,
+      "mano": "S",
+      "primo": 0.03696486048871822,
+      "massimo": 0.165940693374952,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-avanti",
+      "dir": -1,
+      "mano": "D",
+      "primo": 0.03689439223113969,
+      "massimo": 0.16584055908247072,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-avanti",
+      "dir": -1,
+      "mano": "S",
+      "primo": 0.0369648604832154,
+      "massimo": 0.1659429523923847,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-opposto",
+      "dir": 1,
+      "mano": "D",
+      "primo": 0.03689439223116375,
+      "massimo": 0.16489966045347218,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-opposto",
+      "dir": 1,
+      "mano": "S",
+      "primo": 0.03696486048321568,
+      "massimo": 0.15815761159017216,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-opposto",
+      "dir": -1,
+      "mano": "D",
+      "primo": 0.03689439223116393,
+      "massimo": 0.16489746385869608,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-opposto",
+      "dir": -1,
+      "mano": "S",
+      "primo": 0.03696486048321569,
+      "massimo": 0.15816006173945568,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-stesso",
+      "dir": 1,
+      "mano": "D",
+      "primo": 0.03689439223116351,
+      "massimo": 0.15795493280277345,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-stesso",
+      "dir": 1,
+      "mano": "S",
+      "primo": 0.03696486048321582,
+      "massimo": 0.1648633837430883,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-stesso",
+      "dir": -1,
+      "mano": "D",
+      "primo": 0.03689439223116357,
+      "massimo": 0.1579524038717984,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-stesso",
+      "dir": -1,
+      "mano": "S",
+      "primo": 0.036964860483216094,
+      "massimo": 0.16486554657937774,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "palomba",
+      "dir": 1,
+      "mano": "D",
+      "primo": 0.03689439223116365,
+      "massimo": 0.12018959616504658,
+      "rilascio": 17,
+      "supFisica": 0
+    },
+    {
+      "tipo": "palomba",
+      "dir": 1,
+      "mano": "S",
+      "primo": 0.036964864825621495,
+      "massimo": 0.13174362978147855,
+      "rilascio": 17,
+      "supFisica": 0
+    },
+    {
+      "tipo": "palomba",
+      "dir": -1,
+      "mano": "D",
+      "primo": 0.03689438058624766,
+      "massimo": 0.11922868561958007,
+      "rilascio": 17,
+      "supFisica": 0
+    },
+    {
+      "tipo": "palomba",
+      "dir": -1,
+      "mano": "S",
+      "primo": 0.036964864830347735,
+      "massimo": 0.12208467941981568,
+      "rilascio": 17,
+      "supFisica": 0
+    }
+  ],
+  "curve": [
+    1.818227,
+    1.818227,
+    1.818319,
+    1.818319,
+    1.515194,
+    1.515194,
+    1.649011,
+    1.649011
+  ]
+}
+PASS gesti v0.70: 24 casi, invarianti J/ballW e callback, confronto PRIMA/DOPO se richiesto

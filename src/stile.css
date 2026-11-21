@@ -149,12 +149,22 @@ body.touch #tLog{right:calc(52px + var(--sr))}
    anche il margine sicuro raddoppiava il vuoto in fondo e faceva sembrare il menu spostato in alto */
 @media (display-mode:standalone){ #menu{--sb:0px} }
 /* con il menu aperto l'interfaccia di gioco non si vede (si intravede solo la piscina) */
-body:not(.gioco) :is(#hud,#tac,#player,#cronaca,#tLog,#tCambi,#cambiBox,#touch,#fight){visibility:hidden}
+body:not(.gioco) :is(#hud,#tac,#chiamateAttacco,#player,#cronaca,#tLog,#tCambi,#cambiBox,#touch,#fight){visibility:hidden}
 /* solo durante la partita: il menu si usa anche in verticale */
 @media (orientation:portrait){ body.gioco #ruota{display:flex} }
 
 /* ---------- schemi: in alto a sinistra (chiusi mostrano solo lo schema in uso; oro = scelta attiva) ---------- */
 #tac{position:fixed;top:calc(44px + var(--st));right:calc(100px + var(--sr));display:flex;gap:4px;z-index:9;flex-wrap:wrap;justify-content:flex-start;max-width:min(40vw,420px)}
+/* Chiamate in parità: una scelta durante l'azione, poi il campo torna libero. */
+#chiamateAttacco{position:fixed;left:calc((100vw + var(--sl) - var(--sr))/2);bottom:calc(8px + var(--sb));transform:translateX(-50%);width:min(330px,calc(100vw - 440px - var(--sl) - var(--sr)));display:flex;flex-wrap:wrap;gap:5px;z-index:9}
+#chiamateAttacco[hidden]{display:none}
+#chiamateAttacco.sopra-cambi{bottom:calc(60px + var(--sb))}
+#chiamateAttacco button{box-sizing:border-box;flex:1 0 60px;min-width:44px;min-height:44px;padding:3px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:rgba(10,30,46,.88);border:1px solid var(--h-ciano);border-radius:var(--h-r);color:var(--h-testo);font:700 12px system-ui;line-height:1.2;touch-action:manipulation;cursor:pointer}
+#chiamateAttacco button small{text-transform:uppercase;font-size:8px;letter-spacing:.08em;color:var(--h-ciano)}
+#chiamateAttacco button b{font-size:13px;white-space:nowrap}
+#chiamateAttacco button:active,#chiamateAttacco button:focus-visible{background:var(--h-ciano);color:#082132;outline:2px solid var(--h-oro);outline-offset:2px}
+#chiamateAttacco button:active small{color:#082132}
+body.chiamate-visibili #fight{display:none!important}
 .chip{background:var(--h-bg);border:1px solid var(--h-linea);color:var(--h-testo);border-radius:999px;padding:4px 10px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap}
 .chip.on{background:var(--h-oro);color:#0b1d33;border-color:var(--h-oro)}
 .chip.lab{border:none;background:transparent;color:var(--h-tenue);cursor:default;letter-spacing:.06em;font-size:10.5px}

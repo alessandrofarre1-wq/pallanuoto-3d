@@ -35,6 +35,13 @@ jobs:
       - run: npm run gameplay -- --no-build
       - run: npm run centroboa -- --no-build
       - run: npm run tattica -- --no-build
+      - run: npm run espulsioni-tempi
+      - run: npm run rigori-regole
+      - run: npm run rigori-reali
+      - run: npm run boa-fronte
+      - run: npm run chiamate-attacco
+      - run: npm run servizio-boa
+      - run: npm run gesti-fluidi
       - run: npm run difesa-cambi
       - run: npm run entrate -- --no-build
       - run: npm run entrate-integrazione -- --no-build

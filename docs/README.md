@@ -6,7 +6,7 @@
 | `storia.md` | Tutta la storia, versione per versione (fino alla v0.61 il testo originale della vecchia memoria). |
 | `decisioni-superate.md` | Le decisioni cambiate nel tempo: com'era e cosa vale ora. |
 | `versioni/` | Rapporto di ogni versione dalla v0.46 (richiesta, cosa cambia, misure, verifiche, non fatto) e alcuni più vecchi. |
-| `verifiche/` | Verifiche dettagliate v0.39-v0.50, i file di misura (`misure-*.json`) e misure/provenienza della v0.68 in `v068/`. |
+| `verifiche/` | Verifiche dettagliate v0.39-v0.50, i file di misura (`misure-*.json`) e misure/provenienza della v0.68–v0.70 in `v068/`, `v069/`, `v070/`. |
 | `riferimenti/` | Conoscenze che valgono nel tempo: tattica, tecnica, fisica della palla, corpi e acqua, valutazioni dei giocatori, aspetto, uomo in più, priorità dell'interfaccia, arena, analisi di un video. |
 | `proposte/` | Proposte e piani (riordino, menu e tornei, loghi, manuali e studi, prossimi passi del gioco, vecchie roadmap). |
 | `PASSAGGIO-CLAUDE-CODE.md`, `PASSAGGIO-CODEX.md` | Passaggi di consegne tra Claude Code e Codex. |
@@ -19,3 +19,7 @@ Regola per i nuovi documenti: il rapporto di una versione va in `versioni/vXXX-a
 `riferimenti/`; una proposta da approvare va in `proposte/`.
 
 Chiusura v0.68: [ricezione della mezza entrata in quattro momenti](immagini/v068-mezza-entrata.md), [campione finale con semi e hash](verifiche/v068/bilancio-finale.json).
+
+Correzioni v0.69 e verifiche con fase esplicita: [rapporto](versioni/v069-falli-e-riprese.md), [prove e provenienza](verifiche/v069/chiusura.json), [campione finale](verifiche/v069/bilancio-finale.json). CI finale ancora da verificare; bilanciamento globale non concluso.
+
+Lavoro v0.70: [chiamate, servizio boa e raccordi](versioni/v070-chiamate-servizio-gesti.md), [prove e provenienza](verifiche/v070/provenienza.json). Chiamate/servizio/gesti/replay/aspetto/budget PASS, UI e riferimenti ispezionati; verifica indipendente PASS, CI finale ancora da verificare. SondaN1diagnostica, non bilanciamento generale. Nuovi gesti touch ancora proposta.

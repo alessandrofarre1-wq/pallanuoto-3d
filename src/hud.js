@@ -12,8 +12,9 @@ import { siglaUomo } from './uomo-in-piu.js';
 import { ultimoCambioManuale } from './controllo.js';
 import { nomePosizione, numeroPosizione } from './schemi.js';
 import { postoAttacco } from './entrate.js';
+import { etichettaChiamata, offertaChiamate } from './chiamate-attacco.js';
 export const $ = id => document.getElementById(id);
-let tacKey='', schedaVista=null, ultimoBip=null, uomoAperto=null, uomoChiudi=null;
+let tacKey='', schedaVista=null, ultimoBip=null, uomoAperto=null, uomoChiudi=null, chiamateKey='';
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
 let schemiAperti=!TOUCH;
 export function apriSchemi(v){ schemiAperti = v===undefined ? !schemiAperti : (TOUCH ? v : true); }
@@ -30,6 +31,7 @@ aggiornaTabellone();
 export function fmt(s){ s=Math.max(0,Math.ceil(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
 export function updateHUD(){
   aggiornaPulsanteCambi();      // pulsante CAMBI: cambio consigliato, in corso o in attesa
+  aggiornaChiamate();
   $('scA').textContent=teams[0].score; $('scB').textContent=teams[1].score;
   const serie=game.rigoriFinali;
   $('period').textContent=serie?'RIG':game.period+'°T';
@@ -98,7 +100,7 @@ export function updateHUD(){
     fb.style.background=v>=0?fight.boa.team.css:fight.def.team.css;
   } else fe.style.display='none';
   const hum=teams[0], ai=teams[1], atk=game.possTeam===hum;
-  const piano=atk&&hum.schema?hum.schema.nome:null;
+  const piano=atk?(etichettaChiamata(hum)||hum.schema?.nome||null):null;
   // uomo in più (v0.44): la barra mostra i tre schemi scelti; si apre da sola all'inizio di ogni superiorità (un tocco per chiamarlo)
   const up=atk&&manUp(hum)&&game.state==='play';
   // si apre da sola a ogni superiorità e, se non si sceglie niente, si richiude dopo 5 s di gioco (resta la pillola chiusa)
@@ -138,6 +140,21 @@ export function updateHUD(){
       chip.title=piano||names[cur];
     }
   }
+}
+
+function aggiornaChiamate(){
+  const el=$('chiamateAttacco');if(!el)return;
+  const opzioni=offertaChiamate(teams[0]);
+  const visibile=opzioni.length>0;
+  el.hidden=!visibile;
+  document.body.classList.toggle('chiamate-visibili',visibile);
+  const stato=$('tCambi')?.dataset.stato;
+  el.classList.toggle('sopra-cambi',stato==='consiglio'||stato==='corso');
+  if(!visibile)return;
+  const key=opzioni.map(c=>c.id).join('');
+  if(key===chiamateKey)return;
+  chiamateKey=key;
+  el.innerHTML=opzioni.map(c=>`<button type="button" data-chiamata="${c.id}" title="${c.descrizione}" aria-label="${c.nome}. ${c.descrizione}"><small>${c.tipo}</small><b>${c.breve}</b></button>`).join('');
 }
 
 // ================= CONTATORE DI FOTOGRAMMI =================

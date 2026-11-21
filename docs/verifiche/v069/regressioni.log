@@ -1,0 +1,55 @@
+
+> pallanuoto-3d@0.69.0 prove
+> node tests/prove.mjs --solo=rigori-finali,gameplay,centroboa,tattica,sezione1,sezione2,sezione3,sezione4,sezione5,sezione6,v046,entrate,entrate-integrazione,replay
+
+costruisco il gioco, poi 14 passi della CI (la verifica a parte: npm run verifica)
+ 1/14 npm run rigori-finali -- --no-build ... PASS (14 s)
+ 2/14 npm run gameplay -- --no-build ... PASS (8 s)
+ 3/14 npm run centroboa -- --no-build ... PASS (8 s)
+ 4/14 npm run tattica -- --no-build ... FAIL (9 s)
+   ultime righe:
+   | +   libero: null,
+   | -   libero: 'shot',
+   |     marcato: null
+   |   }
+   | 
+   |     at file:///workspace/pallanuoto-3d/tests/tattica-v041.mjs:103:10 {
+   |   generatedMessage: false,
+   |   code: 'ERR_ASSERTION',
+   |   actual: { libero: null, marcato: null },
+   |   expected: { libero: 'shot', marcato: null },
+   |   operator: 'deepStrictEqual',
+   |   diff: 'simple'
+   | }
+   | 
+   | Node.js v24.22.1
+ 5/14 npm run entrate -- --no-build ... PASS (10 s)
+ 6/14 npm run entrate-integrazione -- --no-build ... PASS (16 s)
+ 7/14 npm run replay -- --no-build ... FAIL (24 s)
+   ultime righe:
+   | 
+   | AssertionError [ERR_ASSERTION]: risultato e premiazione aspettano la fine del replay
+   | 
+   | false !== true
+   | 
+   |     at file:///workspace/pallanuoto-3d/tests/replay-v048.mjs:162:10 {
+   |   generatedMessage: false,
+   |   code: 'ERR_ASSERTION',
+   |   actual: false,
+   |   expected: true,
+   |   operator: 'strictEqual',
+   |   diff: 'simple'
+   | }
+   | 
+   | Node.js v24.22.1
+ 8/14 npm run sezione1 -- --no-build ... PASS (25 s)
+ 9/14 npm run sezione2 -- --no-build ... PASS (20 s)
+10/14 npm run sezione3 -- --no-build ... PASS (12 s)
+11/14 npm run sezione4 -- --no-build ... PASS (11 s)
+12/14 npm run sezione5 -- --no-build ... PASS (55 s)
+13/14 npm run v046 -- --no-build ... PASS (14 s)
+14/14 npm run sezione6 -- --no-build ... PASS (17 s)
+
+RIEPILOGO: 12 PASS, 2 FAIL su 14 passi in 4.1 minuti
+falliti: tattica, replay
+registri completi: /tmp/prove-NlrSje

@@ -1,0 +1,262 @@
+{
+  "metodo": "Sostituzione della sola pose.js del checkpoint069 nel motore v070 corrente; dopo invarianti p.J/ballW e traccia fisica confrontate.",
+  "fixture": "La lettura attesa computePose ripristina phase/orizPrec/parataIn/dorsoK. Foto isolano atleta aggiornato e sincronizzano ball3d/raccordoVista senza aggiornare il motore.",
+  "primaPose": "6d7b563ef20a7a7ff02986340f7fda54c9c909ee",
+  "casi": 24,
+  "hashTracciaPrima": "8bf206ee34ab638846248e3192a8d5559355aa48d424debe24d3a4d91defa7b0",
+  "hashTracciaDopo": "8bf206ee34ab638846248e3192a8d5559355aa48d424debe24d3a4d91defa7b0",
+  "hashPoseDopo": "cd1b1c776e5e60c5640e49a621bacde0e9841374b30c63f898b5cbf348c5a95a",
+  "hashHelper": "4ae320129c4ef66774fe86733d4ee9cd461e8d3cdbdf2661e00efbb512624a86",
+  "errorFisicoMassimo": 0,
+  "confronto": [
+    {
+      "tipo": "polso-caricato",
+      "dir": 1,
+      "mano": "D",
+      "ingressoPrima": 0.12792663495702478,
+      "ingressoDopo": 0,
+      "massimoPrima": 0.14833219350312604,
+      "massimoDopo": 0.13895337091617624,
+      "rilascio": 8
+    },
+    {
+      "tipo": "polso-caricato",
+      "dir": 1,
+      "mano": "S",
+      "ingressoPrima": 0.12873104756205123,
+      "ingressoDopo": 0,
+      "massimoPrima": 0.14720412542967198,
+      "massimoDopo": 0.13669233403651365,
+      "rilascio": 8
+    },
+    {
+      "tipo": "polso-caricato",
+      "dir": -1,
+      "mano": "D",
+      "ingressoPrima": 0.12772721821087493,
+      "ingressoDopo": 0,
+      "massimoPrima": 0.1454763318279515,
+      "massimoDopo": 0.13896953619829674,
+      "rilascio": 8
+    },
+    {
+      "tipo": "polso-caricato",
+      "dir": -1,
+      "mano": "S",
+      "ingressoPrima": 0.12850409165278032,
+      "ingressoDopo": 0,
+      "massimoPrima": 0.13298928224926118,
+      "massimoDopo": 0.1308820681061383,
+      "rilascio": 8
+    },
+    {
+      "tipo": "tiro-caricato",
+      "dir": 1,
+      "mano": "D",
+      "ingressoPrima": 0.02206212696049393,
+      "ingressoDopo": 0,
+      "massimoPrima": 0.17367426178573253,
+      "massimoDopo": 0.16685417790814674,
+      "rilascio": 10
+    },
+    {
+      "tipo": "tiro-caricato",
+      "dir": 1,
+      "mano": "S",
+      "ingressoPrima": 0.06400143867160558,
+      "ingressoDopo": 0,
+      "massimoPrima": 0.1743902647529422,
+      "massimoDopo": 0.16761870437357834,
+      "rilascio": 10
+    },
+    {
+      "tipo": "tiro-caricato",
+      "dir": -1,
+      "mano": "D",
+      "ingressoPrima": 0.02910173559561851,
+      "ingressoDopo": 0,
+      "massimoPrima": 0.17367409311342363,
+      "massimoDopo": 0.16685204052522817,
+      "rilascio": 10
+    },
+    {
+      "tipo": "tiro-caricato",
+      "dir": -1,
+      "mano": "S",
+      "ingressoPrima": 0.07050681391274276,
+      "ingressoDopo": 0,
+      "massimoPrima": 0.17440149773938496,
+      "massimoDopo": 0.1676397513664906,
+      "rilascio": 10
+    },
+    {
+      "tipo": "passa-avanti",
+      "dir": 1,
+      "mano": "D",
+      "ingressoPrima": 0.03689438677112965,
+      "ingressoDopo": 0.014837782102978722,
+      "massimoPrima": 0.1658445967053377,
+      "massimoDopo": 0.14356347066575156,
+      "rilascio": 8
+    },
+    {
+      "tipo": "passa-avanti",
+      "dir": 1,
+      "mano": "S",
+      "ingressoPrima": 0.03696486048871822,
+      "ingressoDopo": 0.014844802593658104,
+      "massimoPrima": 0.165940693374952,
+      "massimoDopo": 0.143649833703754,
+      "rilascio": 8
+    },
+    {
+      "tipo": "passa-avanti",
+      "dir": -1,
+      "mano": "D",
+      "ingressoPrima": 0.03689439223113969,
+      "ingressoDopo": 0.014837782102979018,
+      "massimoPrima": 0.16584055908247072,
+      "massimoDopo": 0.14355956901459221,
+      "rilascio": 8
+    },
+    {
+      "tipo": "passa-avanti",
+      "dir": -1,
+      "mano": "S",
+      "ingressoPrima": 0.0369648604832154,
+      "ingressoDopo": 0.014844802593657795,
+      "massimoPrima": 0.1659429523923847,
+      "massimoDopo": 0.14365194754728894,
+      "rilascio": 8
+    },
+    {
+      "tipo": "passa-opposto",
+      "dir": 1,
+      "mano": "D",
+      "ingressoPrima": 0.03689439223116375,
+      "ingressoDopo": 0.014837782102978904,
+      "massimoPrima": 0.16489966045347218,
+      "massimoDopo": 0.15023988442255523,
+      "rilascio": 8
+    },
+    {
+      "tipo": "passa-opposto",
+      "dir": 1,
+      "mano": "S",
+      "ingressoPrima": 0.03696486048321568,
+      "ingressoDopo": 0.014844802593658354,
+      "massimoPrima": 0.15815761159017216,
+      "massimoDopo": 0.12852656384162267,
+      "rilascio": 8
+    },
+    {
+      "tipo": "passa-opposto",
+      "dir": -1,
+      "mano": "D",
+      "ingressoPrima": 0.03689439223116393,
+      "ingressoDopo": 0.014837782102978911,
+      "massimoPrima": 0.16489746385869608,
+      "massimoDopo": 0.15023792209314632,
+      "rilascio": 8
+    },
+    {
+      "tipo": "passa-opposto",
+      "dir": -1,
+      "mano": "S",
+      "ingressoPrima": 0.03696486048321569,
+      "ingressoDopo": 0.014844802593658047,
+      "massimoPrima": 0.15816006173945568,
+      "massimoDopo": 0.1285279761227623,
+      "rilascio": 8
+    },
+    {
+      "tipo": "passa-stesso",
+      "dir": 1,
+      "mano": "D",
+      "ingressoPrima": 0.03689439223116351,
+      "ingressoDopo": 0.014837782102978873,
+      "massimoPrima": 0.15795493280277345,
+      "massimoDopo": 0.1281344193644524,
+      "rilascio": 8
+    },
+    {
+      "tipo": "passa-stesso",
+      "dir": 1,
+      "mano": "S",
+      "ingressoPrima": 0.03696486048321582,
+      "ingressoDopo": 0.014844802593658248,
+      "massimoPrima": 0.1648633837430883,
+      "massimoDopo": 0.15021680704153725,
+      "rilascio": 8
+    },
+    {
+      "tipo": "passa-stesso",
+      "dir": -1,
+      "mano": "D",
+      "ingressoPrima": 0.03689439223116357,
+      "ingressoDopo": 0.014837782102978965,
+      "massimoPrima": 0.1579524038717984,
+      "massimoDopo": 0.12813191605167665,
+      "rilascio": 8
+    },
+    {
+      "tipo": "passa-stesso",
+      "dir": -1,
+      "mano": "S",
+      "ingressoPrima": 0.036964860483216094,
+      "ingressoDopo": 0.014844802593658354,
+      "massimoPrima": 0.16486554657937774,
+      "massimoDopo": 0.15021872063648545,
+      "rilascio": 8
+    },
+    {
+      "tipo": "palomba",
+      "dir": 1,
+      "mano": "D",
+      "ingressoPrima": 0.03689439223116365,
+      "ingressoDopo": 0.01483778210297902,
+      "massimoPrima": 0.12018959616504658,
+      "massimoDopo": 0.09253249966412222,
+      "rilascio": 17
+    },
+    {
+      "tipo": "palomba",
+      "dir": 1,
+      "mano": "S",
+      "ingressoPrima": 0.036964864825621495,
+      "ingressoDopo": 0.014844802593658002,
+      "massimoPrima": 0.13174362978147855,
+      "massimoDopo": 0.10164282981084394,
+      "rilascio": 17
+    },
+    {
+      "tipo": "palomba",
+      "dir": -1,
+      "mano": "D",
+      "ingressoPrima": 0.03689438058624766,
+      "ingressoDopo": 0.01483778210297916,
+      "massimoPrima": 0.11922868561958007,
+      "massimoDopo": 0.0925170574163221,
+      "rilascio": 17
+    },
+    {
+      "tipo": "palomba",
+      "dir": -1,
+      "mano": "S",
+      "ingressoPrima": 0.036964864830347735,
+      "ingressoDopo": 0.014844802593658097,
+      "massimoPrima": 0.12208467941981568,
+      "massimoDopo": 0.09272957889262917,
+      "rilascio": 17
+    }
+  ],
+  "replay": {
+    "esito": "PASS completo",
+    "gpuMassimoCalls": 48,
+    "gpuMassimoTri": 146426,
+    "corpi": 14,
+    "dpr": 1.5,
+    "log": "/tmp/v070-replay.log"
+  },
+  "limiti": "Prova circoscritta al raccordo del gesto: non certifica naturalezza completa né FPS di iPhone fisico."
+}
