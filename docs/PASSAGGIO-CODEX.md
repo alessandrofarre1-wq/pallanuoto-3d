@@ -1,11 +1,43 @@
+# Passaggio WATERPOLO 7 — v0.68 chiusa
+
+Repository `alessandrofarre1-wq/pallanuoto-3d`, branch `codex/v068-difesa-entrate-arena`, PR59, base main `c11f93d` (v0.67/PR58). Prima di proseguire controlla main/PR/CI e diff: preserva il lavoro di entrambi gli agenti. Versione0.68.0. Nessun merge/deploy fatto da Codex.
+
+Leggi [CLAUDE.md](../CLAUDE.md), [rapporto](versioni/v068-cambi-entrate-arena.md), [decisioni](decisioni-superate.md), [misure/hash](verifiche/v068/), [quattro stati della mezza entrata](immagini/v068-mezza-entrata.md). Il vecchio archivio v0.49/v0.50 sotto non è un punto di ripartenza. Stato e CI dell'ultimo SHA: https://github.com/alessandrofarre1-wq/pallanuoto-3d/pull/59/checks . La bozza iniziale3a8984b aveva CI verde; non confonderla col commit finale.
+
+## Concluso
+
+- Difensore durante cambio avversario: copertura utile, rientro alla marcatura quando il sostituto torna minaccioso; schema e controllo umano conservati.25scene PASS,0s oltre metà contro46,85s prima.
+- Entrate reattive A/B/C dopo6s/2passaggi (eccezione fallo, controfuga conservata); mezze D opportunistiche, posti distinti da atleti e accoppiamenti, scalate/rientri nuotati. Preset Falso centro e lettura difensiva. Niente gol/rigori garantiti o reset sui recuperi vivi. Reset solo nelle ricollocazioni effettive delle regole.
+- D ora parte solo se lo scatto legale0,6–1,4m apre la finestra entro5m con20cm di margine d'arresto; rinuncia dall'ala larga e al bordo irraggiungibile. Compagno esterno nei propri spazi, senza convergere sul punto. Quattro scene reali nei due versi e con manoD/S: servizio0,700s, presa1,033s, tiro1,483s; passo massimo4,83cm. Due rinunce,18scene precedenti,8reset e2qualifiche PASS. Non abbassare questi assert.
+- Arena più dettagliata: sedute/pensilina/attrezzature/ufficiali3D/supporti/rete, sempre6mesh/1024²,8296tri CPU. Camera/acqua/corpi/controlli/logoC conservati. Resa incrementale, da giudicare con Ale.
+
+## Misure e verifiche finali
+
+- Campione finale8gare480s ITA-HUN: 14,56 gol / 35,44 tiri per squadra; conversione 41,09%, superiorità 48,28%, rigori 1,62; 13/15 voci in fascia; entrate19,31%dei gol. Italia10,38, Ungheria18,75; nessuna equivalenza di forza implicita. Semi e hash in `bilancio-finale.json`.
+- Distinguere il vecchio candidato con mezze lunghe16,875gol/39,31tiri (6/15voci), la prima PR59 giàD1,4m13,8125gol/35,5625tiri (10/15) e la chiusura finale. I problemi di ricezione e campione mancante della prima bozza NON sono più da rifare.
+- Lint/gameplay/tattica/difesa/area5/5 PASS; entrate isolate e integrazione PASS. Aspetto completo PASS: gambe0/7123,0/5180,0/1179; iPhone56/142116. Verifica immagini `--partite=0` PASS dopo ispezione/riferimenti; sei partite e intera CI sul commit pubblicato, esito nella PR.
+- Budget iPhone prove arena: due cambi64/148852, replay49/146682,14corpi completi. Non FPS di iPhone fisico. Le misure storiche conservano gli hash della fase in cui furono registrate.
+
+## Eventuale lavoro successivo, da concordare
+
+1. Restano 66,81azioni per squadra e durata parità14,66s: problemi globali già noti. Non iniziare nuove tarature o funzionalità senza una richiesta.
+2. La CPU legge un falso centro disposto o nato in gioco e il preset è disponibile; non costruisce tutta la preparazione autonoma da un piano neutro.
+3. Ale deve provare su iPhone e giudicare naturalezza, frequenza delle entrate e arte dell'arena. Nessuna certificazione di qualità professionale.
+
+Se PR59 è già unita, usa main aggiornato e una nuova versione; altrimenti preserva il branch. Limiti sempre <100calls/<150000tri anche due cambi/replay,14corpi. Una sola istanza Chromium pesante; browser `PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers`. Nessuna prova espressioni facciali senza richiesta di Ale.
+
+---
+
+# Archivio delle consegne precedenti
+
 > **Dalla v0.62 (riordino)**: la memoria `CLAUDE.md` contiene solo le regole e le decisioni in vigore; la storia completa è in
 > `docs/storia.md`, le decisioni cambiate in `docs/decisioni-superate.md`, l'indice in `docs/README.md`. I numeri del
 > bilanciamento stanno in `src/taratura.js` (i moduli li importano e li riesportano con lo stesso nome; `npm run taratura` per
 > gioco contro realtà) e `npm run prove` esegue in locale gli stessi passi della CI.
 
-> Passaggio più recente: [v0.50 sospesa, checkpoint per Claude Code](PASSAGGIO-CLAUDE-CODE.md). Il testo v0.49 sotto è storico; non usarlo per riprendere il lavoro corrente.
+> Archivio v0.50: checkpoint per Claude Code conservato sotto la consegna v0.68 in [PASSAGGIO-CLAUDE-CODE.md](PASSAGGIO-CLAUDE-CODE.md). Il testo v0.49 sotto è storico; non usarlo per riprendere il lavoro corrente.
 
-# Passaggio corrente — WATERPOLO 7 v0.49
+# Archivio — WATERPOLO 7 v0.49
 
 ```text
 Continua alessandrofarre1-wq/pallanuoto-3d, branch

@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.67). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.68). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -60,7 +60,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 - Numeri del bilanciamento: `taratura.js` (con i riferimenti reali; `ia.js`, `fisica.js`, `lotta.js`, `regole.js`, `tiri.js`,
   `partita.js`, `finte.js` e `panchina.js` li importano e li riesportano con lo stesso nome).
 - Movimento e palla: `fisica.js` (nuoto, parata, muro, intercetto, presa, uscite), `palla.js` (Rapier), `fisica-palla/`.
-- Computer: `ia.js` (attacco `aiCarrier`, posti, marcature, difese, ripartenza), `lotta.js` (centroboa), `centroboa.js`,
+- Computer: `ia.js` (attacco `aiCarrier`, posti, marcature, difese, ripartenza), `entrate.js`, `difesa-cambi.js`, `lotta.js` (centroboa), `centroboa.js`,
   `tiri.js` (gesti, tiri, passaggi), `finte.js`, `muro.js`, `controfuga.js`, `uomo-in-piu.js` e `schemi.js`.
 - Comandi: `input.js`, `controllo.js`. Interfaccia: `hud.js`, `cronaca.js`, `menu.js`, `panchinaVista.js`, `tattiche-*.js`,
   `uomo-editor.js`, `replay*.js`, `tornei.js`, `rigoriFinali.js`, `index.html`, `stile.css`.
@@ -82,7 +82,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   agita il pugno; 1,15 s registrati dopo la rete, 38% del replay; niente primo piano se è appena stato sostituito). Prova
   `npm run replay`.
 - Menu: home con logo C «Flusso», Partita veloce, Mondiali, Europei, Comandi, Informazioni; Squadre (formazione dei 7, strategie
-  prepartita: cinque preset e una personale, schemi dell'uomo in più) → Impostazioni (durata, difficoltà, arbitro) → Gioca.
+  prepartita: sei preset e una personale, schemi dell'uomo in più) → Impostazioni (durata, difficoltà, arbitro) → Gioca.
 ### Comandi
 - Touch: levetta a sinistra; TIRO: tocco (< 0,16 s) = finta ripetibile, tenuto fino a 0,36 s = polso, più a lungo = tiro caricato
   (pieno in 0,9 s, parte al rilascio); un tocco mentre arriva un passaggio = tiro al volo. PASSA; in difesa = contrasto (1-2 tocchi
@@ -128,12 +128,13 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   «quick» in 3 superiorità su 10, tiro al volo dopo il cambio di lato; occasioni chiare dai 7 s (prima solo subito dopo un cambio
   di lato); chi vede poca porta (l'ala sui 2 metri) non tira al volo e passa a chi ne vede di più (`SUPERIORITA`).
 - Entrate (`ENTRATA`): il computer, nell'8% delle azioni in parità, manda in entrata un mezzo (lo schema del giocatore resta il
-  suo); al massimo un'entrata ogni 12 s; a chi entra la palla arriva solo a meno di 5 m dalla porta e con almeno 1 m di vantaggio
+  suo); al massimo un'entrata automatica ogni 12 s; a chi entra la palla arriva solo a meno di 5 m dalla porta e con almeno 1 m di vantaggio
   sul difensore (o 2 m di spazio), e chi riceve così tira subito; con l'uomo in più o in meno l'entrata finisce.
+- Entrate reattive v0.68 (`entrate.js`): contro pressing stretto3→2→taglio verso5, specchio3→4→1 con mano/abilità adeguate,2 al palo e mezze entrate1/5 solo con testa avanti e marcatore vicino poco reattivo. Il taglio parte al rilascio reale dell’appoggio; il portatore sceglie fra entrante libero, ala che sale3,25m se il suo difensore stringe, oppure circolazione. A/B/C dopo almeno6s e2passaggi, senza interrompere la controfuga; dopo fallo recente si può partire subito. Resta pausa12s fra entrate automatiche; comandi manuali conservati. Vale anche dopo un fallo e la sua ripresa. Niente premio automatico al gol o al rigore.
+- Atleta, posto e accoppiamento sono distinti: `occupantiAttacco`/`postoAttacco`, `centroAttacco`, `accoppiamenti.uomini`. Dopo il taglio si coprono i posti nuotando; alla perdita palla si rientra dalle coordinate raggiunte. Preset **Falso centro**: non specialista al centro, uscita per trascinare il marcatore forte, attesa del corridoio e subentro della boa vera. La CPU legge una disposizione/situazione già presente; non costruisce da zero la preparazione del falso centro. Lo schema salvato non cambia. HUD con posto attuale e #calotta distinta.
 ### Difesa
-- A uomo il punto marca il centroboa (`MARK`); pressing di base, zona e zona a M che scelgono chi lasciare tirare, cambio di
-  marcatura, rientro difensivo, marcatura staccata lontano dalla palla, scivolamento in verticale, intercetti che nascono dalla
-  difesa.
+- Accoppiamenti iniziali da `MARK`, con il marcatore specialista sul centro effettivo; consegne per identità conservate finché si riorganizza la difesa, senza ritorno automatico dopo5s in gioco vivo. Quando le regole ricollocano le squadre dopo gol/time-out o a inizio tempo, si ricostruiscono posti, marcature, riferimenti e memoria del cambio; nessun reset sui recuperi vivi. Pressing, zona e M scelgono chi lasciare sul perimetro usando i posti attuali. Un aiuto tardivo sul taglio può coprire temporaneamente a M o raddoppiare, conservando la scelta persistente del giocatore.
+- Cambio volante AVVERSARIO (`difesa-cambi.js`): il difensore non segue l’uscente verso la panchina. Copre palla-centroboa/porta; due coperture si dividono centro e lato debole. Il sostituto si marca quando è davvero rientrato nella zona d’attacco (entro10,5m dalla porta), anche dopo la fine del percorso visuale. Pressing ripreso se selezionato, zona conservata; mai spostamenti del difensore comandato dal giocatore.
 - Muro: braccio dalla parte del palo coperto in parità; con l'uomo in meno braccio a specchio del braccio di tiro e centrale tra i
   pali sul palo lungo; contro il 3-3 i due davanti ai pali stanno a metà tra il loro tiratore e il 6 e saltano su chi ha palla.
 ### Regole (World Aquatics 18 febbraio 2026; FIN 2026-27 non importato)
@@ -143,6 +144,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   illimitati.
 - Rigore dai 5 m con gli altri sulla linea dei 6 ad almeno 3 m dal tiratore; tiro libero: dentro i 6 m si passa, fuori si può
   tirare subito; area di porta (2 m, fino a 2 m oltre i pali): attaccante dentro l'area davanti alla linea della palla = fallo.
+  I compagni che entrano troppo presto sotto i2m rientrano nuotando (v0.68), senza correzioni istantanee delle coordinate; il controllo di permanenza irregolare vale per tutti.
   Fuori dal fondo: angolo se tocca per ultimo il portiere o se lancia la squadra che difende; tiro murato da un difensore di
   movimento = rimessa del portiere; fuori di lato = tiro libero agli avversari di chi ha toccato per ultimo. Nessun tempo per
   superare la metà campo; passare indietro e al portiere è permesso; fallo per chi rinuncia apposta al possesso. Time-out 2 a
@@ -155,13 +157,17 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 - Un solo modello (il pallanuotista del concept di Ale, v2 con espressioni), colorato per squadra; aspetto dal database (pelle,
   capelli, barba, altezza, corporatura); calottine: squadra del giocatore bianca, computer blu scuro, portieri rossi; costumi con
   bandiera; numero sulla cuffia; niente loghi o stemmi.
-- Acqua unica disegnata, colori sott'acqua per profondità, contatti e scie dal movimento vero; qualità automatica che abbassa e
-  recupera la risoluzione; riflesso completo solo in qualità alta; porte dal riferimento di Ale; arena con tribune leggere.
+- Acqua unica disegnata, colori sott’acqua per profondità, contatti e scie dal movimento vero; qualità automatica che abbassa e recupera la risoluzione; riflesso completo solo in qualità alta. Arena v0.68: sedute/pensilina/corrimani, panchine attrezzate, tavolo e ufficiali3D, porte con pontoni/giunti e rete leggibile anche da lontano. Un atlante1024² e le stesse6mesh statiche;8296tri CPU(+212). Acqua, camera e corpi conservati. Fotografie confrontabili e dati nel rapporto.
 ### Squadre, tornei, valutazioni
 - 24 nazionali; rose vere dal database di Ale (`npm run rose-db`, metodo in `docs/riferimenti/valutazioni.md`), nomi veri
   autorizzati; statistiche 40-99 che cambiano davvero le prestazioni; formazione ricordata per nazionale.
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
+
+## Stato v0.68
+Chiusura21/11: i due blocchi della bozza PR59 sono corretti e misurati; esito CI sull'ultimo commit nella PR. Difesa dei cambi25scene e filmato reale24s:0s oltre metà contro46,85s prima. Arena6mesh/1024²,8296tri CPU; picco iPhone con due cambi64calls/148852tri, replay49/146682,14corpi. Aspetto finale PASS: gambe0/7123,0/5180,0/1179; iPhone56/142116.
+Entrate:18scene ciclo reale,4D nei due versi/manoD-S con servizio/presa/tiro autonomi,2rinunce,8reset e2qualifiche PASS. D0,6–1,4m solo se l'endpoint legale arriva entro4,8m (20cm di margine d'arresto rispetto ai5m della ricezione); da ala larga si continua la circolazione, l'esterno conserva il suo spazio. Chiusura locale5/5mirate +isolate/integrazione/aspetto/verifica immagini PASS. Campione finale8gare: 14,56 gol / 35,44 tiri per squadra; conversione 41,09%, superiorità 48,28%, rigori 1,62; 13/15 voci in fascia. Non sono gli8incontri con mezze lunghe della prima diagnosi:16,875gol/39,31tiri e6/15voci. Dati/hash/limiti nel rapporto `docs/versioni/v068-cambi-entrate-arena.md`; fotografie `docs/immagini/v068-mezza-entrata.md`.
+Restano azioni troppo numerose/corte, preparazione autonoma completa del falso centro, prova su iPhone fisico e giudizio artistico di Ale. Decisioni superate esplicite: inseguimento del cambio, posti fissi per indice, consegna annullata dopo5s, teletrasporto NPC sotto2m, cinque preset; inoltre taglioD sterile e copertura centrale superflua. Nessun merge/deploy. La tabella sotto conserva la baseline v0.67 di Claude su16partite, distinta dal nuovo campione.
 
 ## Numeri: gioco contro realtà
 16 partite ITA–HUN, per squadra, v0.67 (`npm run taratura -- --partite=16`: con 8 partite il caso sposta le voci di qualche punto).

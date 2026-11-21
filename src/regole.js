@@ -1,6 +1,6 @@
 import { datiGolReplay, segnalaGolReplay } from './replay.js';
 // ================= REGOLE / FASI =================
-import { CONTRO, chiLasciare, chiamaUomo, manUp, passaAZona, scegliDifesa, setteControSei } from './ia.js';
+import { CONTRO, chiLasciare, chiamaUomo, manUp, passaAZona, scegliDifesa, setteControSei, uomoDi } from './ia.js';
 import { siglaUomo } from './uomo-in-piu.js';
 import { elevazione } from './tiri.js';
 import { riservaPer, vesti } from './giocatori.js';
@@ -18,6 +18,7 @@ import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, setCtrl, t
 import { creaSerieRigori, preparaRigoreFinale as preparaTiroSerie, registraRigoreFinale } from './rigoriFinali.js';
 import { applicaSchema, copiaSchema } from './schemi.js';
 import { aggiornaGiocoFermo } from './gioco-fermo.js';
+import { resetDisposizioneTattica } from './entrate.js';
 import { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI } from './taratura.js';      // numeri del bilanciamento
 export { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI };
 const serieAttiva = () => game.rigoriFinali && !game.rigoriFinali.terminati;
@@ -28,14 +29,20 @@ function fermaOVola(){
   ball.state='dead'; ball.inUscita=Math.hypot(ball.vx,ball.vy,ball.vz)>1.5;
   if(!ball.inUscita){ ball.vx=ball.vy=ball.vz=0; }
 }
+// Le due squadre devono essere già ricollocate prima di ricostruire gli uomini.
+function riallineaRiferimenti(){
+  for(const p of allPlayers){const a=uomoDi(p);p.lagX=a.x;p.lagZ=a.z;}
+}
 export function kickoff(){
   aggiornaGiocoFermo(0,true);
+  for(const t of teams) resetDisposizioneTattica(t);
   // sprint d'inizio tempo: tutti sulla propria linea di porta, palla a metà campo
   for(const t of teams) for(const p of t.players){
     if(p.excluded&&p.pf>=3) substitute(p);
     p.excluded=false; p.vx=p.vz=0; p.charging=false; p.cut=null; p.act=null;
     p.x=ownGoalX(t)+t.dir*(p.isGK?0.6:0.3); p.z=KICK_Z[p.i]*t.dir; p.fx=t.dir; p.fz=0;
   }
+  riallineaRiferimenti();
   ball.state='free'; ball.inUscita=false; ball.holder=null; ball.x=0; ball.z=0; ball.y=BRV; ball.vx=ball.vy=ball.vz=0; ball.pickupCD=0; ball.lastTeam=null;
   game.possTeam=null; game.shot=SHOT_CLOCK; game.penalty=null;
   setCtrl(teams[0].players[6]);
@@ -43,6 +50,7 @@ export function kickoff(){
 }
 export function placeHalves(){
   aggiornaGiocoFermo(0,true);
+  for(const t of teams) resetDisposizioneTattica(t);
   for(const t of teams) for(const p of t.players){
     if(p.excluded) continue;
     p.vx=p.vz=0; p.charging=false; p.act=null;
@@ -50,6 +58,7 @@ export function placeHalves(){
     else { const f=FORM[p.i]; p.x=-t.dir*(1.5+f[0]*0.9); p.z=f[1]*t.dir; }
     p.fx=t.dir; p.fz=0;
   }
+  riallineaRiferimenti();
 }
 export function giveBall(p){
   if(serieAttiva() && game.rigoriFinali.fase==='tiro' && game.rigoriFinali.tiro){

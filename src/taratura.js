@@ -69,6 +69,18 @@ export const CENTRO_ATTESA={ da:7, a:15 };
 // tiro = secondi dalla ricezione in cui tira subito.
 export const ENTRATA={ azione:0.08, ogni:12, vicino:5, vantaggio:1.0, libero:2.0, tiro:1.2 };
 
+// Entrate reattive v0.68: indicazioni tecniche di Ale (20/11/2026), passaggio al vicino e taglio 3→5/1,
+// 2 al palo e mezze entrate solo con la testa avanti. Metri e secondi; nessuna probabilità di gol/fallo aggiunta.
+// Lato a mano sfavorevole: coppia mancina oppure media velocità/precisione/forza almeno 84.
+// I tempi generali COSTRUZIONE/PAZIENZA e la quota ENTRATA.azione restano invariati.
+export const ENTRATE_REATTIVE={ pressing:1.55, attacco:8.5, appoggio:6.8, fondo:2.35, palo:1.7,
+  diagonale:4.6, corridoio:2.7, alaSale:3.25, stringe:2.05, testa:0.65, manoAbile:84,
+  durata:6.4, attesaAppoggio:2.8, centro:4.3, difensoreForte:80, divario:8,
+  // Una risposta alla circolazione contro pressing, senza interrompere la ripartenza al primo tocco.
+  // Margine per arresto/arrivo: il corpo si ferma poco prima dell'obiettivo (12 cm),
+  // senza restare appena fuori dai 5 m richiesti per decidere il passaggio.
+  circolazione:6, passaggi:2, mezzaMetri:1.4, mezzaMin:0.6, mezzaMargine:0.2 };
+
 // ---------- PASSAGGI, INTERCETTI E PALLE PERSE (fisica.js, tiri.js) ----------
 // INTERCETTO: probabilità che un difensore sulla linea legga il passaggio (base, più «lungo» per i passaggi che volano a lungo).
 // Reale: palla persa in circa il 20% delle azioni in parità (Mondiali 2009). v0.60: 0,09/0,3 → 0,12/0,36; v0.64: base 0,12 → 0,14.

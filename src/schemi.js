@@ -24,7 +24,8 @@ export const SCHEMI_PRESET=[
   {id:'entrata',nome:'Entrata e copertura',descrizione:'La Pos. 2, destra fuori, entra nello spazio; un compagno rimane alto a coprire.',attacco:clone(base),superiorita:clone(up),difesa:2,aiuti:[4,5],entrata:4,passaggi:'equilibrati'},
   {id:'incrocio',nome:'Incrocio dei lati',descrizione:'Le Pos. 2 e 4 scambiano lato; entra la Pos. 4 con un compagno alto in copertura.',attacco:base.map((p,i)=>[p[0],i===3||i===4?-p[1]:p[1]]),superiorita:clone(up),difesa:2,aiuti:[4,5],entrata:5,passaggi:'equilibrati'},
   {id:'boa',nome:'Centro e scarico',descrizione:'Spazio al centroboa, servizio soltanto davanti alla marcatura e scarico se chiuso.',attacco:base.map((p,i)=>i===0?[2.6,0]:[Math.min(10,p[0]*1.08),p[1]*1.1]),superiorita:clone(up),difesa:1,aiuti:[4,5],entrata:0,passaggi:'equilibrati'},
-  {id:'pali',nome:'Pali in movimento',descrizione:'Appoggi rapidi e pali scaglionati: la conclusione dipende dalla risposta della difesa.',attacco:clone(base),superiorita:clone(up),difesa:3,aiuti:[2,3,4,5],entrata:0,passaggi:'rapidi'}
+  {id:'pali',nome:'Pali in movimento',descrizione:'Appoggi rapidi e pali scaglionati: la conclusione dipende dalla risposta della difesa.',attacco:clone(base),superiorita:clone(up),difesa:3,aiuti:[2,3,4,5],entrata:0,passaggi:'rapidi'},
+  {id:'falso-centro',nome:'Falso centro',descrizione:'La Pos. 3 occupa il centro; contro un forte marcatore esce di lato e lascia subentrare il vero centroboa sul suo avversario.',attacco:base.map((p,i)=>[...base[i===0?5:i===5?0:i]]),superiorita:clone(up),difesa:2,aiuti:[4,5],entrata:0,passaggi:'equilibrati'}
 ];
 
 function posizioni(value){

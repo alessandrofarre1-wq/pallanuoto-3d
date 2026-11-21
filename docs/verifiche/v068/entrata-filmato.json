@@ -1,0 +1,1965 @@
+{
+  "provenienza": {
+    "base": "c11f93d2a0cc79af67f66d04ebc624f4cd964172",
+    "versione": "0.68.0",
+    "sha256_produzione": {
+      "src/centroboa.js": "4fd5728ba95eaeda06a65e7f1a7c4f86bea023a0e9cc105a930e7faf92fd73f4",
+      "src/difesa-cambi.js": "a622d8f76e8065fb92dcc01089b3170742da1bc0ec6c7beecaca671c8e243567",
+      "src/entrate.js": "03dd0fd00ef3d97074e24076280473d01659631e0eccf4ce5d9579a713b22532",
+      "src/fisica.js": "6236d062d934147b88285a55b50f17439ffb71a2b8111e53ee8622c4059bf5d6",
+      "src/grafica/arena.js": "bcd2f0a3476df8d05013d72314c9189941bcdccaab7a534471ba74aa0ba3f59f",
+      "src/grafica/pose.js": "855664c785b8d53bcc04eb0c0fca218059beca0cc60196714fb2fc22d1b96b65",
+      "src/hud.js": "4c09f6dc76d603167dcdcb0e0542a23ebffef2c88149acb8201346fa896cdb28",
+      "src/ia.js": "82359a22e1e519b59a05b08cd4ca3c91a269e0d594f8e12bb87bcab246827e5a",
+      "src/lotta.js": "512b41053a73140730515ee396cb29820af444f0a99b766afdadcb035444de44",
+      "src/menu.js": "e051480553b0c532b97f7444e15277a95acc88efc72b0fa60f15a4ce541676eb",
+      "src/panchina.js": "35f5e2fc4c946745573ee143968ae6a062a4260675270de239ddd15d65bf0252",
+      "src/partita.js": "6b6a6e828b664d1912d1273795b3e80890eb079b78d42d70285f2ab113aeb6a3",
+      "src/regole.js": "e1b5e37c0582e2f27e1e128154d40130e4872260baf5f7be79213e7cf172350e",
+      "src/schemi.js": "8381fe8cea32bf3e01d558504987eef5c9578b170ec0302570d629cdba40a274",
+      "src/statistiche.js": "fd8f4d3f62c8bf9e63c40a31cec45e50e0fc81d88e06756c435cbd2136918144",
+      "src/taratura.js": "4d4a7d598675bfa7e4986da0a3e824738b629c9ea7fa092593f4fceccd4c7526",
+      "src/tiri.js": "c2cead5e88db50f6cb1537acd628a6f14ad699a8da2e844fadfa326ab48f01d5"
+    }
+  },
+  "misure": {
+    "tipo": "A",
+    "squadra": "ITA",
+    "entrante": 9,
+    "appoggio": 5,
+    "entranteUid": 6,
+    "appoggioUid": 4,
+    "inizio": 137.13333333331067,
+    "seme": 68,
+    "campioni": [
+      {
+        "tempo": 0.03333333333330302,
+        "entrante": [
+          5.131429215431176,
+          -0.0636726020577596
+        ],
+        "appoggio": [
+          6.417167022326276,
+          4.340342239726278
+        ],
+        "holder": null,
+        "statoPalla": "flight",
+        "tipoPalla": "pass",
+        "da": 6,
+        "a": 4
+      },
+      {
+        "tempo": 0.06666666666660603,
+        "entrante": [
+          5.1494466440408715,
+          -0.07941588175649812
+        ],
+        "appoggio": [
+          6.431064477252407,
+          4.329141775604008
+        ],
+        "holder": null,
+        "statoPalla": "flight",
+        "tipoPalla": "pass",
+        "da": 6,
+        "a": 4
+      },
+      {
+        "tempo": 0.09999999999990905,
+        "entrante": [
+          5.170969022393966,
+          -0.10196282648232963
+        ],
+        "appoggio": [
+          6.442154786140587,
+          4.317002285363179
+        ],
+        "holder": null,
+        "statoPalla": "flight",
+        "tipoPalla": "pass",
+        "da": 6,
+        "a": 4
+      },
+      {
+        "tempo": 0.13333333333321207,
+        "entrante": [
+          5.195569340422337,
+          -0.1303366155129545
+        ],
+        "appoggio": [
+          6.451146462764338,
+          4.304416966274917
+        ],
+        "holder": null,
+        "statoPalla": "flight",
+        "tipoPalla": "pass",
+        "da": 6,
+        "a": 4
+      },
+      {
+        "tempo": 0.16666666666651508,
+        "entrante": [
+          5.2229002872838866,
+          -0.16372537225237252
+        ],
+        "appoggio": [
+          6.458408405642838,
+          4.2916920422143665
+        ],
+        "holder": null,
+        "statoPalla": "flight",
+        "tipoPalla": "pass",
+        "da": 6,
+        "a": 4
+      },
+      {
+        "tempo": 0.1999999999998181,
+        "entrante": [
+          5.252704395066613,
+          -0.2014694586742176
+        ],
+        "appoggio": [
+          6.464247008257477,
+          4.279061487336061
+        ],
+        "holder": null,
+        "statoPalla": "flight",
+        "tipoPalla": "pass",
+        "da": 6,
+        "a": 4
+      },
+      {
+        "tempo": 0.23333333333312112,
+        "entrante": [
+          5.284807448936844,
+          -0.24303638646060668
+        ],
+        "appoggio": [
+          6.4689165414995395,
+          4.26670091420236
+        ],
+        "holder": null,
+        "statoPalla": "flight",
+        "tipoPalla": "pass",
+        "da": 6,
+        "a": 4
+      },
+      {
+        "tempo": 0.26666666666642413,
+        "entrante": [
+          5.319106216812837,
+          -0.28799433794451346
+        ],
+        "appoggio": [
+          6.472627830662324,
+          4.2547390023371445
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.29999999999972715,
+        "entrante": [
+          5.35555497610196,
+          -0.3359889723956803
+        ],
+        "appoggio": [
+          6.478835702189558,
+          4.244751424744962
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.33333333333303017,
+        "entrante": [
+          5.394153161256598,
+          -0.3867244526074455
+        ],
+        "appoggio": [
+          6.489671953484417,
+          4.23757854418622
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.3666666666663332,
+        "entrante": [
+          5.434796717541307,
+          -0.4397705053037141
+        ],
+        "appoggio": [
+          6.503514352278288,
+          4.232281463486585
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.3999999999996362,
+        "entrante": [
+          5.477395248303826,
+          -0.49423600979372423
+        ],
+        "appoggio": [
+          6.519559170789529,
+          4.228396573748382
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.4333333333329392,
+        "entrante": [
+          5.52283900609306,
+          -0.5484641963658371
+        ],
+        "appoggio": [
+          6.537262576077071,
+          4.225605947788267
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.46666666666624224,
+        "entrante": [
+          5.570780358569463,
+          -0.6021986610939836
+        ],
+        "appoggio": [
+          6.556214884774649,
+          4.2236654113107415
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.49999999999954525,
+        "entrante": [
+          5.620722691140244,
+          -0.6554534645323106
+        ],
+        "appoggio": [
+          6.576107485638333,
+          4.222387696173249
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.5333333333328483,
+        "entrante": [
+          5.672253443463774,
+          -0.7082668238190348
+        ],
+        "appoggio": [
+          6.596707904993593,
+          4.221629433407083
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.5666666666661513,
+        "entrante": [
+          5.725037074429889,
+          -0.7606883474933546
+        ],
+        "appoggio": [
+          6.61784101456069,
+          4.221281124228141
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.5999999999994543,
+        "entrante": [
+          5.778804402979304,
+          -0.8127706754853586
+        ],
+        "appoggio": [
+          6.639374870675575,
+          4.221259414740575
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.6333333333327573,
+        "entrante": [
+          5.8333414872825555,
+          -0.8645645514662746
+        ],
+        "appoggio": [
+          6.661210044509786,
+          4.221501149553758
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.6666666666660603,
+        "entrante": [
+          5.8884794005102155,
+          -0.916116249441822
+        ],
+        "appoggio": [
+          6.683271583033251,
+          4.22195879744483
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.6999999999993634,
+        "entrante": [
+          5.94408538823492,
+          -0.9674664950926263
+        ],
+        "appoggio": [
+          6.705502952026191,
+          4.222596934477323
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.7333333333326664,
+        "entrante": [
+          6.0000554819904535,
+          -1.018650275765735
+        ],
+        "appoggio": [
+          6.727861472106412,
+          4.223389541820371
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.7666666666659694,
+        "entrante": [
+          6.056308462278917,
+          -1.0696971395562935
+        ],
+        "appoggio": [
+          6.750314879166599,
+          4.224317931223385
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.7999999999992724,
+        "entrante": [
+          6.112780996119802,
+          -1.1206317325342188
+        ],
+        "appoggio": [
+          6.772838731415558,
+          4.225369154193361
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.8333333333325754,
+        "entrante": [
+          6.169423760674034,
+          -1.1714744234549468
+        ],
+        "appoggio": [
+          6.795414453653668,
+          4.226534784194356
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.8666666666658784,
+        "entrante": [
+          6.226198375961213,
+          -1.222241930205027
+        ],
+        "appoggio": [
+          6.8180278609773115,
+          4.227809986849659
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.8999999999991815,
+        "entrante": [
+          6.283074991214653,
+          -1.2729479028759862
+        ],
+        "appoggio": [
+          6.840668042945561,
+          4.229192812906982
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.9333333333324845,
+        "entrante": [
+          6.340030393493926,
+          -1.3236034429893402
+        ],
+        "appoggio": [
+          6.862052133817977,
+          4.231447233518047
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.9666666666657875,
+        "entrante": [
+          6.397046530222529,
+          -1.3742175527515974
+        ],
+        "appoggio": [
+          6.8689186765703,
+          4.241466874226136
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 0.9999999999990905,
+        "entrante": [
+          6.454109357810533,
+          -1.4247975161396536
+        ],
+        "appoggio": [
+          6.874915619815662,
+          4.2503868195698
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.0333333333323935,
+        "entrante": [
+          6.511207945986116,
+          -1.475349217606304
+        ],
+        "appoggio": [
+          6.880496423205538,
+          4.25837646986116
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.0666666666656965,
+        "entrante": [
+          6.568348688429332,
+          -1.5258602844132731
+        ],
+        "appoggio": [
+          6.88580638586774,
+          4.265735782802649
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.0999999999989996,
+        "entrante": [
+          6.625679306458099,
+          -1.5761548083147876
+        ],
+        "appoggio": [
+          6.8912858652510565,
+          4.272394839617527
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.1333333333323026,
+        "entrante": [
+          6.6833830411940625,
+          -1.626008053619886
+        ],
+        "appoggio": [
+          6.896718096488593,
+          4.278612923091885
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.1666666666656056,
+        "entrante": [
+          6.74158786838707,
+          -1.675252878882766
+        ],
+        "appoggio": [
+          6.902895672895424,
+          4.284029034404027
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.1999999999989086,
+        "entrante": [
+          6.80036298898367,
+          -1.7237895959875749
+        ],
+        "appoggio": [
+          6.9081659428835245,
+          4.289690264842457
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.2333333333322116,
+        "entrante": [
+          6.859718689497502,
+          -1.7715921774623804
+        ],
+        "appoggio": [
+          6.914968640394882,
+          4.2942339813624795
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.2666666666655146,
+        "entrante": [
+          6.919609388309526,
+          -1.8187095897791454
+        ],
+        "appoggio": [
+          6.920137945480051,
+          4.2995604496889195
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.2999999999988177,
+        "entrante": [
+          6.979939947495738,
+          -1.8652605355422576
+        ],
+        "appoggio": [
+          6.927119197626663,
+          4.303696958726969
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.3333333333321207,
+        "entrante": [
+          7.040574834296281,
+          -1.9114212473477459
+        ],
+        "appoggio": [
+          6.933153232021184,
+          4.308286935845585
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.3666666666654237,
+        "entrante": [
+          7.101349195953796,
+          -1.957407892897262
+        ],
+        "appoggio": [
+          6.939241655326111,
+          4.312772032661773
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.3999999999987267,
+        "entrante": [
+          7.162080564428943,
+          -2.0034566267312495
+        ],
+        "appoggio": [
+          6.9469143360396695,
+          4.316277963562464
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.4333333333320297,
+        "entrante": [
+          7.222917113302891,
+          -2.0476619061654393
+        ],
+        "appoggio": [
+          6.953193485019456,
+          4.3205624516919725
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.4666666666653327,
+        "entrante": [
+          7.285758349085657,
+          -2.0786824213577564
+        ],
+        "appoggio": [
+          6.959272141996793,
+          4.324943558262714
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.4999999999986358,
+        "entrante": [
+          7.35086900173122,
+          -2.097295269424271
+        ],
+        "appoggio": [
+          6.966935980665958,
+          4.328387122441268
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.5333333333319388,
+        "entrante": [
+          7.41771301567874,
+          -2.106665867263998
+        ],
+        "appoggio": [
+          6.975353665275041,
+          4.331390555937345
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.5666666666652418,
+        "entrante": [
+          7.486292828221395,
+          -2.1099794117655053
+        ],
+        "appoggio": [
+          6.980487745717011,
+          4.336324977881147
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.5999999999985448,
+        "entrante": [
+          7.556555867654341,
+          -2.1098141234677956
+        ],
+        "appoggio": [
+          6.987437825380637,
+          4.340213804879779
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.6333333333318478,
+        "entrante": [
+          7.628070426888063,
+          -2.106899839672778
+        ],
+        "appoggio": [
+          6.9957550765260965,
+          4.343323739355884
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.6666666666651508,
+        "entrante": [
+          7.700513357223934,
+          -2.1018168349814976
+        ],
+        "appoggio": [
+          7.002514565827349,
+          4.347376515453327
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.6999999999984539,
+        "entrante": [
+          7.772118101527551,
+          -2.090728412295054
+        ],
+        "appoggio": [
+          7.0086455522265085,
+          4.3518333926053705
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7333333333317569,
+        "entrante": [
+          7.836524822449545,
+          -2.069526950958539
+        ],
+        "appoggio": [
+          7.0163426236702,
+          4.355408317404663
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.76666666666506,
+        "entrante": [
+          7.895394326870755,
+          -2.052392995293949
+        ],
+        "appoggio": [
+          7.02521803995175,
+          4.358333535607656
+        ],
+        "holder": 4,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          7.923136858910467,
+          -2.0448534103670286
+        ],
+        "appoggio": [
+          7.0300031480572205,
+          4.359610748705889
+        ],
+        "holder": null,
+        "statoPalla": "dead",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.7833333333317114,
+        "entrante": [
+          6.5,
+          6.8
+        ],
+        "appoggio": [
+          6.5,
+          3.95
+        ],
+        "holder": 2,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.8166666666650144,
+        "entrante": [
+          6.5,
+          6.8
+        ],
+        "appoggio": [
+          6.5,
+          3.95
+        ],
+        "holder": 2,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.8499999999983174,
+        "entrante": [
+          6.5,
+          6.8
+        ],
+        "appoggio": [
+          6.5,
+          3.95
+        ],
+        "holder": 2,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.8833333333316205,
+        "entrante": [
+          6.5,
+          6.8
+        ],
+        "appoggio": [
+          6.5,
+          3.95
+        ],
+        "holder": 2,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.9166666666649235,
+        "entrante": [
+          6.5,
+          6.8
+        ],
+        "appoggio": [
+          6.5,
+          3.95
+        ],
+        "holder": 2,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.9499999999982265,
+        "entrante": [
+          6.5,
+          6.8
+        ],
+        "appoggio": [
+          6.5,
+          3.95
+        ],
+        "holder": 2,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 1.9833333333315295,
+        "entrante": [
+          6.5,
+          6.8
+        ],
+        "appoggio": [
+          6.5,
+          3.95
+        ],
+        "holder": 2,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 2.0166666666648325,
+        "entrante": [
+          6.5,
+          6.8
+        ],
+        "appoggio": [
+          6.5,
+          3.95
+        ],
+        "holder": 2,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 2.0499999999981355,
+        "entrante": [
+          6.5,
+          6.8
+        ],
+        "appoggio": [
+          6.5,
+          3.95
+        ],
+        "holder": 2,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 2.0833333333314386,
+        "entrante": [
+          6.5,
+          6.8
+        ],
+        "appoggio": [
+          6.5,
+          3.95
+        ],
+        "holder": 2,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 2.1166666666647416,
+        "entrante": [
+          6.5,
+          6.8
+        ],
+        "appoggio": [
+          6.5,
+          3.95
+        ],
+        "holder": 2,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 2.1499999999980446,
+        "entrante": [
+          6.5,
+          6.8
+        ],
+        "appoggio": [
+          6.5,
+          3.95
+        ],
+        "holder": 2,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      },
+      {
+        "tempo": 2.1833333333313476,
+        "entrante": [
+          6.5,
+          6.8
+        ],
+        "appoggio": [
+          6.5,
+          3.95
+        ],
+        "holder": 2,
+        "statoPalla": "held",
+        "tipoPalla": null,
+        "da": 6,
+        "a": null
+      }
+    ]
+  },
+  "esportazione": {
+    "fotogrammi": 53,
+    "fpsVideo": 15,
+    "velocita": "rallentato 2x",
+    "secondiGioco": 1.7666666666666666,
+    "coda": "nessuna: interruzione indicata in sovrimpressione",
+    "nota": "Primi 53 dei 120 fotogrammi registrati: il ritorno al tagliante si interrompe. Esclusa la ripresa successiva per non confonderla con il taglio."
+  }
+}

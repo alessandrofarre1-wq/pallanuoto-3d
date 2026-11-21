@@ -1,0 +1,134 @@
+{
+  "provenienza": {
+    "base": "c11f93d2a0cc79af67f66d04ebc624f4cd964172",
+    "versione": "0.68.0",
+    "fase": "Chiusura 21 novembre: endpoint D legale con margine 20cm e compagni nei propri spazi",
+    "sha256_produzione": {
+      "src/centroboa.js": "4fd5728ba95eaeda06a65e7f1a7c4f86bea023a0e9cc105a930e7faf92fd73f4",
+      "src/difesa-cambi.js": "a622d8f76e8065fb92dcc01089b3170742da1bc0ec6c7beecaca671c8e243567",
+      "src/entrate.js": "8eeb169a224e28cda9ed630a46fd6950070136c8ccc76f7ef7c9a253864af8b9",
+      "src/fisica.js": "6236d062d934147b88285a55b50f17439ffb71a2b8111e53ee8622c4059bf5d6",
+      "src/grafica/arena.js": "bcd2f0a3476df8d05013d72314c9189941bcdccaab7a534471ba74aa0ba3f59f",
+      "src/grafica/pose.js": "855664c785b8d53bcc04eb0c0fca218059beca0cc60196714fb2fc22d1b96b65",
+      "src/hud.js": "4c09f6dc76d603167dcdcb0e0542a23ebffef2c88149acb8201346fa896cdb28",
+      "src/ia.js": "82359a22e1e519b59a05b08cd4ca3c91a269e0d594f8e12bb87bcab246827e5a",
+      "src/lotta.js": "512b41053a73140730515ee396cb29820af444f0a99b766afdadcb035444de44",
+      "src/menu.js": "e051480553b0c532b97f7444e15277a95acc88efc72b0fa60f15a4ce541676eb",
+      "src/panchina.js": "35f5e2fc4c946745573ee143968ae6a062a4260675270de239ddd15d65bf0252",
+      "src/partita.js": "6b6a6e828b664d1912d1273795b3e80890eb079b78d42d70285f2ab113aeb6a3",
+      "src/regole.js": "e1b5e37c0582e2f27e1e128154d40130e4872260baf5f7be79213e7cf172350e",
+      "src/schemi.js": "8381fe8cea32bf3e01d558504987eef5c9578b170ec0302570d629cdba40a274",
+      "src/statistiche.js": "fd8f4d3f62c8bf9e63c40a31cec45e50e0fc81d88e06756c435cbd2136918144",
+      "src/taratura.js": "16ef3c3c612ce70e16b124b7c1e66c2ec90c6865b26c6450c41a509560a82c0f",
+      "src/tiri.js": "c2cead5e88db50f6cb1537acd628a6f14ad699a8da2e844fadfa326ab48f01d5"
+    },
+    "comando": "npm run taratura -- --partite=8 --paralleli=3 --dist=<build finale>",
+    "semi": [
+      7919,
+      15838,
+      23757,
+      31676,
+      39595,
+      47514,
+      55433,
+      63352
+    ]
+  },
+  "misure": {
+    "partite": 8,
+    "tempo": 480,
+    "gol": 14.5625,
+    "tiri": 35.4375,
+    "conversione": 41.09347442680776,
+    "inPorta": 81.12874779541447,
+    "parate": 14.1875,
+    "espulsioni": 10.875,
+    "espCentro": 69.54022988505747,
+    "espFuga": 1.7241379310344827,
+    "superiorita": 10.875,
+    "superioritaTrasformate": 48.275862068965516,
+    "rigori": 1.625,
+    "rigoriSegnati": 84.61538461538461,
+    "palleRubate": 3.125,
+    "falli": 30.75,
+    "intercetti": 7.9375,
+    "tiriLontani": 0,
+    "golLontani": 0,
+    "tiriSoli": 4,
+    "golCostruiti": 98.71244635193133,
+    "passaggiGol": 13.648068669527897,
+    "timeout": 1.5,
+    "golTipo": {
+      "perimetro": 21.459227467811157,
+      "superiorita": 36.05150214592275,
+      "controfuga": 0,
+      "entrata": 19.313304721030043,
+      "centroboa": 13.733905579399142,
+      "rigore": 9.44206008583691
+    },
+    "vittorie": [
+      0,
+      8
+    ],
+    "nomi": [
+      "Italia",
+      "Ungheria"
+    ],
+    "golPerSquadra": [
+      10.375,
+      18.75
+    ],
+    "espulsioniPerSquadra": [
+      13.375,
+      8.375
+    ],
+    "azioni": {
+      "parita": {
+        "perPartita": 54.0625,
+        "quota": 80.91674462114125,
+        "durata": 14.658111753341124,
+        "gol": 16.647398843930635,
+        "tiro": 28.55491329479769,
+        "persa": 17.45664739884393,
+        "falloAttacco": 14.104046242774567,
+        "espulsione": 18.959537572254334,
+        "rigore": 2.7745664739884393,
+        "tempo": 1.5028901734104045
+      },
+      "controfuga": {
+        "perPartita": 1.0625,
+        "quota": 1.5902712815715623,
+        "durata": 6.658823529389874,
+        "gol": 17.647058823529413,
+        "tiro": 47.05882352941177,
+        "persa": 0,
+        "falloAttacco": 5.882352941176471,
+        "espulsione": 29.41176470588235,
+        "rigore": 0,
+        "tempo": 0
+      },
+      "superiorita": {
+        "perPartita": 11.6875,
+        "quota": 17.492984097287184,
+        "durata": 9.893404634565135,
+        "gol": 45.98930481283423,
+        "tiro": 42.24598930481283,
+        "persa": 4.81283422459893,
+        "falloAttacco": 1.0695187165775402,
+        "espulsione": 2.1390374331550803,
+        "rigore": 1.0695187165775402,
+        "tempo": 2.6737967914438503
+      }
+    },
+    "azioniTotali": 66.8125,
+    "difese": [
+      0,
+      24.56922363788592,
+      68.24732839729633,
+      7.183447964817755
+    ],
+    "pallaSola": 0.03333333333333333,
+    "pallaVagante": 5.083333333333333,
+    "manoPassaggio": 0.9998674206100501
+  }
+}

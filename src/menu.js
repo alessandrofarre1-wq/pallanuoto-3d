@@ -26,6 +26,7 @@ import { applicaSchema, caricaSchema, copiaSchema, nomePosizione } from './schem
 import { inizializzaEditor, aggiornaRiepilogoStrategia } from './tattiche-menu.js';
 import { aggiornaRiepilogoUomo, inizializzaUomo } from './uomo-editor.js';
 import { renderTattichePausa } from './tattiche-pausa.js';
+import { resetDisposizioneTattica } from './entrate.js';
 
 const salva=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){ /* senza memoria si va avanti lo stesso */ } };
 const leggi=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } };
@@ -332,7 +333,10 @@ export function newMatch(){
   for(const p of allPlayers) Object.assign(p,{stamina:1,excluded:false,pf:0,cut:null,girata:null,act:null,charging:false,chargeT:0,exclUntil:0,stunUntil:0,tackleCD:0,fakeUntil:0,freeThrow:false,qte:null,
     pressatoUntil:0,turnedUntil:0,fakedUntil:0,biteUntil:0,qteDopo:0,fintaFino:0,sfondaT:0,lunge:0,aggrT:0,cinqueUntil:0,cutT:0,ricevutoT:0,arrivoPozzetto:0,contactT:0,decideT:0,reazioneT:0,
     pressatoDa:null,scaricoDopoFinta:false,ricevutoDopoFinta:false,voloTocco:-9,rientro:null,appoggio:null,daChi:null,ricevutoPassaggio:false,ricevutoCambio:false,alVolo:false,voloPronto:false,shootNext:false,fakeUsed:false,fakeCount:0,tiriDiSchiena:0,perno:false,uscendo:false,alPozzetto:false,puoRientrare:false,valutatoPozzetto:false,colpi:[],sprinting:false});
-  for(const t of teams) Object.assign(t,{atkPlay:0,defPlay:2,lasciato:null,cross:false,timeouts:2,vuoleTimeout:false,parzialeSubito:0,espulsioniT:[],setteAnnunciato:false,fugaFino:0,doubleP:null,doubleUntil:0,nextDrive:0,alaConPalla:null,postiT:-1,posti:null,rallT:-1,rall:null,schema:null,schemaStato:null,aiutoStato:null,copertura:null,postiAssegnati:null,simulazioni:0,scambio:null,difesaMeno:null,minuti:null,blocco:null,contro:null,scambi:0,blocchi:0});
+  for(const t of teams){
+    Object.assign(t,{atkPlay:0,defPlay:2,cross:false,timeouts:2,vuoleTimeout:false,parzialeSubito:0,espulsioniT:[],setteAnnunciato:false,fugaFino:0,doubleP:null,doubleUntil:0,nextDrive:0,alaConPalla:null,postiT:-1,posti:null,rallT:-1,rall:null,schema:null,postiAssegnati:null,simulazioni:0,difesaMeno:null,minuti:null,contro:null,scambi:0,blocchi:0});
+    resetDisposizioneTattica(t);
+  }
   // Strategia scelta prima della gara: i posti restano relativi alla porta anche al cambio campo.
   applicaSchema(teams[0],caricaSchema());
   Object.assign(ball,{kind:null,target:null,shooter:null,afterShot:false,flightT:0,saveChecked:false,holdTime:0,shotPower:0,lob:false,raccordoVista:null,raccordoPresa:null,inRete:false,daTiro:false,inUscita:false,rigore:false,cambioLato:false,toccoDifesa:null,ignora:null,skip:false,skipped:false,schizzi:0,lastTeam:null,wx:0,wy:0,wz:0}); ball.intercept.clear();

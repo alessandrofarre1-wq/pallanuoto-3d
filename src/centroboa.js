@@ -1,9 +1,10 @@
 // Lettura geometrica del duello: FIN, Dentro la pallanuoto, PDF pp. 23–37 e 42–50.
 // I numeri di campo restano quelli del gioco; non sono numeri di cuffia.
-import { HW, MARK, clamp } from './costanti.js';
-import { ball, game, goalX, other } from './stato.js';
+import { HW, clamp } from './costanti.js';
+import { ball, game, goalX } from './stato.js';
+import { difensoreEntrata, postoCentro } from './entrate.js';
 
-export const difensoreCentro = boa => other(boa.team).players.find(p=>MARK[p.i]===1&&!p.excluded&&!p.uscendo);
+export const difensoreCentro = boa => difensoreEntrata(boa);
 const unita = (x,z) => { const l=Math.hypot(x,z)||1; return {x:x/l,z:z/l}; };
 const differenza = a => Math.atan2(Math.sin(a),Math.cos(a));
 
@@ -25,7 +26,7 @@ export function leggiCentro(boa,def,portatore=ball){
 }
 
 export function centroTarget(boa){
-  const gx=goalX(boa.team),dir=boa.team.dir,base=boa.team.schema?.attacco?.[0]||[2.6,0];
+  const gx=goalX(boa.team),dir=boa.team.dir,base=boa.team.schema?.attacco?.[postoCentro(boa.team)-1]||[2.6,0];
   const def=difensoreCentro(boa),lettura=leggiCentro(boa,def),lato=lettura.lato||Math.sign(ball.z*dir)||(boa.mano==='S'?-1:1);
   let d=base[0],z=base[1];
   const duello=d<=5&&Math.abs(z)<=3.2&&Math.abs(gx-boa.x)<5.2;

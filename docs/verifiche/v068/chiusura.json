@@ -1,0 +1,66 @@
+{
+  "provenienza": {
+    "base": "c11f93d2a0cc79af67f66d04ebc624f4cd964172",
+    "versione": "0.68.0",
+    "fase": "Chiusura 21 novembre: endpoint D legale con margine 20cm e compagni nei propri spazi",
+    "sha256_produzione": {
+      "src/centroboa.js": "4fd5728ba95eaeda06a65e7f1a7c4f86bea023a0e9cc105a930e7faf92fd73f4",
+      "src/difesa-cambi.js": "a622d8f76e8065fb92dcc01089b3170742da1bc0ec6c7beecaca671c8e243567",
+      "src/entrate.js": "8eeb169a224e28cda9ed630a46fd6950070136c8ccc76f7ef7c9a253864af8b9",
+      "src/fisica.js": "6236d062d934147b88285a55b50f17439ffb71a2b8111e53ee8622c4059bf5d6",
+      "src/grafica/arena.js": "bcd2f0a3476df8d05013d72314c9189941bcdccaab7a534471ba74aa0ba3f59f",
+      "src/grafica/pose.js": "855664c785b8d53bcc04eb0c0fca218059beca0cc60196714fb2fc22d1b96b65",
+      "src/hud.js": "4c09f6dc76d603167dcdcb0e0542a23ebffef2c88149acb8201346fa896cdb28",
+      "src/ia.js": "82359a22e1e519b59a05b08cd4ca3c91a269e0d594f8e12bb87bcab246827e5a",
+      "src/lotta.js": "512b41053a73140730515ee396cb29820af444f0a99b766afdadcb035444de44",
+      "src/menu.js": "e051480553b0c532b97f7444e15277a95acc88efc72b0fa60f15a4ce541676eb",
+      "src/panchina.js": "35f5e2fc4c946745573ee143968ae6a062a4260675270de239ddd15d65bf0252",
+      "src/partita.js": "6b6a6e828b664d1912d1273795b3e80890eb079b78d42d70285f2ab113aeb6a3",
+      "src/regole.js": "e1b5e37c0582e2f27e1e128154d40130e4872260baf5f7be79213e7cf172350e",
+      "src/schemi.js": "8381fe8cea32bf3e01d558504987eef5c9578b170ec0302570d629cdba40a274",
+      "src/statistiche.js": "fd8f4d3f62c8bf9e63c40a31cec45e50e0fc81d88e06756c435cbd2136918144",
+      "src/taratura.js": "16ef3c3c612ce70e16b124b7c1e66c2ec90c6865b26c6450c41a509560a82c0f",
+      "src/tiri.js": "c2cead5e88db50f6cb1537acd628a6f14ad699a8da2e844fadfa326ab48f01d5"
+    },
+    "comando": "npm run taratura -- --partite=8 --paralleli=3 --dist=<build finale>",
+    "semi": [
+      7919,
+      15838,
+      23757,
+      31676,
+      39595,
+      47514,
+      55433,
+      63352
+    ]
+  },
+  "prove": {
+    "lint_gameplay_tattica_difesa_area": "5/5 PASS",
+    "entrate_isolate": "PASS incluse ala larga e margine arresto nei due versi",
+    "entrate_integrazione": "18 scene precedenti +4 D +2 rinunce +2 qualifiche +8 reset PASS",
+    "aspetto": "PASS completo",
+    "gambe_fuori_acqua": {
+      "verticale": [
+        0,
+        7123
+      ],
+      "nuotata": [
+        0,
+        5180
+      ],
+      "transizione": [
+        0,
+        1179
+      ]
+    },
+    "verifica": "PASS --partite=0; sei partite finali affidate alla CI, esito nella PR"
+  },
+  "costi_aspetto": [
+    "iphone-orizzontale: 56 oggetti disegnati, 142116 triangoli",
+    "iphone-piccolo: 56 oggetti disegnati, 142116 triangoli",
+    "nuoto-lato: 39 oggetti disegnati, 152954 triangoli",
+    "nuoto-alto: 34 oggetti disegnati, 152182 triangoli",
+    "verticale-lato: 48 oggetti disegnati, 154064 triangoli",
+    "gruppo-alto: 48 oggetti disegnati, 155548 triangoli"
+  ]
+}

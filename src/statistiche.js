@@ -1,5 +1,6 @@
 // Numeri della partita, per squadra: servono al bilanciamento (prove automatiche) e, più avanti, al tabellino.
 import { ball, game, teams, other } from './stato.js';
+import { centroAttacco } from './entrate.js';
 
 const TIPI=['perimetro','superiorita','controfuga','entrata','centroboa','rigore'];
 const ESITI=['gol','tiro','persa','falloAttacco','espulsione','rigore','tempo'];
@@ -29,7 +30,7 @@ export function tipoDiTiro(p,ball){
   const t=p.team, dif=other(t), gx=t.dir*12.5, dPorta=Math.hypot(gx-p.x,p.z);
   if(game.penalty===p) return 'rigore';
   if(dif.players.some(q=>q.excluded)) return 'superiorita';
-  if(p.i===1 && dPorta<4.6) return 'centroboa';
+  if(p===centroAttacco(t) && dPorta<4.6) return 'centroboa';
   // controfuga: possesso appena conquistato e al massimo due difensori (portiere escluso) tra chi tira e la porta
   if(game.time-(game.possT||0)<6 && vantaggioNumerico(t)) return 'controfuga';
   // entrata (v0.66): tiro di chi ha ricevuto mentre tagliava verso la porta, entro 2,5 s; prima contava solo chi tirava entro 3 s

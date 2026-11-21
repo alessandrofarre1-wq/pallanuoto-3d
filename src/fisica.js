@@ -11,6 +11,7 @@ import { active, allPlayers, ball, fight, game, goalX, other, ownGoalX, teams } 
 import { diSchiena, shotKind } from './tiri.js';
 import { FIRMA, FINTA_LATO, fintaLatoAttiva } from './finte.js';
 import { difensoreCentro, leggiCentro, passoGirata } from './centroboa.js';
+import { centroAttacco } from './entrate.js';
 import { CON_PALLA, INTERCETTO, PARATA_SUP, PRESA, SPRINT_CONSUMO, STANCO } from './taratura.js';      // numeri del bilanciamento
 export { CON_PALLA, INTERCETTO, PARATA_SUP, PRESA, SPRINT_CONSUMO, STANCO };
 export function movePlayer(p,dx,dz,sprint,dt){
@@ -42,14 +43,14 @@ export function movePlayer(p,dx,dz,sprint,dt){
   // inversione: per tornare indietro non si fa una curva a U distesi, ci si alza, si gira sul posto e si riparte
   const cosGiro=swimming?(p.fx*dx+p.fz*dz)/mag:1;
   if(swimming&&!p.isGK&&!lunging){ if(cosGiro<-0.25) p.perno=true; else if(cosGiro>0.45) p.perno=false; } else p.perno=false;
-  const boaAvversario=other(p.team).players[1];
-  const difendeCentro=!p.isGK&&p.i===6&&!p.team.players.some(q=>q.excluded)&&game.possTeam===other(p.team)&&boaAvversario&&!boaAvversario.excluded&&
+  const boaAvversario=centroAttacco(other(p.team));
+  const difendeCentro=!p.isGK&&boaAvversario&&difensoreCentro(boaAvversario)===p&&!p.team.players.some(q=>q.excluded)&&game.possTeam===other(p.team)&&!boaAvversario.excluded&&
     Math.abs(ownGoalX(p.team)-boaAvversario.x)<5&&Math.hypot(p.x-boaAvversario.x,p.z-boaAvversario.z)<1.8;
   const nuotoDiretto=!p.isGK&&!giroTarget&&!difendeCentro;
   let tfx=p.fx, tfz=p.fz;
   const gestoAttivo=p.act&&!p.act.done;
-  const passaFronte=gestoAttivo&&p.act.kind==='pass'&&!p.isGK&&p.i!==1&&Math.abs(goalX(p.team)-p.x)<10;
-  const riceveFronte=riceve&&!p.isGK&&p.i!==1&&Math.abs(goalX(p.team)-p.x)<10;
+  const passaFronte=gestoAttivo&&p.act.kind==='pass'&&!p.isGK&&p!==centroAttacco(p.team)&&Math.abs(goalX(p.team)-p.x)<10;
+  const riceveFronte=riceve&&!p.isGK&&p!==centroAttacco(p.team)&&Math.abs(goalX(p.team)-p.x)<10;
   if(passaFronte||riceveFronte){ tfx=goalX(p.team)-p.x;tfz=-p.z; }
   else if(hold&&!moving&&!gestoAttivo&&!p.isGK&&game.penalty!==p&&p.pressatoUntil>game.time&&p.pressatoDa&&sp<1){
     // Una sola rotazione angolare: il blend di due vettori opposti poteva
@@ -68,7 +69,7 @@ export function movePlayer(p,dx,dz,sprint,dt){
   else if((p.isGK?swimming:moving) && !giroTarget && !(p.isGK&&ball.state!=='held'&&!sprint)){ tfx=dx; tfz=dz; }
   else if(hold){
     tfx=goalX(p.team)-p.x; tfz=-p.z;
-    if(p.i===1 && Math.hypot(tfx,tfz)<4.5 && game.penalty!==p&&!other(p.team).players.some(q=>q.excluded)&&leggiCentro(p,difensoreCentro(p),p).spalle){ tfx=-tfx; tfz=-tfz; }
+    if(p===centroAttacco(p.team) && Math.hypot(tfx,tfz)<4.5 && game.penalty!==p&&!other(p.team).players.some(q=>q.excluded)&&leggiCentro(p,difensoreCentro(p),p).spalle){ tfx=-tfx; tfz=-tfz; }
   }
   else { tfx=ball.x-p.x; tfz=ball.z-p.z; }
   // Si decide prima dove guarda il giocatore: un gesto che guarda altrove
@@ -311,7 +312,7 @@ export function updateBall(dt){
           // v0.55: dopo una finta riuscita i difensori hanno abboccato e leggono peggio lo scarico
           const dopoFinta=(ball.kind==='pass'&&ball.dopoFinta?0.6:1)*(ball.kind==='pass'&&ball.firma?FIRMA.intercetto:1);
           // v0.60 (taratura): palle perse in parità 8% contro circa 20% delle partite vere; base 0,09 → 0,12, passaggio lungo 0,3 → 0,36
-          const versoBoa=ball.target&&ball.target.i===1&&Math.abs(goalX(ball.target.team)-ball.target.x)<5&&!manUp(ball.target.team);
+          const versoBoa=ball.target&&ball.target===centroAttacco(ball.target.team)&&Math.abs(goalX(ball.target.team)-ball.target.x)<5&&!manUp(ball.target.team);
           const letto=(INTERCETTO.base+INTERCETTO.lungo*clamp((ball.flightT-0.2)/0.7,0,1)+(ball.shooter?(p.s.dif-ball.shooter.s.pas)/59*0.12:0))*(p.team.defPlay===2?1.15:1)*(versoBoa?1.3:1)*dopoFinta;
           const pr=(ball.kind==='shot'?muro:clamp(letto,0.04,0.5))*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
           if(rnd()<pr){
