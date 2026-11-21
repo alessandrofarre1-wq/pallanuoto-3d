@@ -6,6 +6,9 @@ import { chromium } from 'playwright';
 import { createServer } from 'vite';
 
 const salva=process.argv.find(a=>a.startsWith('--salva='))?.slice(8);
+const foto=process.argv.find(a=>a.startsWith('--foto='))?.slice(7);
+const soloLayout=process.argv.includes('--solo-layout');
+if(foto)fs.mkdirSync(foto,{recursive:true});
 const server=await createServer({logLevel:'warn',server:{host:'127.0.0.1',port:0,hmr:false}});
 await server.listen();
 const browser=await chromium.launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
@@ -19,7 +22,10 @@ try{
     const nomi=['stato','partita','ia','entrate','tiri','schemi','regole','input','replay','chiamate-attacco','hud'];
     const [S,P,A,E,T,Q,R,I,V,C,U]=await Promise.all(nomi.map(n=>import('/src/'+n+'.js')));
     const [vista,scena]=await Promise.all([import('/src/grafica/render.js'),import('/src/grafica/scena.js')]);
-    document.getElementById('goBtn').click();scena.renderer.render=()=>{};
+    document.getElementById('goBtn').click();
+    // Nel gioco lo fa main.js a ogni RAF; qui il RAF è fermo per misurare i passi.
+    document.body.classList.add('gioco');
+    const disegna=scena.renderer.render.bind(scena.renderer);scena.renderer.render=()=>{};
     let numero=0;
     const put=(p,d,z,dir)=>Object.assign(p,{x:(12.5-d)*dir,z:z*dir,vx:0,vz:0});
     const setup=(tipo='A',dir=1,mano='D')=>{
@@ -52,7 +58,8 @@ try{
     };
     const step=()=>{P.update(1/60);V.interrompiReplay();vista.render(1/60,S.game.time*1000);U.updateHUD();};
     const inputPass=down=>document.querySelector('[data-b="pass"]').dispatchEvent(new TouchEvent(down?'touchstart':'touchend',{bubbles:true,cancelable:true,changedTouches:[]}));
-    window.__chiamate={S,P,A,E,T,Q,R,I,V,C,U,vista,setup,step,inputPass};
+    const ridisegna=()=>{scena.renderer.render=disegna;vista.render(1/60,S.game.time*1000);scena.renderer.render=()=>{};};
+    window.__chiamate={S,P,A,E,T,Q,R,I,V,C,U,vista,setup,step,inputPass,ridisegna};
   });
   const offerte=await page.evaluate(()=>{
     const {S,E,C,U,setup}=window.__chiamate,{t,o,h}=setup();const G=S.game;
@@ -78,7 +85,7 @@ try{
   assert.ok(offerte.propriaMeta&&offerte.sceltaInViaggio&&offerte.esecuzioneAttende&&offerte.hintInViaggio.startsWith('Avanza'),'dopo5,5s si chiama già nella propria metà, ma lo schema attende l’attacco');
 
   const scene=[];
-  for(const tipo of ['A','B','C'])for(const dir of [1,-1]){
+  for(const tipo of soloLayout?[]:['A','B','C'])for(const dir of [1,-1]){
     await page.evaluate(({tipo,dir})=>{
       const {S,setup}=window.__chiamate,s=setup(tipo,dir,tipo==='B'?'S':'D');window.__scenaChiamata=s;
       s.prima=S.allPlayers.map(p=>[p.x,p.z]);s.schema=JSON.stringify(s.t.schema);s.difesa=s.t.defPlay;
@@ -164,15 +171,21 @@ try{
       const fuori=bottoni.some(b=>b.x<safe-.1||b.r>width-safe+.1||b.y<0||b.b>height-12+.1);
       const interseca=bottoni.some(b=>comandi.some(c=>overlap(b,c))||overlap(b,cr));
       const fight=getComputedStyle(document.getElementById('fight')).display;
-      return {width,height,safe,bottoni,fuori,interseca,fight,visibile:!row.hidden};
+      return {width,height,safe,bottoni,fuori,interseca,fight,visibile:!row.hidden&&getComputedStyle(row).visibility==='visible'};
     },{safe,width,height});
     layout.push(r);
     console.log('LAYOUT',JSON.stringify(r));
     assert.ok(r.visibile&&!r.fuori&&!r.interseca&&r.fight==='none',`chiamate e CAMBI separati ${width} safe${safe}`);
     assert.ok(r.bottoni.every(b=>b.w>=43.9&&b.h>=43.9),'aree di tocco44px');
+    if(foto){
+      await page.evaluate(()=>window.__chiamate.ridisegna());
+      await page.waitForTimeout(80); // Un turno del compositore, non del tempo di gioco finto.
+      const cdp=await page.context().newCDPSession(page),img=await cdp.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+      fs.writeFileSync(`${foto}/chiamate-${width}-safe${safe}.png`,Buffer.from(img.data,'base64'));await cdp.detach();
+    }
   }
   assert.deepEqual(errori,[]);
   const risultato={offerte,scene,rinunce,controlloManuale,layout};
   if(salva)fs.writeFileSync(salva,JSON.stringify(risultato,null,2)+'\n');
-  console.log(JSON.stringify(risultato,null,2));console.log('PASS chiamate v0.70: scelta touch, due passaggi reali A/B/C, annullamenti e layout44px');
+  console.log(JSON.stringify(risultato,null,2));console.log(soloLayout?'PASS layout chiamate v0.70: offerte, annullamenti e quattro layout44px (ricezioni non ripetute)':'PASS chiamate v0.70: scelta touch, due passaggi reali A/B/C, annullamenti e layout44px');
 }finally{await browser.close();await server.close();}

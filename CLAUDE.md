@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.69). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.70). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -60,7 +60,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 - Numeri del bilanciamento: `taratura.js` (con i riferimenti reali; `ia.js`, `fisica.js`, `lotta.js`, `regole.js`, `tiri.js`,
   `partita.js`, `finte.js` e `panchina.js` li importano e li riesportano con lo stesso nome).
 - Movimento e palla: `fisica.js` (nuoto, parata, muro, intercetto, presa, uscite), `palla.js` (Rapier), `fisica-palla/`.
-- Computer: `ia.js` (attacco `aiCarrier`, posti, marcature, difese, ripartenza), `entrate.js`, `difesa-cambi.js`, `lotta.js` (centroboa), `centroboa.js`,
+- Computer: `ia.js` (attacco `aiCarrier`, posti, marcature, difese, ripartenza), `entrate.js`, `chiamate-attacco.js`, `difesa-cambi.js`, `lotta.js` (centroboa), `centroboa.js`,
   `tiri.js` (gesti, tiri, passaggi), `finte.js`, `muro.js`, `controfuga.js`, `uomo-in-piu.js` e `schemi.js`.
 - Comandi: `input.js`, `controllo.js`. Interfaccia: `hud.js`, `cronaca.js`, `menu.js`, `panchinaVista.js`, `tattiche-*.js`,
   `uomo-editor.js`, `replay*.js`, `tornei.js`, `rigoriFinali.js`, `index.html`, `stile.css`.
@@ -77,6 +77,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   giocatore solo per 3 s dopo un cambio manuale e a inizio partita; CAMBI in basso al centro solo con un consiglio urgente o un
   cambio in corso (area di tocco 44 px); registro degli eventi dal menu di pausa; notifiche in stile telecronaca ai margini, mai al
   centro (`cronaca.js`); colori con significato fisso (oro = tu e azioni richieste, rosso = sanzioni e urgenza, ciano = servizio).
+- Chiamate in parità: dopo5,5s dal possesso (compreso il viaggio), se la boa non è davvero servibile, scelte touch A/B/C in basso al centro. Una scelta le nasconde; area44px, CAMBI rapido conservato; pausa nasconde le proposte. Il testo indica appoggio e avanzamento; i passaggi restano manuali.
 - Replay del gol: 7,6 s saltabili (1,2 s diretta + 5,2 s replay + 1,2 s ripresa), motore fermo durante la clip; camera che gira di
   circa 35° attorno all'azione e scende, poi taglio con lampo sul primo piano a pelo d'acqua del marcatore che esulta (si alza e
   agita il pugno; 1,15 s registrati dopo la rete, 38% del replay; niente primo piano se è appena stato sostituito). Prova
@@ -108,6 +109,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 - Passaggi alti e tesi (11-15,5 m/s); presa alla mano (0,55 m, portiere 0,9 m); errore verosimile, mai grossi sbagli su passaggi
   semplici; al centroboa marcato la palla arriva in acqua davanti a lui; mai al proprio portiere in attacco. Nel passaggio di lato
   busto e testa girano verso il compagno e la mano non passa davanti al viso; chi riceve guarda la palla (solo disegno).
+- Raccordi visuali v0.70 (`grafica/gesto-vista.js`): carica già raggiunta conservata, ingresso/uscita dalla posa precedente, curva continua al rilascio e filtro graduale. Stato solo visuale per atleta; giunture fisiche, punto/tempi del lancio e carica0,9s conservati. Nessuna nuova geometria.
 - Chi nuota con la palla davanti alla testa, prima di tirare, passare o fintare la pesca dall'acqua e la porta di lato all'altezza
   della spalla (solo disegno, dentro i tempi del gesto).
 - Finte: un tocco; sei stili personali (larga, a raffica, di polso, mezza, di bomba, di spalla) con un piccolo vantaggio sul
@@ -117,8 +119,9 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 ### Attacco del computer
 - Circolazione: palla in mano 0,4-0,7 s sul perimetro (`CIRCOLAZIONE`); costruzione di 18 s prima di cercare il tiro da libero,
   anche nella ripartenza alla pari (il tiro subito dopo la ricezione è sicuro solo nella controfuga con l'uomo in più); palla al
-  centroboa dopo la costruzione (vantaggio che cresce dai 7 ai 15 s, `CENTRO_ATTESA`); tiro subito dopo una ricezione libera
+  centroboa nei duelli marginali dopo la costruzione (vantaggio che cresce dai 7 ai 15 s, `CENTRO_ATTESA`); una boa chiaramente libera con corridoio sicuro può essere servita subito (`SERVIZIO_BOA`); tiro subito dopo una ricezione libera
   deciso una volta (circa 1 su 3 in parità); pazienza fino a fine azione (tiro di fine azione negli ultimi 4,5 s, `FINE_AZIONE`).
+- Chiamate manuali v0.70: A3→2→5, B3→4→1 (mano/abilità adeguate), C2al palo, una per possesso. Il taglio parte al rilascio reale dell’appoggio; perdita/espulsione/scadenza annullano. Nessun cambio dello schema persistente o controllo forzato. PASSA neutro cerca appoggio chiamato, tagliante pronto, poi scelta assistita; una direzione manuale conserva la precedenza. Portiere, aiuti, linea2m e rischio reale restano nel servizio alla boa.
 - La squadra sale per corsie, scaglionata per ruolo: nessuno va tutto sulla palla (richiesta di Ale).
 - Ripartenza dopo ogni recupero: partono tutti subito verso i posti, ma scatta solo chi può guadagnare un vantaggio (non è dietro
   al difensore più vicino o non ha nessuno entro 3 m); in rientro scatta solo chi ha il suo uomo più vicino alla porta (`SCATTI`,
@@ -165,14 +168,21 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.69
+## Stato v0.70
+Implementati chiamate touch in azione, servizio alla boa chiaramente libera e raccordi soltanto visuali di tiro/passaggio. Rapporto `docs/versioni/v070-chiamate-servizio-gesti.md`; file e decisioni superate lì e in `docs/decisioni-superate.md`. Base di dipendenza v0.69 finale `c2e6798`, con ultimo aggiornamento solo test/documenti; produzione invariata.
+
+Prove browser concluse: sei scene A/B/C nei due versi, con scelta touch e due passaggi/presa reali; cinque annullamenti, controllo umano prioritario; quattro layout667/844 con margini0/47px ripetuti con HUD visibile PASS,44px senza sovrapposizione a CAMBI; foto ispezionate. Servizio boa:36scelte e quattro prese fisiche destro/mancino, rilascio0,18333s e presa0,5s. Dati/fase/hash in `docs/verifiche/v070/`: queste scene precedono l’ultimo percorso falloSenzaPalla ereditato dalla v0.69, che non coinvolgono. Gesti24casi a60Hz PASS con tracce fisiche identiche; salto ingresso mano polso0,12873→0m, tiro0,07051→0m, passaggio0,03696→0,01484m. Fixture isolata ispezionata, non partita intera né certificazione di naturalezza. Replay completo PASS,14corpi/picco48calls146426tri. Lint/build e regressioni9/9 PASS. Aspetto completo PASS gambe0/8282,0/4689,0/1113, iPhone55/142100. Due cambi PASS61/145944 (667px60/145942). SondaCPU N1:4×180s seed7919,ITA6–HUN8,508passaggi/37centro/36prese/9finestre(3prima6s), non confronto accoppiato o frequenza generale. Verifica immagini inizialeFAIL4/5, poi solo2riferimenti aggiornati dopo ispezione/confronto; ripetizione indipendente `verifica --partite=0` PASS(0,01/0,02/0,22%/identico/identico), CI ancora da verificare: non dichiarare pronta la PR né un nuovo bilanciamento generale.
+
+Nuovi tasti touch per beduina/sciarpa/finte ancora proposta da discutere con Ale, non implementati. Restano giudizio di naturalezza/leggibilità e iPhone fisico; nessuna promessa di resa professionale. Nessun merge/deploy.
+
+### Baseline v0.69
 Correzioni regolamentari e prove mirate concluse in locale: espulsione residua attraverso intervallo/scatto (sei in campo; tempo dal primo tocco); rigori da contatto reale e occasione credibile entro6m, senza sanzione casuale all'anticipo battuto; tiro/rigore differito conservati alla sirena; boa CPU già fronteporta conclude in parità; fallo ordinario ferma solo autore/vittima, mentre gli altri proseguono e reagiscono alle posizioni aggiornate. Su fallo in attacco possesso/rientro cambiano subito. Arresto generale per gol/rigori/time-out/intervalli. File e decisioni superate nel rapporto `docs/versioni/v069-falli-e-riprese.md`.
 
 Verifiche locali: mirate6/6, guardia fine-periodo3/3, regressioni12/14 al primo giro (due fallimenti risolti/verificati), ripetizione lint/tattica/replay3/3 e lint/tattica/gioco-fermo3/3 PASS; dopo l’ultimo allineamento di `falloSenzaPalla`, lint/gioco-fermo2/2 PASS con nuovo caso di cambio possesso e rientro. Le misure generali seguenti precedono quest’ultimo percorso (geometria invariata). Aspetto completo PASS: gambe0/8286,0/4686,0/1112; iPhone55calls/142100tri. Due cambi: picco61calls/145944tri nelle scene campionate. Replay prima dell'ultimo ritocco alle marcature:48/146426,14corpi. Verifica `--partite=0` PASS: cinque confronti ispezionati, scarto≤0,02%, nessun riferimento aggiornato; sei partite demandate alla CI finale sul commit pubblicato, ancora da verificare. Dati/hash/fasi in `docs/verifiche/v069/`.
 
 Campione8gare ITA–HUN prima dell’ultimo allineamento di `falloSenzaPalla`:15,125gol/40,75tiri per squadra; rigori1,4375, espulsioni8,4375 (52,59%dal centro), superiorità37,04%, azioni69,25, parità14,09s. Solo6/15voci in fascia contro13/15della v0.68: le correzioni non certificano il bilanciamento globale; tiri alti, espulsioni/superiorità basse e azioni corte restano da rivedere. Nessun ritocco a potenza/precisione o probabilità globali per nascondere questi esiti. Prova su iPhone fisico e giudizio di Ale restano necessari.
 
-Nuove richieste su chiamate touch, servizio alla boa e raccordi visuali sono nel lavoro distinto v0.70 (`/workspace/pallanuoto-v070`), non in questa PR. Le nuove scorciatoie touch dei tiri speciali sono ancora una proposta. Nessun merge/deploy.
+Le richieste su chiamate touch, servizio alla boa e raccordi visuali passano al rapporto v0.70; i nuovi comandi touch dei tiri speciali restano una proposta. Nessun merge/deploy.
 
 ### Baseline v0.68
 Chiusura21/11: i due blocchi della bozza PR59 sono corretti e misurati; esito CI sull'ultimo commit nella PR. Difesa dei cambi25scene e filmato reale24s:0s oltre metà contro46,85s prima. Arena6mesh/1024²,8296tri CPU; picco iPhone con due cambi64calls/148852tri, replay49/146682,14corpi. Aspetto finale PASS: gambe0/7123,0/5180,0/1179; iPhone56/142116.

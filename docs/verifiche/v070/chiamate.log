@@ -1,0 +1,417 @@
+SCENA {"tipo":"A","dir":1,"nascoste":true,"coda":"A","primaTaglio":false,"controllo":true,"nessunSalto":true,"hint":"3 → 5 · appoggia alla 2","primoTarget":[6.7,4.6],"rilascio":true,"appoggioRiceve":true,"ritorno":true,"ricezione":true,"maxPasso":0.10093313716882428,"schema":true,"difesa":true,"ancoraPrimaDelRilascio":true,"ritornoT":261.83333333333167,"cutAlRitorno":true,"presaT":262.2333333333313,"presaFlag":{"taglio":false,"entrata":true,"pass":true},"stato":"play","holder":6,"ctrl":6,"palla":"held"}
+SCENA {"tipo":"A","dir":-1,"nascoste":true,"coda":"A","primaTaglio":false,"controllo":true,"nessunSalto":true,"hint":"3 → 5 · appoggia alla 2","primoTarget":[-6.7,-4.599],"rilascio":true,"appoggioRiceve":true,"ritorno":true,"ricezione":true,"maxPasso":0.10013461042966801,"schema":true,"difesa":true,"ancoraPrimaDelRilascio":true,"ritornoT":281.83333333333167,"cutAlRitorno":true,"presaT":282.2333333333313,"presaFlag":{"taglio":false,"entrata":true,"pass":true},"stato":"play","holder":6,"ctrl":6,"palla":"held"}
+SCENA {"tipo":"B","dir":1,"nascoste":true,"coda":"B","primaTaglio":false,"controllo":true,"nessunSalto":true,"hint":"3 → 1 · appoggia alla 4","primoTarget":[6.7,-4.6],"rilascio":true,"appoggioRiceve":true,"ritorno":true,"ricezione":true,"maxPasso":0.10023120623376663,"schema":true,"difesa":true,"ancoraPrimaDelRilascio":true,"ritornoT":301.83333333333167,"cutAlRitorno":true,"presaT":302.2333333333313,"presaFlag":{"taglio":false,"entrata":true,"pass":true},"stato":"play","holder":6,"ctrl":6,"palla":"held"}
+SCENA {"tipo":"B","dir":-1,"nascoste":true,"coda":"B","primaTaglio":false,"controllo":true,"nessunSalto":true,"hint":"3 → 1 · appoggia alla 4","primoTarget":[-6.7,4.601],"rilascio":true,"appoggioRiceve":true,"ritorno":true,"ricezione":true,"maxPasso":0.09971634289765906,"schema":true,"difesa":true,"ancoraPrimaDelRilascio":true,"ritornoT":321.83333333333167,"cutAlRitorno":true,"presaT":322.2333333333313,"presaFlag":{"taglio":false,"entrata":true,"pass":true},"stato":"play","holder":6,"ctrl":6,"palla":"held"}
+SCENA {"tipo":"C","dir":1,"nascoste":true,"coda":"C","primaTaglio":false,"controllo":true,"nessunSalto":true,"hint":"2 al palo · appoggia alla 3","primoTarget":[5,0],"rilascio":true,"appoggioRiceve":true,"ritorno":true,"ricezione":true,"maxPasso":0.10038043551682471,"schema":true,"difesa":true,"ancoraPrimaDelRilascio":true,"ritornoT":341.3333333333321,"cutAlRitorno":true,"presaT":341.59999999999854,"presaFlag":{"taglio":false,"entrata":true,"pass":true},"stato":"play","holder":4,"ctrl":4,"palla":"held"}
+SCENA {"tipo":"C","dir":-1,"nascoste":true,"coda":"C","primaTaglio":false,"controllo":true,"nessunSalto":true,"hint":"2 al palo · appoggia alla 3","primoTarget":[-5,0],"rilascio":true,"appoggioRiceve":true,"ritorno":true,"ricezione":true,"maxPasso":0.1012157858528684,"schema":true,"difesa":true,"ancoraPrimaDelRilascio":true,"ritornoT":361.3333333333321,"cutAlRitorno":true,"presaT":361.59999999999854,"presaFlag":{"taglio":false,"entrata":true,"pass":true},"stato":"play","holder":4,"ctrl":4,"palla":"held"}
+LAYOUT {"width":667,"height":375,"safe":0,"bottoni":[{"x":220,"y":259,"w":72.328125,"h":44,"r":292.328125,"b":303},{"x":297.328125,"y":259,"w":72.34375,"h":44,"r":369.671875,"b":303},{"x":374.671875,"y":259,"w":72.328125,"h":44,"r":447,"b":303}],"fuori":false,"interseca":false,"fight":"none","visibile":true}
+LAYOUT {"width":667,"height":375,"safe":47,"bottoni":[{"x":267,"y":210,"w":64,"h":44,"r":331,"b":254},{"x":336,"y":210,"w":64,"h":44,"r":400,"b":254},{"x":267,"y":259,"w":133,"h":44,"r":400,"b":303}],"fuori":false,"interseca":false,"fight":"none","visibile":true}
+LAYOUT {"width":844,"height":390,"safe":0,"bottoni":[{"x":257,"y":274,"w":106.65625,"h":44,"r":363.65625,"b":318},{"x":368.65625,"y":274,"w":106.671875,"h":44,"r":475.328125,"b":318},{"x":480.328125,"y":274,"w":106.671875,"h":44,"r":587,"b":318}],"fuori":false,"interseca":false,"fight":"none","visibile":true}
+LAYOUT {"width":844,"height":390,"safe":47,"bottoni":[{"x":267,"y":274,"w":100,"h":44,"r":367,"b":318},{"x":372,"y":274,"w":100,"h":44,"r":472,"b":318},{"x":477,"y":274,"w":100,"h":44,"r":577,"b":318}],"fuori":false,"interseca":false,"fight":"none","visibile":true}
+{
+  "offerte": {
+    "presto": true,
+    "tre": [
+      "A",
+      "B",
+      "C"
+    ],
+    "visibile": true,
+    "due": [
+      "A",
+      "C"
+    ],
+    "mancini": [
+      "A",
+      "B",
+      "C"
+    ],
+    "boaAperta": true,
+    "duelloMarginale": true,
+    "propriaMeta": true,
+    "sceltaInViaggio": true,
+    "hintInViaggio": "Avanza · 3 → 5",
+    "esecuzioneAttende": true,
+    "holder": 6
+  },
+  "scene": [
+    {
+      "tipo": "A",
+      "dir": 1,
+      "nascoste": true,
+      "coda": "A",
+      "primaTaglio": false,
+      "controllo": true,
+      "nessunSalto": true,
+      "hint": "3 → 5 · appoggia alla 2",
+      "primoTarget": [
+        6.7,
+        4.6
+      ],
+      "rilascio": true,
+      "appoggioRiceve": true,
+      "ritorno": true,
+      "ricezione": true,
+      "maxPasso": 0.10093313716882428,
+      "schema": true,
+      "difesa": true,
+      "ancoraPrimaDelRilascio": true,
+      "ritornoT": 261.83333333333167,
+      "cutAlRitorno": true,
+      "presaT": 262.2333333333313,
+      "presaFlag": {
+        "taglio": false,
+        "entrata": true,
+        "pass": true
+      },
+      "stato": "play",
+      "holder": 6,
+      "ctrl": 6,
+      "palla": "held"
+    },
+    {
+      "tipo": "A",
+      "dir": -1,
+      "nascoste": true,
+      "coda": "A",
+      "primaTaglio": false,
+      "controllo": true,
+      "nessunSalto": true,
+      "hint": "3 → 5 · appoggia alla 2",
+      "primoTarget": [
+        -6.7,
+        -4.599
+      ],
+      "rilascio": true,
+      "appoggioRiceve": true,
+      "ritorno": true,
+      "ricezione": true,
+      "maxPasso": 0.10013461042966801,
+      "schema": true,
+      "difesa": true,
+      "ancoraPrimaDelRilascio": true,
+      "ritornoT": 281.83333333333167,
+      "cutAlRitorno": true,
+      "presaT": 282.2333333333313,
+      "presaFlag": {
+        "taglio": false,
+        "entrata": true,
+        "pass": true
+      },
+      "stato": "play",
+      "holder": 6,
+      "ctrl": 6,
+      "palla": "held"
+    },
+    {
+      "tipo": "B",
+      "dir": 1,
+      "nascoste": true,
+      "coda": "B",
+      "primaTaglio": false,
+      "controllo": true,
+      "nessunSalto": true,
+      "hint": "3 → 1 · appoggia alla 4",
+      "primoTarget": [
+        6.7,
+        -4.6
+      ],
+      "rilascio": true,
+      "appoggioRiceve": true,
+      "ritorno": true,
+      "ricezione": true,
+      "maxPasso": 0.10023120623376663,
+      "schema": true,
+      "difesa": true,
+      "ancoraPrimaDelRilascio": true,
+      "ritornoT": 301.83333333333167,
+      "cutAlRitorno": true,
+      "presaT": 302.2333333333313,
+      "presaFlag": {
+        "taglio": false,
+        "entrata": true,
+        "pass": true
+      },
+      "stato": "play",
+      "holder": 6,
+      "ctrl": 6,
+      "palla": "held"
+    },
+    {
+      "tipo": "B",
+      "dir": -1,
+      "nascoste": true,
+      "coda": "B",
+      "primaTaglio": false,
+      "controllo": true,
+      "nessunSalto": true,
+      "hint": "3 → 1 · appoggia alla 4",
+      "primoTarget": [
+        -6.7,
+        4.601
+      ],
+      "rilascio": true,
+      "appoggioRiceve": true,
+      "ritorno": true,
+      "ricezione": true,
+      "maxPasso": 0.09971634289765906,
+      "schema": true,
+      "difesa": true,
+      "ancoraPrimaDelRilascio": true,
+      "ritornoT": 321.83333333333167,
+      "cutAlRitorno": true,
+      "presaT": 322.2333333333313,
+      "presaFlag": {
+        "taglio": false,
+        "entrata": true,
+        "pass": true
+      },
+      "stato": "play",
+      "holder": 6,
+      "ctrl": 6,
+      "palla": "held"
+    },
+    {
+      "tipo": "C",
+      "dir": 1,
+      "nascoste": true,
+      "coda": "C",
+      "primaTaglio": false,
+      "controllo": true,
+      "nessunSalto": true,
+      "hint": "2 al palo · appoggia alla 3",
+      "primoTarget": [
+        5,
+        0
+      ],
+      "rilascio": true,
+      "appoggioRiceve": true,
+      "ritorno": true,
+      "ricezione": true,
+      "maxPasso": 0.10038043551682471,
+      "schema": true,
+      "difesa": true,
+      "ancoraPrimaDelRilascio": true,
+      "ritornoT": 341.3333333333321,
+      "cutAlRitorno": true,
+      "presaT": 341.59999999999854,
+      "presaFlag": {
+        "taglio": false,
+        "entrata": true,
+        "pass": true
+      },
+      "stato": "play",
+      "holder": 4,
+      "ctrl": 4,
+      "palla": "held"
+    },
+    {
+      "tipo": "C",
+      "dir": -1,
+      "nascoste": true,
+      "coda": "C",
+      "primaTaglio": false,
+      "controllo": true,
+      "nessunSalto": true,
+      "hint": "2 al palo · appoggia alla 3",
+      "primoTarget": [
+        -5,
+        0
+      ],
+      "rilascio": true,
+      "appoggioRiceve": true,
+      "ritorno": true,
+      "ricezione": true,
+      "maxPasso": 0.1012157858528684,
+      "schema": true,
+      "difesa": true,
+      "ancoraPrimaDelRilascio": true,
+      "ritornoT": 361.3333333333321,
+      "cutAlRitorno": true,
+      "presaT": 361.59999999999854,
+      "presaFlag": {
+        "taglio": false,
+        "entrata": true,
+        "pass": true
+      },
+      "stato": "play",
+      "holder": 4,
+      "ctrl": 4,
+      "palla": "held"
+    }
+  ],
+  "rinunce": [
+    {
+      "causa": "possesso",
+      "chiamata": true,
+      "controllo": true
+    },
+    {
+      "causa": "espulsione",
+      "chiamata": true,
+      "controllo": true
+    },
+    {
+      "causa": "reset",
+      "chiamata": true,
+      "controllo": true
+    },
+    {
+      "causa": "scadenza",
+      "chiamata": true,
+      "controllo": true
+    },
+    {
+      "causa": "corridoio",
+      "chiamata": true,
+      "controllo": true
+    }
+  ],
+  "controlloManuale": {
+    "neutro": true,
+    "direzione": true
+  },
+  "layout": [
+    {
+      "width": 667,
+      "height": 375,
+      "safe": 0,
+      "bottoni": [
+        {
+          "x": 220,
+          "y": 259,
+          "w": 72.328125,
+          "h": 44,
+          "r": 292.328125,
+          "b": 303
+        },
+        {
+          "x": 297.328125,
+          "y": 259,
+          "w": 72.34375,
+          "h": 44,
+          "r": 369.671875,
+          "b": 303
+        },
+        {
+          "x": 374.671875,
+          "y": 259,
+          "w": 72.328125,
+          "h": 44,
+          "r": 447,
+          "b": 303
+        }
+      ],
+      "fuori": false,
+      "interseca": false,
+      "fight": "none",
+      "visibile": true
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "safe": 47,
+      "bottoni": [
+        {
+          "x": 267,
+          "y": 210,
+          "w": 64,
+          "h": 44,
+          "r": 331,
+          "b": 254
+        },
+        {
+          "x": 336,
+          "y": 210,
+          "w": 64,
+          "h": 44,
+          "r": 400,
+          "b": 254
+        },
+        {
+          "x": 267,
+          "y": 259,
+          "w": 133,
+          "h": 44,
+          "r": 400,
+          "b": 303
+        }
+      ],
+      "fuori": false,
+      "interseca": false,
+      "fight": "none",
+      "visibile": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "safe": 0,
+      "bottoni": [
+        {
+          "x": 257,
+          "y": 274,
+          "w": 106.65625,
+          "h": 44,
+          "r": 363.65625,
+          "b": 318
+        },
+        {
+          "x": 368.65625,
+          "y": 274,
+          "w": 106.671875,
+          "h": 44,
+          "r": 475.328125,
+          "b": 318
+        },
+        {
+          "x": 480.328125,
+          "y": 274,
+          "w": 106.671875,
+          "h": 44,
+          "r": 587,
+          "b": 318
+        }
+      ],
+      "fuori": false,
+      "interseca": false,
+      "fight": "none",
+      "visibile": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "safe": 47,
+      "bottoni": [
+        {
+          "x": 267,
+          "y": 274,
+          "w": 100,
+          "h": 44,
+          "r": 367,
+          "b": 318
+        },
+        {
+          "x": 372,
+          "y": 274,
+          "w": 100,
+          "h": 44,
+          "r": 472,
+          "b": 318
+        },
+        {
+          "x": 477,
+          "y": 274,
+          "w": 100,
+          "h": 44,
+          "r": 577,
+          "b": 318
+        }
+      ],
+      "fuori": false,
+      "interseca": false,
+      "fight": "none",
+      "visibile": true
+    }
+  ]
+}
+PASS chiamate v0.70: scelta touch, due passaggi reali A/B/C, annullamenti e layout44px

@@ -71,7 +71,7 @@ try{
  await page.waitForFunction(()=>window.__pallanuoto?.modelloPronto,null,{polling:100,timeout:120000});
  const r=await page.evaluate(async(foto)=>{
   const [S,P,A,F,R]=await Promise.all(['stato','grafica/pose','tiri','fisica','regole'].map(n=>import('/src/'+n+'.js')));
-  const {renderer,camera,scene}=await import('/src/grafica/scena.js');const H=window.__pallanuoto,draw=renderer.render.bind(renderer);
+  const {renderer,camera,scene,ball3d,freccia,ring,passMark}=await import('/src/grafica/scena.js');const H=window.__pallanuoto,draw=renderer.render.bind(renderer);
   H.renderer.render=()=>{};const dt=1/60,misure=[],traccia=[],immagini=[];let numero=0;
   const round=x=>Math.round(x*1e9)/1e9;
   for(const tipo of ['polso-caricato','tiro-caricato','passa-avanti','passa-opposto','passa-stesso','palomba'])for(const dir of [1,-1])for(const mano of ['D','S']){
@@ -84,7 +84,9 @@ try{
    const bone=()=>{const v=camera.position.clone();p.mesh.corpo.ossa[mano==='S'?'manoS':'manoD'].getWorldPosition(v);return v.toArray();};
    let precedente=bone(),massimo=0,primo=null,rilascio=null,supFisica=0;
    const check=()=>{
-    const phase=p.phase,orizPrec=p.orizPrec,parataIn=p.parataIn,T=P.computePose(p,dt,S.game.time);Object.assign(p,{phase,orizPrec,parataIn});
+    // La lettura attesa non consuma un secondo passo delle memorie della posa.
+    const memoria={phase:p.phase,orizPrec:p.orizPrec,parataIn:p.parataIn,dorsoK:p.dorsoK};
+    const T=P.computePose(p,dt,S.game.time);Object.assign(p,memoria);
     const expected={},k=1-Math.exp(-dt*(p.act?34:16));
     for(const key of P.JK)expected[key]=p.J?T[key].map((x,i)=>p.J[key][i]+(x-p.J[key][i])*k):T[key].slice();
     P.updateRig(p,dt,S.game.time);
@@ -108,7 +110,19 @@ try{
     if(act.done&&rilascio===null)rilascio=frame;
     traccia.push([nome,frame,...P.JK.flatMap(k=>p.J[k].map(round)),...(p.ballW||[null,null,null]),S.ball.state,...[S.ball.x,S.ball.y,S.ball.z,S.ball.vx,S.ball.vy,S.ball.vz].map(round)]);
     if(foto&&dir===1&&mano==='D'&&tipo==='passa-opposto'&&[0,2,5,8,12,25].includes(frame)){
-     camera.position.set(2,2.4,4);camera.lookAt(0,.35,0);camera.updateProjectionMatrix();draw(scene,camera);
+     // Il test aggiorna soltanto questo atleta: gli altri conservano ancora il
+     // bind iniziale, quindi non devono coprire il foglio del gesto. Anche la
+     // palla disegnata va allineata, senza cambiare alcun valore del motore.
+     for(const q of S.allPlayers)q.mesh.g.visible=q===p;
+     freccia.visible=ring.visible=passMark.visible=false;
+     const held=S.ball.state==='held'&&S.ball.holder===p,w=held?(p.ballVistaW||p.ballW):[S.ball.x,S.ball.y,S.ball.z];
+     ball3d.position.set(...w);
+     const raccordo=S.ball.raccordoVista;
+     if(!held&&raccordo&&S.ball.flightT<raccordo.durata){
+      const u=Math.max(0,Math.min(1,S.ball.flightT/raccordo.durata)),k=1-u*u*(3-2*u);
+      ball3d.position.x+=raccordo.x*k;ball3d.position.y+=raccordo.y*k;ball3d.position.z+=raccordo.z*k;
+     }
+     camera.position.set(2,1.8,3);camera.lookAt(0,.35,0);camera.updateProjectionMatrix();draw(scene,camera);
      immagini.push({nome:nome+'-'+String(frame).padStart(2,'0'),png:renderer.domElement.toDataURL('image/png')});}
     if(S.ball.state==='flight')F.updateBall(dt);
    }

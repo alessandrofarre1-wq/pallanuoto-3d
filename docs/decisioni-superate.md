@@ -3,6 +3,12 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.70
+- Entrate in parità disponibili dal preset o dall’iniziativa automatica → anche chiamata touch durante l’azione dopo5,5s se la boa non è servibile; appoggio e servizio restano manuali, scelta persistente conservata.
+- Bonus al centro ritardato anche su una boa chiaramente libera → occasione reale letta subito con marcatore, aiuti, portiere e corridoio; costruzione7–15s conservata nei duelli marginali. PASSA neutro assistito distinto dalla scelta CPU.
+- Cambio automatico del controllo che annulla il taglio durante il passaggio → contesto conservato con levetta neutra fino alla presa; direzione manuale prioritaria.
+- Solo disegno: carica del polso ripartiva da zero, curve separate arrestavano la mano al rilascio e filtro40→14 istantaneo → carica ereditata, raccordi della posa, tangente condivisa e filtro graduale. Nessun cambiamento a giunture fisiche, lancio o comandi speciali touch.
+
 ## v0.69
 - Espulsione cancellata al kickoff → sanzione residua nel pozzetto; sei allo scatto, rientro legale su possesso o fine residuo. Cronometro prima del primo tocco → tempo effettivo dal tocco.
 - Ricezione che batte l’anticipo premiata casualmente con rigore/espulsione → nessuna sanzione senza infrazione; criterio comune6m/gol probabile/contatto, tiro in corso differito fino all’esito.
