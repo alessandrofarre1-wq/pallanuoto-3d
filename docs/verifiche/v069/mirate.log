@@ -1,0 +1,14 @@
+
+> pallanuoto-3d@0.69.0 prove
+> node tests/prove.mjs --solo=lint,espulsioni-tempi,rigori-regole,rigori-reali,boa-fronte,gioco-fermo
+
+costruisco il gioco, poi 6 passi della CI (la verifica a parte: npm run verifica)
+ 1/6 npm run lint ... PASS (3 s)
+ 2/6 npm run espulsioni-tempi ... PASS (10 s)
+ 3/6 npm run rigori-regole ... PASS (0 s)
+ 4/6 npm run rigori-reali ... PASS (35 s)
+ 5/6 npm run boa-fronte ... PASS (9 s)
+ 6/6 npm run gioco-fermo -- --no-build ... PASS (13 s)
+
+RIEPILOGO: 6 PASS, 0 FAIL su 6 passi in 1.2 minuti
+registri completi: /tmp/prove-8X2Tfa

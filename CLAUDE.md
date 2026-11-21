@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.68). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.69). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -138,6 +138,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 - Muro: braccio dalla parte del palo coperto in parità; con l'uomo in meno braccio a specchio del braccio di tiro e centrale tra i
   pali sul palo lungo; contro il 3-3 i due davanti ai pali stanno a metà tra il loro tiratore e il 6 e saltano su chi ha palla.
 ### Regole (World Aquatics 18 febbraio 2026; FIN 2026-27 non importato)
+- Espulsione tra i tempi: residuo conservato, pozzetto durante lo scatto; tempo effettivo dal primo tocco. Fallo ordinario: fermi solo autore/vittima, tagli e controllo degli altri continuano; fallo in attacco cambia subito il possesso. Rigore su fallo effettivo entro6m e gol probabile; ricevere davanti al marcatore non basta. Tiro giàiniziato ostacolato da dietro: attenderne l’esito, senza cancellarlo alla fine del periodo.
 - Campo 25 m, porta 3 × 0,90 m; linee 2, 5 e 6 m. Possesso 28 s, 18 s dopo espulsione, angolo, rigore senza cambio o rimbalzo
   ripreso dall'attacco; dopo un tiro respinto il cronometro resta fermo finché qualcuno riprende palla. Espulsione 18 s (rientro
   anticipato su gol o palla riconquistata), terzo fallo grave = fuori per il resto della partita (entra un sostituto); cambi
@@ -149,8 +150,8 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   movimento = rimessa del portiere; fuori di lato = tiro libero agli avversari di chi ha toccato per ultimo. Nessun tempo per
   superare la metà campo; passare indietro e al portiere è permesso; fallo per chi rinuncia apposta al possesso. Time-out 2 a
   squadra, solo in possesso, ripresa da metà campo; rigori finali nei tornei.
-- Arbitro: circa 70% delle espulsioni dalla lotta al centro (cresce con l'azione), contrasto a tre livelli, sfondamento, vantaggio
-  in controfuga, simulazione, interferenza sul tiro libero, anticipo battuto al centroboa (rigore o espulsione).
+- Arbitro: espulsioni dalla lotta al centro (crescono con l'azione; quota misurata nella sezione Stato), contrasto a tre livelli, sfondamento, vantaggio
+  in controfuga, simulazione e interferenza sul tiro libero. Il semplice anticipo battuto al centroboa non è un fallo.
 - Espulso che nuota al pozzetto e rientra solo da lì; cambio dal pozzetto senza «cinque»; cambi volanti con il cinque, immediati
   dopo gol, time-out e tra i tempi; il computer cambia chi scende sotto il 34%; consigli di cambio mai in difesa né nei primi 90 s.
 ### Grafica
@@ -164,7 +165,16 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.68
+## Stato v0.69
+Correzioni regolamentari e prove mirate concluse in locale: espulsione residua attraverso intervallo/scatto (sei in campo; tempo dal primo tocco); rigori da contatto reale e occasione credibile entro6m, senza sanzione casuale all'anticipo battuto; tiro/rigore differito conservati alla sirena; boa CPU già fronteporta conclude in parità; fallo ordinario ferma solo autore/vittima, mentre gli altri proseguono e reagiscono alle posizioni aggiornate. Su fallo in attacco possesso/rientro cambiano subito. Arresto generale per gol/rigori/time-out/intervalli. File e decisioni superate nel rapporto `docs/versioni/v069-falli-e-riprese.md`.
+
+Verifiche locali: mirate6/6, guardia fine-periodo3/3, regressioni12/14 al primo giro (due fallimenti risolti/verificati), ripetizione lint/tattica/replay3/3 e lint/tattica/gioco-fermo3/3 PASS; dopo l’ultimo allineamento di `falloSenzaPalla`, lint/gioco-fermo2/2 PASS con nuovo caso di cambio possesso e rientro. Le misure generali seguenti precedono quest’ultimo percorso (geometria invariata). Aspetto completo PASS: gambe0/8286,0/4686,0/1112; iPhone55calls/142100tri. Due cambi: picco61calls/145944tri nelle scene campionate. Replay prima dell'ultimo ritocco alle marcature:48/146426,14corpi. Verifica `--partite=0` PASS: cinque confronti ispezionati, scarto≤0,02%, nessun riferimento aggiornato; sei partite demandate alla CI finale sul commit pubblicato, ancora da verificare. Dati/hash/fasi in `docs/verifiche/v069/`.
+
+Campione8gare ITA–HUN prima dell’ultimo allineamento di `falloSenzaPalla`:15,125gol/40,75tiri per squadra; rigori1,4375, espulsioni8,4375 (52,59%dal centro), superiorità37,04%, azioni69,25, parità14,09s. Solo6/15voci in fascia contro13/15della v0.68: le correzioni non certificano il bilanciamento globale; tiri alti, espulsioni/superiorità basse e azioni corte restano da rivedere. Nessun ritocco a potenza/precisione o probabilità globali per nascondere questi esiti. Prova su iPhone fisico e giudizio di Ale restano necessari.
+
+Nuove richieste su chiamate touch, servizio alla boa e raccordi visuali sono nel lavoro distinto v0.70 (`/workspace/pallanuoto-v070`), non in questa PR. Le nuove scorciatoie touch dei tiri speciali sono ancora una proposta. Nessun merge/deploy.
+
+### Baseline v0.68
 Chiusura21/11: i due blocchi della bozza PR59 sono corretti e misurati; esito CI sull'ultimo commit nella PR. Difesa dei cambi25scene e filmato reale24s:0s oltre metà contro46,85s prima. Arena6mesh/1024²,8296tri CPU; picco iPhone con due cambi64calls/148852tri, replay49/146682,14corpi. Aspetto finale PASS: gambe0/7123,0/5180,0/1179; iPhone56/142116.
 Entrate:18scene ciclo reale,4D nei due versi/manoD-S con servizio/presa/tiro autonomi,2rinunce,8reset e2qualifiche PASS. D0,6–1,4m solo se l'endpoint legale arriva entro4,8m (20cm di margine d'arresto rispetto ai5m della ricezione); da ala larga si continua la circolazione, l'esterno conserva il suo spazio. Chiusura locale5/5mirate +isolate/integrazione/aspetto/verifica immagini PASS. Campione finale8gare: 14,56 gol / 35,44 tiri per squadra; conversione 41,09%, superiorità 48,28%, rigori 1,62; 13/15 voci in fascia. Non sono gli8incontri con mezze lunghe della prima diagnosi:16,875gol/39,31tiri e6/15voci. Dati/hash/limiti nel rapporto `docs/versioni/v068-cambi-entrate-arena.md`; fotografie `docs/immagini/v068-mezza-entrata.md`.
 Restano azioni troppo numerose/corte, preparazione autonoma completa del falso centro, prova su iPhone fisico e giudizio artistico di Ale. Decisioni superate esplicite: inseguimento del cambio, posti fissi per indice, consegna annullata dopo5s, teletrasporto NPC sotto2m, cinque preset; inoltre taglioD sterile e copertura centrale superflua. Nessun merge/deploy. La tabella sotto conserva la baseline v0.67 di Claude su16partite, distinta dal nuovo campione.

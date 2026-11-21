@@ -1,12 +1,26 @@
 // Lettura geometrica del duello: FIN, Dentro la pallanuoto, PDF pp. 23–37 e 42–50.
 // I numeri di campo restano quelli del gioco; non sono numeri di cuffia.
 import { HW, clamp } from './costanti.js';
-import { ball, game, goalX } from './stato.js';
+import { ball, game, goalX, other } from './stato.js';
 import { difensoreEntrata, postoCentro } from './entrate.js';
 
 export const difensoreCentro = boa => difensoreEntrata(boa);
 const unita = (x,z) => { const l=Math.hypot(x,z)||1; return {x:x/l,z:z/l}; };
 const differenza = a => Math.atan2(Math.sin(a),Math.cos(a));
+
+// Una ricezione già fronte alla porta non deve aspettare il flag di una girata.
+// Il portiere può ancora parare; un altro difensore sulla linea può chiudere l'occasione.
+export function boaFrontePorta(boa){
+  if(!boa||boa.isGK||boa.excluded||boa.uscendo||game.state!=='play'||game.possTeam!==boa.team||
+    ball.state!=='held'||ball.holder!==boa||boa.freeThrow)return false;
+  const dx=goalX(boa.team)-boa.x,dz=-boa.z,L2=dx*dx+dz*dz,L=Math.sqrt(L2),f=Math.hypot(boa.fx||0,boa.fz||0);
+  if(L<.1||L>5||Math.abs(boa.z)>3.2||f<.1||((boa.fx||0)*dx+(boa.fz||0)*dz)/(L*f)<.65)return false;
+  return !other(boa.team).players.some(d=>{
+    if(d.isGK||d.excluded||d.uscendo)return false;
+    const u=((d.x-boa.x)*dx+(d.z-boa.z)*dz)/L2;
+    return u>.03&&u<.98&&Math.hypot(d.x-boa.x-u*dx,d.z-boa.z-u*dz)<.65;
+  });
+}
 
 export function leggiCentro(boa,def,portatore=ball){
   if(!def||def.excluded||def.uscendo||Math.hypot(def.x-boa.x,def.z-boa.z)>1.8)

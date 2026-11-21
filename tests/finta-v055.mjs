@@ -81,7 +81,8 @@ const pas = await pg.evaluate(() => { const H = window.__pallanuoto, it = H.team
   return { indietroGK: !!(indietro && indietro.isGK), avantiBoa: !!(avanti && avanti.i === 1) }; });
 prova(!pas.indietroGK, `in attacco la levetta verso la propria porta non passa al portiere`);
 prova(pas.avantiBoa, `levetta verso la porta avversaria: passaggio al centroboa`);
-// palla al centroboa (v0.55): marcato → in acqua davanti; libero → alta in mano; anticipo battuto → rigore o espulsione
+// Palla al centroboa: marcato → in acqua davanti; libero → alta in mano.
+// v0.69: battere l’anticipo senza un intervento falloso non produce rigori o espulsioni.
 const boa = await pg.evaluate(() => {
   const H = window.__pallanuoto, it = H.teams[0], hu = H.teams[1], gx = 12.5 * it.dir, p = it.players[4], m = it.players[1], d = hu.players[6];
   const scena = (dove) => {
@@ -102,7 +103,7 @@ const boa = await pg.evaluate(() => {
 });
 prova(boa.marcato.y != null && boa.marcato.y < 0.45, `al centroboa marcato la palla arriva bassa, in acqua davanti a lui (${boa.marcato.y?.toFixed(2)} m)`);
 prova(boa.libero.y != null && boa.libero.y > 0.7, `al centroboa libero arriva alta, in mano (${boa.libero.y?.toFixed(2)} m)`);
-prova(boa.falli >= boa.prove * 0.5, `anticipo battuto: rigore o espulsione ${boa.falli} volte su ${boa.prove}`);
+prova(boa.falli === 0, `anticipo battuto senza fallo: nessuna sanzione automatica (${boa.falli}/${boa.prove})`);
 prova(errori.length === 0, `nessun errore nella pagina${errori.length ? ': ' + errori.join(' | ') : ''}`);
 console.log(ok ? '\nFinta e tiro al volo: tutte le prove superate' : '\nFinta e tiro al volo: prove NON superate');
 await browser.close(); server.httpServer.close(); process.exit(ok ? 0 : 1);

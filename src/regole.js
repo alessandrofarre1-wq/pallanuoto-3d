@@ -19,10 +19,16 @@ import { creaSerieRigori, preparaRigoreFinale as preparaTiroSerie, registraRigor
 import { applicaSchema, copiaSchema } from './schemi.js';
 import { aggiornaGiocoFermo } from './gioco-fermo.js';
 import { resetDisposizioneTattica } from './entrate.js';
+import { preparaEspulsoAlTempo } from './espulsioni-tempi.js';
+import { leggiRigore } from './decisione-rigore.js';
 import { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI } from './taratura.js';      // numeri del bilanciamento
 export { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI };
 const serieAttiva = () => game.rigoriFinali && !game.rigoriFinali.terminati;
-export function deadBall(t,fn){ game.state='stop'; game.timer=t; game.after=fn||null; aggiornaGiocoFermo(); }
+export function deadBall(t,fn,fermi=null){
+  game.state='stop'; game.timer=t; game.after=fn||null;
+  game.fermoFallo=fermi?[...new Set(fermi.filter(Boolean))]:null;
+  aggiornaGiocoFermo(0,false,game.fermoFallo||allPlayers);
+}
 // gioco fermo per palla fuori: se la palla si sta ancora muovendo (tiro fuori, deviazione del portiere, rimbalzo sul palo)
 // continua il suo volo con la fisica vera finché non riparte il gioco, così si vede uscire; se è quasi ferma, si ferma
 function fermaOVola(){
@@ -34,17 +40,20 @@ function riallineaRiferimenti(){
   for(const p of allPlayers){const a=uomoDi(p);p.lagX=a.x;p.lagZ=a.z;}
 }
 export function kickoff(){
+  game.fermoFallo=null; game.rigoreDifferito=null;
   aggiornaGiocoFermo(0,true);
   for(const t of teams) resetDisposizioneTattica(t);
   // sprint d'inizio tempo: tutti sulla propria linea di porta, palla a metà campo
   for(const t of teams) for(const p of t.players){
-    if(p.excluded&&p.pf>=3) substitute(p);
+    if(preparaEspulsoAlTempo(p))continue;
+    if(p.excluded)reenter(p,true);
     p.excluded=false; p.vx=p.vz=0; p.charging=false; p.cut=null; p.act=null;
+    p.rientro=null;
     p.x=ownGoalX(t)+t.dir*(p.isGK?0.6:0.3); p.z=KICK_Z[p.i]*t.dir; p.fx=t.dir; p.fz=0;
   }
   riallineaRiferimenti();
   ball.state='free'; ball.inUscita=false; ball.holder=null; ball.x=0; ball.z=0; ball.y=BRV; ball.vx=ball.vy=ball.vz=0; ball.pickupCD=0; ball.lastTeam=null;
-  game.possTeam=null; game.shot=SHOT_CLOCK; game.penalty=null;
+  game.possTeam=null; game.shot=SHOT_CLOCK; game.penalty=null; game.scattando=true;
   setCtrl(teams[0].players[6]);
   game.state='countdown'; game.timer=3;
 }
@@ -61,6 +70,7 @@ export function placeHalves(){
   riallineaRiferimenti();
 }
 export function giveBall(p){
+  game.scattando=false;
   if(serieAttiva() && game.rigoriFinali.fase==='tiro' && game.rigoriFinali.tiro){
     if(p.team.idx!==game.rigoriFinali.tiro.squadra || p.num!==game.rigoriFinali.tiro.num || ball.daTiro){
       concludiRigoreFinale(false,p.isGK?'parata':'respinta'); return;
@@ -130,18 +140,39 @@ export function cornerThrow(att){   // art. 13
 // anticipo, che ora è dietro di lui davanti alla porta: rigore, espulsione o palla libera (ANTICIPO in taratura.js).
 export function anticipoBattuto(d,boa){
   if(game.state!=='play'||ball.holder!==boa||d.excluded||Math.hypot(goalX(boa.team)-boa.x,boa.z)>ANTICIPO.distanza) return;
-  const r=rnd();
-  if(r<ANTICIPO.rigore) penalty(d,boa,'anticipo battuto');
-  else if(r<ANTICIPO.rigore+ANTICIPO.espulsione) exclude(d,boa,'anticipo battuto','centro');
+  // Battere l'anticipo è un vantaggio tecnico, non un'infrazione. L'eventuale
+  // intervento successivo passa dal contrasto reale e dalle condizioni comuni.
+  boa.anticipoSuperatoT=game.time;
 }
 export function penalty(d,c,motivo){       // art. 10.2 (motivo: solo per la notifica)
+  const lettura=leggiRigore(d,c,{porta:ownGoalX(d.team),palla:ball,difendenti:d.team.players});
+  if(!lettura.possibile||game.penalty||game.rigoreDifferito)return false;
+  if(lettura.differito){
+    game.rigoreDifferito={d,c,motivo,t0:game.time,score:c.team.score};
+    return true;
+  }
+  assegnaRigore(d,c,motivo); return true;
+}
+function assegnaRigore(d,c,motivo){
   chiudiAzione('rigore'); whistle(0.6); d.pf++; registraRigore(c.team);
   annuncia('rigore',`Rigore per ${c.team.short}`,{p:c,dettaglio:`fallo di ${d.team.short} #${d.num}${motivo?' · '+motivo:''}`});
   ball.state='dead'; ball.holder=null; ball.x=c.x; ball.z=c.z; ball.y=BRV; ball.vx=ball.vy=ball.vz=0;
   const t=c.team;
   deadBall(1.8,()=>{ if(d.pf>=3) substitute(d); setupPenalty(t); });
 }
+// Un tiro già iniziato deve poter entrare: niente fischio che cancelli il gol.
+export function risolviRigoreDifferito(){
+  const r=game.rigoreDifferito;if(!r)return;
+  if(r.c.team.score!==r.score||game.state==='over'||game.state==='menu'){
+    game.rigoreDifferito=null;return;
+  }
+  if(game.time-r.t0<2.5&&((r.c.act&&!r.c.act.done)||
+    (ball.state==='flight'&&ball.shooter===r.c&&(ball.kind==='shot'||ball.kind==='rebound'))))return;
+  game.rigoreDifferito=null;
+  assegnaRigore(r.d,r.c,r.motivo||'tiro ostacolato da dietro');
+}
 export function setupPenalty(t,tiratore){    // tiro dai 5 metri; tutti gli altri sulla linea dei 6 metri, ad almeno 3 metri da chi tira
+  game.rigoreDifferito=null; game.fermoFallo=null;
   const gx=goalX(t), ot=other(t);
   let s=tiratore||null; if(!s) for(const q of t.players){ if(q.excluded||q.isGK) continue; if(!s||q.st.sht>s.st.sht) s=q; }
   if(!s) return;
@@ -235,13 +266,16 @@ export function sfondamento(c,d){
   annuncia('fallo','Fallo in attacco',{p:c,dettaglio:'nuota addosso al difensore'});
   c.stunUntil=game.time+0.6; c.vx*=0.2; c.vz*=0.2;
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.y=BRV; ball.x=c.x; ball.z=c.z;
-  deadBall(0.9,()=>{ if(d.excluded) d=closestTo(d.team,ball); giveBall(d); d.freeThrow=true; });
+  if(d.excluded)d=closestTo(d.team,ball);
+  giveBall(d); d.freeThrow=true;
+  deadBall(0.9,null,[c,d]);
 }
 export function areaFoul(q){      // art. 8.2.8: attaccante nell'area di porta davanti alla linea della palla
   const def=other(q.team); chiudiAzione('falloAttacco');
   whistle(0.25); annuncia('fallo','Fallo in attacco',{p:q,dettaglio:"nell'area di porta davanti alla palla"});
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.y=BRV;
-  deadBall(1.1,()=>giveBall(def.players[0]));
+  giveBall(def.players[0]); def.players[0].freeThrow=true;
+  deadBall(1.1,null,[q]);
 }
 export function timeout(t){       // art. 5: due time-out a squadra, solo in possesso di palla; si riparte da metà campo
   if(t.timeouts<=0||game.state!=='play'||game.penalty||game.possTeam!==t||!ball.holder||ball.holder.team!==t) return false;
@@ -325,7 +359,7 @@ export function foul(d,c){     // fallo semplice: il gioco si ferma e l'attacco 
   const dx=d.x-c.x, dz=d.z-c.z, l=Math.hypot(dx,dz)||1; d.x+=dx/l*0.9; d.z+=dz/l*0.9; d.vx=d.vz=0;
   c.act=null; c.charging=false; c.chargeT=0; c.freeThrow=true; c.decideT=0.25;
   annuncia('fallo','Fallo',{p:d,dettaglio:`tiro libero ${c.team.short}`});
-  deadBall(0.8,null);
+  deadBall(0.8,null,[d,c]);
 }
 // Contrasto. L'obiettivo del difensore è RUBARE PALLA SENZA FARE FALLO: il fallo è la conseguenza di un contrasto sbagliato.
 // Da dove si arriva: davanti o di lato si può mettere la mano sulla palla; da dietro si finisce addosso all'attaccante.
@@ -341,13 +375,7 @@ export function pallaEsposta(c){
 }
 // l'attaccante avrebbe probabilmente segnato? (dentro i 6 metri, rivolto alla porta, senza altri difensori davanti)
 function probabileGol(d,c){
-  const gx=ownGoalX(d.team), dxg=gx-c.x;
-  if(Math.abs(dxg)>6||Math.abs(c.z)>5) return false;
-  const l=Math.hypot(dxg,c.z)||1, gk=d.team.players[0], portiereFuori=gk.excluded||Math.abs(gx-gk.x)>2.2;
-  // rivolto alla porta o che nuota verso la porta; di schiena solo se il portiere è fuori dalla porta (manuale arbitri, WP 23.2)
-  const verso=(c.fx*dxg-c.fz*c.z)/l>0.1||(c.vx*dxg-c.vz*c.z)/l>0.6;
-  if(!verso&&!portiereFuori) return false;
-  return !d.team.players.some(q=>q!==d&&!q.isGK&&!q.excluded&&Math.hypot(gx-q.x,q.z)<l+0.5&&dist(q,c)<1.6);
+  return leggiRigore(d,c,{porta:ownGoalX(d.team),palla:ball,difendenti:d.team.players}).possibile;
 }
 // o.voluto = CONTRASTO tenuto premuto: fallo semplice cercato apposta per fermare l'azione (scelta tattica normale)
 // Esiti: 'rubata', 'niente' (l'attaccante la protegge), 'fallo', 'espulsione', 'rigore'; false se il contrasto non parte.
@@ -446,5 +474,7 @@ export function falloSenzaPalla(a,d,dettaglio){
   chiudiAzione('falloAttacco'); whistle(0.22); registraFallo(a.team);
   annuncia('fallo','Fallo in attacco',{p:a,dettaglio});
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.y=BRV;
-  deadBall(0.9,()=>{ const r=closestTo(d.team,ball)||d; giveBall(r); r.freeThrow=true; });
+  const r=closestTo(d.team,ball)||d;
+  giveBall(r); r.freeThrow=true;
+  deadBall(0.9,null,[a,d]);
 }

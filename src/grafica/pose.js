@@ -10,6 +10,7 @@ import { allPlayers, ball, fight, game, goalX } from '../stato.js';
 import { shotKind } from '../tiri.js';
 import { braccioMuro, braccioVerso } from '../muro.js';
 import { visoGiocatore } from './espressioni.js';
+import { puoMuoversiSuFallo } from '../gioco-fermo.js';
 //<POSE>
 export const L1=0.30, L2=0.29;
 export function ik(S,H,l1,l2,hint){
@@ -60,7 +61,7 @@ export function computePose(p,dt,t){
   // quanto il corpo è disteso (lo decide la fisica: fisica.js): 0 verticale, 1 orizzontale. Tutto sfuma tra le due pose.
   const o=p.excluded&&p.alPozzetto?0:(p.oriz||0), e=ease(o);      // l'espulso nuota fino al pozzetto, poi aspetta in verticale
   const frena=(p.orizPrec||0)>o+1e-6 ? Math.sin(Math.PI*o) : 0; p.orizPrec=o;      // sta tornando verticale: remata di freno
-  if(o>0.02&&(p.comparsa||game.state==='play'||game.state==='paused')) p.phase+=dt*(3.2+sp*1.9);
+  if(o>0.02&&(p.comparsa||game.state==='play'||game.state==='paused'||puoMuoversiSuFallo(p))) p.phase+=dt*(3.2+sp*1.9);
   const bob=Math.sin(t*2.2+p.uid)*0.02, eg=t*5.5+p.uid;
 
   // ================= POSA VERTICALE: bicicletta, acqua alle spalle =================
@@ -289,8 +290,8 @@ function separaVista(p){
 function inclinazioneVerticale(p,T,dt){
   const L=lottaVista(p), sep=separaVista(p);
   p.lottaSpinta=L||sep?[(L?L.sx:0)+(sep?sep[0]:0),(L?L.sz:0)+(sep?sep[1]:0)]:null;
-  // a gioco fermo si torna dritti ad aspettare (regola v0.50 del fischio): l'inclinazione serve per muoversi durante il gioco
-  const tiro=ball.holder===p&&(p.charging||(p.act&&!p.act.done)), voluta=game.state!=='play'?0:L&&!tiro?L.iv:p.isGK?INCLINA_VERT.portiere:(T.alzato||tiro)?INCLINA_VERT.gesto:T.marca?INCLINA_VERT.marca:INCLINA_VERT.base;
+  // Al fischio si alzano soltanto gli attori del fallo; gli altri conservano l'assetto utile al movimento.
+  const tiro=ball.holder===p&&(p.charging||(p.act&&!p.act.done)), voluta=game.state!=='play'&&!puoMuoversiSuFallo(p)?0:L&&!tiro?L.iv:p.isGK?INCLINA_VERT.portiere:(T.alzato||tiro)?INCLINA_VERT.gesto:T.marca?INCLINA_VERT.marca:INCLINA_VERT.base;
   const k=1-Math.exp(-dt*6); p.inclVert=(p.inclVert??voluta)+(voluta-(p.inclVert??voluta))*k; return p.inclVert;
 }
 function posturaVista(p,J,e,iv=0){
@@ -395,7 +396,7 @@ function articolaVista(p,J,T,t){
   if(!th){
     // Nel taglio coordinato il collo segue il portatore o la palla in volo;
     // busto e direzione fisica del nuoto restano quelli dell'avanzamento.
-    if(!hold&&p.cut?.coordinata&&p.cut.guarda&&game.state==='play'){
+    if(!hold&&p.cut?.coordinata&&p.cut.guarda&&(game.state==='play'||puoMuoversiSuFallo(p))){
       const riferimento=ball.state==='flight'?ball:p.cut.guarda;
       const dx=riferimento.x-p.x,dz=riferimento.z-p.z;
       T.testaGiro=clamp(-Math.atan2(-dx*p.fz+dz*p.fx,dx*p.fx+dz*p.fz),-1.1,1.1);

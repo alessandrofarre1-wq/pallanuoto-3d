@@ -1,0 +1,97 @@
+{
+ "partite": 8,
+ "tempo": 480,
+ "gol": 15.125,
+ "tiri": 40.75,
+ "conversione": 37.11656441717791,
+ "inPorta": 81.44171779141104,
+ "parate": 18.0625,
+ "espulsioni": 8.4375,
+ "espCentro": 52.592592592592595,
+ "espFuga": 2.2222222222222223,
+ "superiorita": 8.4375,
+ "superioritaTrasformate": 37.03703703703704,
+ "rigori": 1.4375,
+ "rigoriSegnati": 78.26086956521739,
+ "palleRubate": 3.5625,
+ "falli": 29.75,
+ "intercetti": 8.5625,
+ "tiriLontani": 0.1875,
+ "golLontani": 0,
+ "tiriSoli": 3.9375,
+ "golCostruiti": 99.58677685950413,
+ "passaggiGol": 12.066115702479339,
+ "timeout": 1.5,
+ "golTipo": {
+  "perimetro": 26.446280991735538,
+  "superiorita": 20.66115702479339,
+  "controfuga": 0.4132231404958678,
+  "entrata": 20.66115702479339,
+  "centroboa": 24.380165289256198,
+  "rigore": 7.43801652892562
+ },
+ "vittorie": [
+  0,
+  8
+ ],
+ "nomi": [
+  "Italia",
+  "Ungheria"
+ ],
+ "golPerSquadra": [
+  10.75,
+  19.5
+ ],
+ "espulsioniPerSquadra": [
+  9.25,
+  7.625
+ ],
+ "azioni": {
+  "parita": {
+   "perPartita": 57.8125,
+   "quota": 83.48375451263539,
+   "durata": 14.087225225195267,
+   "gol": 19.027027027027028,
+   "tiro": 35.24324324324324,
+   "persa": 15.567567567567568,
+   "falloAttacco": 13.08108108108108,
+   "espulsione": 13.513513513513514,
+   "rigore": 2.27027027027027,
+   "tempo": 1.2972972972972974
+  },
+  "controfuga": {
+   "perPartita": 2.1875,
+   "quota": 3.1588447653429603,
+   "durata": 6.217619047604572,
+   "gol": 40,
+   "tiro": 45.714285714285715,
+   "persa": 5.714285714285714,
+   "falloAttacco": 2.857142857142857,
+   "espulsione": 5.714285714285714,
+   "rigore": 0,
+   "tempo": 0
+  },
+  "superiorita": {
+   "perPartita": 9.25,
+   "quota": 13.35740072202166,
+   "durata": 10.042905405389172,
+   "gol": 35.13513513513514,
+   "tiro": 45.945945945945944,
+   "persa": 10.135135135135135,
+   "falloAttacco": 0.6756756756756757,
+   "espulsione": 5.405405405405405,
+   "rigore": 1.3513513513513513,
+   "tempo": 1.3513513513513513
+  }
+ },
+ "azioniTotali": 69.25,
+ "difese": [
+  0,
+  24.145846229435975,
+  67.64103021121925,
+  8.213123559344782
+ ],
+ "pallaSola": 0.03333333333333333,
+ "pallaVagante": 5.1,
+ "manoPassaggio": 1.0140680047815147
+}

@@ -1,0 +1,36 @@
+
+> pallanuoto-3d@0.69.0 verifica
+> node tests/qualita.mjs && node tests/tornei.mjs && node tests/verifica.mjs --no-legacy --partite=0
+
+Qualità, ombra e modello riserva: 13 controlli superati
+✓ Sorteggio: 24 scelte mondiali, 16 europee, torneo a 16 e nazionale sempre inclusa
+✓ Classifica: 3/2/1/0 e gol dei rigori esclusi
+✓ Parità a due: scontro diretto prima della differenza reti generale
+✓ Parità a tre: dopo mini-punti si usa GD generale senza ripartire da H2H
+✓ Parità a tre: gol generali dopo GD generale, moneta persistente ultima
+✓ Parità a tre: confronto con la più alta della parità originale prima della moneta
+✓ Parità a quattro: una posizione appena risolta diventa il riferimento successivo
+✓ Risultati validati; doppia registrazione e lettura non risimulano
+✓ Mondiali: titolo da prima del girone in sei gare e incroci ufficiali
+✓ Mondiali: titolo passando dallo spareggio in sette gare
+✓ Mondiali: eliminazione nel girone, allo spareggio e ai quarti
+✓ Europei: titolo in otto gare senza quarti, tre avversarie nuove
+✓ Europei: riporta solo due incontri fra qualificate e i punti reali
+✓ Europei: eliminazione nella prima e nella seconda fase
+✓ Entrambe le formule: argento, bronzo giocato e bronzo simulato
+✓ Ripresa JSON a ogni gara e consultazioni extra mantengono simulazioni identiche
+✓ Tutte le 24 scelte mondiali e le 16 europee arrivano al titolo o all’eliminazione
+Tornei: 17 gruppi di controlli superati
+Costruzione del gioco (vite build)…
+
+Partite simulate (0 senza comandi + 0 con un giocatore finto che preme tasti a caso)
+  eventi: 
+
+Screenshot
+  ✓ 1-menu.png: 0.00% (scarto medio 0.0 su 255) dei punti diverso (entro la tolleranza)
+  ✓ 2-sprint-iniziale.png: 0.02% (scarto medio 0.0 su 255) dei punti diverso (entro la tolleranza)
+  ✓ 3-azione.png: 0.01% (scarto medio 0.0 su 255) dei punti diverso (entro la tolleranza)
+  ✓ 4-iphone-piccolo.png: 0.02% (scarto medio 0.0 su 255) dei punti diverso (entro la tolleranza)
+  ✓ 5-iphone-orizzontale.png: 0.02% (scarto medio 0.0 su 255) dei punti diverso (entro la tolleranza)
+
+✓ Verifica superata

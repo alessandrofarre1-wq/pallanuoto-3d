@@ -83,7 +83,25 @@ const pg = await apri();
 await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 'USA'); document.getElementById('goBtn').click(); window.__salta(260);
   // gli attori: chi ha palla (attacco) e il difensore più vicino
   window.__attori = () => { const B = H.ball, c = B.holder || H.teams[0].players[6], dif = c.team === H.teams[0] ? H.teams[1] : H.teams[0];
-    const d = dif.players.filter(q => !q.isGK && !q.excluded).sort((a, b) => Math.hypot(a.x - c.x, a.z - c.z) - Math.hypot(b.x - c.x, b.z - c.z))[0]; return { c, d }; }; });
+    const d = dif.players.filter(q => !q.isGK && !q.excluded).sort((a, b) => Math.hypot(a.x - c.x, a.z - c.z) - Math.hypot(b.x - c.x, b.z - c.z))[0]; return { c, d }; };
+  // Scenari UI isolati: il rigore deve nascere da una situazione regolamentare
+  // valida, senza tiri CPU o replay residui che coprano l'evento successivo.
+  window.__preparaEvento = (rigore = false) => {
+    H.replay.interrompiReplay(); H.cronaca.svuota(); H.fight.active = false;
+    Object.assign(H.game, { state: 'play', after: null, timer: 0, penalty: null, rigoriFinali: null,
+      rigoreDifferito: null, fermoFallo: null, cambiLiberi: false, autoplay: false, clock: 180, shot: 28 });
+    for (const t of H.teams) { t.human = true; t.timeouts = 2; t.cambio = null; t.coda = []; t.prossimoControllo = Infinity; t.contro = null; }
+    for (const q of H.allPlayers) Object.assign(q, { x: -q.team.dir * 7, z: (q.i - 3) * 1.9,
+      vx: 0, vz: 0, fx: q.team.dir, fz: 0, excluded: false, uscendo: false, act: null, charging: false, chargeT: 0,
+      freeThrow: false, pressatoUntil: 0, cut: null, girata: null, tackleCD: 99, colpi: [], decideT: 99, reazioneT: 99 });
+    const t = H.teams[0], o = H.teams[1], gx = 12.5 * t.dir, c = t.players[5], d = o.players[6];
+    for (const gk of [t.players[0], o.players[0]]) Object.assign(gk, { x: -12.1 * gk.team.dir, z: 0 });
+    Object.assign(c, { x: gx - t.dir * (rigore ? 2.6 : 7.5), z: rigore ? 0 : 2, fx: t.dir, fz: 0 });
+    Object.assign(d, { x: c.x - t.dir * .9, z: c.z });
+    Object.assign(H.ball, { state: 'held', holder: c, kind: null, target: null, shooter: null, inRete: false,
+      daTiro: false, inUscita: false, afterShot: false, vx: 0, vy: 0, vz: 0, x: c.x, y: .15, z: c.z });
+    H.regole.giveBall(c); H.__setCtrl(c); return { c, d };
+  }; });
 // 1. fallo ordinario
 { const g = await pg.evaluate(() => { const H = window.__pallanuoto, { c, d } = window.__attori(); H.regole.foul(d, c); window.__vai(12); return window.__guarda(); });
   controlla(g, '1. fallo'); nota(g.tipo === 'fallo' && /#\d+/.test(g.testo), '1. fallo: icona, squadra e numero'); await foto(pg, 'scenario-1-fallo');
@@ -108,26 +126,27 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
   const sovrapp = await pg.evaluate(() => { const b = document.getElementById('shotclock').getBoundingClientRect(); return [...document.querySelectorAll('#espulsioni .esp > *')].some(e => { const a = e.getBoundingClientRect(); return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom); }); });
   nota(!sovrapp, '2. indicatore non sopra il tempo per l\'azione'); await foto(pg, 'scenario-2-indicatore'); }
 // 3. rigore
-{ const g = await pg.evaluate(() => { const H = window.__pallanuoto, { c, d } = window.__attori(); H.regole.penalty(d, c); window.__vai(12); return window.__guarda(); });
+{ const g = await pg.evaluate(() => { const H = window.__pallanuoto, { c, d } = window.__preparaEvento(true); const accettato = H.regole.penalty(d, c); window.__vai(12); return Object.assign(window.__guarda(), { accettato }); });
+  nota(g.accettato, '3. rigore: contatto, possesso e occasione validi entro i 6 metri');
   controlla(g, '3. rigore'); nota(/Rigore per [A-Z]{3}/i.test(g.testo), '3. rigore: squadra che lo batte'); await foto(pg, 'scenario-3-rigore');
   const g2 = await pg.evaluate(() => { window.__vai(130); return window.__guarda(); });
   nota(!g2.vis || g2.sopra.length === 0, `3. rigore: a tiratore e portiere schierati la notifica non copre porta e tiratore (${g2.vis ? g2.testo + ', ' + g2.pos : 'già chiusa'})`); await foto(pg, 'scenario-3-rigore-schierati');
-  await pg.evaluate(() => { const H = window.__pallanuoto; H.game.penalty = null; H.regole.giveBall(H.teams[0].players[5]); H.game.possTeam = H.teams[0]; H.game.state = 'play'; window.__salta(120); }); }
+  await pg.evaluate(() => window.__preparaEvento()); }
 // 4. time-out
-{ const g = await pg.evaluate(() => { const H = window.__pallanuoto, p = H.teams[0].players[5]; H.regole.giveBall(p); H.game.possTeam = p.team; H.game.state = 'play'; H.game.penalty = null;
+{ const g = await pg.evaluate(() => { const H = window.__pallanuoto, { c: p } = window.__preparaEvento();
     const fatto = H.regole.timeout(p.team); window.__vai(30); return Object.assign(window.__guarda(), { fatto }); });
   nota(g.fatto, '4. time-out chiamato'); controlla(g, '4. time-out'); nota(/\d"/.test(g.testo), `4. time-out: tempo alla ripresa («${g.testo}»)`); await foto(pg, 'scenario-4-timeout');
   const g2 = await pg.evaluate(() => { for (let i = 0; i < 400 && window.__pallanuoto.game.state !== 'play'; i++) window.__salta(1); window.__vai(30); return window.__guarda(); });
   nota(!g2.vis || g2.tipo !== 'timeout', '4. time-out: niente banner quando il gioco riprende'); }
 // 5. gol: due righe anche sui font più stretti, come nel caso che falliva in CI.
 { const righe = await pg.addStyleTag({ content: '#cronaca.t-gol .esito{flex-basis:100%}' });
-  const g = await pg.evaluate(() => { const H = window.__pallanuoto, p = H.ball.holder || H.teams[0].players[5]; const prima = H.teams[0].score + H.teams[1].score; H.ball.shooter = p; H.regole.goalScored(p.team);
+  const g = await pg.evaluate(() => { const H = window.__pallanuoto, { c: p } = window.__preparaEvento(); const prima = H.teams[0].score + H.teams[1].score; H.ball.shooter = p; H.regole.goalScored(p.team);
     window.__vai(20); const r = window.__guarda(); r.punteggio = document.getElementById('score').textContent.replace(/\s+/g, ' '); r.sale = H.teams[0].score + H.teams[1].score === prima + 1; return r; });
   controlla(g, '5. gol'); nota(g.sale && g.tipo === 'gol' && /#\d+/.test(g.testo), `5. gol: marcatore e punteggio aggiornato (${g.punteggio})`); await foto(pg, 'scenario-5-gol');
   const g2 = await pg.evaluate(() => { for (let i = 0; i < 600 && window.__pallanuoto.game.state !== 'play'; i++) window.__salta(1); window.__salta(150); return window.__guarda(); });
   nota(!g2.vis || g2.tipo !== 'gol', '5. gol: si torna al tabellone normale'); await righe.evaluate(e => e.remove()); }
 // 6. eventi ravvicinati: un'informazione, un fallo e un'espulsione nello stesso istante
-{ const seq = await pg.evaluate(() => { const H = window.__pallanuoto, C = H.cronaca, { c, d } = window.__attori(); C.svuota();
+{ const seq = await pg.evaluate(() => { const H = window.__pallanuoto, C = H.cronaca, { c, d } = window.__preparaEvento(); C.svuota();
     C.annuncia('avviso', 'Raddoppio!'); H.regole.foul(d, c); C.annuncia('parata', 'Parata!', { p: H.teams[1].players[0] }); H.regole.exclude(d, c);
     const visti = []; let n = 0; for (let i = 0; i < 360; i++) { window.__salta(1); const el = document.getElementById('cronaca'); if (el.classList.contains('vis')) { const t = (el.className.match(/t-(\w+)/) || [])[1]; if (visti[visti.length - 1] !== t) visti.push(t); }
       n = Math.max(n, document.querySelectorAll('.cr.vis').length); if (i === 5) window.__tab = !!document.querySelector('#espulsioni .ex.nuova'); } return { visti, n, tab: window.__tab }; });

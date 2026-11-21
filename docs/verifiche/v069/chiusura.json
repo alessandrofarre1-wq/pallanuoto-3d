@@ -1,0 +1,195 @@
+{
+  "provenienza": {
+    "versione": "0.69.0",
+    "base": "e4e0787e4a3acc6a18dd9d052b93114c05b80a34",
+    "checkpoint": "6d7b563ef20a7a7ff02986340f7fda54c9c909ee",
+    "fase": "Misure generali dopo guardia !manUp e aggiornamento marcature durante il fermo selettivo, PRIMA dell’ultimo allineamento di falloSenzaPalla (possesso immediato/fermo selettivo). Hash conservati della fase misurata.",
+    "sha256_produzione": {
+      "src/regole.js": "f53c82981a8ea10c89107005576db3fa34cb69f726c9c3709db7426fdf18abb4",
+      "src/partita.js": "f6a2bdb30b9027efe13b07b694a50e13d3698628c3628f433778e3a6daa3b1ea",
+      "src/gioco-fermo.js": "23e00640efe2724d62ba62c564575293d9903048af018140ad90c16eb0e3c6e3",
+      "src/fisica.js": "763287efbdf8b1ca9c367b7d0c86a20815e987a187c7001b9c73f30fc42632d0",
+      "src/grafica/pose.js": "708592b8fd8e522bba1ace96a2b1e0ea417d59a0a0ccc4611060bec205d36f76",
+      "src/centroboa.js": "f4e9cbee4d0bec9aacbaffb9e8ac41fb3540a4cf5a39f9475b85d5b5348a205e",
+      "src/lotta.js": "8900863000513dae5873ee0b395b50a19c810db11aa3d3d691d108470f5c5fef",
+      "src/ia.js": "d0987728e6c09b92bc21269bc7cdf9d8a282929cf4babfb67c8c50351824be78",
+      "src/decisione-rigore.js": "0f6249ebad8f568b858cf9ec48b5cc745355dec9128db46975392933f6b96252",
+      "src/espulsioni-tempi.js": "d60bff4e49555d1c400bb3522a07c096a2d56eb1a00f1cf57996fcc38c9c3ff7"
+    }
+  },
+  "prove": {
+    "mirate_iniziali": {
+      "esito": "6/6 PASS",
+      "fase": "Prima della guardia fine-periodo e della reazione della difesa",
+      "comando": "npm run prove -- --solo=lint,espulsioni-tempi,rigori-regole,rigori-reali,boa-fronte,gioco-fermo"
+    },
+    "dopo_fine_periodo": {
+      "esito": "3/3 PASS",
+      "comando": "npm run prove -- --solo=lint,rigori-reali,gioco-fermo"
+    },
+    "regressioni_primo_giro": {
+      "esito": "12 PASS / 2 FAIL su 14",
+      "fallimenti": [
+        "tattica: la nuova priorità della boa intercettava il tiro sul palo in superiorità; corretta con !manUp",
+        "replay: assert UI finale fallito durante modifica sorgente; HMR sospetto, nessun fix replay applicato"
+      ],
+      "comando": "npm run prove -- --solo=rigori-finali,gameplay,centroboa,tattica,sezione1,sezione2,sezione3,sezione4,sezione5,sezione6,v046,entrate,entrate-integrazione,replay"
+    },
+    "ripetizione_dopo_correzione": {
+      "esito": "3/3 PASS",
+      "comando": "npm run prove -- --solo=lint,tattica,replay",
+      "fase": "Guardia !manUp presente; sorgente stabile durante replay"
+    },
+    "finali_dopo_reazione_difesa": {
+      "esito": "3/3 PASS",
+      "comando": "npm run prove -- --solo=lint,tattica,gioco-fermo",
+      "nota": "Test reazione difensiva aggiunto; nessuna soglia abbassata."
+    },
+    "aspetto": {
+      "esito": "PASS completo",
+      "comando": "npm run aspetto -- --no-build",
+      "gambe_fuori": {
+        "verticale": [
+          0,
+          8286
+        ],
+        "nuotata": [
+          0,
+          4686
+        ],
+        "transizione": [
+          0,
+          1112
+        ]
+      },
+      "iphone": [
+        {
+          "viewport": [
+            844,
+            390
+          ],
+          "calls": 55,
+          "triangoli": 142100
+        },
+        {
+          "viewport": [
+            667,
+            375
+          ],
+          "calls": 55,
+          "triangoli": 142100
+        }
+      ],
+      "fase": "Prima dell’ultimo allineamento di falloSenzaPalla; geometria invariata."
+    },
+    "fluidita": {
+      "esito": "PASS",
+      "scene": [
+        "diretta",
+        "due richieste di cambio"
+      ],
+      "dpr": 1.5,
+      "iphone": [
+        {
+          "viewport": [
+            844,
+            390
+          ],
+          "calls_max": 61,
+          "triangoli_max": 145944
+        },
+        {
+          "viewport": [
+            667,
+            375
+          ],
+          "calls_max": 60,
+          "triangoli_max": 145942
+        }
+      ],
+      "nota": "Massimi delle scene campionate; non misura FPS di iPhone fisico né un miglioramento geometrico.",
+      "fase": "Prima dell’ultimo allineamento di falloSenzaPalla; geometria invariata."
+    },
+    "replay": {
+      "esito": "PASS nella ripetizione stabile",
+      "calls_max": 48,
+      "triangoli_max": 146426,
+      "corpi": 14,
+      "fase": "Prima del successivo aggiornamento cache/marcature durante i falli; nessun cambiamento alla grafica del replay."
+    },
+    "verifica": {
+      "esito": "PASS solo immagini, qualità e tornei",
+      "comando": "npm run verifica -- --partite=0",
+      "partite": 0,
+      "differenza_percentuale": [
+        0,
+        0.02,
+        0.01,
+        0.02,
+        0.02
+      ],
+      "riferimenti_aggiornati": false,
+      "ispezione_visiva": "Cinque confronti ispezionati dal responsabile PR: posa/posizioni/arena/HUD coerenti; footer versione e timer dello scatto diversi; nessun riferimento aggiornato.",
+      "fase": "Prima dell’ultimo allineamento di falloSenzaPalla; il confronto finale completo sarà in CI."
+    },
+    "CI_finale": "Da eseguire sul commit pubblicato, incluse sei partite; nessuna CI finale ancora dichiarata PASS.",
+    "chiusura_fallo_senza_palla": {
+      "esito": "2/2 PASS",
+      "comando": "npm run prove -- --solo=lint,gioco-fermo",
+      "fase": "Codice finale con falloSenzaPalla allineato, possesso immediato e arresto dei soli autore/vittima; nuovo caso di rientro reale."
+    }
+  },
+  "bilancio": {
+    "file": "bilancio-finale.json",
+    "partite": 8,
+    "tempo_periodo": 480,
+    "squadre": [
+      "ITA",
+      "HUN"
+    ],
+    "semi": [
+      7919,
+      15838,
+      23757,
+      31676,
+      39595,
+      47514,
+      55433,
+      63352
+    ],
+    "esiti": [
+      "10-19",
+      "12-18",
+      "10-15",
+      "12-25",
+      "9-17",
+      "12-19",
+      "11-25",
+      "10-18"
+    ],
+    "voci_in_fascia": 6,
+    "voci_totali": 15,
+    "nota": "Campione dopo !manUp e reazione difensiva, PRIMA dell’ultimo allineamento di falloSenzaPalla. Non è un campione sul codice finale né una calibrazione globale conclusa. Il primo giro da 8 e il successivo giro interrotto non sono questo campione."
+  },
+  "non_fatto": [
+    "Bilanciamento globale: tiri alti, espulsioni e superiorità basse, azioni ancora numerose e corte.",
+    "Richieste v0.70 (chiamate in azione, servizio boa, raccordi visuali) separate; proposte speciali touch ancora da discutere.",
+    "Prova su iPhone fisico e giudizio di Ale sulla naturalezza.",
+    "Nessun merge o deploy."
+  ],
+  "provenienza_finale": {
+    "fase": "Dopo allineamento falloSenzaPalla e nuovo test reale; solo lint/gioco-fermo ripetuti localmente. CI intera ancora da verificare.",
+    "sha256_produzione": {
+      "src/regole.js": "84efd7c842dc2da2cb4d82fcd07823934c7e0f6d3058cdc1e4e7330caa1df561",
+      "src/partita.js": "f6a2bdb30b9027efe13b07b694a50e13d3698628c3628f433778e3a6daa3b1ea",
+      "src/gioco-fermo.js": "23e00640efe2724d62ba62c564575293d9903048af018140ad90c16eb0e3c6e3",
+      "src/fisica.js": "763287efbdf8b1ca9c367b7d0c86a20815e987a187c7001b9c73f30fc42632d0",
+      "src/grafica/pose.js": "708592b8fd8e522bba1ace96a2b1e0ea417d59a0a0ccc4611060bec205d36f76",
+      "src/centroboa.js": "f4e9cbee4d0bec9aacbaffb9e8ac41fb3540a4cf5a39f9475b85d5b5348a205e",
+      "src/lotta.js": "8900863000513dae5873ee0b395b50a19c810db11aa3d3d691d108470f5c5fef",
+      "src/ia.js": "d0987728e6c09b92bc21269bc7cdf9d8a282929cf4babfb67c8c50351824be78",
+      "src/decisione-rigore.js": "0f6249ebad8f568b858cf9ec48b5cc745355dec9128db46975392933f6b96252",
+      "src/espulsioni-tempi.js": "d60bff4e49555d1c400bb3522a07c096a2d56eb1a00f1cf57996fcc38c9c3ff7"
+    }
+  }
+}
