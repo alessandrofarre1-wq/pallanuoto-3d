@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.69.0",
+  "version": "0.70.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -74,7 +74,11 @@
     "espulsioni-tempi": "node tests/espulsioni-tempi-v069.mjs",
     "rigori-regole": "node tests/decisione-rigore-v069.mjs",
     "rigori-reali": "node tests/rigori-reali-v069.mjs",
-    "boa-fronte": "node tests/boa-fronte-v069.mjs"
+    "boa-fronte": "node tests/boa-fronte-v069.mjs",
+    "chiamate-attacco": "node tests/chiamate-attacco-v070.mjs",
+    "servizio-boa": "node tests/servizio-boa-v070.mjs",
+    "gesti-fluidi": "node tests/gesti-v070.mjs",
+    "sonda-boa": "node strumenti/sonda-boa-v070.mjs"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",

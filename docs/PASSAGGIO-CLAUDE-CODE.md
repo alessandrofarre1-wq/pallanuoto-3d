@@ -1,31 +1,25 @@
-# Passaggio WATERPOLO 7 — v0.69: correzioni e prove mirate concluse
+# Passaggio WATERPOLO 7 — v0.70: chiamate, boa e raccordi in verifica
 
-Repository `alessandrofarre1-wq/pallanuoto-3d`, branch `codex/v069-falli-riprese`, versione0.69.0, base main `e4e0787` (PR59 già unita da Ale). Prima di modifiche/test onerosi riallinea main, PR recenti, CI e diff: Claude e Codex lavorano sullo stesso progetto. Nessun merge/deploy fatto da Codex.
+Repository `alessandrofarre1-wq/pallanuoto-3d`, worktree `/workspace/pallanuoto-v070`, branch `codex/v070-chiamate-gesti`, versione0.70.0. Dipendenza dalla v0.69 finale `ea469d2`, ultimi aggiornamenti solo test/documenti, produzione misurata invariata. Prima di modifiche/test onerosi controlla main, PR recenti, CI e diff: preserva il lavoro di Claude e Codex. Non ripartire dagli archivi. Nessun merge/deploy.
 
-Leggi [CLAUDE.md](../CLAUDE.md), [rapporto v0.69](versioni/v069-falli-e-riprese.md), [prove/hash](verifiche/v069/chiusura.json) e [campione finale](verifiche/v069/bilancio-finale.json). L'archivio sotto non è un punto di ripartenza. La CI intera sull'ultimo commit pubblicato resta da verificare prima di dichiarare la PR pronta.
+Leggi [CLAUDE.md](../CLAUDE.md), [rapporto v0.70](versioni/v070-chiamate-servizio-gesti.md), [dati e provenienza](verifiche/v070/provenienza.json), [decisioni superate](decisioni-superate.md). La v0.69 regolamentare è separata e la CI completa è verde: https://github.com/alessandrofarre1-wq/pallanuoto-3d/actions/runs/44906185448 sul commit `ea469d23be9b8806ee2224ee0c97ec214ca14611`. I precedenti fallimenti erano scene obsolete, non nuovi bug produttivi. La PR v0.70 dipende dalla v0.69 se non è ancora unita.
 
-## Concluso v0.69
+## Implementato e verificato finora
 
-- Espulsione residua nel pozzetto attraverso intervallo/scatto, sei allo scatto; cronometri e residuo dal primo tocco, rientro legale su riconquista o scadenza. Terzo fallo gestito con sostituto al rientro.
-- Tolta sanzione casuale dal passaggio che batte l'anticipo. Rigore solo per infrazione/contatto/possesso/occasione credibile entro6m. Ostacolo da dietro durante tiro: attesa dell'esito, senza cancellazione alla sirena.
-- Boa CPU già fronteporta conclude in parità, con linea realmente libera. Guardia `!manUp` conserva il sistema di superiorità. Nessun tiro o gol garantito.
-- Sul fallo ordinario fermi solo autore/vittima; compagni/avversari continuano e le marcature leggono posizioni aggiornate. Fallo in attacco cambia subito possesso e rientro. Arresti generali restano per pause regolamentari.
+- Chiamate A/B/C in parità dopo5,5s dal possesso, compreso viaggio, se la boa non è servibile. Una scelta per possesso, pannello scompare al tocco; appoggio/ritorno restano del giocatore e taglio parte al rilascio. Schema/difesa persistenti conservati. Nel passaggio al tagliante controllato la levetta neutra conserva il contesto; la direzione manuale prevale.
+- PASS chiamate:6scene A/B/C nei due versi, due passaggi e presa fisici;5annullamenti;4layout667/844 con margini0/47px ripetuti con HUD effettivamente visibile PASS,44px senza sovrapposizione, foto ispezionate. CAMBI rapido resta basso centro; pausa nasconde le proposte.
+- Servizio alla boa realmente libera senza attesa artificiale, con marcatore/aiuti/portiere/linea2m e rischio reali; PASSA neutro preferisce appoggio chiamato e tagliante pronto. Direzionale e superiorità conservati. PASS36scelte e4prese fisiche D/S e due versi: rilascio0,18333s/presa0,5s.
+- Raccordi visuali: memoria della carica, Hermite con velocità condivisa al rilascio, ingresso/uscita dalla posa precedente e filtro graduale. Fisica `p.J`/`ballW` e tempi di lancio conservati, nessuna nuova geometria. PASS24casi a60Hz con tracce fisiche identiche, errore massimo0. Ingresso mano polso0,12873→0m, tiro0,07051→0m, passaggio0,03696→0,01484m. Fixture isolata ispezionata: non affermare naturalezza risolta o partita intera. Replay completo PASS,14corpi/picco48calls146426tri.
 
-## Esiti reali e limiti
+Le scene già passate precedono l’ultimo percorsooffball della v0.69 ereditato col rebase, non coinvolto nelle scene; dati/hash distinti in `verifiche/v070/`. Nessun nuovo campione generale v0.70: il bilanciamento resta aperto, non copiare i numeri v0.69 come misure di questa versione.
 
-Mirate6/6 e3/3 PASS. Primo giro regressioni12PASS/2FAIL: tattica corretta con `!manUp`; replay ripetuto senza sorgente modificato durante la prova, nessun fix replay. Ripetizione lint/tattica/replay3/3; dopo aggiornamento marcature lint/tattica/gioco-fermo3/3 PASS. Ultimo allineamento di `falloSenzaPalla`: possesso immediato e fermo selettivo, lint/gioco-fermo2/2 PASS con nuovo caso reale. Le misure generali seguenti precedono quest’ultimo percorso, con geometria invariata. Aspetto completo PASS: gambe0/8286,0/4686,0/1112; iPhone55calls/142100tri, due cambi picco61/145944 nelle scene campionate. Replay48/146426,14corpi nella ripetizione precedente al ritocco alle marcature. Nessuna nuova geometria. Non sono FPS di iPhone fisico.
+## Chiusura locale e passo finale
 
-`npm run verifica -- --partite=0` PASS, cinque confronti ispezionati, scarto≤0,02%, nessun riferimento sostituito. Le sei partite della verifica e tutti i passi della CI sono da eseguire sul commit pubblicato, senza duplicare un altro campione locale.
+Lint/build e regressioni9/9 PASS (gameplay,centroboa,tattica,entrate,integrazione,nuoto coerente,gioco fermo,desktop). Aspetto completo PASS gambe0/8282,0/4689,0/1113 e iPhone55/142100; due cambi PASS61/145944. SondaCPU N1(4×180s,seme7919)ITA6–HUN8,508passaggi/37alcentro/36prese/9finestre, non campione generale. Verifica immagini inizialeFAILsolo4/5, poi2riferimenti aggiornati dopo ispezione e prove pixel/hash; ripetizione indipendente `verifica --partite=0` PASS(0,01/0,02/0,22%/identico/identico). Cronaca completa locale PASS: corretta la fixture rigore con contatto0,9m/vittima2,6m dalla porta e CPU isolata, assert conservati; vecchia CI07044904621590su ba3e falliva qui. Nessun sorgente produttivo modificato. Resta CI070 intera verde sull’ultimo push, poi PR con esiti veritieri. Una sola istanza Chromium pesante; `PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers`. Non eseguire nuove prove delle espressioni facciali. **Non aggiungere `node_modules`: nel worktree è un collegamento simbolico non tracciato.**
 
-Campione8gare ITA–HUN480s prima dell’ultimo allineamento di `falloSenzaPalla` (non sul codice finale):15,125gol/40,75tiri, rigori1,4375, espulsioni8,4375, superiorità37,04%, azioni69,25, parità14,09s, soltanto6/15voci in fascia (v0.68:13/15). NON presentare il bilanciamento globale come concluso. Nessun ritocco a potenza/precisione o probabilità globali per compensare. Campioni precedenti/interrotti non sono questi dati.
+I nuovi tasti touch beduina/sciarpa/finte sono solo proposta da discutere con Ale, non implementati. Le due analisi in `docs/proposte/v070-*` documentano la fase iniziale; il rapporto v0.70 prevale per lo stato attuale. Restano iPhone fisico e giudizio di Ale, nessuna certificazione professionale.
 
-## Lavoro successivo già autorizzato: v0.70
-
-Worktree separato `/workspace/pallanuoto-v070`, branch `codex/v070-chiamate-gesti`, nato dal checkpoint locale v0.69 `6d7b563`; prima di pubblicare va riallineato al commit finale v0.69. Preservare il diff locale. **Non aggiungere `node_modules`: nel worktree è un collegamento simbolico non tracciato.**
-
-Implementati localmente ma ancora da verificare nel browser: chiamate A/B/C durante l'azione con scelte touch dopo5,5s se boa non servibile, assistenza al servizio della boa realmente libera, raccordi visuali tiro/passaggio. Separati dalla PR regolamentare v0.69. I nuovi comandi touch per beduina/sciarpa/finte speciali sono ancora idee da discutere con Ale; non aggiungere pulsanti fingendo che siano già concordati. Restano prove reali, ispezione sequenze, regressioni/aspetto/verifica e CI, documentazione/versione e PR v0.70.
-
-Limiti sempre<100calls/<150000tri anche due cambi/replay,14corpi completi; nessuna deroga. LogoC, camera/velocità uniche, sprint/controlli/carica attuali e CAMBI basso centro44px conservati. Una sola istanza Chromium pesante, `PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers`; niente prove espressioni facciali senza richiesta. Prova iPhone fisico e giudizio artistico di Ale ancora necessari.
+Vincoli sempre<100calls/<150000tri anche due cambi/replay,14corpi completi, nessuna deroga. LogoC, camera/velocità uniche, sprint/controlli/carica0,9s e CAMBI basso centro44px conservati. Non fare merge/deploy.
 
 ---
 

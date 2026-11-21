@@ -11,6 +11,7 @@ import { shotKind } from '../tiri.js';
 import { braccioMuro, braccioVerso } from '../muro.js';
 import { visoGiocatore } from './espressioni.js';
 import { puoMuoversiSuFallo } from '../gioco-fermo.js';
+import { conservaGestoVista, frustaVista, preparaGestoVista, raccordaGestoVista, smussoGestoVista } from './gesto-vista.js';
 //<POSE>
 export const L1=0.30, L2=0.29;
 export function ik(S,H,l1,l2,hint){
@@ -344,7 +345,7 @@ const CARICA_VISTA={
   beduina:[0.29,0.08,0.28],sciarpa:[0.27,0.09,0.30],rovesciata:[0.27,0.14,0.27],
   colonnello:[0.05,0.30,0.22],schizzo:[-0.22,0.02,0.28]
 };
-function articolaVista(p,J,T,t){
+function articolaVista(p,J,T,t,gestoVista){
   const V=p.giuntiVista||(p.giuntiVista={});
   for(const key of JK){ const q=J[key],v=V[key]||(V[key]=[0,0,0]); v[0]=q[0]; v[1]=q[1]; v[2]=q[2]; }
   // Copie: i palmi smussati della posa originale non diventano stato della nuova animazione.
@@ -461,7 +462,7 @@ function articolaVista(p,J,T,t){
     return V;
   }
   const fr=a?.frusta||0.18, tt=a?a.t-a.wind:0;
-  const carica=a?(a.wind>0?ease(clamp(a.t/a.wind,0,1)):1):ease(clamp(p.chargeT/0.5,0,1));
+  const carica=gestoVista.carica;
   const volo=a?clamp(tt/fr,0,1):0, busto=ease(clamp((volo-0.02)/0.70,0,1));
   const braccioK=ease(clamp((volo-0.14)/0.86,0,1)), polso=ease(clamp((volo-0.62)/0.38,0,1));
   const chiude=a?clamp((tt-fr)/0.36,0,1):0, rientra=ease(clamp((chiude-0.55)/0.45,0,1));
@@ -505,9 +506,11 @@ function articolaVista(p,J,T,t){
     if(su>0) for(const j of JK) V[j][1]+=su;
     T.alzataTiro=k;      // corpo.js lascia salire il bacino fin quasi al pelo dell'acqua (le gambe restano sotto)
   }
-  let off=mix3(HOLD_VISTA,fp?fp.vista:CARICA_VISTA[kind]||CARICA_VISTA.shot,carica);
-  off=mix3(off,rilascio,braccioK);
-  off=mix3(off,ACCOMPAGNA[kind]||th.F,ease(clamp(chiude/0.55,0,1)));
+  const caricata=mix3(HOLD_VISTA,fp?fp.vista:CARICA_VISTA[kind]||CARICA_VISTA.shot,carica);
+  let off=tt>=0&&a&&kind!=='fake'
+    ? frustaVista(gestoVista.off,caricata,rilascio,ACCOMPAGNA[kind]||th.F,tt,fr)
+    : mix3(caricata,rilascio,braccioK);
+  if(kind==='fake')off=mix3(off,ACCOMPAGNA[kind]||th.F,ease(clamp(chiude/0.55,0,1)));
   // gomito in fuori e un po' indietro durante la carica (prima indietro e in alto: con la mano davanti il braccio si girava
   // «ad ala di pollo», gomito sotto e dietro la spalla)
   let hint=mix3(mix3(GOMITO_FUORI,[-0.3,0.15,1],carica),[-0.08,0.05,1],braccioK);
@@ -598,18 +601,21 @@ export function updateRig(p,dt,t){
   // Euler; con la direzione oltre ±90° diventa (π, π-y, π). Impostando solo .y il corpo restava capovolto
   // e girato (v0.51, video e diagnosi di Ale su iPhone: corpo contro moto fino al 35% dopo i replay).
   R.g.position.set(p.x,0,p.z); R.g.rotation.set(0,Math.atan2(-p.fz,p.fx),0);
-  const Jv=articolaVista(p,posturaVista(p,J,T.oriz||0,inclinazioneVerticale(p,T,dt)),T,t);
+  const resetVista=!p.giuntiVista||game.state==='countdown'||(!p.act&&!p.charging&&game.state!=='play'&&!puoMuoversiSuFallo(p));
+  const gestoVista=preparaGestoVista(p,ball.holder===p&&p.act?.done?null:p.act,ball.holder===p,game.time,dt,t,resetVista);
+  const Jv=raccordaGestoVista(gestoVista,articolaVista(p,posturaVista(p,J,T.oriz||0,inclinazioneVerticale(p,T,dt)),T,t,gestoVista),T);
   // BRACCIA SENZA SCATTI (v0.56, Ale: «i passaggi sembrano calamitati»): le pose aggiunte solo nel disegno (palla protetta, palla in
   // acqua del centroboa, accompagnamento) cambiavano di colpo quando cambiava la situazione, e la palla in mano saltava fino a
   // 1,4 m in un fotogramma subito dopo la presa. Gomiti e mani disegnati seguono la posa con un breve smussamento (più rapido
   // durante un gesto); anche la palla che scende in acqua sotto la mano arriva con gradualità.
   // (non in nuotata: la bracciata del crawl è rapida e va lasciata intera)
-  { const B=p.bracciaVista||(p.bracciaVista={}), k0=1-Math.exp(-dt*(p.act&&!p.act.done?BRACCIA_SMUSSO.gesto:BRACCIA_SMUSSO.base)), kb=k0+(1-k0)*clamp((T.oriz||0)*2,0,1);
+  { const B=p.bracciaVista||(p.bracciaVista={}), k0=1-Math.exp(-dt*smussoGestoVista(p.act,BRACCIA_SMUSSO.base,BRACCIA_SMUSSO.gesto)), kb=k0+(1-k0)*clamp((T.oriz||0)*2,0,1);
     for(const key of ['eR','eL','hR','hL']){ const v=Jv[key]; if(!v) continue; const a=B[key];
       if(!a||Math.hypot(a[0]-v[0],a[1]-v[1],a[2]-v[2])>3){ B[key]=v.slice(); continue; }
       a[0]+=(v[0]-a[0])*kb; a[1]+=(v[1]-a[1])*kb; a[2]+=(v[2]-a[2])*kb; v[0]=a[0]; v[1]=a[1]; v[2]=a[2]; }
     p.pallaAcquaVista=(p.pallaAcquaVista||0)+((T.pallaInAcqua||0)-(p.pallaAcquaVista||0))*kb; T.pallaInAcqua=p.pallaAcquaVista; }
   { const k=1-Math.exp(-dt*7); p.testaGiro=(p.testaGiro||0)+((T.testaGiro||0)-(p.testaGiro||0))*k; T.testaGiro=p.testaGiro; }
+  conservaGestoVista(gestoVista,Jv,T);
   if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)) muoviCorpo(R,Jv,T,dt); }
   else {
     setSeg(R.torso,J.hip,J.chest); R.chest.position.set(J.chest[0],J.chest[1],J.chest[2]); R.pelvis.position.set(J.hip[0],J.hip[1],J.hip[2]);
