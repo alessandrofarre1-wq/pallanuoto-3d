@@ -62,7 +62,12 @@ export function humanControl(p,dt){
   let passa=pressed('pass'), lob=pressed('lob'), ix=inp.x, iz=inp.z;
   if(pressed('desktopPass')&&hasBall&&!p.excluded&&game.state==='play'&&!game.penalty) desktopPass={p,possT:game.possT,epoch:inputEpoch};
   if(released('desktopPass')&&desktopPass?.p===p){ passa=true; desktopPass=null; }
-  p.cut=null;
+  // Il passaggio porta automaticamente il controllo al ricevente mentre la
+  // palla è ancora in volo. Non cancellare in quel momento l'entrata chiamata:
+  // la presa deve conservarne il contesto. Una direzione manuale prevale subito.
+  const riceveTaglio=p.cut?.coordinata&&!hasBall&&ball.state==='flight'&&ball.kind==='pass'&&
+    ball.target===p&&ball.shooter?.team===p.team&&Math.hypot(ix,iz)<.2;
+  if(!riceveTaglio)p.cut=null;
   const ftDesktop=p.freeThrow&&Math.abs(goalX(p.team)-p.x)<6;
   const tiroDesktopLecito=hasBall&&p===ctrl&&game.state==='play'&&!game.penalty&&!p.excluded&&!p.isGK&&!ftDesktop&&!(p.pressatoUntil>game.time);
   if(pressed('desktopShoot')){

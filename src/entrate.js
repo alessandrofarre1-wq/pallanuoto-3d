@@ -18,12 +18,13 @@ export function resetDisposizioneTattica(t){
   resetEntrantiCambio(t);
   Object.assign(t,{occupantiAttacco:null,occupantiSchema:null,occupantiTempo:null,accoppiamenti:null,
     entrataAzione:null,preparaEntrata:null,rotazioneCentro:null,entrataDopo:0,scambio:null,adattamentoEntrata:null,
+    chiamataAttacco:null,chiamataPossesso:null,
     schemaStato:null,copertura:null,blocco:null,aiutoStato:null,lasciato:null,lasciatoT:0,centroT:-1,centroAperto:false});
   for(const p of t.players){p.cut=null;p.appoggio=null;}
 }
 function posti(t){
   if(!t.occupantiAttacco||t.occupantiAttacco.some((p,i)=>p&&!t.players.includes(p))||t.occupantiSchema!==schemaSquadra(t)||game.time<(t.occupantiTempo??-1)){
-    t.occupantiAttacco=[...t.players];t.occupantiSchema=schemaSquadra(t);t.entrataAzione=null;t.rotazioneCentro=null;t.entrataDopo=0;
+    t.occupantiAttacco=[...t.players];t.occupantiSchema=schemaSquadra(t);t.entrataAzione=null;t.rotazioneCentro=null;t.entrataDopo=0;t.chiamataAttacco=null;t.chiamataPossesso=null;
   }
   t.occupantiTempo=game.time;return t.occupantiAttacco;
 }
@@ -45,12 +46,46 @@ const atletico=p=>((p.s?.vel??70)+(p.s?.pre??70)+(p.s?.frz??70))/3;
 export function latoTecnico(p,ala){return p.mano==='S'&&ala.mano==='S'||Math.min(atletico(p),atletico(ala))>=E.manoAbile;}
 const pressato=p=>{const d=difensoreEntrata(p);return !!d&&(dist(d,p)<E.pressing||p.pressatoUntil>game.time||
   p.freeThrow&&game.time-(p.falloT??-9)<4&&dist(d,p)<3);};
-function valida(t,rotazione=false){return game.state==='play'&&game.possTeam===t&&pari(t)&&(automatico(t)||rotazione&&schemaSquadra(t).id==='falso-centro')&&!t.entrataAzione&&!t.rotazioneCentro&&
-  !t.players.some(p=>p.cut)&&game.time>=(t.entrataDopo||0);}
+function valida(t,rotazione=false,chiamata=false){return game.state==='play'&&game.possTeam===t&&pari(t)&&(automatico(t)||chiamata||rotazione&&schemaSquadra(t).id==='falso-centro')&&!t.entrataAzione&&!t.rotazioneCentro&&
+  !t.players.some(p=>p.cut)&&(chiamata||game.time>=(t.entrataDopo||0));}
+
+// La chiamata umana dispone i compagni e aspetta l'appoggio: non prende il
+// controllo della palla. I riferimenti sono agli atleti che occupano i posti ora.
+export function chiamataAttuale(t){
+  const c=t.chiamataAttacco;if(!c)return null;
+  if(game.possTeam!==t||!pari(t)||game.period!==c.periodo||game.possT!==c.possT||
+    game.time>c.fino||!disponibile(c.p)||!disponibile(c.m)||
+    !t.players.includes(c.p)||!t.players.includes(c.m)||['menu','over','countdown'].includes(game.state)){
+    t.chiamataAttacco=null;
+    if(t.preparaEntrata?.chiamata===c)t.preparaEntrata=null;
+    return null;
+  }
+  return c;
+}
+export function chiamaEntrata(t,tipo){
+  posti(t);
+  if(!t.human||game.autoplay||!['A','B','C'].includes(tipo)||!valida(t,false,true)||chiamataAttuale(t)||
+    t.chiamataPossesso?.possT===game.possT&&t.chiamataPossesso.periodo===game.period)return false;
+  const p=occupanteAttacco(t,tipo==='C'?4:6),m=occupanteAttacco(t,tipo==='B'?5:tipo==='C'?6:4);
+  const ala=occupanteAttacco(t,2);
+  if(!disponibile(p)||!disponibile(m)||tipo==='B'&&(!disponibile(ala)||!latoTecnico(p,ala)))return false;
+  t.preparaEntrata=null;
+  t.chiamataAttacco={tipo,p,m,side:tipo==='A'?-1:1,t0:game.time,fino:game.time+E.durata,possT:game.possT,periodo:game.period};
+  t.chiamataPossesso={possT:game.possT,periodo:game.period};
+  return true;
+}
+export function passaggioChiamato(p,passabile){
+  const t=p.team;posti(t);const c=chiamataAttuale(t);
+  if(!c||c.p!==p||ball.holder!==p||!valida(t,false,true)||profondita(p)>E.attacco||
+    dist(p,c.m)<1.8||dist(p,c.m)>=E.appoggio||!passabile(p,c.m,false))return null;
+  t.preparaEntrata={...c,fino:Math.min(c.fino,game.time+.7),chiamata:c};return c.m;
+}
 
 // Solo la partenza effettiva del passaggio mette in moto il tagliante.
 export function preparaEntrata(p,passabile){
   const t=p.team;posti(t);
+  const chiamato=passaggioChiamato(p,passabile);if(chiamato)return chiamato;
+  if(chiamataAttuale(t))return null;
   if(!valida(t)||p===ctrl||profondita(p)>E.attacco||!pressato(p)) return null;
   const dopoFallo=p.freeThrow&&game.time-(p.falloT??-9)<4;
   if(!dopoFallo&&(game.time-game.possT<E.circolazione||(game.passaggi||0)<E.passaggi))return null;
@@ -83,9 +118,13 @@ function inizia(p,tipo,appoggio,side,arrivo=null){
   return true;
 }
 export function registraPassaggioEntrata(p,m){
-  const t=p.team,s=t.preparaEntrata;t.preparaEntrata=null;
-  if(!s||s.p!==p||s.m!==m||s.possT!==game.possT||game.time>s.fino||!valida(t)||p===ctrl)return false;
-  return inizia(p,s.tipo,m,s.side);
+  const t=p.team,c=chiamataAttuale(t),diretto=c&&c.p===p&&c.m===m&&profondita(p)<=E.attacco&&dist(p,m)>=1.8&&dist(p,m)<E.appoggio;
+  const s=t.preparaEntrata||(diretto?{...c,chiamata:c}:null);t.preparaEntrata=null;
+  const chiamata=s?.chiamata&&chiamataAttuale(t)===s.chiamata;
+  if(!s||s.p!==p||s.m!==m||s.possT!==game.possT||game.time>s.fino||!valida(t,false,!!chiamata)||p===ctrl&&!chiamata)return false;
+  const avviata=inizia(p,s.tipo,m,s.side);
+  if(avviata&&chiamata){t.entrataAzione.chiamata=s.tipo;t.chiamataAttacco=null;}
+  return avviata;
 }
 function mezzaEntrata(t){
   for(const i of [2,3]){
@@ -119,6 +158,7 @@ function ruotaCentro(t){
 }
 export function aggiornaEntrate(t){
   posti(t);
+  const chiamata=chiamataAttuale(t);
   const a=t.entrataAzione,r=t.rotazioneCentro;
   if(game.possTeam!==t||!pari(t)){
     if(a?.entrante.cut?.coordinata)a.entrante.cut=null;
@@ -136,6 +176,7 @@ export function aggiornaEntrate(t){
   }
   if(r){if(r.possT!==game.possT||game.time-r.t0>E.durata||!disponibile(r.uscente)||!disponibile(r.boa))t.rotazioneCentro=null;return;}
   if(t.preparaEntrata&&game.time<t.preparaEntrata.fino)return;
+  if(chiamata)return;
   if(!valida(t,true)||!ball.holder||ball.holder.team!==t||ball.holder.isGK||profondita(ball.holder)>E.attacco)return;
   ruotaCentro(t);if(!t.rotazioneCentro&&automatico(t))mezzaEntrata(t);
 }

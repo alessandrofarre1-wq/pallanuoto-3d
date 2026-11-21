@@ -9,9 +9,9 @@ import { manUp, paloUomo, postoPortiere, setteControSei, viciniUomo } from './ia
 import { faseUomo } from './uomo-in-piu.js';
 import { difensoreCentro, leggiCentro } from './centroboa.js';
 import { schemaSquadra, viciniPerimetro } from './schemi.js';
-import { centroAttacco, postoAttacco, registraPassaggioEntrata } from './entrate.js';
+import { centroAttacco, destinatarioEntrata, passaggioChiamato, postoAttacco, registraPassaggioEntrata } from './entrate.js';
 import { velocitaDiLancio } from './palla.js';
-import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO } from './taratura.js';      // numeri del bilanciamento
+import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO, PRESA, SERVIZIO_BOA as S } from './taratura.js';      // numeri del bilanciamento
 export { ERRORE_PASSAGGIO };
 import { paloCoperto } from './muro.js';
 import { P } from './fisica-palla/parametri.js';
@@ -127,18 +127,57 @@ export function shotKind(p){
 // v0.64 (taratura): in parità il vantaggio di dare la palla al centroboa cresce con i secondi d'azione (CENTRO_ATTESA)
 function attesaCentro(t,sup){ if(sup) return 1; const az=azioneAperta(); if(!az||az.t!==t||az.tipo!=='parita') return 1;
   return clamp((game.time-az.t0-CENTRO_ATTESA.da)/(CENTRO_ATTESA.a-CENTRO_ATTESA.da),0,1); }
-export function bestPassTarget(p,variabile=true){
+const spazioMovimento = m => {
+  let spazio=99;
+  for(const d of other(m.team).players)if(!d.isGK&&!d.excluded&&!d.uscendo)spazio=Math.min(spazio,dist(d,m));
+  return spazio;
+};
+const spazioDavantiBoa = m => {
+  const dx=goalX(m.team)-m.x,dz=-m.z,L=Math.hypot(dx,dz)||1;let spazio=99;
+  for(const d of other(m.team).players){
+    if(d.isGK||d.excluded||d.uscendo||((d.x-m.x)*dx+(d.z-m.z)*dz)/L<-S.dietroNonCopre)continue;
+    spazio=Math.min(spazio,dist(d,m));
+  }
+  return spazio;
+};
+// Una boa davvero liberata non deve aspettare il bonus temporale della costruzione.
+// Il marcatore e la linea di servizio sono due letture diverse: gli aiuti e il
+// portiere restano nel rischio della traiettoria, anche se il proprio uomo è battuto.
+export function occasioneBoa(p,m=centroAttacco(p.team)){
+  if(game.state!=='play'||game.possTeam!==p.team||ball.state!=='held'||ball.holder!==p||manUp(p.team)||
+    p.isGK||!m||m===p||m.isGK||m.excluded||m.uscendo||m!==centroAttacco(p.team)||dist(p,m)>S.passaggio)return false;
+  const gx=goalX(p.team),dg=Math.hypot(gx-m.x,m.z),prof=(gx-m.x)*p.team.dir,linea=(gx-p.x)*p.team.dir;
+  if(dg>S.porta||prof<0||Math.abs(m.z)<S.areaLaterale&&prof<2&&prof<linea-S.lineaPalla||m.cut&&!entrataPronta(m))return false;
+  const def=difensoreCentro(m),lettura=leggiCentro(m,def,p);
+  if(!lettura.ricevibile||!laneClear(p,m.x,m.z,p.team,S.corridoio)||passLaneRisk(p,m)>S.rischio)return false;
+  const gk=other(p.team).players[0];
+  if(gk&&!gk.excluded&&!gk.uscendo){
+    const dx=m.x-gk.x,dz=m.z-gk.z,verso=dx*(gk.vx||0)+dz*(gk.vz||0),tempo=Math.max(S.voloMinimo,dist(p,m)/(11+4.5*(p.st?.pas||.7)));
+    const portata=PRESA.portiere+S.portiereMargine+(verso>0?Math.min(S.portiereAnticipo,Math.hypot(gk.vx||0,gk.vz||0)*tempo):0);
+    if(Math.hypot(dx,dz)<portata)return false;
+  }
+  if(spazioMovimento(m)>S.spazio)return true;
+  const fronte=((m.fx||0)*(gx-m.x)-(m.fz||0)*m.z)/(dg*(Math.hypot(m.fx||0,m.fz||0)||1));
+  const vantaggio=def?(m.x-def.x)*p.team.dir:99;
+  if(fronte<S.fronte||vantaggio<ENTRATA.vantaggio)return false;
+  return !other(p.team).players.some(d=>d!==def&&!d.isGK&&!d.excluded&&!d.uscendo&&dist(d,m)<S.spazio);
+}
+export function bestPassTarget(p,variabile=true,{assistita=false}={}){
   let best=null,bs=-1e9; const sup=manUp(p.team),schema=schemaSquadra(p.team),gx=goalX(p.team),press=openness(p);
   for(const m of p.team.players){
     if(m===p||m.excluded||m.uscendo||(m.isGK&&!setteControSei(p.team))) continue;
     const d=dist(p,m); if(d<1.2) continue;
-    const dg=Math.hypot(gx-m.x,m.z),aperto=openness(m),risk=passLaneRisk(p,m),linea=laneClear(p,m.x,m.z,p.team,0.55);
+    const dg=Math.hypot(gx-m.x,m.z),risk=passLaneRisk(p,m),linea=laneClear(p,m.x,m.z,p.team,0.55);
     const interno=(!sup&&centroAttacco(p.team)===m)||(sup&&paloUomo(m));
+    const boaChiara=!sup&&interno&&occasioneBoa(p,m);
+    // Il portiere può intercettare (controllato sopra); la sua distanza dalla
+    // propria porta non equivale però a una marcatura dell'uomo sul centro.
+    const aperto=boaChiara?spazioDavantiBoa(m):openness(m);
     // v0.66: a chi sta entrando la palla va solo quando è pronto (vicino alla porta e davanti al suo difensore)
     const taglio=!!m.cut&&entrataPronta(m);
     if(m.cut&&(!taglio||!linea||risk>0.25)) continue;
     if(interno){
-      const def=other(p.team).players.filter(q=>!q.excluded&&!q.isGK).sort((a,b)=>dist(a,m)-dist(b,m))[0];
+      const def=!sup?difensoreCentro(m):other(p.team).players.filter(q=>!q.excluded&&!q.isGK).sort((a,b)=>dist(a,m)-dist(b,m))[0];
       if(!leggiCentro(m,def,p).ricevibile||!linea||risk>0.3) continue;
     }
     const vicino=sup?viciniUomo(p.team,p.i,m.i):viciniPerimetro(postoAttacco(p),postoAttacco(m),false),perimetro=!interno&&!p.isGK&&!(sup?paloUomo(p):centroAttacco(p.team)===p);
@@ -151,7 +190,7 @@ export function bestPassTarget(p,variabile=true){
     }
     let s=Math.min(aperto,3)*1.2-dg*0.14-d*0.07-risk*6+(linea?0.8:-2.8);
     if(vicino) s+=schema.passaggi==='vicini'?2.4:schema.passaggi==='equilibrati'?1.7:1.25;
-    if(interno) s+=(1.6+(schema.id==='boa'&&!sup?0.8:0))*attesaCentro(p.team,sup);
+    if(interno) s+=(1.6+(schema.id==='boa'&&!sup?0.8:0))*(boaChiara||assistita&&!p.isGK?1:attesaCentro(p.team,sup));
     if(taglio) s+=4.5;      // l'entrata riuscita è l'occasione migliore: la palla va lì
     // uomo in più: la fase in corso dello schema chiamato indica a chi dare la palla
     if(sup&&faseUomo(p.team)?.palla===m.i) s+=1.8;
@@ -168,7 +207,11 @@ export function bestPassTarget(p,variabile=true){
 }
 export function humanPassTarget(p,ix,iz){
   const il=Math.hypot(ix,iz);
-  if(il<0.3) return bestPassTarget(p,false);
+  if(il<0.3){
+    const passabile=(a,m,taglio)=>!m.excluded&&!m.uscendo&&(!taglio||entrataPronta(m))&&
+      laneClear(a,m.x,m.z,p.team,.55)&&passLaneRisk(a,m)<.25&&openness(m)>1.1;
+    return passaggioChiamato(p,passabile)||destinatarioEntrata(p,passabile)||bestPassTarget(p,false,{assistita:true});
+  }
   // v0.55 (Ale: «più di una volta ho passato la palla al portiere quando ero in attacco»; «fatico a dare la palla al centro»):
   // il proprio portiere si sceglie solo nella propria metà campo e se non c'è nessun altro nella direzione; con la levetta verso
   // la porta avversaria il centroboa (o il palo con l'uomo in più) ha la precedenza se è nel cono
@@ -205,7 +248,7 @@ export function doPass(p,m){
   // con una frustata oppure fa una beduina; se gli arriva in mano al volo è perché si è liberato del difensore»): con il marcatore
   // addosso il passaggio arriva basso, in acqua, BOA_DAVANTI m davanti a lui verso chi passa, e un po' più lento; in mano (alto,
   // al volo) solo se si è liberato. Se il difensore era in anticipo (tra palla e centroboa) e la palla passa, resta dietro di lui:
-  // fallo da rigore o espulsione (anticipoBattuto in regole.js).
+  // vantaggio da sfruttare: la ricezione da sola non assegna rigori o espulsioni.
   let ty=PASSAGGIO_ALTEZZA, anticipo=null;
   if(!manUp(p.team)&&centroAttacco(p.team)===m&&!m.isGK&&Math.hypot(goalX(m.team)-m.x,m.z)<6){
     const def=difensoreCentro(m), lett=leggiCentro(m,def,p);
