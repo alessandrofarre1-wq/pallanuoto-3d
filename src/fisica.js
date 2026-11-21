@@ -141,15 +141,16 @@ export function movePlayer(p,dx,dz,sprint,dt){
   }
   p.fx=Math.cos(na); p.fz=Math.sin(na);
 }
-export function separate(){
+export function separate(fermi=null){
   const ps=allPlayers.filter(active);
   for(let i=0;i<ps.length;i++) for(let j=i+1;j<ps.length;j++){
     // distanza minima tra due corpi: tra avversari c'è contatto, tra compagni un po' di spazio in più (meno ammassi)
     const a=ps[i], b=ps[j], opp=a.team!==b.team, R=opp?0.8:0.75;
     const dx=b.x-a.x, dz=b.z-a.z, d=Math.hypot(dx,dz);
     if(d>=R||d<0.0001) continue;
-    const nx=dx/d, nz=dz/d, push=(R-d)/2;
-    a.x-=nx*push; a.z-=nz*push; b.x+=nx*push; b.z+=nz*push;
+    const fa=fermi?.has(a),fb=fermi?.has(b);if(fa&&fb)continue;
+    const nx=dx/d, nz=dz/d, push=(R-d)/(fa||fb?1:2);
+    if(!fa){a.x-=nx*push; a.z-=nz*push;}if(!fb){b.x+=nx*push;b.z+=nz*push;}
     if(opp){   // un avversario davanti fa resistenza: si perde la velocità verso di lui e si deve girargli attorno
       // chi ha la palla e nuota dritto addosso al difensore fa fallo in attacco (sfondamento); si decide una volta per contatto
       if(game.state==='play'&&(ball.holder===a||ball.holder===b)&&!(fight.active&&(fight.boa===a||fight.boa===b))){
