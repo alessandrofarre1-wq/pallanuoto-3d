@@ -15,7 +15,7 @@ Base `e4e0787` (PR59 v0.68 unita), versione0.69.0, branch `codex/v069-falli-ripr
 - `src/regole.js`, nuovi `src/espulsioni-tempi.js` e `src/decisione-rigore.js`: sanzioni, scatto, criteri del rigore, vantaggio e cambio possesso.
 - `src/partita.js`, `src/gioco-fermo.js`, `src/fisica.js`, `src/grafica/pose.js`: cronometri, fermo selettivo, movimento e marcature, separazione dei corpi e posa coerente.
 - `src/centroboa.js`, `src/lotta.js`, `src/ia.js`: lettura fronteporta e conclusione in parità.
-- `tests/espulsioni-tempi-v069.mjs`, `decisione-rigore-v069.mjs`, `rigori-reali-v069.mjs`, `boa-fronte-v069.mjs`, aggiornati `gioco-fermo-v050.mjs` e `finta-v055.mjs`; script in `package*.json`, passi in `.github/workflows/pages.yml`; memoria, storia, consegne e dati in `docs/verifiche/v069/`.
+- `tests/espulsioni-tempi-v069.mjs`, `decisione-rigore-v069.mjs`, `rigori-reali-v069.mjs`, `boa-fronte-v069.mjs`, aggiornati `gioco-fermo-v050.mjs`, `finta-v055.mjs` e `cronaca.mjs`; script in `package*.json`, passi in `.github/workflows/pages.yml`; memoria, storia, consegne e dati in `docs/verifiche/v069/`.
 
 ## Verifiche e fasi
 
@@ -31,6 +31,8 @@ Registri e hash del codice in [dati di chiusura](../verifiche/v069/chiusura.json
 8. `npm run verifica -- --partite=0`: PASS (qualità, tornei e cinque immagini). Confronti ispezionati: posa, arena e HUD coerenti; cambia il footer versione e il timer, ora fermo nello scatto. Sprint3:00contro2:57, azione2:43contro2:39, iPhone2:56contro2:52. Scarti0–0,02%; nessun riferimento sostituito. Le sei partite della verifica e tutti i passi della CI saranno eseguiti sul commit pubblicato: non sono ancora dichiarati PASS.
 
 La prima CI pubblicata ([44902551508](https://github.com/alessandrofarre1-wq/pallanuoto-3d/actions/runs/44902551508)) ha segnalato il vecchio assert di `finta-v055.mjs`: pretendeva una sanzione automatica in almeno metà dei20anticipi battuti senza fallo. Il risultato0/20 è ora quello richiesto da Ale; il test verifica esattamente zero sanzioni, mantenendo le altre prove di finte, passaggi e tiro al volo. Nessuna modifica produttiva per questo allineamento e nessun nuovo campione da8partite. La nuova esecuzione CI resta da verificare.
+
+La seconda CI ([44903853058](https://github.com/alessandrofarre1-wq/pallanuoto-3d/actions/runs/44903853058)) ha passato le sei partite, finte, replay, sezioni e aspetto, fermandosi sul penultimo controllo `cronaca`. La sua scena chiedeva un rigore senza condizioni valide e poi lasciava un gol CPU interferire con il time-out. Ora il test prepara possesso, contatto0,9m, fronteporta a2,6m e corridoio libero, verifica che il rigore sia accettato e isola le scene successive. Assert su testo, leggibilità, posizione, time-out e pausa conservati. `npm run prove -- --solo=lint,cronaca,menu`:3/3 PASS (4s/187s/59s); anche `finta` aggiornata PASS0/20. Log in `ui-finali.log`. Solo fixture, nessuna ulteriore modifica al gioco o nuova taratura. La CI intera sul nuovo commit è da controllare nella PR60.
 
 ## Campione di gioco prima dell’ultimo percorso di fallo
 
