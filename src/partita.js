@@ -46,6 +46,14 @@ function muoviVerso(p,tg,dt){
 function aggiornaMovimentiSuFallo(dt){
   const fermi=new Set(game.fermoFallo);
   aggiornaGiocoFermo(dt,false,game.fermoFallo);
+  // Il cronometro è fermo, la lettura dei movimenti no: senza aggiornare i
+  // riferimenti i marcatori inseguirebbero ancora le posizioni pre-fischio.
+  for(const t of teams){t.postiT=t.rallT=t.centroT=-1;}
+  for(const p of allPlayers){
+    if(fermi.has(p)||p.excluded||game.time<p.stunUntil)continue;
+    const a=uomoDi(p),k=Math.min(1,dt*(2+2*p.st.def*(p.team.human?1:DIFF()))*(p.team.defPlay===3?1.4:1));
+    p.lagX+=(a.x-p.lagX)*k;p.lagZ+=(a.z-p.lagZ)*k;
+  }
   for(const p of allPlayers){
     if(fermi.has(p))continue;
     if(p.excluded){

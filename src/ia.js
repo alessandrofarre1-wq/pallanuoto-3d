@@ -731,7 +731,7 @@ export function aiCarrier(p,dt){
   const dGoal=Math.hypot(gx-p.x,p.z);
   p.target={x:slot.x+t.dir*0.8, z:slot.z, sprint: Math.abs(p.x-slot.x)>6};
   if(p.act&&!p.act.done) return;
-  if(centroAttacco(t)===p&&boaFrontePorta(p)){
+  if(!manUp(t)&&centroAttacco(t)===p&&boaFrontePorta(p)){
     if(ball.holdTime>=.12&&!(p.pressatoUntil>game.time)){
       p.motivoTiro='boa fronte porta';aiShoot(p,.75,false);
     }

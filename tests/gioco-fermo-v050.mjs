@@ -47,6 +47,12 @@ try{
     }
     // Il fischio ferma autore e vittima; i compagni continuano i movimenti già utili.
     prepara();const compagno=H.teams[0].players[2];compagno.stunUntil=0;
+    let marcatore=null,lagPrima=null;
+    if(sorgenti){
+      const A=await import('/src/ia.js');marcatore=H.teams[1].players.find(q=>A.uomoDi(q)===compagno);
+      need(marcatore&&marcatore!==d,'marcatore estraneo al fallo nella scena');
+      marcatore.stunUntil=0;marcatore.lagX=compagno.x;marcatore.lagZ=compagno.z;lagPrima=[marcatore.lagX,marcatore.lagZ];
+    }
     compagno.cut={t0:G.time,phase:0,x:7,z:-4};
     const primaFallo=assetto(),faseCompagno=compagno.phase;H.regole.foul(d,p);
     const immediato=assetto(),posAttori=JSON.stringify([p,d].map(q=>[q.x,q.z])),posCompagno=[compagno.x,compagno.z],clock=G.clock,time=G.time,shot=G.shot;
@@ -59,6 +65,8 @@ try{
     need(JSON.stringify([p,d].map(q=>[q.x,q.z]))===posAttori,'le collisioni non spostano gli attori del fallo');
     need(movimentoCompagno>.05&&compagno.phase>faseCompagno,'taglio e bracciata dei compagni proseguono durante il tiro libero');
     need(G.clock===clock&&G.time===time&&G.shot===shot,'cronometri fermi durante il fallo');
+    const reazioneMarcatore=marcatore?Math.hypot(marcatore.lagX-lagPrima[0],marcatore.lagZ-lagPrima[1]):null;
+    if(sorgenti)need(reazioneMarcatore>.03,'la difesa aggiorna la lettura del tagliante durante il fermo del cronometro');
     // Il giocatore umano estraneo al fallo resta comandabile, senza nuovi tiri/contrasti.
     prepara();const libero=H.teams[0].players[2];libero.stunUntil=0;
     H.regole.giveBall(d);H.__setCtrl(libero);H.regole.foul(p,d);
@@ -69,7 +77,7 @@ try{
     need(movimentoUmano>.05&&JSON.stringify([p,d].map(q=>[q.x,q.z]))===fermiUmano,'controllo umano libero, attori immobili');
     // Un fallo in attacco cambia subito il possesso: chi era salito deve iniziare il rientro,
     // mentre il colpevole e il nuovo battitore restano al punto del fischio.
-    let rientroSuFallo=null;
+    let rientroSuFallo=null,rientroSenzaPalla=null;
     if(sorgenti){
       const R=await import('/src/regole.js');prepara();
       const q=H.teams[0].players[2];Object.assign(q,{x:7,z:-5.5,vx:1.4,vz:0,stunUntil:0,fx:1,fz:0});
@@ -77,6 +85,19 @@ try{
       step(30);rientroSuFallo={possesso:G.possTeam===d.team,spostamento:q.x-origine,velocita:q.vx};
       need(rientroSuFallo.possesso&&q.x<origine-.05&&q.vx<-.1,'fallo in attacco: cambio possesso e rientro reale nella nuova direzione');
       need(JSON.stringify([p,d].map(v=>[v.x,v.z]))===attori&&G.clock===c&&G.time===t,'attori e cronometri fermi durante il rientro degli altri');
+      // Lo stesso vale per un blocco/spinta senza palla: il portatore è un terzo atleta,
+      // il possesso cambia già al fischio e si fermano solo colpevole e vittima.
+      prepara();const portatore=H.teams[0].players[5],rientrante=H.teams[0].players[2];
+      Object.assign(portatore,{x:0,z:3});Object.assign(d,{x:.8,z:0});
+      Object.assign(rientrante,{x:7,z:-5.5,vx:1.4,vz:0,stunUntil:0,fx:1,fz:0});
+      H.regole.giveBall(portatore);Object.assign(B,{x:portatore.x,z:portatore.z});
+      R.falloSenzaPalla(p,d,'blocco irregolare');
+      need(G.possTeam===d.team&&B.holder?.team===d.team&&B.holder.freeThrow,'fallo senza palla: possesso assegnato al fischio');
+      need(G.fermoFallo?.length===2&&G.fermoFallo.includes(p)&&G.fermoFallo.includes(d),'fallo senza palla: solo autore e vittima nel gruppo fermo');
+      const origineSenzaPalla=rientrante.x,attoriSenzaPalla=JSON.stringify([p,d].map(v=>[v.x,v.z])),clockSenzaPalla=G.clock,timeSenzaPalla=G.time;
+      step(30);rientroSenzaPalla={possesso:G.possTeam===d.team,spostamento:rientrante.x-origineSenzaPalla,velocita:rientrante.vx};
+      need(rientroSenzaPalla.possesso&&rientrante.x<origineSenzaPalla-.05&&rientrante.vx<-.1,'fallo senza palla: gli altri rientrano realmente prima della ripresa');
+      need(JSON.stringify([p,d].map(v=>[v.x,v.z]))===attoriSenzaPalla&&G.clock===clockSenzaPalla&&G.time===timeSenzaPalla,'fallo senza palla: attori e cronometri restano fermi');
     }
     // Il gesto non rilasciato viene annullato dal deadBall del time-out, non soltanto dal fallo sul portatore.
     prepara();let callback=0;H.prova.startAct(p,'shot',.4,()=>{callback++;});p.charging=true;p.chargeT=.7;
@@ -120,7 +141,7 @@ try{
     const congelato=H.replay.trattieniMondoReplay();
     const snapshot=()=>JSON.stringify({timer:G.timer,clock:G.clock,time:G.time,corpi:P.map(q=>[q.x,q.z,q.vx,q.vz,q.oriz,q.phase,q.act?.t])});
     const fermo=snapshot();step(10);need(congelato&&H.replay.trattieniMondoReplay()&&snapshot()===fermo,'replay: mondo e assetto restano congelati');
-    return {primaFallo,immediato,dopoFallo,movimentoCompagno,movimentoUmano,rientroSuFallo,deltaFaseFallo:dopoFallo.fase-fase,gestoAnnullato,countdown,rigore,esclusioneViva,spostamentoComparsa,faseComparsaViva,recuperoGol,replayCongelato:congelato};
+    return {primaFallo,immediato,dopoFallo,movimentoCompagno,movimentoUmano,rientroSuFallo,rientroSenzaPalla,deltaFaseFallo:dopoFallo.fase-fase,gestoAnnullato,countdown,rigore,esclusioneViva,spostamentoComparsa,faseComparsaViva,recuperoGol,replayCongelato:congelato};
   },{prima,sorgenti:!dist});
   assert.deepEqual(errori,[],'nessun errore JavaScript');
   if(arg('json'))fs.writeFileSync(arg('json'),JSON.stringify(misure,null,2));

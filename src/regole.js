@@ -474,5 +474,7 @@ export function falloSenzaPalla(a,d,dettaglio){
   chiudiAzione('falloAttacco'); whistle(0.22); registraFallo(a.team);
   annuncia('fallo','Fallo in attacco',{p:a,dettaglio});
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.y=BRV;
-  deadBall(0.9,()=>{ const r=closestTo(d.team,ball)||d; giveBall(r); r.freeThrow=true; });
+  const r=closestTo(d.team,ball)||d;
+  giveBall(r); r.freeThrow=true;
+  deadBall(0.9,null,[a,d]);
 }
