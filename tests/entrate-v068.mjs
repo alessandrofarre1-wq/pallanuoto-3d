@@ -112,8 +112,16 @@ try{
     }
     // D: la larghezza da sola non fa partire un taglio; testa avanti e difensore distratto sì.
     for(const dir of [1,-1])for(const davanti of [false,true]){
-      const {t}=setup(dir),p=t.players[2],d=E.difensoreEntrata(p);hold(t.players[5]);d.x=p.x+(davanti?-1.1:.4)*dir;d.z=p.z;d.fx=-dir;d.fz=0;
+      const {t}=setup(dir),p=t.players[2],d=E.difensoreEntrata(p);put(p,2.6,5.2);hold(t.players[5]);d.x=p.x+(davanti?-1.1:.4)*dir;d.z=p.z;d.fx=-dir;d.fz=0;
       E.aggiornaEntrate(t);risultati[(davanti?'mezzaSi':'mezzaNo')+(dir===1?'':'Specchio')]={taglio:p.cut?.tipo??null,metri:p.cut?Math.hypot(p.cut.x-p.x,p.cut.z-p.z):0};
+    }
+    for(const dir of [1,-1]){
+      const {t}=setup(dir),p=t.players[2],d=E.difensoreEntrata(p);hold(t.players[5]);d.x=p.x-dir*1.1;d.z=p.z;d.fx=-dir;d.fz=0;
+      E.aggiornaEntrate(t);risultati['mezzaLarga'+dir]={taglio:p.cut?.tipo??null};
+    }
+    for(const dir of [1,-1]){
+      const {t}=setup(dir),p=t.players[2],d=E.difensoreEntrata(p);put(p,2.6,5.7);hold(t.players[5]);d.x=p.x-dir*1.1;d.z=p.z;d.fx=-dir;d.fz=0;
+      E.aggiornaEntrate(t);risultati['mezzaBordo'+dir]={taglio:p.cut?.tipo??null};
     }
     for(const dir of [1,-1]){
       const {t}=setup(dir),p=t.players[2],d=E.difensoreEntrata(p);put(p,2.35,1.7);hold(t.players[5]);d.x=p.x-dir*1.1;d.z=p.z;d.fx=-dir;d.fz=0;
@@ -183,6 +191,8 @@ try{
   assert.equal(r.mezzaNoSpecchio.taglio,null);assert.equal(r.mezzaSiSpecchio.taglio,'D');
   assert.ok(r.mezzaSi.metri<=1.40001&&r.mezzaSi.metri>.6&&r.mezzaSiSpecchio.metri<=1.40001&&r.mezzaSiSpecchio.metri>.6,'mezza entrata breve, non taglio intero al palo');
   for(const dir of [1,-1])assert.equal(r['mezzaGiaArrivato'+dir].taglio,null,'niente entrata senza spostamento utile');
+  for(const dir of [1,-1])assert.equal(r['mezzaLarga'+dir].taglio,null,'dall’ala larga lo scatto breve non apre una ricezione: si conserva la circolazione');
+  for(const dir of [1,-1])assert.equal(r['mezzaBordo'+dir].taglio,null,'margine reale di arresto: il taglio non si esaurisce appena fuori dalla finestra di ricezione');
   assert.deepEqual(r.mano,{debole:false,mancina:true,abile:true});
   for(const dir of [1,-1]){const x=r['mismatch'+dir];assert.ok(x.partito&&x.centro&&x.attesa&&x.uscita&&x.boaDentro&&x.forteSegue&&x.deboleSuBoa&&x.schema&&x.identita,'rotazione vera boa e identità/accoppiamenti '+dir);assert.ok(x.massimo<.1);}
   for(const dir of [1,-1]){const x=r['preset'+dir];assert.equal(x.nome,'Falso centro');assert.ok(Object.entries(x).filter(([k])=>k!=='nome').every(([,v])=>v),'preset da lavagna, rotazione umana e primo accoppiamento persistente '+dir);}

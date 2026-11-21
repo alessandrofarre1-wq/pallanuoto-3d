@@ -1,38 +1,30 @@
-# Passaggio WATERPOLO 7 — v0.68
+# Passaggio WATERPOLO 7 — v0.68 chiusa
 
-Repository `alessandrofarre1-wq/pallanuoto-3d`, branch `codex/v068-difesa-entrate-arena`, base main `c11f93d` (PR #58, v0.67 di Claude). Versione `0.68.0`. Prima di proseguire riallinea main, PR recenti, CI, questo branch e diff locale. L'archivio v0.49/v0.50 sotto non è il punto da cui ripartire.
+Repository `alessandrofarre1-wq/pallanuoto-3d`, branch `codex/v068-difesa-entrate-arena`, PR59, base main `c11f93d` (v0.67/PR58). Prima di proseguire controlla main/PR/CI e diff: preserva il lavoro di entrambi gli agenti. Versione0.68.0. Nessun merge/deploy fatto da Codex.
 
-Leggi [CLAUDE.md](../CLAUDE.md), [rapporto v0.68](versioni/v068-cambi-entrate-arena.md), [decisioni cambiate](decisioni-superate.md) e [misure con provenienza](verifiche/v068/). Esiti della CI sull'ultimo SHA e stato del campione e della consegna sono nella descrizione della PR v0.68; controllarli prima di dichiarare pronto un seguito. Nessun merge/deploy eseguito da Codex.
+Leggi [CLAUDE.md](../CLAUDE.md), [rapporto](versioni/v068-cambi-entrate-arena.md), [decisioni](decisioni-superate.md), [misure/hash](verifiche/v068/), [quattro stati della mezza entrata](immagini/v068-mezza-entrata.md). Il vecchio archivio v0.49/v0.50 sotto non è un punto di ripartenza. Stato e CI dell'ultimo SHA: https://github.com/alessandrofarre1-wq/pallanuoto-3d/pull/59/checks . La bozza iniziale3a8984b aveva CI verde; non confonderla col commit finale.
 
-## Implementato
+## Concluso
 
-- Cambio volante avversario: il marcatore copre temporaneamente palla-centroboa/porta, senza inseguire l'uscente al bordo; due coperture si dividono gli spazi. Riprende il sostituto quando entra nella zona d'attacco, entro 10,5 m dalla porta. Pressing/zona e controllo umano conservati.
-- Entrate A/B/C: 3→2 e taglio verso 5; specchio 3→4 e taglio verso 1 con mano/abilità adatte; 2 al palo. Taglio al rilascio effettivo. L'appoggio legge entrante pronto, ala salita a 3,25 m sulla chiusura del suo difensore, oppure circolazione. Mezze entrate 1/5 richiedono testa davanti e marcatore vicino poco attento. Nessuna sanzione o rete garantita.
-- L'innesco A/B/C richiede 6 s di possesso e due passaggi; mezza D con obiettivo max1,4m e almeno0,6m utile; non interrompe la controfuga organizzata. Dopo un fallo recente può partire subito sul passaggio. Cooldown automatico 12 s, comandi manuali conservati. Il primo candidato partiva troppo presto: sui due semi di controllo 20,75 gol per squadra contro 13,75 della v0.67. Non riattivare quell'innesco precoce.
-- Identità, calotta, mano e specialità separate dal posto tattico. Occupanti e consegne persistono durante il gioco vivo; rientri dalle posizioni raggiunte. Quando le regole ricollocano le squadre dopo gol/time-out o a inizio tempo, si ricostruiscono mappe e riferimenti, pulendo anche la memoria dell'entrante. Nessun reset sui recuperi vivi.
-- Preset **Falso centro**: non specialista esce, boa vera attende il corridoio e subentra; difesa può consegnare o aiutare temporaneamente a M/raddoppio. Centro effettivo usato da lotta, fisica, zona e statistiche. HUD con posto attuale distinto dal numero di calotta.
-- Rimossa la correzione istantanea degli NPC sotto i 2 m: tornano nuotando. Sguardo del tagliante verso il portatore solo visuale, direzione fisica coerente.
-- Arena: sedute, pensilina, corrimani, panchine/attrezzature, tavolo e ufficiali 3D, pontoni/supporti/rete e rulli. Sei mesh statiche, atlante 1024²; CPU 8.084→8.296 triangoli. Nessun modello/controllo/camera/acqua sostituito.
+- Difensore durante cambio avversario: copertura utile, rientro alla marcatura quando il sostituto torna minaccioso; schema e controllo umano conservati.25scene PASS,0s oltre metà contro46,85s prima.
+- Entrate reattive A/B/C dopo6s/2passaggi (eccezione fallo, controfuga conservata); mezze D opportunistiche, posti distinti da atleti e accoppiamenti, scalate/rientri nuotati. Preset Falso centro e lettura difensiva. Niente gol/rigori garantiti o reset sui recuperi vivi. Reset solo nelle ricollocazioni effettive delle regole.
+- D ora parte solo se lo scatto legale0,6–1,4m apre la finestra entro5m con20cm di margine d'arresto; rinuncia dall'ala larga e al bordo irraggiungibile. Compagno esterno nei propri spazi, senza convergere sul punto. Quattro scene reali nei due versi e con manoD/S: servizio0,700s, presa1,033s, tiro1,483s; passo massimo4,83cm. Due rinunce,18scene precedenti,8reset e2qualifiche PASS. Non abbassare questi assert.
+- Arena più dettagliata: sedute/pensilina/attrezzature/ufficiali3D/supporti/rete, sempre6mesh/1024²,8296tri CPU. Camera/acqua/corpi/controlli/logoC conservati. Resa incrementale, da giudicare con Ale.
 
-## Verifiche da conservare
+## Misure e verifiche finali
 
-- Primo giro completo40PASS/1FAIL immagini su41, sei gare78gol/233tiri: precedente ai fix finali, non attribuirlo al codice finale.
-- Dopo i fix14/14 mirate PASS; dopo ultimo limite D6/6 PASS (lint, entrate, integrazione, nuoto coerente, gioco fermo, replay).25scene difesa ripetute PASS.
-- Aspetto finale completo PASS: gambe0/7513,0/4840,0/1129; iPhone56/142116. Arena con due cambi64/148852, replay49/146682.
-- PR DRAFT: CI in corso/da consultare nella PR, non dichiararla pronta al merge.
-- Otto partite prima della mezza corta:16,875gol,39,31tiri per squadra,38,15%gol da entrata,6/15voci in fascia. Bilancio dopo ultimo limite1,4m NON completato. D ora richiede anche0,6m di spostamento utile.
-- Punto concreto da verificare: ala a6,2m, mezza1,4m, `entrataPronta` richiede distanza porta<=5m; il target può rimanere fuori finestra. Risolvere con prova di ricezione/tiro reale prima di tarare8/16gare. Non allargare soglie senza verificare il comportamento.
+- Campione finale8gare480s ITA-HUN: 14,56 gol / 35,44 tiri per squadra; conversione 41,09%, superiorità 48,28%, rigori 1,62; 13/15 voci in fascia; entrate19,31%dei gol. Italia10,38, Ungheria18,75; nessuna equivalenza di forza implicita. Semi e hash in `bilancio-finale.json`.
+- Distinguere il vecchio candidato con mezze lunghe16,875gol/39,31tiri (6/15voci), la prima PR59 giàD1,4m13,8125gol/35,5625tiri (10/15) e la chiusura finale. I problemi di ricezione e campione mancante della prima bozza NON sono più da rifare.
+- Lint/gameplay/tattica/difesa/area5/5 PASS; entrate isolate e integrazione PASS. Aspetto completo PASS: gambe0/7123,0/5180,0/1179; iPhone56/142116. Verifica immagini `--partite=0` PASS dopo ispezione/riferimenti; sei partite e intera CI sul commit pubblicato, esito nella PR.
+- Budget iPhone prove arena: due cambi64/148852, replay49/146682,14corpi completi. Non FPS di iPhone fisico. Le misure storiche conservano gli hash della fase in cui furono registrate.
 
-I filmati sono verifiche: quello del cambio parte da una scena preparata (portatore comandato senza tiri, caso 0,5), poi usa il motore reale per 24 s e viene accelerato 3×. Quello dell'entrata cerca una vera azione CPU, senza imporre passaggi o posizioni; cerchi/etichette sono solo annotazioni del filmato. Non sono misure degli FPS di un iPhone fisico né prova di naturalezza professionale. Vedi rapporto e metadati.
+## Eventuale lavoro successivo, da concordare
 
-## Da continuare con Ale / Claude
+1. Restano 66,81azioni per squadra e durata parità14,66s: problemi globali già noti. Non iniziare nuove tarature o funzionalità senza una richiesta.
+2. La CPU legge un falso centro disposto o nato in gioco e il preset è disponibile; non costruisce tutta la preparazione autonoma da un piano neutro.
+3. Ale deve provare su iPhone e giudicare naturalezza, frequenza delle entrate e arte dell'arena. Nessuna certificazione di qualità professionale.
 
-1. Completare e valutare il campione di otto partite sul codice finale e la frequenza delle entrate giocando. Conservare circolazione e ripartenze di Claude; non compensare un problema di scelta tattica alterando alla cieca precisione/potenza. La taratura non è dichiarata conclusa dai test geometrici.
-2. La CPU riconosce un falso centro già disposto o nato dai movimenti, ma **non costruisce autonomamente la preparazione da un piano ordinario**. Il preset è disponibile al giocatore. Se completi la preparazione, conserva mano/specialità, tempi e lettura difensiva; nessun esito garantito.
-3. Restano i problemi v0.67 di durata delle azioni, superiorità, fatica da contatto e riferimento reale dei falli. Non sono automaticamente risolti dalla v0.68.
-4. Ale deve giudicare la resa artistica dell'arena e la naturalezza in partita. Il dettaglio è migliorato in modo incrementale; per il livello professionale serve ancora una valutazione artistica, non altre sole misure geometriche.
-
-Se la PR v0.68 non è unita, prosegui dal suo branch senza duplicarla. Se è unita, parti da main aggiornato e alza la versione della nuova PR. Preserva tutto il lavoro successivo di Claude. Limiti iPhone sempre <100 chiamate e <150.000 triangoli anche con due cambi/replay, 14 corpi completi; nessuna deroga. Una sola istanza Chromium pesante per volta. Browser locale: `PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers`. Non aggiungere prove delle espressioni facciali senza richiesta di Ale.
+Se PR59 è già unita, usa main aggiornato e una nuova versione; altrimenti preserva il branch. Limiti sempre <100calls/<150000tri anche due cambi/replay,14corpi. Una sola istanza Chromium pesante; browser `PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers`. Nessuna prova espressioni facciali senza richiesta di Ale.
 
 ---
 

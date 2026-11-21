@@ -1,0 +1,105 @@
+{
+  "provenienza": {
+    "commit": "3a8984b7b3272a5778f77bc40161fe6eb2307a30",
+    "partite": 8,
+    "nota": "PR59 iniziale, D gia limitata a1.4m, prima della qualificazione endpoint/margine e della correzione copertura D.",
+    "comando": "npm run taratura -- --partite=8 --paralleli=3 --dist=<build 3a8984b>"
+  },
+  "misure": {
+    "partite": 8,
+    "tempo": 480,
+    "gol": 13.8125,
+    "tiri": 35.5625,
+    "conversione": 38.840070298769774,
+    "inPorta": 76.97715289982425,
+    "parate": 13.5625,
+    "espulsioni": 10.0625,
+    "espCentro": 60.24844720496895,
+    "espFuga": 3.1055900621118013,
+    "superiorita": 10.0625,
+    "superioritaTrasformate": 43.47826086956522,
+    "rigori": 2.625,
+    "rigoriSegnati": 59.523809523809526,
+    "palleRubate": 3.375,
+    "falli": 32.75,
+    "intercetti": 7.8125,
+    "tiriLontani": 0.1875,
+    "golLontani": 0,
+    "tiriSoli": 3.3125,
+    "golCostruiti": 99.09502262443439,
+    "passaggiGol": 13.122171945701357,
+    "timeout": 1.3125,
+    "golTipo": {
+      "perimetro": 25.79185520361991,
+      "superiorita": 31.67420814479638,
+      "controfuga": 0,
+      "entrata": 18.552036199095024,
+      "centroboa": 12.669683257918551,
+      "rigore": 11.312217194570136
+    },
+    "vittorie": [
+      0,
+      8
+    ],
+    "nomi": [
+      "Italia",
+      "Ungheria"
+    ],
+    "golPerSquadra": [
+      9.375,
+      18.25
+    ],
+    "espulsioniPerSquadra": [
+      12.75,
+      7.375
+    ],
+    "azioni": {
+      "parita": {
+        "perPartita": 55.125,
+        "quota": 82.66166822867854,
+        "durata": 14.4744331065471,
+        "gol": 16.213151927437643,
+        "tiro": 30.045351473922903,
+        "persa": 15.873015873015873,
+        "falloAttacco": 13.151927437641723,
+        "espulsione": 17.573696145124718,
+        "rigore": 4.648526077097506,
+        "tempo": 2.494331065759637
+      },
+      "controfuga": {
+        "perPartita": 0.8125,
+        "quota": 1.218369259606373,
+        "durata": 8.615384615347816,
+        "gol": 38.46153846153846,
+        "tiro": 53.84615384615385,
+        "persa": 7.6923076923076925,
+        "falloAttacco": 0,
+        "espulsione": 0,
+        "rigore": 0,
+        "tempo": 0
+      },
+      "superiorita": {
+        "perPartita": 10.75,
+        "quota": 16.119962511715087,
+        "durata": 10.265310077495174,
+        "gol": 42.44186046511628,
+        "tiro": 44.18604651162791,
+        "persa": 5.813953488372093,
+        "falloAttacco": 1.744186046511628,
+        "espulsione": 2.9069767441860463,
+        "rigore": 0.5813953488372093,
+        "tempo": 2.3255813953488373
+      }
+    },
+    "azioniTotali": 66.6875,
+    "difese": [
+      0,
+      23.63681695098593,
+      67.91038759190761,
+      8.452795457106467
+    ],
+    "pallaSola": 0.03333333333333333,
+    "pallaVagante": 5.05,
+    "manoPassaggio": 1.024270557027076
+  }
+}

@@ -69,14 +69,11 @@ export function preparaEntrata(p,passabile){
   t.preparaEntrata={...scelta,p,fino:game.time+0.7,possT:game.possT};return scelta.m;
 }
 function scambia(t,a,b){const f=posti(t),ia=f.indexOf(a),ib=f.indexOf(b);if(ia>0&&ib>0)[f[ia],f[ib]]=[f[ib],f[ia]];}
-function inizia(p,tipo,appoggio,side){
+function inizia(p,tipo,appoggio,side,arrivo=null){
   const t=p.team,gx=goalX(t),ala=occupanteAttacco(t,side<0?3:2),esterno=occupanteAttacco(t,side<0?5:4);
   const c={coordinata:true,tipo,t0:game.time,phase:0,tratto:tipo==='A'||tipo==='B'?0:1,
     x:gx-t.dir*E.fondo,z:side*E.palo*t.dir,guarda:appoggio};
-  if(tipo==='D'){
-    const dx=c.x-p.x,dz=c.z-p.z,l=Math.hypot(dx,dz);
-    if(l>E.mezzaMetri){c.x=p.x+dx/l*E.mezzaMetri;c.z=p.z+dz/l*E.mezzaMetri;}
-  }
+  if(arrivo){c.x=arrivo.x;c.z=arrivo.z;}
   p.cut=c;p.cutT=game.time;t.copertura=null;t.blocco=null;t.entrataDopo=game.time+ENTRATA.ogni;
   t.entrataAzione={tipo,entrante:p,appoggio,ala,esterno,side,t0:game.time,possT:game.possT,allargata:false};
   if(tipo==='A'||tipo==='B'){
@@ -98,8 +95,13 @@ function mezzaEntrata(t){
     // Essere semplicemente largo non basta: testa già davanti e difensore che non segue.
     if(testa<E.testa||!(d.stunUntil>game.time||verso<-0.2||Math.hypot(d.vx||0,d.vz||0)<0.18&&testa>1.05))continue;
     const side=i===2?1:-1;
-    if(Math.hypot(goalX(t)-t.dir*E.fondo-p.x,side*E.palo*t.dir-p.z)<E.mezzaMin)continue;
-    inizia(p,'D',ball.holder,side);return;
+    const gx=goalX(t),dx=gx-t.dir*E.fondo-p.x,dz=side*E.palo*t.dir-p.z,l=Math.hypot(dx,dz);
+    if(l<E.mezzaMin)continue;
+    const s=Math.min(1,E.mezzaMetri/l),arrivo=limiteAreaEntrata(p,p.x+dx*s,p.z+dz*s),metri=Math.hypot(arrivo.x-p.x,arrivo.z-p.z);
+    // Uno scatto breve deve offrire un punto di ricezione raggiungibile: dall'ala
+    // ancora larga si continua a circolare, senza un taglio sterile o più lungo.
+    if(metri<E.mezzaMin||metri>E.mezzaMetri+1e-6||Math.hypot(gx-arrivo.x,arrivo.z)>ENTRATA.vicino-E.mezzaMargine)continue;
+    inizia(p,'D',ball.holder,side,arrivo);return;
   }
 }
 function ruotaCentro(t){
@@ -162,7 +164,7 @@ export function targetEntrata(p){
       const d=a.allargata?E.alaSale:4.7,z=a.side*(a.allargata?3.1:5.5)*t.dir;
       return {x:gx-t.dir*d,z,sprint:Math.hypot(gx-t.dir*d-p.x,z-p.z)>1.6};
     }
-    if(p===a.esterno&&p!==a.entrante&&p!==a.appoggio)return {x:gx-t.dir*7.4,z:0,sprint:false};
+    if(a.tipo!=='D'&&p===a.esterno&&p!==a.entrante&&p!==a.appoggio)return {x:gx-t.dir*7.4,z:0,sprint:false};
     if(p===a.entrante&&ball.holder===p)return {x:p.x,z:p.z};
   }
   if(r){

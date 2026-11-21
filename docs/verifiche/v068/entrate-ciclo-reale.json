@@ -2,10 +2,11 @@
   "provenienza": {
     "base": "c11f93d2a0cc79af67f66d04ebc624f4cd964172",
     "versione": "0.68.0",
+    "fase": "Chiusura 21 novembre: endpoint D legale con margine 20cm e compagni nei propri spazi",
     "sha256_produzione": {
       "src/centroboa.js": "4fd5728ba95eaeda06a65e7f1a7c4f86bea023a0e9cc105a930e7faf92fd73f4",
       "src/difesa-cambi.js": "a622d8f76e8065fb92dcc01089b3170742da1bc0ec6c7beecaca671c8e243567",
-      "src/entrate.js": "78716bc148931d1a6aca46a32913647c37fb7946c2e659b183c61c366309245f",
+      "src/entrate.js": "8eeb169a224e28cda9ed630a46fd6950070136c8ccc76f7ef7c9a253864af8b9",
       "src/fisica.js": "6236d062d934147b88285a55b50f17439ffb71a2b8111e53ee8622c4059bf5d6",
       "src/grafica/arena.js": "bcd2f0a3476df8d05013d72314c9189941bcdccaab7a534471ba74aa0ba3f59f",
       "src/grafica/pose.js": "855664c785b8d53bcc04eb0c0fca218059beca0cc60196714fb2fc22d1b96b65",
@@ -18,7 +19,7 @@
       "src/regole.js": "e1b5e37c0582e2f27e1e128154d40130e4872260baf5f7be79213e7cf172350e",
       "src/schemi.js": "8381fe8cea32bf3e01d558504987eef5c9578b170ec0302570d629cdba40a274",
       "src/statistiche.js": "fd8f4d3f62c8bf9e63c40a31cec45e50e0fc81d88e06756c435cbd2136918144",
-      "src/taratura.js": "aa41576f941230a29375b3e7c47a9c4410dd491cd22acec0b813823e61387806",
+      "src/taratura.js": "16ef3c3c612ce70e16b124b7c1e66c2ec90c6865b26c6450c41a509560a82c0f",
       "src/tiri.js": "c2cead5e88db50f6cb1537acd628a6f14ad699a8da2e844fadfa326ab48f01d5"
     }
   },
@@ -1062,6 +1063,144 @@
             3.7128637741575377
           ]
         }
+      }
+    ],
+    "mezze": [
+      {
+        "dir": 1,
+        "mano": "D",
+        "taglio": true,
+        "metriTarget": 1.4,
+        "distanzaTarget": 4.551738437844658,
+        "palmoReale": true,
+        "passaggioAutonomo": true,
+        "ricezione": true,
+        "tiro": true,
+        "scarico": false,
+        "prontaAllaScelta": true,
+        "esternoLaterale": 4.309108055267948,
+        "maxPasso": 0.048273615310092985,
+        "nuotoD": 1.3120840307865376,
+        "passaggi": [
+          {
+            "tipo": "pass",
+            "da": 6,
+            "a": 2,
+            "t": 0.7
+          },
+          {
+            "tipo": "shot",
+            "da": 2,
+            "t": 1.483
+          }
+        ],
+        "stato": "play",
+        "metri": 1.4321931590226318
+      },
+      {
+        "dir": 1,
+        "mano": "S",
+        "taglio": true,
+        "metriTarget": 1.4,
+        "distanzaTarget": 4.551738437844658,
+        "palmoReale": true,
+        "passaggioAutonomo": true,
+        "ricezione": true,
+        "tiro": true,
+        "scarico": false,
+        "prontaAllaScelta": true,
+        "esternoLaterale": 4.250095060837784,
+        "maxPasso": 0.0482735581703347,
+        "nuotoD": 1.3122705357924256,
+        "passaggi": [
+          {
+            "tipo": "pass",
+            "da": 6,
+            "a": 2,
+            "t": 0.7
+          },
+          {
+            "tipo": "shot",
+            "da": 2,
+            "t": 1.483
+          }
+        ],
+        "stato": "play",
+        "metri": 1.4326862888489194
+      },
+      {
+        "dir": -1,
+        "mano": "D",
+        "taglio": true,
+        "metriTarget": 1.4,
+        "distanzaTarget": 4.551738437844658,
+        "palmoReale": true,
+        "passaggioAutonomo": true,
+        "ricezione": true,
+        "tiro": true,
+        "scarico": false,
+        "prontaAllaScelta": true,
+        "esternoLaterale": 4.899645391452124,
+        "maxPasso": 0.04827394339553325,
+        "nuotoD": 1.3131707609559378,
+        "passaggi": [
+          {
+            "tipo": "pass",
+            "da": 6,
+            "a": 2,
+            "t": 0.7
+          },
+          {
+            "tipo": "shot",
+            "da": 2,
+            "t": 1.483
+          }
+        ],
+        "stato": "play",
+        "metri": 1.3828880771221919
+      },
+      {
+        "dir": -1,
+        "mano": "S",
+        "taglio": true,
+        "metriTarget": 1.4,
+        "distanzaTarget": 4.551738437844658,
+        "palmoReale": true,
+        "passaggioAutonomo": true,
+        "ricezione": true,
+        "tiro": true,
+        "scarico": false,
+        "prontaAllaScelta": true,
+        "esternoLaterale": 4.755808960423428,
+        "maxPasso": 0.04827382625487982,
+        "nuotoD": 1.3128662769948738,
+        "passaggi": [
+          {
+            "tipo": "pass",
+            "da": 6,
+            "a": 2,
+            "t": 0.7
+          },
+          {
+            "tipo": "shot",
+            "da": 2,
+            "t": 1.483
+          }
+        ],
+        "stato": "play",
+        "metri": 1.3819347399785062
+      }
+    ],
+    "mezzeChiuse": [
+      {
+        "motivo": "ala-larga",
+        "partenza": false,
+        "maxPasso": 0.012286321009253134
+      },
+      {
+        "motivo": "difensore-davanti",
+        "partenza": false,
+        "maxPasso": 0.012155728651128862
       }
     ],
     "qualifiche": [

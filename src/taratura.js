@@ -77,7 +77,9 @@ export const ENTRATE_REATTIVE={ pressing:1.55, attacco:8.5, appoggio:6.8, fondo:
   diagonale:4.6, corridoio:2.7, alaSale:3.25, stringe:2.05, testa:0.65, manoAbile:84,
   durata:6.4, attesaAppoggio:2.8, centro:4.3, difensoreForte:80, divario:8,
   // Una risposta alla circolazione contro pressing, senza interrompere la ripartenza al primo tocco.
-  circolazione:6, passaggi:2, mezzaMetri:1.4, mezzaMin:0.6 };
+  // Margine per arresto/arrivo: il corpo si ferma poco prima dell'obiettivo (12 cm),
+  // senza restare appena fuori dai 5 m richiesti per decidere il passaggio.
+  circolazione:6, passaggi:2, mezzaMetri:1.4, mezzaMin:0.6, mezzaMargine:0.2 };
 
 // ---------- PASSAGGI, INTERCETTI E PALLE PERSE (fisica.js, tiri.js) ----------
 // INTERCETTO: probabilità che un difensore sulla linea legga il passaggio (base, più «lungo» per i passaggi che volano a lungo).

@@ -17,3 +17,5 @@ stampa gioco contro realtà).
 
 Regola per i nuovi documenti: il rapporto di una versione va in `versioni/vXXX-argomento.md`; una conoscenza da riusare va in
 `riferimenti/`; una proposta da approvare va in `proposte/`.
+
+Chiusura v0.68: [ricezione della mezza entrata in quattro momenti](immagini/v068-mezza-entrata.md), [campione finale con semi e hash](verifiche/v068/bilancio-finale.json).

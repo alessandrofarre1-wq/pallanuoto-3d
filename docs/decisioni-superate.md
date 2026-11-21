@@ -4,6 +4,7 @@ Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le r
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
 ## v0.68
+- Chiusura21/11: mezza D avviata anche se lo scatto finisce fuori dalla ricezione → endpoint legale entro4,8m, margine20cm sotto la soglia5m, sempre0,6–1,4m; esterno sul punto anche senza rotazione → conserva lo spazio laterale. Nessun aumento di precisione/potenza o modifica della soglia di ricezione.
 - Difensore che segue l’uscente e poi l’entrante fino al bordo → copertura temporanea palla-centro/porta finché il sostituto torna in zona d’attacco; schema selezionato conservato.
 - Posto d’attacco legato all’indice del giocatore → occupanti per posto distinti da identità, calotta, mano e specialità; coperture e rientri dalle coordinate reali.
 - Cambio di marcatura che scade dopo5s → accoppiamento conservato nel gioco vivo finché una consegna successiva lo modifica. Nei riposizionamenti già previsti dopo gol/time-out o a inizio tempo, mappe e riferimenti vengono ricostruiti; i recuperi vivi non li resettano. Il marcatore specialista prende il centro effettivo.
