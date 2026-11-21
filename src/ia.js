@@ -1,7 +1,7 @@
 // ================= IA =================
 import { azioneAperta, difensoriDavanti } from './statistiche.js';
 import { ARBITRO, DEF_DOWN, FORM, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp, dist, rnd } from './costanti.js';
-import { anticipoTarget, centroTarget, leggiCentro } from './centroboa.js';
+import { anticipoTarget, boaFrontePorta, centroTarget, leggiCentro } from './centroboa.js';
 import { numeroPosizione, schemaSquadra } from './schemi.js';
 import { coperturaCambio } from './difesa-cambi.js';
 import { aggiornaEntrate, attesaEntrata, centroAttacco, destinatarioEntrata, postoAttacco, preparaEntrata, ricezioneAla, targetEntrata } from './entrate.js';
@@ -731,6 +731,12 @@ export function aiCarrier(p,dt){
   const dGoal=Math.hypot(gx-p.x,p.z);
   p.target={x:slot.x+t.dir*0.8, z:slot.z, sprint: Math.abs(p.x-slot.x)>6};
   if(p.act&&!p.act.done) return;
+  if(centroAttacco(t)===p&&boaFrontePorta(p)){
+    if(ball.holdTime>=.12&&!(p.pressatoUntil>game.time)){
+      p.motivoTiro='boa fronte porta';aiShoot(p,.75,false);
+    }
+    return;
+  }
   if(ball.holdTime>=0.18){
     const passabile=(a,m,taglio)=>!m.excluded&&!m.uscendo&&(!taglio||entrataPronta(m))&&
       laneClear(a,m.x,m.z,t,0.55)&&passLaneRisk(a,m)<0.25&&openness(m)>1.1;

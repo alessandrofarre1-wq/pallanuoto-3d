@@ -9,13 +9,17 @@ import { inp } from './input.js';
 import { ESPULSIONI, deadBall, exclude, foul, giveBall, tackle } from './regole.js';
 import { ball, ctrl, fight, game, goalX, other } from './stato.js';
 import { bestPassTarget } from './tiri.js';
-import { avviaGirata, difensoreCentro, leggiCentro } from './centroboa.js';
+import { avviaGirata, boaFrontePorta, difensoreCentro, leggiCentro } from './centroboa.js';
 import { centroAttacco } from './entrate.js';
 import { azioneAperta, chiudiAzione } from './statistiche.js';
 import { CENTRO_SENZA_PALLA, LOTTA_FASE, LOTTA_PALLA } from './taratura.js';      // numeri del bilanciamento
 export { CENTRO_SENZA_PALLA, LOTTA_FASE, LOTTA_PALLA };
 export const boaDef = t => difensoreCentro(centroAttacco(t));
-export function fightOn(a,b){ return fight.active && ((fight.boa===a&&fight.def===b)||(fight.boa===b&&fight.def===a)); }
+export function fightOn(a,b){
+  // Fronte porta il duello è diventato una normale occasione di tiro: il marcatore
+  // deve poter contrastare davvero, anche durante la preparazione del gesto.
+  return fight.active&&((fight.boa===a&&fight.def===b)||(fight.boa===b&&fight.def===a))&&!boaFrontePorta(fight.boa);
+}
 export function updateFight(dt){
   const at=game.possTeam;
   fight.active=false;
@@ -66,11 +70,14 @@ export function boaHold(b,d,dt){
   if(b.act) return;
   if(b.girata) return;
   if(b.turnedUntil>game.time&&leggiCentro(b,d,b).spalle) b.turnedUntil=0;
-  if(b.turnedUntil>game.time){
+  const fronte=boaFrontePorta(b);
+  if(fronte||b.turnedUntil>game.time){
     // La finestra nasce dall'aggiramento fisico. Il rigore richiede un contrasto effettivo,
     // con le condizioni regolamentari comuni, non l'esito casuale della girata.
     if(d===ctrl&&d.aggrT>game.time&&dist(b,d)<1.15){ tackle(d,b,{fallo:true,origine:'centro'});return; }
-    if(b!==ctrl&&!b.freeThrow){ b.motivoTiro='girata'; aiShoot(b,0.75,false); }
+    if(b!==ctrl&&!b.freeThrow&&b.pressatoUntil<=game.time&&(!fronte||ball.holdTime>=.12)){
+      b.motivoTiro=fronte?'boa fronte porta':'girata'; aiShoot(b,0.75,false);
+    }
     return;
   }
   const v=fight.v;
@@ -110,7 +117,9 @@ export function offFoul(b,titolo='Fallo in attacco',dettaglio='spinge il difenso
   const t=other(b.team);
   annuncia('fallo',titolo,{p:b,dettaglio});
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0; ball.y=BRV;
-  deadBall(0.9,()=>{ const r=boaDef(b.team)||closestTo(t,b); giveBall(r); r.freeThrow=true; });
+  const r=boaDef(b.team)||closestTo(t,b);
+  giveBall(r); r.freeThrow=true;
+  deadBall(0.9,null,[b,r]);
 }
 
 // due espulsi insieme: il centroboa e il suo marcatore (v0.45)

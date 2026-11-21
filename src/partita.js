@@ -8,7 +8,8 @@ import { aggiornaDifesa, aggiornaSchemi, pos01, rif01, aiCarrier, aiTarget, clos
 import { inp, pollInput, pressed, released } from './input.js';
 import { fightOn, updateFight } from './lotta.js';
 import { endMatch } from './menu.js';
-import { areaFoul, avviaRigoriFinali, callPlay, concludiRigoreFinale, contrasto, deadBall, giveBall, kickoff, latoContrasto, pallaEsposta, preparaProssimoRigoreFinale, reenter, tackle, timeout } from './regole.js';
+import { areaFoul, avviaRigoriFinali, callPlay, concludiRigoreFinale, contrasto, deadBall, giveBall, kickoff, latoContrasto, pallaEsposta, preparaProssimoRigoreFinale, reenter, risolviRigoreDifferito, tackle, timeout } from './regole.js';
+import { aggiornaScatto } from './espulsioni-tempi.js';
 import { aggiornaAzione, annullaAzione, chiudiAzione, difensoriDavanti } from './statistiche.js';
 import { allPlayers, ball, ctrl, game, goalX, other, setCtrl, teams } from './stato.js';
 import { doShoot, startAct, updateActs, updateRecuperi } from './tiri.js';
@@ -17,6 +18,56 @@ import { obiettivoEspulso, obiettivoRientro, recuperoPozzetto } from './pozzetto
 import { aggiornaGiocoFermo } from './gioco-fermo.js';
 import { CONTR_AI, PRESSING_CONSUMO } from './taratura.js';      // contrasto del computer (sezione 2) e fatica del pressing: numeri del bilanciamento
 export { CONTR_AI, PRESSING_CONSUMO };
+// Stessa risposta di nuoto e scivolamento nel gioco vivo e durante un tiro libero.
+function muoviVerso(p,tg,dt){
+  const dx=tg.x-p.x, dz=tg.z-p.z, d=Math.hypot(dx,dz);
+  let mx=0,mz=0; if(d>0.12){ const s=Math.min(1,d/0.8); mx=dx/d*s; mz=dz/d*s; }
+  if(d>1.0 && !tg.gk){ const st=steer(p,dx/d,dz/d,d); mx=st[0]; mz=st[1]; }
+  // Anticipa l'arresto soltanto per la breve distanza di frenata effettiva.
+  if(!tg.gk && !tg.sprint && d<Math.hypot(p.vx,p.vz)/8 && p.vx*dx+p.vz*dz>0){ mx=0; mz=0; }
+  // SCIVOLAMENTO IN VERTICALE (v0.53, richiesta di Ale): gli spostamenti brevi si fanno restando dritti con la bicicletta,
+  // in qualunque direzione, senza distendersi a crawl. Sotto 1,8 m si scivola, oltre 2,8 m si torna a nuotare (in mezzo resta la
+  // scelta di prima, così non si alterna a ogni fotogramma). Ampiezza 0,48: sotto la soglia del nuoto di movePlayer (0,5).
+  // chi difende su chi ha la palla non scivola: deve poter chiudere il tiro con la sua velocità piena
+  const suPortatore=ball.holder&&ball.holder.team!==p.team&&uomoDi(p)===ball.holder;
+  if(!tg.gk&&!tg.sprint&&!p.uscendo&&!p.excluded&&!suPortatore){
+    if(d<1.8) p.scivolaAI=true; else if(d>2.8) p.scivolaAI=false;
+    if(p.scivolaAI){ const k=Math.hypot(mx,mz); if(k>0.48){ mx*=0.48/k; mz*=0.48/k; } }
+  } else p.scivolaAI=false;
+  // v0.67: chi è lontano dal suo posto (oltre 4 m) scatta da solo, tranne nelle transizioni quando il posto dice «nuota» (SCATTI):
+  // prima la regola dei 4 m faceva scattare tutti in ripartenza e in rientro fino a stamina 0,35, la soglia dei cambi
+  const sprint = tg.gk ? false : ((tg.sprint && d>0.6) || (!tg.nuota && d>4 && p.stamina>0.35));
+  if(tg.gk){ // spostamento laterale del portiere: di posizione (lento o svelto secondo Posizione) oppure in tuffo (Riflessi); stanco è più lento
+    const fresco=0.75+0.25*p.stamina, sp=(tg.tuffo ? 1.6+2.2*rif01(p) : 1.1+1.3*pos01(p))*fresco; p.z+=clamp(tg.z-p.z,-sp*dt,sp*dt); mz=0;
+  }
+  movePlayer(p,mx,mz,sprint,dt);
+}
+
+function aggiornaMovimentiSuFallo(dt){
+  const fermi=new Set(game.fermoFallo);
+  aggiornaGiocoFermo(dt,false,game.fermoFallo);
+  for(const p of allPlayers){
+    if(fermi.has(p))continue;
+    if(p.excluded){
+      const tg=obiettivoEspulso(p);
+      if(tg)muoviVerso(p,tg,dt);
+      else {movePlayer(p,0,0,false,dt);recuperoPozzetto(p,dt);}
+      // Il pozzetto resta raggiungibile, ma la sanzione usa solo tempo effettivo.
+      continue;
+    }
+    if(p===ctrl){
+      const g=aiutoGuida(p,inp.x,inp.z);movePlayer(p,g[0],g[1],inp.sprint,dt);continue;
+    }
+    // Niente contrasti, passaggi o tiri nuovi prima della ripresa: continuano solo
+    // il taglio/appoggio/rientro e la risposta alla nuova squadra in possesso.
+    let tg=aiTarget(p);
+    if(p.uscendo&&ball.holder!==p)tg=obiettivoUscita(p);
+    tg=obiettivoRientro(p)||tg;
+    if(tg)muoviVerso(p,tg,dt);else movePlayer(p,0,0,false,dt);
+  }
+  separate(fermi);
+}
+
 export function aggiornaRigoriFinali(dt){
   const serie=game.rigoriFinali;
   if(serie.fase==='attesa'){
@@ -54,6 +105,7 @@ export function aggiornaRigoriFinali(dt){
 export function update(dt){
   pollInput();
   if(game.state==='menu'||game.state==='paused') return;
+  risolviRigoreDifferito();
   if(game.state==='over'){ aggiornaGiocoFermo(dt); return; }
   if(game.rigoriFinali){ aggiornaRigoriFinali(dt); return; }
   if(game.state==='countdown'){
@@ -66,12 +118,12 @@ export function update(dt){
     return;
   }
   if(game.state==='stop'){
-    aggiornaGiocoFermo(dt);
+    if(game.fermoFallo?.length)aggiornaMovimentiSuFallo(dt);else aggiornaGiocoFermo(dt);
     if(ball.inRete) updateRecuperi(dt);
     aggiornaPanchina(dt,!!game.cambiLiberi);      // dopo un gol o nel time-out i cambi si fanno subito; su un fallo il cambio volante continua
     if(ball.state==='dead') updateBall(dt);
     game.timer-=dt;
-    if(game.timer<=0){ const f=game.after; game.after=null; game.state='play'; game.cambiLiberi=false; if(f) f(); }
+    if(game.timer<=0){ const f=game.after; game.after=null; game.fermoFallo=null; game.state='play'; game.cambiLiberi=false; if(f) f(); }
     return;
   }
   // --- gioco attivo ---
@@ -97,7 +149,7 @@ export function update(dt){
       return;
     }
   }
-  game.clock-=dt;
+  if(!aggiornaScatto(dt))game.clock=Math.max(0,game.clock-dt);
   if(game.possTeam && !ball.afterShot) game.shot-=dt;     // dopo un tiro respinto il cronometro riparte solo quando qualcuno riprende palla
   if(pressed('to')) { timeout(teams[0]); if(game.state!=='play') return; }
   // rientro espulsi
@@ -146,27 +198,7 @@ export function update(dt){
       if(qd<2&&Math.abs(p.z)<GW+2&&qd<bd-0.3) tg={x:gx-p.team.dir*2.15,z:p.z,sprint:true};
     }
     if(!tg){ movePlayer(p,0,0,false,dt); continue; }
-    const dx=tg.x-p.x, dz=tg.z-p.z, d=Math.hypot(dx,dz);
-    let mx=0,mz=0; if(d>0.12){ const s=Math.min(1,d/0.8); mx=dx/d*s; mz=dz/d*s; }
-    if(d>1.0 && !tg.gk){ const st=steer(p,dx/d,dz/d,d); mx=st[0]; mz=st[1]; }
-    // Anticipa l'arresto soltanto per la breve distanza di frenata effettiva.
-    if(!tg.gk && !tg.sprint && d<Math.hypot(p.vx,p.vz)/8 && p.vx*dx+p.vz*dz>0){ mx=0; mz=0; }
-    // SCIVOLAMENTO IN VERTICALE (v0.53, richiesta di Ale): gli spostamenti brevi si fanno restando dritti con la bicicletta,
-    // in qualunque direzione, senza distendersi a crawl. Sotto 1,8 m si scivola, oltre 2,8 m si torna a nuotare (in mezzo resta la
-    // scelta di prima, così non si alterna a ogni fotogramma). Ampiezza 0,48: sotto la soglia del nuoto di movePlayer (0,5).
-    // chi difende su chi ha la palla non scivola: deve poter chiudere il tiro con la sua velocità piena
-    const suPortatore=ball.holder&&ball.holder.team!==p.team&&uomoDi(p)===ball.holder;
-    if(!tg.gk&&!tg.sprint&&!p.uscendo&&!p.excluded&&!suPortatore){
-      if(d<1.8) p.scivolaAI=true; else if(d>2.8) p.scivolaAI=false;
-      if(p.scivolaAI){ const k=Math.hypot(mx,mz); if(k>0.48){ mx*=0.48/k; mz*=0.48/k; } }
-    } else p.scivolaAI=false;
-    // v0.67: chi è lontano dal suo posto (oltre 4 m) scatta da solo, tranne nelle transizioni quando il posto dice «nuota» (SCATTI):
-    // prima la regola dei 4 m faceva scattare tutti in ripartenza e in rientro fino a stamina 0,35, la soglia dei cambi
-    const sprint = tg.gk ? false : ((tg.sprint && d>0.6) || (!tg.nuota && d>4 && p.stamina>0.35));
-    if(tg.gk){ // spostamento laterale del portiere: di posizione (lento o svelto secondo Posizione) oppure in tuffo (Riflessi); stanco è più lento
-      const fresco=0.75+0.25*p.stamina, sp=(tg.tuffo ? 1.6+2.2*rif01(p) : 1.1+1.3*pos01(p))*fresco; p.z+=clamp(tg.z-p.z,-sp*dt,sp*dt); mz=0;
-    }
-    movePlayer(p,mx,mz,sprint,dt);
+    muoviVerso(p,tg,dt);
     if(p.team.defPlay===2 && game.possTeam===other(p.team) && !p.isGK) p.stamina=Math.max(0,p.stamina-dt*PRESSING_CONSUMO);  // il pressing stanca (taratura.js)
     // pressing e contrasti dei difensori controllati dall'IA
     if(ball.holder && ball.holder.team!==p.team && !p.isGK && !ball.holder.isGK){
@@ -218,7 +250,10 @@ export function update(dt){
     game.shot=0;
   }
   // fine tempo
-  if(game.clock<=0 && game.state==='play'){
+  // Il tiro partito in tempo e l'eventuale rigore differito devono avere un esito
+  // prima della chiusura del periodo; il cronometro resta a zero.
+  if(game.clock<=0 && game.state==='play'&&!game.rigoreDifferito&&
+    !(ball.state==='flight'&&ball.daTiro)){
     game.clock=0; whistle(0.9); annullaAzione();      // l'azione interrotta dalla sirena non ha un esito
     if(game.period<4){
       annuncia('fine',`Fine ${game.period}° tempo`,{dettaglio:`${teams[0].short} ${teams[0].score} - ${teams[1].score} ${teams[1].short}`});
