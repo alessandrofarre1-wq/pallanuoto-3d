@@ -15,7 +15,7 @@ Base `e4e0787` (PR59 v0.68 unita), versione0.69.0, branch `codex/v069-falli-ripr
 - `src/regole.js`, nuovi `src/espulsioni-tempi.js` e `src/decisione-rigore.js`: sanzioni, scatto, criteri del rigore, vantaggio e cambio possesso.
 - `src/partita.js`, `src/gioco-fermo.js`, `src/fisica.js`, `src/grafica/pose.js`: cronometri, fermo selettivo, movimento e marcature, separazione dei corpi e posa coerente.
 - `src/centroboa.js`, `src/lotta.js`, `src/ia.js`: lettura fronteporta e conclusione in parità.
-- `tests/espulsioni-tempi-v069.mjs`, `decisione-rigore-v069.mjs`, `rigori-reali-v069.mjs`, `boa-fronte-v069.mjs`, aggiornato `gioco-fermo-v050.mjs`; script in `package*.json`, passi in `.github/workflows/pages.yml`; memoria, storia, consegne e dati in `docs/verifiche/v069/`.
+- `tests/espulsioni-tempi-v069.mjs`, `decisione-rigore-v069.mjs`, `rigori-reali-v069.mjs`, `boa-fronte-v069.mjs`, aggiornati `gioco-fermo-v050.mjs` e `finta-v055.mjs`; script in `package*.json`, passi in `.github/workflows/pages.yml`; memoria, storia, consegne e dati in `docs/verifiche/v069/`.
 
 ## Verifiche e fasi
 
@@ -29,6 +29,8 @@ Registri e hash del codice in [dati di chiusura](../verifiche/v069/chiusura.json
 6. `npm run aspetto -- --no-build`: PASS completo. Gambe fuori:0/8286verticale,0/4686nuotata,0/1112transizione. iPhone844×390 e667×375:55chiamate/142100triangoli. I primi piani desktop oltre150000non sono scene iPhone.
 7. Fluidità/due cambi: PASS, DPR1,5; massimi844×39061chiamate/145944tri,667×37560/145942. Replay nella ripetizione precedente all'ultimo ritocco alle marcature:48/146426,14corpi. Geometria invariata; sono i massimi delle scene campionate, non FPS di un iPhone fisico.
 8. `npm run verifica -- --partite=0`: PASS (qualità, tornei e cinque immagini). Confronti ispezionati: posa, arena e HUD coerenti; cambia il footer versione e il timer, ora fermo nello scatto. Sprint3:00contro2:57, azione2:43contro2:39, iPhone2:56contro2:52. Scarti0–0,02%; nessun riferimento sostituito. Le sei partite della verifica e tutti i passi della CI saranno eseguiti sul commit pubblicato: non sono ancora dichiarati PASS.
+
+La prima CI pubblicata ([44902551508](https://github.com/alessandrofarre1-wq/pallanuoto-3d/actions/runs/44902551508)) ha segnalato il vecchio assert di `finta-v055.mjs`: pretendeva una sanzione automatica in almeno metà dei20anticipi battuti senza fallo. Il risultato0/20 è ora quello richiesto da Ale; il test verifica esattamente zero sanzioni, mantenendo le altre prove di finte, passaggi e tiro al volo. Nessuna modifica produttiva per questo allineamento e nessun nuovo campione da8partite. La nuova esecuzione CI resta da verificare.
 
 ## Campione di gioco prima dell’ultimo percorso di fallo
 
