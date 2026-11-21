@@ -33,10 +33,20 @@
     "aspetto": "PASS completo: partita finita, gambe0/8282verticale,0/4689crawl,0/1113transizione; entrambi iPhone55calls/142100tri.",
     "fluidita": "PASS scene con due cambi:844x390DPR1,5 max61calls/145944tri;667x375max60/145942. Non FPS su iPhone fisico.",
     "sonda": "N1CPUgame4x180s seed7919 finita ITA6HUN8;508passaggi,37alcentro,36prese,9finestrechiare(3prima6s). Diagnostica, nessun confronto accoppiato né frequenza generale.",
-    "verifica": "PASS ripetizione indipendente --partite=0 dopo ispezione:0,01%/0,02%/0,22%/identico/identico. Primo giro FAIL solo4/5; aggiornati soltanto2riferimenti iPhone, nessuna tolleranza cambiata. Sei partite demandate alla CI finale."
+    "verifica": "PASS ripetizione indipendente --partite=0 dopo ispezione:0,01%/0,02%/0,22%/identico/identico. Primo giro FAIL solo4/5; aggiornati soltanto2riferimenti iPhone, nessuna tolleranza cambiata. Sei partite demandate alla CI finale.",
+    "cronaca_finale": "PASS completo locale: cronaca/registro/pausa/orientamento/app-background/iPhone piccolo. Fixture rigore resa regolamentare con contatto0,9m e vittima a2,6m dalla porta, CPU isolata nella scena; assert conservati. Nessun cambiamento produttivo."
   },
-  "ci_v069": "prima esecuzione44902551508fallita su aspettativa obsoleta test finta; nuova esecuzione dopo c2e6798 da controllare",
-  "ci_v070": "non ancora eseguita",
+  "ci_v069": {
+    "run": "https://github.com/alessandrofarre1-wq/pallanuoto-3d/actions/runs/44906185448",
+    "head": "ea469d23be9b8806ee2224ee0c97ec214ca14611",
+    "conclusione": "success"
+  },
+  "ci_v070": {
+    "precedente_run": "https://github.com/alessandrofarre1-wq/pallanuoto-3d/actions/runs/44904621590",
+    "precedente_head": "ba3e",
+    "precedente_esito": "FAIL cronaca: fixture invocava un rigore senza presupposti regolamentari, non nuova regressione produttiva",
+    "finale": "CI intera sul prossimo ultimo SHA ancora da verificare"
+  },
   "fase_layout_gesti_replay": "dopo riallineamento alla v0.69 finale c03f2bf, prima della pipeline generale v0.70",
   "hash_sha256_fase_layout_gesti_replay": {
     "src/hud.js": "8111f7273c59ed0b605508b7eca66d106bb1ef62e4568ef3227b482e7daccbda",
@@ -47,7 +57,7 @@
     "tests/chiamate-attacco-v070.mjs": "c5503b1d1bba2535a91fe48b14520be370e8e92779b581eb1eb9141bcdd9f91d",
     "tests/gesti-v070.mjs": "b12e6243b710b884196b628a72ce149d4e93e4f795360c289a0982ad739fd37e"
   },
-  "base_dipendenza_finale": "c2e6798",
+  "base_dipendenza_finale": "ea469d23be9b8806ee2224ee0c97ec214ca14611",
   "nota_aggiornamento_base": "Dipendenza finale c2e6798: aggiorna solo il test v0.69 sull’anticipo e i documenti, non la produzione. Il vecchio test finta pretendeva sanzioni casuali, superate dalla v0.69; nuovo assert0/20 anticipi senza infrazione. Il rebase di soli test/documenti non altera i sorgenti di produzione misurati.",
   "hash_sha256_produzione_v070_pre_rebase_solo_test": {
     "src/aspetto.js": "96ae07b8f8a97731d71e6a900d9ff5718cbd4b32374f5adfe5c3485152920aaa",
@@ -135,5 +145,11 @@
     "tests/screenshot/riferimento/3-azione.png": "5b25ec55c034af1dd1b176e5f44d1d8cbb62bb6762a85f7edd1a5a6b49eb3815",
     "tests/screenshot/riferimento/4-iphone-piccolo.png": "0a530e3e14e9c736c1de7a178f3fdacf29d1787fa3d9984321a9b5b0bfb190fd",
     "tests/screenshot/riferimento/5-iphone-orizzontale.png": "aac6b8a01a21b4c4a1247879911ff5067eaeab530ef01bcb08355e479c8c87f2"
+  },
+  "confronto_produzione_chiusura_cronaca": {
+    "metodo": "SHA-256 dei file src contro la fase delle verifiche generali documentata",
+    "differenze": [],
+    "identica": true,
+    "sha256_test_cronaca_finale": "3826cd8e97c38509dfca8d1589d6d691c7a94eccc91b349a04f6678d83f27e23"
   }
 }

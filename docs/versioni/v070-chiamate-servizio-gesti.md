@@ -1,6 +1,6 @@
 # v0.70 — chiamate in azione, servizio alla boa e raccordi dei gesti
 
-Richiesta di Ale: più occasioni per servire il centroboa, nuove entrate chiamabili durante l'azione e tiro/passaggio meno scattosi. Versione `0.70.0`, branch `codex/v070-chiamate-gesti`. Dipendenza v0.69 finale `c2e6798`: correzioni regolamentari più aggiornamento del vecchio test sull’anticipo, senza ulteriori modifiche produttive. **Stato: verifiche locali concluse; CI intera sull’ultimo commit pubblicato ancora da verificare prima di dichiarare la PR pronta.**
+Richiesta di Ale: più occasioni per servire il centroboa, nuove entrate chiamabili durante l'azione e tiro/passaggio meno scattosi. Versione `0.70.0`, branch `codex/v070-chiamate-gesti`. Dipendenza v0.69 finale `ea469d2`, CI completa verde44906185448; ultimi aggiornamenti solo alle scene di prova, senza ulteriori modifiche produttive. **Stato: verifiche locali concluse; CI intera sull’ultimo commit pubblicato ancora da verificare prima di dichiarare la PR pronta.**
 
 ## Cosa cambia
 
@@ -15,7 +15,7 @@ Chiamate: nuovi `src/chiamate-attacco.js` e `tests/chiamate-attacco-v070.mjs`; m
 
 Servizio: `src/tiri.js`, soglie in `SERVIZIO_BOA` di `src/taratura.js`; nuovi `tests/servizio-boa-v070.mjs` e `strumenti/sonda-boa-v070.mjs`.
 
-Disegno: `src/grafica/pose.js`, nuovi `src/grafica/gesto-vista.js` e `tests/gesti-v070.mjs`. Versione/script in `package.json` e lock; tre passi dedicati nella CI `pages.yml`.
+Disegno: `src/grafica/pose.js`, nuovi `src/grafica/gesto-vista.js` e `tests/gesti-v070.mjs`. Versione/script in `package.json` e lock; tre passi dedicati nella CI `pages.yml`. Allineata anche la scena di rigore in `tests/cronaca.mjs` alle regole v0.69.
 
 ## Verifiche e misure
 
@@ -26,6 +26,7 @@ Dati in `docs/verifiche/v070/`. Chiamate e servizio sono stati provati prima del
 - Gesti PASS: helper e24sequenze a60Hz (sei gesti×due versi×due mani), invarianti di giunture fisiche/punto di lancio/callback e tracce prima/dopo identiche, errore fisico massimo0. Salto massimo della mano all’ingresso: polso0,12873→0m, tiro caricato0,07051→0m, passaggio0,03696→0,01484m. Massimo passo fra fotogrammi: polso0,14833→0,13897m; tiro0,17440→0,16764m; passaggio avanti0,16594→0,14365m; opposto0,16490→0,15024m; palombella0,13174→0,10164m. Sono spostamenti per fotogramma, non velocità né una misura generale di naturalezza. Dati24casi e hash tracce in `gesti-riepilogo.json`; ispezionati fotogrammi2/8/25 della fixture isolata con palla visuale sincronizzata, non una partita intera. La parte fisica `//<POSE>` conserva lo SHA-256 `bd1833d84ab7553fcfcf95d21c20c619fdaafab91eb657405ce7b51a6e17c231`; questo controllo da solo non dimostra la qualità percepita.
 - Replay completo PASS: identità/ripristino/tempi/leggibilità,14corpi, picco48calls/146426tri nelle scene campionate.
 - Lint/build e regressioni PASS9/9: gameplay, centroboa, tattica, entrate isolate/integrazione, nuoto coerente, gioco fermo e desktop. Registro `/tmp/prove-XqkQMC`, riepilogo in `regressioni.log`.
+- Cronaca completa locale PASS (`cronaca-finale.log`). La prima CI v0.70 sul vecchio head `ba3e` falliva perché la fixture chiedeva un rigore privo dei presupposti attuali: ora contatto a0,9m e vittima a2,6m dalla porta, con CPU isolata nella scena. Assert conservati, nessuna modifica produttiva; traccia di provenienza aggiornata. CI intera sul nuovo ultimo commit ancora da verificare.
 - Aspetto completo PASS: partita arrivata alla fine; gambe fuori dall’acqua0/8282(verticale),0/4689(nuoto),0/1113(transizione); entrambi iPhone55calls/142100tri. Primi piani desktop oltre150mila sono fuori dalla misura specifica iPhone.
 - Budget con due cambi PASS:844×390,DPR1,5, picco61calls/145944tri;667×375,picco60/145942. Restano **meno di100chiamate e meno di150.000triangoli**,14corpi completi. Nessuna misura di FPS su iPhone fisico disponibile qui.
 - Sonda diagnostica: una sola partita CPU, quattro periodi da180s, seme7919, conclusa ITA6–HUN8.508passaggi,37servizi al centro,36prese,9finestre chiaramente servibili di cui3prima dei6s. Non è un confronto accoppiato prima/dopo, una frequenza generale o un campione di bilanciamento.
