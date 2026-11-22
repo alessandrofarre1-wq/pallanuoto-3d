@@ -11,7 +11,8 @@ import { difensoreCentro, leggiCentro } from './centroboa.js';
 import { schemaSquadra, viciniPerimetro } from './schemi.js';
 import { centroAttacco, destinatarioEntrata, passaggioChiamato, postoAttacco, registraPassaggioEntrata } from './entrate.js';
 import { velocitaDiLancio } from './palla.js';
-import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO, PRESA, SERVIZIO_BOA as S } from './taratura.js';      // numeri del bilanciamento
+import { profiloTraiettoria } from './profili-traiettorie.js';
+import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO, PRESA, SERVIZIO_BOA as S, TRAIETTORIE_TIRO as T } from './taratura.js';      // numeri del bilanciamento
 export { ERRORE_PASSAGGIO };
 import { paloCoperto } from './muro.js';
 import { P } from './fisica-palla/parametri.js';
@@ -54,15 +55,18 @@ export function updateRecuperi(dt){
     if(a.t>a.wind+a.frusta+0.36) p.act=null;
   }
 }
-export function launch(p,tx,ty,tz,t,kind){
+export function launch(p,tx,ty,tz,t,kind,giriVoluti){
   ball.tiroReplay=null; ball.raccordoPresa=null;
+  ball.tentativoPortiere=null; ball.contattoPortiere=null; ball.parataRegistrata=false; ball.parataDaRegistrare=null;
+  ball.costoTentativoPortiere=false; ball.deviataInPorta=false;
+  ball.revisioneTiro=(ball.revisioneTiro||0)+1;
   ball.state='flight'; ball.holder=null; ball.kind=kind; ball.shooter=p; ball.lastTeam=p.team;
   if(p.ballW){ ball.x=p.ballW[0]; ball.y=Math.max(0.3,p.ballW[1]); ball.z=p.ballW[2]; }
   else { ball.x=p.x+p.fx*0.25; ball.z=p.z+p.fz*0.25; ball.y=1.0; }
   const vista=p.ballVistaW;
   ball.raccordoVista=vista?.every(Number.isFinite)?{x:vista[0]-ball.x,y:vista[1]-ball.y,z:vista[2]-ball.z,durata:Math.min(0.08,Math.max(1/60,t*0.25))}:null;
   // velocità e rotazione di partenza: la palla gira all'indietro (di più nella palombella) e la mira tiene conto dell'aria
-  const giri = kind==='pass' ? P.giriPassaggio : ty>0.55 ? P.giriPalombella : P.giriTiro;
+  const giri = Number.isFinite(giriVoluti)?giriVoluti:kind==='pass' ? P.giriPassaggio : ty>0.55 ? P.giriPalombella : P.giriTiro;
   const L=velocitaDiLancio(ball.x,ball.y,ball.z,tx,ty,tz,t,giri);
   ball.vx=L.vx; ball.vy=L.vy; ball.vz=L.vz; ball.wx=L.wx; ball.wy=L.wy; ball.wz=L.wz;
   ball.flightT=0; ball.intercept=new Set(); ball.saveChecked=false; ball.pickupCD=0.3;
@@ -292,12 +296,15 @@ export function doShoot(p,power,lob,aimZ,o){
   o=o||{};
   const tipoAzione=tipoDiTiro(p,ball);
   const t=p.team, gx=goalX(t), gk=other(t).players[0];
-  // si mira un po' più dentro di prima: ora pali e traversa sono veri e la palla ha il suo ingombro
-  let az = aimZ!=null ? clamp(aimZ*1.28,-1.28,1.28) : -Math.sign(gk.z||(rnd()-0.5))*(0.85+rnd()*0.38);
-  let ay = lob ? 0.55 : 0.15+rnd()*0.55;
+  // La quadrella resta dentro l'ingombro utile della porta prima dell'errore
+  // personale; la direzione manuale conserva la stessa scala e priorità.
+  const forte=!lob&&power>=T.forteDa&&!o.speciale&&!o.polso&&!o.torsione;
+  let az = aimZ!=null ? clamp(aimZ*1.28,-1.28,1.28) : -Math.sign(gk.z||(rnd()-0.5))*(forte?T.quadrellaZ+rnd()*T.quadrellaLarghezza:0.85+rnd()*0.38);
+  let ay = lob ? 0.55 : forte?T.quadrellaY+rnd()*T.quadrellaAltezza:0.15+rnd()*0.55;
   // TIRO BASSO CHE RIMBALZA (Berlino 2018: in parità i tiri bassi e quelli che toccano l'acqua davanti alla porta rendono di più;
   // il tiro alto senza rimbalzo segna il 31%): il computer lo sceglie una volta su cinque nei tiri classici in parità
-  if(!lob&&aimZ==null&&!o.speciale&&!game.penalty&&!manUp(p.team)&&rnd()<0.2) { ay=0.04+rnd()*0.05; o.rimbalzo=true; }
+  if(!lob&&aimZ==null&&!o.speciale&&!game.penalty&&!manUp(p.team)&&rnd()<0.2) { ay=P.raggioUrti-T.rimbalzoImmersione; o.rimbalzo=true; }
+  else if(o.rimbalzo&&!lob)ay=P.raggioUrti-T.rimbalzoImmersione;
   const d=Math.hypot(gx-p.x,az-p.z);
   let press=99; for(const o of other(t).players){ if(!o.excluded&&!o.isGK&&game.time>=o.stunUntil) press=Math.min(press,dist(o,p)); }
   // un tiro marcato stretto è molto meno preciso: gli schemi servono a liberare il tiratore
@@ -321,19 +328,21 @@ export function doShoot(p,power,lob,aimZ,o){
   // Velocità al rilascio (dati riportati nella tesi): professionisti 22,8 ± 2,4 m/s a tutta forza. La bravura al tiro sposta
   // il massimo tra circa 20 e 25 m/s; il tiro classico è il più veloce.
   const vMax=(22.8+(p.s.pot-75)*0.16)*(classico?1:tipo==='colonnello'?0.9:tipo==='schizzo'?0.82:0.85);      // Potenza: da circa 20 (60) a 25 m/s (90)
-  const spd = lob ? 4.5+d*0.15 : vMax*(0.5+0.5*power)*(0.75+0.25*p.stamina)*(o.torsione?0.92:1);
+  const spd = vMax*(0.5+0.5*power)*(0.75+0.25*p.stamina)*(o.torsione?0.92:1);
   // tiro a schizzo (sezione 4): schiaffo dalla superficie, palla bassa e tesa (sostituisce il vecchio tiro che rimbalzava
   // apposta prima della porta)
   if(o.speciale==='schizzo') ay=clamp(0.12+(ay-0.15)*0.45,0.08,0.5);
   if(p.act) p.act.potenza=power;
   p.effettoTiro={tipo,forza:power,inizio:game.time};
-  launch(p,gx,ay,az,d/spd,'shot');
+  const origine=p.ballW?{x:p.ballW[0],y:Math.max(0.3,p.ballW[1]),z:p.ballW[2]}:{x:p.x+p.fx*0.25,y:1,z:p.z+p.fz*0.25};
+  const profilo=profiloTraiettoria({...origine,gx,ay,az,velocita:spd,lob,rimbalzo:!!o.rimbalzo,gkX:gk.x});
+  launch(p,profilo.tx,profilo.ty,profilo.tz,profilo.t,'shot',profilo.giri);
   if(o.speciale==='schizzo') ball.y=Math.min(ball.y,0.32);      // parte dal pelo dell'acqua
   ball.shotPower=lob?0.3:power; ball.lob=lob; ball.crossZ=az; ball.paloCoperto=paloCoperto(p); ball.rigore=game.penalty===p;
   ball.tipoTiro=tipoAzione; registraTiro(p,tipoAzione);
   // dove si trova il portiere nel momento in cui parte il tiro: è da qui che dipende soprattutto la parata
   ball.gkZ0=gk.z; ball.gkFuoriPosto=Math.abs(gk.z-postoPortiere(gk.team,p.x,p.z));
-  ball.gkVz0=gk.vz; ball.rimbalzo=!!o.rimbalzo;      // portiere ancora in movimento di lato al momento del tiro (Berlino 2018)
+  ball.gkVz0=gk.vz; ball.rimbalzo=profilo.rimbalzo;      // portiere ancora in movimento di lato al momento del tiro (Berlino 2018)
   // sorpresa per portiere e muro: il polso parte senza caricare (ancora di più dopo una finta); con la torsione il portiere
   // si sposta verso il primo palo e la palla va sull'altro
   ball.sorpresa = o.polso ? (o.dopoFinta?0.26:0.15) : o.torsione ? 0.08 : o.volo ? 0.06 : o.speciale==='schizzo' ? 0.14 : o.speciale==='colonnello' ? 0.1 : 0;

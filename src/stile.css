@@ -170,7 +170,16 @@ body.chiamate-visibili #fight{display:none!important}
 .chip.lab{border:none;background:transparent;color:var(--h-tenue);cursor:default;letter-spacing:.06em;font-size:10.5px}
 
 /* ---------- giocatore controllato (sempre visibile, compatto), lotta al centro, contatore ---------- */
-#player{position:fixed;left:calc(12px + var(--sl));bottom:calc(12px + var(--sb));background:var(--h-bg);border:1px solid var(--h-linea);border-radius:var(--h-r);padding:7px 11px;font-size:12.5px;z-index:5;pointer-events:none;min-width:190px;box-shadow:var(--h-ombra)}
+#player{position:fixed;left:calc(12px + var(--sl));bottom:calc(12px + var(--sb));background:var(--h-bg);border:1px solid var(--h-linea);border-radius:var(--h-r);padding:6px 8px;font-size:12.5px;z-index:5;pointer-events:none;box-sizing:border-box;width:148px;box-shadow:var(--h-ombra)}
+#player[hidden]{display:none}
+#player.vis{width:max-content;min-width:190px;max-width:calc(100vw - 24px - var(--sl) - var(--sr))}
+#player:not(.vis) :is(#pname,#pstat,#power,.potenza-label){display:none}
+#energia{display:flex;align-items:center;gap:4px;min-height:14px;line-height:1.2;font-size:10px;font-variant-numeric:tabular-nums}
+#player.vis #energia{margin-top:3px}
+#energia .energia-label{font-size:9px;color:var(--h-tenue)}
+#stamNumero{font-weight:800;white-space:nowrap}
+#energia #stam{flex:1;min-width:24px;height:4px;margin:0}
+#stamPerc{min-width:27px;text-align:right;font-size:10px;white-space:nowrap}
 #pname{font-weight:800;display:flex;align-items:center;gap:5px}
 #pname .posto{flex:none;font-size:.85em;color:var(--h-ciano);font-variant-numeric:tabular-nums}
 #pname .identita{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -227,10 +236,12 @@ body.touch .tb[data-b="sw"]{right:calc(164px + var(--sr));bottom:calc(10px + var
 #tPause,#tLog{position:fixed;top:calc(8px + var(--st));width:36px;height:36px;border-radius:var(--h-r);background:var(--h-bg);border:1px solid var(--h-linea);z-index:8;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--h-testo);box-shadow:var(--h-ombra)}
 #tPause{right:calc(10px + var(--sr))}
 /* Su telefono: giocatore e schema in alto a destra, distinti dal tabellone. */
-body.touch #player{top:calc(8px + var(--st));bottom:auto;left:auto;right:calc(100px + var(--sr));min-width:0;max-width:150px;font-size:10.5px;padding:4px 8px 5px;background:var(--h-bg)}
+body.touch #player,body.touch #player.vis{top:calc(8px + var(--st));bottom:auto;left:auto;right:calc(100px + var(--sr));width:148px;min-width:0;max-width:150px;font-size:10.5px;padding:2px 6px 3px;background:var(--h-bg)}
 body.touch #pstat,body.touch #player .et,body.touch #power{display:none}
 body.touch #player .bar{height:3px;margin-top:3px}
-body.touch #pname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.touch #pname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:12px}
+body.touch #energia{min-height:12px;line-height:12px}
+body.touch #player.vis #energia{margin-top:2px}
 body.touch #tac{top:calc(42px + var(--st));right:calc(100px + var(--sr));max-width:200px;justify-content:flex-end}
 body.touch #fps{top:calc(112px + var(--st));left:calc(8px + var(--sl));font-size:9.5px;line-height:1.25;padding:2px 6px}
 body.touch #fps b{font-size:12px}
@@ -239,7 +250,8 @@ body.touch #fps b{font-size:12px}
 @media (max-width:720px){
   #hud .sq{padding:0 7px;gap:5px} #score{padding:0 8px;font-size:19px} #hud .tempo{padding:0 7px;gap:4px} #shotclock{min-width:34px;padding:0 6px;font-size:18px}
   #hud .sq.tu .sigla::after{margin-left:3px}
-  body.touch #player{max-width:118px} #player .ruolo{display:none}
+  body.touch #player,body.touch #player.vis{max-width:118px} #player .ruolo{display:none}
+  body.touch #energia .energia-label{display:none}
 }
 @media (max-height:340px){
   #hud{height:28px} #hud .sq{padding:0 8px;font-size:12px} #score{font-size:18px;padding:0 9px} #clock{font-size:13px} #shotclock{font-size:17px;min-width:36px}
@@ -1046,9 +1058,10 @@ body.touch #tac .chip[data-apri]{max-width:200px}
    le proposte non urgenti restano nella schermata Cambi e panchina della pausa (e nel tasto B) */
 #tCambi:not([data-stato="consiglio"]):not([data-stato="corso"]){display:none}
 
-/* v0.44 (scelte di Ale): pannello del giocatore solo per 3 s al cambio (classe vis da hud.js); palombella solo con la palla nostra;
+/* Nome/ruolo restano temporanei; l'energia del selezionato rimane visibile.
+   Palombella solo con la palla nostra;
    registro degli eventi spostato nel menu di pausa (il T.O. resta sempre a schermo) */
-#player{opacity:0;transition:opacity .25s}
+#player{opacity:1}
 #player.vis{opacity:1}
 body:not(.nostra-palla) .tb[data-b="lob"]{display:none}
 #tLog{display:none}

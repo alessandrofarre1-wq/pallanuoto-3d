@@ -1,0 +1,78 @@
+{
+  "raggioVistaPalla": 0.1106,
+  "quotaGalleggiamentoVistaPalla": 0.07342985996986247,
+  "misure": [
+    {
+      "width": 844,
+      "height": 390,
+      "mano": "D",
+      "diametro": [
+        0.22120000422000885,
+        0.22120000422000874,
+        0.22120000422000885
+      ],
+      "distanzaPalmo": 0.11059970502877063,
+      "pixelCss": 7.295477731149143,
+      "corpi": 14,
+      "gpu": {
+        "calls": 63,
+        "triangles": 143000
+      },
+      "fisicaImmutata": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "mano": "S",
+      "diametro": [
+        0.22120000422000885,
+        0.22120000422000874,
+        0.22120000422000885
+      ],
+      "distanzaPalmo": 0.11017651246598861,
+      "pixelCss": 6.9019912473883425,
+      "corpi": 14,
+      "gpu": {
+        "calls": 63,
+        "triangles": 143000
+      },
+      "fisicaImmutata": true
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "mano": "D",
+      "diametro": [
+        0.22120000422000885,
+        0.22120000422000874,
+        0.22120000422000885
+      ],
+      "distanzaPalmo": 0.11059970502877063,
+      "pixelCss": 7.014882433797263,
+      "corpi": 14,
+      "gpu": {
+        "calls": 63,
+        "triangles": 143000
+      },
+      "fisicaImmutata": true
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "mano": "S",
+      "diametro": [
+        0.22120000422000885,
+        0.22120000422000874,
+        0.22120000422000885
+      ],
+      "distanzaPalmo": 0.11017651246598861,
+      "pixelCss": 6.636530045565724,
+      "corpi": 14,
+      "gpu": {
+        "calls": 63,
+        "triangles": 143000
+      },
+      "fisicaImmutata": true
+    }
+  ]
+}

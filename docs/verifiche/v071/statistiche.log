@@ -1,0 +1,11 @@
+
+> pallanuoto-3d@0.71.0 statistiche
+> node tests/statistiche.mjs --no-build
+
+✓ Velocità 90 contro 60, in sprint: 2.91 contro 2.43 m/s = +19.4%   (obiettivo: 15-20%)
+✓ Precisione 90 contro 60, tiri nello specchio dallo stesso punto: 93.5% contro 41.5% = 2.25 volte (con 75: 62.5%)   (obiettivo: circa il doppio)
+✓ Potenza 90 contro 60, velocità al rilascio: 27.4 contro 22.2 m/s   (obiettivo: da circa 20 a 25 m/s)
+✓ Resistenza 75: dopo 7 vasche di sprint di fila: barra al 39% (dopo 3: 75%), velocità -10%   (obiettivo: visibilmente stanco: barra sotto il 40%)
+✓ Resistenza 90 contro 60 dopo 7 vasche: barra al 55% contro 22%   (obiettivo: chi ne ha di più è più fresco)
+
+✓ Statistiche: effetti minimi rispettati

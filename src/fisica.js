@@ -1,10 +1,14 @@
 // ================= FISICA GIOCATORI =================
 import { manUp, rif01, setteControSei } from './ia.js';
 import { registraIntercetto, registraParata } from './statistiche.js';
-import { whistle } from './audio.js';
 import { ALZATA, ARBITRO, BRV, DIFF, DIFF_GK, GH, GW, HL, HW, clamp, dist, rnd } from './costanti.js';
 import { annuncia } from './cronaca.js';
-import { QUOTA_GALLEGGIA, passoPalla } from './palla.js';
+import { urtoLegno } from './audio.js';
+import { QUOTA_GALLEGGIA, RAGGIO, passoPalla } from './palla.js';
+import { contattoPortiere } from './contatto-portiere.js';
+import { avanzaTentativoPortiere, concludiTentativoPortiere, creaTentativoPortiere } from './parata-portiere.js';
+import { probabilitaPresa, probabilitaTentativo } from './decisione-parata.js';
+import { velocitaDeviata } from './deviazione-tiro.js';
 import { blockR } from './ia.js';
 import { anticipoBattuto, cornerThrow, giveBall, goalScored, goalThrow, sfondamento, sideOut } from './regole.js';
 import { active, allPlayers, ball, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
@@ -12,7 +16,7 @@ import { diSchiena, shotKind } from './tiri.js';
 import { FIRMA, FINTA_LATO, fintaLatoAttiva } from './finte.js';
 import { difensoreCentro, leggiCentro, passoGirata } from './centroboa.js';
 import { centroAttacco } from './entrate.js';
-import { CON_PALLA, INTERCETTO, PARATA_SUP, PRESA, SPRINT_CONSUMO, STANCO } from './taratura.js';      // numeri del bilanciamento
+import { CON_PALLA, INTERCETTO, PARATA_PORTIERE, PARATA_SUP, PRESA, SPRINT_CONSUMO, STANCO } from './taratura.js';      // numeri del bilanciamento
 export { CON_PALLA, INTERCETTO, PARATA_SUP, PRESA, SPRINT_CONSUMO, STANCO };
 export function movePlayer(p,dx,dz,sprint,dt){
   // La girata usa lo stesso movimento e gli stessi collisori del nuoto ordinario.
@@ -176,7 +180,8 @@ const _giocatori=[];
 function passo(dt,corpiAttivi){
   // i corpi dei giocatori fanno rimbalzare solo la palla vagante (su tiri e passaggi decidono parata, muro e intercetto)
   for(let i=0;i<allPlayers.length;i++){ const p=allPlayers[i], g=_giocatori[i]||(_giocatori[i]={x:0,z:0,attivo:false});
-    g.x=p.x; g.z=p.z; g.attivo=corpiAttivi&&!p.excluded&&p!==ball.shooter&&p!==ball.ignora; }
+    g.x=p.x; g.z=p.z; g.attivo=corpiAttivi&&!p.excluded&&p!==ball.shooter&&p!==ball.ignora&&
+      !(p.isGK&&ball.daTiro&&ball.tentativoPortiere?.attiva); }
   const e=passoPalla(ball,dt,_giocatori);
   if(e.acqua) ball.spruzzo={ forza:e.acqua.forza, schizzo:e.acqua.tipo==='schizzo'||e.acqua.radente };      // lo disegna render.js
   return e;
@@ -189,14 +194,16 @@ function passo(dt,corpiAttivi){
 // rimessa del portiere (art. 13.1.2.2.3: prima nel gioco era angolo)
 function fuoriDalFondo(att){
   const def=other(att);
+  if(ball.parataDaRegistrare)registraParataUnaVolta(ball.parataDaRegistrare.att,ball.parataDaRegistrare.def);
   if((ball.toccoDifesa===def&&ball.toccoPortiere)||ball.lastTeam===def) cornerThrow(att); else goalThrow(def,'Fuori! Rimessa dal portiere');
 }
 // la palla ha passato la linea di porta in questo passo? (px = posizione prima del passo)
-function lineaDiPorta(px){
+function lineaDiPorta(px,py=ball.y,pz=ball.z){
   for(const t of teams){
     const gx=goalX(t);
     if((px-gx)*(ball.x-gx)>0 || px===ball.x || Math.abs(px)>HL) continue;      // conta solo se arriva dal campo
-    const dentro=Math.abs(ball.z)<GW+0.04 && ball.y<GH+0.04 && ball.y>-0.3;
+    const u=clamp((gx-px)/(ball.x-px),0,1), y=py+(ball.y-py)*u, z=pz+(ball.z-pz)*u;
+    const dentro=Math.abs(z)<GW+0.04 && y<GH+0.04 && y>-0.3;
     return { att:t, dentro };
   }
   return null;
@@ -210,7 +217,108 @@ function gkFinta(gk){
   if(fl) return Math.sign(ball.crossZ||0)===fl?-FINTA_LATO.parataVicino:FINTA_LATO.parataLontano;
   return gk.fakedUntil>game.time?0.25:0;
 }
+
+function registraParataUnaVolta(att,def){
+  if(ball.parataRegistrata)return;
+  ball.parataRegistrata=true;ball.parataDaRegistrare=null;registraParata(att,def);
+}
+function chiudiParataInAttesa(){
+  const p=ball.parataDaRegistrare;
+  if(!p)return;
+  if(ball.inRete){ball.parataDaRegistrare=null;return;}
+  if(ball.state==='held'||ball.state==='dead'||ball.state==='free'&&ball.vx*p.att.dir<=0)registraParataUnaVolta(p.att,p.def);
+}
+let tempoPortieri=0; // avanza con la fisica, anche nel recupero dopo gol; fermo in pausa/replay
+function portiereSulTiro(dt){
+  const att=ball.shooter?.team;
+  const valido=ball.state==='flight'&&ball.daTiro&&att&&(ball.kind==='shot'||ball.kind==='rebound');
+  const gk=valido?other(att).players[0]:null;
+  const arriva=gk&&!gk.excluded&&!gk.uscendo&&ball.vx*att.dir>0&&Math.abs(ball.x)<HL+RAGGIO;
+  for(const t of teams){const q=t.players[0],p=q.tentativoPortiere;
+    if(p?.attiva&&(!arriva||q!==gk)){
+      concludiTentativoPortiere(p,tempoPortieri);avanzaTentativoPortiere(p,q,ball,tempoPortieri);
+    }
+  }
+  if(!arriva)return gk&&gk.tentativoPortiere?.attiva?gk:null;
+  let t=ball.tentativoPortiere;
+  if(!t?.attiva||t.gid!==gk.uid||t.num!==gk.num||t.scheda!==gk.scheda||t.revisione!==ball.revisioneTiro){
+    const precedente=gk.tentativoPortiere?.attiva?gk.tentativoPortiere:null;
+    // Il sorteggio sceglie il tentativo e il suo ritardo. Non assegna mai una
+    // presa: soltanto le parti realmente incontrate possono toccare la palla.
+    t=creaTentativoPortiere(gk,ball,{probabilita:1,caso:0,time:tempoPortieri,precedente,
+      ritardoFinta:Math.max(0,gkFinta(gk))*.2+(ball.deviataInPorta?.08:0)});
+    t.revisione=ball.revisioneTiro;
+    const prob=probabilitaTentativo({riflessi:rif01(gk),stamina:gk.stamina,tempoVolo:t.arrivoStimato,
+      distanzaTiro:ball.distTiro||6,angolo:ball.angoloTiro??1,marcato:ball.marcato||0,
+      daFermo:!!ball.daFermo,dopoCambio:!!ball.dopoCambio,liberato:!!ball.liberato,
+      tipoTiro:ball.tipoTiro,parataSuperiorita:PARATA_SUP,zPalla:t.bersaglio[2],yPalla:t.bersaglio[1],
+      zPrima:ball.gkZ0??gk.z,vzPrima:ball.gkVz0||0,forza:ball.shotPower??.7,lob:!!ball.lob,
+      finta:gkFinta(gk),schizzo:!!ball.skipped,sorpresa:ball.sorpresa||0,difficolta:gk.team.human?1:DIFF_GK(),
+      rigore:!!ball.rigore,fuoriPosto:ball.gkFuoriPosto||0});
+    t.probabilita=prob;t.riuscita=rnd()<prob;
+    // Anche al cambio di traiettoria conserviamo il punto di partenza del
+    // movimento: lo sweep deve vedere il portiere spostarsi, non teletrasportarlo.
+    for(let i=0;i<t.sfere.length;i++){
+      const c=t.sfere[i].centro,prima=precedente?.sfere[i]?.centro;
+      if(prima){c[0]=prima[0];c[1]=prima[1];c[2]=prima[2];}
+      else {c[0]-=(gk.vx||0)*dt;c[2]-=(gk.vz||0)*dt;}
+    }
+    ball.tentativoPortiere=t;gk.tentativoPortiere=t;
+    if(!ball.costoTentativoPortiere){
+      gk.stamina=Math.max(0,gk.stamina-.035*(1.5-(gk.s.res-40)/59));ball.costoTentativoPortiere=true;
+    }
+  }
+  return gk;
+}
+
+function toccoPortiere(gk,prima,px,py,pz,dt){
+  const t=ball.tentativoPortiere;
+  if(!t?.attiva||!avanzaTentativoPortiere(t,gk,ball,tempoPortieri))return false;
+  const hit=contattoPortiere([px,py,pz],[ball.x,ball.y,ball.z],RAGGIO,t.sferePrima,t.sfere);
+  if(!hit)return false;
+  const att=ball.shooter.team,def=gk.team,gx=goalX(att),dx=ball.x-px;
+  const linea=dx?(gx-px)/dx:Infinity;
+  if(linea>=0&&linea<=1&&hit.t>linea+1e-8)return false; // una palla già entrata non si para
+  const v=Math.hypot(ball.vx,ball.vy,ball.vz),n=hit.normale;
+  ball.x=hit.punto[0]+n[0]*.001;ball.y=hit.punto[1]+n[1]*.001;ball.z=hit.punto[2]+n[2]*.001;
+  ball.saveChecked=true;ball.afterShot=true;ball.toccoDifesa=def;ball.toccoPortiere=true;ball.ignora=gk;
+  ball.raccordoVista=null;
+  ball.contattoPortiere={parte:hit.parte,t:game.time,punto:hit.punto.slice(),normale:n.slice(),velocita:v};
+  const presa=probabilitaPresa({parte:hit.parte,velocita:v,distanza:ball.distTiro||6,tempoVolo:prima+dt*hit.t});
+  if(presa>0&&rnd()<presa){
+    registraParataUnaVolta(att,def);
+    ball.raccordoPresa={x:ball.x,y:ball.y,z:ball.z,t:game.time};giveBall(gk);
+    annuncia('parata','Parata!',{p:gk});concludiTentativoPortiere(t,tempoPortieri);return true;
+  }
+  const normale=ball.vx*n[0]+ball.vy*n[1]+ball.vz*n[2];
+  if(normale<0){const k=(1+PARATA_PORTIERE.restituzione)*normale;ball.vx-=k*n[0];ball.vy-=k*n[1];ball.vz-=k*n[2];}
+  ball.vy=Math.max(.25,ball.vy);ball.wx*=.4;ball.wz*=.4;ball.kind='rebound';ball.pickupCD=.18;
+  if(ball.vx*att.dir<=0)registraParataUnaVolta(att,def);
+  else ball.parataDaRegistrare={att,def}; // una deviazione che entra resta un gol, non una parata
+  concludiTentativoPortiere(t,tempoPortieri);
+  annuncia('parata','Parata!',{p:gk,dettaglio:'respinta'});return true;
+}
+
+function deviaMuro(p){
+  let nx=ball.x-p.x,nz=ball.z-p.z;
+  const ny=clamp((ball.y-.75)*.5,-.25,.25);
+  if(Math.hypot(nx,ny,nz)<.05){nx=-ball.vx;nz=-ball.vz;}
+  const v=velocitaDeviata([ball.vx-p.vx,ball.vy,ball.vz-p.vz],[nx,ny,nz]);
+  ball.vx=v[0]+p.vx;ball.vy=v[1];ball.vz=v[2]+p.vz;
+  ball.kind='rebound';ball.toccoDifesa=p.team;ball.toccoPortiere=false;ball.ignora=p;
+  ball.wx*=.5;ball.wz*=.5;ball.pickupCD=.15;ball.afterShot=true;
+  ball.revisioneTiro=(ball.revisioneTiro||0)+1;ball.deviataInPorta=true;
+  if(ball.shooter&&ball.vx*ball.shooter.team.dir>0){
+    const t=Math.max(0,(goalX(ball.shooter.team)-ball.x)/ball.vx);
+    ball.crossZ=ball.z+ball.vz*t;
+  }
+  annuncia('parata','Muro!',{p});
+}
+
 export function updateBall(dt){
+  tempoPortieri+=dt;
+  chiudiParataInAttesa();
+  const gkSulTiro=portiereSulTiro(dt);
   if(ball.state==='held'){
     const p=ball.holder; ball.holdTime+=dt; ball.x=p.x; ball.z=p.z; ball.y=BRV;
     ball.vx=ball.vy=ball.vz=0; ball.wx=ball.wy=ball.wz=0; ball.inRete=false;
@@ -226,69 +334,32 @@ export function updateBall(dt){
   }
   ball.pickupCD-=dt;
   if(ball.state==='flight'){
-    const px=ball.x, pz=ball.z;
+    const px=ball.x, py=ball.y, pz=ball.z, voloPrima=ball.flightT;
+    const velocitaUrto=Math.hypot(ball.vx,ball.vy,ball.vz);
     const e=passo(dt,ball.kind==='rebound'); ball.flightT+=dt;
-    // pali e traversa: l'urto è vero, qui si annuncia soltanto
+    // Pali e traversa: annuncio e rumore partono soltanto dall'urto fisico.
     if(ball.daTiro){
       const legno=e.urti.find(u=>u==='palo'||u==='traversa');
-      if(legno && Math.abs(Math.abs(ball.x)-HL)<0.5){ ball.kind='rebound'; ball.afterShot=true; annuncia('legno',legno==='palo'?'Palo!':'Traversa!',{p:ball.shooter}); }
-    }
-    if(ball.kind==='shot'){
-      const att=ball.shooter.team, def=other(att), gk=def.players[0];
-      // parata
-      if(!ball.saveChecked && (px-gk.x)*(ball.x-gk.x)<=0){
-        ball.saveChecked=true;
-        // Parata. Conta soprattutto la POSIZIONE al momento del tiro: quanto la palla passa lontano da dove stava il portiere,
-        // tolto il pezzo che copre senza tuffarsi (braccia). Il tuffo (Riflessi) recupera solo una parte del resto; la stanchezza pesa.
-        const R=rif01(gk), fresco=0.8+0.2*gk.stamina, braccia=0.7;
-        // tiro da lontano: il portiere ha più tempo, arriva più lontano e para molto di più (da oltre 8-9 metri quasi sempre);
-        // da poco angolo vede poca porta da coprire
-        const tempo=clamp((ball.flightT-0.28)/0.3,0,1), dT=ball.distTiro||6, ang=ball.angoloTiro==null?1:ball.angoloTiro;
-        // v0.45: in parità a difesa schierata il tiro dal perimetro segna circa il 25% (Berlino 2018): il portiere è piazzato
-        const facile=(ball.tipoTiro==='perimetro'?0.12:0)+0.3*tempo+Math.max(0,dT-7.5)*0.2+Math.max(0,0.6-ang)*0.8+0.1*(ball.marcato||0)+(ball.daFermo?0.1:0)-(ball.dopoCambio?0.16:0)-(ball.liberato?0.05:0)-(ball.tipoTiro==='superiorita'?PARATA_SUP:0);
-        const lontano=Math.max(0,Math.abs(ball.z-ball.gkZ0)-braccia), reach=(0.5+0.8*R)*fresco+0.7*tempo+Math.max(0,dT-7.5)*0.3;
-        gk.stamina=Math.max(0,gk.stamina-0.035*(1.5-(gk.s.res-40)/59));          // ogni salto costa
-        // tiro da vicino: la palla arriva in meno di un quarto di secondo e il portiere non fa in tempo a reagire
-        const vicino=clamp((0.26-ball.flightT)/0.26,0,1)*0.42;
-        if(lontano<reach && ball.y<1.9){
-          let prob=(1.07-0.30*ball.shotPower*(1.25-0.5*R)-lontano*(0.7-0.3*R)-(ball.lob?0.2:0)-gkFinta(gk)-(ball.skipped?0.12:0)-(ball.sorpresa||0)-vicino+facile)*fresco*(def.human?1:DIFF_GK())
-            *(ball.rigore?0.41:1);      // sul rigore il portiere para molto meno: negli studi citati dalla tesi ne entra l'80%
-          // PORTIERE FUORI POSTO O ANCORA IN MOVIMENTO (Berlino 2018: si segna di più tirando mentre il portiere scivola di lato e
-          // quando c'è più spazio tra lui e il palo vicino): para meno se al tiro era lontano dal suo posto o andava dall'altra parte
-          if(!ball.rigore){
-            const vz0=ball.gkVz0||0, controPiede=Math.abs(vz0)>0.3&&Math.sign(ball.z-ball.gkZ0)!==Math.sign(vz0);
-            prob-=0.15*clamp((ball.gkFuoriPosto||0)-0.3,0,1)+(controPiede?0.12*Math.min(1,Math.abs(vz0)/1.2):0);
-          }
-          if(rnd()<prob){
-            whistle(0.12); const r=rnd(); ball.afterShot=true; registraParata(att,def);
-            if(ball.shotPower>0.55&&r<0.25){
-              // deviata in angolo: il portiere la alza sopra la traversa; uscirà dal fondo toccata per ultimo da lui (tiro d'angolo)
-              const gx=ownGoalX(def), dx=Math.max(0.25,Math.abs(gx-ball.x)), vxs=3.2, t=dx/vxs, y0=Math.max(0.3,ball.y);
-              ball.kind='rebound'; ball.toccoDifesa=def; ball.toccoPortiere=true; ball.ignora=gk; ball.vx=Math.sign(gx-ball.x||1)*vxs; ball.vz=ball.vz*0.15+(rnd()-0.5)*1.5;
-              ball.vy=(GH+0.45-y0+4.9*t*t)/t; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=9;
-              annuncia('parata','Parata!',{p:gk,dettaglio:"deviata in angolo"});
-            }
-            else if(ball.shotPower>0.7&&r<0.65){
-              // respinta: la palla schizza via dalle mani del portiere, verso il campo e verso l'alto
-              ball.kind='rebound'; ball.toccoDifesa=def; ball.toccoPortiere=true; ball.ignora=gk; ball.vx=-ball.vx*0.22; ball.vz=ball.vz*0.3+(rnd()-0.5)*4; ball.vy=1.5+rnd()*2; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.25;
-              annuncia('parata','Parata!',{p:gk,dettaglio:'respinta'});
-            } else { giveBall(gk); annuncia('parata','Parata!',{p:gk}); }
-            return;
-          }
-        }
+      if(legno && Math.abs(Math.abs(ball.x)-HL)<0.5){
+        ball.kind='rebound'; ball.afterShot=true;
+        if(tempoPortieri-(ball.ultimoSuonoLegno??-Infinity)>0.08){ urtoLegno(velocitaUrto,legno); ball.ultimoSuonoLegno=tempoPortieri; }
+        annuncia('legno',legno==='palo'?'Palo!':'Traversa!',{p:ball.shooter});
       }
     }
+    if(gkSulTiro&&toccoPortiere(gkSulTiro,voloPrima,px,py,pz,dt))return;
+    if(gkSulTiro&&(px-gkSulTiro.x)*(ball.x-gkSulTiro.x)<=0)ball.saveChecked=true;
     // linea di porta: gol se passa tra i pali e sotto la traversa (anche dopo aver toccato un legno), altrimenti fuori
     // (v0.57) vale anche per passaggi e rimbalzi: prima un passaggio oltre la linea di fondo restava in gioco fino a 1,2 m oltre
     // la linea e i giocatori lo inseguivano dentro la porta
-    { const l=lineaDiPorta(px);
+    { const l=lineaDiPorta(px,py,pz);
       if(l){
-        if(l.dentro){ ball.inRete=true; goalScored(l.att); return; }
+        if(l.dentro){ ball.parataDaRegistrare=null; ball.inRete=true; goalScored(l.att); return; }
         fuoriDalFondo(l.att); return;
       }
     }
     // intercetti, muri e ricezione
     if(ball.y<1.35){
+      const tiroEffettivo=ball.kind==='shot'||ball.kind==='rebound'&&ball.deviataInPorta&&!ball.toccoPortiere&&ball.shooter&&ball.vx*ball.shooter.team.dir>0;
       for(const p of allPlayers){
         if(p.excluded) continue;
         const hd=Math.hypot(p.x-ball.x,p.z-ball.z);
@@ -296,15 +367,15 @@ export function updateBall(dt){
           ball.intercept.add(p);
           // il muro copre un palo (muro.js: primo palo se il tiratore è di lato, lato del braccio di tiro se è centrale)
           // e lascia l'altro al portiere
-          const primoPalo=ball.kind==='shot'&&ball.shooter&&Math.sign(ball.crossZ||0)===(ball.paloCoperto||0);
+          const primoPalo=tiroEffettivo&&ball.shooter&&Math.sign(ball.crossZ||0)===(ball.paloCoperto||0);
           // sulle diagonali (palo lontano) serve il braccio alto al momento giusto: dipende dalla Difesa; una finta appena
           // riuscita lo abbassa per un attimo; il polso non dà il tempo di alzarlo; chi tira più alto passa sopra
           const dif01=(p.s.dif-40)/59, braccioAlto=0.2+0.7*dif01;
           const finta=ball.shooter&&ball.shooter.fakeUntil>game.time?0.45:1;
           // (v0.56) il centrale tra i pali con l'uomo in meno copre il palo lungo: sul tiro da quella parte il braccio è già alto
-          const cl=p.copreLungo, lungoCoperto=ball.kind==='shot'&&cl&&game.time-cl.t<0.3&&Math.sign(ball.crossZ||0)===cl.lato;
+          const cl=p.copreLungo, lungoCoperto=tiroEffettivo&&cl&&game.time-cl.t<0.3&&Math.sign(ball.crossZ||0)===cl.lato;
           // finta di lato (v0.59): chi ha abboccato ha il braccio verso quel palo; sul lato opposto mura molto meno
-          const fl=ball.kind==='shot'?fintaLatoAttiva(p):0, fintaL=fl?(Math.sign(ball.crossZ||0)===fl?FINTA_LATO.vicino:FINTA_LATO.lontano):1;
+          const fl=tiroEffettivo?fintaLatoAttiva(p):0, fintaL=fl?(Math.sign(ball.crossZ||0)===fl?FINTA_LATO.vicino:FINTA_LATO.lontano):1;
           const muro=(primoPalo||lungoCoperto?0.42:0.34*braccioAlto)*fintaL*finta*(1-2*(ball.sorpresa||0))*(1.3-0.6*(ball.elevazione||0.5));
           // intercetto: è da qui che nasce la maggior parte delle palle rubate. Un passaggio lungo e lento dà il tempo di leggerlo;
           // conta la Difesa di chi anticipa contro il Passaggio di chi l'ha fatto
@@ -315,11 +386,11 @@ export function updateBall(dt){
           // v0.60 (taratura): palle perse in parità 8% contro circa 20% delle partite vere; base 0,09 → 0,12, passaggio lungo 0,3 → 0,36
           const versoBoa=ball.target&&ball.target===centroAttacco(ball.target.team)&&Math.abs(goalX(ball.target.team)-ball.target.x)<5&&!manUp(ball.target.team);
           const letto=(INTERCETTO.base+INTERCETTO.lungo*clamp((ball.flightT-0.2)/0.7,0,1)+(ball.shooter?(p.s.dif-ball.shooter.s.pas)/59*0.12:0))*(p.team.defPlay===2?1.15:1)*(versoBoa?1.3:1)*dopoFinta;
-          const pr=(ball.kind==='shot'?muro:clamp(letto,0.04,0.5))*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
+          const pr=(tiroEffettivo?muro:clamp(letto,0.04,0.5))*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
           if(rnd()<pr){
-            if(ball.kind==='shot'){
+            if(tiroEffettivo){
               // muro: la palla rimbalza sul braccio alzato e resta in gioco
-              ball.kind='rebound'; ball.toccoDifesa=p.team; ball.toccoPortiere=false; ball.ignora=p; ball.vx*=-0.2; ball.vz=ball.vz*0.3+(rnd()-0.5)*3; ball.vy=1+rnd()*1.5; ball.wx*=0.3; ball.wz*=0.3; ball.pickupCD=0.2; annuncia('parata','Muro!',{p}); ball.afterShot=true;
+              deviaMuro(p);
             }
             else { ball.raccordoPresa={x:ball.x,y:ball.y,z:ball.z,t:game.time}; registraIntercetto(p.team); giveBall(p); annuncia('possesso','Intercetto!',{p}); }
             return;
@@ -336,17 +407,17 @@ export function updateBall(dt){
     }
     // acqua (palla.js calcola le forze; qui solo la regola): la palla che esce dall'acqua dopo averla toccata ha fatto uno
     // schizzo e resta in volo (il portiere la legge peggio); quella che resta in acqua e rallenta diventa vagante
-    if(e.acqua && e.acqua.tipo==='schizzo'){ if((ball.schizzi=(ball.schizzi||0)+1)<=2 && ball.kind==='shot') ball.skipped=true; }
+    if(e.acqua && e.acqua.tipo==='schizzo'){ if((ball.schizzi=(ball.schizzi||0)+1)<=2 && ball.kind==='shot'){ ball.skipped=true;ball.revisioneTiro=(ball.revisioneTiro||0)+1;ball.deviataInPorta=true;ball.rimbalzoOsservato={x:ball.x,y:ball.y,z:ball.z,t:game.time}; } }
     else if(e.inAcqua && ball.vy<=0.5 && ball.flightT>0.1 && Math.hypot(ball.vx,ball.vz)<4){ ball.state='free'; ball.pickupCD=0.1; }
     if(ball.state==='flight' && Math.abs(ball.z)>HW+0.2){ sideOut(); return; }
     if(ball.state==='flight' && Math.abs(ball.x)>HL+1.2){ ball.state='free'; ball.vx*=0.2; ball.vz*=0.2; }
   }
   if(ball.state==='free'){
-    const px=ball.x;
+    const px=ball.x,py=ball.y,pz=ball.z;
     passo(dt,true);
     if(Math.abs(ball.z)>HW+0.2){ sideOut(); return; }
     // una palla vagante che rotola in porta dopo un tiro è gol; se esce dal fondo è rimessa
-    if(ball.daTiro){ const l=lineaDiPorta(px); if(l&&l.dentro){ ball.inRete=true; goalScored(l.att); return; } }
+    if(ball.daTiro){ const l=lineaDiPorta(px,py,pz); if(l&&l.dentro){ ball.inRete=true; goalScored(l.att); return; } }
     if(Math.abs(ball.x)>HL){
       const defT=teams.find(t=>Math.sign(ownGoalX(t))===Math.sign(ball.x));
       fuoriDalFondo(other(defT)); return;

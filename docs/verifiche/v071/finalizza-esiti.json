@@ -1,0 +1,60 @@
+[
+  {
+    "nome": "bilancio-finale",
+    "comando": [
+      "npm",
+      "run",
+      "taratura",
+      "--",
+      "--partite=8",
+      "--paralleli=2",
+      "--salva=/tmp/v071-bilancio-finale.json",
+      "--confronta=/tmp/v071-bilancio-prima.json"
+    ],
+    "codice": 0,
+    "secondi": 536.62
+  },
+  {
+    "nome": "verifica-prima-riferimenti",
+    "comando": [
+      "npm",
+      "run",
+      "verifica",
+      "--",
+      "--partite=0"
+    ],
+    "codice": 1,
+    "secondi": 90.9
+  },
+  {
+    "nome": "aspetto-finale",
+    "comando": [
+      "npm",
+      "run",
+      "aspetto",
+      "--",
+      "--no-build"
+    ],
+    "codice": 0,
+    "secondi": 279.08
+  },
+  {
+    "nome": "fluidita-finale",
+    "comando": [
+      "node",
+      "strumenti/misura-fluidita.mjs"
+    ],
+    "codice": 0,
+    "secondi": 76.06
+  },
+  {
+    "nome": "foglio-tiro",
+    "comando": [
+      "node",
+      "strumenti/foglio-tiro-v061.mjs",
+      "--uscita=/tmp/v071-foglio-tiro.png"
+    ],
+    "codice": 1,
+    "secondi": 259.35
+  }
+]

@@ -1,0 +1,15 @@
+$ node tests/contatto-portiere-v071.mjs
+PASS contatto portiere v0.71: 51 scene, sweep3D relativo, 30/60/120Hz, lati liberi e nessun riurto uscente
+EXIT 0
+
+$ node tests/profilo-portiere-v071.mjs
+PASS profilo portiere v0.71: 26 sfere, portata, reazione ravvicinata/deviazione, raccordo e recupero, due versi, 30/60/120Hz e indipendenza dal rendering; massimo mano 6.8586m/s
+EXIT 0
+
+$ node tests/decisione-parata-v071.mjs
+PASS decisione parata: finte facoltative, portata, respinte e prese ravvicinate
+EXIT 0
+
+$ node tests/deviazione-tiro-v071.mjs
+PASS deviazione tiro: piena indietro, sfiorata ancora in porta, simmetria ed energia
+EXIT 0

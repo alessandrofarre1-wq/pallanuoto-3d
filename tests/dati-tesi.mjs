@@ -18,8 +18,9 @@ await pg.addInitScript(() => {
 });
 await pg.goto(server.resolvedUrls.local[0]);
 await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });
-const R = await pg.evaluate(() => {
+const R = await pg.evaluate(diagnosi => {
   const H = window.__pallanuoto, out = {};
+  const dettagli=[];
   H.renderer.render = () => {}; H.senzaCorpi = true;
   // 1. aria: palla che lascia la mano a 13,3 m/s, velocità dopo 5 metri (tesi: 12,2 m/s)
   { const B = { x: 0, y: 1.2, z: 0, vx: 13.3 * Math.cos(0.06), vy: 13.3 * Math.sin(0.06), vz: 0, wx: 0, wy: 0, wz: 0 };
@@ -33,23 +34,27 @@ const R = await pg.evaluate(() => {
     for (const p of H.allPlayers) { p.stamina = 1; p.excluded = false; p.stunUntil = 0; p.act = null; }
     H.game.state = 'play'; H.game.after = null; H.game.clock = 100; H.game.shot = 28; H.ball.afterShot = false;
     H.regole.setupPenalty(sq);
-    const tiratore = H.ball.holder; let partito = -1, v0 = 0;
+    const tiratore = H.ball.holder; let partito = -1, v0 = 0, lancio=null,contatto=null;
     for (let f = 0; f < 420; f++) {
       window.__step(1);
       const B = H.ball;
-      if (partito < 0 && B.state === 'flight') { partito = f; v0 = Math.hypot(B.vx, B.vy, B.vz); if (tiratore.act) tempi.push(tiratore.act.frusta); }
+      if (partito < 0 && B.state === 'flight') { partito = f; v0 = Math.hypot(B.vx, B.vy, B.vz); if (tiratore.act) tempi.push(tiratore.act.frusta); if(diagnosi)lancio={x:B.x,y:B.y,z:B.z,v:[B.vx,B.vy,B.vz],crossZ:B.crossZ,power:B.shotPower}; }
+      if(diagnosi&&partito>=0&&B.contattoPortiere&&!contatto)contatto=B.contattoPortiere;
       if (sq.score > prima) break;
       if (partito >= 0 && (B.state === 'held' || (H.game.state === 'stop' && f > partito + 2) || f > partito + 150)) break;
     }
     if (partito >= 0) vel.push(v0);
     if (sq.score > prima) gol++;
+    if(diagnosi){const B=H.ball,t=B.tentativoPortiere;dettagli.push({n,partito,gol:sq.score>prima,state:H.game.state,palla:B.state,tipo:B.kind,pos:[B.x,B.y,B.z],lancio,contatto,tentativo:t?{riuscita:t.riuscita,prob:t.probabilita,target:t.bersaglio,letto:t.bersaglioLetto}:null});}
   }
   const media = a => a.reduce((s, x) => s + x, 0) / a.length, ds = a => { const m = media(a); return Math.sqrt(media(a.map(x => (x - m) ** 2))); };
-  out.rigori = { N, gol, velMedia: media(vel), velDs: ds(vel), velMin: Math.min(...vel), velMax: Math.max(...vel), frusta: media(tempi) };
+  out.rigori = { N, gol,lanci:vel.length, velMedia: media(vel), velDs: ds(vel), velMin: Math.min(...vel), velMax: Math.max(...vel), frusta: media(tempi) };
+  if(diagnosi)out.diagnosi=dettagli;
   return out;
-});
+},process.argv.includes('--diagnosi'));
 await browser.close(); await new Promise(r => server.httpServer.close(r));
 const r = (x, n = 1) => x.toFixed(n); let ok = true;
+if(R.diagnosi)console.log('DIAGNOSI '+JSON.stringify(R));
 const riga = (nome, valore, atteso, dentro) => { if (!dentro) ok = false; console.log(`${dentro ? '✓' : '✗'} ${nome}: ${valore}   (dato: ${atteso})`); };
 riga('Velocità della palla dopo 5 m, partendo da 13,3 m/s', r(R.arrivo, 2) + ' m/s', '12,2 m/s misurati nella tesi', Math.abs(R.arrivo - 12.2) < 0.25);
 const g = R.rigori, perc = 100 * g.gol / g.N;

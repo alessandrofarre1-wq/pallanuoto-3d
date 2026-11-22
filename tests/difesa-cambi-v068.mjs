@@ -25,7 +25,7 @@ const stub=new Map([
   ['grafica/costumi.js','export const profiloCostume=()=>({});'],
   ['cronaca.js','export const annuncia=()=>{};'],
   ['replay.js','export const registraTiroReplay=()=>{};'],
-  ['palla.js','export const QUOTA_GALLEGGIA=.15,passoPalla=()=>{},velocitaDiLancio=()=>20;'],
+  ['palla.js','export const RAGGIO=.1106,QUOTA_GALLEGGIA=.15,passoPalla=()=>{},velocitaDiLancio=()=>20;'],
   ['regole.js',`export const ${['doFake','falloSenzaPalla','timeout','controllaInterferenza','anticipoBattuto','cornerThrow','giveBall','goalScored','goalThrow','sfondamento','sideOut'].map(n=>n+'=()=>{}').join(',')};`],
 ]);
 registerHooks({load(url,context,next){

@@ -1,7 +1,8 @@
 // Scena 3D: piscina, acqua, schiuma, corde, porte, palla, telecamera
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { BRV, HL } from '../costanti.js';
+import { HL } from '../costanti.js';
+import { raggioVistaPalla } from './dimensioni-palla.js';
 import { sottAcqua, tempoAcqua } from './sottacqua.js';
 import { creaSuperficie } from './superficie.js';
 import { illuminaArena, creaOmbreAcqua } from './illuminazione.js';
@@ -203,12 +204,11 @@ export const ball3d = (()=>{
     } }
   xg.putImageData(ig,0,0);
   const tg=new THREE.CanvasTexture(tela); tg.colorSpace=THREE.SRGBColorSpace; tg.anisotropy=4;
-  const m=new THREE.Mesh(new THREE.SphereGeometry(BRV,32,24),sottAcqua(new THREE.MeshPhysicalMaterial({map:tg,roughness:0.4,metalness:0,clearcoat:0.65,clearcoatRoughness:0.22,envMapIntensity:0.6})));
-  m.scale.setScalar(1.3);
+  const m=new THREE.Mesh(new THREE.SphereGeometry(raggioVistaPalla,32,24),sottAcqua(new THREE.MeshPhysicalMaterial({map:tg,roughness:0.4,metalness:0,clearcoat:0.65,clearcoatRoughness:0.22,envMapIntensity:0.6})));
   return m;
 })();
 scene.add(ball3d);
-export const shadow = new THREE.Mesh(new THREE.CircleGeometry(BRV*1.1,16),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.3}));
+export const shadow = new THREE.Mesh(new THREE.CircleGeometry(raggioVistaPalla*1.1,16),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.3}));
 shadow.rotation.x=-Math.PI/2; scene.add(shadow);
 export const ring = new THREE.Mesh(new THREE.TorusGeometry(0.55,0.05,8,32),new THREE.MeshBasicMaterial({color:0xfacc15}));
 ring.rotation.x=Math.PI/2; scene.add(ring);

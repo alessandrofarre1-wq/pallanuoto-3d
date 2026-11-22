@@ -1,0 +1,11 @@
+tiro da 7 m: altezze massime sull'acqua prima del rilascio (m) {"testaTiratore":0.619,"bacinoTiratore":-0.161,"testaPortiere":0.354,"maniPortiere":0.635}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.evaluate: Target page, context or browser has been closed
+    at /workspace/pallanuoto-v071/strumenti/foglio-tiro-v061.mjs:27:23 {
+  log: []
+}
+
+Node.js v24.22.1

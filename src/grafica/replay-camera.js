@@ -17,11 +17,15 @@ export const FASCIA_REPLAY=Object.freeze({left:0.06,right:0.94,top:0.16,bottom:0
 // (avvicinamento), arco laterale durante l'esultanza, distanza minima e angoli provati attorno alla direzione della porta
 export const REGIA_REPLAY=Object.freeze({
   orbita:Object.freeze({giro:0.56,quotaDa:0.72,quotaA:0.46}),
+  pallaMinima:4,
   stretta:Object.freeze({prima:0.35,dopo:0.12}),
-  primoPiano:Object.freeze({quota:-0.05,margine:Object.freeze([1.34,1.06]),arco:0.18,minimo:1.5,
+  // La fascia esclude già i pannelli con7px di margine e la testa ha un
+  // involucro di20cm. Nel primo piano basta un ulteriore2% di sicurezza;
+  // l'arco e il gesto muovono la ripresa senza rimpicciolire il viso.
+  primoPiano:Object.freeze({quota:-0.05,margine:Object.freeze([1.00,1.00]),sicurezza:1.02,arco:0.18,minimo:1.5,
     angoli:Object.freeze([0.3,0.65,1.0,-0.3,-0.65,-1.0]),vicino:1.5})
 });
-const su=new THREE.Vector3(0,1,0), cam=new THREE.Vector3(), camB=new THREE.Vector3(), centro=new THREE.Vector3();
+const su=new THREE.Vector3(0,1,0), cam=new THREE.Vector3(), camB=new THREE.Vector3(), camFit=new THREE.Vector3(), camFitB=new THREE.Vector3(), centro=new THREE.Vector3();
 const puntiPrimo=new Float32Array(14*3);
 
 function fasciaVisibile(){
@@ -65,15 +69,15 @@ function orienta(piano,x,y,z){
 
 // punti: posizioni da tenere in vista per tutta l'azione; puntiTiro: solo quelle dal rilascio in poi (con la porta);
 // laterale: piccola diagonale iniziale, ridotta per i tiri molto laterali
-export function preparaCameraReplay(punti,n,puntiTiro,nTiro,dir,laterale=0.12){
-  return {punti,n,puntiTiro,nTiro,dir:Math.sign(dir)||1,giroDa:Math.atan(laterale),
+export function preparaCameraReplay(punti,n,puntiTiro,nTiro,dir,laterale=0.12,palla=null){
+  return {punti,n,puntiTiro,nTiro,palla,dir:Math.sign(dir)||1,giroDa:Math.atan(laterale),
     centro:centroPunti(punti,n),centroTiro:nTiro?centroPunti(puntiTiro,nTiro):null,
     indietro:new THREE.Vector3(),destra:new THREE.Vector3(),alto:new THREE.Vector3(),
     chiave:'',fascia:FASCIA_REPLAY,primo:null};
 }
 
 // distanza minima lungo «indietro» perché tutti i punti cadano nella fascia; lato: la camera resta sul lato della giuria
-function distanzaMinima(camera,piano,punti,n,c,lato=true,minimo=2){
+function distanzaMinima(camera,piano,punti,n,c,lato=true,minimo=2,sicurezza=1.045){
   const tv=Math.tan(THREE.MathUtils.degToRad(camera.fov)/2)/camera.zoom, th=tv*camera.aspect;
   const ymin=1-2*piano.fascia.bottom,ymax=1-2*piano.fascia.top;
   const xmin=2*piano.fascia.left-1,xmax=2*piano.fascia.right-1;
@@ -85,7 +89,44 @@ function distanzaMinima(camera,piano,punti,n,c,lato=true,minimo=2){
     const z=dx*piano.indietro.x+dy*piano.indietro.y+dz*piano.indietro.z;
     distanza=Math.max(distanza,z+Math.max(x/(x>=0?xmax*th:xmin*th),y/(y>=0?ymax*tv:ymin*tv),camera.near*2));
   }
-  return distanza*1.045;
+  return distanza*sicurezza;
+}
+
+// Fit prospettico minimo: trasla anche il bersaglio sui due assi dello schermo, usando tutta la fascia asimmetrica.
+// Ogni coppia di vincoli dà un limite lineare alla distanza; la posizione resta continua mentre l'orbita ruota.
+function posizioneMinima(camera,piano,punti,n,c,dest){
+  const tv=Math.tan(THREE.MathUtils.degToRad(camera.fov)/2)/camera.zoom,th=tv*camera.aspect;
+  const xmin=(2*piano.fascia.left-1)*th,xmax=(2*piano.fascia.right-1)*th;
+  const ymin=(1-2*piano.fascia.bottom)*tv,ymax=(1-2*piano.fascia.top)*tv;
+  let A=-Infinity,B=Infinity,C=-Infinity,D=Infinity,zmax=-Infinity;
+  for(let i=0;i<n*3;i+=3){
+    const dx=punti[i]-c.x,dy=punti[i+1]-c.y,dz=punti[i+2]-c.z;
+    const x=dx*piano.destra.x+dy*piano.destra.y+dz*piano.destra.z;
+    const y=dx*piano.alto.x+dy*piano.alto.y+dz*piano.alto.z;
+    const z=dx*piano.indietro.x+dy*piano.indietro.y+dz*piano.indietro.z;
+    A=Math.max(A,x+xmax*z);B=Math.min(B,x+xmin*z);
+    C=Math.max(C,y+ymax*z);D=Math.min(D,y+ymin*z);zmax=Math.max(zmax,z);
+  }
+  const x0=(A+B)/2,y0=(C+D)/2,sx=(xmax+xmin)/2,sy=(ymax+ymin)/2;
+  const giuria=(0.5-c.z-piano.destra.z*x0-piano.alto.z*y0)/(piano.indietro.z-piano.destra.z*sx-piano.alto.z*sy);
+  const d=Math.max(2,(A-B)/(xmax-xmin),(C-D)/(ymax-ymin),zmax+camera.near*2,giuria)*1.045;
+  return dest.copy(c).addScaledVector(piano.indietro,d).addScaledVector(piano.destra,x0-sx*d).addScaledVector(piano.alto,y0-sy*d);
+}
+
+// Il diametro reale determina la profondità massima leggibile. Solo quando serve si passa dal campo largo al fit minimo;
+// entrambe le posizioni rispettano gli stessi semispazi del frustum, quindi anche la loro interpolazione li rispetta.
+function avvicinaPalla(camera,piano,w){
+  const p=piano.palla;if(!p?.n||!(p.raggio>0))return;
+  let vicino=Infinity;
+  for(let i=0;i<p.n*3;i+=3)vicino=Math.min(vicino,p.punti[i]*piano.indietro.x+p.punti[i+1]*piano.indietro.y+p.punti[i+2]*piano.indietro.z);
+  const profondita=cam.dot(piano.indietro)-vicino;
+  const tv=Math.tan(THREE.MathUtils.degToRad(camera.fov)/2)/camera.zoom;
+  const massima=innerHeight*p.raggio/(tv*REGIA_REPLAY.pallaMinima*1.045);
+  if(profondita<=massima)return;
+  posizioneMinima(camera,piano,piano.punti,piano.n,piano.centro,camFit);
+  if(w>0){posizioneMinima(camera,piano,piano.puntiTiro,piano.nTiro,piano.centroTiro,camFitB);camFit.lerp(camFitB,w);}
+  const guadagno=profondita-(camFit.dot(piano.indietro)-vicino);
+  if(guadagno>0)cam.lerp(camFit,THREE.MathUtils.clamp((profondita-massima)/guadagno,0,1));
 }
 
 function aggiornaFascia(camera,piano){
@@ -135,7 +176,7 @@ function applicaPrimoPiano(camera,piano,m,k){
   let quota=P.quota;
   for(let giro=0;giro<2;giro++){
     orienta(piano,Math.cos(ang)*Math.cos(quota),Math.sin(quota),Math.sin(ang)*Math.cos(quota));
-    const d=distanzaMinima(camera,piano,puntiPrimo,n,centro,false,P.minimo)*THREE.MathUtils.lerp(P.margine[0],P.margine[1],e);
+    const d=distanzaMinima(camera,piano,puntiPrimo,n,centro,false,P.minimo,P.sicurezza)*THREE.MathUtils.lerp(P.margine[0],P.margine[1],e);
     cam.copy(centro).addScaledVector(piano.indietro,d);
     if(cam.y>=0.22||giro) break;
     quota=Math.asin(THREE.MathUtils.clamp((0.22-centro.y)/d,-0.5,0.5));      // la camera resta sopra l'acqua
@@ -160,6 +201,7 @@ export function applicaCameraReplay(camera,piano,stato){
     camB.copy(piano.centroTiro).addScaledVector(piano.indietro,distanzaMinima(camera,piano,piano.puntiTiro,piano.nTiro,piano.centroTiro));
     cam.lerp(camB,w);
   }
+  avvicinaPalla(camera,piano,w);
   camera.position.copy(cam); camera.lookAt(cam.x-piano.indietro.x,cam.y-piano.indietro.y,cam.z-piano.indietro.z);
   camera.updateMatrixWorld(true);
   return 0;

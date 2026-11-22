@@ -1,0 +1,2658 @@
+{
+ "nota": "Traiettorie imposte dopo doShoot per isolare il portiere; metadati reali, portiere controllato e neutro, difficoltà media, valori delle squadre normalizzati. Primo evento: una respinta può ancora entrare successivamente. Le frequenze non rappresentano partite complete.",
+ "raggioFisicoAtteso": 0.1106,
+ "gruppi": [
+  {
+   "distanza": 3,
+   "potenza": 0.42,
+   "n": 80,
+   "esiti": {
+    "PRESA": 0,
+    "RESPINTA": 0,
+    "GOL": 80,
+    "FUORI": 0,
+    "ACQUA": 0,
+    "NESSUN_ESITO": 0
+   },
+   "squadre": [
+    {
+     "n": 40,
+     "prese": 0,
+     "gol": 40
+    },
+    {
+     "n": 40,
+     "prese": 0,
+     "gol": 40
+    }
+   ],
+   "preseDirette": 0
+  },
+  {
+   "distanza": 3,
+   "potenza": 0.9,
+   "n": 80,
+   "esiti": {
+    "PRESA": 0,
+    "RESPINTA": 0,
+    "GOL": 80,
+    "FUORI": 0,
+    "ACQUA": 0,
+    "NESSUN_ESITO": 0
+   },
+   "squadre": [
+    {
+     "n": 40,
+     "prese": 0,
+     "gol": 40
+    },
+    {
+     "n": 40,
+     "prese": 0,
+     "gol": 40
+    }
+   ],
+   "preseDirette": 0
+  },
+  {
+   "distanza": 8,
+   "potenza": 0.42,
+   "n": 80,
+   "esiti": {
+    "PRESA": 6,
+    "RESPINTA": 34,
+    "GOL": 40,
+    "FUORI": 0,
+    "ACQUA": 0,
+    "NESSUN_ESITO": 0
+   },
+   "squadre": [
+    {
+     "n": 40,
+     "prese": 3,
+     "gol": 20
+    },
+    {
+     "n": 40,
+     "prese": 3,
+     "gol": 20
+    }
+   ],
+   "preseDirette": 0.075
+  },
+  {
+   "distanza": 8,
+   "potenza": 0.9,
+   "n": 80,
+   "esiti": {
+    "PRESA": 6,
+    "RESPINTA": 26,
+    "GOL": 48,
+    "FUORI": 0,
+    "ACQUA": 0,
+    "NESSUN_ESITO": 0
+   },
+   "squadre": [
+    {
+     "n": 40,
+     "prese": 3,
+     "gol": 24
+    },
+    {
+     "n": 40,
+     "prese": 3,
+     "gol": 24
+    }
+   ],
+   "preseDirette": 0.075
+  }
+ ],
+ "simmetria": {
+  "coppie": 160,
+  "esitiDiversi": 0,
+  "differenze": []
+ },
+ "provenienza": {
+  "prima": false,
+  "build": "sorgenti v0.71",
+  "campioniPerGruppo": 80
+ },
+ "mirati": [
+  {
+   "nome": "centro-torace-1-30",
+   "dir": 1,
+   "fps": 30,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.4,
+    0
+   ],
+   "esito": "RESPINTA",
+   "frames": 3,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    11.433037757873535,
+    0.4084664583206177,
+    -1.4094801950240194e-17
+   ],
+   "golNelFrame": false,
+   "controlloPortiere": true,
+   "contatto": {
+    "parte": "testa",
+    "punto": [
+     11.455936778684894,
+     0.40617589228356277,
+     0
+    ],
+    "normale": [
+     -0.9034039298573083,
+     -0.4287905543716786,
+     -2.953655786366701e-17
+    ],
+    "velocita": 24.50242803434133
+   },
+   "tentativo": {
+    "probabilita": 0.5151602225168722,
+    "riuscita": false,
+    "progresso": 0
+   },
+   "atteso": "contatto"
+  },
+  {
+   "nome": "centro-testa-1-30",
+   "dir": 1,
+   "fps": 30,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.65,
+    0
+   ],
+   "esito": "RESPINTA",
+   "frames": 3,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    11.412724494934082,
+    0.8460237383842468,
+    -1.4425806544159413e-17
+   ],
+   "golNelFrame": false,
+   "controlloPortiere": true,
+   "contatto": {
+    "parte": "testa",
+    "punto": [
+     11.452435322036532,
+     0.6562143392146693,
+     0
+    ],
+    "normale": [
+     -0.9150521555670932,
+     0.4033355335102728,
+     -2.953655786366696e-17
+    ],
+    "velocita": 24.50242803434133
+   },
+   "tentativo": {
+    "probabilita": 0.5151602225168722,
+    "riuscita": false,
+    "progresso": 0
+   },
+   "atteso": "contatto"
+  },
+  {
+   "nome": "lato-destro-1-30",
+   "dir": 1,
+   "fps": 30,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.6,
+    1.15
+   ],
+   "esito": "GOL",
+   "frames": 4,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    12.795089721679688,
+    0.5753265023231506,
+    1.149999976158142
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.2658272063335561,
+    "riuscita": false,
+    "progresso": 0.014265315492366771
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "lato-sinistro-1-30",
+   "dir": 1,
+   "fps": 30,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.6,
+    -1.15
+   ],
+   "esito": "GOL",
+   "frames": 4,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    12.795089721679688,
+    0.5753265023231506,
+    -1.149999976158142
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.2658272063335561,
+    "riuscita": false,
+    "progresso": 0.014265315492367215
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "sopra-spalla-destra-1-30",
+   "dir": 1,
+   "fps": 30,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.72,
+    0.38
+   ],
+   "esito": "GOL",
+   "frames": 4,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    12.795089721679688,
+    0.6953265070915222,
+    0.3799999952316284
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.5157403731982915,
+    "riuscita": false,
+    "progresso": 0.0024173694637605564
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "sopra-spalla-sinistra-1-30",
+   "dir": 1,
+   "fps": 30,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.72,
+    -0.38
+   ],
+   "esito": "GOL",
+   "frames": 4,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    12.795089721679688,
+    0.6953265070915222,
+    -0.3799999952316284
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.5157403731982915,
+    "riuscita": false,
+    "progresso": 0.002417369463760591
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "centro-torace-1-60",
+   "dir": 1,
+   "fps": 60,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.4,
+    0
+   ],
+   "esito": "RESPINTA",
+   "frames": 5,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    11.455033374755036,
+    0.4057471017291911,
+    -2.9536557863667016e-20
+   ],
+   "golNelFrame": false,
+   "controlloPortiere": true,
+   "contatto": {
+    "parte": "testa",
+    "punto": [
+     11.455936778684894,
+     0.40617589228356277,
+     0
+    ],
+    "normale": [
+     -0.9034039298573086,
+     -0.4287905543716783,
+     -2.9536557863667015e-17
+    ],
+    "velocita": 24.50242803434133
+   },
+   "tentativo": {
+    "probabilita": 0.5151602225168722,
+    "riuscita": false,
+    "progresso": 0
+   },
+   "atteso": "contatto"
+  },
+  {
+   "nome": "centro-testa-1-60",
+   "dir": 1,
+   "fps": 60,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.65,
+    0
+   ],
+   "esito": "RESPINTA",
+   "frames": 5,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    11.451520269880964,
+    0.6566176747481796,
+    -2.9536557863666974e-20
+   ],
+   "golNelFrame": false,
+   "controlloPortiere": true,
+   "contatto": {
+    "parte": "testa",
+    "punto": [
+     11.452435322036532,
+     0.6562143392146693,
+     0
+    ],
+    "normale": [
+     -0.9150521555670935,
+     0.40333553351027207,
+     -2.953655786366697e-17
+    ],
+    "velocita": 24.50242803434133
+   },
+   "tentativo": {
+    "probabilita": 0.5151602225168722,
+    "riuscita": false,
+    "progresso": 0
+   },
+   "atteso": "contatto"
+  },
+  {
+   "nome": "lato-destro-1-60",
+   "dir": 1,
+   "fps": 60,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.6,
+    1.15
+   ],
+   "esito": "GOL",
+   "frames": 8,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    12.795089721679688,
+    0.5753265023231506,
+    1.149999976158142
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.2658272063335561,
+    "riuscita": false,
+    "progresso": 0.014265315492368221
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "lato-sinistro-1-60",
+   "dir": 1,
+   "fps": 60,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.6,
+    -1.15
+   ],
+   "esito": "GOL",
+   "frames": 8,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    12.795089721679688,
+    0.5753265023231506,
+    -1.149999976158142
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.2658272063335561,
+    "riuscita": false,
+    "progresso": 0.0142653154923683
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "sopra-spalla-destra-1-60",
+   "dir": 1,
+   "fps": 60,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.72,
+    0.38
+   ],
+   "esito": "GOL",
+   "frames": 8,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    12.795089721679688,
+    0.6953265070915222,
+    0.3799999952316284
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.5157403731982915,
+    "riuscita": false,
+    "progresso": 0.0024173694637607233
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "sopra-spalla-sinistra-1-60",
+   "dir": 1,
+   "fps": 60,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.72,
+    -0.38
+   ],
+   "esito": "GOL",
+   "frames": 8,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    12.795089721679688,
+    0.6953265070915222,
+    -0.3799999952316284
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.5157403731982915,
+    "riuscita": false,
+    "progresso": 0.002417369463760758
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "centro-torace-1-120",
+   "dir": 1,
+   "fps": 120,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.4,
+    0
+   ],
+   "esito": "RESPINTA",
+   "frames": 10,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    11.45470507297097,
+    0.40597396343970565,
+    -2.9536557863666986e-20
+   ],
+   "golNelFrame": false,
+   "controlloPortiere": true,
+   "contatto": {
+    "parte": "testa",
+    "punto": [
+     11.455609565434594,
+     0.40640045304479255,
+     0
+    ],
+    "normale": [
+     -0.904492463624106,
+     -0.42648960508691813,
+     -2.9536557863666984e-17
+    ],
+    "velocita": 24.50242803434133
+   },
+   "tentativo": {
+    "probabilita": 0.5151602225168722,
+    "riuscita": false,
+    "progresso": 0
+   },
+   "atteso": "contatto"
+  },
+  {
+   "nome": "centro-testa-1-120",
+   "dir": 1,
+   "fps": 120,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.65,
+    0
+   ],
+   "esito": "RESPINTA",
+   "frames": 10,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    11.451822784874196,
+    0.6568423924700872,
+    -2.9536557863667016e-20
+   ],
+   "golNelFrame": false,
+   "controlloPortiere": true,
+   "contatto": {
+    "parte": "testa",
+    "punto": [
+     11.452736833995965,
+     0.6564367889654282,
+     0
+    ],
+    "normale": [
+     -0.9140491217699113,
+     0.40560350465898815,
+     -2.9536557863667015e-17
+    ],
+    "velocita": 24.50242803434133
+   },
+   "tentativo": {
+    "probabilita": 0.5151602225168722,
+    "riuscita": false,
+    "progresso": 0
+   },
+   "atteso": "contatto"
+  },
+  {
+   "nome": "lato-destro-1-120",
+   "dir": 1,
+   "fps": 120,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.6,
+    1.15
+   ],
+   "esito": "GOL",
+   "frames": 15,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    12.596256256103516,
+    0.5818669199943542,
+    1.149999976158142
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.2633463890205663,
+    "riuscita": false,
+    "progresso": 0.0016809484867781306
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "lato-sinistro-1-120",
+   "dir": 1,
+   "fps": 120,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.6,
+    -1.15
+   ],
+   "esito": "GOL",
+   "frames": 15,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    12.596256256103516,
+    0.5818669199943542,
+    -1.149999976158142
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.26334638902056634,
+    "riuscita": false,
+    "progresso": 0.0016809484867807208
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "sopra-spalla-destra-1-120",
+   "dir": 1,
+   "fps": 120,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.72,
+    0.38
+   ],
+   "esito": "GOL",
+   "frames": 15,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    12.596256256103516,
+    0.7018669247627258,
+    0.3799999952316284
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.5154519132736486,
+    "riuscita": false,
+    "progresso": 0.000285136051931373
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "sopra-spalla-sinistra-1-120",
+   "dir": 1,
+   "fps": 120,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.72,
+    -0.38
+   ],
+   "esito": "GOL",
+   "frames": 15,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    12.596256256103516,
+    0.7018669247627258,
+    -0.3799999952316284
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.5154519132736486,
+    "riuscita": false,
+    "progresso": 0.0002851360519313739
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "centro-torace--1-30",
+   "dir": -1,
+   "fps": 30,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.4,
+    0
+   ],
+   "esito": "RESPINTA",
+   "frames": 3,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -11.433037757873535,
+    0.4084664583206177,
+    0
+   ],
+   "golNelFrame": false,
+   "controlloPortiere": true,
+   "contatto": {
+    "parte": "testa",
+    "punto": [
+     -11.455936778684894,
+     0.40617589228356277,
+     0
+    ],
+    "normale": [
+     0.903403929857308,
+     -0.42879055437167934,
+     0
+    ],
+    "velocita": 24.50242803434133
+   },
+   "tentativo": {
+    "probabilita": 0.5151602225168722,
+    "riuscita": false,
+    "progresso": 0
+   },
+   "atteso": "contatto"
+  },
+  {
+   "nome": "centro-testa--1-30",
+   "dir": -1,
+   "fps": 30,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.65,
+    0
+   ],
+   "esito": "RESPINTA",
+   "frames": 3,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -11.412724494934082,
+    0.8460237383842468,
+    0
+   ],
+   "golNelFrame": false,
+   "controlloPortiere": true,
+   "contatto": {
+    "parte": "testa",
+    "punto": [
+     -11.452435322036532,
+     0.6562143392146693,
+     0
+    ],
+    "normale": [
+     0.9150521555670935,
+     0.40333553351027207,
+     0
+    ],
+    "velocita": 24.50242803434133
+   },
+   "tentativo": {
+    "probabilita": 0.5151602225168722,
+    "riuscita": false,
+    "progresso": 0
+   },
+   "atteso": "contatto"
+  },
+  {
+   "nome": "lato-destro--1-30",
+   "dir": -1,
+   "fps": 30,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.6,
+    1.15
+   ],
+   "esito": "GOL",
+   "frames": 4,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -12.795089721679688,
+    0.5753265023231506,
+    -1.149999976158142
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.26582720633355617,
+    "riuscita": false,
+    "progresso": 0.014265315492368221
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "lato-sinistro--1-30",
+   "dir": -1,
+   "fps": 30,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.6,
+    -1.15
+   ],
+   "esito": "GOL",
+   "frames": 4,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -12.795089721679688,
+    0.5753265023231506,
+    1.149999976158142
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.26582720633355617,
+    "riuscita": false,
+    "progresso": 0.014265315492368221
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "sopra-spalla-destra--1-30",
+   "dir": -1,
+   "fps": 30,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.72,
+    0.38
+   ],
+   "esito": "GOL",
+   "frames": 4,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -12.795089721679688,
+    0.6953265070915222,
+    -0.3799999952316284
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.5157403731982915,
+    "riuscita": false,
+    "progresso": 0.00241736946376075
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "sopra-spalla-sinistra--1-30",
+   "dir": -1,
+   "fps": 30,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.72,
+    -0.38
+   ],
+   "esito": "GOL",
+   "frames": 4,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -12.795089721679688,
+    0.6953265070915222,
+    0.3799999952316284
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.5157403731982915,
+    "riuscita": false,
+    "progresso": 0.00241736946376075
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "centro-torace--1-60",
+   "dir": -1,
+   "fps": 60,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.4,
+    0
+   ],
+   "esito": "RESPINTA",
+   "frames": 5,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -11.455033374755036,
+    0.4057471017291911,
+    0
+   ],
+   "golNelFrame": false,
+   "controlloPortiere": true,
+   "contatto": {
+    "parte": "testa",
+    "punto": [
+     -11.455936778684894,
+     0.40617589228356277,
+     0
+    ],
+    "normale": [
+     0.903403929857309,
+     -0.42879055437167707,
+     0
+    ],
+    "velocita": 24.50242803434133
+   },
+   "tentativo": {
+    "probabilita": 0.5151602225168722,
+    "riuscita": false,
+    "progresso": 0
+   },
+   "atteso": "contatto"
+  },
+  {
+   "nome": "centro-testa--1-60",
+   "dir": -1,
+   "fps": 60,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.65,
+    0
+   ],
+   "esito": "RESPINTA",
+   "frames": 5,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -11.451520269880966,
+    0.6566176747481796,
+    0
+   ],
+   "golNelFrame": false,
+   "controlloPortiere": true,
+   "contatto": {
+    "parte": "testa",
+    "punto": [
+     -11.452435322036534,
+     0.6562143392146693,
+     0
+    ],
+    "normale": [
+     0.9150521555670916,
+     0.4033355335102765,
+     0
+    ],
+    "velocita": 24.50242803434133
+   },
+   "tentativo": {
+    "probabilita": 0.5151602225168722,
+    "riuscita": false,
+    "progresso": 0
+   },
+   "atteso": "contatto"
+  },
+  {
+   "nome": "lato-destro--1-60",
+   "dir": -1,
+   "fps": 60,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.6,
+    1.15
+   ],
+   "esito": "GOL",
+   "frames": 8,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -12.795089721679688,
+    0.5753265023231506,
+    -1.149999976158142
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.26582720633355605,
+    "riuscita": false,
+    "progresso": 0.014265315492364115
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "lato-sinistro--1-60",
+   "dir": -1,
+   "fps": 60,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.6,
+    -1.15
+   ],
+   "esito": "GOL",
+   "frames": 8,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -12.795089721679688,
+    0.5753265023231506,
+    1.149999976158142
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.26582720633355605,
+    "riuscita": false,
+    "progresso": 0.014265315492364115
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "sopra-spalla-destra--1-60",
+   "dir": -1,
+   "fps": 60,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.72,
+    0.38
+   ],
+   "esito": "GOL",
+   "frames": 8,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -12.795089721679688,
+    0.6953265070915222,
+    -0.3799999952316284
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.5157403731982915,
+    "riuscita": false,
+    "progresso": 0.0024173694637600685
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "sopra-spalla-sinistra--1-60",
+   "dir": -1,
+   "fps": 60,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.72,
+    -0.38
+   ],
+   "esito": "GOL",
+   "frames": 8,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -12.795089721679688,
+    0.6953265070915222,
+    0.3799999952316284
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.5157403731982915,
+    "riuscita": false,
+    "progresso": 0.0024173694637609254
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "centro-torace--1-120",
+   "dir": -1,
+   "fps": 120,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.4,
+    0
+   ],
+   "esito": "RESPINTA",
+   "frames": 10,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -11.45470507297097,
+    0.40597396343970565,
+    0
+   ],
+   "golNelFrame": false,
+   "controlloPortiere": true,
+   "contatto": {
+    "parte": "testa",
+    "punto": [
+     -11.455609565434594,
+     0.40640045304479255,
+     0
+    ],
+    "normale": [
+     0.9044924636241082,
+     -0.42648960508691347,
+     0
+    ],
+    "velocita": 24.50242803434133
+   },
+   "tentativo": {
+    "probabilita": 0.5151602225168722,
+    "riuscita": false,
+    "progresso": 0
+   },
+   "atteso": "contatto"
+  },
+  {
+   "nome": "centro-testa--1-120",
+   "dir": -1,
+   "fps": 120,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.65,
+    0
+   ],
+   "esito": "RESPINTA",
+   "frames": 10,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -11.451822784874198,
+    0.6568423924700872,
+    0
+   ],
+   "golNelFrame": false,
+   "controlloPortiere": true,
+   "contatto": {
+    "parte": "testa",
+    "punto": [
+     -11.452736833995967,
+     0.6564367889654282,
+     0
+    ],
+    "normale": [
+     0.9140491217699084,
+     0.4056035046589951,
+     0
+    ],
+    "velocita": 24.50242803434133
+   },
+   "tentativo": {
+    "probabilita": 0.5151602225168722,
+    "riuscita": false,
+    "progresso": 0
+   },
+   "atteso": "contatto"
+  },
+  {
+   "nome": "lato-destro--1-120",
+   "dir": -1,
+   "fps": 120,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.6,
+    1.15
+   ],
+   "esito": "GOL",
+   "frames": 15,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -12.596256256103516,
+    0.5818669199943542,
+    -1.149999976158142
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.2633463890205662,
+    "riuscita": false,
+    "progresso": 0.0016809484867754427
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "lato-sinistro--1-120",
+   "dir": -1,
+   "fps": 120,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.6,
+    -1.15
+   ],
+   "esito": "GOL",
+   "frames": 15,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -12.596256256103516,
+    0.5818669199943542,
+    1.149999976158142
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.2633463890205662,
+    "riuscita": false,
+    "progresso": 0.0016809484867754427
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "sopra-spalla-destra--1-120",
+   "dir": -1,
+   "fps": 120,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.72,
+    0.38
+   ],
+   "esito": "GOL",
+   "frames": 15,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -12.596256256103516,
+    0.7018669247627258,
+    -0.3799999952316284
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.5154519132736486,
+    "riuscita": false,
+    "progresso": 0.00028513605193047426
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "sopra-spalla-sinistra--1-120",
+   "dir": -1,
+   "fps": 120,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.72,
+    -0.38
+   ],
+   "esito": "GOL",
+   "frames": 15,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -12.596256256103516,
+    0.7018669247627258,
+    0.3799999952316284
+   ],
+   "golNelFrame": true,
+   "controlloPortiere": true,
+   "contatto": null,
+   "tentativo": {
+    "probabilita": 0.5154519132736486,
+    "riuscita": false,
+    "progresso": 0.00028513605193047426
+   },
+   "atteso": "gol"
+  },
+  {
+   "nome": "stesso-frame-1",
+   "dir": 1,
+   "fps": 30,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.4,
+    0
+   ],
+   "esito": "RESPINTA",
+   "frames": 1,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    11.747472763061523,
+    0.4022446572780609,
+    -1.6274469186431725e-17
+   ],
+   "golNelFrame": false,
+   "controlloPortiere": true,
+   "contatto": {
+    "parte": "testa",
+    "punto": [
+     11.75,
+     0.4,
+     0
+    ],
+    "normale": [
+     -0.8796627942040907,
+     -0.47559790631693455,
+     -3.433078080470386e-17
+    ],
+    "velocita": 24.869825225383874
+   },
+   "tentativo": {
+    "probabilita": 0.39420013037809654,
+    "riuscita": false,
+    "progresso": 0
+   },
+   "traccia": [
+    {
+     "frame": 1,
+     "tempo": 0.03333333333333333,
+     "palla": [
+      11.747472763061523,
+      0.4022446572780609,
+      -1.6274469186431725e-17
+     ],
+     "stato": "flight",
+     "tipo": "rebound",
+     "contatto": {
+      "parte": "testa",
+      "punto": [
+       11.75,
+       0.4,
+       0
+      ],
+      "normale": [
+       -0.8796627942040907,
+       -0.47559790631693455,
+       -3.433078080470386e-17
+      ]
+     }
+    }
+   ],
+   "atteso": "contatto",
+   "stessoFrame": true
+  },
+  {
+   "nome": "stesso-frame--1",
+   "dir": -1,
+   "fps": 30,
+   "distanza": 3,
+   "potenza": 0.9,
+   "velocita": 25,
+   "bersaglio": [
+    0.4,
+    0
+   ],
+   "esito": "RESPINTA",
+   "frames": 1,
+   "movimentoGK": 0,
+   "pallaFinale": [
+    -11.747472763061523,
+    0.4022446572780609,
+    0
+   ],
+   "golNelFrame": false,
+   "controlloPortiere": true,
+   "contatto": {
+    "parte": "testa",
+    "punto": [
+     -11.75,
+     0.4,
+     0
+    ],
+    "normale": [
+     0.8796627942040907,
+     -0.47559790631693455,
+     0
+    ],
+    "velocita": 24.869825225383874
+   },
+   "tentativo": {
+    "probabilita": 0.39420013037809654,
+    "riuscita": false,
+    "progresso": 0
+   },
+   "traccia": [
+    {
+     "frame": 1,
+     "tempo": 0.03333333333333333,
+     "palla": [
+      -11.747472763061523,
+      0.4022446572780609,
+      0
+     ],
+     "stato": "flight",
+     "tipo": "rebound",
+     "contatto": {
+      "parte": "testa",
+      "punto": [
+       -11.75,
+       0.4,
+       0
+      ],
+      "normale": [
+       0.8796627942040907,
+       -0.47559790631693455,
+       0
+      ]
+     }
+    }
+   ],
+   "atteso": "contatto",
+   "stessoFrame": true
+  }
+ ],
+ "muri": [
+  {
+   "nome": "muro-striscio-1",
+   "tipo": "striscio",
+   "dir": 1,
+   "deviazione": {
+    "frame": 9,
+    "punto": [
+     7.951360702514648,
+     0.736492931842804,
+     0
+    ],
+    "prima": [
+     22.336875915527344,
+     0.31987786293029785,
+     0
+    ],
+    "dopo": [
+     20.811178390721775,
+     0.1393692322603756,
+     -0.4838798550794165
+    ],
+    "portiere": false,
+    "stessaDirezione": true
+   },
+   "esito": "GOL",
+   "movimentoDifensore": 0,
+   "controlloDifensore": true,
+   "portiereLaterale": 6.219096890676357,
+   "contattoPortiere": null,
+   "pendingGK": false,
+   "parataRegistrata": false,
+   "gol": 1,
+   "parate": 0,
+   "traccia": [
+    {
+     "frame": 1,
+     "palla": [
+      4.897211074829102,
+      0.6267163157463074,
+      0
+     ],
+     "velocita": [
+      23.751644134521484,
+      1.5209859609603882,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 2,
+     "palla": [
+      5.29084587097168,
+      0.6504812240600586,
+      0
+     ],
+     "velocita": [
+      23.538440704345703,
+      1.3445490598678589,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 3,
+     "palla": [
+      5.680967330932617,
+      0.6713231801986694,
+      0
+     ],
+     "velocita": [
+      23.329120635986328,
+      1.1698030233383179,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 4,
+     "palla": [
+      6.06764030456543,
+      0.6892698407173157,
+      0
+     ],
+     "velocita": [
+      23.123567581176758,
+      0.9967017769813538,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 5,
+     "palla": [
+      6.450925827026367,
+      0.7043482661247253,
+      0
+     ],
+     "velocita": [
+      22.921669006347656,
+      0.8252012133598328,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 6,
+     "palla": [
+      6.830883026123047,
+      0.7165845036506653,
+      0
+     ],
+     "velocita": [
+      22.72332191467285,
+      0.6552576422691345,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 7,
+     "palla": [
+      7.207571029663086,
+      0.7260042428970337,
+      0
+     ],
+     "velocita": [
+      22.528423309326172,
+      0.48682981729507446,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 8,
+     "palla": [
+      7.581047058105469,
+      0.7326322793960571,
+      0
+     ],
+     "velocita": [
+      22.336875915527344,
+      0.31987786293029785,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 9,
+     "palla": [
+      7.951360702514648,
+      0.736492931842804,
+      0
+     ],
+     "velocita": [
+      20.811178390721775,
+      0.1393692322603756,
+      -0.4838798550794165
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 10,
+     "palla": [
+      8.296507835388184,
+      0.7373614311218262,
+      -0.00802497286349535
+     ],
+     "velocita": [
+      20.647621154785156,
+      -0.024578038603067398,
+      -0.48007702827453613
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 11,
+     "palla": [
+      8.63895320892334,
+      0.735511064529419,
+      -0.015987185761332512
+     ],
+     "velocita": [
+      20.48661994934082,
+      -0.18724212050437927,
+      -0.4763335585594177
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 12,
+     "palla": [
+      8.978743553161621,
+      0.7309625744819641,
+      -0.02388761006295681
+     ],
+     "velocita": [
+      20.328102111816406,
+      -0.34865278005599976,
+      -0.47264784574508667
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 13,
+     "palla": [
+      9.315917015075684,
+      0.7237366437911987,
+      -0.031727198511362076
+     ],
+     "velocita": [
+      20.172000885009766,
+      -0.5088384747505188,
+      -0.4690183401107788
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 14,
+     "palla": [
+      9.650511741638184,
+      0.7138535976409912,
+      -0.039506856352090836
+     ],
+     "velocita": [
+      20.01824951171875,
+      -0.6678261756896973,
+      -0.46544349193573
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 15,
+     "palla": [
+      9.982569694519043,
+      0.7013329267501831,
+      -0.04722750559449196
+     ],
+     "velocita": [
+      19.86678695678711,
+      -0.8256427645683289,
+      -0.4619218707084656
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 16,
+     "palla": [
+      10.312125205993652,
+      0.6861939430236816,
+      -0.054889995604753494
+     ],
+     "velocita": [
+      19.717552185058594,
+      -0.9823135137557983,
+      -0.458452045917511
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 17,
+     "palla": [
+      10.639212608337402,
+      0.6684554815292358,
+      -0.06249517574906349
+     ],
+     "velocita": [
+      19.570486068725586,
+      -1.1378636360168457,
+      -0.455032616853714
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 18,
+     "palla": [
+      10.963873863220215,
+      0.6481360197067261,
+      -0.0700438916683197
+     ],
+     "velocita": [
+      19.425533294677734,
+      -1.2923158407211304,
+      -0.4516622722148895
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 19,
+     "palla": [
+      11.286147117614746,
+      0.6252534985542297,
+      -0.07753691077232361
+     ],
+     "velocita": [
+      19.28263282775879,
+      -1.445692539215088,
+      -0.44833970069885254
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 20,
+     "palla": [
+      11.60605525970459,
+      0.5998257398605347,
+      -0.08497503399848938
+     ],
+     "velocita": [
+      19.141735076904297,
+      -1.5980151891708374,
+      -0.44506368041038513
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 21,
+     "palla": [
+      11.923636436462402,
+      0.5718700289726257,
+      -0.09235906600952148
+     ],
+     "velocita": [
+      19.002784729003906,
+      -1.7493045330047607,
+      -0.441832959651947
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 22,
+     "palla": [
+      12.238917350769043,
+      0.5414034724235535,
+      -0.09968969225883484
+     ],
+     "velocita": [
+      18.86573600769043,
+      -1.8995803594589233,
+      -0.4386464059352875
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 23,
+     "palla": [
+      12.551932334899902,
+      0.508442759513855,
+      -0.10696768760681152
+     ],
+     "velocita": [
+      18.73053550720215,
+      -2.0488617420196533,
+      -0.4355028569698334
+     ],
+     "tipo": "rebound",
+     "stato": "dead"
+    }
+   ]
+  },
+  {
+   "nome": "muro-pieno-1",
+   "tipo": "pieno",
+   "dir": 1,
+   "deviazione": {
+    "frame": 9,
+    "punto": [
+     7.951360702514648,
+     0.736492931842804,
+     0
+    ],
+    "prima": [
+     22.336875915527344,
+     0.31987786293029785,
+     0
+    ],
+    "dopo": [
+     -6.634970286590017,
+     -0.4729503847108838,
+     0
+    ],
+    "portiere": false,
+    "stessaDirezione": false
+   },
+   "esito": "TORNA_IN_CAMPO",
+   "movimentoDifensore": 0,
+   "controlloDifensore": true,
+   "portiereLaterale": 6.559917374636909,
+   "contattoPortiere": null,
+   "pendingGK": false,
+   "parataRegistrata": false,
+   "gol": 0,
+   "parate": 0,
+   "traccia": [
+    {
+     "frame": 1,
+     "palla": [
+      4.897211074829102,
+      0.6267163157463074,
+      0
+     ],
+     "velocita": [
+      23.751644134521484,
+      1.5209859609603882,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 2,
+     "palla": [
+      5.29084587097168,
+      0.6504812240600586,
+      0
+     ],
+     "velocita": [
+      23.538440704345703,
+      1.3445490598678589,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 3,
+     "palla": [
+      5.680967330932617,
+      0.6713231801986694,
+      0
+     ],
+     "velocita": [
+      23.329120635986328,
+      1.1698030233383179,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 4,
+     "palla": [
+      6.06764030456543,
+      0.6892698407173157,
+      0
+     ],
+     "velocita": [
+      23.123567581176758,
+      0.9967017769813538,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 5,
+     "palla": [
+      6.450925827026367,
+      0.7043482661247253,
+      0
+     ],
+     "velocita": [
+      22.921669006347656,
+      0.8252012133598328,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 6,
+     "palla": [
+      6.830883026123047,
+      0.7165845036506653,
+      0
+     ],
+     "velocita": [
+      22.72332191467285,
+      0.6552576422691345,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 7,
+     "palla": [
+      7.207571029663086,
+      0.7260042428970337,
+      0
+     ],
+     "velocita": [
+      22.528423309326172,
+      0.48682981729507446,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 8,
+     "palla": [
+      7.581047058105469,
+      0.7326322793960571,
+      0
+     ],
+     "velocita": [
+      22.336875915527344,
+      0.31987786293029785,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 9,
+     "palla": [
+      7.951360702514648,
+      0.736492931842804,
+      0
+     ],
+     "velocita": [
+      -6.634970286590017,
+      -0.4729503847108838,
+      0
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 10,
+     "palla": [
+      7.840951919555664,
+      0.7271777987480164,
+      0
+     ],
+     "velocita": [
+      -6.618229389190674,
+      -0.6349354386329651,
+      0
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 11,
+     "palla": [
+      7.730823516845703,
+      0.7151670455932617,
+      0
+     ],
+     "velocita": [
+      -6.601534843444824,
+      -0.7965121865272522,
+      0
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 12,
+     "palla": [
+      7.6209716796875,
+      0.7004677653312683,
+      0
+     ],
+     "velocita": [
+      -6.58487606048584,
+      -0.9576805233955383,
+      0
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    }
+   ]
+  },
+  {
+   "nome": "muro-striscio--1",
+   "tipo": "striscio",
+   "dir": -1,
+   "deviazione": {
+    "frame": 9,
+    "punto": [
+     -7.951360702514648,
+     0.736492931842804,
+     0
+    ],
+    "prima": [
+     -22.336875915527344,
+     0.31987786293029785,
+     0
+    ],
+    "dopo": [
+     -20.811178390721775,
+     0.1393692322603756,
+     0.4838798550794165
+    ],
+    "portiere": false,
+    "stessaDirezione": true
+   },
+   "esito": "GOL",
+   "movimentoDifensore": 0,
+   "controlloDifensore": true,
+   "portiereLaterale": -6.219096890676357,
+   "contattoPortiere": null,
+   "pendingGK": false,
+   "parataRegistrata": false,
+   "gol": 1,
+   "parate": 0,
+   "traccia": [
+    {
+     "frame": 1,
+     "palla": [
+      -4.897211074829102,
+      0.6267163157463074,
+      0
+     ],
+     "velocita": [
+      -23.751644134521484,
+      1.5209859609603882,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 2,
+     "palla": [
+      -5.29084587097168,
+      0.6504812240600586,
+      0
+     ],
+     "velocita": [
+      -23.538440704345703,
+      1.3445490598678589,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 3,
+     "palla": [
+      -5.680967330932617,
+      0.6713231801986694,
+      0
+     ],
+     "velocita": [
+      -23.329120635986328,
+      1.1698030233383179,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 4,
+     "palla": [
+      -6.06764030456543,
+      0.6892698407173157,
+      0
+     ],
+     "velocita": [
+      -23.123567581176758,
+      0.9967017769813538,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 5,
+     "palla": [
+      -6.450925827026367,
+      0.7043482661247253,
+      0
+     ],
+     "velocita": [
+      -22.921669006347656,
+      0.8252012133598328,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 6,
+     "palla": [
+      -6.830883026123047,
+      0.7165845036506653,
+      0
+     ],
+     "velocita": [
+      -22.72332191467285,
+      0.6552576422691345,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 7,
+     "palla": [
+      -7.207571029663086,
+      0.7260042428970337,
+      0
+     ],
+     "velocita": [
+      -22.528423309326172,
+      0.48682981729507446,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 8,
+     "palla": [
+      -7.581047058105469,
+      0.7326322793960571,
+      0
+     ],
+     "velocita": [
+      -22.336875915527344,
+      0.31987786293029785,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 9,
+     "palla": [
+      -7.951360702514648,
+      0.736492931842804,
+      0
+     ],
+     "velocita": [
+      -20.811178390721775,
+      0.1393692322603756,
+      0.4838798550794165
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 10,
+     "palla": [
+      -8.296507835388184,
+      0.7373614311218262,
+      0.00802497286349535
+     ],
+     "velocita": [
+      -20.647621154785156,
+      -0.024578038603067398,
+      0.48007702827453613
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 11,
+     "palla": [
+      -8.63895320892334,
+      0.735511064529419,
+      0.015987185761332512
+     ],
+     "velocita": [
+      -20.48661994934082,
+      -0.18724212050437927,
+      0.4763335585594177
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 12,
+     "palla": [
+      -8.978743553161621,
+      0.7309625744819641,
+      0.02388761006295681
+     ],
+     "velocita": [
+      -20.328102111816406,
+      -0.34865278005599976,
+      0.47264784574508667
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 13,
+     "palla": [
+      -9.315917015075684,
+      0.7237366437911987,
+      0.031727198511362076
+     ],
+     "velocita": [
+      -20.172000885009766,
+      -0.5088384747505188,
+      0.4690183401107788
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 14,
+     "palla": [
+      -9.650511741638184,
+      0.7138535976409912,
+      0.039506856352090836
+     ],
+     "velocita": [
+      -20.01824951171875,
+      -0.6678261756896973,
+      0.46544349193573
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 15,
+     "palla": [
+      -9.982569694519043,
+      0.7013329267501831,
+      0.04722750559449196
+     ],
+     "velocita": [
+      -19.86678695678711,
+      -0.8256427645683289,
+      0.4619218707084656
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 16,
+     "palla": [
+      -10.312125205993652,
+      0.6861939430236816,
+      0.054889995604753494
+     ],
+     "velocita": [
+      -19.717552185058594,
+      -0.9823135137557983,
+      0.458452045917511
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 17,
+     "palla": [
+      -10.639212608337402,
+      0.6684554815292358,
+      0.06249517574906349
+     ],
+     "velocita": [
+      -19.570486068725586,
+      -1.1378636360168457,
+      0.455032616853714
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 18,
+     "palla": [
+      -10.963873863220215,
+      0.6481360197067261,
+      0.0700438916683197
+     ],
+     "velocita": [
+      -19.425533294677734,
+      -1.2923158407211304,
+      0.4516622722148895
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 19,
+     "palla": [
+      -11.286147117614746,
+      0.6252534985542297,
+      0.07753691077232361
+     ],
+     "velocita": [
+      -19.28263282775879,
+      -1.445692539215088,
+      0.44833970069885254
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 20,
+     "palla": [
+      -11.60605525970459,
+      0.5998257398605347,
+      0.08497503399848938
+     ],
+     "velocita": [
+      -19.141735076904297,
+      -1.5980151891708374,
+      0.44506368041038513
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 21,
+     "palla": [
+      -11.923636436462402,
+      0.5718700289726257,
+      0.09235906600952148
+     ],
+     "velocita": [
+      -19.002784729003906,
+      -1.7493045330047607,
+      0.441832959651947
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 22,
+     "palla": [
+      -12.238917350769043,
+      0.5414034724235535,
+      0.09968969225883484
+     ],
+     "velocita": [
+      -18.86573600769043,
+      -1.8995803594589233,
+      0.4386464059352875
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 23,
+     "palla": [
+      -12.551932334899902,
+      0.508442759513855,
+      0.10696768760681152
+     ],
+     "velocita": [
+      -18.73053550720215,
+      -2.0488617420196533,
+      0.4355028569698334
+     ],
+     "tipo": "rebound",
+     "stato": "dead"
+    }
+   ]
+  },
+  {
+   "nome": "muro-pieno--1",
+   "tipo": "pieno",
+   "dir": -1,
+   "deviazione": {
+    "frame": 9,
+    "punto": [
+     -7.951360702514648,
+     0.736492931842804,
+     0
+    ],
+    "prima": [
+     -22.336875915527344,
+     0.31987786293029785,
+     0
+    ],
+    "dopo": [
+     6.634970286590017,
+     -0.4729503847108838,
+     0
+    ],
+    "portiere": false,
+    "stessaDirezione": false
+   },
+   "esito": "TORNA_IN_CAMPO",
+   "movimentoDifensore": 0,
+   "controlloDifensore": true,
+   "portiereLaterale": -6.559917374636909,
+   "contattoPortiere": null,
+   "pendingGK": false,
+   "parataRegistrata": false,
+   "gol": 0,
+   "parate": 0,
+   "traccia": [
+    {
+     "frame": 1,
+     "palla": [
+      -4.897211074829102,
+      0.6267163157463074,
+      0
+     ],
+     "velocita": [
+      -23.751644134521484,
+      1.5209859609603882,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 2,
+     "palla": [
+      -5.29084587097168,
+      0.6504812240600586,
+      0
+     ],
+     "velocita": [
+      -23.538440704345703,
+      1.3445490598678589,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 3,
+     "palla": [
+      -5.680967330932617,
+      0.6713231801986694,
+      0
+     ],
+     "velocita": [
+      -23.329120635986328,
+      1.1698030233383179,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 4,
+     "palla": [
+      -6.06764030456543,
+      0.6892698407173157,
+      0
+     ],
+     "velocita": [
+      -23.123567581176758,
+      0.9967017769813538,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 5,
+     "palla": [
+      -6.450925827026367,
+      0.7043482661247253,
+      0
+     ],
+     "velocita": [
+      -22.921669006347656,
+      0.8252012133598328,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 6,
+     "palla": [
+      -6.830883026123047,
+      0.7165845036506653,
+      0
+     ],
+     "velocita": [
+      -22.72332191467285,
+      0.6552576422691345,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 7,
+     "palla": [
+      -7.207571029663086,
+      0.7260042428970337,
+      0
+     ],
+     "velocita": [
+      -22.528423309326172,
+      0.48682981729507446,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 8,
+     "palla": [
+      -7.581047058105469,
+      0.7326322793960571,
+      0
+     ],
+     "velocita": [
+      -22.336875915527344,
+      0.31987786293029785,
+      0
+     ],
+     "tipo": "shot",
+     "stato": "flight"
+    },
+    {
+     "frame": 9,
+     "palla": [
+      -7.951360702514648,
+      0.736492931842804,
+      0
+     ],
+     "velocita": [
+      6.634970286590017,
+      -0.4729503847108838,
+      0
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 10,
+     "palla": [
+      -7.840951919555664,
+      0.7271777987480164,
+      0
+     ],
+     "velocita": [
+      6.618229389190674,
+      -0.6349354386329651,
+      0
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 11,
+     "palla": [
+      -7.730823516845703,
+      0.7151670455932617,
+      0
+     ],
+     "velocita": [
+      6.601534843444824,
+      -0.7965121865272522,
+      0
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    },
+    {
+     "frame": 12,
+     "palla": [
+      -7.6209716796875,
+      0.7004677653312683,
+      0
+     ],
+     "velocita": [
+      6.58487606048584,
+      -0.9576805233955383,
+      0
+     ],
+     "tipo": "rebound",
+     "stato": "flight"
+    }
+   ]
+  }
+ ],
+ "originale_sha256": "1392328dad3c509b1e7c03f0be2cd526bca668eb999ca9203b22cfcb7a042f4b",
+ "limite": "Traiettorie iniziali imposte;320campioni primo esito.4muri invece proseguono nel ciclo RAF fino a gol/ritorno, senza correzioni della velocità dopo il contatto. Non bilancio."
+}

@@ -12,4 +12,5 @@ tests/screenshot/menu/
 tests/screenshot/tornei/
 tests/screenshot/fisica-acqua.svg
 tests/screenshot/acqua-effetti/
+tests/screenshot/portiere-v071.json
 __pycache__/

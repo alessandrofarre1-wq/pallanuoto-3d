@@ -2,7 +2,8 @@ import { presentaReplay, registraDirettaReplay } from '../replay-regia.js';
 import { trattieniMondoReplay } from '../replay.js';
 // ================= RENDER =================
 import * as THREE from 'three';
-import { BRV, HL, clamp } from '../costanti.js';
+import { HL, clamp } from '../costanti.js';
+import { quotaGalleggiamentoVistaPalla, raggioVistaPalla } from './dimensioni-palla.js';
 import { updateRig } from './pose.js';
 import { aggiornaGocce, aggiornaVisibilita, evento } from './acqua-eventi.js';
 import { animateWater, aggiornaOmbreAcqua, ball3d, camera, freccia, mirino, passMark, renderer, ring, scene, shadow, updateFoam } from './scena.js';
@@ -10,9 +11,10 @@ import { inp } from '../input.js';
 import { allPlayers, ball, ctrl, game, teams } from '../stato.js';
 import { humanPassTarget } from '../tiri.js';
 import { comparseVisibili } from '../panchina.js';
+import { TRAIETTORIE_TIRO as TIRO } from '../taratura.js';
 export const RACCORDO_PRESA=0.12;      // secondi in cui la palla disegnata arriva nella mano dopo la presa (v0.56)
 export const camPos=new THREE.Vector3(0,10.5,16), camLook=new THREE.Vector3(), _cv=new THREE.Vector3();
-export let prevBY=BRV;
+export let prevBY=quotaGalleggiamentoVistaPalla;
 let camLargo=0;
 const _wv=new THREE.Vector3(), _wq=new THREE.Quaternion();
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
@@ -27,7 +29,7 @@ export function render(dt,now){
   for(const c of comparseVisibili()) updateRig(c,dt,t);      // chi entra o esce con un cambio
   // palla
   const h=ball.holder; let by;
-  if(ball.state==='held'&&h&&h.ballW){ const w=h.ballVistaW||h.ballW; by=Math.max(BRV,w[1]); ball3d.position.set(w[0],by,w[2]);
+  if(ball.state==='held'&&h&&h.ballW){ const w=h.ballVistaW||h.ballW; by=Math.max(quotaGalleggiamentoVistaPalla,w[1]); ball3d.position.set(w[0],by,w[2]);
     // presa (v0.56): la palla disegnata non salta nella mano, ci arriva in RACCORDO_PRESA secondi da dove l'ha presa
     const rp=ball.raccordoPresa, u=rp?(game.time-rp.t)/RACCORDO_PRESA:1;
     if(rp&&u>=0&&u<1){ const k=1-u*u*(3-2*u); ball3d.position.x+=(rp.x-ball3d.position.x)*k; ball3d.position.y+=(rp.y-ball3d.position.y)*k; ball3d.position.z+=(rp.z-ball3d.position.z)*k; by=ball3d.position.y; }
@@ -45,12 +47,12 @@ export function render(dt,now){
   aggiornaVisibilita(); updateFoam(dt); aggiornaGocce(dt);
   // rotazione: in aria quella data dal tiro (e dagli urti); in acqua la palla rotola nella direzione in cui scivola; in mano gira poco
   if(ball.state==='held') _wv.set(0,0,0);
-  else if(ball.y<BRV) _wv.set(ball.vz,0,-ball.vx).multiplyScalar(4);
+  else if(ball.y<raggioVistaPalla) _wv.set(ball.vz,0,-ball.vx).multiplyScalar(4);
   else _wv.set(ball.wx||0,ball.wy||0,ball.wz||0);
   const wl=_wv.length();
   if(wl>0.01){ _wq.setFromAxisAngle(_wv.divideScalar(wl),wl*dt); ball3d.quaternion.premultiply(_wq); }
   shadow.position.set(ball3d.position.x,0.015,ball3d.position.z);
-  shadow.visible=ball3d.position.y>BRV+0.15;
+  shadow.visible=ball3d.position.y>raggioVistaPalla+0.15;
   // anello del giocatore controllato
   ring.visible=false;
   freccia.visible=!!ctrl&&!ctrl.excluded&&game.state!=='menu';
@@ -59,8 +61,11 @@ export function render(dt,now){
   mirino.visible=false;
   if(ctrl&&ball.holder===ctrl&&!ctrl.isGK&&game.state==='play'&&(ctrl.charging||(ctrl.act&&!ctrl.act.done&&ctrl.act.kind!=='pass'&&ctrl.act.kind!=='fake'))){
     const gk=teams[1-ctrl.team.idx].players[0];
-    const az=Math.abs(inp.z)>0.3 ? clamp(inp.z*1.28,-1.28,1.28) : -Math.sign(gk.z||1)*1.1;
-    mirino.visible=true; mirino.position.set(HL*ctrl.team.dir,0.45,az);
+    const potenza=ctrl.charging?Math.min(1,(ctrl.chargeT||0)/0.9):(ctrl.act?.potenza||0);
+    const tipo=ctrl.act?.kind||'shot',forte=potenza>=TIRO.forteDa&&!['lob','polso','torsione','schizzo','colonnello'].includes(tipo);
+    const az=Math.abs(inp.z)>0.3 ? clamp(inp.z*1.28,-1.28,1.28) : -Math.sign(gk.z||1)*(forte?TIRO.quadrellaZ+TIRO.quadrellaLarghezza/2:1.04);
+    const ay=tipo==='lob'?0.55:forte?TIRO.quadrellaY+TIRO.quadrellaAltezza/2:0.425;
+    mirino.visible=true; mirino.position.set(HL*ctrl.team.dir,ay,az);
     const s=0.95-0.3*Math.min(1,(ctrl.chargeT||0)/0.9); mirino.scale.set(s,s,1);      // si stringe mentre il tiro si carica
   }
   // indicatore del compagno a cui passeresti

@@ -1,0 +1,10 @@
+{
+  "sorgente": "a2a055165afc12122d7343bee0231c61edf5475f",
+  "stesso_codice_main_dbf": true,
+  "dist": "/workspace/pallanuoto-v070/dist",
+  "sha256": {
+    "index.html": "435dfbb515260569e00a520e606ff90b9496dec07379ca18f2d5dc95968dd7c7",
+    "assets/index-CMYOZMjv.js": "f9f2e6a0b8a2eeafeba2f9a79a90f45e165e04e7a7b737843b9060767b658740",
+    "assets/index-BWAxUNyJ.css": "f49f9ff10e27659edbe596456c3844daf1332085987b50b34a29f73d31ce68c8"
+  }
+}

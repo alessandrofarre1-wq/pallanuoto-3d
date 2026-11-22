@@ -584,8 +584,18 @@ export function muroSu(h){
 }
 export function gkTarget(p){
   const t=p.team, ogx=ownGoalX(t);
-  // tiro in arrivo: ormai conta il tuffo (lo gestisce partita.js con la statistica Riflessi)
-  if(ball.state==='flight'&&ball.kind==='shot'&&ball.shooter.team!==t&&ball.flightT>0.08) return { x:ogx+t.dir*0.7, z:clamp(ball.crossZ,-GW-0.2,GW+0.2), gk:true, tuffo:true };
+  // Il corpo legge lo stesso lato delle braccia: un tentativo sbagliato non
+  // può continuare a tuffarsi verso il bersaglio vero, né anticipare la reazione.
+  if(ball.state==='flight'&&ball.daTiro&&(ball.kind==='shot'||ball.kind==='rebound')&&
+    ball.shooter?.team!==t&&ball.vx*ball.shooter?.team.dir>0){
+    const parata=p.tentativoPortiere;
+    const valida=parata?.attiva&&parata===ball.tentativoPortiere&&parata.fine===undefined&&
+      parata.gid===p.uid&&parata.num===p.num&&parata.scheda===p.scheda&&
+      parata.revisione===ball.revisioneTiro&&ball.flightT>=parata.voloInizio;
+    const bersaglio=valida&&(parata.riuscita?parata.bersaglio:parata.bersaglioLetto);
+    const reagisce=!!bersaglio&&ball.flightT-parata.voloInizio>=parata.reazione;
+    return { x:ogx+t.dir*0.7, z:reagisce?clamp(bersaglio[2],-GW-0.2,GW+0.2):p.z, gk:true, tuffo:reagisce };
+  }
   // la palla "vista" dal portiere: durante un passaggio guarda già dove arriverà, ma lo capisce con un ritardo
   let bx=ball.x, bz=ball.z;
   if(ball.state==='flight'&&ball.kind==='pass'&&ball.target){
@@ -645,6 +655,8 @@ function chiVaSullaPalla(){
   return _vag;
 }
 export function aiTarget(p){
+  if(p.isGK&&ball.state==='flight'&&ball.daTiro&&(ball.kind==='shot'||ball.kind==='rebound')&&
+    ball.shooter?.team!==p.team&&ball.vx*ball.shooter?.team.dir>0) return gkTarget(p);
   if(p.isGK && setteControSei(p.team) && game.possTeam===p.team) return { x:goalX(p.team)-p.team.dir*8.6, z:2.6, sprint:true };      // 7 contro 6: il portiere sale a fare il settimo attaccante
   if(pallaVagante()){ const v=chiVaSullaPalla(); if(v.chi.has(p)) return { x:v.x, z:v.z, sprint:true }; }
   if(p.isGK) return gkTarget(p);
@@ -705,6 +717,17 @@ function chiudiFinta(p,f,dGoal){
   aiShoot(p,0.6+rnd()*0.4,false);
 }
 export function aiShoot(p,power,lob){
+  // Solo la scelta CPU prepara la palombella con la finta personale. I comandi
+  // umani L/PALOMB. restano immediati; una finta già fatta basta anche se il
+  // portiere non ha abboccato (fakeUntil non è un requisito).
+  if(lob&&!(p.fakeCount>0)){
+    const f=fintaDi(p);
+    startAct(p,'fake',f.wind,()=>{
+      doFake(p);
+      if(ball.holder===p&&game.state==='play')startAct(p,'lob',f.pausa[0],()=>doShoot(p,power,true,null));
+    });
+    return;
+  }
   const kind=lob?'lob':shotKind(p), r=kind==='shot'?rnd():1;
   if(r<0.14) startAct(p,'polso',0.04,()=>doShoot(p,0.42,false,null,{polso:true,dopoFinta:p.fakeUntil>game.time}));        // tiro di polso
   else if(r<0.24) startAct(p,'torsione',0.12+rnd()*0.1,()=>doShoot(p,power,false,null,{torsione:true}));                  // torsione e diagonale

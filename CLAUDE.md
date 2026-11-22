@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale: v0.70). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.71). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -20,7 +20,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   superate, verifiche, non fatto) e aggiornamento qui delle sezioni toccate; ogni decisione cambiata va segnalata nella PR e in
   `docs/decisioni-superate.md`.
 - **Prima della PR**: `npm run lint`, `npm run prove` (gli stessi passi della CI in locale), `npm run verifica` (sei partite con
-  il caso bloccato e cinque immagini: guardare sempre i confronti in `tests/screenshot/confronto/`; aggiornare i riferimenti con
+  il caso bloccato e cinque immagini: guardare sempre i confronti in `tests/screenshot/confronto/`; le sei partite si possono eseguire una sola volta nella CI finale, usando `--partite=0` per il confronto locale; aggiornare i riferimenti con
   `npm run verifica:aggiorna -- --partite=0` solo dopo averli controllati) e `npm run aspetto`. Nella descrizione gli esiti veri.
 - **Limiti iPhone vincolanti**: meno di 100 oggetti disegnati e meno di 150.000 triangoli per fotogramma, anche durante cambi e
   replay. Se una modifica li supera, chiedere ad Ale prima di tenerla. Da qui non si misurano gli FPS di un iPhone vero: conta il
@@ -59,7 +59,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   `costanti.js`, `statistiche.js` (contatori ed esiti delle azioni), `gioco-fermo.js`, `pozzetto.js`, `panchina.js`.
 - Numeri del bilanciamento: `taratura.js` (con i riferimenti reali; `ia.js`, `fisica.js`, `lotta.js`, `regole.js`, `tiri.js`,
   `partita.js`, `finte.js` e `panchina.js` li importano e li riesportano con lo stesso nome).
-- Movimento e palla: `fisica.js` (nuoto, parata, muro, intercetto, presa, uscite), `palla.js` (Rapier), `fisica-palla/`.
+- Movimento e palla: `fisica.js` (nuoto, parata, muro, intercetto, presa, uscite), `palla.js` (Rapier), `fisica-palla/`; `contatto-portiere.js`/`parata-portiere.js`/`decisione-parata.js` e `deviazione-tiro.js`; `profili-traiettorie.js`.
 - Computer: `ia.js` (attacco `aiCarrier`, posti, marcature, difese, ripartenza), `entrate.js`, `chiamate-attacco.js`, `difesa-cambi.js`, `lotta.js` (centroboa), `centroboa.js`,
   `tiri.js` (gesti, tiri, passaggi), `finte.js`, `muro.js`, `controfuga.js`, `uomo-in-piu.js` e `schemi.js`.
 - Comandi: `input.js`, `controllo.js`. Interfaccia: `hud.js`, `cronaca.js`, `menu.js`, `panchinaVista.js`, `tattiche-*.js`,
@@ -78,10 +78,11 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   cambio in corso (area di tocco 44 px); registro degli eventi dal menu di pausa; notifiche in stile telecronaca ai margini, mai al
   centro (`cronaca.js`); colori con significato fisso (oro = tu e azioni richieste, rosso = sanzioni e urgenza, ciano = servizio).
 - Chiamate in parità: dopo5,5s dal possesso (compreso il viaggio), se la boa non è davvero servibile, scelte touch A/B/C in basso al centro. Una scelta le nasconde; area44px, CAMBI rapido conservato; pausa nasconde le proposte. Il testo indica appoggio e avanzamento; i passaggi restano manuali.
+- Energia del selezionato: barra e percentuale sempre visibili durante il gioco; nome/ruolo restano temporanei. Vale in attacco e difesa, senza mostrare un pannello grande permanente.
 - Replay del gol: 7,6 s saltabili (1,2 s diretta + 5,2 s replay + 1,2 s ripresa), motore fermo durante la clip; camera che gira di
   circa 35° attorno all'azione e scende, poi taglio con lampo sul primo piano a pelo d'acqua del marcatore che esulta (si alza e
   agita il pugno; 1,15 s registrati dopo la rete, 38% del replay; niente primo piano se è appena stato sostituito). Prova
-  `npm run replay`.
+  `npm run replay`. Con la palla22,12cm la camera mantiene almeno4pxCSS reali in azione e il viso del primo piano almeno2× rispetto all’azione, dentro la fascia libera; nessun aumento della sfera o cambioFOV per ottenere leggibilità.
 - Menu: home con logo C «Flusso», Partita veloce, Mondiali, Europei, Comandi, Informazioni; Squadre (formazione dei 7, strategie
   prepartita: sei preset e una personale, schemi dell'uomo in più) → Impostazioni (durata, difficoltà, arbitro) → Gioca.
 ### Comandi
@@ -116,6 +117,8 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
   seguito tipico; dalla seconda finta il braccio va di lato e sposta difensore e portiere.
 - Portiere: segue il passaggio, para in base a posizione, Riflessi, stanchezza, sorpresa e muro; para meno dopo un cambio di lato,
   in superiorità, dopo una finta o su tiri vicini; mentre l'avversario carica sale a braccia larghe (solo disegno).
+- Portiere v0.71: il sorteggio decide il tentativo, non una presa senza contatto. Sagoma numerica condivisa con il disegno, sweep3D e reazione/velocità delle mani limitate; corpo/testa respingono, le prese ravvicinate richiedono la mano e sono rare. Stesse regole per le due squadre. Palla disegnata di diametro22,12cm come quella fisica: supera il vecchio ingrandimento a39cm; VIS dei corpi conservato.
+- Traiettorie v0.71: palombella più tesa (CPU dopo una finta, nessun nuovo obbligo umano); forte alto verso le quadrelle con rotazione da tiro, mirino nominale coerente e suono sordo solo su urto reale palo/traversa. Rimbalzo mirato prima del portiere dalla fisica dell’acqua, solo con distanza/spazio adatti. Parametri in `TRAIETTORIE_TIRO`. Il corpo del portiere segue la stessa lettura delle mani, anche sui tiri deviati ancora in arrivo; aspetta la propria reazione e non anticipa il lato vero. Fattore rigore0,41→0,7 per la sola lettura, non per assegnare una parata:188/240gol nel controllo,78,3%; coefficienti globali di precisione/potenza conservati.
 ### Attacco del computer
 - Circolazione: palla in mano 0,4-0,7 s sul perimetro (`CIRCOLAZIONE`); costruzione di 18 s prima di cercare il tiro da libero,
   anche nella ripartenza alla pari (il tiro subito dopo la ricezione è sicuro solo nella controfuga con l'uomo in più); palla al
@@ -168,52 +171,22 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione attuale:
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.70
-Implementati chiamate touch in azione, servizio alla boa chiaramente libera e raccordi soltanto visuali di tiro/passaggio. Rapporto `docs/versioni/v070-chiamate-servizio-gesti.md`; file e decisioni superate lì e in `docs/decisioni-superate.md`. Base di dipendenza v0.69 finale `ea469d2`, CI completa verde44906185448; ultimi aggiornamenti solo test/documenti, produzione invariata.
+## Stato v0.71 — chiusura locale
 
-Prove browser concluse: sei scene A/B/C nei due versi, con scelta touch e due passaggi/presa reali; cinque annullamenti, controllo umano prioritario; quattro layout667/844 con margini0/47px ripetuti con HUD visibile PASS,44px senza sovrapposizione a CAMBI; foto ispezionate. Servizio boa:36scelte e quattro prese fisiche destro/mancino, rilascio0,18333s e presa0,5s. Dati/fase/hash in `docs/verifiche/v070/`: queste scene precedono l’ultimo percorso falloSenzaPalla ereditato dalla v0.69, che non coinvolgono. Gesti24casi a60Hz PASS con tracce fisiche identiche; salto ingresso mano polso0,12873→0m, tiro0,07051→0m, passaggio0,03696→0,01484m. Fixture isolata ispezionata, non partita intera né certificazione di naturalezza. Replay completo PASS,14corpi/picco48calls146426tri. Lint/build e regressioni9/9 PASS. Aspetto completo PASS gambe0/8282,0/4689,0/1113, iPhone55/142100. Due cambi PASS61/145944 (667px60/145942). SondaCPU N1:4×180s seed7919,ITA6–HUN8,508passaggi/37centro/36prese/9finestre(3prima6s), non confronto accoppiato o frequenza generale. Verifica immagini inizialeFAIL4/5, poi solo2riferimenti aggiornati dopo ispezione/confronto; ripetizione indipendente `verifica --partite=0` PASS(0,01/0,02/0,22%/identico/identico), Cronaca completa locale PASS dopo allineamento della fixture di rigore (contatto0,9m/vittima2,6m dalla porta, CPU isolata, assert conservati); prima CI070ba3e falliva su quella scena. CI070 intera sull’ultimo push ancora da verificare: non dichiarare pronta la PR né un nuovo bilanciamento generale.
+Base main `dbf20b6` (PR60/61 unite). Correzioni in `fisica`, `parata-portiere`, `contatto-portiere`, `decisione-parata`, `deviazione-tiro`, `ia`/`regole`: contatto continuo sulla stessa posa disegnata, corpo e braccia condividono lettura/reazione, nessun tuffo verso il lato vero dopo lettura sbagliata. Prese solo sulle mani, rare da vicino, deviazioni ancora in porta. `tiri`/`profili-traiettorie`/`taratura`/`audio`: palomba tesa, forte alto, rimbalzo davantiGK e urto sordo. Palla reale22,12cm nel disegno e nel palmo (`grafica/dimensioni-palla`, scena/pose/render); avatarVIS invariato. Energia persistente (HUD/CSS/HTML); replay mantiene4px reali con fit più vicino solo se serve, senza aumentare sfera o FOV. Nuovi8test, script/CI, versione0.71.0. Rapporto completo `docs/versioni/v071-portiere-tiri-stamina.md`, dati/fasi/hash `docs/verifiche/v071/`.
 
-Nuovi tasti touch per beduina/sciarpa/finte ancora proposta da discutere con Ale, non implementati. Restano giudizio di naturalezza/leggibilità e iPhone fisico; nessuna promessa di resa professionale. Nessun merge/deploy.
+Misure:14/14tiri corporei primaGOL→respinti,24varchi ancora liberi;30/60/120Hz e2versi.320tiri diagnostici a22m/s, primo esito, non bilancio.5suiteNode PASS; mani6,8586m/s su50bersagli. Rigori188/240=78,3%; testPrecisione standard93,5/41,5%=2,25. Palla4scene D/S667/844:22,12cm,6,64–7,30pxCSS,palmo≤0,423mm. Stamina60stati PASS,0%compreso. Rapier22scene/42voli: palomba8m1,396→1,021s,picco3,168→2,076m,rimbalzo1,434m dietro→1,248m primaGK. Replay18scene/558frame PASS,palla≥4,20px,14corpi48/146426. Aspetto completo PASS,gambe0 su tutti i campioni; due cambi61/145944. Lint PASS, primo prove48/51 e tre regressioni corrette/verificate; esito CI INTERA dell’ultimo SHA nella PR.5riferimenti ispezionati,2–5aggiornati dopo misure, soglie invariate; verifica indipendente bloccante PASS(menu0,01%,3identici,orizzontale0,00%entro tolleranza). Sei partite standard soloCI.
 
-### Baseline v0.69
-Correzioni regolamentari e prove mirate concluse in locale: espulsione residua attraverso intervallo/scatto (sei in campo; tempo dal primo tocco); rigori da contatto reale e occasione credibile entro6m, senza sanzione casuale all'anticipo battuto; tiro/rigore differito conservati alla sirena; boa CPU già fronteporta conclude in parità; fallo ordinario ferma solo autore/vittima, mentre gli altri proseguono e reagiscono alle posizioni aggiornate. Su fallo in attacco possesso/rientro cambiano subito. Arresto generale per gol/rigori/time-out/intervalli. File e decisioni superate nel rapporto `docs/versioni/v069-falli-e-riprese.md`.
+Decisioni cambiate esplicite: impatto necessario al posto della parata assegnata; lettura del corpo coerente con le mani; coefficiente rigori0,41(esito)→0,7(lettura, ancora soggetta a portata/tempo); palla39→22,12cm; stamina persistente; vecchi profili palomba/rimbalzo e fit replay sulla vecchia sfera. Non fatto: bilanciamento generale (numeri sotto), iPhone fisico/giudizio di Ale, nuovi comandi touch speciali ancora proposta. Nessun merge/deploy.
 
-Verifiche locali: mirate6/6, guardia fine-periodo3/3, regressioni12/14 al primo giro (due fallimenti risolti/verificati), ripetizione lint/tattica/replay3/3 e lint/tattica/gioco-fermo3/3 PASS; dopo l’ultimo allineamento di `falloSenzaPalla`, lint/gioco-fermo2/2 PASS con nuovo caso di cambio possesso e rientro. Le misure generali seguenti precedono quest’ultimo percorso (geometria invariata). Aspetto completo PASS: gambe0/8286,0/4686,0/1112; iPhone55calls/142100tri. Due cambi: picco61calls/145944tri nelle scene campionate. Replay prima dell'ultimo ritocco alle marcature:48/146426,14corpi. Verifica `--partite=0` PASS: cinque confronti ispezionati, scarto≤0,02%, nessun riferimento aggiornato; sei partite demandate alla CI finale sul commit pubblicato, ancora da verificare. Dati/hash/fasi in `docs/verifiche/v069/`.
-
-Campione8gare ITA–HUN prima dell’ultimo allineamento di `falloSenzaPalla`:15,125gol/40,75tiri per squadra; rigori1,4375, espulsioni8,4375 (52,59%dal centro), superiorità37,04%, azioni69,25, parità14,09s. Solo6/15voci in fascia contro13/15della v0.68: le correzioni non certificano il bilanciamento globale; tiri alti, espulsioni/superiorità basse e azioni corte restano da rivedere. Nessun ritocco a potenza/precisione o probabilità globali per nascondere questi esiti. Prova su iPhone fisico e giudizio di Ale restano necessari.
-
-Le richieste su chiamate touch, servizio alla boa e raccordi visuali passano al rapporto v0.70; i nuovi comandi touch dei tiri speciali restano una proposta. Nessun merge/deploy.
-
-### Baseline v0.68
-Chiusura21/11: i due blocchi della bozza PR59 sono corretti e misurati; esito CI sull'ultimo commit nella PR. Difesa dei cambi25scene e filmato reale24s:0s oltre metà contro46,85s prima. Arena6mesh/1024²,8296tri CPU; picco iPhone con due cambi64calls/148852tri, replay49/146682,14corpi. Aspetto finale PASS: gambe0/7123,0/5180,0/1179; iPhone56/142116.
-Entrate:18scene ciclo reale,4D nei due versi/manoD-S con servizio/presa/tiro autonomi,2rinunce,8reset e2qualifiche PASS. D0,6–1,4m solo se l'endpoint legale arriva entro4,8m (20cm di margine d'arresto rispetto ai5m della ricezione); da ala larga si continua la circolazione, l'esterno conserva il suo spazio. Chiusura locale5/5mirate +isolate/integrazione/aspetto/verifica immagini PASS. Campione finale8gare: 14,56 gol / 35,44 tiri per squadra; conversione 41,09%, superiorità 48,28%, rigori 1,62; 13/15 voci in fascia. Non sono gli8incontri con mezze lunghe della prima diagnosi:16,875gol/39,31tiri e6/15voci. Dati/hash/limiti nel rapporto `docs/versioni/v068-cambi-entrate-arena.md`; fotografie `docs/immagini/v068-mezza-entrata.md`.
-Restano azioni troppo numerose/corte, preparazione autonoma completa del falso centro, prova su iPhone fisico e giudizio artistico di Ale. Decisioni superate esplicite: inseguimento del cambio, posti fissi per indice, consegna annullata dopo5s, teletrasporto NPC sotto2m, cinque preset; inoltre taglioD sterile e copertura centrale superflua. Nessun merge/deploy. La tabella sotto conserva la baseline v0.67 di Claude su16partite, distinta dal nuovo campione.
+### Baseline unite
+V0.70 (PR61, chiamate/boa/raccordi), v0.69 (PR60, regole e continuità sui falli) e v0.68 (PR59, cambi/entrate/arena) sono unite. Rapporti, risultati e limiti restano in `docs/versioni/v068-*`, `v069-*`, `v070-*` e nei rispettivi `docs/verifiche/`; non ripartire dai vecchi checkpoint. La v0.71 parte da main `dbf20b6` e non riscrive quei sistemi. I nuovi tasti touch speciali sono ancora una proposta da discutere, non implementati.
 
 ## Numeri: gioco contro realtà
-16 partite ITA–HUN, per squadra, v0.67 (`npm run taratura -- --partite=16`: con 8 partite il caso sposta le voci di qualche punto).
-Riferimenti: Mondiali 2025, Mondiali 2009, Euro League, video della finale olimpica. La tabella completa (15 voci, con lo stato e i
-numeri da guardare) la stampa `npm run taratura`.
-
-| | gioco | reale |
-|---|---|---|
-| tiri | 33,5 | 33 |
-| gol | 13,7 | 13,3 |
-| tiri in gol | 40,9% | 40% |
-| espulsioni | 11,4 | 11 (66% dal centroboa; in gioco 62%) |
-| superiorità trasformate | 40,3% | 52% |
-| rigori | 2,0 | 1,8 |
-| azioni a partita | 66 | circa 50 |
-| azione in parità: durata | 14,7 s | circa 21 s (con 30 s di possesso) |
-| azione in parità: tiro sbagliato | 25,8% | circa 32% |
-| azione in parità: palla persa | 19,4% | circa 20% |
-| azione in parità: fallo in attacco | 12,8% | circa 15% |
-| gol su entrata | 7,1% dei gol | pochi (in calo nel 2025) |
-| controfughe | 1,5 a partita | circa 2 (Euro League) |
-| tempo in scatto / sotto la soglia dei cambi | 20% / 14% | — |
-| palla in mano prima del passaggio | 0,97 s | 0,6-1 s (finale olimpica) |
+Confronto finale8+8gare ITA–HUN, tempi480s/stessi semi: gol16,125→17,375,tiri41,375→43,250,conversione38,97→40,17%,parate17,500→19,188,rigori1,750→1,688. **Solo4/15voci in fascia contro5/15: bilanciamento aperto.** Superiorità40,32→32,09%;Italia11,750→10,625,Ungheria20,500→24,125: divario cresciuto, non nasconderlo con precisione/potenza. Azioni71,38, parità13,67s,mano1,012s,palla sola max0,0333s. Dati e limiti nel rapporto v0.71 e `bilancio-finale.json`. Il candidato precedente15,375gol/23,13%superiorità è superato e archiviato con fase distinta. Non sono una certificazione contro l’utente umano o tutte le nazionali.
 
 ## Cosa resta da fare
-- Gioco: azioni ancora corte (15 s invece di 21, 66 invece di 50): non dipende dagli scatti in ripartenza (v0.67), l'azione
+- Gioco: conclusione in superiorità e divario ITA–HUN peggiorati nel campione v0.71 (numeri sopra), da diagnosticare con una sonda dedicata; azioni ancora corte (13,67s invece di21,71,38 invece di50): non dipende dagli scatti in ripartenza (v0.67), l'azione
   finisce presto per palle perse, espulsioni e falli; superiorità al 40% (reale 52%), da ritarare con i difensori meno stanchi
   (v0.67); il contatto costa 0,02 di stamina al secondo, più dello scatto; falli fischiati saliti a 35 per squadra a partita
   con i difensori meno stanchi (v0.66: 28; nella v0.28 circa 30): manca un riferimento reale; pali forse troppi (13% dei tiri con

@@ -28,6 +28,7 @@ export function deadBall(t,fn,fermi=null){
   game.state='stop'; game.timer=t; game.after=fn||null;
   game.fermoFallo=fermi?[...new Set(fermi.filter(Boolean))]:null;
   aggiornaGiocoFermo(0,false,game.fermoFallo||allPlayers);
+  if(ball.state==='held'||!ball.daTiro)for(const p of allPlayers)if(p.tentativoPortiere)p.tentativoPortiere.attiva=false;
 }
 // gioco fermo per palla fuori: se la palla si sta ancora muovendo (tiro fuori, deviazione del portiere, rimbalzo sul palo)
 // continua il suo volo con la fisica vera finché non riparte il gioco, così si vede uscire; se è quasi ferma, si ferma
@@ -37,9 +38,12 @@ function fermaOVola(){
 }
 // Le due squadre devono essere già ricollocate prima di ricostruire gli uomini.
 function riallineaRiferimenti(){
-  for(const p of allPlayers){const a=uomoDi(p);p.lagX=a.x;p.lagZ=a.z;}
+  for(const p of allPlayers){const a=uomoDi(p);p.lagX=a.x;p.lagZ=a.z;if(p.tentativoPortiere)p.tentativoPortiere.attiva=false;}
+  ball.tentativoPortiere=null;
 }
 export function kickoff(){
+  for(const p of allPlayers)if(p.tentativoPortiere)p.tentativoPortiere.attiva=false;
+  ball.tentativoPortiere=null;ball.parataDaRegistrare=null;
   game.fermoFallo=null; game.rigoreDifferito=null;
   aggiornaGiocoFermo(0,true);
   for(const t of teams) resetDisposizioneTattica(t);

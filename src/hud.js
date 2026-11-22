@@ -52,11 +52,12 @@ export function updateHUD(){
     const t=q?`Premi TIRO<small>(K) · ${q.tipo==="schizzo"?"tiro a schizzo":"colonnello"}</small>`:"";
     if(el.dataset.t!==t){ el.dataset.t=t; el.innerHTML=t; el.classList.toggle('on',!!q); }
     if(b){ const on=!!q; if(b.classList.contains('premi')!==on){ b.classList.toggle('premi',on); const s=b.querySelector('small'); if(s) s.textContent=on?'Premi!':'tocco: finta'; } } }
-  // pannello del giocatore (v0.44, scelta di Ale): si vede per 3 s quando CAMBI giocatore tu (tasto Cambia) e a inizio partita, poi resta
-  // solo la freccia; i passaggi automatici al compagno con la palla o al più vicino non lo riaccendono (in difesa sarebbe sempre acceso);
-  // con tastiera/mouse resta anche mentre si carica il tiro (lì c'è la barra della potenza)
+  // Nome/ruolo per 3 s al cambio manuale e all'inizio; l'energia del selezionato
+  // resta compatta e visibile anche in difesa. I cambi automatici aggiornano
+  // calotta, barra e percentuale senza riaprire tutta la scheda.
   { const dal=game.time-ultimoCambioManuale();
-    const vedi=!!ctrl&&(game.time<3||(dal>=0&&dal<3)||(!TOUCH&&ctrl.charging)); const pl=$('player'); if(pl.classList.contains('vis')!==vedi) pl.classList.toggle('vis',vedi); }
+    const vedi=!!ctrl&&(game.time<3||(dal>=0&&dal<3)||(!TOUCH&&ctrl.charging)); const pl=$('player'); pl.hidden=!ctrl;
+    if(pl.classList.contains('vis')!==vedi) pl.classList.toggle('vis',vedi); }
   // pulsante PALOMB. solo quando la nostra squadra ha la palla (in difesa non serve)
   { const nostra=game.possTeam===teams[0]; if(document.body.classList.contains('nostra-palla')!==nostra) document.body.classList.toggle('nostra-palla',nostra); }
   if(ctrl){
@@ -67,8 +68,14 @@ export function updateHUD(){
       $('pname').setAttribute('aria-label',`Calotta ${ctrl.num}, ${ctrl.name}. ${posizione}${sup?', uomo in più':''}`);
       if($('pname').innerHTML!==t) $('pname').innerHTML=t; }
     if(ctrl.scheda!==schedaVista){ schedaVista=ctrl.scheda; const s=ctrl.s; $('pstat').innerHTML=`<b>${ctrl.ovr}</b> · `+CHIAVE[ctrl.i].map(k=>`${STAT_NOMI[k].slice(0,3).toUpperCase()} ${s[k]}`).join(' · ')+` · mano ${ctrl.mano==='S'?'sinistra':'destra'}`; }
-    $('stam').firstChild.style.width=(ctrl.stamina*100)+'%';
-    $('stam').firstChild.style.background= ctrl.stamina>0.5?'#4ade80':ctrl.stamina>0.25?'#facc15':'#ef4444';
+    const energia=Number.isFinite(ctrl.stamina)?Math.max(0,Math.min(1,ctrl.stamina)):0,percento=Math.round(energia*100),stam=$('stam');
+    stam.firstChild.style.width=(energia*100)+'%';
+    stam.firstChild.style.background= energia>0.5?'#4ade80':energia>0.25?'#facc15':'#ef4444';
+    const numero='#'+ctrl.num,valore=percento+'%',etichetta=`Energia di ${numero} ${ctrl.name}: ${valore}`;
+    if($('stamNumero').textContent!==numero)$('stamNumero').textContent=numero;
+    if($('stamPerc').textContent!==valore)$('stamPerc').textContent=valore;
+    if(stam.getAttribute('aria-label')!==etichetta)stam.setAttribute('aria-label',etichetta);
+    if(stam.getAttribute('aria-valuenow')!==String(percento))stam.setAttribute('aria-valuenow',String(percento));
     $('power').firstChild.style.width=(ctrl.charging?Math.min(1,ctrl.chargeT/0.9)*100:0)+'%';
   }
   { const btn=document.querySelector('.tb[data-b="shoot"]'), carica=!!(ctrl&&ctrl.charging&&ball.holder===ctrl), pot=carica?Math.min(1,ctrl.chargeT/0.9):0;

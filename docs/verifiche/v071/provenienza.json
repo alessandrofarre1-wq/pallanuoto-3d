@@ -1,0 +1,374 @@
+{
+  "versione": "0.71.0",
+  "base_git": "dbf20b61024ca9609e6715abd1aa6e7a59899590",
+  "ramo": "codex/v071-portiere-palla",
+  "stato": "Chiusura locale eseguita; esito CI completa e SHA finale nella descrizione PR.",
+  "archiviazione_utc": "2026-11-21T23:09:26.341035+00:00",
+  "nota_date": "La data è quella dell’archiviazione. I JSON browser originali non incorporano SHA dei sorgenti né data/comando della prova: non sono attestazioni del commit finale.",
+  "originali": {
+    "/tmp/v071-portiere-prima.json": {
+      "sha256": "4ad34423246b2d3657c7fb8d2233aa4d3d6c9dbc153b004d9156f1bec781316b",
+      "byte": 281249
+    },
+    "/tmp/v071-portiere-dopo.json": {
+      "sha256": "51a2ef2d5dc8c01cf27ffa3c627bff064687574a4957c920d93feff3a30f6e79",
+      "byte": 340721
+    },
+    "/tmp/v071-dimensioni-palla.json": {
+      "sha256": "f48fc4202bc4c6155de37ab4bbb811923bf3e00dfc68d9a33307845082541091",
+      "byte": 1667
+    },
+    "/tmp/v071-dimensioni-palla.log": {
+      "sha256": "8a552fde9d43767d1d0e578fa246a14e50ed073c76f44de3cf9b9f8fed688d2e",
+      "byte": 1272
+    },
+    "/tmp/v071-stamina/misure.json": {
+      "sha256": "c655d4ce6db461a5c32e06e5a3aa3da1d0385677ce315e7e1892efc3e1ceec57",
+      "byte": 32419
+    },
+    "/tmp/v071-stamina-manuale.log": {
+      "sha256": "e4d70f40e62bf63584be5c732973d8aebb23bd3c93b9ecf0bed0fabe5c3729ba",
+      "byte": 111
+    },
+    "/tmp/v071-traiettorie.json.log": {
+      "sha256": "3f08f1feccf753c93235613a863baa5b46891570f485590e6d71296d01dfe7e0",
+      "byte": 11251
+    },
+    "/tmp/misure-gk-v071/misure.json": {
+      "sha256": "eb82b549dd4aa55ca94da8ffb862613917ed9f7fc5a43069e9b66a4305c839a4",
+      "byte": 8234
+    }
+  },
+  "comandi_portiere_comunicati_dall_esecutore": {
+    "prima": "PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers node tests/portiere-v071.mjs --dist=/workspace/pallanuoto-v070/dist --prima --salva=/tmp/v071-portiere-prima.json",
+    "dopo": "PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers node tests/portiere-v071.mjs --salva=/tmp/v071-portiere-dopo.json --foto=/tmp/v071-portiere-foto"
+  },
+  "limiti_portiere": "320 traiettorie imposte dopo doShoot, velocità 22m/s in tutti i gruppi anche con potenza0,42. Portiere controllato neutro, difficoltà media, squadre normalizzate; primo esito soltanto. Non è un campione di partite e non stima gol o prese reali. Il prima usa la build indicata nel JSON, senza SHA della build incorporato.",
+  "nodi": {
+    "registro": "contatto-nodi.log",
+    "esito": "4/4 PASS; sweep51scene; mano6,8586m/s sotto7m/s; nessun browser",
+    "eseguiti_per_questa_archiviazione": true
+  },
+  "limiti_proporzioni": "proporzioni-prima.json: quattro pose statiche reali del rig Nicosia; gli altri giocatori sono nascosti. Non è una misura del budget in partita.",
+  "limiti_palla": "dimensioni-palla.json: quattro scene statiche D/S a667/844px;14corpi,63calls/143000tri. Non è il massimo finale di cambi/replay né una misura FPS di iPhone.",
+  "stamina": "60 stati salvati con0errori; cambio automatico73% documentato nel log separato, non fra le60righe JSON.",
+  "traiettorie": "traiettorie.log:22scene/42voli con Rapier, senza browser. Confronto vecchia/nuova formula nella stessa prova; non confronto di due build complete.",
+  "ispezione_immagini": "Coordinatore: tutti5confronti, palla/stamina, contatto/varchi, replayazione/primo piano; foto selezionate in docs/immagini/v071. Foglio tiro opzionale interrotto; sei foto del replay reale ispezionate.",
+  "hash_sha256_test_nodi_archiviati": {
+    "tests/contatto-portiere-v071.mjs": "c38e86cea847f8b18d2fe63912d163ba50e69f975a029e0a66f7cfae48cdb0b4",
+    "tests/profilo-portiere-v071.mjs": "b478b2cbb61ee2d1b0e39e37298c9f067bf9c25141804f088b5f74a939e51eb0",
+    "tests/decisione-parata-v071.mjs": "cc654a5732caecdb57627737a9b54d5d3993824c1c68f8f28feba4a2e327d30a",
+    "tests/deviazione-tiro-v071.mjs": "1421ea42364fea6af839bdc56a831d1d53d058e87f07acea7e5394fed149441c"
+  },
+  "archivi": {
+    "contatto-nodi.log": {
+      "sha256": "6488d8db84c1e1f118c44878cc16ba8e6442d6588d99c33b17ede3c53b8dc457",
+      "byte": 637
+    },
+    "dimensioni-palla.json": {
+      "sha256": "f48fc4202bc4c6155de37ab4bbb811923bf3e00dfc68d9a33307845082541091",
+      "byte": 1667
+    },
+    "dimensioni-palla.log": {
+      "sha256": "8a552fde9d43767d1d0e578fa246a14e50ed073c76f44de3cf9b9f8fed688d2e",
+      "byte": 1272
+    },
+    "portiere-dopo-estratto.json": {
+      "sha256": "8eeb1130f9f386ba667bb117cde719a564838bcba279aef2e2a7ebab2f3481ca",
+      "byte": 19417
+    },
+    "portiere-prima-estratto.json": {
+      "sha256": "de5f6991c6a295a75eddbf8ca9dfc2bfcad9b65e8381948114500f8105ce3c1a",
+      "byte": 14804
+    },
+    "proporzioni-prima.json": {
+      "sha256": "eb82b549dd4aa55ca94da8ffb862613917ed9f7fc5a43069e9b66a4305c839a4",
+      "byte": 8234
+    },
+    "stamina.json": {
+      "sha256": "c655d4ce6db461a5c32e06e5a3aa3da1d0385677ce315e7e1892efc3e1ceec57",
+      "byte": 32419
+    },
+    "stamina.log": {
+      "sha256": "e4d70f40e62bf63584be5c732973d8aebb23bd3c93b9ecf0bed0fabe5c3729ba",
+      "byte": 111
+    },
+    "traiettorie.log": {
+      "sha256": "3f08f1feccf753c93235613a863baa5b46891570f485590e6d71296d01dfe7e0",
+      "byte": 11251
+    }
+  },
+  "in_attesa_iniziale": {
+    "bilancio_8_partite_prima_dopo": "IN CORSO: nessun risultato completo archiviato",
+    "lint_prove_verifica_aspetto_finali": "DA CONSOLIDARE: non dichiarati PASS",
+    "budget_cambi_replay_finale": "DA MISURARE: limiti invariati <100calls e <150000tri",
+    "riferimenti_grafici_finali": "DA ISPEZIONARE dopo verifica",
+    "ci_ultimo_commit": "DA VERIFICARE; nessuna PR in questa fase",
+    "iPhone_fisico_giudizio_Ale": "NON ESEGUITI"
+  },
+  "chiusura": {
+    "utc": "2026-11-22T00:34:39.972016+00:00",
+    "esiti": [
+      {
+        "nome": "bilancio-finale",
+        "comando": [
+          "npm",
+          "run",
+          "taratura",
+          "--",
+          "--partite=8",
+          "--paralleli=2",
+          "--salva=/tmp/v071-bilancio-finale.json",
+          "--confronta=/tmp/v071-bilancio-prima.json"
+        ],
+        "codice": 0,
+        "secondi": 536.62
+      },
+      {
+        "nome": "verifica-prima-riferimenti",
+        "comando": [
+          "npm",
+          "run",
+          "verifica",
+          "--",
+          "--partite=0"
+        ],
+        "codice": 1,
+        "secondi": 90.9
+      },
+      {
+        "nome": "aspetto-finale",
+        "comando": [
+          "npm",
+          "run",
+          "aspetto",
+          "--",
+          "--no-build"
+        ],
+        "codice": 0,
+        "secondi": 279.08
+      },
+      {
+        "nome": "fluidita-finale",
+        "comando": [
+          "node",
+          "strumenti/misura-fluidita.mjs"
+        ],
+        "codice": 0,
+        "secondi": 76.06
+      },
+      {
+        "nome": "foglio-tiro",
+        "comando": [
+          "node",
+          "strumenti/foglio-tiro-v061.mjs",
+          "--uscita=/tmp/v071-foglio-tiro.png"
+        ],
+        "codice": 1,
+        "secondi": 259.35
+      }
+    ],
+    "sorgenti_sha256": "sorgenti-finali.json",
+    "rigori": "188/240,78.3%;240lanci reali",
+    "statistiche": "rapporto2.25;carica0.7,stessi semi e assert",
+    "replay": "replay-misure.json",
+    "cambi": {
+      "calls": 61,
+      "triangoli": 145944
+    },
+    "gambe": {
+      "conta": {
+        "vert": [
+          7502,
+          0
+        ],
+        "oriz": [
+          5300,
+          0
+        ],
+        "mezzo": [
+          1198,
+          0
+        ]
+      },
+      "sopraMax": 0
+    },
+    "bilancio": "bilancio-finale.json;4/15voci;candidateprecedenteconservato",
+    "immagini": "ispezione-riferimenti.md;quattrobaselineaggiornate",
+    "resta": "iPhone fisico,giudizioAle,bilanciamento generale,CI definitiva da leggere nellaPR",
+    "verifica_indipendente": {
+      "codice": 0,
+      "comando": "npm run verifica -- --partite=0",
+      "risultati": "menu0.01%,3identici,orizzontale0.00%entro tolleranza,qualita+torneiPASS"
+    }
+  },
+  "sha_test_finali": {
+    "tests/contatto-portiere-v071.mjs": "c38e86cea847f8b18d2fe63912d163ba50e69f975a029e0a66f7cfae48cdb0b4",
+    "tests/decisione-parata-v071.mjs": "cc654a5732caecdb57627737a9b54d5d3993824c1c68f8f28feba4a2e327d30a",
+    "tests/traiettorie-v071.mjs": "594162ea7eed2c9e3f3ecd6cff58e86c81276e654c50e36902720ab90f413c63",
+    "tests/profilo-portiere-v071.mjs": "cf24f3ae78a1991b6ad2220849e92dccf2e969cc76ecf0c1e41509b05af75359",
+    "tests/portiere-v071.mjs": "9ee3355c6b2224bc66e825c629a27933ac9f6c39d65e67c7a2eeb101add24577",
+    "tests/deviazione-tiro-v071.mjs": "1421ea42364fea6af839bdc56a831d1d53d058e87f07acea7e5394fed149441c",
+    "tests/dimensioni-palla-v071.mjs": "a350b543c2c13ef6b8622dd38b305da2f9466f86598aca526da322146f4e819d",
+    "tests/lettura-portiere-v071.mjs": "7e8e90fd8abbc6622af68715de814f74a83aaf5553925526951c2607480cd659",
+    "tests/dati-tesi.mjs": "b2aa61604a04829308a7f8df8329fe5caacba2a40a425e3726ed78312e30b6ff",
+    "tests/statistiche.mjs": "c3c86262bf190df316e80d776ddad8046c472a624b478d87789841d479c8a459",
+    "tests/replay-v048.mjs": "af009a2aafc906909bf74419605ff57fdbf1fda13e201934b99a2cc4b49ac3e2",
+    "tests/difesa-cambi-v068.mjs": "f634364c554c0f68e01afcdacc0294f3fcd82b3bb5f991d6a075df98c27c15f9"
+  },
+  "archivi_finali": {
+    "dimensioni-palla.log": {
+      "sha256": "8a552fde9d43767d1d0e578fa246a14e50ed073c76f44de3cf9b9f8fed688d2e",
+      "byte": 1272
+    },
+    "sorgenti-finali.json": {
+      "sha256": "cbb5601079e2ed83571a86ababf3a898c4fa3fc28f0c53d728e00a7a258ed91a",
+      "byte": 7934
+    },
+    "bilancio-finale.log": {
+      "sha256": "80e6241ac462f9df38f4313254726dd930d69b25b0ca1f2c592f81cd07ae7d38",
+      "byte": 3922
+    },
+    "bilancio-candidato-iniziale.log": {
+      "sha256": "45538fd1f883395ca0a2f65b0efdfcbbab6e4998f1087c741efea709940dec50",
+      "byte": 3907
+    },
+    "contatto-nodi.log": {
+      "sha256": "6488d8db84c1e1f118c44878cc16ba8e6442d6588d99c33b17ede3c53b8dc457",
+      "byte": 637
+    },
+    "bilancio-prima.log": {
+      "sha256": "ed5f88d43dd5e47371fc9944dcace1be6639543b246b806338114358a2b562f6",
+      "byte": 3516
+    },
+    "prove-primo-giro.log": {
+      "sha256": "048dd015c8927b14493a7cbe6f13ee88dfc78f5b6df5c84bf7dae37ddcbebfbb",
+      "byte": 5189
+    },
+    "finalizza-esiti.json": {
+      "sha256": "a39b77c8565ba89c1488436a2be5045a7004523c0ec7044a9d71284ba743fb47",
+      "byte": 1017
+    },
+    "replay.log": {
+      "sha256": "9bf5726c136aae9f7955ab2055fb231e7f8b7662199453711bb33bfc38b21264",
+      "byte": 4300
+    },
+    "portiere-finale-estratto.json": {
+      "sha256": "fa7ce630afcb341a60a2d8771bd983ecac88ccc52ee22ee20dccc30b968f8e7f",
+      "byte": 47744
+    },
+    "replay-misure.json": {
+      "sha256": "6cf84b0208c9b306a94b4f974a42f3a069366812aff782677ffc7d8fc05c753d",
+      "byte": 1380
+    },
+    "dimensioni-palla.json": {
+      "sha256": "f48fc4202bc4c6155de37ab4bbb811923bf3e00dfc68d9a33307845082541091",
+      "byte": 1667
+    },
+    "fluidita.log": {
+      "sha256": "ca92307e8982248c35e7407e4f7b8ea0ad52c89500ad33e279a932fc057e08da",
+      "byte": 3322
+    },
+    "foglio-tiro.log": {
+      "sha256": "400b786b62ec80f3fae4fca287144363149121160081a78fda841adb2dfe415f",
+      "byte": 392
+    },
+    "statistiche.log": {
+      "sha256": "745d68abf41a9f74f4fd6a3b9a38b8bada159958e8e5c724a0b0e937234c0abf",
+      "byte": 731
+    },
+    "immersione.json": {
+      "sha256": "fe9e6876392f91cfa6125f5f8d249228b826b7d3abe61f08614965bdc963c6bc",
+      "byte": 73
+    },
+    "costi-aspetto.txt": {
+      "sha256": "f4619c55d568c69baa4501e8b5fd136c413d9ef4423e1cfb1a4debda52c622c6",
+      "byte": 323
+    },
+    "baseline-build.json": {
+      "sha256": "ea49814d12704d4e5e6bb45cb1e95cdd71f11a31981781b5b6060ff15fbc738d",
+      "byte": 444
+    },
+    "bilancio-finale.json": {
+      "sha256": "ef05bf744ca459380c04fe6b66f02f8768f829f9e403cb3ef8f47eb0f1e858a8",
+      "byte": 2162
+    },
+    "bilancio-candidato-iniziale.json": {
+      "sha256": "40c995feec377ee5fdc34acbc1844eb2e96e078202a5dd6b2fd597c490763f7a",
+      "byte": 2166
+    },
+    "ispezione-riferimenti.json": {
+      "sha256": "221497cc80b00af8f77e9b34e449aef60804644ae1d86e307ebe3a7e3f366242",
+      "byte": 1773
+    },
+    "portiere-dopo-estratto.json": {
+      "sha256": "8eeb1130f9f386ba667bb117cde719a564838bcba279aef2e2a7ebab2f3481ca",
+      "byte": 19417
+    },
+    "proporzioni-prima.json": {
+      "sha256": "eb82b549dd4aa55ca94da8ffb862613917ed9f7fc5a43069e9b66a4305c839a4",
+      "byte": 8234
+    },
+    "stamina.log": {
+      "sha256": "e4d70f40e62bf63584be5c732973d8aebb23bd3c93b9ecf0bed0fabe5c3729ba",
+      "byte": 111
+    },
+    "sorgenti-candidato-iniziale.json": {
+      "sha256": "74036b5ec64b3b87ac4bacb0f6a2523ed5e144550a88de8ee75d9329faa982b3",
+      "byte": 2648
+    },
+    "stamina.json": {
+      "sha256": "c655d4ce6db461a5c32e06e5a3aa3da1d0385677ce315e7e1892efc3e1ceec57",
+      "byte": 32419
+    },
+    "contatto-nodi-finale.log": {
+      "sha256": "018b628d7e141c54f15354f72597950686c9c7d0d71a1bd5c1f1bef4fd95e25c",
+      "byte": 867
+    },
+    "verifica-prima-riferimenti.log": {
+      "sha256": "a6a0eff48a41da2d4607c122ddc9abd7bf6673f5314e14330ec34ee8a0964b52",
+      "byte": 2109
+    },
+    "verifica-finale.log": {
+      "sha256": "f3f6d5777a22bcd00e95ac951ffd5e833027df449dd960f21258a924b1e4077a",
+      "byte": 1985
+    },
+    "traiettorie.log": {
+      "sha256": "3f08f1feccf753c93235613a863baa5b46891570f485590e6d71296d01dfe7e0",
+      "byte": 11251
+    },
+    "rigori-finale.json": {
+      "sha256": "209e9b9470c44926888bba6db6fab7652e141bbdfbab1a6a10f0ab32c34ec02e",
+      "byte": 369
+    },
+    "portiere-prima-estratto.json": {
+      "sha256": "de5f6991c6a295a75eddbf8ca9dfc2bfcad9b65e8381948114500f8105ce3c1a",
+      "byte": 14804
+    },
+    "bilancio-prima.json": {
+      "sha256": "4268cfd67b02eef91dc7c1fd5b0e2f1573167cbf36601542a78d40b9145dd000",
+      "byte": 2134
+    },
+    "lint.log": {
+      "sha256": "3709ccc2a59b1b13fa51aff942c88839e4fe51c376dbabca18a05a2cc58946b3",
+      "byte": 58
+    },
+    "dati-tesi.log": {
+      "sha256": "0cd8fcb4caf33d2f00ce94f259ed7f035f79d68cc2aa89eb7c4cb2bfb98e3d63",
+      "byte": 637
+    },
+    "aspetto.log": {
+      "sha256": "f60728dde50ced1db6e2cdfee8bc91d3cfa5dd05d4fc23d0bc5485571ba0689a",
+      "byte": 702
+    },
+    "ispezione-riferimenti.md": {
+      "sha256": "f24f4b3a27d9d0a7aff2ed4263d99ea1de7945bc1d335a30e2831b48569a0623",
+      "byte": 1085
+    },
+    "README.md": {
+      "sha256": "2b047cc5a163f9146581bb2d90f0ad0eb6e855f8e4f4f7f44254eff505e912fe",
+      "byte": 3929
+    }
+  },
+  "normalizzazione_log": "Nelle copie archiviate eliminati solo spazi finali e righe vuote in coda; originali /tmp invariati."
+}

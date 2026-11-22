@@ -259,7 +259,8 @@ try{
             if(fasePrec==='principale')tagli++;
           }else{
             D.need(fasePrec!=='primoPiano','un solo taglio: dal primo piano non si torna all\'azione');
-            const centro=proietta(D.W.ball3d.position),bordo=proietta(v.clone().set(.195,0,0).applyQuaternion(c.quaternion).add(D.W.ball3d.position));
+            const raggio=D.W.ball3d.geometry.parameters.radius*D.W.ball3d.getWorldScale(v.clone()).x;
+            const centro=proietta(D.W.ball3d.position),bordo=proietta(v.clone().set(raggio,0,0).applyQuaternion(c.quaternion).add(D.W.ball3d.position));
             const diametro=2*Math.hypot(bordo.x-centro.x,bordo.y-centro.y);pallaMin=Math.min(pallaMin,diametro);
             D.need(diametro>=4,'palla leggibile '+nome+': '+diametro+'px');
             D.need(c.position.z>0,'nell\'azione la camera resta sul lato della giuria (mai girata di 180°)');
