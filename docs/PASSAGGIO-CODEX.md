@@ -1,3 +1,17 @@
+# Passaggio WATERPOLO 7 — v0.73 mani e polsi
+
+Ramo `codex/v073-mani-polsi`, worktree `/workspace/pallanuoto-v073-mani`, base main `1452f1a` (PR #63 unita), versione 0.73.0. Prima di altri interventi controllare main, PR, CI e modifiche locali: preservare il lavoro di Claude Code.
+
+Ale ha fermato il tentativo sul volto, poi ha chiesto di conservare mani, polsi e movimenti validi. Questo ramo integra soltanto mani/polsi: 30 falangi aggiunte alle 24 giunture originali. Il volto, le 18 morph e il controller delle espressioni sono quelli della v0.72. Le migliorie a nuoto e tiro già pubblicate restano. Il prototipo facciale locale `/workspace/pallanuoto-v073` è sospeso, non pronto e non fa parte della PR.
+
+Leggere [CLAUDE.md](../CLAUDE.md), [rapporto v0.73](versioni/v073-mani-polsi.md) e [verifiche](verifiche/v073/README.md). Lo SHA e l'esito della CI finale si leggono nella PR. Nessun merge o deploy eseguito.
+
+Rigenerazione: `node strumenti/rigenera-mani-v073.mjs`, con Blender 4.3.2, Python numpy/Pillow e dipendenze npm. Fonte MakeHuman CC0 inclusa e fissata a commit. GLB finale: 8366 triangoli, 8599 vertici, 54 joint. Le 24 rest/IBM e le 18 morph originali sono conservate. Dita solo visuali: `J` e `ballW` fisici invariati. Marker di presa 3 mm oltre il palmo; palla 22,12 cm. Il replay registra soltanto le rotazioni delle nuove falangi perché posizione, scala e visibilità locali sono costanti; il limite storico di 24 MiB è conservato.
+
+Non attribuire al modello il nuovo volto o la qualità artistica del concept. Non fatto: rifacimento viso, clip Plask importate, revisione generale di movimenti/IA o bilanciamento, FPS su iPhone fisico. Sempre meno di 100 chiamate e 150.000 triangoli anche con due cambi e replay, 14 corpi completi. Camera unica, SPEED 1, controlli, logo C, riflesso solo in alta e CAMBI basso al centro restano.
+
+---
+
 # Passaggio WATERPOLO7 — v0.72
 
 Branch `codex/v072-proporzioni-tiro-rimesse`, worktree `/workspace/pallanuoto-v072`, base main7827854(PR62unita), versione0.72.0. Prima di altro lavoro riallineare main/PR/CI e preservare le modifiche; non ripartire dai vecchi checkpoint. Nessun merge/deploy di questa versione.

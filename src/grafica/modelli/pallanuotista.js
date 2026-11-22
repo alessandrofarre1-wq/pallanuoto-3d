@@ -1,3 +1,4 @@
+// Mani v0.73: 30 falangi aggiunte alle 24 giunture originali, volto e morph conservati.
 // Corpo di tutti i giocatori (MODELLO v2, 14/11/2026): il pallanuotista generato da Ale dal suo concept in posa a T, preparato con Blender
 // (strumenti/blender/prepara.py, scheletro.py, viso.py): stesse 24 ossa, zone dei colori, bocca apribile con cavità e denti, 18 forme
 // del viso per le espressioni (src/grafica/espressioni.js). Prima: il modello generato con Hunyuan 3D Pro
@@ -21,6 +22,6 @@ export default {
   // in posa a T i palmi guardano in avanti (+Z del modello)
   palmoRiposo:[0,0,1],
   // Le prese sono già davanti alla superficie: distanze misurate sul GLB v2, in metri modello lungo +Z.
-  prese:{D:'presa_r',S:'presa_l'},
-  distanzeSuperficiePrese:{D:0.033477,S:0.028076},
+  prese:{D:'palmo_r',S:'palmo_l'},
+  distanzeSuperficiePrese:{D:0.003,S:0.003},
 };

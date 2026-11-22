@@ -1,0 +1,646 @@
+{
+  "atlante": {
+    "larghezza": 768,
+    "altezza": 768,
+    "nazionali": [
+      {
+        "codice": "ESP",
+        "colori": 22,
+        "hash": 268060364,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "HUN",
+        "colori": 30,
+        "hash": 3070157114,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "GRE",
+        "colori": 35,
+        "hash": 3974405338,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "SRB",
+        "colori": 19,
+        "hash": 4111136073,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "CRO",
+        "colori": 31,
+        "hash": 366727007,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "MNE",
+        "colori": 19,
+        "hash": 1382918397,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "ITA",
+        "colori": 33,
+        "hash": 3251497832,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "USA",
+        "colori": 70,
+        "hash": 802444188,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "JPN",
+        "colori": 25,
+        "hash": 1339863380,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "ROU",
+        "colori": 37,
+        "hash": 2038127484,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "CAN",
+        "colori": 23,
+        "hash": 477832130,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "BRA",
+        "colori": 43,
+        "hash": 1284141465,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "AUS",
+        "colori": 51,
+        "hash": 192253327,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "CHN",
+        "colori": 24,
+        "hash": 1924755300,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "SGP",
+        "colori": 37,
+        "hash": 1398419402,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "RSA",
+        "colori": 74,
+        "hash": 1527794307,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "FRA",
+        "colori": 32,
+        "hash": 3541707704,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "GEO",
+        "colori": 8,
+        "hash": 614697285,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "NED",
+        "colori": 36,
+        "hash": 2071598035,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "SVK",
+        "colori": 40,
+        "hash": 3956445794,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "SLO",
+        "colori": 39,
+        "hash": 1407862770,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "TUR",
+        "colori": 48,
+        "hash": 1864096887,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "MLT",
+        "colori": 24,
+        "hash": 947828728,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      },
+      {
+        "codice": "ISR",
+        "colori": 11,
+        "hash": 2750188123,
+        "uniformi": true,
+        "cuffie": true,
+        "hud": true
+      }
+    ]
+  },
+  "matrice": {
+    "casi": [
+      {
+        "cod": "ITA",
+        "lato": 0,
+        "mano": "D",
+        "corpi": 14,
+        "verificati": true
+      },
+      {
+        "cod": "ITA",
+        "lato": 0,
+        "mano": "S",
+        "corpi": 14,
+        "verificati": true
+      },
+      {
+        "cod": "ITA",
+        "lato": 1,
+        "mano": "D",
+        "corpi": 14,
+        "verificati": true
+      },
+      {
+        "cod": "ITA",
+        "lato": 1,
+        "mano": "S",
+        "corpi": 14,
+        "verificati": true
+      },
+      {
+        "cod": "GRE",
+        "lato": 0,
+        "mano": "D",
+        "corpi": 14,
+        "verificati": true
+      },
+      {
+        "cod": "GRE",
+        "lato": 0,
+        "mano": "S",
+        "corpi": 14,
+        "verificati": true
+      },
+      {
+        "cod": "GRE",
+        "lato": 1,
+        "mano": "D",
+        "corpi": 14,
+        "verificati": true
+      },
+      {
+        "cod": "GRE",
+        "lato": 1,
+        "mano": "S",
+        "corpi": 14,
+        "verificati": true
+      }
+    ],
+    "stessaNazioneDueLati": true
+  },
+  "cambi": {
+    "portiere": true,
+    "pozzetto": true,
+    "corrette": true,
+    "comparse": 1
+  },
+  "budget": [
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "dpr": 1.5,
+      "doppi": 2,
+      "calls": 66,
+      "triangles": 138686,
+      "campioni": [
+        {
+          "fase": "azione",
+          "frame": 55,
+          "calls": 60,
+          "triangles": 132390,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "azione",
+          "frame": 56,
+          "calls": 56,
+          "triangles": 131858,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "azione",
+          "frame": 57,
+          "calls": 57,
+          "triangles": 131874,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "azione",
+          "frame": 58,
+          "calls": 57,
+          "triangles": 131874,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "azione",
+          "frame": 59,
+          "calls": 57,
+          "triangles": 131874,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "azione",
+          "frame": 60,
+          "calls": 48,
+          "triangles": 130886,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 61,
+          "calls": 51,
+          "triangles": 136774,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 62,
+          "calls": 59,
+          "triangles": 137566,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 63,
+          "calls": 65,
+          "triangles": 138490,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 64,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 65,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 66,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 67,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 68,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 69,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 70,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 71,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 72,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 73,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 74,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 75,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 76,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "dpr": 1.5,
+      "doppi": 2,
+      "calls": 66,
+      "triangles": 138686,
+      "campioni": [
+        {
+          "fase": "azione",
+          "frame": 55,
+          "calls": 60,
+          "triangles": 132390,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "azione",
+          "frame": 56,
+          "calls": 56,
+          "triangles": 131858,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "azione",
+          "frame": 57,
+          "calls": 57,
+          "triangles": 131874,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "azione",
+          "frame": 58,
+          "calls": 57,
+          "triangles": 131874,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "azione",
+          "frame": 59,
+          "calls": 57,
+          "triangles": 131874,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "azione",
+          "frame": 60,
+          "calls": 45,
+          "triangles": 130686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 61,
+          "calls": 49,
+          "triangles": 136576,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 62,
+          "calls": 56,
+          "triangles": 137366,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 63,
+          "calls": 62,
+          "triangles": 138154,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 64,
+          "calls": 62,
+          "triangles": 138154,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 65,
+          "calls": 65,
+          "triangles": 138490,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 66,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 67,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 68,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 69,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 70,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 71,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 72,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 73,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 74,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 75,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "fase": "doppi-cambi",
+          "frame": 76,
+          "calls": 66,
+          "triangles": 138686,
+          "points": 0,
+          "lines": 0
+        }
+      ]
+    }
+  ],
+  "errori": []
+}

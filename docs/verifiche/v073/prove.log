@@ -1,0 +1,67 @@
+
+> pallanuoto-3d@0.73.0 prove
+> node tests/prove.mjs
+
+costruisco il gioco, poi 54 passi della CI (la verifica a parte: npm run verifica)
+ 1/54 npm run lint ... PASS (4 s)
+ 2/54 npm run contatto-portiere ... PASS (1 s)
+ 3/54 npm run traiettorie ... PASS (2 s)
+ 4/54 npm run portiere -- --salva=tests/screenshot/portiere-v071.json ... PASS (17 s)
+ 5/54 npm run tiro-visuale ... PASS (0 s)
+ 6/54 npm run rig-mani ... PASS (1 s)
+ 7/54 npm run rimesse ... PASS (2 s)
+ 8/54 npm run dimensioni-palla -- --salva=tests/screenshot/dimensioni-v072.json --foto=tests/screenshot/dimensioni-v072 ... PASS (25 s)
+ 9/54 npm run tornei-menu -- --no-build ... PASS (51 s)
+10/54 npm run rigori-finali -- --no-build ... PASS (14 s)
+11/54 npm run gameplay -- --no-build ... PASS (8 s)
+12/54 npm run centroboa -- --no-build ... PASS (9 s)
+13/54 npm run tattica -- --no-build ... PASS (10 s)
+14/54 npm run espulsioni-tempi ... PASS (13 s)
+15/54 npm run rigori-regole ... PASS (0 s)
+16/54 npm run rigori-reali ... PASS (33 s)
+17/54 npm run boa-fronte ... PASS (9 s)
+18/54 npm run chiamate-attacco ... PASS (13 s)
+19/54 npm run servizio-boa ... PASS (11 s)
+20/54 npm run gesti-fluidi ... PASS (9 s)
+21/54 npm run difesa-cambi ... PASS (2 s)
+22/54 npm run entrate -- --no-build ... PASS (11 s)
+23/54 npm run entrate-integrazione -- --no-build ... PASS (19 s)
+24/54 npm run area-movimento -- --no-build ... PASS (11 s)
+25/54 npm run strategie -- --no-build ... PASS (32 s)
+26/54 npm run nuoto -- --no-build ... PASS (11 s)
+27/54 npm run nuoto-coerente -- --no-build ... PASS (13 s)
+28/54 npm run gioco-fermo -- --no-build ... PASS (10 s)
+29/54 npm run posizioni ... PASS (0 s)
+30/54 npm run orientamento -- --no-build ... PASS (40 s)
+31/54 npm run finta -- --no-build ... PASS (13 s)
+32/54 npm run desktop -- --no-build ... PASS (11 s)
+33/54 npm run gesti -- --no-build ... PASS (13 s)
+34/54 npm run costumi -- --no-build ... PASS (109 s)
+35/54 npm run home -- --no-build ... PASS (21 s)
+36/54 npm run replay -- --no-build ... PASS (54 s)
+37/54 npm run replay-ui -- --no-build ... PASS (16 s)
+38/54 npm run fisica-palla -- --no-build ... PASS (12 s)
+39/54 npm run fisica-acqua ... PASS (3 s)
+40/54 npm run sezione1 -- --no-build ... PASS (32 s)
+41/54 npm run sezione2 -- --no-build ... PASS (25 s)
+42/54 npm run sezione3 -- --no-build ... PASS (14 s)
+43/54 npm run sezione4 -- --no-build ... PASS (13 s)
+44/54 npm run sezione5 -- --no-build ... PASS (70 s)
+45/54 npm run uomo -- --no-build ... PASS (30 s)
+46/54 npm run inferiorita ... PASS (19 s)
+47/54 npm run v046 -- --no-build ... PASS (15 s)
+48/54 npm run sezione6 -- --no-build ... PASS (20 s)
+49/54 npm run dati-tesi -- --no-build ... PASS (31 s)
+50/54 npm run statistiche -- --no-build ... PASS (25 s)
+51/54 npm run azione -- --no-build ... PASS (12 s)
+52/54 npm run aspetto -- --no-build --solo-gioco ... PASS (182 s)
+53/54 npm run cronaca -- --no-build --solo-controlli ... PASS (177 s)
+54/54 npm run menu -- --no-build --solo-controlli ... PASS (54 s)
+
+RIEPILOGO: 54 PASS, 0 FAIL su 54 passi in 22.7 minuti
+registri completi: /tmp/prove-S3zEvl
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

@@ -1,0 +1,5 @@
+
+> pallanuoto-3d@0.73.0 tiro-visuale
+> node tests/tiro-visuale-v072.mjs
+
+PASS tiro visuale v0.72: anche/core/mano libera, specchio, raccordi C1, posa fisica intatta e rig pesato (8599 vertici)
