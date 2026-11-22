@@ -27,6 +27,10 @@ jobs:
       # solo il browser, senza pacchetti di sistema: il server di GitHub ha già ciò che serve, e scaricare
       # quei pacchetti (caratteri aggiuntivi) falliva quando i loro archivi non erano raggiungibili
       - run: npx playwright install chromium
+      - run: npm run contatto-portiere
+      - run: npm run traiettorie
+      - run: npm run portiere -- --salva=tests/screenshot/portiere-v071.json
+      - run: npm run dimensioni-palla
       # sul server i caratteri dei testi sono diversi da quelli usati per gli screenshot di riferimento:
       # lì gli screenshot si guardano soltanto, mentre le partite simulate devono passare
       - run: npm run verifica -- --screenshot-non-bloccanti

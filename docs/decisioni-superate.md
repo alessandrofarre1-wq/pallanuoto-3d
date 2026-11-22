@@ -3,6 +3,19 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.71
+- Replay verificato sul vecchio raggio0,195m → misura del raggio effettivo0,1106m; fit prospettico più vicino solo se serve a conservare4pxCSS, FOV/orbita conservati. Margine extra del primo piano eliminato, vincoli di viso/mani/pannelli conservati.
+- Tuffo laterale sempre sul `crossZ` vero → corpo e braccia seguono la medesima lettura dopo il tempo di reazione, anche sulla deviazione ancora in arrivo; il recupero della respinta uscente resta libero.
+- Fattore rigore0,41 che assegnava una parata → fattore0,7 per la sola lettura corretta, che può ancora fallire per tempo/portata:78,3%su240rigori. Nessun aumento globale di precisione/potenza.
+- Parata assegnata al piano del portiere dopo un sorteggio, con corpo attraversabile se il tentativo falliva → la probabilità orienta il gesto, ma un intervento sulla palla richiede l'impatto3D con la sagoma; il corpo resta un ostacolo anche dopo un tentativo fallito. Sweep relativo palla/sagoma anche nello stesso fotogramma della linea di porta.
+- Mani disegnate sempre sulla traiettoria, indipendentemente dal tempo disponibile → profilo condiviso con il contatto, reazione e velocità limitate, raccordo e recupero numerici indipendenti dal renderer.
+- Tiro con potenza≤0,55: ogni parata assegnata diventava una presa → presa decisa separatamente dopo contatto con la mano; corpo/testa/braccio respingono. Le finte aiutano ma non diventano un requisito obbligatorio per il tiro umano.
+- Palla fisica22,12cm ma sfera visuale39cm → sfera visuale22,12cm, palmo e galleggiamento allineati. `VIS=1,45`, `BRV=0,15` e punto fisico di lancio invariati; nessun ridimensionamento globale dei giocatori.
+- V0.44: tutto il pannello del selezionato scompariva dopo3s → barra/percentuale/calotta dell'energia persistenti durante il gioco, anche in difesa e a0%; nome/ruolo restano temporanei.
+- Palombella molto alta, forte alto con rotazione da palombella e tiro a rimbalzo mirato sulla linea di porta → palombella più tesa, forte con rotazione da tiro, bersaglio dell'acqua prima della posizione reale del portiere. La CPU prepara la palombella con una finta se manca; il comando umano conserva l'accesso diretto.
+
+Prove, campione finale, fasi e limiti nel [rapporto v0.71](versioni/v071-portiere-tiri-stamina.md); esito CI dello SHA finale nella PR. Budget cambi/replay rispettati nei campioni, nessuna deroga ai limiti100chiamate/150000triangoli. Bilanciamento globale ancora aperto.
+
 ## v0.70
 - Entrate in parità disponibili dal preset o dall’iniziativa automatica → anche chiamata touch durante l’azione dopo5,5s se la boa non è servibile; appoggio e servizio restano manuali, scelta persistente conservata.
 - Bonus al centro ritardato anche su una boa chiaramente libera → occasione reale letta subito con marcatore, aiuti, portiere e corridoio; costruzione7–15s conservata nei duelli marginali. PASSA neutro assistito distinto dalla scelta CPU.

@@ -1,0 +1,969 @@
+{
+  "nota": "Traiettorie imposte dopo doShoot per isolare il portiere; metadati reali, portiere controllato e neutro, difficoltà media, valori delle squadre normalizzati. Primo evento: una respinta può ancora entrare successivamente. Le frequenze non rappresentano partite complete.",
+  "raggioFisicoAtteso": 0.1106,
+  "provenienza": {
+    "prima": false,
+    "build": "sorgenti v0.71",
+    "campioniPerGruppo": 80
+  },
+  "gruppi": [
+    {
+      "distanza": 3,
+      "potenza": 0.42,
+      "n": 80,
+      "esiti": {
+        "PRESA": 0,
+        "RESPINTA": 0,
+        "GOL": 80,
+        "FUORI": 0,
+        "ACQUA": 0,
+        "NESSUN_ESITO": 0
+      },
+      "squadre": [
+        {
+          "n": 40,
+          "prese": 0,
+          "gol": 40
+        },
+        {
+          "n": 40,
+          "prese": 0,
+          "gol": 40
+        }
+      ],
+      "preseDirette": 0
+    },
+    {
+      "distanza": 3,
+      "potenza": 0.9,
+      "n": 80,
+      "esiti": {
+        "PRESA": 0,
+        "RESPINTA": 0,
+        "GOL": 80,
+        "FUORI": 0,
+        "ACQUA": 0,
+        "NESSUN_ESITO": 0
+      },
+      "squadre": [
+        {
+          "n": 40,
+          "prese": 0,
+          "gol": 40
+        },
+        {
+          "n": 40,
+          "prese": 0,
+          "gol": 40
+        }
+      ],
+      "preseDirette": 0
+    },
+    {
+      "distanza": 8,
+      "potenza": 0.42,
+      "n": 80,
+      "esiti": {
+        "PRESA": 6,
+        "RESPINTA": 34,
+        "GOL": 40,
+        "FUORI": 0,
+        "ACQUA": 0,
+        "NESSUN_ESITO": 0
+      },
+      "squadre": [
+        {
+          "n": 40,
+          "prese": 3,
+          "gol": 20
+        },
+        {
+          "n": 40,
+          "prese": 3,
+          "gol": 20
+        }
+      ],
+      "preseDirette": 0.075
+    },
+    {
+      "distanza": 8,
+      "potenza": 0.9,
+      "n": 80,
+      "esiti": {
+        "PRESA": 6,
+        "RESPINTA": 26,
+        "GOL": 48,
+        "FUORI": 0,
+        "ACQUA": 0,
+        "NESSUN_ESITO": 0
+      },
+      "squadre": [
+        {
+          "n": 40,
+          "prese": 3,
+          "gol": 24
+        },
+        {
+          "n": 40,
+          "prese": 3,
+          "gol": 24
+        }
+      ],
+      "preseDirette": 0.075
+    }
+  ],
+  "simmetria": {
+    "coppie": 160,
+    "esitiDiversi": 0,
+    "differenze": []
+  },
+  "estrazione": {
+    "origine": "/tmp/v071-portiere-dopo.json",
+    "sha256_origine": "51a2ef2d5dc8c01cf27ffa3c627bff064687574a4957c920d93feff3a30f6e79",
+    "campi_omessi": "statistiche (320 tiri individuali), tentativo e misure accessorie; traccia conservata solo nei due casi stesso-frame. Aggregati gruppi/simmetria e i 38 esiti mirati conservati."
+  },
+  "mirati": [
+    {
+      "nome": "centro-torace-1-30",
+      "dir": 1,
+      "fps": 30,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.4,
+        0
+      ],
+      "esito": "RESPINTA",
+      "atteso": "contatto",
+      "golNelFrame": false,
+      "contatto": {
+        "parte": "testa",
+        "punto": [
+          11.455936778684894,
+          0.40617589228356277,
+          0
+        ],
+        "normale": [
+          -0.9034039298573083,
+          -0.4287905543716786,
+          -2.953655786366701e-17
+        ],
+        "velocita": 24.50242803434133
+      }
+    },
+    {
+      "nome": "centro-testa-1-30",
+      "dir": 1,
+      "fps": 30,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.65,
+        0
+      ],
+      "esito": "RESPINTA",
+      "atteso": "contatto",
+      "golNelFrame": false,
+      "contatto": {
+        "parte": "testa",
+        "punto": [
+          11.452435322036532,
+          0.6562143392146693,
+          0
+        ],
+        "normale": [
+          -0.9150521555670932,
+          0.4033355335102728,
+          -2.953655786366696e-17
+        ],
+        "velocita": 24.50242803434133
+      }
+    },
+    {
+      "nome": "lato-destro-1-30",
+      "dir": 1,
+      "fps": 30,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.6,
+        1.15
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "lato-sinistro-1-30",
+      "dir": 1,
+      "fps": 30,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.6,
+        -1.15
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "sopra-spalla-destra-1-30",
+      "dir": 1,
+      "fps": 30,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.72,
+        0.38
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "sopra-spalla-sinistra-1-30",
+      "dir": 1,
+      "fps": 30,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.72,
+        -0.38
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "centro-torace-1-60",
+      "dir": 1,
+      "fps": 60,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.4,
+        0
+      ],
+      "esito": "RESPINTA",
+      "atteso": "contatto",
+      "golNelFrame": false,
+      "contatto": {
+        "parte": "testa",
+        "punto": [
+          11.455936778684894,
+          0.40617589228356277,
+          0
+        ],
+        "normale": [
+          -0.9034039298573086,
+          -0.4287905543716783,
+          -2.9536557863667015e-17
+        ],
+        "velocita": 24.50242803434133
+      }
+    },
+    {
+      "nome": "centro-testa-1-60",
+      "dir": 1,
+      "fps": 60,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.65,
+        0
+      ],
+      "esito": "RESPINTA",
+      "atteso": "contatto",
+      "golNelFrame": false,
+      "contatto": {
+        "parte": "testa",
+        "punto": [
+          11.452435322036532,
+          0.6562143392146693,
+          0
+        ],
+        "normale": [
+          -0.9150521555670935,
+          0.40333553351027207,
+          -2.953655786366697e-17
+        ],
+        "velocita": 24.50242803434133
+      }
+    },
+    {
+      "nome": "lato-destro-1-60",
+      "dir": 1,
+      "fps": 60,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.6,
+        1.15
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "lato-sinistro-1-60",
+      "dir": 1,
+      "fps": 60,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.6,
+        -1.15
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "sopra-spalla-destra-1-60",
+      "dir": 1,
+      "fps": 60,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.72,
+        0.38
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "sopra-spalla-sinistra-1-60",
+      "dir": 1,
+      "fps": 60,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.72,
+        -0.38
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "centro-torace-1-120",
+      "dir": 1,
+      "fps": 120,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.4,
+        0
+      ],
+      "esito": "RESPINTA",
+      "atteso": "contatto",
+      "golNelFrame": false,
+      "contatto": {
+        "parte": "testa",
+        "punto": [
+          11.455609565434594,
+          0.40640045304479255,
+          0
+        ],
+        "normale": [
+          -0.904492463624106,
+          -0.42648960508691813,
+          -2.9536557863666984e-17
+        ],
+        "velocita": 24.50242803434133
+      }
+    },
+    {
+      "nome": "centro-testa-1-120",
+      "dir": 1,
+      "fps": 120,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.65,
+        0
+      ],
+      "esito": "RESPINTA",
+      "atteso": "contatto",
+      "golNelFrame": false,
+      "contatto": {
+        "parte": "testa",
+        "punto": [
+          11.452736833995965,
+          0.6564367889654282,
+          0
+        ],
+        "normale": [
+          -0.9140491217699113,
+          0.40560350465898815,
+          -2.9536557863667015e-17
+        ],
+        "velocita": 24.50242803434133
+      }
+    },
+    {
+      "nome": "lato-destro-1-120",
+      "dir": 1,
+      "fps": 120,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.6,
+        1.15
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "lato-sinistro-1-120",
+      "dir": 1,
+      "fps": 120,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.6,
+        -1.15
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "sopra-spalla-destra-1-120",
+      "dir": 1,
+      "fps": 120,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.72,
+        0.38
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "sopra-spalla-sinistra-1-120",
+      "dir": 1,
+      "fps": 120,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.72,
+        -0.38
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "centro-torace--1-30",
+      "dir": -1,
+      "fps": 30,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.4,
+        0
+      ],
+      "esito": "RESPINTA",
+      "atteso": "contatto",
+      "golNelFrame": false,
+      "contatto": {
+        "parte": "testa",
+        "punto": [
+          -11.455936778684894,
+          0.40617589228356277,
+          0
+        ],
+        "normale": [
+          0.903403929857308,
+          -0.42879055437167934,
+          0
+        ],
+        "velocita": 24.50242803434133
+      }
+    },
+    {
+      "nome": "centro-testa--1-30",
+      "dir": -1,
+      "fps": 30,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.65,
+        0
+      ],
+      "esito": "RESPINTA",
+      "atteso": "contatto",
+      "golNelFrame": false,
+      "contatto": {
+        "parte": "testa",
+        "punto": [
+          -11.452435322036532,
+          0.6562143392146693,
+          0
+        ],
+        "normale": [
+          0.9150521555670935,
+          0.40333553351027207,
+          0
+        ],
+        "velocita": 24.50242803434133
+      }
+    },
+    {
+      "nome": "lato-destro--1-30",
+      "dir": -1,
+      "fps": 30,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.6,
+        1.15
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "lato-sinistro--1-30",
+      "dir": -1,
+      "fps": 30,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.6,
+        -1.15
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "sopra-spalla-destra--1-30",
+      "dir": -1,
+      "fps": 30,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.72,
+        0.38
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "sopra-spalla-sinistra--1-30",
+      "dir": -1,
+      "fps": 30,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.72,
+        -0.38
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "centro-torace--1-60",
+      "dir": -1,
+      "fps": 60,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.4,
+        0
+      ],
+      "esito": "RESPINTA",
+      "atteso": "contatto",
+      "golNelFrame": false,
+      "contatto": {
+        "parte": "testa",
+        "punto": [
+          -11.455936778684894,
+          0.40617589228356277,
+          0
+        ],
+        "normale": [
+          0.903403929857309,
+          -0.42879055437167707,
+          0
+        ],
+        "velocita": 24.50242803434133
+      }
+    },
+    {
+      "nome": "centro-testa--1-60",
+      "dir": -1,
+      "fps": 60,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.65,
+        0
+      ],
+      "esito": "RESPINTA",
+      "atteso": "contatto",
+      "golNelFrame": false,
+      "contatto": {
+        "parte": "testa",
+        "punto": [
+          -11.452435322036534,
+          0.6562143392146693,
+          0
+        ],
+        "normale": [
+          0.9150521555670916,
+          0.4033355335102765,
+          0
+        ],
+        "velocita": 24.50242803434133
+      }
+    },
+    {
+      "nome": "lato-destro--1-60",
+      "dir": -1,
+      "fps": 60,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.6,
+        1.15
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "lato-sinistro--1-60",
+      "dir": -1,
+      "fps": 60,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.6,
+        -1.15
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "sopra-spalla-destra--1-60",
+      "dir": -1,
+      "fps": 60,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.72,
+        0.38
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "sopra-spalla-sinistra--1-60",
+      "dir": -1,
+      "fps": 60,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.72,
+        -0.38
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "centro-torace--1-120",
+      "dir": -1,
+      "fps": 120,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.4,
+        0
+      ],
+      "esito": "RESPINTA",
+      "atteso": "contatto",
+      "golNelFrame": false,
+      "contatto": {
+        "parte": "testa",
+        "punto": [
+          -11.455609565434594,
+          0.40640045304479255,
+          0
+        ],
+        "normale": [
+          0.9044924636241082,
+          -0.42648960508691347,
+          0
+        ],
+        "velocita": 24.50242803434133
+      }
+    },
+    {
+      "nome": "centro-testa--1-120",
+      "dir": -1,
+      "fps": 120,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.65,
+        0
+      ],
+      "esito": "RESPINTA",
+      "atteso": "contatto",
+      "golNelFrame": false,
+      "contatto": {
+        "parte": "testa",
+        "punto": [
+          -11.452736833995967,
+          0.6564367889654282,
+          0
+        ],
+        "normale": [
+          0.9140491217699084,
+          0.4056035046589951,
+          0
+        ],
+        "velocita": 24.50242803434133
+      }
+    },
+    {
+      "nome": "lato-destro--1-120",
+      "dir": -1,
+      "fps": 120,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.6,
+        1.15
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "lato-sinistro--1-120",
+      "dir": -1,
+      "fps": 120,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.6,
+        -1.15
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "sopra-spalla-destra--1-120",
+      "dir": -1,
+      "fps": 120,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.72,
+        0.38
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "sopra-spalla-sinistra--1-120",
+      "dir": -1,
+      "fps": 120,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.72,
+        -0.38
+      ],
+      "esito": "GOL",
+      "atteso": "gol",
+      "golNelFrame": true,
+      "contatto": null
+    },
+    {
+      "nome": "stesso-frame-1",
+      "dir": 1,
+      "fps": 30,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.4,
+        0
+      ],
+      "esito": "RESPINTA",
+      "atteso": "contatto",
+      "golNelFrame": false,
+      "contatto": {
+        "parte": "testa",
+        "punto": [
+          11.75,
+          0.4,
+          0
+        ],
+        "normale": [
+          -0.8796627942040907,
+          -0.47559790631693455,
+          -3.433078080470386e-17
+        ],
+        "velocita": 24.869825225383874
+      },
+      "traccia": [
+        {
+          "frame": 1,
+          "tempo": 0.03333333333333333,
+          "palla": [
+            11.747472763061523,
+            0.4022446572780609,
+            -1.6274469186431725e-17
+          ],
+          "stato": "flight",
+          "tipo": "rebound",
+          "contatto": {
+            "parte": "testa",
+            "punto": [
+              11.75,
+              0.4,
+              0
+            ],
+            "normale": [
+              -0.8796627942040907,
+              -0.47559790631693455,
+              -3.433078080470386e-17
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "nome": "stesso-frame--1",
+      "dir": -1,
+      "fps": 30,
+      "distanza": 3,
+      "potenza": 0.9,
+      "velocita": 25,
+      "bersaglio": [
+        0.4,
+        0
+      ],
+      "esito": "RESPINTA",
+      "atteso": "contatto",
+      "golNelFrame": false,
+      "contatto": {
+        "parte": "testa",
+        "punto": [
+          -11.75,
+          0.4,
+          0
+        ],
+        "normale": [
+          0.8796627942040907,
+          -0.47559790631693455,
+          0
+        ],
+        "velocita": 24.869825225383874
+      },
+      "traccia": [
+        {
+          "frame": 1,
+          "tempo": 0.03333333333333333,
+          "palla": [
+            -11.747472763061523,
+            0.4022446572780609,
+            0
+          ],
+          "stato": "flight",
+          "tipo": "rebound",
+          "contatto": {
+            "parte": "testa",
+            "punto": [
+              -11.75,
+              0.4,
+              0
+            ],
+            "normale": [
+              0.8796627942040907,
+              -0.47559790631693455,
+              0
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "rigori": {
+    "N": 240,
+    "gol": 188,
+    "lanci": 240,
+    "velMedia": 22.698353182933147,
+    "velDs": 0.7151773900113765,
+    "velMin": 21.53377839972886,
+    "velMax": 23.896427129245374,
+    "frusta": 0.16976836158192085
+  },
+  "nota": "240lanci reali, letturaRigore0.7; include priorità AI tiro/rebound; camera in chiusura indipendente dai risultati."
+}

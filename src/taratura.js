@@ -189,3 +189,38 @@ export const REALE=/*#__PURE__*/Object.freeze([
   { voce:'parità: espulsione procurata', dato:'azioni.parita.espulsione', unita:'%', reale:22, banda:[17,27], fonte:'Mondiali 2009', numeri:['ESPULSIONI','LOTTA_FASE','CENTRO_SENZA_PALLA'] },
   { voce:'palla in mano prima del passaggio', dato:'manoPassaggio', unita:'s', reale:[0.6,1], banda:[0.6,1], fonte:'finale olimpica Parigi 2024 (video di Ale)', numeri:['CIRCOLAZIONE'] },
 ]);
+// v0.71: tempi e presa del portiere; il contatto effettivo resta geometrico.
+// Calibrazione di gioco: reazione e velocità limitano il tuffo, non garantiscono
+// l'arrivo sulla palla. La palla ha raggio regolamentare in fisica-palla/parametri.
+export const PARATA_PORTIERE = {
+  reazioneMin: 0.08,
+  reazioneRiflessi: 0.10,
+  reazioneStanchezza: 0.03,
+  velocitaMano: 7,
+  durataMinima: 0.05,
+  presaLenta: 0.5,
+  presaVeloce: 0.04,
+  velocitaLenta: 10,
+  velocitaVeloce: 22,
+  distanzaRavvicinata: 5.5,
+  tempoRavvicinato: 0.32,
+  presaRavvicinata: 0.05,
+  recupero: 0.28,
+  restituzione: 0.3,
+  // Prima0,41 assegnava direttamente la parata. Ora è solo la lettura giusta:
+  // servono anche reazione, portata e impatto. Con0,41:210/240rigori in gol.
+  letturaRigore: 0.7,
+};
+
+// v0.71: profili di tiro richiesti da Ale. Palombella prima 4,5+d*0,15 m/s
+// (8m: 1,40s/picco3,17m); ora circa 1,02s/picco2,08m con il medesimo spin.
+// Quadrella nominale dentro il centro-palla utile della porta (±1,389m/0,789m);
+// l'errore personale si aggiunge dopo, senza cambiare Precisione o Potenza.
+// Rimbalzo: primo contatto 0,8–1,5m prima del portiere; risalita dalle forze
+// di de Mestre già in palla.js, senza impulsi. Valori da calibrare nel gioco.
+export const TRAIETTORIE_TIRO={
+  palombellaVelocita:7.8,palombellaMin:0.7,palombellaMax:1.15,
+  forteDa:0.8,quadrellaZ:1.12,quadrellaLarghezza:0.18,quadrellaY:0.66,quadrellaAltezza:0.10,
+  rimbalzoDistanzaMin:6,rimbalzoPrimaPortiere:1.2,rimbalzoPrimaMin:0.9,rimbalzoPrimaPendenza:0.15,rimbalzoTrattoMin:2.2,
+  rimbalzoImmersione:0.02,portiereDallaPorta:0.7,
+};

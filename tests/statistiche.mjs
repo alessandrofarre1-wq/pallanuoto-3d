@@ -11,7 +11,8 @@ const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--ena
 const pg = await browser.newPage();
 pg.on('pageerror', e => console.log('errore nella pagina:', e.message)); pg.on('console', m => { if (m.type() === 'error') console.log('console:', m.text().slice(0, 300)); });
 await pg.addInitScript(() => {
-  let a = 5; window.__rnd = () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  let a = 5; window.__resetStatSeed=()=>{a=5;};
+  window.__rnd = () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   performance.now = () => 0; window.__frame = 0;
   window.requestAnimationFrame = cb => { window.__raf = cb; return 1; };
   window.__step = n => { for (let i = 0; i < n; i++) { window.__frame++; window.__raf(window.__frame * 1000 / 60); } };
@@ -38,10 +39,14 @@ const R = await pg.evaluate(() => {
     return { st, vel }; };
   out.res75 = vasche(75); out.res90 = vasche(90); out.res60 = vasche(60);
   // 3. Precisione: stesso tiro dallo stesso punto, senza portiere né difensori: quanti finiscono nello specchio
-  const tiri = pre => { con({ pre, pot: 80 }); let dentro = 0; const N = 1500, gx = 12.5;
+  // Stessi errori casuali per ogni valore: cambia Precisione, non il campione.
+  const tiri = pre => { window.__resetStatSeed(); con({ pre, pot: 80 }); let dentro = 0; const N = 1500, gx = 12.5;
     for (let n = 0; n < N; n++) { lontani(); p.x = gx - 7.5; p.z = 3; p.vx = p.vz = 0; p.fx = 1; p.fz = 0; p.stamina = 0.85; p.act = null; p.ballW = [p.x + 0.2, 1.1, p.z]; p.fakeUntil = 0; p.turnedUntil = 0;
       H.ball.state = 'held'; H.ball.holder = p; H.game.penalty = null;
-      P.doShoot(p, 0.8, false, -1);      // mira all'angolo
+      // Tiro classico a carica media: a0,8 la v0.71 sceglie la quadrella alta,
+      // aggiungendo un secondo margine (traversa) al confronto sulla Precisione.
+      // Le quadrelle sono verificate a parte da traiettorie-v071.mjs.
+      P.doShoot(p, 0.7, false, -1);      // stessa mira all'angolo per tutti
       const B = H.ball; let px = B.x, pz = B.z, py = B.y;
       for (let i = 0; i < 200 && B.x < gx; i++) { px = B.x; pz = B.z; py = B.y; H.palla.passoPalla(B, dt, null); }
       const k = (gx - px) / ((B.x - px) || 1), z = pz + (B.z - pz) * k, y = py + (B.y - py) * k;

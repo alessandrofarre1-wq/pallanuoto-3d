@@ -1,0 +1,82 @@
+[
+  {
+    "file": "1-menu.png",
+    "size": [
+      1280,
+      720
+    ],
+    "bbox_diff": [
+      139,
+      691,
+      152,
+      699
+    ],
+    "prima_sha256": "d5a1902548b8fda60b2c4e8a295daf0b4be2e78a4633275ec090346fa83e3436",
+    "attuale_sha256": "9524da8402462f7fdc158f1f7939b75c1dc616859457ffd67009d9de382c5a17",
+    "aggiornato": false
+  },
+  {
+    "file": "2-sprint-iniziale.png",
+    "size": [
+      1280,
+      720
+    ],
+    "bbox_diff": [
+      0,
+      18,
+      651,
+      720
+    ],
+    "prima_sha256": "297b3241105079f527eb5f142046fce3bf04b17092d6d76a2d960f8c2bcf2aee",
+    "attuale_sha256": "5e6d08bf2aba777370b79966e88b73ff14d476718e4512b37f163abeb080b416",
+    "aggiornato": true
+  },
+  {
+    "file": "3-azione.png",
+    "size": [
+      1280,
+      720
+    ],
+    "bbox_diff": [
+      0,
+      18,
+      824,
+      720
+    ],
+    "prima_sha256": "5b25ec55c034af1dd1b176e5f44d1d8cbb62bb6762a85f7edd1a5a6b49eb3815",
+    "attuale_sha256": "2c7676c579b37abc66b8c2dcbe149b07e414dd4349b2cc850a4d55effe19e342",
+    "aggiornato": true
+  },
+  {
+    "file": "4-iphone-piccolo.png",
+    "size": [
+      1334,
+      750
+    ],
+    "bbox_diff": [
+      614,
+      0,
+      1157,
+      368
+    ],
+    "prima_sha256": "0a530e3e14e9c736c1de7a178f3fdacf29d1787fa3d9984321a9b5b0bfb190fd",
+    "attuale_sha256": "9a095d8f0230728d41d2c3431d2a5094bb617952778b0a1ad2e27a8274935e45",
+    "aggiornato": true
+  },
+  {
+    "file": "5-iphone-orizzontale.png",
+    "size": [
+      1688,
+      780
+    ],
+    "bbox_diff": [
+      790,
+      0,
+      1511,
+      383
+    ],
+    "prima_sha256": "aac6b8a01a21b4c4a1247879911ff5067eaeab530ef01bcb08355e479c8c87f2",
+    "attuale_sha256": "2f4241ea90ce6c5b56b6dffede8beba782dfb9a915ea1b1c5ce00106090a3aaf",
+    "aggiornato": true
+  }
+]

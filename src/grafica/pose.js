@@ -12,6 +12,7 @@ import { braccioMuro, braccioVerso } from '../muro.js';
 import { visoGiocatore } from './espressioni.js';
 import { puoMuoversiSuFallo } from '../gioco-fermo.js';
 import { conservaGestoVista, frustaVista, preparaGestoVista, raccordaGestoVista, smussoGestoVista } from './gesto-vista.js';
+import { raggioVistaPalla } from './dimensioni-palla.js';
 //<POSE>
 export const L1=0.30, L2=0.29;
 export function ik(S,H,l1,l2,hint){
@@ -356,6 +357,17 @@ function articolaVista(p,J,T,t,gestoVista){
   T.morbidoR=T.morbidoL=1-0.75*(T.oriz||0);
   T.torsioneVista=Math.sin(p.phase)*0.06*e;
   T.alzataTiro=0;
+  const parata=p.isGK&&!hold&&p.tentativoPortiere;
+  if(parata?.attiva&&parata.gid===p.uid&&parata.num===p.num&&parata.scheda===p.scheda&&!p.excluded){
+    // La stessa posa numerica muove il modello e i volumi che toccano la palla.
+    // Un tentativo in ritardo non disegna più le mani già sul bersaglio.
+    for(const [key,q] of Object.entries(parata.giunti)){
+      const v=V[key];v[0]=q[0];v[1]=q[1];v[2]=q[2];
+    }
+    T.oriz=0;T.torsioneVista=0;T.polsoR=T.polsoL=.08;
+    T.nR=[1,.15,.2];T.nL=[1,.15,-.2];
+    return V;
+  }
   const braccio=(s,mano,hint,n,polso,k=1)=>{
     const suff=s>0?'R':'L', spalla=V['s'+suff];
     const h=mix3(V['h'+suff],mano,k), piega=ik(spalla,h,L1,L2,hint);
@@ -603,13 +615,15 @@ export function updateRig(p,dt,t){
   R.g.position.set(p.x,0,p.z); R.g.rotation.set(0,Math.atan2(-p.fz,p.fx),0);
   const resetVista=!p.giuntiVista||game.state==='countdown'||(!p.act&&!p.charging&&game.state!=='play'&&!puoMuoversiSuFallo(p));
   const gestoVista=preparaGestoVista(p,ball.holder===p&&p.act?.done?null:p.act,ball.holder===p,game.time,dt,t,resetVista);
-  const Jv=raccordaGestoVista(gestoVista,articolaVista(p,posturaVista(p,J,T.oriz||0,inclinazioneVerticale(p,T,dt)),T,t,gestoVista),T);
+  const parataCondivisa=p.isGK&&ball.holder!==p&&p.tentativoPortiere?.attiva;
+  const vista=articolaVista(p,posturaVista(p,J,T.oriz||0,inclinazioneVerticale(p,T,dt)),T,t,gestoVista);
+  const Jv=parataCondivisa?vista:raccordaGestoVista(gestoVista,vista,T);
   // BRACCIA SENZA SCATTI (v0.56, Ale: «i passaggi sembrano calamitati»): le pose aggiunte solo nel disegno (palla protetta, palla in
   // acqua del centroboa, accompagnamento) cambiavano di colpo quando cambiava la situazione, e la palla in mano saltava fino a
   // 1,4 m in un fotogramma subito dopo la presa. Gomiti e mani disegnati seguono la posa con un breve smussamento (più rapido
   // durante un gesto); anche la palla che scende in acqua sotto la mano arriva con gradualità.
   // (non in nuotata: la bracciata del crawl è rapida e va lasciata intera)
-  { const B=p.bracciaVista||(p.bracciaVista={}), k0=1-Math.exp(-dt*smussoGestoVista(p.act,BRACCIA_SMUSSO.base,BRACCIA_SMUSSO.gesto)), kb=k0+(1-k0)*clamp((T.oriz||0)*2,0,1);
+  { const B=p.bracciaVista||(p.bracciaVista={}), k0=parataCondivisa?1:1-Math.exp(-dt*smussoGestoVista(p.act,BRACCIA_SMUSSO.base,BRACCIA_SMUSSO.gesto)), kb=k0+(1-k0)*clamp((T.oriz||0)*2,0,1);
     for(const key of ['eR','eL','hR','hL']){ const v=Jv[key]; if(!v) continue; const a=B[key];
       if(!a||Math.hypot(a[0]-v[0],a[1]-v[1],a[2]-v[2])>3){ B[key]=v.slice(); continue; }
       a[0]+=(v[0]-a[0])*kb; a[1]+=(v[1]-a[1])*kb; a[2]+=(v[2]-a[2])*kb; v[0]=a[0]; v[1]=a[1]; v[2]=a[2]; }
@@ -642,7 +656,7 @@ export function updateRig(p,dt,t){
     }else _normalePresa.set(...(T.manoS?T.nL:T.nR)).applyQuaternion(R.g.quaternion).normalize();
     presa.getWorldScale(_scalaPresa);
     const giaFuori=(C.distanzeSuperficiePrese?.[lato]||0)*Math.abs(_scalaPresa.x);
-    _mano.addScaledVector(_normalePresa,Math.max(0,BRV*1.3-giaFuori));
+    _mano.addScaledVector(_normalePresa,Math.max(0,raggioVistaPalla-giaFuori));
     const dv=T.ballDavanti||0, c=p.fx, sn=-p.fz;
     const avanti=Jv.head[0]+0.30, fianco=Jv.head[2];
     p.ballVistaW=[_mano.x*(1-dv)+(p.x+VIS*(avanti*c+fianco*sn))*dv,

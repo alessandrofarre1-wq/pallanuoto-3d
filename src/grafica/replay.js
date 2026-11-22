@@ -24,6 +24,7 @@ const nomi=new Array(CAPACITA*corpi.length).fill(null),nomiClip=new Array(MAX_CL
 const posizioni=new Float32Array(CAPACITA*POSIZIONI), posizioniClip=new Float32Array(MAX_CLIP*POSIZIONI);
 const tempoSchermo=new Float64Array(MAX_CLIP);
 const puntiPrincipali=new Float32Array((MAX_CLIP*32+16)*3), puntiTiro=new Float32Array(puntiPrincipali.length);
+const puntiPalla=new Float32Array(MAX_CLIP*3);
 // v0.61: il replay è diviso in due inquadrature (replay-camera.js): l'azione fino a poco dopo la rete (TAGLIO s dopo il gol) occupa
 // la prima parte dello schermo (QUOTA_AZIONE), il primo piano di chi esulta il resto, al rallentatore.
 // v0.63 (Ale: «esultanza più lunga nel replay»): 1,15 s registrati dopo la rete (prima 0,56) e primo piano al 38% del replay
@@ -293,7 +294,7 @@ function preparaRegia(info){
   const dir=Math.sign(infoClip.dir)||1, gx=dir*HL;
   const offsetPalla=nodi.find(n=>n.oggetto===ball3d).offset;
   const portiere=corpi.findIndex(p=>p.isGK&&(marcatore>=0?p.team!==corpi[marcatore].team:p.team.dir===-dir));
-  let n=0,nTiro=0,minDist=Infinity,maxZ=0;
+  let n=0,nTiro=0,nPalla=0,minDist=Infinity,maxZ=0;
   const aggiungi=(dest,x,y,z)=>{
     let i=dest===puntiPrincipali?n++:nTiro++;
     i*=3;dest[i]=x;dest[i+1]=y;dest[i+2]=z;
@@ -317,6 +318,8 @@ function preparaRegia(info){
     if(dopo&&(!capGiusto||!visibile)) reazioneIdentificata=false;
     // l'azione si inquadra fino al taglio; la ripresa del tiro solo dal rilascio in poi
     if(taglio!==null&&t>taglio+PASSO) continue;
+    const bp=f*stride+offsetPalla;
+    puntiPalla.set(clip.subarray(bp,bp+3),nPalla++*3);
     for(const dest of t>=inizioTiro-PASSO?[puntiPrincipali,puntiTiro]:[puntiPrincipali]){
       const b=f*stride+offsetPalla;
       sfera(dest,clip[b],clip[b+1],clip[b+2],0.23);
@@ -337,7 +340,8 @@ function preparaRegia(info){
   if(nTiro) porta(puntiTiro);
   // La piccola diagonale non deve invertire un tiro da posizione molto laterale.
   const laterale=Number.isFinite(minDist)?Math.max(0,Math.min(0.18,minDist*0.3/(maxZ+1))):0.12;
-  pianoCamera=preparaCameraReplay(puntiPrincipali,n,puntiTiro,nTiro,dir,laterale);
+  const raggioPalla=ball3d.geometry.parameters.radius*ball3d.getWorldScale(punto).x;
+  pianoCamera=preparaCameraReplay(puntiPrincipali,n,puntiTiro,nTiro,dir,laterale,{punti:puntiPalla,n:nPalla,raggio:raggioPalla});
   if(reazioneIdentificata){
     // angolo del primo piano scelto sul fotogramma del taglio, con le teste e i corpi degli altri come possibili ostacoli
     let f=0;while(f<countClip-1&&tempiClip[f]-tempiClip[0]<taglio)f++;
@@ -496,7 +500,7 @@ export function diagnosticaReplay(){
     durataClip:countClip>1?tempiClip[countClip-1]-tempiClip[0]:0,
     bytes:dati.byteLength+clip.byteLength+attuale.byteLength+matrici.byteLength+matriciDisegno.byteLength+tempi.byteLength+tempiClip.byteLength+
       metadati.byteLength+metaClip.byteLength+numeri.byteLength+numeriClip.byteLength+posizioni.byteLength+posizioniClip.byteLength+
-      tempoSchermo.byteLength+puntiPrincipali.byteLength+puntiTiro.byteLength+bersagliUltimi.byteLength+posizioneCameraUltima.byteLength+(nomi.length+nomiClip.length)*8+
+      tempoSchermo.byteLength+puntiPrincipali.byteLength+puntiTiro.byteLength+puntiPalla.byteLength+bersagliUltimi.byteLength+posizioneCameraUltima.byteLength+(nomi.length+nomiClip.length)*8+
       istanze.reduce((n,i)=>n+i.blocchi.reduce((s,b)=>s+b.salvati.byteLength,0),0)+textureCongelate.reduce((n,r)=>n+r.tex.image.width*r.tex.image.height*4,0),
   };
 }

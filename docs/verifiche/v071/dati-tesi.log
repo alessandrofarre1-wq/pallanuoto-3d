@@ -1,0 +1,10 @@
+
+> pallanuoto-3d@0.71.0 dati-tesi
+> node tests/dati-tesi.mjs --no-build --diagnosi
+
+✓ Velocità della palla dopo 5 m, partendo da 13,3 m/s: 12.20 m/s   (dato: 12,2 m/s misurati nella tesi)
+✓ Rigori segnati: 78.3% (188 su 240)   (dato: 80,1% negli studi citati dalla tesi; 75% ai Mondiali 2025 (127 su 169, World Aquatics))
+✓ Velocità al rilascio dei rigori: 22.7 ± 0.7 m/s (da 21.5 a 23.9)   (dato: professionisti 22,8 ± 2,4 m/s; semi-professionisti 18,4 ± 1,7)
+✓ Tempo dal braccio caricato al rilascio: 170 ms   (dato: professionisti 166 ms, semi-professionisti 189 ms)
+
+✓ Dati della tesi: il gioco è nella fascia attesa

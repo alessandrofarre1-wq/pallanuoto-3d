@@ -1,0 +1,49 @@
+
+> pallanuoto-3d@0.71.0 taratura
+> node strumenti/taratura.mjs --partite=8 --paralleli=1 --dist=/workspace/pallanuoto-v070/dist --porta=4190 --salva=/tmp/v071-bilancio-prima.json
+
+gioco 8 partite (ITA–HUN), 1 alla volta...
+  partita 1: Italia 8 - Ungheria 23
+  partita 2: Italia 12 - Ungheria 18
+  partita 3: Italia 10 - Ungheria 15
+  partita 4: Italia 19 - Ungheria 23
+  partita 5: Italia 10 - Ungheria 18
+  partita 6: Italia 17 - Ungheria 21
+  partita 7: Italia 9 - Ungheria 30
+  partita 8: Italia 9 - Ungheria 16
+
+GIOCO CONTRO REALTÀ · 8 partite Italia–Ungheria, tempi da 8 minuti · per squadra a partita
+voce                                gioco     reale       stato  numeri da guardare (src/taratura.js)
+tiri                                41,4      33          ALTO   COSTRUZIONE, TIRO_LIBERATO, FINE_AZIONE, PAZIENZA, SUPERIORITA
+gol                                 16,1      13,3        ALTO   PARATA_SUP, TIRO_LIBERATO, COSTRUZIONE
+tiri in gol                         39,0%     40%         ok     COSTRUZIONE, PARATA_SUP, TIRO_LIBERATO
+espulsioni                          7,8       11          BASSO  ESPULSIONI, LOTTA_FASE, CENTRO_SENZA_PALLA, CONTR_AI
+espulsioni dalla lotta al centro    46,0%     66%         BASSO  ESPULSIONI, LOTTA_FASE, CENTRO_SENZA_PALLA
+superiorità trasformate             40,3%     52%         BASSO  SUPERIORITA, PARATA_SUP, TIRO_LIBERATO
+rigori                              1,8       1,8         ok     RIGORI, ANTICIPO
+azioni a partita                    69,1      50          ALTO   FINE_AZIONE, CENTRO_ATTESA, LOTTA_FASE, RIPARTENZA
+parità: durata dell'azione          14,1 s    21 s        BASSO  FINE_AZIONE, CENTRO_ATTESA, LOTTA_FASE, RIPARTENZA
+parità: gol                         20,7%     6-19%       ALTO   COSTRUZIONE, TIRO_LIBERATO
+parità: tiro sbagliato              34,7%     32%         ok     COSTRUZIONE, TIRO_LIBERATO, PAZIENZA
+parità: palla persa                 15,9%     20%         ok     INTERCETTO, LOTTA_PALLA, ERRORE_PASSAGGIO
+parità: fallo in attacco            12,4%     15%         ok     LOTTA_PALLA, CENTRO_SENZA_PALLA, LOTTA_FASE
+parità: espulsione procurata        12,3%     22%         BASSO  ESPULSIONI, LOTTA_FASE, CENTRO_SENZA_PALLA
+palla in mano prima del passaggio   1,02 s    0,6-1 s     ALTO   CIRCOLAZIONE
+
+a posto 5 voci su 15; da guardare: tiri (alto), gol (alto), espulsioni (basso), espulsioni dalla lotta al centro (basso), superiorità trasformate (basso), azioni a partita (alto), parità: durata dell'azione (basso), parità: gol (alto), parità: espulsione procurata (basso), palla in mano prima del passaggio (alto)
+fonti: Mondiali 2025 · Euro League · Mondiali 2009 · finale olimpica Parigi 2024 (video di Ale)
+
+valori di oggi dei numeri da guardare:
+  CENTRO_ATTESA = {da:7, a:15}
+  CENTRO_SENZA_PALLA = {espulsione:0.07, inArrivo:0.9, fallo:0.18, contro:0.12}
+  CIRCOLAZIONE = {superiorita:[0.4, 0.35], rapidi:[0.32, 0.18], equilibrati:[0.4, 0.3], vicini:[0.55, 0.35]}
+  CONTR_AI = {ritmo:1.5, insiste:2, fallo:0.2, indisciplina:0.4}
+  COSTRUZIONE = {secondi:18, libero:0.3, vicino:4.5}
+  ESPULSIONI = {centro:9, contrasto:0.21}
+  FINE_AZIONE = {secondi:4.5, voglia:0.35, ultimi:2.5, ultima:0.9}
+  LOTTA_FASE = {minimo:0.1, da:12, a:26}
+  PARATA_SUP = 0.38
+  PAZIENZA = [25, 2.5]
+  RIPARTENZA = {d3:7, arrivato:2.5, transizione:10}
+  SUPERIORITA = {pronta:7, dopoCambio:1.6, cambioDa:3, libero:8, attesa:8, rampa:4, stretto:0.5, strettoVoglia:0.25}
+  TIRO_LIBERATO = {parita:0.3, superiorita:1, quick:0.3}

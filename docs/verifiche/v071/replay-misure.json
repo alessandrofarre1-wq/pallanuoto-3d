@@ -1,0 +1,36 @@
+{
+  "esito": "PASS",
+  "utc": "2026-11-22T00:13:42.750390+00:00",
+  "chrome_chiuso": true,
+  "sorgenti_grafica_frozen": true,
+  "comando": "PLAYWRIGHT_BROWSERS_PATH=/tmp/pallanuoto-browsers npm run replay -- --no-build",
+  "pathlog": "/tmp/v071-replay-camera-finale.log",
+  "log_foto": "/tmp/v071-camera-foto.log",
+  "immagini": [
+    "/tmp/v071-camera-foto/ala-safe-dir-1-p0.5.png",
+    "/tmp/v071-camera-foto/ala-safe-dir-1-p0.8.png",
+    "/tmp/v071-camera-foto/ala-safe-dir-1-p0.png",
+    "/tmp/v071-camera-foto/ala-safe-dir1-p0.5.png",
+    "/tmp/v071-camera-foto/ala-safe-dir1-p0.8.png",
+    "/tmp/v071-camera-foto/ala-safe-dir1-p0.png"
+  ],
+  "immagini_ispezionate": 6,
+  "origine_immagini": "Render WebGL reale, canvas.toDataURL nello stesso draw, poi composizione con overlay DOM; PNG canvas originali affiancati.",
+  "lint": "PASS (replay-camera.js e replay.js)",
+  "diff_check": "PASS",
+  "misure": {
+    "scene": 18,
+    "fotogrammi": 558,
+    "palla_min_px": 4.2,
+    "passo_max_m": 1.38,
+    "giro_max_rad": 0.062,
+    "rapporto_testa_min_da_misure_arrotondate": 2.0223880597014925,
+    "calls_max": 48,
+    "tri_max": 146426,
+    "corpi": 14
+  },
+  "sha256": {
+    "src/grafica/replay-camera.js": "f4698bd90a7a660b2b2f109e67aa494ee63969df1dd03ccb26ef940a80b9267d",
+    "src/grafica/replay.js": "14d175654719e25887dd517266d3ac896fcd665edfd34cab1a971353a8ae4beb"
+  }
+}

@@ -38,3 +38,19 @@ export function accentoGol(firma='GOL'){
     });
   }catch(e){}
 }
+
+// Palo/traversa: colpo breve e sordo, due risonanze smorzate del telaio.
+// Si chiama dall'urto fisico reale; nessun file audio o caso della partita.
+export function urtoLegno(velocita=20,tipo='palo'){
+  if(!actx)return;
+  try{
+    const volume=Math.min(0.065,Math.max(0.008,velocita*0.0025)),t=actx.currentTime;
+    for(const [i,frequenza] of (tipo==='traversa'?[155,310]:[185,370]).entries()){
+      const o=actx.createOscillator(),g=actx.createGain();
+      o.type='triangle';o.frequency.setValueAtTime(frequenza,t);o.frequency.exponentialRampToValueAtTime(frequenza*0.65,t+0.10);
+      g.gain.setValueAtTime(volume/(1+i*2),t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.13-i*0.03);
+      o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+0.15);
+      o.onended=()=>{o.disconnect();g.disconnect();};
+    }
+  }catch(e){}
+}
