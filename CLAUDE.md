@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.74). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.75). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -86,14 +86,9 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Menu: home con logo C «Flusso», Partita veloce, Mondiali, Europei, Comandi, Informazioni; Squadre (formazione dei 7, strategie
   prepartita: sei preset e una personale, schemi dell'uomo in più) → Impostazioni (durata, difficoltà, arbitro) → Gioca.
 ### Comandi
-- Touch: levetta a sinistra; TIRO: tocco (< 0,16 s) = finta ripetibile, tenuto fino a 0,36 s = polso, più a lungo = tiro caricato
-  (pieno in 0,9 s, parte al rilascio); un tocco mentre arriva un passaggio = tiro al volo. PASSA; in difesa = contrasto (1-2 tocchi
-  in 1,5 s disturbano, il terzo ravvicinato è fallo). SPRINT a tocchi ripetuti. CAMBIA va al compagno più vicino alla palla.
-  TAGLIO (taglio, girata, raddoppio), PALOMB. solo con la palla nostra, T.O., pausa. In controfuga TIRO si illumina: schizzo oltre
-  5,5 m, colonnello più vicino. Con la levetta ferma il ricevente comandato va incontro alla palla; finta di lato con la levetta.
-- Tastiera: frecce; Spazio (tocco = finta, tenuto = carica, rilascio = tiro); D passaggio (contrasto in difesa); K tiro e L
-  palombella; Shift sprint a tocchi; C cambia; F taglio/girata/raddoppio; Q/W/E o 1/2/3 schemi, 4 schema «boa» (in
-  superiorità torna al 4-2); T time-out; B cambio consigliato; P o Esc pausa. Controller con la stessa logica.
+- Touch: levetta a sinistra; TIRO toccato e rilasciato = tiro rapido di polso, meno potente; tenuto = preparazione e finte continue, potenza massima in0,9s, tiro al rilascio anche durante la propria finta. Nessun tiro automatico normale e nessun minigioco di precisione. L’anello del selezionato diventa oro chiaro e il tasto indica PRONTO; nessuna barra sopra l’atleta o barra di potenza. Mira, stanchezza, pressione e abilità restano determinanti.
+- PASSA; in difesa = contrasto (1-2 tocchi in1,5s disturbano, il terzo ravvicinato è fallo). SPRINT a tocchi, CAMBIA al più vicino alla palla. TAGLIO tolto dal touch su richiesta di Ale; chiamate A/B/C conservate. PALOMB., T.O. e pausa conservati. TIRO durante un passaggio in arrivo conserva il tiro al volo; alla boa spalle alla porta sceglie beduina/sciarpa dalla situazione. QTE di controfuga e procedura dei rigori conservati.
+- Tastiera: frecce; Spazio/K stessa tenuta-finte-rilascio (K anche al volo in arrivo, Spazio tenuto prima della presa non tira da solo); D passaggio al rilascio/contrasto; L palombella; Shift sprint a tocchi; C cambia; F comando avanzato taglio/girata/raddoppio conservato; Q/W/E o1/2/3 schemi,4 boa, T time-out,B cambio consigliato,P/Esc pausa. Controller con la stessa logica. Annullamenti per pausa/blur/touchcancel/perdita possesso o controllo; un tasto fisicamente ancora premuto dopo reset deve prima essere rilasciato.
 ### Nuoto e corpo (indicazioni di Ale, ex nuotatore)
 - Tiro standard caricato/torsione v0.74: pose Plask di Ale trasferite sull’intera catena di52ossa, modello/rig/pesi invariati. Tutti gli altri gesti restano procedurali. Stile libero a testa alta, mai rana o stella; chi
   porta palla la spinge davanti alla testa. Da fermi acqua alle spalle, corpo comunque inclinato (bacino e gambe indietro, di più
@@ -113,7 +108,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Raccordi visuali v0.70 (`grafica/gesto-vista.js`): carica già raggiunta conservata, ingresso/uscita dalla posa precedente, curva continua al rilascio e filtro graduale. Stato solo visuale per atleta; giunture fisiche, punto/tempi del lancio e carica0,9s conservati. Nessuna nuova geometria.
 - Chi nuota con la palla davanti alla testa, prima di tirare, passare o fintare la pesca dall'acqua e la porta di lato all'altezza
   della spalla (solo disegno, dentro i tempi del gesto).
-- Finte: un tocco; sei stili personali (larga, a raffica, di polso, mezza, di bomba, di spalla) con un piccolo vantaggio sul
+- Finte: tenere TIRO; sei stili personali (larga, a raffica, di polso, mezza, di bomba, di spalla) con un piccolo vantaggio sul
   seguito tipico; dalla seconda finta il braccio va di lato e sposta difensore e portiere.
 - Portiere: segue il passaggio, para in base a posizione, Riflessi, stanchezza, sorpresa e muro; para meno dopo un cambio di lato,
   in superiorità, dopo una finta o su tiri vicini; mentre l'avversario carica sale a braccia larghe (solo disegno).
@@ -128,6 +123,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   deciso una volta (circa 1 su 3 in parità); pazienza fino a fine azione (tiro di fine azione negli ultimi 4,5 s, `FINE_AZIONE`).
 - Chiamate manuali v0.70: A3→2→5, B3→4→1 (mano/abilità adeguate), C2al palo, una per possesso. Il taglio parte al rilascio reale dell’appoggio; perdita/espulsione/scadenza annullano. Nessun cambio dello schema persistente o controllo forzato. PASSA neutro cerca appoggio chiamato, tagliante pronto, poi scelta assistita; una direzione manuale conserva la precedenza. Portiere, aiuti, linea2m e rischio reale restano nel servizio alla boa.
 - La squadra sale per corsie, scaglionata per ruolo: nessuno va tutto sulla palla (richiesta di Ale).
+- Recupero dopo slancio manuale: se il contrasto cambia possessore, si rilegge il comando umano invece di continuare verso il vecchio portatore; niente sfondamento causato da quel bersaglio ormai superato, nessuna immunità generale ai falli.
 - Ripartenza dopo ogni recupero: partono tutti subito verso i posti, ma scatta solo chi può guadagnare un vantaggio (non è dietro
   al difensore più vicino o non ha nessuno entro 3 m); in rientro scatta solo chi ha il suo uomo più vicino alla porta (`SCATTI`,
   scelta di Ale v0.67); nelle transizioni niente scatto automatico da lontano; aperture del portiere («base» e «apertura2»);
@@ -146,6 +142,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Muro: braccio dalla parte del palo coperto in parità; con l'uomo in meno braccio a specchio del braccio di tiro e centrale tra i
   pali sul palo lungo; contro il 3-3 i due davanti ai pali stanno a metà tra il loro tiratore e il 6 e saltano su chi ha palla.
 ### Regole (World Aquatics 18 febbraio 2026; FIN 2026-27 non importato)
+- Inizio di ogni tempo: scatta il giocatore di movimento disponibile con Velocità più alta, davanti al centro della propria porta; portiere temporaneamente laterale, rientro nuotato dal fischio. Countdown immobile, nessun bonus alle statistiche; input e CAMBIA del giocatore prevalgono sullo scatto assistito. Espulsioni e cambi reali conservati.
 - Espulsione tra i tempi: residuo conservato, pozzetto durante lo scatto; tempo effettivo dal primo tocco. Fallo ordinario: fermi solo autore/vittima, tagli e controllo degli altri continuano; fallo in attacco cambia subito il possesso. Rigore su fallo effettivo entro6m e gol probabile; ricevere davanti al marcatore non basta. Tiro giàiniziato ostacolato da dietro: attenderne l’esito, senza cancellarlo alla fine del periodo.
 - Campo 25 m, porta 3 × 0,90 m; linee 2, 5 e 6 m. Possesso 28 s, 18 s dopo espulsione, angolo, rigore senza cambio o rimbalzo
   ripreso dall'attacco; dopo un tiro respinto il cronometro resta fermo finché qualcuno riprende palla. Espulsione 18 s (rientro
@@ -173,54 +170,10 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.74 — tiro registrato e mano nel replay
+## Stato v0.75 — tiro continuo, scatto e comandi alla boa
 
-Base main9e95c00(PR64 unita, CI45014844635 verde), ramo `codex/v074-tiro-plask`. Richiesta più recente: il modello di Ale si conserva; la mano rovesciata si corregge applicando le pose, volto rinviato. GLB runtime SHA2568fd658a8… invariato. Intera catena di52ossa Plask sul modello esistente, compresi piedi/punte e dita; nessuna nuova mesh/skin/rig. File e limiti nel [rapporto v0.74](docs/versioni/v074-tiro-plask.md), misure/esiti reali in [verifiche](docs/verifiche/v074/README.md). Tiro classico/torsione, non tutti gli speciali. Originale e video con provenienza esplicita; tutta la preparazione/gesto/recupero conservati (415pose), esclusa solo la Tpose artificiale iniziale.
+Base main1ec69ca(PR65 unita; CI45058084563 verde), ramo `codex/v075-tiro-fintee-anello`, versione0.75.0. Riallineamento GitHub prima dello sviluppo e prima della pubblicazione; nessun nuovo intervento di Claude da duplicare. Modello, rig, pesi, volto, clip Plask integrale e nuoto precedenti conservati; GLB SHA2568fd658a8… invariato. Nessuna nuova prova facciale.
 
-PrimaCI34comandiPASS poiFAILgomito in carica: ancora5,8→5,9s corretta sullo stesso file di pose, prova gestiPASS109,94°D/S con soglie conservate. Nessun osso alterato. Confronto fisico prima/dopo identico in4casi,24pose/18foto; mano esultanza corretta solo nel disegno,60campioni nei due sensi. La CI finale dell’ultimo SHA nellaPR determina la prontezza al merge; non fare merge/deploy. Nessuna nuova prova o modifica facciale. Non reinterpretare il vecchio incarico di aggiungere ossa come permesso di stravolgere il modello: la richiesta più recente lo vieta.
+Dettagli, file, misure con fase esplicita, esiti e limiti nel [rapporto v0.75](docs/versioni/v075-tiro-scatto-boa.md) e nelle [verifiche](docs/verifiche/v075/README.md). Prima serie locale13/13PASS inclusi tiro registrato, rig, regole/nuoto/replay e aspetto gioco; prove finali mirate e CI completa sono riportate con la loro provenienza. Sei partite standard soltanto nella CI finale, nessuna nuova taratura generale. La PR indica lo SHA e l’esito finale; non fare merge/deploy.
 
-## Stato v0.73 — mani e polsi
-
-Base main `1452f1a` (PR #63 v0.72 unita, CI `45001334329` riuscita). Dopo aver fermato il tentativo sul volto, Ale ha chiesto di conservare mani, polsi e movimenti validi. Il ramo `codex/v073-mani-polsi` integra soltanto mani/polsi: volto, 18 morph e controller delle espressioni restano quelli pubblicati nella v0.72. Il prototipo facciale locale `/workspace/pallanuoto-v073` è sospeso e non fa parte della PR.
-
-File: `grafica/mani`, collegamenti in `corpo`/`pose`, modello GLB/configurazione/riserva, registrazione delle nuove falangi in `grafica/replay`; builder, fonti CC0, prova indipendente del rig e adattamento del test costumi ai conteggi ufficiali. Modello con 54 joint (24 originali e 30 falangi), 8366 triangoli e 8599 vertici; un'unica primitiva/materiale. Le 24 rest e inversebind originali sono conservate. Cinque dita indipendenti, polso assottigliato e raccordato; marker di presa misurati. Controller soltanto visuale: nessuna modifica a `computePose`, `J`, `ballW`, regole o IA. Nuoto e tiro v0.72 restano in vigore.
-
-Decisione cambiata: il modello del concept mantiene corpo e volto, ma usa ora mani anatomiche MakeHuman CC0. Il replay registra soltanto la rotazione delle nuove falangi, con posizione/scala/visibilità locali costanti, per conservare il limite storico di 24 MiB. Misura completa finale: replay 22.009.580 byte, massimo 49 chiamate/136.678 triangoli. Due cambi simultanei: 66 chiamate/138.686 triangoli, 14 corpi completi. Il GLB cresce da 1.101.624 a 4.523.896 byte: nessuna misura di caricamento su rete mobile. Locale: lint PASS; prove 54/54 PASS; verifica immagini finale PASS (partite=0); aspetto completo PASS in due parti sulla stessa build, sei viste ispezionate e gambe fuori 0/7684, 0/5144, 0/1200. Sei partite standard soltanto nella CI finale; esito dello SHA pubblicato nella PR. Numeri finali, file e provenienza nel [rapporto v0.73](docs/versioni/v073-mani-polsi.md).
-
-Non fatto: nuovo volto/rig facciale (sospeso da Ale), clip Plask importate, FPS su iPhone fisico, nuova revisione generale dei movimenti o del bilanciamento. Il GLB Plask consegnato rimane separato. Nessun merge o deploy.
-
-## Stato v0.72 — proporzioni, tiro e rimesse
-
-Base main `7827854` (PR62 v0.71 unita, CI main verde44991043277). Richiesta nuova di Ale: palla piccola rispetto ai corpi, articolo sul tiro e rimessa laterale dopo deviazione del portiere. Nessun ritorno ai vecchi checkpoint.
-
-File: `scala-grafica`/`costanti`, `grafica/dimensioni-palla`/`render`, `grafica/pose`/`corpo`/`tiro-vista`; `regole.sideOut`; prove di proporzioni, tiro e rimesse; package/lock/CI. Modello GLB esistente:24joints con skin e pesi su9023vertici; gomiti/polsi/bacino/gambe già presenti. Non serve conversioneFBX/Mixamo.
-
-Decisioni cambiate esplicite: VIS1,45 (modello2,547m) →1,10 (base1,932m): si ridimensionano gli atleti rispetto al campo, non si ingrandisce la palla. Campo25×20m, porta3×0,90m, palla22,12cm conservati; sagomaGK, punti fisici di lancio e supporti visuali adeguati. La vecchia decisione di mantenere VIS e ballW assoluto è superata esplicitamente; computePose e durata/velocità del gesto restano invariati. Bicicletta simmetrica durante tiro classico → appoggio asimmetrico e catena anche/core. Rimessa laterale dedotta dal lanciatore → ultimo tocco reale, compresa eccezione del muro su tiro (WA12.3.1.1); dopo deviazioneGK l’attacco conserva palla18s. Fondo: corner dopoGK, rimessaGK dopo muro di movimento. Sui rigori la potenza non forza sempre la quadrella alta: bersagli naturali alti/bassi, mirino coerente, stessa precisione/velocità/lettura0,7. Dalla regressione237/240(98,8%) a190/240(79,17%) nel nuovo controllo reale; soglia70–86% conservata. In azione il forte resta alle quadrelle. Schema di partita, controlli e potenza/precisione globali conservati.
-
-Misure finali:66chiamate/148150tri anche due cambi,14corpi completi; proporzioni statiche63/142160,22,12cm e porte3×0,90m; gambe0/7684,0/5144,0/1200; rigori190/240=79,17%, stessa precisione/potenza/lettura. Misure e verifiche della chiusura sono nel [rapporto v0.72](docs/versioni/v072-proporzioni-tiro-rimesse.md), con fase/provenienza dei dati; esito CI dell’ultimo SHA nella PR. La decal cuffia7×7 conserva il corpoGLB e risparmia60triangoli per atleta; precarica del torace29,46° dopo correzione rilevata dal test, soglia25° conservata. Non fatto: nuovi gesti speciali, bilanciamento generale già aperto nella v0.71, FPS su iPhone fisico e giudizio di Ale sulla naturalezza. Nessuna nuova prova facciale, nessun merge/deploy.
-
-### Baseline unite
-V0.70 (PR61, chiamate/boa/raccordi), v0.69 (PR60, regole e continuità sui falli) e v0.68 (PR59, cambi/entrate/arena) sono unite. Rapporti, risultati e limiti restano in `docs/versioni/v068-*`, `v069-*`, `v070-*` e nei rispettivi `docs/verifiche/`; non ripartire dai vecchi checkpoint. La v0.71 è unita con PR62; la v0.72 parte da main `7827854` e conserva quei sistemi. I nuovi tasti touch speciali sono ancora una proposta da discutere, non implementati.
-
-## Numeri: gioco contro realtà — baseline v0.71
-Questi sono dati storici della v0.71, non misure della nuova scala v0.72. Confronto finale8+8gare ITA–HUN, tempi480s/stessi semi: gol16,125→17,375,tiri41,375→43,250,conversione38,97→40,17%,parate17,500→19,188,rigori1,750→1,688. **Solo4/15voci in fascia contro5/15: bilanciamento aperto.** Superiorità40,32→32,09%;Italia11,750→10,625,Ungheria20,500→24,125: divario cresciuto, non nasconderlo con precisione/potenza. Azioni71,38, parità13,67s,mano1,012s,palla sola max0,0333s. Dati e limiti nel rapporto v0.71 e `bilancio-finale.json`. Il candidato precedente15,375gol/23,13%superiorità è superato e archiviato con fase distinta. Non sono una certificazione contro l’utente umano o tutte le nazionali.
-
-## Cosa resta da fare
-- Tiro Plask di Ale integrato nella v0.74 sull’intera catena del modello invariato (vedi rapporto); nessuna nuova revisione del volto autorizzata. GLB Plask separato con mani corrette consegnato. Ale ha poi autorizzato una derivazione leggera per il gioco: mani/polsi v0.73. Il successivo tentativo di rifare il volto è stato sospeso perché artisticamente inadeguato; nessun nuovo volto in questa PR.
-- Gioco: conclusione in superiorità e divario ITA–HUN peggiorati nel campione v0.71 (numeri sopra), da diagnosticare con una sonda dedicata; azioni ancora corte (13,67s invece di21,71,38 invece di50): non dipende dagli scatti in ripartenza (v0.67), l'azione
-  finisce presto per palle perse, espulsioni e falli; superiorità al 40% (reale 52%), da ritarare con i difensori meno stanchi
-  (v0.67); il contatto costa 0,02 di stamina al secondo, più dello scatto; falli fischiati saliti a 35 per squadra a partita
-  con i difensori meno stanchi (v0.66: 28; nella v0.28 circa 30): manca un riferimento reale; pali forse troppi (13% dei tiri con
-  l'uomo in più, 9% in parità: mira a 0,85-1,23 m dal centro della porta); il blocco del compagno sul difensore di chi entra
-  non riesce mai; difesa adattata agli schemi dell'uomo in più; aiuto al posto per i difensori comandati con l'uomo in meno;
-  7 contro 6 chiamabile dal giocatore.
-- Gesti: giudizio di Ale sui fogli della v0.63 (passaggio di lato, ricezione, pesca della palla, esultanza); muro e parata a
-  braccio del tutto teso; corpo in nuotata con la palla forse troppo inclinato (da confrontare con un video).
-- Riordino: prove con nomi per argomento (oggi si chiamano con la versione in cui sono nate); semplificare `aiCarrier`.
-- Da Ale: prova su iPhone (FPS, sensazioni), giudizi sulla naturalezza, nuovi video, scelta dei tasti per comandi nuovi.
-
-## Fonti
-- Regolamento World Aquatics (febbraio 2026) e modifiche 2025; FIN 2025-26 come confronto; tesi Patumi (PoliTo) sul tiro; de
-  Mestre 2004 sulla palla in acqua; Results Report dei Mondiali 2025; Lupo et al. (Mondiali 2009, Euro League); manuali FIN e USA
-  Water Polo; wpdworld.com (`docs/riferimenti/tattica.md`, `tecnica.md`); riferimento visivo Water Polo Revolution
-  (ericflorio.itch.io). Indirizzi completi nella storia.
+La posa a L segnalata da Ale nella foto dello scatto era un errore del test: spostamenti avanzati60frame, articolazioni aggiornate una sola volta. Corretto il test per aggiornare anche il rig a ogni frame; non cambiata la nuotata nel gioco. Non pubblicare le vecchie catture come prova del nuoto. Restano giudizio visivo di Ale, FPS su iPhone fisico e bilanciamento generale già aperto. Nessuna promessa di qualità professionale dai soli test numerici.

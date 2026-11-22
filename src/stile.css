@@ -3,6 +3,7 @@
 :root{--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px)}
 html,body{width:100%;height:100%;overflow:hidden;background:#07131d;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff;touch-action:none;user-select:none;-webkit-user-select:none}
 canvas{display:block}
+.solo-lettura{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
 
 /* ================= DESIGN SYSTEM DELL'HUD =================
    Regola prima di tutto: la partita si deve leggere. L'interfaccia sta ai margini, è compatta e non copre mai l'azione.
@@ -173,7 +174,7 @@ body.chiamate-visibili #fight{display:none!important}
 #player{position:fixed;left:calc(12px + var(--sl));bottom:calc(12px + var(--sb));background:var(--h-bg);border:1px solid var(--h-linea);border-radius:var(--h-r);padding:6px 8px;font-size:12.5px;z-index:5;pointer-events:none;box-sizing:border-box;width:148px;box-shadow:var(--h-ombra)}
 #player[hidden]{display:none}
 #player.vis{width:max-content;min-width:190px;max-width:calc(100vw - 24px - var(--sl) - var(--sr))}
-#player:not(.vis) :is(#pname,#pstat,#power,.potenza-label){display:none}
+#player:not(.vis) :is(#pname,#pstat){display:none}
 #energia{display:flex;align-items:center;gap:4px;min-height:14px;line-height:1.2;font-size:10px;font-variant-numeric:tabular-nums}
 #player.vis #energia{margin-top:3px}
 #energia .energia-label{font-size:9px;color:var(--h-tenue)}
@@ -186,8 +187,6 @@ body.chiamate-visibili #fight{display:none!important}
 body.touch #pname .ruolo{display:none}
 .bar{height:5px;background:rgba(255,255,255,.14);border-radius:3px;margin-top:5px;overflow:hidden}
 .bar>div{height:100%;background:var(--h-verde);width:100%;transition:width .2s linear}
-#power>div{background:var(--h-oro);width:0}
-.et{color:var(--h-tenue);font-size:10.5px;margin-top:3px}
 #pstat{font-size:11px;color:var(--h-tenue);margin-top:2px;font-variant-numeric:tabular-nums}
 #pstat b{color:var(--h-oro)}
 /* lotta al centro: sopra CAMBI, senza sovrapporsi ai comandi laterali */
@@ -227,7 +226,6 @@ body.touch .tb[data-b="shoot"]{right:calc(16px + var(--sr));bottom:calc(66px + v
 body.touch .tb[data-b="pass"]{right:calc(88px + var(--sr));bottom:calc(14px + var(--sb))}
 body.touch .tb[data-b="sprint"]{right:calc(22px + var(--sr));bottom:calc(12px + var(--sb))}
 body.touch .tb[data-b="lob"]{right:calc(95px + var(--sr));bottom:calc(90px + var(--sb))}
-body.touch .tb[data-b="cmd"]{right:calc(160px + var(--sr));bottom:calc(62px + var(--sb))}
 body.touch .tb[data-b="sw"]{right:calc(164px + var(--sr));bottom:calc(10px + var(--sb))}
 /* T.O.: quadrato piccolo sotto la pausa (comando raro) */
 .tb.ang{right:calc(10px + var(--sr));top:calc(52px + var(--st));width:36px;height:30px;border-radius:8px;background:var(--h-bg);border:1px solid var(--h-linea)}
@@ -237,7 +235,7 @@ body.touch .tb[data-b="sw"]{right:calc(164px + var(--sr));bottom:calc(10px + var
 #tPause{right:calc(10px + var(--sr))}
 /* Su telefono: giocatore e schema in alto a destra, distinti dal tabellone. */
 body.touch #player,body.touch #player.vis{top:calc(8px + var(--st));bottom:auto;left:auto;right:calc(100px + var(--sr));width:148px;min-width:0;max-width:150px;font-size:10.5px;padding:2px 6px 3px;background:var(--h-bg)}
-body.touch #pstat,body.touch #player .et,body.touch #power{display:none}
+body.touch #pstat{display:none}
 body.touch #player .bar{height:3px;margin-top:3px}
 body.touch #pname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:12px}
 body.touch #energia{min-height:12px;line-height:12px}
@@ -565,10 +563,7 @@ body.touch #qte{display:none}
 #tCambi[data-stato="consiglio"] .tc-testo small{color:var(--h-oro)}
 /* consiglio non urgente (partita storta, in panchina c'è chi rende di più): visibile ma senza oro */
 
-/* Potenza accanto al comando TIRO, visibile durante la carica. */
-.carica-potenza{display:none;position:absolute;left:-3px;right:-3px;top:-12px;height:7px;border-radius:4px;background:var(--h-bg-forte);border:1px solid var(--h-linea);overflow:hidden;pointer-events:none}
-.carica-potenza i{display:block;width:var(--potenza,0%);height:100%;background:var(--h-oro)}
-.tb.caricando .carica-potenza{display:block}
+/* Tiro pronto: segno stabile e testo, senza barre o lampeggi. */
 .tb.massimo{background:var(--h-bg-forte);color:var(--h-testo);border-color:var(--h-oro);box-shadow:0 0 0 2px var(--h-oro)}
 .tb.massimo small{color:var(--h-oro);font-weight:900}
 

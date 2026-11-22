@@ -13,6 +13,7 @@ import { ultimoCambioManuale } from './controllo.js';
 import { nomePosizione, numeroPosizione } from './schemi.js';
 import { postoAttacco } from './entrate.js';
 import { etichettaChiamata, offertaChiamate } from './chiamate-attacco.js';
+import { prontezzaTiro } from './tiro-comando.js';
 export const $ = id => document.getElementById(id);
 let tacKey='', schedaVista=null, ultimoBip=null, uomoAperto=null, uomoChiudi=null, chiamateKey='';
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
@@ -51,12 +52,12 @@ export function updateHUD(){
   { const q=ctrl&&ctrl.qte&&game.state==='play'?ctrl.qte:null, el=$('qte'), b=document.querySelector('.tb[data-b="shoot"]');
     const t=q?`Premi TIRO<small>(K) · ${q.tipo==="schizzo"?"tiro a schizzo":"colonnello"}</small>`:"";
     if(el.dataset.t!==t){ el.dataset.t=t; el.innerHTML=t; el.classList.toggle('on',!!q); }
-    if(b){ const on=!!q; if(b.classList.contains('premi')!==on){ b.classList.toggle('premi',on); const s=b.querySelector('small'); if(s) s.textContent=on?'Premi!':'tocco: finta'; } } }
+    if(b){ const on=!!q; if(b.classList.contains('premi')!==on) b.classList.toggle('premi',on); } }
   // Nome/ruolo per 3 s al cambio manuale e all'inizio; l'energia del selezionato
   // resta compatta e visibile anche in difesa. I cambi automatici aggiornano
   // calotta, barra e percentuale senza riaprire tutta la scheda.
   { const dal=game.time-ultimoCambioManuale();
-    const vedi=!!ctrl&&(game.time<3||(dal>=0&&dal<3)||(!TOUCH&&ctrl.charging)); const pl=$('player'); pl.hidden=!ctrl;
+    const vedi=!!ctrl&&(game.time<3||(dal>=0&&dal<3)); const pl=$('player'); pl.hidden=!ctrl;
     if(pl.classList.contains('vis')!==vedi) pl.classList.toggle('vis',vedi); }
   // pulsante PALOMB. solo quando la nostra squadra ha la palla (in difesa non serve)
   { const nostra=game.possTeam===teams[0]; if(document.body.classList.contains('nostra-palla')!==nostra) document.body.classList.toggle('nostra-palla',nostra); }
@@ -76,19 +77,17 @@ export function updateHUD(){
     if($('stamPerc').textContent!==valore)$('stamPerc').textContent=valore;
     if(stam.getAttribute('aria-label')!==etichetta)stam.setAttribute('aria-label',etichetta);
     if(stam.getAttribute('aria-valuenow')!==String(percento))stam.setAttribute('aria-valuenow',String(percento));
-    $('power').firstChild.style.width=(ctrl.charging?Math.min(1,ctrl.chargeT/0.9)*100:0)+'%';
   }
-  { const btn=document.querySelector('.tb[data-b="shoot"]'), carica=!!(ctrl&&ctrl.charging&&ball.holder===ctrl), pot=carica?Math.min(1,ctrl.chargeT/0.9):0;
+  { const btn=document.querySelector('.tb[data-b="shoot"]'), carica=!!(ctrl&&ctrl.team.human&&!ctrl.excluded&&ctrl.charging&&ball.holder===ctrl&&game.state==='play'), pot=carica?prontezzaTiro(ctrl):0;
     const max=carica&&pot>=1, recente=ctrl&&ctrl.effettoTiro&&game.time-ctrl.effettoTiro.inizio>=0&&game.time-ctrl.effettoTiro.inizio<0.65?ctrl.effettoTiro:null;
     const nomi={beduina:'BEDUINA',sciarpa:'SCIARPA',rovesciata:'ROVESCIATA',schizzo:'SCHIZZO',colonnello:'COLONNELLO'};
-    btn.classList.toggle('caricando',carica); btn.classList.toggle('massimo',max);
-    const riempimento=pot*100+'%'; if(btn.style.getPropertyValue('--potenza')!==riempimento) btn.style.setProperty('--potenza',riempimento);
-    const etichetta=$('power').previousElementSibling, testoPotenza=carica?(max?'Potenza tiro · MAX — rilascia':'Potenza tiro · '+Math.round(pot*100)+'%'):'Potenza tiro';
-    if(etichetta.textContent!==testoPotenza) etichetta.textContent=testoPotenza;
-    const label=carica?(max?'MAX':Math.round(pot*100)+'%'):recente&&(nomi[recente.tipo]||recente.forza>=0.98)?(nomi[recente.tipo]||'POTENTE'):ctrl&&ctrl.qte?'Premi!':'tocco: finta';
+    btn.classList.toggle('massimo',max);
+    const label=carica?(max?'PRONTO':'Rilascia'):recente&&(nomi[recente.tipo]||recente.forza>=0.98)?(nomi[recente.tipo]||'POTENTE'):ctrl&&ctrl.qte?'Premi!':'tocco: polso';
     const small=btn.querySelector('small'); if(small.textContent!==label) small.textContent=label;
-    const aria=carica?(max?'Tiro alla massima potenza: rilascia':'Potenza tiro '+Math.round(pot*100)+'%'):'Tiro';
+    const stato=carica?(max?'Tiro pronto alla massima potenza: rilascia per tirare':'Tiro in preparazione: rilascia per tirare'):'';
+    const aria=stato||'Tiro: tocco e rilascio per il polso; tieni premuto per preparare e fintare';
     if(btn.getAttribute('aria-label')!==aria) btn.setAttribute('aria-label',aria);
+    if($('tiroStato').textContent!==stato) $('tiroStato').textContent=stato;
   }
   aggiornaCronaca();
   const fe=$('fight');

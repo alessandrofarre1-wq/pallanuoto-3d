@@ -20,6 +20,7 @@ import { applicaSchema, copiaSchema } from './schemi.js';
 import { aggiornaGiocoFermo } from './gioco-fermo.js';
 import { resetDisposizioneTattica } from './entrate.js';
 import { preparaEspulsoAlTempo } from './espulsioni-tempi.js';
+import { formazioneScatto, stessaFormazioneScatto } from './scatto-inizio.js';
 import { leggiRigore } from './decisione-rigore.js';
 import { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI } from './taratura.js';      // numeri del bilanciamento
 export { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI };
@@ -41,24 +42,42 @@ function riallineaRiferimenti(){
   for(const p of allPlayers){const a=uomoDi(p);p.lagX=a.x;p.lagZ=a.z;if(p.tentativoPortiere)p.tentativoPortiere.attiva=false;}
   ball.tentativoPortiere=null;
 }
+// Un cambio fra i tempi può sostituire l'atleta dentro lo stesso posto.
+// Si ricolloca soltanto prima del fischio, e solo se la formazione è cambiata.
+export function aggiornaFormazioneScatto(forza=false){
+  if(!forza&&game.state!=='countdown')return false;
+  let cambiata=false;
+  for(const t of teams){
+    const prossima=formazioneScatto(t,ownGoalX(t),KICK_Z),precedente=t.scattoInizio;
+    if(!forza&&stessaFormazioneScatto(precedente,prossima))continue;
+    t.scattoInizio=prossima;cambiata=true;
+    for(const {p,x,z} of prossima.posizioni)Object.assign(p,{x,z,vx:0,vz:0,fx:t.dir,fz:0});
+    if(t===teams[0]&&(forza||precedente?.nuotatore!==prossima.nuotatore||ctrl===prossima.nuotatore))setCtrl(prossima.nuotatore);
+  }
+  if(cambiata)riallineaRiferimenti();
+  return cambiata;
+}
 export function kickoff(){
   for(const p of allPlayers)if(p.tentativoPortiere)p.tentativoPortiere.attiva=false;
   ball.tentativoPortiere=null;ball.parataDaRegistrare=null;
   game.fermoFallo=null; game.rigoreDifferito=null;
   aggiornaGiocoFermo(0,true);
   for(const t of teams) resetDisposizioneTattica(t);
-  // sprint d'inizio tempo: tutti sulla propria linea di porta, palla a metà campo
+  // Prima le sanzioni residue e gli eventuali subentri, poi il più veloce
+  // disponibile al centro della propria linea; portiere sul lato.
   for(const t of teams) for(const p of t.players){
     if(preparaEspulsoAlTempo(p))continue;
     if(p.excluded)reenter(p,true);
     p.excluded=false; p.vx=p.vz=0; p.charging=false; p.cut=null; p.act=null;
     p.rientro=null;
-    p.x=ownGoalX(t)+t.dir*(p.isGK?0.6:0.3); p.z=KICK_Z[p.i]*t.dir; p.fx=t.dir; p.fz=0;
+    p.fx=t.dir; p.fz=0;
   }
-  riallineaRiferimenti();
-  ball.state='free'; ball.inUscita=false; ball.holder=null; ball.x=0; ball.z=0; ball.y=BRV; ball.vx=ball.vy=ball.vz=0; ball.pickupCD=0; ball.lastTeam=null;
+  aggiornaFormazioneScatto(true);
+  Object.assign(ball,{state:'free',inUscita:false,holder:null,x:0,z:0,y:BRV,vx:0,vy:0,vz:0,pickupCD:0,lastTeam:null,
+    kind:null,target:null,shooter:null,afterShot:false,daTiro:false,inRete:false,ignora:null,toccoDifesa:null,toccoPortiere:false,
+    raccordoPresa:null,raccordoVista:null});
+  ball.intercept.clear();
   game.possTeam=null; game.shot=SHOT_CLOCK; game.penalty=null; game.scattando=true;
-  setCtrl(teams[0].players[6]);
   game.state='countdown'; game.timer=3;
 }
 export function placeHalves(){
@@ -442,7 +461,7 @@ export function tackle(d,c,o){
   return null;
 }
 // finta di tiro: i difensori vicini possono abboccare (e restare fuori tempo) oppure andare addosso al tiratore
-export function doFake(p){
+export function doFake(p,{continua=false}={}){
   const t=p.team, ot=other(t), dG=Math.hypot(goalX(t)-p.x,p.z), lato=p.fintaLatoGesto||0;
   // la finta riesce se il tiratore resta alto e stabile sulle gambe
   const q=(0.7+0.3*p.st.sht)*(0.65+0.6*elevazione(p))*Math.pow(0.5,p.fakeCount||0)*(dG<9?1:0.4);
@@ -463,7 +482,7 @@ export function doFake(p){
   if(dG<9 && !gk.excluded && rnd()<0.45*q){ gk.fakedUntil=game.time+1.1; if(lato) gk.fintaLato={lato,fino:game.time+FINTA_LATO.durata}; bit++; }
   if(bit) p.fakeUntil=game.time+1.3;
   p.ultimaFintaT=game.time;      // per la firma (finte.js): il seguito tipico entro poco spiazza di più
-  { const f=fintaDi(p); annuncia('avviso',bit?`Finta ${f.nome}${lato?' di lato':''} riuscita!`:`Finta ${f.nome}`,{durata:0.8}); }
+  if(bit||!continua){ const f=fintaDi(p); annuncia('avviso',bit?`Finta ${f.nome}${lato?' di lato':''} riuscita!`:`Finta ${f.nome}`,{durata:0.8}); }
 }
 
 // INTERFERENZA sul tiro libero (WP 20.2 e 22.5, v0.45): chi ha commesso il fallo deve allontanarsi di circa 1 m prima di alzare il

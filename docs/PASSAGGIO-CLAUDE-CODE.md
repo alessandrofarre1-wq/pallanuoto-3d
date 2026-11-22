@@ -1,3 +1,15 @@
+# Passaggio WATERPOLO7 — v0.75 tiro continuo, scatto e boa
+
+Base main1ec69ca(PR65 unita, CI45058084563 verde), ramo `codex/v075-tiro-fintee-anello`, worktree `/workspace/pallanuoto-v075`, versione0.75.0. Prima di altro lavoro riallineare main/PR/CI e diff; preservare tutto. Non fare merge/deploy. La PR riporta lo SHA e l’esito finale; non riaprire il vecchio lavoro v068–v074.
+
+TIRO tocco/rilascio=polso; tenuta=preparazione e finte continue, massimo0,9s e tiro al rilascio anche dalla propria finta. Un solo contesto per touch/tastiera/controller e annullamenti robusti; anello oro/PRONTO senza barra di potenza. Controfuga speciale e rigori conservati. Alla boa gesto secondo assetto, anche su ricezione; TAGLIO tolto dal touch, chiamate A/B/C conservate. Scatto: più veloce disponibile al centro della porta; GK laterale prima del via e rientro nuotato. Nessun bonus o teletrasporto dopo il via; controllo umano prioritario. Rubata da slancio: corretto il bersaglio vecchio che causava subito sfondamento, senza immunità ai falli.
+
+**Nuoto e modello invariati**: la foto a L segnalata da Ale era un errore del test (60passi fisici e un solo aggiornamento del rig). Corretto il test e rifatte le foto; non alterare il crawl per replicare quella cattura sbagliata. GLB SHA2568fd658a8… invariato; clip Plask completa415pose/52ossa, volto/rig/pesi conservati. Nessuna nuova prova facciale.
+
+Leggere [CLAUDE.md](../CLAUDE.md), [rapporto](versioni/v075-tiro-scatto-boa.md), [verifiche](verifiche/v075/README.md) e [decisioni superate](decisioni-superate.md). Misure con fase esplicita: non attribuire il primo13/13 o le foto precedenti al codice finale. Sei partite soltanto nella CI; confronto locale0partite. Una sola Chromium pesante. Limiti iPhone<100call/<150000tri sempre,14corpi completi, logoC, camera/SPEED1, CAMBI centro basso44px, riflessoalta. Restano giudizio di Ale, iPhone fisico e bilanciamento generale già aperto. Nessun nuovo sviluppo artistico in questa consegna.
+
+---
+
 # Passaggio WATERPOLO7 — v0.74 tiro Plask, modello invariato
 
 Base main `9e95c00` (PR64 unita, CI45014844635 verde), ramo `codex/v074-tiro-plask`, worktree `/workspace/pallanuoto-v074`. Versione0.74.0. Prima di altro lavoro riallineare main/PR/CI e diff; preservare Claude. Esito CI finale e SHA nella PR, nessun merge/deploy.

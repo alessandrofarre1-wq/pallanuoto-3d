@@ -62,7 +62,7 @@ try{
   await touchPage.locator('#vHome [data-va="comandi"]').click();
   assert.ok(await touchPage.locator('#vComandi .solo-tastiera').first().isHidden(),'touch: le istruzioni desktop sono nascoste');
   assert.ok(await touchPage.locator('#vComandi .solo-touch').first().isVisible(),'touch: istruzioni a schermo visibili');
-  assert.match(await touchPage.locator('#vComandi').textContent(),/Un tocco = finta/,'istruzione touch: un tocco = finta (v0.55, scelta di Ale)');
+  assert.match(await touchPage.locator('#vComandi').textContent(),/Tocca TIRO e rilascia subito per un tiro rapido di polso\. Tieni premuto per preparare il tiro e fintare, poi rilascia per tirare\./,'istruzione touch: tocco e rilascio per il polso, pressione lunga per preparare e fintare');
   await touchPage.context().close();
   const page=await apri({width:852,height:393},false);
   await page.locator('#vHome [data-va="comandi"]').click();

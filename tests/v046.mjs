@@ -92,16 +92,17 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
   prova(r.scambiato, 'cambio di marcatura: i due difensori si scambiano gli uomini');
   prova(r.contro && r.avanti && r.zPrima.length === 3 && r.zPrima[0] <= -3 && Math.abs(r.zPrima[1]) <= 1 && r.zPrima[2] >= 3, `controfuga organizzata: la prima linea va avanti, davanti alla palla, su tre corsie (lato: ${r.zPrima.join(', ')} m)`); }
 
-// 5. uomo in più: 10 schemi validi (v0.58: + uscita del 6); rovesciata del centroboa; minuti in acqua
+// 5. uomo in più: 10 schemi validi; gesto del centroboa dalla situazione; minuti in acqua
 { const r = await pg.evaluate(() => { const H = window.__pallanuoto, U = H.uomo, it = H.teams[0], hu = H.teams[1];
     const lib = U.LIBRERIA.map(s => s.id), validi = U.LIBRERIA.every(s => U.validaUomo(s));
     const c = window.__scena(0); const boa = it.players[1], gx = 12.5 * it.dir, def = hu.players.find(q => q.i === 6);
     boa.x = gx - it.dir * 2.3; boa.z = 0; boa.fx = -it.dir; boa.fz = 0; def.x = gx - it.dir * 1.6; def.z = 0.05; H.regole.giveBall(boa);
-    boa.tiriDiSchiena = 3; const k3 = H.prova.shotKind(boa); boa.tiriDiSchiena = 0; const k0 = H.prova.shotKind(boa);
+    boa.mano='D'; boa.tiriDiSchiena = 3; const k3 = H.prova.shotKind(boa); boa.tiriDiSchiena = 0; const k0 = H.prova.shotKind(boa);
+    def.z=-it.dir*.55; const coperto=H.prova.shotKind(boa);
     const g = it.players[2].scheda, m0 = g.minuti || 0; window.__scena(0); window.__salta(600); const m1 = g.minuti || 0;
-    return { lib, validi, k3, k0, m0, m1 }; });
+    return { lib, validi, k3, k0, coperto, m0, m1 }; });
   prova(r.lib.length === 10 && r.validi && r.lib.includes('utasca') && r.lib.includes('u33-entra') && r.lib.includes('u6esce'), `uomo in più: ${r.lib.length} schemi validi, compresi i due del manuale USA e l'uscita del 6 (v0.58)`);
-  prova(r.k3 === 'rovesciata' && r.k0 === 'beduina', `centroboa di spalle: ogni quattro tiri una rovesciata (${r.k0} … ${r.k3})`);
+  prova(r.k3 === 'beduina' && r.k0 === 'beduina' && r.coperto === 'sciarpa', `centroboa di spalle: conta la spalla coperta, non il numero dei tiri (${r.k0}/${r.k3} → ${r.coperto})`);
   prova(r.m1 > r.m0 + 0.05, `minuti in acqua contati a gioco in corso (${r.m0.toFixed(2)} → ${r.m1.toFixed(2)} min)`); }
 
 prova(errori.length === 0, `nessun errore nella pagina${errori.length ? ': ' + errori.slice(0, 2).join(' | ') : ''}`);

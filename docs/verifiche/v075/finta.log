@@ -1,0 +1,16 @@
+✓ un tocco e rilascio su TIRO = polso, senza finta (polso, finte 0)
+✓ TIRO tenuto = finte continue con la palla in mano (4)
+✓ finte: la prima dritta, poi di lato alternando (0, 1, -1)
+✓ il portiere che abbocca alla finta di lato si sposta verso quel palo (0.45 m)
+✓ tenuto 0,25 s e lasciato = tiro di polso (partito: sì, palla flight)
+✓ tenuto 0,9 s e lasciato = tiro caricato (partito: sì, palla flight)
+✓ passaggio teso: 15.9 m/s alla partenza (prima 8,5-12)
+✓ un tocco su TIRO mentre arriva il passaggio = tiro al volo di chi riceve (shot, flight)
+✓ in attacco la levetta verso la propria porta non passa al portiere
+✓ levetta verso la porta avversaria: passaggio al centroboa
+✓ al centroboa marcato la palla arriva bassa, in acqua davanti a lui (0.17 m)
+✓ al centroboa libero arriva alta, in mano (1.03 m)
+✓ anticipo battuto senza fallo: nessuna sanzione automatica (0/20)
+✓ nessun errore nella pagina
+
+Finta e tiro al volo: tutte le prove superate

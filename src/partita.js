@@ -8,7 +8,7 @@ import { aggiornaDifesa, aggiornaSchemi, pos01, rif01, aiCarrier, aiTarget, clos
 import { inp, pollInput, pressed, released } from './input.js';
 import { fightOn, updateFight } from './lotta.js';
 import { endMatch } from './menu.js';
-import { areaFoul, avviaRigoriFinali, callPlay, concludiRigoreFinale, contrasto, deadBall, giveBall, kickoff, latoContrasto, pallaEsposta, preparaProssimoRigoreFinale, reenter, risolviRigoreDifferito, tackle, timeout } from './regole.js';
+import { aggiornaFormazioneScatto, areaFoul, avviaRigoriFinali, callPlay, concludiRigoreFinale, contrasto, deadBall, giveBall, kickoff, latoContrasto, pallaEsposta, preparaProssimoRigoreFinale, reenter, risolviRigoreDifferito, tackle, timeout } from './regole.js';
 import { aggiornaScatto } from './espulsioni-tempi.js';
 import { aggiornaAzione, annullaAzione, chiudiAzione, difensoriDavanti } from './statistiche.js';
 import { allPlayers, ball, ctrl, game, goalX, other, setCtrl, teams } from './stato.js';
@@ -122,6 +122,7 @@ export function update(dt){
     const n=Math.ceil(game.timer);
     if(n>0&&n!==game.contoVisto){ game.contoVisto=n; annuncia('conto',`${game.period}° tempo · ${n}`,{durata:0.9}); }
     aggiornaPanchina(dt,true);      // tra i tempi i cambi sono liberi
+    aggiornaFormazioneScatto();      // un subentro può cambiare il nuotatore più veloce
     if(game.timer<=0){ game.state='play'; game.contoVisto=0; whistle(0.5); annuncia('ripresa','Via!',{dettaglio:`inizio ${game.period}° tempo`,durata:1}); }
     return;
   }
@@ -188,8 +189,16 @@ export function update(dt){
       const h=ball.holder;
       if(p.lunge>game.time && h && h.team!==p.team){
         const dx=h.x-p.x, dz=h.z-p.z, d=Math.hypot(dx,dz)||1;
-        if(d<=1.3){ p.lunge=0; contrasto(p,h); if(game.state!=='play') return; }
+        if(d<=1.3){
+          p.lunge=0;contrasto(p,h);if(game.state!=='play')return;
+          // Dopo la rubata il vecchio portatore non è più il bersaglio:
+          // riprende subito la direzione richiesta, senza uno slancio residuo contro di lui.
+          if(ball.holder!==h){const g=aiutoGuida(p,inp.x,inp.z);movePlayer(p,g[0],g[1],inp.sprint,dt);continue;}
+        }
         movePlayer(p,dx/d,dz/d,true,dt);
+      } else if(game.scattando&&ball.state==='free'&&p===p.team.scattoInizio?.nuotatore&&Math.hypot(inp.x,inp.z)<.05){
+        // Partenza naturale a levetta ferma; una direzione manuale prevale subito.
+        p.lunge=0;muoviVerso(p,aiTarget(p),dt);
       } else { p.lunge=0; const g=aiutoGuida(p,inp.x,inp.z); movePlayer(p,g[0],g[1],inp.sprint,dt); }
       continue;
     }

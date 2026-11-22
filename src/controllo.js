@@ -6,30 +6,76 @@ import { inp, inputEpoch, pressed, released } from './input.js';
 import { fightOn, girata } from './lotta.js';
 import { contrasto, doFake } from './regole.js';
 import { fintaDi } from './finte.js';
+import { TIRO_COMANDO } from './tiro-comando.js';
 import { aggiornaQte, tiroSpeciale } from './controfuga.js';
 import { ball, ctrl, fight, game, goalX, ownGoalX, setCtrl, teams } from './stato.js';
 import { diSchiena, doPass, doShoot, humanPassTarget, shotKind, startAct } from './tiri.js';
 export let tapT=-9, pendingQuick=null;
-// v0.55 (scelta di Ale): tocco su TIRO (meno di TOCCO_FINTA secondi) = finta; tenuto fino a TIRO_POLSO = tiro di polso; più a lungo = tiro caricato
-export const TOCCO_FINTA=0.16, TIRO_POLSO=0.36;
+// v0.75: il tocco tira di polso; tenere prepara e finta, lasciare tira.
+export const TIRO_POLSO=TIRO_COMANDO.polso;
 // Una sola intenzione negli ultimi 200 ms del gesto: non si accodano tiri speciali o cariche.
 let intenzione=null;
-let desktopShot=null, desktopPass=null;
-function annullaTiroDesktop(){
-  if(desktopShot){
-    const p=desktopShot.p;
-    if(p.act===desktopShot.act) p.act=null;
+let tiroTenuto=null, desktopPass=null;
+function annullaTiroTenuto(){
+  if(tiroTenuto){
+    const p=tiroTenuto.p;
+    if(p.act===tiroTenuto.act) p.act=null;
     p.charging=false; p.chargeT=0;
   }
-  desktopShot=null;
+  tiroTenuto=null;
 }
-export function resetTap(){ tapT=-9; pendingQuick=null; intenzione=null; annullaTiroDesktop(); desktopPass=null; }
+export function resetTap(){ tapT=-9; pendingQuick=null; intenzione=null; annullaTiroTenuto(); desktopPass=null; }
+const tiroLecito=p=>ball.holder===p&&ctrl===p&&game.state==='play'&&!game.penalty&&!p.excluded&&!p.isGK&&
+  !(p.freeThrow&&Math.abs(goalX(p.team)-p.x)<6)&&!(p.pressatoUntil>game.time);
+const tenutaValida=c=>tiroLecito(c.p)&&game.possT===c.possT&&inputEpoch===c.epoch&&c.p.num===c.numero&&c.p.scheda===c.scheda;
 function verificaIntenzione(){
   if(intenzione && (game.state!=='play'||game.penalty||ctrl!==intenzione.p||ball.holder!==intenzione.p||
     game.possT!==intenzione.possT||intenzione.p.act!==intenzione.act||inputEpoch!==intenzione.epoch||game.time>intenzione.fino)) intenzione=null;
-  const valida=c=>game.state==='play'&&!game.penalty&&ctrl===c.p&&ball.holder===c.p&&game.possT===c.possT&&inputEpoch===c.epoch;
-  if(desktopShot&&!valida(desktopShot)) annullaTiroDesktop();
-  if(desktopPass&&!valida(desktopPass)) desktopPass=null;
+  if(tiroTenuto&&!tenutaValida(tiroTenuto)) annullaTiroTenuto();
+  if(desktopPass&&!(game.state==='play'&&!game.penalty&&ctrl===desktopPass.p&&ball.holder===desktopPass.p&&
+    game.possT===desktopPass.possT&&inputEpoch===desktopPass.epoch)) desktopPass=null;
+}
+// Restituisce true soltanto mentre possiede il gesto: un'altra azione non si
+// interrompe per un vecchio rilascio. Finta e tiro condividono la stessa tenuta.
+function aggiornaTiroTenuto(p,dt,passa,lob){
+  if(pressed('shoot')&&tiroLecito(p)&&(!p.act||p.act.done)){
+    tiroTenuto={p,possT:game.possT,epoch:inputEpoch,numero:p.num,scheda:p.scheda,
+      prossimaFinta:game.time+TIRO_COMANDO.primaFinta,act:null};
+    p.act=null;p.charging=true;p.chargeT=0;p.mira0=0;
+  }
+  if(!tiroTenuto)return false;
+  if(tiroTenuto.p!==p)return false;
+  if(!tenutaValida(tiroTenuto)||passa||lob||pressed('cmd')||(!inp.shoot&&!released('shoot'))){ annullaTiroTenuto();return false; }
+  const c=tiroTenuto,aimZ=Math.abs(inp.z)>.3?inp.z:null;
+  p.charging=true;p.chargeT=Math.min(TIRO_COMANDO.carica,p.chargeT+(inp.shoot?Math.max(0,dt):0));
+  if(!p.mira0&&aimZ!==null)p.mira0=Math.sign(aimZ);
+  if(released('shoot')){
+    const carica=p.chargeT,kind=shotKind(p),dopoFinta=game.time<(p.fintaFino||0);
+    if(p.act===c.act)p.act=null;
+    tiroTenuto=null;p.voloPronto=false;pendingQuick=null;tapT=game.time;
+    if(carica<TIRO_POLSO){
+      // Il polso rimane utile vicino alla porta: meno potenza, stessa mira.
+      const pw=.42;p.chargeT=pw*TIRO_COMANDO.carica;
+      startAct(p,diSchiena(kind)?kind:'polso',.04,()=>doShoot(p,pw,false,aimZ,{polso:true,dopoFinta}));
+    }else{
+      const pw=Math.min(1,carica/TIRO_COMANDO.carica);
+      const torsione=kind==='shot'&&((p.mira0&&aimZ!==null&&Math.sign(aimZ)!==p.mira0)||inp.sprint);
+      startAct(p,torsione?'torsione':kind,0,()=>doShoot(p,pw,false,aimZ,{torsione}));
+    }
+    return true;
+  }
+  if(game.time>=c.prossimaFinta&&(!p.act||p.act.done)){
+    const carica=p.chargeT,f=fintaDi(p);
+    p.fintaLatoVoluto=Math.abs(inp.z)>.35?Math.sign(inp.z):0;
+    startAct(p,'fake',f.wind,()=>{
+      if(tiroTenuto===c&&tenutaValida(c)&&inp.shoot){
+        doFake(p,{continua:true});if(ball.holder===p)p.fintaFino=game.time+1.2;
+      }
+    });
+    c.act=p.act;c.prossimaFinta=game.time+Math.max(TIRO_COMANDO.pausaFinta,f.wind+.09+.36+.2);
+    p.charging=true;p.chargeT=carica;
+  }
+  return true;
 }
 export function autoSwitch(pt){
   const c=closestTo(teams[0],pt);
@@ -52,9 +98,10 @@ export function updateCtrl(){
   if(game.autoplay) return;
   const ht=teams[0];
   if(ball.holder&&ball.holder.team===ht){ setCtrl(ball.holder); return; }
+  if(!ctrl){ autoSwitch(ball);if(!ctrl)return; }
   if(pressed('sw')){ const best=piuVicinoAllaPalla(ht,ctrl); if(best){ setCtrl(best); cambioManualeT=game.time; return; } }
   if(ctrl.excluded) autoSwitch(ball);
-  if(ball.state==='free'&&game.time-cambioManualeT>1.5&&ctrl!==closestTo(ht,ball)&&dist(ctrl,ball)>3) autoSwitch(ball);
+  if(!game.scattando&&ball.state==='free'&&game.time-cambioManualeT>1.5&&ctrl!==closestTo(ht,ball)&&dist(ctrl,ball)>3) autoSwitch(ball);
 }
 export function humanControl(p,dt){
   const hasBall = ball.holder===p;
@@ -68,39 +115,9 @@ export function humanControl(p,dt){
   const riceveTaglio=p.cut?.coordinata&&!hasBall&&ball.state==='flight'&&ball.kind==='pass'&&
     ball.target===p&&ball.shooter?.team===p.team&&Math.hypot(ix,iz)<.2;
   if(!riceveTaglio)p.cut=null;
-  const ftDesktop=p.freeThrow&&Math.abs(goalX(p.team)-p.x)<6;
-  const tiroDesktopLecito=hasBall&&p===ctrl&&game.state==='play'&&!game.penalty&&!p.excluded&&!p.isGK&&!ftDesktop&&!(p.pressatoUntil>game.time);
-  if(pressed('desktopShoot')){
-    if(tiroDesktopLecito&&(!p.act||p.act.done)){
-      desktopShot={p,possT:game.possT,epoch:inputEpoch,prossimaFinta:game.time+0.18,act:null};
-      p.charging=true; p.chargeT=0; p.mira0=0;
-    } else if(hasBall&&ftDesktop) annuncia('avviso','Tiro libero dentro i 6 metri',{dettaglio:'devi passare o uscire oltre i 6',durata:1.6});
-    else if(hasBall&&p.pressatoUntil>game.time) annuncia('avviso','Sotto pressione',{dettaglio:'proteggi la palla o passa',durata:0.9});
-  }
-  if(desktopShot){
-    if(!tiroDesktopLecito||passa||lob||pressed('cmd')||(!inp.desktopShoot&&!released('desktopShoot'))) annullaTiroDesktop();
-    else {
-      // La carica continua anche durante le finte, ma non produce mai un tiro da sola.
-      p.charging=true; p.chargeT=Math.min(0.9,p.chargeT+(inp.desktopShoot?dt:0));
-      const aimZ=Math.abs(iz)>0.3?iz:null;
-      if(released('desktopShoot')){
-        if(p.act===desktopShot.act) p.act=null;
-        const fintaFatta=!!desktopShot.act; desktopShot=null; p.voloPronto=false; pendingQuick=null;
-        // v0.55: anche con Spazio un tocco breve è una finta
-        if(!fintaFatta&&p.chargeT<TOCCO_FINTA){ p.charging=false; p.chargeT=0; p.fintaLatoVoluto=Math.abs(inp.z)>0.35?Math.sign(inp.z):0; startAct(p,'fake',fintaDi(p).wind,()=>doFake(p)); p.fintaFino=game.time+1.2; return; }
-        const pw=Math.max(0.35,Math.min(1,p.chargeT/0.9));
-        p.chargeT=pw*0.9;
-        startAct(p,shotKind(p),0,()=>doShoot(p,pw,false,aimZ)); return;
-      }
-      if(inp.desktopShoot&&game.time>=desktopShot.prossimaFinta&&(!p.act||p.act.done)){
-        const carica=p.chargeT;
-        startAct(p,'fake',0,()=>{ if(desktopShot?.p===p&&desktopShot.epoch===inputEpoch&&inp.desktopShoot) doFake(p); });
-        desktopShot.act=p.act; desktopShot.prossimaFinta=game.time+0.42;
-        p.charging=true; p.chargeT=carica;
-      }
-      return;
-    }
-  }
+  const speciale=hasBall&&tiroLecito(p)&&aggiornaQte(p);
+  if(speciale&&pressed('legacyShoot')&&!passa&&!lob){ annullaTiroTenuto();pendingQuick=null;tiroSpeciale(p,speciale.tipo,Math.abs(iz)>.3?iz:null);return; }
+  if(aggiornaTiroTenuto(p,dt,passa,lob))return;
   if(p.act&&!p.act.done){
     const resto=p.act.wind+p.act.frusta-p.act.t;
     const lobLecito=!p.isGK&&!(p.freeThrow&&Math.abs(goalX(p.team)-p.x)<6)&&!(p.pressatoUntil>game.time);
@@ -127,39 +144,17 @@ export function humanControl(p,dt){
     const aimZ=Math.abs(iz)>0.3?iz:null;
     const ftBlock = p.freeThrow && Math.abs(goalX(p.team)-p.x)<6;
     if(passa){ pendingQuick=null; const m=humanPassTarget(p,ix,iz); if(m) startAct(p,'pass',0.05,()=>doPass(p,m),[m.x,m.z]); return; }
-    if(ftBlock && (lob||pressed('legacyShoot'))){ annuncia('avviso','Tiro libero dentro i 6 metri',{dettaglio:'devi passare o uscire oltre i 6',durata:1.6}); return; }
+    if(ftBlock && (lob||pressed('shoot'))){ annuncia('avviso','Tiro libero dentro i 6 metri',{dettaglio:'devi passare o uscire oltre i 6',durata:1.6}); return; }
     if(ftBlock){ p.charging=false; p.chargeT=0; pendingQuick=null; }
     // sotto pressione non si tira: si passa o ci si allontana proteggendo la palla
     if(p.pressatoUntil>game.time && !p.isGK){ p.charging=false; p.chargeT=0; p.voloPronto=false; pendingQuick=null;
-      if(pressed('legacyShoot')||lob) annuncia('avviso','Sotto pressione',{dettaglio:'proteggi la palla o passa',durata:0.9});
+      if(pressed('shoot')||lob) annuncia('avviso','Sotto pressione',{dettaglio:'proteggi la palla o passa',durata:0.9});
       return; }
-    // controfuga: tasto a comparsa per lo schizzo o il colonnello (controfuga.js)
-    const qte=aggiornaQte(p);
-    if(qte && pressed('legacyShoot')){ pendingQuick=null; p.charging=false; p.chargeT=0; tiroSpeciale(p,qte.tipo,aimZ); return; }
     if(lob&&!p.isGK){ pendingQuick=null; startAct(p,'lob',0.12,()=>doShoot(p,0.4,true,aimZ)); return; }
     // tiro al volo: TIRO tenuto premuto mentre il passaggio era in volo → si tira appena arriva la palla
-    if(p.voloPronto && ball.holdTime<0.2 && !p.isGK && !ftBlock){ p.voloPronto=false; p.voloTocco=-9; p.charging=false; p.chargeT=0; startAct(p,'shot',0.03,()=>doShoot(p,0.62,false,aimZ,{volo:true})); return; }
+    if(p.voloPronto && ball.holdTime<0.2 && !p.isGK && !ftBlock){ p.voloPronto=false; p.voloTocco=-9; p.charging=false; p.chargeT=0; startAct(p,shotKind(p),0.03,()=>doShoot(p,0.62,false,aimZ,{volo:true})); return; }
     p.voloPronto=false;
-    if(inp.legacyShoot&&!p.isGK){ if(!p.charging) p.mira0=0; p.charging=true; p.chargeT=Math.min(0.9,p.chargeT+dt); if(!p.mira0&&aimZ!=null) p.mira0=Math.sign(aimZ); }
-    if(p.charging&&released('legacyShoot')){
-      if(p.chargeT<TOCCO_FINTA){
-        // v0.55 (scelta di Ale): un tocco breve su TIRO è una FINTA, ripetibile; per tirare si tiene premuto e si lascia
-        p.charging=false; p.chargeT=0; tapT=game.time;
-        p.fintaLatoVoluto=Math.abs(inp.z)>0.35?Math.sign(inp.z):0; startAct(p,'fake',fintaDi(p).wind,()=>doFake(p)); p.fintaFino=game.time+1.2; return;
-      }
-      if(p.chargeT<TIRO_POLSO){
-        // tenuto poco: tiro di polso, subito (dopo una finta il polso sorprende di più)
-        p.charging=false; p.chargeT=0; tapT=game.time;
-        const dopoFinta=game.time<(p.fintaFino||0);
-        startAct(p,diSchiena(shotKind(p))?shotKind(p):'polso',0.04,()=>doShoot(p,0.42,false,aimZ,{polso:true,dopoFinta})); return;
-      } else {
-        // torsione: caricare con la levetta verso un palo e rilasciare verso l'altro (oppure rilasciare tenendo SPRINT):
-        // il busto fa pensare al primo palo, il polso chiude in diagonale
-        const pw=Math.min(1,p.chargeT/0.9), kind=shotKind(p);
-        const torsione=kind==='shot' && ((p.mira0&&aimZ!=null&&Math.sign(aimZ)!==p.mira0) || inp.sprint);
-        startAct(p,torsione?'torsione':kind,0,()=>doShoot(p,pw,false,aimZ,{torsione})); return;
-      }
-    }
+
   } else {
     p.qte=null;
     p.charging=false; p.chargeT=0; pendingQuick=null;

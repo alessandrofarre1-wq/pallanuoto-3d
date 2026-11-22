@@ -655,6 +655,13 @@ function chiVaSullaPalla(){
   return _vag;
 }
 export function aiTarget(p){
+  // Scatto d'inizio: una sola corsia centrale per il nuotatore scelto prima
+  // del via. Il portiere rientra con il normale movimento, gli altri ai ruoli.
+  if(game.scattando&&!game.possTeam&&ball.state==='free'){
+    if(p.isGK)return gkTarget(p);
+    if(p===p.team.scattoInizio?.nuotatore&&!p.excluded&&!p.uscendo)return {x:ball.x,z:ball.z,sprint:true};
+    return {x:-p.team.dir*FORM[p.i][0]*.8,z:KICK_Z[p.i]*p.team.dir,sprint:true};
+  }
   if(p.isGK&&ball.state==='flight'&&ball.daTiro&&(ball.kind==='shot'||ball.kind==='rebound')&&
     ball.shooter?.team!==p.team&&ball.vx*ball.shooter?.team.dir>0) return gkTarget(p);
   if(p.isGK && setteControSei(p.team) && game.possTeam===p.team) return { x:goalX(p.team)-p.team.dir*8.6, z:2.6, sprint:true };      // 7 contro 6: il portiere sale a fare il settimo attaccante

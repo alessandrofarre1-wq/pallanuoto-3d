@@ -3,6 +3,16 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.75
+
+- Tocco TIRO = finta e lunga attesa nella carica → tocco/rilascio = polso, tenuta = finte continue e preparazione, rilascio = tiro. Massimo0,9s conservato; nessuna precisione assegnata da una barra oscillante.
+- Barra di potenza e percentuale → anello del selezionato e PRONTO nel tasto; stamina sempre visibile, niente indicatore sopra il tiratore.
+- Scattista fissato per indice e portiere già in porta → più veloce disponibile al centro porta, portiere temporaneamente laterale e rientro nuotato. Nessun bonus o teletrasporto dopo il via.
+- Beduina/sciarpa/rovesciata scelte contando i tiri precedenti → beduina o sciarpa secondo assetto e lato del marcatore; ricezione al volo usa la stessa lettura. Tiro frontale normale conservato.
+- Dopo rubata nello slancio manuale il vettore continuava verso il vecchio possessore e poteva causare subito sfondamento → rilegge il comando umano quando cambia holder; regole generali conservate.
+- TAGLIO nel touch → pulsante rimosso; chiamate A/B/C conservate. Nessun nuovo gesto dedicato aggiunto.
+- Foto dello scatto con soli spostamenti aggiornati → rig aggiornato a ogni fotogramma anche nel test; catture precedenti a1s non valide per giudicare la postura. Animazione di nuoto runtime invariata.
+
 ## v0.74
 
 - Solo animazioni procedurali → tiro standard caricato/torsione dalla registrazione Plask di Ale, su tutte le52ossa corrispondenti e sul modello esistente. Gli altri gesti restano procedurali. Il prototipo che trasferiva solo torso/braccia e quello che usava solo gli ultimi2,117s sono superati e non vengono pubblicati: si usano tutte le415pose animate, esclusa soltanto la Tpose artificiale a0.

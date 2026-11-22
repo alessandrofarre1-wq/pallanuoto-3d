@@ -32,12 +32,15 @@ jobs:
       - run: npm run portiere -- --salva=tests/screenshot/portiere-v071.json
       - run: npm run tiro-visuale
       - run: npm run tiro-registrato
+      - run: npm run tiro-comando
+      - run: npm run scatto-inizio
       - run: npm run rig-mani
       - run: npm run rimesse
       - run: npm run dimensioni-palla -- --salva=tests/screenshot/dimensioni-v072.json --foto=tests/screenshot/dimensioni-v072
       # sul server i caratteri dei testi sono diversi da quelli usati per gli screenshot di riferimento:
       # lì gli screenshot si guardano soltanto, mentre le partite simulate devono passare
       - run: npm run verifica -- --screenshot-non-bloccanti
+      - run: npm run regia-tiro -- --no-build
       - run: npm run tornei-menu -- --no-build
       - run: npm run rigori-finali -- --no-build
       - run: npm run gameplay -- --no-build

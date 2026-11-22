@@ -1,0 +1,316 @@
+{
+  "misure": [
+    {
+      "canale": "touch",
+      "braccio": 2.482,
+      "busto": 0.428,
+      "finte": 3
+    },
+    {
+      "canale": "Space",
+      "braccio": 1.721,
+      "busto": 0.279,
+      "finte": 3
+    },
+    {
+      "canale": "k",
+      "braccio": 1.726,
+      "busto": 0.279,
+      "finte": 3
+    },
+    {
+      "canale": "pad",
+      "braccio": 1.645,
+      "busto": 0.279,
+      "finte": 3
+    }
+  ],
+  "budget": [
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "tv": {
+        "frame": 55,
+        "calls": 53,
+        "triangles": 137482,
+        "points": 0,
+        "lines": 0
+      },
+      "ampia": {
+        "frame": 56,
+        "calls": 68,
+        "triangles": 139200,
+        "points": 0,
+        "lines": 0
+      },
+      "comparse": 2,
+      "corpi": 16,
+      "anello": true,
+      "carica": 0.9
+    },
+    {
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "tv": {
+        "frame": 57,
+        "calls": 49,
+        "triangles": 136892,
+        "points": 0,
+        "lines": 0
+      },
+      "ampia": {
+        "frame": 58,
+        "calls": 68,
+        "triangles": 139200,
+        "points": 0,
+        "lines": 0
+      },
+      "comparse": 2,
+      "corpi": 16,
+      "anello": true,
+      "carica": 0.9
+    }
+  ],
+  "geometriaBoa": [
+    {
+      "dir": 1,
+      "mano": "D",
+      "assetto": "coperto",
+      "atteso": "sciarpa",
+      "gesti": [
+        "sciarpa",
+        "sciarpa",
+        "sciarpa",
+        "sciarpa"
+      ]
+    },
+    {
+      "dir": 1,
+      "mano": "D",
+      "assetto": "aperto",
+      "atteso": "beduina",
+      "gesti": [
+        "beduina",
+        "beduina",
+        "beduina",
+        "beduina"
+      ]
+    },
+    {
+      "dir": 1,
+      "mano": "D",
+      "assetto": "porta-esterno",
+      "atteso": "beduina",
+      "gesti": [
+        "beduina",
+        "beduina",
+        "beduina",
+        "beduina"
+      ]
+    },
+    {
+      "dir": 1,
+      "mano": "D",
+      "assetto": "porta-interno",
+      "atteso": "sciarpa",
+      "gesti": [
+        "sciarpa",
+        "sciarpa",
+        "sciarpa",
+        "sciarpa"
+      ]
+    },
+    {
+      "dir": 1,
+      "mano": "S",
+      "assetto": "coperto",
+      "atteso": "sciarpa",
+      "gesti": [
+        "sciarpa",
+        "sciarpa",
+        "sciarpa",
+        "sciarpa"
+      ]
+    },
+    {
+      "dir": 1,
+      "mano": "S",
+      "assetto": "aperto",
+      "atteso": "beduina",
+      "gesti": [
+        "beduina",
+        "beduina",
+        "beduina",
+        "beduina"
+      ]
+    },
+    {
+      "dir": 1,
+      "mano": "S",
+      "assetto": "porta-esterno",
+      "atteso": "beduina",
+      "gesti": [
+        "beduina",
+        "beduina",
+        "beduina",
+        "beduina"
+      ]
+    },
+    {
+      "dir": 1,
+      "mano": "S",
+      "assetto": "porta-interno",
+      "atteso": "sciarpa",
+      "gesti": [
+        "sciarpa",
+        "sciarpa",
+        "sciarpa",
+        "sciarpa"
+      ]
+    },
+    {
+      "dir": -1,
+      "mano": "D",
+      "assetto": "coperto",
+      "atteso": "sciarpa",
+      "gesti": [
+        "sciarpa",
+        "sciarpa",
+        "sciarpa",
+        "sciarpa"
+      ]
+    },
+    {
+      "dir": -1,
+      "mano": "D",
+      "assetto": "aperto",
+      "atteso": "beduina",
+      "gesti": [
+        "beduina",
+        "beduina",
+        "beduina",
+        "beduina"
+      ]
+    },
+    {
+      "dir": -1,
+      "mano": "D",
+      "assetto": "porta-esterno",
+      "atteso": "beduina",
+      "gesti": [
+        "beduina",
+        "beduina",
+        "beduina",
+        "beduina"
+      ]
+    },
+    {
+      "dir": -1,
+      "mano": "D",
+      "assetto": "porta-interno",
+      "atteso": "sciarpa",
+      "gesti": [
+        "sciarpa",
+        "sciarpa",
+        "sciarpa",
+        "sciarpa"
+      ]
+    },
+    {
+      "dir": -1,
+      "mano": "S",
+      "assetto": "coperto",
+      "atteso": "sciarpa",
+      "gesti": [
+        "sciarpa",
+        "sciarpa",
+        "sciarpa",
+        "sciarpa"
+      ]
+    },
+    {
+      "dir": -1,
+      "mano": "S",
+      "assetto": "aperto",
+      "atteso": "beduina",
+      "gesti": [
+        "beduina",
+        "beduina",
+        "beduina",
+        "beduina"
+      ]
+    },
+    {
+      "dir": -1,
+      "mano": "S",
+      "assetto": "porta-esterno",
+      "atteso": "beduina",
+      "gesti": [
+        "beduina",
+        "beduina",
+        "beduina",
+        "beduina"
+      ]
+    },
+    {
+      "dir": -1,
+      "mano": "S",
+      "assetto": "porta-interno",
+      "atteso": "sciarpa",
+      "gesti": [
+        "sciarpa",
+        "sciarpa",
+        "sciarpa",
+        "sciarpa"
+      ]
+    }
+  ],
+  "ricezioniBoa": [
+    {
+      "dir": 1,
+      "mano": "D",
+      "coperto": true,
+      "volo": false,
+      "gesto": "sciarpa"
+    },
+    {
+      "dir": -1,
+      "mano": "S",
+      "coperto": true,
+      "volo": false,
+      "gesto": "sciarpa"
+    },
+    {
+      "dir": 1,
+      "mano": "S",
+      "coperto": false,
+      "volo": false,
+      "gesto": "beduina"
+    },
+    {
+      "dir": -1,
+      "mano": "D",
+      "coperto": false,
+      "volo": false,
+      "gesto": "beduina"
+    },
+    {
+      "dir": 1,
+      "mano": "D",
+      "coperto": true,
+      "volo": true,
+      "gesto": "sciarpa"
+    },
+    {
+      "dir": 1,
+      "mano": "D",
+      "coperto": false,
+      "volo": true,
+      "gesto": "beduina"
+    }
+  ]
+}

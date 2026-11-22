@@ -1,4 +1,4 @@
-// v0.55 (scelta di Ale): sul telefono un tocco su TIRO è una finta, tenuto e lasciato è un tiro; un tocco mentre arriva un passaggio
+// v0.75: sul telefono un tocco e rilascio è un polso; tenere TIRO conserva la palla e ripete le finte. Un tocco mentre arriva un passaggio
 // è un tiro al volo; i passaggi sono più tesi e arrivano alla mano alzata. Uso: node tests/finta-v055.mjs [--no-build]
 import { chromium } from 'playwright';
 import { build, preview } from 'vite';
@@ -19,15 +19,17 @@ await pg.goto(server.resolvedUrls.local[0]);
 await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });
 let ok = true; const prova = (bene, testo) => { console.log(`${bene ? '✓' : '✗'} ${testo}`); if (!bene) ok = false; };
 // i pulsanti touch si premono con il DOM vero
-const tocco = async (ms) => {
+const premi = async () => {
   await pg.evaluate(() => { const b = document.querySelector('[data-b="shoot"]'), r = b.getBoundingClientRect();
     const t = new Touch({ identifier: 7, target: b, clientX: r.x + r.width / 2, clientY: r.y + r.height / 2 });
     b.dispatchEvent(new TouchEvent('touchstart', { touches: [t], targetTouches: [t], changedTouches: [t], bubbles: true, cancelable: true })); });
-  await pg.evaluate(n => window.__salta(n), Math.round(ms / 1000 * 60));
+};
+const rilascia = async () => {
   await pg.evaluate(() => { const b = document.querySelector('[data-b="shoot"]'), r = b.getBoundingClientRect();
     const t = new Touch({ identifier: 7, target: b, clientX: r.x + r.width / 2, clientY: r.y + r.height / 2 });
     b.dispatchEvent(new TouchEvent('touchend', { touches: [], targetTouches: [], changedTouches: [t], bubbles: true, cancelable: true })); });
 };
+const tocco = async ms => { await premi(); await pg.evaluate(n => window.__salta(n), Math.round(ms / 1000 * 60)); await rilascia(); };
 const prepara = () => pg.evaluate(() => {
   const H = window.__pallanuoto, it = H.teams[0], hu = H.teams[1], gx = 12.5 * it.dir;
   H.game.state = 'play'; H.game.after = null; H.game.penalty = null; H.fight.active = false; H.game.shot = 28;
@@ -39,14 +41,17 @@ const prepara = () => pg.evaluate(() => {
 const stato = () => pg.evaluate(() => { const H = window.__pallanuoto, p = H.teams[0].players[4];
   return { tiene: H.ball.holder === p, finte: p.fakeCount || 0, palla: H.ball.state, tipo: H.ball.kind, gesto: p.act && p.act.kind }; });
 
-await prepara(); await tocco(80); await pg.evaluate(() => window.__salta(30)); const a = await stato();
-prova(a.tiene && a.finte === 1, `un tocco su TIRO = una finta, palla ancora in mano (finte ${a.finte}, palla ${a.tiene ? 'in mano' : a.palla})`);
-await prepara(); for (let k = 0; k < 3; k++) { await tocco(80); await pg.evaluate(() => window.__salta(28)); } const b = await stato();
-prova(b.tiene && b.finte === 3, `tre tocchi = tre finte di fila (${b.finte})`);
+await prepara(); await tocco(80); const a = await pg.evaluate(() => { window.__salta(1); const H=window.__pallanuoto,p=H.teams[0].players[4]; return {gesto:p.act?.kind,finte:p.fakeCount}; });
+prova(a.gesto === 'polso' && a.finte === 0, `un tocco e rilascio su TIRO = polso, senza finta (${a.gesto}, finte ${a.finte})`);
+await prepara(); await premi(); await pg.evaluate(() => window.__salta(180)); const b = await stato();
+prova(b.tiene && b.finte >= 3, `TIRO tenuto = finte continue con la palla in mano (${b.finte})`);
+await rilascia();
 // v0.59 (video di Dénes Varga; Ale: «sposta sia il difensore che il portiere»): la prima finta dritta, poi di lato verso un palo,
 // alternando; il portiere che abbocca alla finta di lato si sposta verso quel palo
-await prepara(); const lati = [];
-for (let k = 0; k < 3; k++) { await tocco(80); lati.push(await pg.evaluate(() => { window.__salta(2); return window.__pallanuoto.teams[0].players[4].fintaLatoGesto || 0; })); await pg.evaluate(() => window.__salta(26)); }
+await prepara(); await premi();
+const lati = await pg.evaluate(() => { const p=window.__pallanuoto.teams[0].players[4],lati=[]; let contate=0;
+  for(let i=0;i<240&&lati.length<3;i++){ window.__salta(1); if(p.fakeCount>contate){contate=p.fakeCount;lati.push(p.fintaLatoGesto||0);} } return lati; });
+await rilascia();
 prova(lati[0] === 0 && Math.abs(lati[1]) === 1 && lati[2] === -lati[1], `finte: la prima dritta, poi di lato alternando (${lati.join(', ')})`);
 const gkSposta = await pg.evaluate(() => { const H = window.__pallanuoto, gk = H.teams[1].players[0];
   gk.fintaLato = null; const z0 = H.prova.gkTarget(gk).z; gk.fintaLato = { lato: 1, fino: H.game.time + 1 }; const z1 = H.prova.gkTarget(gk).z; gk.fintaLato = null; return z1 - z0; });

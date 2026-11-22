@@ -116,14 +116,21 @@ export function passLaneRisk(p,m){
 export const elevazione = p => ((p.s.frz-40)/59*0.5+(p.s.res-40)/59*0.5)*(0.55+0.45*p.stamina);
 export function shotKind(p){
   if(game.penalty===p) return 'shot';
-  // centroboa spalle alla porta: beduina (braccio che gira all'esterno) oppure sciarpa (braccio che attraversa il corpo,
-  // come per mettersi una sciarpa); il centroboa alterna i due gesti
+  // Centroboa spalle alla porta: la beduina esce dal lato del braccio, la
+  // sciarpa attraversa il corpo. Decide lo spazio reale, non i tiri precedenti.
   if(Math.hypot(goalX(p.team)-p.x,p.z)<4.5){
     const def=other(p.team).players.filter(q=>!q.excluded&&!q.isGK).sort((a,b)=>dist(a,p)-dist(b,p))[0];
     const lettura=leggiCentro(p,def,p),dx=goalX(p.team)-p.x,dz=-p.z;
     const fronte=(p.fx*dx+p.fz*dz)/(Math.hypot(dx,dz)||1);
-    // rovesciata (Nitzkowski: quando il difensore copre una spalla; Mondiali 2009: circa il 5% dei tiri): una volta su quattro
-    if(lettura.spalle&&fronte<-.2) return (p.tiriDiSchiena||0)%4===3?'rovesciata':(p.tiriDiSchiena||0)%2?'sciarpa':'beduina';
+    if(lettura.spalle&&fronte<-.2){
+      const mano=p.mano==='S'?-1:1,f=Math.hypot(p.fx,p.fz)||1,nx=-p.fz/f*mano,nz=p.fx/f*mano;
+      const distanza=dist(def,p)||.001;
+      const portaDalBraccio=(dx*nx+dz*nz)/(Math.hypot(dx,dz)||1);
+      // Un marcatore vicino sulla spalla dominante chiude l'uscita esterna;
+      // verso il limite del duello (leggiCentro) prevale l'orientamento.
+      const copreEsterno=((def.x-p.x)*nx+(def.z-p.z)*nz)/distanza*(1-distanza/1.65);
+      return portaDalBraccio>=copreEsterno?'beduina':'sciarpa';
+    }
   }
   // colonnello e schizzo: solo in controfuga, con il tasto a comparsa (controfuga.js)
   return 'shot';
