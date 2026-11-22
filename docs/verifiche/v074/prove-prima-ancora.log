@@ -1,0 +1,18 @@
+
+> pallanuoto-3d@0.74.0 prove
+> node tests/prove.mjs --solo=lint,tiro-registrato,dimensioni-palla,replay,aspetto
+
+costruisco il gioco, poi 5 passi della CI (la verifica a parte: npm run verifica)
+ 1/5 npm run lint ... PASS (3 s)
+ 2/5 npm run tiro-registrato ... PASS (8 s)
+ 3/5 npm run dimensioni-palla -- --salva=tests/screenshot/dimensioni-v072.json --foto=tests/screenshot/dimensioni-v072 ... PASS (26 s)
+ 4/5 npm run replay -- --no-build ... PASS (53 s)
+ 5/5 npm run aspetto -- --no-build --solo-gioco ... PASS (180 s)
+
+RIEPILOGO: 5 PASS, 0 FAIL su 5 passi in 4.5 minuti
+registri completi: /tmp/prove-gGMCce
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

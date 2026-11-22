@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.73). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.74). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -95,7 +95,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   palombella; Shift sprint a tocchi; C cambia; F taglio/girata/raddoppio; Q/W/E o 1/2/3 schemi, 4 schema «boa» (in
   superiorità torna al 4-2); T time-out; B cambio consigliato; P o Esc pausa. Controller con la stessa logica.
 ### Nuoto e corpo (indicazioni di Ale, ex nuotatore)
-- Tutti i movimenti sono costruiti sulle ossa (niente animazioni registrate). Stile libero a testa alta, mai rana o stella; chi
+- Tiro standard caricato/torsione v0.74: pose Plask di Ale trasferite sull’intera catena di52ossa, modello/rig/pesi invariati. Tutti gli altri gesti restano procedurali. Stile libero a testa alta, mai rana o stella; chi
   porta palla la spinge davanti alla testa. Da fermi acqua alle spalle, corpo comunque inclinato (bacino e gambe indietro, di più
   per chi marca; dritto a gioco fermo); in nuotata corpo orizzontale appena sotto la superficie con onda «a serpente».
 - Alzata in 0,25 s, distensione poco di più, transizioni sempre continue; controllo preciso con una piccola inerzia; il corpo si
@@ -120,6 +120,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Portiere v0.71: il sorteggio decide il tentativo, non una presa senza contatto. Sagoma numerica condivisa con il disegno, sweep3D e reazione/velocità delle mani limitate; corpo/testa respingono, le prese ravvicinate richiedono la mano e sono rare. Stesse regole per le due squadre. Proporzioni v0.72: campo25×20m, porta3×0,90m e palla22,12cm nello stesso mondo. Scala delle giuntureVIS1,45→1,10: modello base2,547→1,932m in bind, profili individuali conservati. Sagoma/mani del portiere, palla sul palmo, ombra e contatto acqua seguono il corpo. Il punto fisico di lancio segue necessariamente la nuova altezza; tempi e velocità del tiro conservati.
 - Traiettorie v0.71: palombella più tesa (CPU dopo una finta, nessun nuovo obbligo umano); forte alto verso le quadrelle con rotazione da tiro, mirino nominale coerente e suono sordo solo su urto reale palo/traversa. Rimbalzo mirato prima del portiere dalla fisica dell’acqua, solo con distanza/spazio adatti. Parametri in `TRAIETTORIE_TIRO`. Il corpo del portiere segue la stessa lettura delle mani, anche sui tiri deviati ancora in arrivo; aspetta la propria reazione e non anticipa il lato vero. Fattore rigore0,41→0,7 per la sola lettura, non per assegnare una parata:188/240gol nel controllo,78,3%; coefficienti globali di precisione/potenza conservati.
 - Tiro classico v0.72: gambe asimmetriche con perno controlaterale e dominante arretrata, anche che anticipano il braccio, core e mano libera (spazzata→trazione), gomito alto. Solo disegno su ossa esistenti; posa fisica, polso/frusta e tempi conservati. Fonte Solum2008 nel rapporto; non è un riferimento regolamentare.
+- Tiro Plask v0.74: `grafica/tiro-plask-vista` applica solo disegno dopo `muoviCorpo`/mani; piedi/punte e dita inclusi, assi calibrati, mancino speculare senza scala negativa. Originale6,917s integro nel ramo di consegna; nel comando si usa tutta la sequenza1/60–6,917s, esclusa solo la Tpose artificiale a0;415pose/52ossa, tempi adattati ai comandi. Solo tre ossa del braccio raccordate5,9–6,1s dove la mano esce dal video; rilascio originale non misurabile. Tempi fisici e carica0,9s conservati. Esultanza: palmo davanti e polso quasi neutro, nessun cambio al modello. Volto rimandato da Ale. Dettagli nel rapporto v0.74.
 ### Attacco del computer
 - Circolazione: palla in mano 0,4-0,7 s sul perimetro (`CIRCOLAZIONE`); costruzione di 18 s prima di cercare il tiro da libero,
   anche nella ripartenza alla pari (il tiro subito dopo la ricezione è sicuro solo nella controfuga con l'uomo in più); palla al
@@ -172,6 +173,12 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
+## Stato v0.74 — tiro registrato e mano nel replay
+
+Base main9e95c00(PR64 unita, CI45014844635 verde), ramo `codex/v074-tiro-plask`. Richiesta più recente: il modello di Ale si conserva; la mano rovesciata si corregge applicando le pose, volto rinviato. GLB runtime SHA2568fd658a8… invariato. Intera catena di52ossa Plask sul modello esistente, compresi piedi/punte e dita; nessuna nuova mesh/skin/rig. File e limiti nel [rapporto v0.74](docs/versioni/v074-tiro-plask.md), misure/esiti reali in [verifiche](docs/verifiche/v074/README.md). Tiro classico/torsione, non tutti gli speciali. Originale e video con provenienza esplicita; tutta la preparazione/gesto/recupero conservati (415pose), esclusa solo la Tpose artificiale iniziale.
+
+PrimaCI34comandiPASS poiFAILgomito in carica: ancora5,8→5,9s corretta sullo stesso file di pose, prova gestiPASS109,94°D/S con soglie conservate. Nessun osso alterato. Confronto fisico prima/dopo identico in4casi,24pose/18foto; mano esultanza corretta solo nel disegno,60campioni nei due sensi. La CI finale dell’ultimo SHA nellaPR determina la prontezza al merge; non fare merge/deploy. Nessuna nuova prova o modifica facciale. Non reinterpretare il vecchio incarico di aggiungere ossa come permesso di stravolgere il modello: la richiesta più recente lo vieta.
+
 ## Stato v0.73 — mani e polsi
 
 Base main `1452f1a` (PR #63 v0.72 unita, CI `45001334329` riuscita). Dopo aver fermato il tentativo sul volto, Ale ha chiesto di conservare mani, polsi e movimenti validi. Il ramo `codex/v073-mani-polsi` integra soltanto mani/polsi: volto, 18 morph e controller delle espressioni restano quelli pubblicati nella v0.72. Il prototipo facciale locale `/workspace/pallanuoto-v073` è sospeso e non fa parte della PR.
@@ -199,7 +206,7 @@ V0.70 (PR61, chiamate/boa/raccordi), v0.69 (PR60, regole e continuità sui falli
 Questi sono dati storici della v0.71, non misure della nuova scala v0.72. Confronto finale8+8gare ITA–HUN, tempi480s/stessi semi: gol16,125→17,375,tiri41,375→43,250,conversione38,97→40,17%,parate17,500→19,188,rigori1,750→1,688. **Solo4/15voci in fascia contro5/15: bilanciamento aperto.** Superiorità40,32→32,09%;Italia11,750→10,625,Ungheria20,500→24,125: divario cresciuto, non nasconderlo con precisione/potenza. Azioni71,38, parità13,67s,mano1,012s,palla sola max0,0333s. Dati e limiti nel rapporto v0.71 e `bilancio-finale.json`. Il candidato precedente15,375gol/23,13%superiorità è superato e archiviato con fase distinta. Non sono una certificazione contro l’utente umano o tutte le nazionali.
 
 ## Cosa resta da fare
-- GLB Plask separato con mani corrette consegnato. Ale ha poi autorizzato una derivazione leggera per il gioco: mani/polsi v0.73. Il successivo tentativo di rifare il volto è stato sospeso perché artisticamente inadeguato; nessun nuovo volto in questa PR.
+- Tiro Plask di Ale integrato nella v0.74 sull’intera catena del modello invariato (vedi rapporto); nessuna nuova revisione del volto autorizzata. GLB Plask separato con mani corrette consegnato. Ale ha poi autorizzato una derivazione leggera per il gioco: mani/polsi v0.73. Il successivo tentativo di rifare il volto è stato sospeso perché artisticamente inadeguato; nessun nuovo volto in questa PR.
 - Gioco: conclusione in superiorità e divario ITA–HUN peggiorati nel campione v0.71 (numeri sopra), da diagnosticare con una sonda dedicata; azioni ancora corte (13,67s invece di21,71,38 invece di50): non dipende dagli scatti in ripartenza (v0.67), l'azione
   finisce presto per palle perse, espulsioni e falli; superiorità al 40% (reale 52%), da ritarare con i difensori meno stanchi
   (v0.67); il contatto costa 0,02 di stamina al secondo, più dello scatto; falli fischiati saliti a 35 per squadra a partita

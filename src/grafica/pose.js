@@ -16,6 +16,7 @@ import { conservaGestoVista, frustaVista, preparaGestoVista, raccordaGestoVista,
 import { raggioVistaPalla } from './dimensioni-palla.js';
 import { RAPPORTO_SCALA_PRECEDENTE as scalaAtleta } from '../scala-grafica.js';
 import { raccordaCatenaTiroVista } from './tiro-vista.js';
+import { applicaTiroRegistrato } from './tiro-plask-vista.js';
 //<POSE>
 export const L1=0.30, L2=0.29;
 export function ik(S,H,l1,l2,hint){
@@ -431,7 +432,9 @@ function articolaVista(p,J,T,t,gestoVista){
       const te=2.6-game.timer, k=ease(clamp((te-0.06)/0.3,0,1))*(1-e), pugno=ease(clamp((te-0.35)/0.25,0,1));
       for(const j of JK) V[j][1]+=ESULTA.su*k;
       const batte=Math.sin(Math.max(0,te-0.35)*2*Math.PI*ESULTA.ritmo)*pugno;
-      braccio(1,add3(V.sR,[0.08,ESULTA.alto+ESULTA.pugno*batte,0.14]),[-0.4,0.1,1],[0.2,0.8,0.3],0.1,k);
+      // Con l'avambraccio verticale il riferimento del palmo deve restare
+      // trasversale: quello quasi rivolto in alto torceva la mano nel replay.
+      braccio(1,add3(V.sR,[0.08,ESULTA.alto+ESULTA.pugno*batte,0.14]),[-0.4,0.1,1],[1,0.05,0],0.04,k);
     }
     if(hold&&e<0.7){
       // v0.55 (Ale: «tengono la palla come un vassoio», «gomito girato al contrario»): palla alta come un pallanuotista, gomito
@@ -648,7 +651,7 @@ export function updateRig(p,dt,t){
     p.pallaAcquaVista=(p.pallaAcquaVista||0)+((T.pallaInAcqua||0)-(p.pallaAcquaVista||0))*kb; T.pallaInAcqua=p.pallaAcquaVista; }
   { const k=1-Math.exp(-dt*7); p.testaGiro=(p.testaGiro||0)+((T.testaGiro||0)-(p.testaGiro||0))*k; T.testaGiro=p.testaGiro; }
   conservaGestoVista(gestoVista,Jv,T);
-  if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){ muoviCorpo(R,Jv,T,dt); aggiornaMani(R.corpo.mani,p,T,dt); } }
+  if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){ muoviCorpo(R,Jv,T,dt); aggiornaMani(R.corpo.mani,p,T,dt); applicaTiroRegistrato(R,p,T,Jv,gestoVista,dt); } }
   else {
     setSeg(R.torso,J.hip,J.chest); R.chest.position.set(J.chest[0],J.chest[1],J.chest[2]); R.pelvis.position.set(J.hip[0],J.hip[1],J.hip[2]);
     setSeg(R.bar,J.sL,J.sR); R.shR.position.set(J.sR[0],J.sR[1],J.sR[2]); R.shL.position.set(J.sL[0],J.sL[1],J.sL[2]);

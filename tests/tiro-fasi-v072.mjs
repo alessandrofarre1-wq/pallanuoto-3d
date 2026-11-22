@@ -1,5 +1,6 @@
 // Solo tiro standard: simula senza render; fotografa sei fasi da tre lati.
 // --prima=<sha> sostituisce pose.js E corpo.js. --salva=x.json --confronta=prima.json
+// --sequenza=cartella fotografa il gesto continuo a30Hz da trequarti.
 // --foto=cartella abilita al massimo 18 draw, nessun warmup o foglio live.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -33,7 +34,8 @@ try{
   });
   await page.goto(server.resolvedUrls.local[0]);
   await page.waitForFunction(()=>window.__pallanuoto?.modelloPronto,null,{polling:100,timeout:120000});
-  const risultato=await page.evaluate(async foto=>{
+  const risultato=await page.evaluate(async opzioni=>{
+    const {foto,sequenza}=opzioni;
     const [S,P,A,F,R,{VIS}]=await Promise.all(['stato','grafica/pose','tiri','fisica','regole','costanti'].map(n=>import('/src/'+n+'.js')));
     const {renderer,camera,scene,ball3d,freccia,ring,passMark}=await import('/src/grafica/scena.js');
     const draw=renderer.render.bind(renderer);renderer.render=()=>{};
@@ -84,6 +86,7 @@ try{
         if(p.charging)p.chargeT+=delta;
         A.updateActs(delta);check(delta);
         if(S.ball.state==='flight')F.updateBall(delta);
+        if(sequenza&&numero===1&&passo%4===0)cattura('seq-'+String(passo).padStart(4,'0'));
       };
       const cattura=fase=>{
         p.mesh.g.updateWorldMatrix(true,true);
@@ -114,7 +117,8 @@ try{
           manoLiberaY:ossa['hand_'+libero].pos[1],
           manoLiberaSottoSpalla:round(ossa['hand_'+libero].pos[1]-ossa['upperarm_'+libero].pos[1])};
         fasi.push(misura);
-        if(!foto||dir!==1||mano!=='D')return;
+        const seq=fase.startsWith('seq-');
+        if((seq?!sequenza:!foto)||dir!==1||mano!=='D')return;
         freccia.visible=ring.visible=passMark.visible=false;
         const held=S.ball.state==='held'&&S.ball.holder===p,w=held?(p.ballVistaW||p.ballW):[S.ball.x,S.ball.y,S.ball.z];
         ball3d.position.set(...w);
@@ -123,7 +127,7 @@ try{
           const u=Math.max(0,Math.min(1,S.ball.flightT/raccordo.durata)),k=1-u*u*(3-2*u);
           ball3d.position.x+=raccordo.x*k;ball3d.position.y+=raccordo.y*k;ball3d.position.z+=raccordo.z*k;
         }
-        for(const vista of viste){
+        for(const vista of (seq?[{nome:'trequarti',pos:[2.8,1.1,2.8]}]:viste)){
           camera.position.set(...vista.pos);camera.lookAt(0,.15,0);camera.fov=36;camera.updateProjectionMatrix();
           draw(scene,camera);render++;
           immagini.push({nome:fase+'-'+vista.nome,png:renderer.domElement.toDataURL('image/png')});
@@ -141,10 +145,11 @@ try{
         while(act.t<target-1e-12)avanza(Math.min(dt,target-act.t));
         cattura(fase);
       }
+      if(sequenza&&numero===1)while(act.t<act.frusta+.36-1e-12)avanza(Math.min(dt,act.frusta+.36-act.t));
       casi.push({nome,dir,mano,supFisica,callback,rilascio,frusta:act.frusta});
     }
     return {casi,traccia,fasi,immagini,render};
-  },!!arg('foto'));
+  },{foto:!!arg('foto'),sequenza:!!arg('sequenza')});
   assert.deepEqual(errori,[],'nessun errore in pagina');
   for(const c of risultato.casi){
     assert.ok(c.supFisica<1e-10,'J/ballW fisici invariati '+JSON.stringify(c));
@@ -156,10 +161,12 @@ try{
       f.asimmetriaPiedi,f.yawBacino,f.quotaGomito,f.quotaGomitoTesta,f.manoLiberaY,f.manoLiberaSottoSpalla];
     assert.ok(valori.every(Number.isFinite),'ossa e giunti finiti '+f.nome+' '+f.fase);
   }
-  assert.equal(risultato.render,arg('foto')?18:0,'solo render delle fasi richieste');
+  const sequenza=risultato.immagini.filter(f=>f.nome.startsWith('seq-'));
+  assert.equal(risultato.render,(arg('foto')?18:0)+sequenza.length,'solo render delle fasi richieste');
+  if(arg('sequenza')){fs.mkdirSync(arg('sequenza'),{recursive:true});for(const [i,f]of sequenza.entries())fs.writeFileSync(path.join(arg('sequenza'),String(i).padStart(4,'0')+'.png'),Buffer.from(f.png.split(',')[1],'base64'));}
   if(arg('foto')){
     fs.mkdirSync(arg('foto'),{recursive:true});
-    for(const f of risultato.immagini)fs.writeFileSync(path.join(arg('foto'),f.nome+'.png'),Buffer.from(f.png.split(',')[1],'base64'));
+    for(const f of risultato.immagini.filter(f=>!f.nome.startsWith('seq-')))fs.writeFileSync(path.join(arg('foto'),f.nome+'.png'),Buffer.from(f.png.split(',')[1],'base64'));
   }
   delete risultato.immagini;
   risultato.fisicaSHA256=createHash('sha256').update(JSON.stringify(risultato.traccia)).digest('hex');
@@ -174,5 +181,5 @@ try{
     fs.writeFileSync(arg('salva'),JSON.stringify(risultato,null,2)+'\n');
   }
   console.log(JSON.stringify({prima:risultato.prima,casi:risultato.casi,fisicaSHA256:risultato.fisicaSHA256,render:risultato.render},null,2));
-  console.log('PASS tiro fasi v0.72: quattro casi, invarianti fisiche, 24 pose del rig; '+risultato.render+' render selezionati');
+  console.log('PASS tiro fasi: quattro casi, invarianti fisiche, '+risultato.fasi.length+' pose del rig; '+risultato.render+' render selezionati');
 }finally{await browser.close();await server.close();}

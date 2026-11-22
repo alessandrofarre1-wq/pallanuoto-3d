@@ -46,9 +46,13 @@ try{
     const dopo=fisica();scene.updateMatrixWorld(true);
     const bb=new THREE.Box3().setFromObject(ball3d),diametro=bb.getSize(new THREE.Vector3()).toArray();
     let m;p.mesh.corpo.radice.traverse(o=>{if(o.isSkinnedMesh)m=o;});m.skeleton.update();m.computeBoundingSphere();m.computeBoundingBox();
+    // Misura in assi anatomici della testa, mantenendo la scala in metri.
+    // La proiezione sullo Z del campo includeva anche la profondità quando
+    // la testa ruotava/inclinava nella clip, falsando le proporzioni.
     const testa=new THREE.Box3(),vertice=new THREE.Vector3(),si=m.geometry.attributes.skinIndex,sw=m.geometry.attributes.skinWeight;
-    for(let v=0;v<si.count;v++){let peso=0,osso=0;for(let k=0;k<4;k++)if(sw.getComponent(v,k)>peso){peso=sw.getComponent(v,k);osso=si.getComponent(v,k);}if(m.skeleton.bones[osso].name==='head'){m.getVertexPosition(v,vertice);testa.expandByPoint(m.localToWorld(vertice));}}
-    const larghezzaTesta=testa.getSize(new THREE.Vector3()).z;
+    const head=p.mesh.corpo.ossa.testa,headQ=head.getWorldQuaternion(new THREE.Quaternion()).invert(),headP=head.getWorldPosition(new THREE.Vector3());
+    for(let v=0;v<si.count;v++){let peso=0,osso=0;for(let k=0;k<4;k++)if(sw.getComponent(v,k)>peso){peso=sw.getComponent(v,k);osso=si.getComponent(v,k);}if(m.skeleton.bones[osso].name==='head'){m.getVertexPosition(v,vertice);testa.expandByPoint(m.localToWorld(vertice).sub(headP).applyQuaternion(headQ));}}
+    const larghezzaTesta=testa.getSize(new THREE.Vector3()).x;
     const presa=p.mesh.corpo.prese[mano],palmo=new THREE.Vector3();presa.getWorldPosition(palmo);
     const centro=ball3d.position.clone(),direzione=palmo.clone().sub(centro).normalize(),ray=new THREE.Raycaster(centro,direzione,0,.5);
     const hit=ray.intersectObject(m,false)[0];

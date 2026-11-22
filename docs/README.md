@@ -1,6 +1,6 @@
 # Documenti di WATERPOLO 7
 
-Versione corrente **v0.73**: [mani e polsi](versioni/v073-mani-polsi.md), [verifiche](verifiche/v073/README.md). Proporzioni e movimenti del tiro già uniti nella [v0.72](versioni/v072-proporzioni-tiro-rimesse.md).
+Versione corrente **v0.74**: [tiro Plask e mano nel replay](versioni/v074-tiro-plask.md), [verifiche](verifiche/v074/README.md). Base precedente **v0.73**: [mani e polsi](versioni/v073-mani-polsi.md), [verifiche](verifiche/v073/README.md). Proporzioni e movimenti del tiro già uniti nella [v0.72](versioni/v072-proporzioni-tiro-rimesse.md).
 
 
 | Dove | Cosa c'è |
