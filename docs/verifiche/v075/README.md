@@ -31,3 +31,9 @@ Lint finale e `git diff --check`: PASS. Provenienza dei file runtime in [proveni
 [Aspetto foto finale](aspetto-foto.log):6/6viste PASS e ispezionate, [costi](aspetto-costi.txt). iPhone844/667:56chiamate e131872triangoli; massima vista vicina146138triangoli. Immagini in `docs/immagini/v075/aspetto`. È la metà foto finale, distinta dalla partita/gambe della prima serie; il gioco/gambe finale viene ripetuto una volta nella CI completa.
 
 [Regressione v046](v046.log): PASS sul codice finale, includendo letto geometrico della spalla invece della vecchia rovesciata ogni4tiri; schemi/minuti invariati. Nessuna soglia di sicurezza o qualità abbassata. La CI include59comandi npm e rende disponibili anche i risultati dei sei incontri standard e del replay sullo SHA finale.
+
+## Prima CI e aggiornamento del test d’inizio tempo
+
+[CI45069119661](https://github.com/alessandrofarre1-wq/pallanuoto-3d/actions/runs/45069119661), SHA b5aae8d:6partite completate,108gol/257tiri, verifica PASS con5avvisi immagini non bloccanti (font server; scarti1,04–5,64%). Non sono dati di taratura. Poi FAIL in entrate-integrazione: il vecchio assert conservava il controllato precedente anche al kickoff. Il nuovo requisito seleziona invece lo scattista più veloce. Nel setup tutti hanno Velocità90, quindi indice1; aggiornata questa attesa precisa, conservati tutti gli assert di schema/difesa/riposizionamento e il controllo manuale nelle altre riprese. [Estratto CI](ci-prima-serie.log), [regressione locale dopo fix](entrate-integrazione.log) PASS.
+
+Nessuna modifica runtime dopo quella CI: corretto soltanto il test e documentata la fase. Il fallimento interrompe gli altri passi: serve quindi una nuova CI intera sull’ultimo SHA, che ripete anche il suo giro standard; nessuna simulazione aggiuntiva locale. La precedente previsione di un unico giro CI è superata da questo arresto del test. Risultato finale nella PR.

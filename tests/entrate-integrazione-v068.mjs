@@ -223,11 +223,14 @@ try{
         Object.assign(team,{entrataAzione:{entrante},preparaEntrata:{p:entrante},rotazioneCentro:{uscente:team.players[6],boa:team.players[1]},entrataDopo:G.time+12,
           scambio:{a:team.players[1],b:team.players[6]},adattamentoEntrata:{entrante},schemaStato:{possT:G.possT},copertura:{entrante},blocco:{entrante},aiutoStato:{p:team.players[5]},lasciato:team.players[1],lasciatoT:G.time+1,centroT:G.time,centroAperto:true});
       }
+      // Nel setup tutti i nuotatori hanno Velocità90: al kickoff la parità
+      // sceglie l'indice1; nelle altre riprese resta il controllo manuale.
+      const controlloAtteso=ripresa==='kickoff'?t.players[1]:controllo;
       R[ripresa]();
       const resetMappe=S.teams.every((team,i)=>team.occupantiAttacco!==mappe[i].posti&&team.accoppiamenti!==mappe[i].uomini&&team.occupantiSchema===Q.schemaSquadra(team));
       const resetAzione=S.teams.every(team=>['entrataAzione','preparaEntrata','rotazioneCentro','scambio','adattamentoEntrata','schemaStato','copertura','blocco','aiutoStato','lasciato'].every(k=>team[k]===null)&&
         team.entrataDopo===0&&team.lasciatoT===0&&team.centroT===-1&&!team.centroAperto&&team.players.every(p=>!p.cut&&!p.appoggio));
-      const invarianti=S.teams.every((team,i)=>team.schema===scelti[i].schema&&JSON.stringify(team.schema)===scelti[i].piano&&team.human===scelti[i].human&&team.defPlay===difese[i])&&S.ctrl===controllo;
+      const invarianti=S.teams.every((team,i)=>team.schema===scelti[i].schema&&JSON.stringify(team.schema)===scelti[i].piano&&team.human===scelti[i].human&&team.defPlay===difese[i])&&S.ctrl===controlloAtteso;
       for(const team of S.teams)E.occupanteAttacco(team,1);
       const centro=E.centroAttacco(t),nuovoForte=A.uomoDi(forte);
       const riferimentiAllineati=S.allPlayers.every(p=>{const a=A.uomoDi(p);return p.lagX===a.x&&p.lagZ===a.z;});
@@ -274,7 +277,7 @@ try{
     const nome=x.ripresa+' '+x.schema+' dir='+x.dir;
     assert.ok(x.liveConservaMappe&&x.liveConservaCoordinate,nome+': il recupero vivo conserva posti, uomini e coordinate');
     assert.ok(x.resetMappe&&x.resetAzione&&x.postiRicostruiti,nome+': la ricollocazione elimina le mappe e i tagli precedenti');
-    assert.ok(x.invarianti,nome+': schema, difesa e controllo umano conservati');
+    assert.ok(x.invarianti,nome+': schema e difesa conservati; controllo allo scattista soltanto al kickoff');
     assert.ok(x.riferimentiAllineati&&x.memoriaCambioPrima&&x.memoriaCambioPulita,nome+': riferimenti nuovi e memoria del cambio precedente pulita');
     assert.equal(x.primaForte,4,nome+': scena con vecchia consegna persistente');
     assert.equal(x.centro,x.schema==='falso-centro'?6:1,nome+': centro del piano scelto');

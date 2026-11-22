@@ -6,6 +6,8 @@ TIRO tocco/rilascio=polso; tenuta=preparazione e finte continue, massimo0,9s e t
 
 **Nuoto e modello invariati**: la foto a L segnalata da Ale era un errore del test (60passi fisici e un solo aggiornamento del rig). Corretto il test e rifatte le foto; non alterare il crawl per replicare quella cattura sbagliata. GLB SHA2568fd658a8… invariato; clip Plask completa415pose/52ossa, volto/rig/pesi conservati. Nessuna nuova prova facciale.
 
+PrimaCI45069119661 sullo SHA b5aae8d:6partite PASS, poi arresto sul vecchio assert del controllato al kickoff in entrate-integrazione. Corretto soltanto il test, regressione locale PASS; runtime invariato. Nuova CI completa necessaria per terminare i passi saltati; l’idea di un solo giro standard è superata da questo arresto. Esito finale nella PR.
+
 Leggere [CLAUDE.md](../CLAUDE.md), [rapporto](versioni/v075-tiro-scatto-boa.md), [verifiche](verifiche/v075/README.md) e [decisioni superate](decisioni-superate.md). Misure con fase esplicita: non attribuire il primo13/13 o le foto precedenti al codice finale. Sei partite soltanto nella CI; confronto locale0partite. Una sola Chromium pesante. Limiti iPhone<100call/<150000tri sempre,14corpi completi, logoC, camera/SPEED1, CAMBI centro basso44px, riflessoalta. Restano giudizio di Ale, iPhone fisico e bilanciamento generale già aperto. Nessun nuovo sviluppo artistico in questa consegna.
 
 ---

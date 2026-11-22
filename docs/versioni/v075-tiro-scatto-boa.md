@@ -38,6 +38,8 @@ Otto scatti reali (quattro tempi×due direzioni), presa a4,05s, massimo spostame
 
 Aspetto foto finale6/6PASS e ispezionato: iPhone56chiamate/131872triangoli, vista ravvicinata massima146138triangoli. Primo confronto locale immagini0partite:4differenze attese dopo il nuovo scatto e i nuovi comandi (7,14/47,09/33,17/36,28%);5confronti ispezionati e aggiornati solo i4riferimenti cambiati. Il giro rimane etichettato FAIL prima dei nuovi riferimenti, senza dichiararlo PASS retroattivamente. Non ripetuto il disegno locale delle stesse5immagini per risparmiare: la CI completa finale rilegge i riferimenti. Regressione v046 finale PASS, inclusa la scelta geometrica al centro.
 
+PrimaCI45069119661: verifica/sei partite PASS,108gol/257tiri e5avvisi immagini da font server, poi FAIL in entrate-integrazione sul vecchio controllato conservato al kickoff. Aggiornata soltanto l’attesa del test: al via sceglie il più veloce (indice1 nella parità a90 del setup), nelle altre riprese controllo manuale conservato. Regressione locale PASS; runtime invariato rispetto a b5aae8d. CI intera da ripetere sull’ultimo SHA perché il primo arresto ha saltato i passi successivi: questo rende necessaria anche la seconda esecuzione del suo giro standard, senza nuove simulazioni locali. Esito finale nella PR.
+
 ## Decisioni superate e non fatto
 
 Superati tocco=finta, attesa statica della carica, barra di potenza, scattista fisso e alternanza contata dei tiri di schiena. Nessuna nuova animazione o rifacimento dell’atleta/arena, nessun intervento al volto, nessun bilanciamento generale. Giudizio sulla naturalezza e prestazioni sul telefono reale restano ad Ale. Nessuna nuova meccanica aggiunta per sostituire TAGLIO.
