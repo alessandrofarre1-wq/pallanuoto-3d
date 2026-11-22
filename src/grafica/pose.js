@@ -13,6 +13,8 @@ import { visoGiocatore } from './espressioni.js';
 import { puoMuoversiSuFallo } from '../gioco-fermo.js';
 import { conservaGestoVista, frustaVista, preparaGestoVista, raccordaGestoVista, smussoGestoVista } from './gesto-vista.js';
 import { raggioVistaPalla } from './dimensioni-palla.js';
+import { RAPPORTO_SCALA_PRECEDENTE as scalaAtleta } from '../scala-grafica.js';
+import { raccordaCatenaTiroVista } from './tiro-vista.js';
 //<POSE>
 export const L1=0.30, L2=0.29;
 export function ik(S,H,l1,l2,hint){
@@ -263,7 +265,7 @@ export const INCLINA_VERT={ base:0.42, marca:0.62, gesto:0.12, portiere:0.12 };
 // l'altro. Solo disegno: posizioni e lotta del gioco invariate.
 // I corpi non si compenetrano (v0.55, Ale: «va bene stare vicini ma non ci si può fondere»): la parte alta si avvicina solo fino a
 // LOTTA.schiena tra i centri se l'avversario è dietro (petto contro schiena) e LOTTA.faccia se è davanti (teste e visi in mezzo).
-export const PALLA_FUORI=0.36;
+export const PALLA_FUORI=(0.36-0.1106)*scalaAtleta+raggioVistaPalla;
 export const LOTTA={ indietro:0.5, avanti:0.7, contatto:0.17, schiena:0.5, faccia:0.7 };
 function lottaVista(p){
   if(!fight.active||(p!==fight.boa&&p!==fight.def)) return null;
@@ -392,6 +394,9 @@ function articolaVista(p,J,T,t,gestoVista){
   }
   const a=hold&&p.act?.done?null:p.act;
   const kind=a?.kind||(p.charging?shotKind(p):null), th=kind?(THROW[kind]||THROW.shot):null;
+  const fr=a?.frusta||0.18, tt=a?a.t-a.wind:0, carica=gestoVista.carica;
+  const volo=a?clamp(tt/fr,0,1):0, chiude=a?clamp((tt-fr)/0.36,0,1):0;
+  const tiro=T.tiroVista=raccordaCatenaTiroVista(gestoVista,kind==='shot',carica,volo,chiude,lato,e);
   const suff=lato>0?'R':'L', locale=v=>[v[0],v[1],v[2]*lato];
   if(th) T['morbido'+suff]=0.2; else if(hold) T['morbido'+suff]=Math.min(T['morbido'+suff],0.45);
   if(!th&&p.ricevutoPassaggio&&hold){
@@ -473,11 +478,9 @@ function articolaVista(p,J,T,t,gestoVista){
     }
     return V;
   }
-  const fr=a?.frusta||0.18, tt=a?a.t-a.wind:0;
-  const carica=gestoVista.carica;
-  const volo=a?clamp(tt/fr,0,1):0, busto=ease(clamp((volo-0.02)/0.70,0,1));
+  const busto=ease(clamp((volo-0.02)/0.70,0,1));
   const braccioK=ease(clamp((volo-0.14)/0.86,0,1)), polso=ease(clamp((volo-0.62)/0.38,0,1));
-  const chiude=a?clamp((tt-fr)/0.36,0,1):0, rientra=ease(clamp((chiude-0.55)/0.45,0,1));
+  const rientra=ease(clamp((chiude-0.55)/0.45,0,1));
   const base0=kind==='fake'?-0.84*(fintaDi(p).torsione):kind==='shot'||kind==='torsione'?-0.84:kind==='beduina'||kind==='rovesciata'?0.72:kind==='sciarpa'?-0.72:th.tw0;
   const base1=kind==='shot'?0.48:kind==='torsione'?0.72:th.tw1;
   // PASSAGGIO DI LATO (v0.63, foglio a tre lati): verso il compagno il busto gira (di più se il passaggio va dalla parte opposta al
@@ -501,6 +504,10 @@ function articolaVista(p,J,T,t,gestoVista){
   T.torsioneVista=twist*(1-e*0.6);
   const avanti=(-0.025*carica*(1-busto)+0.035*busto)*(1-chiude);
   V.chest[0]+=avanti; V.head[0]+=avanti*0.6;
+  // Il peso passa dal lato dominante arretrato al piede controlaterale avanti;
+  // il core conclude la rotazione con un piccolo piegamento, restando verticale.
+  V.hip[0]+=tiro.trasferimento;
+  V.chest[0]+=tiro.crunch*.14; V.head[0]+=tiro.crunch*.05;
   let rilascio=th.R;
   if(kind==='shot'){
     const ang=(146.7+10.8*clamp((p.st.sht-0.7)/0.3,0,1))*Math.PI/180;
@@ -526,6 +533,7 @@ function articolaVista(p,J,T,t,gestoVista){
   // gomito in fuori e un po' indietro durante la carica (prima indietro e in alto: con la mano davanti il braccio si girava
   // «ad ala di pollo», gomito sotto e dietro la spalla)
   let hint=mix3(mix3(GOMITO_FUORI,[-0.3,0.15,1],carica),[-0.08,0.05,1],braccioK);
+  if(kind==='shot')hint=mix3(hint,[-0.12,0.95,0.68],tiro.gomito);
   hint=mix3(hint,[0.15,-0.7,0.8],ease(chiude));
   // palmo: dietro la palla, in avanti e un po' in su durante la carica (prima rivolto al cielo, «a vassoio»), verso il bersaglio
   // al rilascio, in giù nella chiusura
@@ -577,7 +585,16 @@ function articolaVista(p,J,T,t,gestoVista){
   if(kind!=='schizzo'){
     const libero=-lato, sl=V[libero>0?'sR':'sL'];
     const appoggio=add3(sl,[0.31,-0.14-0.035*busto,libero*0.14]);
-    braccio(libero,appoggio,[0,-1,libero*0.65],[0,-1,libero*0.1],0.28,(1-e*0.7)*carica*(1-rientra));
+    let palmo=[0,-1,libero*0.1];
+    if(kind==='shot'){
+      // Prima spazza di lato a pelo d'acqua, poi tira sotto il corpo mentre le
+      // anche partono. Non ripete il movimento del braccio che lancia.
+      appoggio[0]=sl[0]+.28+.08*tiro.sweep-.10*tiro.pull;
+      appoggio[1]=-.025-.14*tiro.pull;
+      appoggio[2]=sl[2]+libero*(.14+.20*tiro.sweep-.03*tiro.pull);
+      palmo=[-.12*tiro.pull,-1,libero*(.30*tiro.sweep-.10*tiro.pull)];
+    }
+    braccio(libero,appoggio,[0,-1,libero*0.65],palmo,0.28,(1-e*0.7)*carica*(1-rientra));
   }
   return V;
 }
@@ -676,7 +693,7 @@ export function updateRig(p,dt,t){
     for(const q of allPlayers){ if(q===p||q.excluded) continue;
       // asse del corpo e testa disegnata dell'altro (dal fotogramma più recente): la palla resta fuori da entrambi
       const h=q.Jv?.head||q.J?.head, c=q.fx, sn=-q.fz, hx=h?q.x+VIS*(h[0]*c+h[2]*sn):q.x, hz=h?q.z+VIS*(-h[0]*sn+h[2]*c):q.z, hy=h?VIS*h[1]:0.35;
-      for(const [cx,cz,r,alto] of [[q.x,q.z,PALLA_FUORI,b[1]<0.75&&b[1]>-0.3],[hx,hz,PALLA_FUORI*0.9,Math.abs(b[1]-hy)<0.3]]){
+      for(const [cx,cz,r,alto] of [[q.x,q.z,PALLA_FUORI,b[1]<0.75*scalaAtleta&&b[1]>-0.3*scalaAtleta],[hx,hz,PALLA_FUORI*0.9,Math.abs(b[1]-hy)<0.3*scalaAtleta]]){
         const dx=b[0]-cx, dz=b[2]-cz, d=Math.hypot(dx,dz); if(!alto||d>=r) continue;
         const ux=d>1e-3?dx:p.x-cx, uz=d>1e-3?dz:p.z-cz, ul=Math.hypot(ux,uz)||1; b[0]=cx+ux/ul*r; b[2]=cz+uz/ul*r; } } }
   // contatto con l'acqua (scena.js), dove il corpo disegnato attraversa la superficie: attorno alle spalle da fermi, attorno a
@@ -686,7 +703,7 @@ export function updateRig(p,dt,t){
   { const mx=(Jv.sL[0]+Jv.sR[0])/2*(1-e)+(Jv.head[0]+Jv.chest[0])/2*e, mz=(Jv.sL[2]+Jv.sR[2])/2*(1-e)+(Jv.head[2]+Jv.chest[2])/2*e;
     const i=p.iContatto??(p.iContatto=allPlayers.indexOf(p)), sforzo=clamp((J.chest[1]+0.06)/0.26,0,1);
     const forza=(1-e)*(0.22+0.5*sforzo+0.3*vel)+e*(0.3+0.6*vel);
-    contatto(i,p.x+VIS*(mx*c+mz*sn),p.z+VIS*(-mx*sn+mz*c),R.g.rotation.y,0.5+0.12*e,0.5-0.08*e,R.g.visible?forza:0,R.g.visible?e*vel:0); }
+    contatto(i,p.x+VIS*(mx*c+mz*sn),p.z+VIS*(-mx*sn+mz*c),R.g.rotation.y,(0.5+0.12*e)*scalaAtleta,(0.5-0.08*e)*scalaAtleta,R.g.visible?forza:0,R.g.visible?e*vel:0); }
   // spruzzo quando una mano rientra in acqua (bracciata, appoggio del braccio libero nel tiro): solo disegno, niente caso
   if(R.corpo && R.corpo.ossa.manoD && !(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){
     const Y=p.maniY||(p.maniY=[0,0]);

@@ -13,7 +13,8 @@ const PRONTO={hip:[-.06,Math.max(-.22/VIS,-.5),0],chest:[.02,.04,0],head:[.05,.2
   sR:[.02,.04,.2],sL:[.02,.04,-.2],hR:[.26,.14,.44],hL:[.26,.14,-.44]};
 const nuovoVettore=()=>[0,0,0];
 const punto=(v,x,y,z)=>{v[0]=x;v[1]=y;v[2]=z;return v;};
-const nuovaSfera=(parte,raggio)=>({centro:nuovoVettore(),raggio,parte});
+// Raggi tarati sul rig precedente aVIS1,45: seguono il corpo, non la porta.
+const nuovaSfera=(parte,raggio)=>({centro:nuovoVettore(),raggio:raggio*VIS/1.45,parte});
 const nuoveSfere=()=>[
   ...Array.from({length:3},()=>nuovaSfera('torace',.23)),nuovaSfera('testa',.19),
   ...Array.from({length:10},()=>nuovaSfera('braccio',.07)),
@@ -48,7 +49,7 @@ function aggiornaSagoma(t,gk){
     punto(A,J.hip[0]+(J.chest[0]-J.hip[0])*k,J.hip[1]+(J.chest[1]-J.hip[1])*k,J.hip[2]+(J.chest[2]-J.hip[2])*k);
     mondo(S[i].centro,A,gk,c,s);
   }
-  mondo(S[3].centro,J.head,gk,c,s);S[3].centro[1]+=.03;
+  mondo(S[3].centro,J.head,gk,c,s);S[3].centro[1]+=.03*VIS/1.45;
   let idx=4;
   for(const [da,a] of OSSA_BRACCIA){
     mondo(A,J[da],gk,c,s);mondo(B,J[a],gk,c,s);
@@ -110,15 +111,38 @@ function copiaSfere(da,a){
 function limitaVelocita(t,gk,B){
   const prova={...B},margine=P.velocitaMano*.95;
   for(let giro=0;giro<4;giro++){
-    const fine=Math.max(.5,t.reazione+t.durataBraccio*1.2+.1),dt=fine/96;
+    // Dopo questi raccordi le mani sono ferme: includere mezzo secondo anche
+    // per un gesto breve diluiva i picchi dell'IK in corde di oltre 5 ms.
+    const fine=Math.max(.18,t.reazione*.4+.22,t.reazione+t.durataBraccio*(t.riuscita?1:1.2)),dt=fine/96;
     prova.flightT=t.voloInizio;disegnaTentativo(t,gk,prova);
-    const r=t.sfere[24].centro.slice(),l=t.sfere[25].centro.slice();let massimo=0;
+    const r=t.sfere[24].centro.slice(),l=t.sfere[25].centro.slice(),picchi=[];let massimo=0;
     for(let i=1;i<=96;i++){
       prova.flightT=t.voloInizio+i*dt;disegnaTentativo(t,gk,prova);
+      let velocita=0;
       for(const [idx,prima] of [[24,r],[25,l]]){
         const v=t.sfere[idx].centro;
-        massimo=Math.max(massimo,Math.hypot(v[0]-prima[0],v[1]-prima[1],v[2]-prima[2])/dt);
+        velocita=Math.max(velocita,Math.hypot(v[0]-prima[0],v[1]-prima[1],v[2]-prima[2])/dt);
         punto(prima,v[0],v[1],v[2]);
+      }
+      massimo=Math.max(massimo,velocita);picchi.push({i,velocita});
+    }
+    // Raffina soltanto i tre intervalli più veloci e i loro vicini: il cambio
+    // di direzione del palmo può essere più rapido della corda iniziale.
+    // Al massimo 178 pose per giro, tutte al lancio e mai nel passo fisico.
+    const intervalli=new Set();
+    for(const {i} of picchi.sort((a,b)=>b.velocita-a.velocita).slice(0,3)){
+      for(let j=Math.max(1,i-1);j<=Math.min(96,i+1);j++)intervalli.add(j);
+    }
+    for(const i of intervalli){
+      prova.flightT=t.voloInizio+(i-1)*dt;disegnaTentativo(t,gk,prova);
+      punto(r,...t.sfere[24].centro);punto(l,...t.sfere[25].centro);
+      for(let j=1;j<=8;j++){
+        prova.flightT=t.voloInizio+(i-1+j/8)*dt;disegnaTentativo(t,gk,prova);
+        for(const [idx,prima] of [[24,r],[25,l]]){
+          const v=t.sfere[idx].centro;
+          massimo=Math.max(massimo,Math.hypot(v[0]-prima[0],v[1]-prima[1],v[2]-prima[2])*8/dt);
+          punto(prima,v[0],v[1],v[2]);
+        }
       }
     }
     t.velocitaMassimaStimata=massimo;

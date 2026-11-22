@@ -33,7 +33,9 @@ function preparaFumetto(scena){
   // sul modello in posa di riposo), staccato di 3 mm, nel sistema dell'osso della testa. Un solo oggetto per i due lati.
   const testa=scena.getObjectByName(FUMETTO.ossa.testa), invTesta=testa.matrixWorld.clone().invert();
   const rif=new THREE.Mesh(maglia.geometry.clone().applyMatrix4(maglia.matrixWorld)), ray=new THREE.Raycaster();
-  const Q=FUMETTO.cuffia, c=new THREE.Vector3(...Q.centro), N=8, P=[], U=[], I=[];
+  // Sette suddivisioni bastano per la piccola decal curva:60 triangoli in meno
+  // per atleta, senza toccare il corpoGLB o la texture del numero (né il viso).
+  const Q=FUMETTO.cuffia, c=new THREE.Vector3(...Q.centro), N=7, P=[], U=[], I=[];
   for(const segno of [1,-1]){
     const d=new THREE.Vector3(Q.lato[0]*segno,Q.lato[1],Q.lato[2]).normalize(), t1=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),d).normalize(), t2=new THREE.Vector3().crossVectors(d,t1);
     const o0=P.length/3;
@@ -172,6 +174,7 @@ export function aggiornaNumero(R,num){
 const _a=new THREE.Vector3(), _b=new THREE.Vector3(), _d=new THREE.Vector3(), _d2=new THREE.Vector3(), _v=new THREE.Vector3();
 const _q=new THREE.Quaternion(), _qp=new THREE.Quaternion(), _qd=new THREE.Quaternion(), _qg=new THREE.Quaternion(), _qr=new THREE.Quaternion();
 const _su=new THREE.Vector3(), _av=new THREE.Vector3(), _de=new THREE.Vector3(), _m=new THREE.Matrix4(), _inv=new THREE.Matrix4();
+const _gambaTiro=new THREE.Vector3();
 export const BACINO_TIRO=-0.16;      // v0.61: quota massima del bacino nel tiro da fuori (m sull'acqua; di solito -0,22); v0.64: -0,14 → -0,16 (un campione a 1 cm)
 const SU=new THREE.Vector3(0,1,0), _qy=new THREE.Quaternion(), _qg2=new THREE.Quaternion(), PIEGA0={petto:0,bacino:0,gambe:0};
 const ROT_MODELLO=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),Math.PI/2);
@@ -298,17 +301,20 @@ export function muoviCorpo(R,J,T,dt){
   // colonna che si piega: il bacino resta indietro rispetto alle spalle (ruota attorno alla verticale del ritardo calcolato da
   // pose.js) e le tre ossa della schiena recuperano la differenza un po' ciascuna, fino al petto; le spalle restano dove le
   // vuole la posa, quindi il corpo gira attorno a testa e spalle e il bacino descrive l'arco più largo
-  const pg=T.piega||PIEGA0,torsione=Number.isFinite(T.torsioneVista)?T.torsioneVista:0;
-  const ritardoBacino=pg.bacino-torsione;
-  if(Math.abs(ritardoBacino)>0.002) _qr.premultiply(_qy.setFromAxisAngle(SU,ritardoBacino));
+  const pg=T.piega||PIEGA0,torsione=Number.isFinite(T.torsioneVista)?T.torsioneVista:0,tiro=T.tiroVista;
+  const giroBacino=tiro?.bacino||0,crunch=tiro?.crunch||0;
+  const ritardoBacino=pg.bacino-torsione+giroBacino;
+  if(Math.abs(ritardoBacino)>0.002||giroBacino!==0) _qr.premultiply(_qy.setFromAxisAngle(SU,ritardoBacino));
+  if(crunch>0)_qr.premultiply(_qd.setFromAxisAngle(_de,crunch));
   O.bacino.parent.getWorldQuaternion(_qp); O.bacino.quaternion.copy(_qr).premultiply(_qp.invert());
-  const recuperoTorace=pg.petto-pg.bacino+torsione;
-  if(Math.abs(recuperoTorace)>0.002 && C.schiena.length){
+  const recuperoTorace=pg.petto-pg.bacino+torsione-giroBacino;
+  if((Math.abs(recuperoTorace)>0.002||crunch>0||giroBacino!==0) && C.schiena.length){
     const passo=recuperoTorace/C.schiena.length; _qy.setFromAxisAngle(SU,passo);
-    for(const o of C.schiena){ o.getWorldQuaternion(_q); o.parent.getWorldQuaternion(_qp); o.quaternion.copy(_q.premultiply(_qy).premultiply(_qp.invert())); }
+    _qd.setFromAxisAngle(_de,-crunch/C.schiena.length);
+    for(const o of C.schiena){ o.getWorldQuaternion(_q); o.parent.getWorldQuaternion(_qp); o.quaternion.copy(_q.premultiply(_qy).premultiply(_qd).premultiply(_qp.invert())); }
   }
   // le gambe seguono con un ritardo ancora maggiore
-  const ritardoGambe=pg.gambe-torsione;
+  const giroGambe=tiro?.gambe||0,ritardoGambe=pg.gambe-torsione+giroGambe;
   const qGambe=Math.abs(ritardoGambe)>0.002 ? _qg2.setFromAxisAngle(SU,ritardoGambe) : null, curva=Math.abs(T.curva||0);
   // posizione: le spalle del modello vanno dove le vuole pose.js
   const pv=O.bacino.position; pv.set(0,0,0);
@@ -329,6 +335,7 @@ export function muoviCorpo(R,J,T,dt){
   C.fase+=dt*(5.2+6.5*sforzo)*(1+0.6*curva*(1-e));
   const amp=(0.85+0.45*sforzo)*(1+0.3*curva*(1-e));
   for(const lato of [1,-1]){
+    const pesoTiro=tiro?.peso||0,dominante=lato===(T.manoS?-1:1),spinta=tiro?.spinta||0;
     // gambe sfasate di mezzo ciclo (Kawai 2026); la spinta in fuori (ginocchio che si estende) è più rapida del rientro:
     // la fase scorre più veloce nella prima metà del giro
     const f0=C.fase+(lato>0?0:Math.PI), f=f0+0.35*Math.sin(f0), cs=Math.cos(f), sn=Math.sin(f);
@@ -339,18 +346,37 @@ export function muoviCorpo(R,J,T,dt){
     _d.copy(_av).multiplyScalar(0.70+0.10*sforzo).addScaledVector(_de,lato*(0.56+0.10*sforzo+0.10*sn)).addScaledVector(_su,-0.48-0.09*cs).normalize();
     if(e>0.001){ dirMondo(J.hip,gin,_d2); _d.lerp(_d2,e).normalize(); }
     if(qGambe) _d.applyQuaternion(qGambe);
+    if(pesoTiro>0){
+      // Gamba dominante dietro, controlaterale avanti come perno: la spinta
+      // avvia le anche senza una sforbiciata simultanea delle due gambe.
+      _gambaTiro.copy(_av).multiplyScalar(dominante?-.55+.35*spinta:.72).addScaledVector(_de,lato*.25).addScaledVector(_su,dominante?-.82:-.70).normalize();
+      if(qGambe)_gambaTiro.applyQuaternion(qGambe);
+      _d.lerp(_gambaTiro,pesoTiro).normalize();
+    }
     sottoIlPelo(coscia,gamba,_d,0.10);
     punta(coscia,gamba,_d);
     // sotto il ginocchio: il piede gira in cerchio (verso opposto tra destra e sinistra, mezzo giro di ritardo)
     _d.copy(_su).multiplyScalar(-0.80).addScaledVector(_de,lato*0.46*cs*amp).addScaledVector(_av,-0.15+0.42*sn*amp).normalize();
     if(e>0.001){ dirMondo(gin,pie,_d2); _d.lerp(_d2,e).normalize(); }
-    if(qGambe) _d.applyQuaternion(_qy.setFromAxisAngle(SU,pg.gambe*1.25-torsione));      // la gamba sotto il ginocchio resta ancora un po' più indietro: coda leggermente piegata
+    if(qGambe) _d.applyQuaternion(_qy.setFromAxisAngle(SU,pg.gambe*1.25-torsione+giroGambe));      // la gamba sotto il ginocchio resta ancora un po' più indietro: coda leggermente piegata
+    if(pesoTiro>0){
+      _gambaTiro.copy(_av).multiplyScalar(dominante?-.45+.57*spinta:-.12).addScaledVector(_de,lato*(dominante?.10:.06)).addScaledVector(_su,-.96).normalize();
+      if(qGambe)_gambaTiro.applyQuaternion(qGambe);
+      _d.lerp(_gambaTiro,pesoTiro).normalize();
+    }
     sottoIlPelo(gamba,piede,_d,0.12);
     punta(gamba,piede,_d);
     // in battuta il piede si distende in linea con la gamba; nella bicicletta il piede resta quasi orizzontale e si inclina
     // durante la spinta in fuori (angolo d'attacco, Kawai 2026), così spinge l'acqua verso il basso
     if(puntaP){
       if(e<0.95){ _d2.copy(_av).multiplyScalar(0.55).addScaledVector(_de,lato*0.55).addScaledVector(_su,-0.18-0.22*Math.max(0,sn)).normalize();
+        if(pesoTiro>0){
+          if(dominante){
+            _gambaTiro.copy(_av).multiplyScalar(.65).addScaledVector(_de,lato*(.55-.95*spinta)).addScaledVector(_su,-.18-.20*spinta).normalize();
+            if(qGambe)_gambaTiro.applyQuaternion(qGambe);
+          }else _gambaTiro.set(.95,-.16,lato*.05).normalize().applyQuaternion(_qg);      // piede perno verso la porta
+          _d2.lerp(_gambaTiro,pesoTiro).normalize();
+        }
         punta(piede,puntaP,_d2,(1-e)*0.6); }
       if(e>0.05) punta(piede,puntaP,_d,e*0.8);
     }

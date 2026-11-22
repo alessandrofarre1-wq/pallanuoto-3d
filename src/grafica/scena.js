@@ -177,7 +177,7 @@ makeGoal(1); makeGoal(-1);
 // palla + ombra + anello del giocatore controllato
 // Palla da pallanuoto gialla e blu come nel concept: 18 spicchi a gruppi di tre (la striscia di mezzo di ogni spicchio è blu),
 // separati da solchi scuri, con la buccia a puntini. Disegno calcolato punto per punto sulla sfera, così i solchi sono curve
-// esatte e non si deformano ai poli. Un po' più grande del vero (1,3), per leggerla anche da lontano.
+// esatte e non si deformano ai poli. Raggio regolamentare, nella stessa unità di campo e porta.
 export const ball3d = (()=>{
   const W=1024, H=512, tela=document.createElement('canvas'); tela.width=W; tela.height=H;
   const xg=tela.getContext('2d'), ig=xg.createImageData(W,H);

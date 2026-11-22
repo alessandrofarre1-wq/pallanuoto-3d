@@ -1,0 +1,130 @@
+
+> pallanuoto-3d@0.72.0 prove
+> node tests/prove.mjs
+
+costruisco il gioco, poi 53 passi della CI (la verifica a parte: npm run verifica)
+ 1/53 npm run lint ... PASS (4 s)
+ 2/53 npm run contatto-portiere ... PASS (1 s)
+ 3/53 npm run traiettorie ... PASS (2 s)
+ 4/53 npm run portiere -- --salva=tests/screenshot/portiere-v071.json ... PASS (19 s)
+ 5/53 npm run tiro-visuale ... PASS (0 s)
+ 6/53 npm run rimesse ... PASS (2 s)
+ 7/53 npm run dimensioni-palla ... PASS (27 s)
+ 8/53 npm run tornei-menu -- --no-build ... PASS (53 s)
+ 9/53 npm run rigori-finali -- --no-build ... PASS (14 s)
+10/53 npm run gameplay -- --no-build ... PASS (9 s)
+11/53 npm run centroboa -- --no-build ... PASS (9 s)
+12/53 npm run tattica -- --no-build ... PASS (11 s)
+13/53 npm run espulsioni-tempi ... PASS (13 s)
+14/53 npm run rigori-regole ... PASS (0 s)
+15/53 npm run rigori-reali ... PASS (36 s)
+16/53 npm run boa-fronte ... PASS (9 s)
+17/53 npm run chiamate-attacco ... PASS (14 s)
+18/53 npm run servizio-boa ... PASS (9 s)
+19/53 npm run gesti-fluidi ... PASS (10 s)
+20/53 npm run difesa-cambi ... PASS (2 s)
+21/53 npm run entrate -- --no-build ... PASS (9 s)
+22/53 npm run entrate-integrazione -- --no-build ... PASS (18 s)
+23/53 npm run area-movimento -- --no-build ... PASS (9 s)
+24/53 npm run strategie -- --no-build ... PASS (35 s)
+25/53 npm run nuoto -- --no-build ... PASS (12 s)
+26/53 npm run nuoto-coerente -- --no-build ... PASS (13 s)
+27/53 npm run gioco-fermo -- --no-build ... PASS (10 s)
+28/53 npm run posizioni ... PASS (1 s)
+29/53 npm run orientamento -- --no-build ... PASS (41 s)
+30/53 npm run finta -- --no-build ... PASS (14 s)
+31/53 npm run desktop -- --no-build ... PASS (9 s)
+32/53 npm run gesti -- --no-build ... FAIL (14 s)
+   ultime righe:
+   |     at file:///workspace/pallanuoto-v072/strumenti/gesti-v049.mjs:74:11 {
+   |   generatedMessage: false,
+   |   code: 'ERR_ASSERTION',
+   |   actual: false,
+   |   expected: true,
+   |   operator: '==',
+   |   diff: 'simple'
+   | }
+   | 
+   | Node.js v24.22.1
+   | npm notice
+   | npm notice New major version of npm available! 11.9.0 -> 12.2.3
+   | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+   | npm notice To update run: npm install -g npm@12.2.3
+   | npm notice
+33/53 npm run costumi -- --no-build ... FAIL (117 s)
+   ultime righe:
+   | OK atlante condiviso entro 1024×1024
+   | OK 24 nazionali: bandiere disegnate, profilo assegnato, calottine e colori HUD corretti
+   | OK 24 bandiere distinte, senza celle vuote o ripetute
+   | OK due nazioni × due mani × due lati: tutti i 14 corpi completi disegnati
+   | OK stessa nazionale sui due lati: costume identico, calottina diversa
+   | OK bandiera conservata dopo cambio portiere e cambio dal pozzetto, compresa la riserva visibile
+   | NO iPhone 844: 66 chiamate / 149110 triangoli, 2 riserve visibili (limiti v0.43: 69 / 148734)
+   | NO iPhone 667: 66 chiamate / 149110 triangoli, 2 riserve visibili (limiti v0.43: 69 / 148734)
+   | OK nessun errore pagina/WebGL/shader (0)
+   | Fotografie e rapporto: /tmp/pallanuoto-costumi-v044
+   | npm notice
+   | npm notice New major version of npm available! 11.9.0 -> 12.2.3
+   | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+   | npm notice To update run: npm install -g npm@12.2.3
+   | npm notice
+34/53 npm run home -- --no-build ... PASS (22 s)
+35/53 npm run replay -- --no-build ... PASS (51 s)
+36/53 npm run replay-ui -- --no-build ... PASS (16 s)
+37/53 npm run fisica-palla -- --no-build ... PASS (14 s)
+38/53 npm run fisica-acqua ... PASS (3 s)
+39/53 npm run sezione1 -- --no-build ... FAIL (64 s)
+   ultime righe:
+   |     triggerUncaughtException(
+   |     ^
+   | 
+   | page.waitForFunction: Timeout 60000ms exceeded.
+   |     at /workspace/pallanuoto-v072/tests/sezione1.mjs:19:10 {
+   |   log: [],
+   |   name: 'TimeoutError'
+   | }
+   | 
+   | Node.js v24.22.1
+   | npm notice
+   | npm notice New major version of npm available! 11.9.0 -> 12.2.3
+   | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+   | npm notice To update run: npm install -g npm@12.2.3
+   | npm notice
+40/53 npm run sezione2 -- --no-build ... PASS (31 s)
+41/53 npm run sezione3 -- --no-build ... PASS (15 s)
+42/53 npm run sezione4 -- --no-build ... PASS (13 s)
+43/53 npm run sezione5 -- --no-build ... PASS (63 s)
+44/53 npm run uomo -- --no-build ... PASS (30 s)
+45/53 npm run inferiorita ... PASS (18 s)
+46/53 npm run v046 -- --no-build ... PASS (14 s)
+47/53 npm run sezione6 -- --no-build ... PASS (18 s)
+48/53 npm run dati-tesi -- --no-build ... FAIL (30 s)
+   ultime righe:
+   | > pallanuoto-3d@0.72.0 dati-tesi
+   | > node tests/dati-tesi.mjs --no-build
+   | 
+   | ✓ Velocità della palla dopo 5 m, partendo da 13,3 m/s: 12.20 m/s   (dato: 12,2 m/s misurati nella tesi)
+   | ✗ Rigori segnati: 98.8% (237 su 240)   (dato: 80,1% negli studi citati dalla tesi; 75% ai Mondiali 2025 (127 su 169, World Aquatics))
+   | ✓ Velocità al rilascio dei rigori: 22.7 ± 0.7 m/s (da 21.5 a 23.8)   (dato: professionisti 22,8 ± 2,4 m/s; semi-professionisti 18,4 ± 1,7)
+   | ✓ Tempo dal braccio caricato al rilascio: 170 ms   (dato: professionisti 166 ms, semi-professionisti 189 ms)
+   | 
+   | ✗ Dati della tesi: valori FUORI dalla fascia attesa
+   | npm notice
+   | npm notice New major version of npm available! 11.9.0 -> 12.2.3
+   | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+   | npm notice To update run: npm install -g npm@12.2.3
+   | npm notice
+49/53 npm run statistiche -- --no-build ... PASS (26 s)
+50/53 npm run azione -- --no-build ... PASS (12 s)
+51/53 npm run aspetto -- --no-build --solo-gioco ... PASS (181 s)
+52/53 npm run cronaca -- --no-build --solo-controlli ... PASS (190 s)
+53/53 npm run menu -- --no-build --solo-controlli ... PASS (59 s)
+
+RIEPILOGO: 49 PASS, 4 FAIL su 53 passi in 23.6 minuti
+falliti: gesti, costumi, sezione1, dati-tesi
+registri completi: /tmp/prove-UkKrPk
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

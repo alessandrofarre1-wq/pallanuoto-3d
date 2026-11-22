@@ -59,7 +59,8 @@ const sorgente=await readFile(new URL('../src/tiri.js',import.meta.url),'utf8');
 const corpo=sorgente.replace(/^import .*;.*\n/gm,'').replace(/^export \{.*\};.*\n/gm,'').replace(/\bexport /g,'');
 const ball={},game={time:10,state:'play',penalty:null},teams=[{idx:0,dir:1,human:true,short:'ITA',players:[]},{idx:1,dir:-1,short:'HUN',players:[]}],allPlayers=[];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),dist=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z),other=t=>teams[1-t.idx],goalX=t=>12.5*t.dir;
-const contesto={ball,game,teams,allPlayers,clamp,dist,other,goalX,P,T,FIRMA,ALZATA,profiloTraiettoria,velocitaDiLancio:H.velocitaDiLancio,rnd:()=>.5,gauss:()=>0,
+let caso=.5,profiloScelto;
+const contesto={ball,game,teams,allPlayers,clamp,dist,other,goalX,P,T,FIRMA,ALZATA,profiloTraiettoria:o=>{profiloScelto=profiloTraiettoria(o);return profiloScelto;},velocitaDiLancio:H.velocitaDiLancio,rnd:()=>caso,gauss:()=>0,
   azioneAperta:()=>null,tipoDiTiro:()=> 'fuori',registraTiro:()=>{},registraTiroReplay:()=>{},paloCoperto:()=>0,postoPortiere:()=>0,manUp:()=>false,firma:()=>false};
 const tiro=new Function(...Object.keys(contesto),corpo+'\nreturn {doShoot,launch,startAct,updateActs};')(...Object.values(contesto));
 const p={team:teams[0],x:4.5,z:0,fx:1,fz:0,ballW:[4.5,1.2,0],stamina:1,s:{pot:76.25,pre:90,frz:85,res:85},st:{sht:.9},fakeCount:0};
@@ -72,6 +73,24 @@ assert.equal(ball.costoTentativoPortiere,false);assert.equal(ball.deviataInPorta
 assert.equal(ball.tentativoPortiere,null);assert.equal(ball.contattoPortiere,null);assert.equal(ball.parataRegistrata,false);
 tiro.launch(p,8,.95,0,.4,'pass');assert.ok(Math.abs(Math.hypot(ball.wx,ball.wz)-P.giriPassaggio)<1e-9,'passaggio conserva lo spin');
 ball.holder=p;p.fakeCount=0;tiro.doShoot(p,.4,true,0);assert.equal(ball.lob,true,'palombella umana senza nuovo requisito di finta');
+
+// Rigori: potenza piena non impone la quadrella alta. Le due direzioni e
+// i due estremi della distribuzione mantengono forza e spin, con mira manuale prioritaria.
+const quoteRigore=[];
+for(const dir of [1,-1])for(const r of [.02,.5,.98]){
+  caso=r;teams[0].dir=dir;teams[1].dir=-dir;p.x=4.5*dir;p.fx=dir;p.ballW=[p.x,1.2,0];gk.x=10.9*dir;gk.z=.2*dir;
+  p.stamina=1;ball.holder=p;game.penalty=null;tiro.doShoot(p,1,false,.7);
+  const velocitaForte=Math.hypot(ball.vx,ball.vy,ball.vz);
+  assert.ok(profiloScelto.ty>=T.quadrellaY&&profiloScelto.ty<=T.quadrellaY+T.quadrellaAltezza,'forte in azione conserva quadrella');
+  p.stamina=1;ball.holder=p;game.penalty=p;tiro.doShoot(p,1,false,null);
+  quoteRigore.push(profiloScelto.ty);assert.equal(ball.rigore,true);assert.equal(ball.shotPower,1);
+  assert.ok(Math.abs(profiloScelto.ty-(.15+r*.55))<1e-12,'bersagli naturali bassi/alti sul rigore');
+  assert.ok(Math.abs(Math.hypot(ball.vx,ball.vy,ball.vz)-velocitaForte)/velocitaForte<.03,'potenza nominale conservata');
+  assert.ok(Math.abs(Math.hypot(ball.wx,ball.wz)-P.giriTiro)<1e-9);
+  p.stamina=1;ball.holder=p;tiro.doShoot(p,1,false,.7);assert.equal(ball.crossZ,.7*1.28,'mira manuale anche sul rigore');
+}
+assert.ok(Math.min(...quoteRigore)<.2&&Math.max(...quoteRigore)>.65,'rigori alti e bassi disponibili');
+caso=.5;game.penalty=null;teams[0].dir=1;teams[1].dir=-1;p.x=4.5;p.fx=1;p.ballW=[4.5,1.2,0];gk.x=10.9;gk.z=.2;
 
 const ia=await readFile(new URL('../src/ia.js',import.meta.url),'utf8');
 const aiSource=ia.slice(ia.indexOf('export function aiShoot('),ia.indexOf('export function aiPass(')).replace('export ','');

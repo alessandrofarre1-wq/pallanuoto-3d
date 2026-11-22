@@ -5,8 +5,8 @@ export const HL = 12.5;        // metà lunghezza campo: 25 m tra le linee di po
 export const HW = 10;          // metà larghezza campo (20 m)
 export const GW = 1.5;         // metà larghezza porta (3 m)
 export const GH = 0.9;         // altezza traversa sull'acqua
-export const VIS = 1.45;        // scala visiva dei giocatori
-export const BRV = 0.15;       // raggio visivo della palla
+export { VIS } from './scala-grafica.js';
+export const BRV = 0.15;       // quota storica della posa; raggio fisico in fisica-palla/parametri
 export const SHOT_CLOCK = 28, SHOT_RESET = 18, EXCL_TIME = 18;  // artt. 4.1.1, 8.12, 9.3
 export const ROLES = ['Portiere','Centroboa','Ala destra','Ala sinistra','Mezzo destro','Mezzo sinistro','Punto'];
 // posizioni d'attacco: [distanza dalla porta avversaria, spostamento laterale (+ = destra)]

@@ -1,3 +1,21 @@
+# Passaggio WATERPOLO7 — v0.72
+
+Branch `codex/v072-proporzioni-tiro-rimesse`, worktree `/workspace/pallanuoto-v072`, base main7827854(PR62unita), versione0.72.0. Prima di altro lavoro riallineare main/PR/CI e preservare le modifiche; non ripartire dai vecchi checkpoint. Nessun merge/deploy di questa versione.
+
+Leggere [CLAUDE.md](../CLAUDE.md), [rapporto v0.72](versioni/v072-proporzioni-tiro-rimesse.md), [verifiche](verifiche/v072/README.md) e [decisioni superate](decisioni-superate.md).
+
+Ale ha chiesto coerenza di **tutto**: non ingrandire la sola palla. Corpi VIS1,45→1,10 (base bind2,547→1,932m); campo25×20m, porta3×0,90m e palla22,12cm conservati. SagomaGK, punti di lancio, ombre/contatti acqua seguono l'atleta. Questo cambia necessariamente ballW assoluto: non dichiarare identità delle partite conVIS1,45. Test gesto prima/dopo usa scala1,10 in entrambe le fasi e isola solo pose/corpo:4casi, frusta175,031ms, erroreJ/ballW0, traccia identica. Il GLB ha già24joints pesati: niente conversioneFBX/Mixamo necessaria. Migliorato solo tiro classico, non tutti gli speciali.
+
+RimessaGK laterale ora attacco18s, fondo corner18s; eccezione muro di movimento conservata (difesa28s).56voli reali con riprese da partita.update PASS. Non abbassare assert;5suiteNodekeeperPASS e limite mani7m/s conservato con scansione dei picchiIK affinata al lancio.
+
+Gli esiti finali sono riportati nella PR e nel rapporto. Locale: lintPASS, primo prove49/53 con4passi poi corretti e ripetutiPASS, verifica bloccantePASS e aspetto completo in due metà sulla stessa buildPASS. Due cambi66/148150,14corpi; rigori190/240=79,17% dopo esclusione del solo preset automaticoquadrella sui rigori, stessa velocità/precisione/lettura. La CI INTERA dell’ultimo SHA nellaPR è la fonte finale; sei partite una sola volta lì. Il bilanciamento0.71 è solo baseline storica: dopo cambio scala non venderlo come nuova misura. Non eseguire altre8+8gare senza diagnosi/scopo; sei partite standard una volta nellaCI. Nuova foto annunciata non allegata nel messaggio attuale: datiGLB/articolo/riferimenti precedenti disponibili. Nessuna nuova prova facciale. Una solaChrome pesante, browser `/tmp/pallanuoto-browsers`; localhost richiede permesso rete dello strumento.
+
+Restano iPhone fisico/FPS e giudizio di Ale, bilanciamento generale già aperto e nuovi comandi touch speciali ancora da concordare.14corpi completi, sempre<100draw/<150000tri su iPhone anche2cambi/replay; logoC, camera unica/SPEED1, controlli e maxcarica0,9s, riflesso soloalta, CAMBI basso centro44px. Non aggiungere `node_modules`.
+
+Nuovo incarico successivo autorizzato: **prima consegnare questa PR**, poi esportare un GLB con rig più completo/dita e giunture per Plask da video. Asset separato, non sostituire automaticamente quello iPhone. Verificare skin/pesi reali e requisiti del retargeting.
+
+---
+
 # Passaggio WATERPOLO 7 — v0.71: portiere, tiri e stamina
 
 Repository `alessandrofarre1-wq/pallanuoto-3d`, branch `codex/v071-portiere-palla`, worktree `/workspace/pallanuoto-v071`, versione0.71.0, base main `dbf20b61024ca9609e6715abd1aa6e7a59899590` (PR60/61 unite). Le verifiche locali sono chiuse; CI completa e SHA definitivo si leggono nella PR associata al ramo. Nessun merge/deploy eseguito. Prima di altro lavoro riallineare main, PR, CI e diff: preservare Claude e Codex, non riaprire gli archivi sotto.

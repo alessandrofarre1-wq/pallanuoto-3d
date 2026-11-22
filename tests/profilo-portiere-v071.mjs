@@ -115,5 +115,5 @@ assert.equal(rec30.t.attiva,false);assert.ok(Math.abs(rec30.t.lift-.1)<1e-12);as
 const gz=portiere(),bz=palla(),tz=creaTentativoPortiere(gz,bz,{...opzioni,time:0});
 concludiTentativoPortiere(tz,0);assert.equal(tz.fine,0);
 avanzaTentativoPortiere(tz,gz,{...bz,flightT:0},PARATA_PORTIERE.recupero);assert.equal(tz.attiva,false,'fine=0 resta una conclusione valida');
-assert.equal(VIS,1.45);
+assert.equal(VIS,1.10,'scala corretta del modello rispetto al campo');
 console.log('PASS profilo portiere v0.71: 26 sfere, portata, reazione ravvicinata/deviazione, raccordo e recupero, due versi, 30/60/120Hz e indipendenza dal rendering; massimo mano '+velocitaMax.toFixed(4)+'m/s');

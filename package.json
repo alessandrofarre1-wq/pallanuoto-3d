@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.71.0",
+  "version": "0.72.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -82,7 +82,9 @@
     "contatto-portiere": "node tests/contatto-portiere-v071.mjs && node tests/profilo-portiere-v071.mjs && node tests/decisione-parata-v071.mjs && node tests/deviazione-tiro-v071.mjs && node tests/lettura-portiere-v071.mjs",
     "traiettorie": "node tests/traiettorie-v071.mjs",
     "portiere": "node tests/portiere-v071.mjs",
-    "dimensioni-palla": "node tests/dimensioni-palla-v071.mjs"
+    "dimensioni-palla": "node tests/dimensioni-palla-v071.mjs",
+    "tiro-visuale": "node tests/tiro-visuale-v072.mjs",
+    "rimesse": "node tests/rimesse-v072.mjs"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",

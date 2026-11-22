@@ -1,0 +1,1690 @@
+[
+  {
+    "nome": "portiere-laterale-squadra0-1-1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": true
+    },
+    "fuori": [
+      8.43080997467041,
+      0.44262826442718506,
+      10.303278923034668
+    ],
+    "possesso": 0,
+    "secondiPrima": 7,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        8.705265768335174,
+        0.467075184166945,
+        9.491382096839848
+      ],
+      "prima": [
+        19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        -2.7726577760651274,
+        0.25,
+        8.20224012609991
+      ]
+    }
+  },
+  {
+    "nome": "portiere-fondo-squadra0-1-1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": true
+    },
+    "fuori": [
+      12.628673553466797,
+      0.5672693252563477,
+      3.52197527885437
+    ],
+    "possesso": 0,
+    "secondiPrima": 7,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        11.611507713739892,
+        0.46378150991474204,
+        2.6132477357978345
+      ],
+      "prima": [
+        19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        12.408567978734073,
+        1.6784822120595386,
+        11.085682147311829
+      ]
+    }
+  },
+  {
+    "nome": "portiere-laterale-squadra0-1-1-0.28",
+    "tocco": {
+      "squadra": 1,
+      "portiere": true
+    },
+    "fuori": [
+      9.627760887145996,
+      0.5522574782371521,
+      10.342487335205078
+    ],
+    "possesso": 0,
+    "secondiPrima": 7,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": true,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        8.811506867195765,
+        0.46378140581309346,
+        9.613247257088803
+      ],
+      "prima": [
+        19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        12.408480956930077,
+        1.6784846315869113,
+        11.085725974246484
+      ]
+    }
+  },
+  {
+    "nome": "muro-laterale-squadra0-1-1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": false
+    },
+    "fuori": [
+      8.479602813720703,
+      0.08666452765464783,
+      10.265621185302734
+    ],
+    "possesso": 1,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        8.676631927490234,
+        0.6128472089767456,
+        9.520000457763672
+      ],
+      "prima": [
+        19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        -1.9920437619740303,
+        -4.8240465516187125,
+        7.538532082529679
+      ]
+    }
+  },
+  {
+    "nome": "muro-fondo-squadra0-1-1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": false
+    },
+    "fuori": [
+      12.525303840637207,
+      0.2114270180463791,
+      5.142718315124512
+    ],
+    "possesso": 1,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        11.476635932922363,
+        0.6128472089767456,
+        2.680000066757202
+      ],
+      "prima": [
+        19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        4.9357616953267165,
+        -3.3549078317658676,
+        11.591295252300453
+      ]
+    }
+  },
+  {
+    "nome": "nessuno-laterale-squadra0-1-1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      5,
+      0.6130239963531494,
+      10.30558967590332
+    ],
+    "possesso": 1,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "nessuno-fondo-squadra0-1-1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      12.755997657775879,
+      0.5549076795578003,
+      2.680000066757202
+    ],
+    "possesso": 1,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "portiere-laterale-squadra0-1--1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": true
+    },
+    "fuori": [
+      8.546759605407715,
+      0.8243134617805481,
+      -10.307626724243164
+    ],
+    "possesso": 0,
+    "secondiPrima": 24,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        8.712183868405909,
+        0.46703839871970165,
+        -9.4913918730931
+      ],
+      "prima": [
+        19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        -1.6723959108833881,
+        4.108949092017539,
+        -8.251611666440928
+      ]
+    }
+  },
+  {
+    "nome": "portiere-fondo-squadra0-1--1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": true
+    },
+    "fuori": [
+      12.628673553466797,
+      0.5672693252563477,
+      -3.52197527885437
+    ],
+    "possesso": 0,
+    "secondiPrima": 24,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        11.611507713739892,
+        0.46378150991474204,
+        -2.6132477357978345
+      ],
+      "prima": [
+        19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        12.408567978734073,
+        1.6784822120595386,
+        -11.085682147311829
+      ]
+    }
+  },
+  {
+    "nome": "portiere-laterale-squadra0-1--1-0.28",
+    "tocco": {
+      "squadra": 1,
+      "portiere": true
+    },
+    "fuori": [
+      9.627760887145996,
+      0.5522574782371521,
+      -10.342487335205078
+    ],
+    "possesso": 0,
+    "secondiPrima": 24,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": true,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        8.811506867195765,
+        0.46378140581309346,
+        -9.613247257088803
+      ],
+      "prima": [
+        19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        12.408480956930077,
+        1.6784846315869113,
+        -11.085725974246484
+      ]
+    }
+  },
+  {
+    "nome": "muro-laterale-squadra0-1--1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": false
+    },
+    "fuori": [
+      8.479602813720703,
+      0.08666452765464783,
+      -10.265621185302734
+    ],
+    "possesso": 1,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        8.676631927490234,
+        0.6128472089767456,
+        -9.520000457763672
+      ],
+      "prima": [
+        19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        -1.9920437619740303,
+        -4.8240465516187125,
+        -7.538532082529679
+      ]
+    }
+  },
+  {
+    "nome": "muro-fondo-squadra0-1--1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": false
+    },
+    "fuori": [
+      12.525303840637207,
+      0.2114270180463791,
+      -5.142718315124512
+    ],
+    "possesso": 1,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        11.476635932922363,
+        0.6128472089767456,
+        -2.680000066757202
+      ],
+      "prima": [
+        19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        4.9357616953267165,
+        -3.3549078317658676,
+        -11.591295252300453
+      ]
+    }
+  },
+  {
+    "nome": "nessuno-laterale-squadra0-1--1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      5,
+      0.6130239963531494,
+      -10.30558967590332
+    ],
+    "possesso": 1,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "nessuno-fondo-squadra0-1--1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      12.755997657775879,
+      0.5549076795578003,
+      -2.680000066757202
+    ],
+    "possesso": 1,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "portiere-laterale-squadra0--1-1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": true
+    },
+    "fuori": [
+      -8.546759605407715,
+      0.8243134617805481,
+      10.307626724243164
+    ],
+    "possesso": 0,
+    "secondiPrima": 7,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        -8.712183868405909,
+        0.46703839871970165,
+        9.4913918730931
+      ],
+      "prima": [
+        -19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        1.6723959108833881,
+        4.108949092017539,
+        8.251611666440928
+      ]
+    }
+  },
+  {
+    "nome": "portiere-fondo-squadra0--1-1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": true
+    },
+    "fuori": [
+      -12.628673553466797,
+      0.5672693252563477,
+      3.52197527885437
+    ],
+    "possesso": 0,
+    "secondiPrima": 7,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        -11.611507713739892,
+        0.46378150991474204,
+        2.6132477357978345
+      ],
+      "prima": [
+        -19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        -12.408567978734073,
+        1.6784822120595386,
+        11.085682147311829
+      ]
+    }
+  },
+  {
+    "nome": "portiere-laterale-squadra0--1-1-0.28",
+    "tocco": {
+      "squadra": 1,
+      "portiere": true
+    },
+    "fuori": [
+      -9.627760887145996,
+      0.5522574782371521,
+      10.342487335205078
+    ],
+    "possesso": 0,
+    "secondiPrima": 7,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": true,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        -8.811506867195765,
+        0.46378140581309346,
+        9.613247257088803
+      ],
+      "prima": [
+        -19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        -12.408480956930077,
+        1.6784846315869113,
+        11.085725974246484
+      ]
+    }
+  },
+  {
+    "nome": "muro-laterale-squadra0--1-1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": false
+    },
+    "fuori": [
+      -8.479602813720703,
+      0.08666452765464783,
+      10.265621185302734
+    ],
+    "possesso": 1,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        -8.676631927490234,
+        0.6128472089767456,
+        9.520000457763672
+      ],
+      "prima": [
+        -19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        1.9920437619740303,
+        -4.8240465516187125,
+        7.538532082529679
+      ]
+    }
+  },
+  {
+    "nome": "muro-fondo-squadra0--1-1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": false
+    },
+    "fuori": [
+      -12.525303840637207,
+      0.2114270180463791,
+      5.142718315124512
+    ],
+    "possesso": 1,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        -11.476635932922363,
+        0.6128472089767456,
+        2.680000066757202
+      ],
+      "prima": [
+        -19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        -4.9357616953267165,
+        -3.3549078317658676,
+        11.591295252300453
+      ]
+    }
+  },
+  {
+    "nome": "nessuno-laterale-squadra0--1-1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      -5,
+      0.6130239963531494,
+      10.30558967590332
+    ],
+    "possesso": 1,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "nessuno-fondo-squadra0--1-1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      -12.755997657775879,
+      0.5549076795578003,
+      2.680000066757202
+    ],
+    "possesso": 1,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "portiere-laterale-squadra0--1--1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": true
+    },
+    "fuori": [
+      -8.546759605407715,
+      0.8243134617805481,
+      -10.307626724243164
+    ],
+    "possesso": 0,
+    "secondiPrima": 24,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        -8.712183868405909,
+        0.46703839871970165,
+        -9.4913918730931
+      ],
+      "prima": [
+        -19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        1.6723959108833881,
+        4.108949092017539,
+        -8.251611666440928
+      ]
+    }
+  },
+  {
+    "nome": "portiere-fondo-squadra0--1--1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": true
+    },
+    "fuori": [
+      -12.628673553466797,
+      0.5672693252563477,
+      -3.52197527885437
+    ],
+    "possesso": 0,
+    "secondiPrima": 24,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        -11.611507713739892,
+        0.46378150991474204,
+        -2.6132477357978345
+      ],
+      "prima": [
+        -19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        -12.408567978734073,
+        1.6784822120595386,
+        -11.085682147311829
+      ]
+    }
+  },
+  {
+    "nome": "portiere-laterale-squadra0--1--1-0.28",
+    "tocco": {
+      "squadra": 1,
+      "portiere": true
+    },
+    "fuori": [
+      -9.627760887145996,
+      0.5522574782371521,
+      -10.342487335205078
+    ],
+    "possesso": 0,
+    "secondiPrima": 24,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": true,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        -8.811506867195765,
+        0.46378140581309346,
+        -9.613247257088803
+      ],
+      "prima": [
+        -19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        -12.408480956930077,
+        1.6784846315869113,
+        -11.085725974246484
+      ]
+    }
+  },
+  {
+    "nome": "muro-laterale-squadra0--1--1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": false
+    },
+    "fuori": [
+      -8.479602813720703,
+      0.08666452765464783,
+      -10.265621185302734
+    ],
+    "possesso": 1,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        -8.676631927490234,
+        0.6128472089767456,
+        -9.520000457763672
+      ],
+      "prima": [
+        -19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        1.9920437619740303,
+        -4.8240465516187125,
+        -7.538532082529679
+      ]
+    }
+  },
+  {
+    "nome": "muro-fondo-squadra0--1--1-0.12",
+    "tocco": {
+      "squadra": 1,
+      "portiere": false
+    },
+    "fuori": [
+      -12.525303840637207,
+      0.2114270180463791,
+      -5.142718315124512
+    ],
+    "possesso": 1,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        -11.476635932922363,
+        0.6128472089767456,
+        -2.680000066757202
+      ],
+      "prima": [
+        -19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        -4.9357616953267165,
+        -3.3549078317658676,
+        -11.591295252300453
+      ]
+    }
+  },
+  {
+    "nome": "nessuno-laterale-squadra0--1--1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      -5,
+      0.6130239963531494,
+      -10.30558967590332
+    ],
+    "possesso": 1,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "nessuno-fondo-squadra0--1--1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      -12.755997657775879,
+      0.5549076795578003,
+      -2.680000066757202
+    ],
+    "possesso": 1,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "portiere-laterale-squadra1-1-1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": true
+    },
+    "fuori": [
+      8.558568954467773,
+      0.8487619161605835,
+      10.305566787719727
+    ],
+    "possesso": 1,
+    "secondiPrima": 7,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        8.712862473045815,
+        0.46702760424777157,
+        9.4913918730931
+      ],
+      "prima": [
+        19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        -1.5599463474733426,
+        4.3565327346387726,
+        8.23146242850273
+      ]
+    }
+  },
+  {
+    "nome": "portiere-fondo-squadra1-1-1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": true
+    },
+    "fuori": [
+      12.638650894165039,
+      0.5789676308631897,
+      3.5152347087860107
+    ],
+    "possesso": 1,
+    "secondiPrima": 7,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        11.612619386265537,
+        0.4637575576785666,
+        2.6132477357978345
+      ],
+      "prima": [
+        19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        12.517156035121427,
+        1.8215446668074051,
+        11.003853633434387
+      ]
+    }
+  },
+  {
+    "nome": "portiere-laterale-squadra1-1-1-0.28",
+    "tocco": {
+      "squadra": 0,
+      "portiere": true
+    },
+    "fuori": [
+      9.635993957519531,
+      0.5616410374641418,
+      10.337078094482422
+    ],
+    "possesso": 1,
+    "secondiPrima": 7,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": true,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        8.812618530408447,
+        0.4637574539154157,
+        9.613247257088803
+      ],
+      "prima": [
+        19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        12.517068724586435,
+        1.8215488357949297,
+        11.00389843533108
+      ]
+    }
+  },
+  {
+    "nome": "muro-laterale-squadra1-1-1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": false
+    },
+    "fuori": [
+      8.479602813720703,
+      0.08666452765464783,
+      10.265621185302734
+    ],
+    "possesso": 0,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        8.676631927490234,
+        0.6128472089767456,
+        9.520000457763672
+      ],
+      "prima": [
+        19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        -1.9920437619740303,
+        -4.8240465516187125,
+        7.538532082529679
+      ]
+    }
+  },
+  {
+    "nome": "muro-fondo-squadra1-1-1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": false
+    },
+    "fuori": [
+      12.525303840637207,
+      0.2114270180463791,
+      5.142718315124512
+    ],
+    "possesso": 0,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        11.476635932922363,
+        0.6128472089767456,
+        2.680000066757202
+      ],
+      "prima": [
+        19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        4.9357616953267165,
+        -3.3549078317658676,
+        11.591295252300453
+      ]
+    }
+  },
+  {
+    "nome": "nessuno-laterale-squadra1-1-1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      5,
+      0.6130239963531494,
+      10.30558967590332
+    ],
+    "possesso": 0,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "nessuno-fondo-squadra1-1-1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      12.755997657775879,
+      0.5549076795578003,
+      2.680000066757202
+    ],
+    "possesso": 0,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "portiere-laterale-squadra1-1--1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": true
+    },
+    "fuori": [
+      8.558568954467773,
+      0.8487619161605835,
+      -10.305566787719727
+    ],
+    "possesso": 1,
+    "secondiPrima": 24,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        8.712862473045815,
+        0.46702760424777157,
+        -9.4913918730931
+      ],
+      "prima": [
+        19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        -1.5599463474733426,
+        4.3565327346387726,
+        -8.23146242850273
+      ]
+    }
+  },
+  {
+    "nome": "portiere-fondo-squadra1-1--1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": true
+    },
+    "fuori": [
+      12.638650894165039,
+      0.5789676308631897,
+      -3.5152347087860107
+    ],
+    "possesso": 1,
+    "secondiPrima": 24,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        11.612619386265537,
+        0.4637575576785666,
+        -2.6132477357978345
+      ],
+      "prima": [
+        19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        12.517156035121427,
+        1.8215446668074051,
+        -11.003853633434387
+      ]
+    }
+  },
+  {
+    "nome": "portiere-laterale-squadra1-1--1-0.28",
+    "tocco": {
+      "squadra": 0,
+      "portiere": true
+    },
+    "fuori": [
+      9.635993957519531,
+      0.5616410374641418,
+      -10.337078094482422
+    ],
+    "possesso": 1,
+    "secondiPrima": 24,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": true,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        8.812618530408447,
+        0.4637574539154157,
+        -9.613247257088803
+      ],
+      "prima": [
+        19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        12.517068724586435,
+        1.8215488357949297,
+        -11.00389843533108
+      ]
+    }
+  },
+  {
+    "nome": "muro-laterale-squadra1-1--1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": false
+    },
+    "fuori": [
+      8.479602813720703,
+      0.08666452765464783,
+      -10.265621185302734
+    ],
+    "possesso": 0,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        8.676631927490234,
+        0.6128472089767456,
+        -9.520000457763672
+      ],
+      "prima": [
+        19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        -1.9920437619740303,
+        -4.8240465516187125,
+        -7.538532082529679
+      ]
+    }
+  },
+  {
+    "nome": "muro-fondo-squadra1-1--1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": false
+    },
+    "fuori": [
+      12.525303840637207,
+      0.2114270180463791,
+      -5.142718315124512
+    ],
+    "possesso": 0,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        11.476635932922363,
+        0.6128472089767456,
+        -2.680000066757202
+      ],
+      "prima": [
+        19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        4.9357616953267165,
+        -3.3549078317658676,
+        -11.591295252300453
+      ]
+    }
+  },
+  {
+    "nome": "nessuno-laterale-squadra1-1--1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      5,
+      0.6130239963531494,
+      -10.30558967590332
+    ],
+    "possesso": 0,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "nessuno-fondo-squadra1-1--1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      12.755997657775879,
+      0.5549076795578003,
+      -2.680000066757202
+    ],
+    "possesso": 0,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "portiere-laterale-squadra1--1-1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": true
+    },
+    "fuori": [
+      -8.558568954467773,
+      0.8487619161605835,
+      10.305566787719727
+    ],
+    "possesso": 1,
+    "secondiPrima": 7,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        -8.712862473045815,
+        0.46702760424777157,
+        9.4913918730931
+      ],
+      "prima": [
+        -19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        1.5599463474733426,
+        4.3565327346387726,
+        8.23146242850273
+      ]
+    }
+  },
+  {
+    "nome": "portiere-fondo-squadra1--1-1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": true
+    },
+    "fuori": [
+      -12.638650894165039,
+      0.5789676308631897,
+      3.5152347087860107
+    ],
+    "possesso": 1,
+    "secondiPrima": 7,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        -11.612619386265537,
+        0.4637575576785666,
+        2.6132477357978345
+      ],
+      "prima": [
+        -19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        -12.517156035121427,
+        1.8215446668074051,
+        11.003853633434387
+      ]
+    }
+  },
+  {
+    "nome": "portiere-laterale-squadra1--1-1-0.28",
+    "tocco": {
+      "squadra": 0,
+      "portiere": true
+    },
+    "fuori": [
+      -9.635993957519531,
+      0.5616410374641418,
+      10.337078094482422
+    ],
+    "possesso": 1,
+    "secondiPrima": 7,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": true,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        -8.812618530408447,
+        0.4637574539154157,
+        9.613247257088803
+      ],
+      "prima": [
+        -19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        -12.517068724586435,
+        1.8215488357949297,
+        11.00389843533108
+      ]
+    }
+  },
+  {
+    "nome": "muro-laterale-squadra1--1-1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": false
+    },
+    "fuori": [
+      -8.479602813720703,
+      0.08666452765464783,
+      10.265621185302734
+    ],
+    "possesso": 0,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        -8.676631927490234,
+        0.6128472089767456,
+        9.520000457763672
+      ],
+      "prima": [
+        -19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        1.9920437619740303,
+        -4.8240465516187125,
+        7.538532082529679
+      ]
+    }
+  },
+  {
+    "nome": "muro-fondo-squadra1--1-1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": false
+    },
+    "fuori": [
+      -12.525303840637207,
+      0.2114270180463791,
+      5.142718315124512
+    ],
+    "possesso": 0,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        -11.476635932922363,
+        0.6128472089767456,
+        2.680000066757202
+      ],
+      "prima": [
+        -19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        -4.9357616953267165,
+        -3.3549078317658676,
+        11.591295252300453
+      ]
+    }
+  },
+  {
+    "nome": "nessuno-laterale-squadra1--1-1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      -5,
+      0.6130239963531494,
+      10.30558967590332
+    ],
+    "possesso": 0,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "nessuno-fondo-squadra1--1-1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      -12.755997657775879,
+      0.5549076795578003,
+      2.680000066757202
+    ],
+    "possesso": 0,
+    "secondiPrima": 7,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "portiere-laterale-squadra1--1--1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": true
+    },
+    "fuori": [
+      -8.558568954467773,
+      0.8487619161605835,
+      -10.305566787719727
+    ],
+    "possesso": 1,
+    "secondiPrima": 24,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        -8.712862473045815,
+        0.46702760424777157,
+        -9.4913918730931
+      ],
+      "prima": [
+        -19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        1.5599463474733426,
+        4.3565327346387726,
+        -8.23146242850273
+      ]
+    }
+  },
+  {
+    "nome": "portiere-fondo-squadra1--1--1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": true
+    },
+    "fuori": [
+      -12.638650894165039,
+      0.5789676308631897,
+      -3.5152347087860107
+    ],
+    "possesso": 1,
+    "secondiPrima": 24,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        -11.612619386265537,
+        0.4637575576785666,
+        -2.6132477357978345
+      ],
+      "prima": [
+        -19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        -12.517156035121427,
+        1.8215446668074051,
+        -11.003853633434387
+      ]
+    }
+  },
+  {
+    "nome": "portiere-laterale-squadra1--1--1-0.28",
+    "tocco": {
+      "squadra": 0,
+      "portiere": true
+    },
+    "fuori": [
+      -9.635993957519531,
+      0.5616410374641418,
+      -10.337078094482422
+    ],
+    "possesso": 1,
+    "secondiPrima": 24,
+    "secondi": 18,
+    "parata": true,
+    "parataInAttesa": true,
+    "contatto": {
+      "frame": 9,
+      "punto": [
+        -8.812618530408447,
+        0.4637574539154157,
+        -9.613247257088803
+      ],
+      "prima": [
+        -19.49172019958496,
+        -0.5489556789398193,
+        0
+      ],
+      "dopo": [
+        -12.517068724586435,
+        1.8215488357949297,
+        -11.00389843533108
+      ]
+    }
+  },
+  {
+    "nome": "muro-laterale-squadra1--1--1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": false
+    },
+    "fuori": [
+      -8.479602813720703,
+      0.08666452765464783,
+      -10.265621185302734
+    ],
+    "possesso": 0,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        -8.676631927490234,
+        0.6128472089767456,
+        -9.520000457763672
+      ],
+      "prima": [
+        -19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        1.9920437619740303,
+        -4.8240465516187125,
+        -7.538532082529679
+      ]
+    }
+  },
+  {
+    "nome": "muro-fondo-squadra1--1--1-0.12",
+    "tocco": {
+      "squadra": 0,
+      "portiere": false
+    },
+    "fuori": [
+      -12.525303840637207,
+      0.2114270180463791,
+      -5.142718315124512
+    ],
+    "possesso": 0,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": {
+      "frame": 8,
+      "punto": [
+        -11.476635932922363,
+        0.6128472089767456,
+        -2.680000066757202
+      ],
+      "prima": [
+        -19.63739013671875,
+        -0.38896211981773376,
+        0
+      ],
+      "dopo": [
+        -4.9357616953267165,
+        -3.3549078317658676,
+        -11.591295252300453
+      ]
+    }
+  },
+  {
+    "nome": "nessuno-laterale-squadra1--1--1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      -5,
+      0.6130239963531494,
+      -10.30558967590332
+    ],
+    "possesso": 0,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  },
+  {
+    "nome": "nessuno-fondo-squadra1--1--1-0",
+    "tocco": {
+      "squadra": null,
+      "portiere": false
+    },
+    "fuori": [
+      -12.755997657775879,
+      0.5549076795578003,
+      -2.680000066757202
+    ],
+    "possesso": 0,
+    "secondiPrima": 24,
+    "secondi": 28,
+    "parata": false,
+    "parataInAttesa": false,
+    "contatto": null
+  }
+]

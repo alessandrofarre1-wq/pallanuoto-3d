@@ -298,7 +298,9 @@ export function doShoot(p,power,lob,aimZ,o){
   const t=p.team, gx=goalX(t), gk=other(t).players[0];
   // La quadrella resta dentro l'ingombro utile della porta prima dell'errore
   // personale; la direzione manuale conserva la stessa scala e priorità.
-  const forte=!lob&&power>=T.forteDa&&!o.speciale&&!o.polso&&!o.torsione;
+  // Su rigore la potenza non impone sempre la stessa quadrella alta: restano
+  // disponibili bersagli bassi e alti, con la medesima velocità e precisione.
+  const forte=game.penalty!==p&&!lob&&power>=T.forteDa&&!o.speciale&&!o.polso&&!o.torsione;
   let az = aimZ!=null ? clamp(aimZ*1.28,-1.28,1.28) : -Math.sign(gk.z||(rnd()-0.5))*(forte?T.quadrellaZ+rnd()*T.quadrellaLarghezza:0.85+rnd()*0.38);
   let ay = lob ? 0.55 : forte?T.quadrellaY+rnd()*T.quadrellaAltezza:0.15+rnd()*0.55;
   // TIRO BASSO CHE RIMBALZA (Berlino 2018: in parità i tiri bassi e quelli che toccano l'acqua davanti alla porta rendono di più;

@@ -1,0 +1,20 @@
+
+> pallanuoto-3d@0.72.0 sezione1
+> node tests/sezione1.mjs --no-build
+
+✓ tiro fuori: la palla vola oltre la linea fino a 14.9 m (linea a 12,5)
+✓ tiro fuori: Ripresa: Fuori! Rimessa dal portiere  → palla al portiere USA
+✓ deviata sopra la traversa dal portiere: vola fino a 14.9 m · Ripresa: Tiro d'angolo 
+✓ passaggio della difesa verso il proprio portiere oltre la linea di fondo: Ripresa: Tiro d'angolo  → palla al giocatore ITA
+✓ tiro deviato fuori da un difensore di movimento (art. 13.1.2.2.3): Ripresa: Fuori! Rimessa dal portiere  → palla al portiere USA
+✓ passaggio dell'attacco oltre la linea di fondo: Ripresa: Fuori! Rimessa dal portiere  → palla al portiere USA
+✓ Cambia: passa al compagno più vicino alla palla in 6 prove su 6 (metà durante un gesto)
+✓ contatto frontale a 2 m/s: fallo in attacco 14 volte su 40 (non sempre)
+✓ contatto di lato: 0 falli in attacco su 40
+
+Sezione 1: tutte le prove superate
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

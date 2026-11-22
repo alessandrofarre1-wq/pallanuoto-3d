@@ -62,7 +62,7 @@ export function render(dt,now){
   if(ctrl&&ball.holder===ctrl&&!ctrl.isGK&&game.state==='play'&&(ctrl.charging||(ctrl.act&&!ctrl.act.done&&ctrl.act.kind!=='pass'&&ctrl.act.kind!=='fake'))){
     const gk=teams[1-ctrl.team.idx].players[0];
     const potenza=ctrl.charging?Math.min(1,(ctrl.chargeT||0)/0.9):(ctrl.act?.potenza||0);
-    const tipo=ctrl.act?.kind||'shot',forte=potenza>=TIRO.forteDa&&!['lob','polso','torsione','schizzo','colonnello'].includes(tipo);
+    const tipo=ctrl.act?.kind||'shot',forte=game.penalty!==ctrl&&potenza>=TIRO.forteDa&&!['lob','polso','torsione','schizzo','colonnello'].includes(tipo);
     const az=Math.abs(inp.z)>0.3 ? clamp(inp.z*1.28,-1.28,1.28) : -Math.sign(gk.z||1)*(forte?TIRO.quadrellaZ+TIRO.quadrellaLarghezza/2:1.04);
     const ay=tipo==='lob'?0.55:forte?TIRO.quadrellaY+TIRO.quadrellaAltezza/2:0.425;
     mirino.visible=true; mirino.position.set(HL*ctrl.team.dir,ay,az);
