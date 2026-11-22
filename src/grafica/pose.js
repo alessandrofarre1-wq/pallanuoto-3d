@@ -10,6 +10,7 @@ import { allPlayers, ball, fight, game, goalX } from '../stato.js';
 import { shotKind } from '../tiri.js';
 import { braccioMuro, braccioVerso } from '../muro.js';
 import { visoGiocatore } from './espressioni.js';
+import { aggiornaMani } from './mani.js';
 import { puoMuoversiSuFallo } from '../gioco-fermo.js';
 import { conservaGestoVista, frustaVista, preparaGestoVista, raccordaGestoVista, smussoGestoVista } from './gesto-vista.js';
 import { raggioVistaPalla } from './dimensioni-palla.js';
@@ -647,7 +648,7 @@ export function updateRig(p,dt,t){
     p.pallaAcquaVista=(p.pallaAcquaVista||0)+((T.pallaInAcqua||0)-(p.pallaAcquaVista||0))*kb; T.pallaInAcqua=p.pallaAcquaVista; }
   { const k=1-Math.exp(-dt*7); p.testaGiro=(p.testaGiro||0)+((T.testaGiro||0)-(p.testaGiro||0))*k; T.testaGiro=p.testaGiro; }
   conservaGestoVista(gestoVista,Jv,T);
-  if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)) muoviCorpo(R,Jv,T,dt); }
+  if(R.corpo){ aggiornaNumero(R,p.num); if(!(window.__pallanuoto&&window.__pallanuoto.senzaCorpi)){ muoviCorpo(R,Jv,T,dt); aggiornaMani(R.corpo.mani,p,T,dt); } }
   else {
     setSeg(R.torso,J.hip,J.chest); R.chest.position.set(J.chest[0],J.chest[1],J.chest[2]); R.pelvis.position.set(J.hip[0],J.hip[1],J.hip[2]);
     setSeg(R.bar,J.sL,J.sR); R.shR.position.set(J.sR[0],J.sR[1],J.sR[2]); R.shL.position.set(J.sL[0],J.sL[1],J.sL[2]);

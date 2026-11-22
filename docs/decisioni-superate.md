@@ -3,6 +3,15 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.73
+
+- Mani unite senza falangi → mani anatomiche con 30 falangi e polso raccordato, derivate da fonte CC0; corpo, 24 rest e 18 morph del volto v0.72 conservati.
+- Undici componenti per osso nel replay → per le nuove falangi si salvano quattro componenti di rotazione; posizione, scala e visibilità locali sono costanti. Durata, campionamento e limite di 24 MiB conservati.
+- Test costumi legato a 9042/2800 triangoli esatti → confronto con la geometria ufficiale del GLB e della riserva, conservando i massimi storici 9042/2800, 69 chiamate/148.734 triangoli e 14 corpi completi.
+- Ale ha fermato il tentativo facciale e poi chiesto di conservare mani, polsi e movimenti validi. Questa versione esclude ogni nuovo volto; nuoto e tiro già uniti nella v0.72 restano in vigore. Il GLB Plask rimane separato.
+
+Dati finali e limiti nel [rapporto v0.73](versioni/v073-mani-polsi.md).
+
 ## v0.72
 - Preset automatico quadrella alta anche su ogni rigore≥0,8 → sui rigori potenza e scelta di bersaglio vengono separate: distribuzione naturale alta/bassa/laterale, mirino coerente, precisione/velocità/lettura0,7 conservate. Il gigante precedente mascherava237/240gol con la scala corretta; test240rigori ripetuto con soglia70–86% invariata. In azione il forte alle quadrelle resta.
 - Verifica visuale sempre con nuova simulazione completa → se `prove` ha appena validato gioco/gambe sulla stessa build, `aspetto --solo-foto` completa le sei viste senza ripetere quella partita. I due esiti restano separati nei log.

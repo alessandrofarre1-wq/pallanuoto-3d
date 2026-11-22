@@ -1,6 +1,6 @@
 # Documenti di WATERPOLO 7
 
-Versione corrente **v0.72**: [proporzioni, tiro e rimesse](versioni/v072-proporzioni-tiro-rimesse.md), [dati e verifiche](verifiche/v072/README.md), [confronto tiro](immagini/v072/tiro-prima-dopo.png).
+Versione corrente **v0.73**: [mani e polsi](versioni/v073-mani-polsi.md), [verifiche](verifiche/v073/README.md). Proporzioni e movimenti del tiro già uniti nella [v0.72](versioni/v072-proporzioni-tiro-rimesse.md).
 
 
 | Dove | Cosa c'è |

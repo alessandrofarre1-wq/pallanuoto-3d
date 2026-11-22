@@ -1,0 +1,97 @@
+{
+  "sha256": "8fd658a8a89ad0dd242100133daf920eb6cfa492af8f39e95f6ff92124ba6745",
+  "triangles": 8366,
+  "vertices": 8599,
+  "joints": 54,
+  "bindError": 2.860768248779243e-7,
+  "bounds": [
+    [
+      -0.8963014086021059,
+      0.8965159626183893
+    ],
+    [
+      -0.0001720586878946051,
+      1.8005706071853638
+    ],
+    [
+      -0.18005249283393818,
+      0.17998151411302388
+    ]
+  ],
+  "fingers": {
+    "leftHandThumb1": 105,
+    "leftHandThumb2": 95,
+    "leftHandThumb3": 60,
+    "leftHandIndex1": 88,
+    "leftHandIndex2": 55,
+    "leftHandIndex3": 49,
+    "leftHandMiddle1": 130,
+    "leftHandMiddle2": 52,
+    "leftHandMiddle3": 54,
+    "leftHandRing1": 119,
+    "leftHandRing2": 47,
+    "leftHandRing3": 42,
+    "leftHandPinky1": 84,
+    "leftHandPinky2": 57,
+    "leftHandPinky3": 49,
+    "rightHandThumb1": 108,
+    "rightHandThumb2": 84,
+    "rightHandThumb3": 48,
+    "rightHandIndex1": 84,
+    "rightHandIndex2": 51,
+    "rightHandIndex3": 49,
+    "rightHandMiddle1": 118,
+    "rightHandMiddle2": 44,
+    "rightHandMiddle3": 49,
+    "rightHandRing1": 103,
+    "rightHandRing2": 42,
+    "rightHandRing3": 39,
+    "rightHandPinky1": 79,
+    "rightHandPinky2": 52,
+    "rightHandPinky3": 50
+  },
+  "fingerProbes": [
+    {
+      "side": "left",
+      "ownMax": 0.035931785835052195,
+      "otherMax": 0,
+      "bodyMax": 0,
+      "delta": [
+        -0.011190444374077901,
+        -0.001182206477315484,
+        0.013845586775603911
+      ]
+    },
+    {
+      "side": "right",
+      "ownMax": 0.03593183391045106,
+      "otherMax": 0,
+      "bodyMax": 0,
+      "delta": [
+        0.011190500021658334,
+        -0.001182212356164447,
+        0.013845682751009163
+      ]
+    }
+  ],
+  "morphOriginals": {
+    "count": 18,
+    "activeRuntimeVertices": 3663,
+    "activeOriginalVertices": 3665
+  },
+  "controller": [
+    {
+      "mano": "D",
+      "heldAngle": 0.12999956213958452,
+      "firstReleaseStep": 0.03990330089503131,
+      "releaseResidual": 0
+    },
+    {
+      "mano": "S",
+      "heldAngle": 0.12999956213958452,
+      "firstReleaseStep": 0.03990330089503131,
+      "releaseResidual": 0
+    }
+  ],
+  "limite": "Verifica Node indipendente di mesh/skin e controller mani; nessuna verifica della mimica facciale, nessun rendering o misura FPS."
+}

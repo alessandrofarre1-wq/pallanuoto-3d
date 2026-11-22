@@ -1,0 +1,24 @@
+{
+  "sha256": "6eef14399ddb8f78bb872e24ab898ba6a609d1f37961bb69adbceb00a233ce28",
+  "triangles": 8366,
+  "vertices": 8599,
+  "minimumArea2": 1.0095249081132351e-08,
+  "zeroAreaTriangles": 0,
+  "allNodesExactlyEqual": true,
+  "nonWristTrianglesExactlyEqual": true,
+  "wristTopology": {
+    "1": {
+      "geometricEdges": 130,
+      "allEdgesIncidentFaces": 2,
+      "duplicateGroups": 44,
+      "maxDuplicateSkinDifference": 0
+    },
+    "-1": {
+      "geometricEdges": 130,
+      "allEdgesIncidentFaces": 2,
+      "duplicateGroups": 47,
+      "maxDuplicateSkinDifference": 0
+    }
+  },
+  "gpuBudgetPreserved": true
+}

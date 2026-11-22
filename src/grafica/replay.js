@@ -91,7 +91,11 @@ function preparaStruttura(){
   const visti=new Set(), matVisti=new Set(), scheletriVisti=new Set();
   const aggiungi=o=>{
     if(visti.has(o)) return; visti.add(o);
-    nodi.push({oggetto:o,offset:stride}); stride+=TRASFORMA;
+    // Le falangi nuove ruotano su centri fissi: posizione, scala e visibilità
+    // locali non cambiano mai. Registrare la sola rotazione conserva la posa
+    // completa, senza duplicare sette valori costanti per osso e campione.
+    const soloRotazione=o.isBone&&/^(left|right)Hand(Thumb|Index|Middle|Ring|Pinky)[123]$/.test(o.name);
+    nodi.push({oggetto:o,offset:stride,soloRotazione}); stride+=soloRotazione?4:TRASFORMA;
     if(o.morphTargetInfluences?.length) aggiungiNumerico(o.morphTargetInfluences,Array.from(o.morphTargetInfluences,(_,i)=>i));
     if(o.skeleton&&!scheletriVisti.has(o.skeleton)){
       scheletriVisti.add(o.skeleton);
@@ -162,6 +166,7 @@ function assegnaMappa(a,i,tex){
 function cattura(dest,base){
   for(const n of nodi){
     const o=n.oggetto, k=base+n.offset;
+    if(n.soloRotazione){ o.quaternion.toArray(dest,k); continue; }
     o.position.toArray(dest,k); o.quaternion.toArray(dest,k+3); o.scale.toArray(dest,k+7); dest[k+10]=o.visible?1:0;
   }
   for(const n of numerici) for(let j=0;j<n.chiavi.length;j++) dest[base+n.offset+j]=n.oggetto[n.chiavi[j]];
@@ -271,6 +276,7 @@ function applica(a,b,k){
   const pa=a*stride, pb=b*stride, scelta=k<0.5?pa:pb;
   for(const n of nodi){
     const o=n.oggetto, ia=pa+n.offset, ib=pb+n.offset;
+    if(n.soloRotazione){ qA.fromArray(clip,ia); qB.fromArray(clip,ib); o.quaternion.copy(qA.slerp(qB,k)); continue; }
     o.position.set(THREE.MathUtils.lerp(clip[ia],clip[ib],k),THREE.MathUtils.lerp(clip[ia+1],clip[ib+1],k),THREE.MathUtils.lerp(clip[ia+2],clip[ib+2],k));
     qA.fromArray(clip,ia+3); qB.fromArray(clip,ib+3); o.quaternion.copy(qA.slerp(qB,k));
     o.scale.set(THREE.MathUtils.lerp(clip[ia+7],clip[ib+7],k),THREE.MathUtils.lerp(clip[ia+8],clip[ib+8],k),THREE.MathUtils.lerp(clip[ia+9],clip[ib+9],k));
@@ -468,7 +474,8 @@ export function disegnaClipReplay(progresso,info,draw){
   }finally{
     for(let i=0;i<nodi.length;i++){
       const n=nodi[i], o=n.oggetto, j=n.offset;
-      o.position.fromArray(attuale,j); o.quaternion.fromArray(attuale,j+3); o.scale.fromArray(attuale,j+7); o.visible=!!attuale[j+10];
+      if(n.soloRotazione)o.quaternion.fromArray(attuale,j);
+      else{ o.position.fromArray(attuale,j); o.quaternion.fromArray(attuale,j+3); o.scale.fromArray(attuale,j+7); o.visible=!!attuale[j+10]; }
       o.matrix.fromArray(matrici,i*32); o.matrixWorld.fromArray(matrici,i*32+16); o.matrixWorldNeedsUpdate=!!flags[i];
     }
     for(const n of numerici) for(let j=0;j<n.chiavi.length;j++) n.oggetto[n.chiavi[j]]=attuale[n.offset+j];
@@ -494,7 +501,7 @@ export function disegnaClipReplay(progresso,info,draw){
 export function diagnosticaReplay(){
   return {
     count, fotogrammi:count, clip:countClip, nodi:nodi.length, textures:textureCongelate.length,
-    strideFloats:stride, effettiRegistrati:istanze.length,
+    strideFloats:stride, falangiCompatte:nodi.filter(n=>n.soloRotazione).length, effettiRegistrati:istanze.length,
     eventi:{...eventi},marcatoreIdentificato:ultimoDisegno?.marcatoreIdentificato??(countClip>0&&identitaCorretta(0)),faseCamera:ultimoDisegno?.faseCamera||null,
     durata:count>1?tempi[(testa-1+CAPACITA)%CAPACITA]-tempi[(testa-count+CAPACITA)%CAPACITA]:0,
     durataClip:countClip>1?tempiClip[countClip-1]-tempiClip[0]:0,

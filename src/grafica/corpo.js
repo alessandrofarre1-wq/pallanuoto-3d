@@ -8,6 +8,7 @@ import FUMETTO from './modelli/pallanuotista.js';
 import riservaIndici from './modelli/riserva-indici.json';
 import { sottAcqua } from './sottacqua.js';
 import { preparaViso } from './espressioni.js';
+import { preparaMani } from './mani.js';
 import { valoriDisegno } from '../aspetto.js';
 import { atlanteCostumi, profiloCostume } from './costumi.js';
 
@@ -125,6 +126,7 @@ function attaccaFumetto(R,colori,num,seme){
   const n=new THREE.Mesh(baseF.numeroGeo,new THREE.MeshStandardMaterial({map:tex,transparent:true,roughness:0.55,polygonOffset:true,polygonOffsetFactor:-2,depthWrite:false}));
   n.renderOrder=2; K.ossa.testa.add(n);
   R.g.add(radice);
+  K.mani=preparaMani(radice);
   // Tutti i riferimenti sono intrinseci al bind, prima che bacino e colonna ricevano la prima posa.
   radice.updateWorldMatrix(true,true);
   K.bracci={

@@ -9,6 +9,8 @@ const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const arg=(k,d)=>process.argv.find(a=>a.startsWith(`--${k}=`))?.slice(k.length+3)||d;
 const USCITA=arg('uscita','/tmp/pallanuoto-costumi-v044'); fs.mkdirSync(USCITA,{recursive:true});
 const DIST=arg('dist','dist');
+const rig=JSON.parse(fs.readFileSync(path.join(ROOT,'src/grafica/modelli/riserva-indici.json'),'utf8'));
+if(rig.triangoliOriginali>9042||rig.triangoli>2800)throw new Error('Budget storico dei corpi e delle riserve superato');
 const codici=JSON.parse(fs.readFileSync(path.join(ROOT,'src/dati/squadre.json'),'utf8')).squadre.map(s=>s.codice);
 if(!process.argv.includes('--no-build')) await build({root:ROOT,logLevel:'warn',build:{outDir:DIST,emptyOutDir:true}});
 const server=await preview({root:ROOT,logLevel:'warn',build:{outDir:DIST},preview:{port:+arg('porta','4344'),host:'127.0.0.1'}});
@@ -49,7 +51,7 @@ try{
   prova(risultati.atlante.larghezza<=1024&&risultati.atlante.altezza<=1024,'atlante condiviso entro 1024×1024');
   prova(risultati.atlante.nazionali.length===24&&risultati.atlante.nazionali.every(n=>n.colori>=2&&n.uniformi&&n.cuffie&&n.hud),'24 nazionali: bandiere disegnate, profilo assegnato, calottine e colori HUD corretti');
   prova(new Set(risultati.atlante.nazionali.map(n=>n.hash)).size===24,'24 bandiere distinte, senza celle vuote o ripetute');
-  risultati.matrice=await pg.evaluate(()=>{
+  risultati.matrice=await pg.evaluate(triangoli=>{
     const H=window.__pallanuoto,matrice=[],forme=[];
     document.getElementById('goBtn').click();window.__passi(2);
     for(const cod of ['ITA','GRE'])for(const lato of [0,1])for(const mano of ['D','S']){
@@ -58,17 +60,17 @@ try{
       const disegnati=new Set();
       for(const p of H.allPlayers){p.mano=mano;p.mesh.g.visible=true;p.excluded=false;p.mesh.corpo.radice.traverse(o=>{if(o.isSkinnedMesh)o.onAfterRender=()=>disegnati.add(p.uid);});}
       window.__passi(1,true);
-      const verificati=H.allPlayers.every(p=>{const C=p.mesh.corpo;let m;C.radice.traverse(o=>{if(o.isSkinnedMesh)m=o;});forme.push(m.geometry.index.count/3);return C.costume.codice===p.team.codice&&C.u.uCostumi.value===H.costumi.atlante&&m.geometry.index.count/3===9042;});
+      const verificati=H.allPlayers.every(p=>{const C=p.mesh.corpo;let m;C.radice.traverse(o=>{if(o.isSkinnedMesh)m=o;});forme.push(m.geometry.index.count/3);return C.costume.codice===p.team.codice&&C.u.uCostumi.value===H.costumi.atlante&&m.geometry.index.count/3===triangoli;});
       matrice.push({cod,lato,mano,corpi:disegnati.size,verificati});
       for(const p of H.allPlayers)p.mesh.corpo.radice.traverse(o=>{if(o.isSkinnedMesh)o.onAfterRender=()=>{};});
     }
     H.scegliSquadre('ITA','HUN');const prima=H.teams[0].players[3].mesh.corpo.u.uBandiera.value.toArray();
     H.scegliSquadre('HUN','ITA');const dopo=H.teams[1].players[3].mesh.corpo.u.uBandiera.value.toArray();
     return {casi:matrice,stessaNazioneDueLati:JSON.stringify(prima)===JSON.stringify(dopo)};
-  });
+  },rig.triangoliOriginali);
   prova(risultati.matrice.casi.every(c=>c.corpi===14&&c.verificati),'due nazioni × due mani × due lati: tutti i 14 corpi completi disegnati');
   prova(risultati.matrice.stessaNazioneDueLati,'stessa nazionale sui due lati: costume identico, calottina diversa');
-  risultati.cambi=await pg.evaluate(()=>{
+  risultati.cambi=await pg.evaluate(triangoliRiserva=>{
     const H=window.__pallanuoto;
     H.scegliSquadre('BRA','USA');H.game.state='stop';H.game.timer=10;H.game.after=null;H.game.cambiLiberi=true;
     const t=H.teams[0],gk=t.players[0],ris=t.rosa.find(g=>!g.inAcqua&&g.ruolo===0),numero=ris.num;
@@ -78,13 +80,13 @@ try{
     p.excluded=true;p.alPozzetto=true;p.exclUntil=H.game.time+20;p.pf=0;H.panchina.chiediCambio(t,p,g,true);window.__passi(1);
     const pozzetto=p.num===g.num&&p.mesh.corpo.costume.codice==='BRA'&&p.mesh.corpo.u.uCal.value.getHex()===0xf4f4f4;
     let comparse=0,corrette=true;const scene=p.mesh.g.parent;scene.traverse(o=>{
-      if(!o.isSkinnedMesh||o.geometry.index.count/3!==2800)return;
+      if(!o.isSkinnedMesh||o.geometry.index.count/3!==triangoliRiserva)return;
       for(let z=o;z;z=z.parent)if(!z.visible)return;
       const shader={uniforms:{},vertexShader:'',fragmentShader:''};o.material.onBeforeCompile(shader,H.renderer);comparse++;
       corrette&&=shader.uniforms.uBandiera.value.toArray().every((v,i)=>v===H.costumi.profilo('BRA').rettangolo[i]);
     });
     return {portiere,pozzetto,corrette,comparse};
-  });
+  },rig.triangoli);
   prova(risultati.cambi.portiere&&risultati.cambi.pozzetto&&risultati.cambi.corrette&&risultati.cambi.comparse===1,'bandiera conservata dopo cambio portiere e cambio dal pozzetto, compresa la riserva visibile');
   // Fotografie di vestibilità: lo stesso corpo è portato sopra il pelo dell'acqua per leggere tutto il tessuto.
   await pg.addStyleTag({content:'body>:not(canvas):not(script):not(style){display:none!important}'});
@@ -102,7 +104,7 @@ try{
   risultati.budget=[];
   for(const viewport of [{width:844,height:390},{width:667,height:375}]){
     const p=await apri(viewport);
-    const b=await p.evaluate(()=>{
+    const b=await p.evaluate(triangoliRiserva=>{
       const H=window.__pallanuoto;H.scegliSquadre('ITA','HUN');document.getElementById('goBtn').click();const campioni=[];
       for(let f=0;f<1800;f++){window.__passi(1);if(f%300===299){window.__passi(1,true);campioni.push({fase:'azione',...H.renderer.info.render});}}
       H.game.state='play';H.game.clock=300;H.game.after=null;H.game.cambiLiberi=false;
@@ -111,10 +113,10 @@ try{
         const p=t.players.find(p=>!p.isGK&&!p.excluded&&H.ball.holder!==p),g=t.rosa.find(g=>!g.inAcqua&&g.ruolo!==0&&!g.fuori);H.panchina.chiediCambio(t,p,g,true);
       }
       window.__passi(1,true);campioni.push({fase:'doppi-cambi',...H.renderer.info.render});
-      let doppi=0;H.allPlayers[0].mesh.g.parent.traverse(o=>{if(!o.isSkinnedMesh||o.geometry.index.count/3!==2800)return;for(let z=o;z;z=z.parent)if(!z.visible)return;doppi++;});
+      let doppi=0;H.allPlayers[0].mesh.g.parent.traverse(o=>{if(!o.isSkinnedMesh||o.geometry.index.count/3!==triangoliRiserva)return;for(let z=o;z;z=z.parent)if(!z.visible)return;doppi++;});
       for(let f=0;f<180;f++){window.__passi(1);if(f%12===11){window.__passi(1,true);campioni.push({fase:'doppi-cambi',...H.renderer.info.render});}}
       return {dpr:H.renderer.getPixelRatio(),doppi,calls:Math.max(...campioni.map(c=>c.calls)),triangles:Math.max(...campioni.map(c=>c.triangles)),campioni};
-    });
+    },rig.triangoli);
     risultati.budget.push({viewport,...b});prova(b.doppi===2&&b.calls<=69&&b.triangles<=148734,`iPhone ${viewport.width}: ${b.calls} chiamate / ${b.triangles} triangoli, ${b.doppi} riserve visibili (limiti v0.43: 69 / 148734)`);
     await p.context().close();
   }

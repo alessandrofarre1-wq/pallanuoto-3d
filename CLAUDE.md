@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.72). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.73). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -172,6 +172,16 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
+## Stato v0.73 — mani e polsi
+
+Base main `1452f1a` (PR #63 v0.72 unita, CI `45001334329` riuscita). Dopo aver fermato il tentativo sul volto, Ale ha chiesto di conservare mani, polsi e movimenti validi. Il ramo `codex/v073-mani-polsi` integra soltanto mani/polsi: volto, 18 morph e controller delle espressioni restano quelli pubblicati nella v0.72. Il prototipo facciale locale `/workspace/pallanuoto-v073` è sospeso e non fa parte della PR.
+
+File: `grafica/mani`, collegamenti in `corpo`/`pose`, modello GLB/configurazione/riserva, registrazione delle nuove falangi in `grafica/replay`; builder, fonti CC0, prova indipendente del rig e adattamento del test costumi ai conteggi ufficiali. Modello con 54 joint (24 originali e 30 falangi), 8366 triangoli e 8599 vertici; un'unica primitiva/materiale. Le 24 rest e inversebind originali sono conservate. Cinque dita indipendenti, polso assottigliato e raccordato; marker di presa misurati. Controller soltanto visuale: nessuna modifica a `computePose`, `J`, `ballW`, regole o IA. Nuoto e tiro v0.72 restano in vigore.
+
+Decisione cambiata: il modello del concept mantiene corpo e volto, ma usa ora mani anatomiche MakeHuman CC0. Il replay registra soltanto la rotazione delle nuove falangi, con posizione/scala/visibilità locali costanti, per conservare il limite storico di 24 MiB. Misura completa finale: replay 22.009.580 byte, massimo 49 chiamate/136.678 triangoli. Due cambi simultanei: 66 chiamate/138.686 triangoli, 14 corpi completi. Il GLB cresce da 1.101.624 a 4.523.896 byte: nessuna misura di caricamento su rete mobile. Locale: lint PASS; prove 54/54 PASS; verifica immagini finale PASS (partite=0); aspetto completo PASS in due parti sulla stessa build, sei viste ispezionate e gambe fuori 0/7684, 0/5144, 0/1200. Sei partite standard soltanto nella CI finale; esito dello SHA pubblicato nella PR. Numeri finali, file e provenienza nel [rapporto v0.73](docs/versioni/v073-mani-polsi.md).
+
+Non fatto: nuovo volto/rig facciale (sospeso da Ale), clip Plask importate, FPS su iPhone fisico, nuova revisione generale dei movimenti o del bilanciamento. Il GLB Plask consegnato rimane separato. Nessun merge o deploy.
+
 ## Stato v0.72 — proporzioni, tiro e rimesse
 
 Base main `7827854` (PR62 v0.71 unita, CI main verde44991043277). Richiesta nuova di Ale: palla piccola rispetto ai corpi, articolo sul tiro e rimessa laterale dopo deviazione del portiere. Nessun ritorno ai vecchi checkpoint.
@@ -189,7 +199,7 @@ V0.70 (PR61, chiamate/boa/raccordi), v0.69 (PR60, regole e continuità sui falli
 Questi sono dati storici della v0.71, non misure della nuova scala v0.72. Confronto finale8+8gare ITA–HUN, tempi480s/stessi semi: gol16,125→17,375,tiri41,375→43,250,conversione38,97→40,17%,parate17,500→19,188,rigori1,750→1,688. **Solo4/15voci in fascia contro5/15: bilanciamento aperto.** Superiorità40,32→32,09%;Italia11,750→10,625,Ungheria20,500→24,125: divario cresciuto, non nasconderlo con precisione/potenza. Azioni71,38, parità13,67s,mano1,012s,palla sola max0,0333s. Dati e limiti nel rapporto v0.71 e `bilancio-finale.json`. Il candidato precedente15,375gol/23,13%superiorità è superato e archiviato con fase distinta. Non sono una certificazione contro l’utente umano o tutte le nazionali.
 
 ## Cosa resta da fare
-- Nuova richiesta di Ale22/11, **dopo questa PR**: preparare un GLB separato per Plask con scheletro più completo, dita realmente pesate e giunture migliorate; verificare compatibilità Plask. Non sostituire automaticamente il modello leggero del gioco e non attribuire questa attività alla v0.72.
+- GLB Plask separato con mani corrette consegnato. Ale ha poi autorizzato una derivazione leggera per il gioco: mani/polsi v0.73. Il successivo tentativo di rifare il volto è stato sospeso perché artisticamente inadeguato; nessun nuovo volto in questa PR.
 - Gioco: conclusione in superiorità e divario ITA–HUN peggiorati nel campione v0.71 (numeri sopra), da diagnosticare con una sonda dedicata; azioni ancora corte (13,67s invece di21,71,38 invece di50): non dipende dagli scatti in ripartenza (v0.67), l'azione
   finisce presto per palle perse, espulsioni e falli; superiorità al 40% (reale 52%), da ritarare con i difensori meno stanchi
   (v0.67); il contatto costa 0,02 di stamina al secondo, più dello scatto; falli fischiati saliti a 35 per squadra a partita
