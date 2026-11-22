@@ -60,8 +60,8 @@
           "nome": "Ferrero",
           "portiere": false,
           "altezzaBindWorld": 1.8597634218347723,
-          "spalle": 0.3925740745677503,
-          "aperturaMani": 1.2586147155931289
+          "spalle": 0.4243865309753605,
+          "aperturaMani": 1.1269841003158565
         },
         {
           "nome": "Cannella",
@@ -127,10 +127,10 @@
           "aperturaMani": 1.1940844802347417
         }
       ],
-      "larghezzaTesta": 0.27978705132623816,
-      "rapportoPallaTesta": 0.7906012918449344,
-      "distanzaPalmo": 0.11100802376226677,
-      "pixelCss": 7.255818896128522,
+      "larghezzaTesta": 0.2797870513262388,
+      "rapportoPallaTesta": 0.7906012918449326,
+      "distanzaPalmo": 0.1109963353422098,
+      "pixelCss": 7.245615011140895,
       "corpi": 14,
       "gpu": {
         "calls": 63,
@@ -196,8 +196,8 @@
           "nome": "Ferrero",
           "portiere": false,
           "altezzaBindWorld": 1.8597634218347723,
-          "spalle": 0.39490466231277427,
-          "aperturaMani": 1.2644265949293776
+          "spalle": 0.42621914097746566,
+          "aperturaMani": 1.1326119923277582
         },
         {
           "nome": "Cannella",
@@ -263,10 +263,10 @@
           "aperturaMani": 1.19408448030651
         }
       ],
-      "larghezzaTesta": 0.27978705132623827,
-      "rapportoPallaTesta": 0.7906012918449341,
-      "distanzaPalmo": 0.11100129591734367,
-      "pixelCss": 6.865206361821579,
+      "larghezzaTesta": 0.27978705132623716,
+      "rapportoPallaTesta": 0.7906012918449372,
+      "distanzaPalmo": 0.1109877783890984,
+      "pixelCss": 6.8628897268775795,
       "corpi": 14,
       "gpu": {
         "calls": 63,
@@ -332,8 +332,8 @@
           "nome": "Ferrero",
           "portiere": false,
           "altezzaBindWorld": 1.8597634218347723,
-          "spalle": 0.3925740745677503,
-          "aperturaMani": 1.2586147155931289
+          "spalle": 0.4243865309753605,
+          "aperturaMani": 1.1269841003158565
         },
         {
           "nome": "Cannella",
@@ -399,10 +399,10 @@
           "aperturaMani": 1.1940844802347417
         }
       ],
-      "larghezzaTesta": 0.27978705132623816,
-      "rapportoPallaTesta": 0.7906012918449344,
-      "distanzaPalmo": 0.11100802376226677,
-      "pixelCss": 6.976748938585165,
+      "larghezzaTesta": 0.2797870513262388,
+      "rapportoPallaTesta": 0.7906012918449326,
+      "distanzaPalmo": 0.1109963353422098,
+      "pixelCss": 6.966937510712392,
       "corpi": 14,
       "gpu": {
         "calls": 63,
@@ -468,8 +468,8 @@
           "nome": "Ferrero",
           "portiere": false,
           "altezzaBindWorld": 1.8597634218347723,
-          "spalle": 0.39490466231277427,
-          "aperturaMani": 1.2644265949293776
+          "spalle": 0.42621914097746566,
+          "aperturaMani": 1.1326119923277582
         },
         {
           "nome": "Cannella",
@@ -535,10 +535,10 @@
           "aperturaMani": 1.19408448030651
         }
       ],
-      "larghezzaTesta": 0.27978705132623827,
-      "rapportoPallaTesta": 0.7906012918449341,
-      "distanzaPalmo": 0.11100129591734367,
-      "pixelCss": 6.60115996328995,
+      "larghezzaTesta": 0.27978705132623716,
+      "rapportoPallaTesta": 0.7906012918449372,
+      "distanzaPalmo": 0.1109877783890984,
+      "pixelCss": 6.598932429689963,
       "corpi": 14,
       "gpu": {
         "calls": 63,

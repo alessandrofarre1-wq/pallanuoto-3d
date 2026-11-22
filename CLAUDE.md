@@ -177,7 +177,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 
 Base main9e95c00(PR64 unita, CI45014844635 verde), ramo `codex/v074-tiro-plask`. Richiesta più recente: il modello di Ale si conserva; la mano rovesciata si corregge applicando le pose, volto rinviato. GLB runtime SHA2568fd658a8… invariato. Intera catena di52ossa Plask sul modello esistente, compresi piedi/punte e dita; nessuna nuova mesh/skin/rig. File e limiti nel [rapporto v0.74](docs/versioni/v074-tiro-plask.md), misure/esiti reali in [verifiche](docs/verifiche/v074/README.md). Tiro classico/torsione, non tutti gli speciali. Originale e video con provenienza esplicita; tutta la preparazione/gesto/recupero conservati (415pose), esclusa solo la Tpose artificiale iniziale.
 
-Confronto fisico prima/dopo identico in4casi,24pose/18foto; mano esultanza corretta solo nel disegno,60campioni nei due sensi. La CI finale dell’ultimo SHA nellaPR determina la prontezza al merge; non fare merge/deploy. Nessuna nuova prova o modifica facciale. Non reinterpretare il vecchio incarico di aggiungere ossa come permesso di stravolgere il modello: la richiesta più recente lo vieta.
+PrimaCI34comandiPASS poiFAILgomito in carica: ancora5,8→5,9s corretta sullo stesso file di pose, prova gestiPASS109,94°D/S con soglie conservate. Nessun osso alterato. Confronto fisico prima/dopo identico in4casi,24pose/18foto; mano esultanza corretta solo nel disegno,60campioni nei due sensi. La CI finale dell’ultimo SHA nellaPR determina la prontezza al merge; non fare merge/deploy. Nessuna nuova prova o modifica facciale. Non reinterpretare il vecchio incarico di aggiungere ossa come permesso di stravolgere il modello: la richiesta più recente lo vieta.
 
 ## Stato v0.73 — mani e polsi
 

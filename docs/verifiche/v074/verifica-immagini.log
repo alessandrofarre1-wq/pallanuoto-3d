@@ -34,7 +34,7 @@ Partite simulate (0 senza comandi + 0 con un giocatore finto che preme tasti a c
 Screenshot
   ✓ 1-menu.png: 0.01% (scarto medio 0.0 su 255) dei punti diverso (entro la tolleranza)
   ✓ 2-sprint-iniziale.png: 0.44% (scarto medio 0.2 su 255) dei punti diverso (entro la tolleranza)
-  ✓ 3-azione.png: 0.33% (scarto medio 0.3 su 255) dei punti diverso (entro la tolleranza)
+  ✓ 3-azione.png: 0.34% (scarto medio 0.3 su 255) dei punti diverso (entro la tolleranza)
   ✓ 4-iphone-piccolo.png: 0.31% (scarto medio 0.2 su 255) dei punti diverso (entro la tolleranza)
   ✓ 5-iphone-orizzontale.png: 0.25% (scarto medio 0.1 su 255) dei punti diverso (entro la tolleranza)
 

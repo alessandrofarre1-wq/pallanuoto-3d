@@ -20,6 +20,12 @@ function model(){
  for(const [n,v]of Object.entries(names))C.ossa[n]=get(v);R.corpo=C;C.tiroRegistrato=preparaTiroRegistrato(R,C);return R;
 }
 const pose=dati.bones.map(()=>new THREE.Quaternion());let maxFootError=0,maxPalmError=0;
+// La frusta parte dalla vera carica del file, non dal fotogramma ancora disteso.
+campionaPosaRegistrata(dati.source.loadEnd,pose);
+const ua=pose[dati.bones.findIndex(n=>n.target==='upperarm_r')],fa=pose[dati.bones.findIndex(n=>n.target==='lowerarm_r')];
+const upper=new THREE.Vector3(1,0,0).applyQuaternion(ua),fore=new THREE.Vector3(1,0,0).applyQuaternion(fa);
+const gomitoCarica=Math.acos(Math.max(-1,Math.min(1,-upper.dot(fore))))*180/Math.PI;
+assert.ok(gomitoCarica>=55&&gomitoCarica<=115,'fine carica coerente col gomito della clip: '+gomitoCarica);
 for(const manoS of [false,true])for(const carica of [0,.3,.7,1]){
  const R=model(),C=R.corpo,s=C.tiroRegistrato;
  const front=new THREE.Vector3(1,0,0),palmLocal={};

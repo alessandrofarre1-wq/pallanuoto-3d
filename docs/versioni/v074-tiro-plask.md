@@ -24,6 +24,8 @@ Nel primo piano segnalato da Ale, il riferimento del palmo dell’esultanza era 
 
 La [sequenza continua](../filmati/v074-tiro-plask.mp4) mostra32fotogrammi selezionati a circa30Hz: carica, lancio fisico e recupero nella scena isolata del motore, con gambe visibili. [Foglio](../immagini/v074/sequenza-tiro.jpg) ispezionato per intero: non è una partita completa né una registrazione di FPS su telefono.
 
+La prima CI sullo SHA02d0a0d si è fermata dopo34comandi riusciti: gomito in carica142,42° al fotogramma agganciato5,8s, fuori dall’assert55–115°. La curva originale si chiude nel caricamento a5,9s: si corregge soltanto `loadEnd`5,8→5,9, non l’osso o il modello. La prova completa dei gesti passa ora D/S con109,94° nella sua scena. Soglie anatomiche, torsione e polso conservate; nuova regressione verifica che l’ancora della carica abbia il gomito55–115° nella clip. Foto e sequenza sono rigenerate dopo questa correzione; gli esiti precedenti restano distinti dalla fase finale.
+
 La prima verifica delle proporzioni ha evidenziato un errore nella misura: la scatola della testa sulloZ del campo includeva la profondità quando la testa ruotava. `tests/dimensioni-palla-v071.mjs` misura ora negli assi anatomici della testa, in metri e senza togliere la scala. Le soglie0,7–1,0 del rapporto palla/testa e5mm sul palmo restano invariate. Non si corregge il modello per far passare una proiezione sbagliata.
 
 Esiti finali, fase e provenienza delle misure sono in [verifiche/v074](../verifiche/v074/README.md). La CI dell’ultimo SHA pubblicato è la fonte per l’intera suite e le sei partite standard; non si attribuiscono alla v0.74 i numeri della v0.73.

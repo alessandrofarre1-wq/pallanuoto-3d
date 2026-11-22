@@ -2,7 +2,7 @@
 > pallanuoto-3d@0.74.0 tiro-registrato
 > node tests/tiro-registrato.mjs && node tests/esultanza-mano.mjs
 
-PASS tiro completo: 52 ossa, modello intatto, piedi e palmi D/S fedeli alle pose; errori {"maxFootError":2.220446049250313e-16,"maxPalmError":7.771561172376096e-16}
+PASS tiro completo: 52 ossa, modello intatto, piedi e palmi D/S fedeli alle pose; errori {"maxFootError":1.1102230246251565e-16,"maxPalmError":7.771561172376096e-16}
 {"before":null,"samples":60,"minPalmFront":0.9187271710241002,"maxWristDegrees":2.291831180523805}
 PASS mano esultanza: palmo e polso coerenti, entrambi i sensi del campo
 npm notice
