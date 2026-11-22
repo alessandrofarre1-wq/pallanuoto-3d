@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { RAPPORTO_SCALA_PRECEDENTE as scala } from '../scala-grafica.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 export function illuminaArena(renderer,scene){
@@ -37,8 +38,8 @@ export function creaOmbreAcqua(scene){
     for(let i=0;i<ombre.count;i++){
       const g=giocatori[i], visibile=g.mesh.g.visible, o=g.oriz||0;
       q.setFromAxisAngle(su,Math.atan2(-g.fz,g.fx));
-      s.set(visibile?0.45+0.65*o:0,1,visibile?0.38:0);
-      m.compose(p.set(g.x-0.15*g.fx*o,-0.025,g.z-0.15*g.fz*o),q,s);
+      s.set(visibile?(0.45+0.65*o)*scala:0,1,visibile?0.38*scala:0);
+      m.compose(p.set(g.x-0.15*scala*g.fx*o,-0.025,g.z-0.15*scala*g.fz*o),q,s);
       ombre.setMatrixAt(i,m);
     }
     ombre.instanceMatrix.needsUpdate=true;

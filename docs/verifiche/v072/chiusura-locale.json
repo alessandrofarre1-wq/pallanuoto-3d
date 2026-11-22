@@ -1,0 +1,29 @@
+[
+  {
+    "nome": "aspetto-gioco-finale",
+    "codice": 0,
+    "secondi": 187.83,
+    "cmd": [
+      "npm",
+      "run",
+      "aspetto",
+      "--",
+      "/tmp/v072-aspetto-finale",
+      "--no-build",
+      "--solo-gioco",
+      "--salva=docs/verifiche/v072/aspetto-statistiche.json"
+    ]
+  },
+  {
+    "nome": "verifica-finale",
+    "codice": 0,
+    "secondi": 87.98,
+    "cmd": [
+      "npm",
+      "run",
+      "verifica",
+      "--",
+      "--partite=0"
+    ]
+  }
+]

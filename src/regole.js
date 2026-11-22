@@ -256,12 +256,15 @@ export function concludiRigoreFinale(gol,esito){
     p,dettaglio:`${esito==='tempo'?'Sette secondi scaduti · ':''}serie ${serie.gol[0]} – ${serie.gol[1]}${serie.terminati?' · vince '+teams[serie.vincitore].short:''}`,durata:1.8});
   return true;
 }
-export function sideOut(){        // art. 12: palla uscita lateralmente, tiro libero agli avversari di chi l'ha toccata per ultimo
+export function sideOut(){        // WA 18/02/2026, 12.3.1: tiro libero contro l'ultimo tocco; 12.3.1.1: muro su tiro alla difesa
   if(serieAttiva()){ concludiRigoreFinale(false,'fuori'); return; }
-  const t = ball.lastTeam ? other(ball.lastTeam) : teams[0], side=ball.z>=0?1:-1, x=clamp(ball.x,-HL+1,HL-1);
+  // lastTeam conserva chi ha lanciato: una respinta non gli assegna un nuovo possesso.
+  const ultimo=ball.toccoDifesa||ball.lastTeam, muro=ball.daTiro&&ball.toccoDifesa&&!ball.toccoPortiere;
+  const t=muro?ultimo:ultimo?other(ultimo):teams[0], side=ball.z>=0?1:-1, x=clamp(ball.x,-HL+1,HL-1);
+  const ripresa18=t===game.possTeam&&ball.toccoDifesa&&ultimo!==t; // 9.10.3: tocco difensivo e attacco che conserva palla
   whistle(0.22); annuncia('ripresa','Palla fuori',{squadra:t,dettaglio:`rimessa ${t.short}`});
   ball.holder=null; fermaOVola(); if(!ball.inUscita){ ball.x=x; ball.z=side*(HW-0.3); ball.y=BRV; } ball.afterShot=false;
-  deadBall(ball.inUscita?1.3:0.9,()=>{ const r=closestTo(t,ball)||t.players[6]; r.x=x; r.z=side*(HW-0.7); r.vx=r.vz=0; giveBall(r); r.freeThrow=true; });
+  deadBall(ball.inUscita?1.3:0.9,()=>{ const r=closestTo(t,ball)||t.players[6]; r.x=x; r.z=side*(HW-0.7); r.vx=r.vz=0; giveBall(r); if(ripresa18)game.shot=SHOT_RESET; r.freeThrow=true; });
 }
 // Sfondamento (fallo in attacco, art. 8): chi ha la palla nuota dritto addosso a un difensore fermo o che arretra.
 // Come lo sfondamento del basket: palla alla difesa, tiro libero dal punto del contatto.

@@ -5,7 +5,9 @@
 //     (punti veri del corpo deformato dallo scheletro, non le ossa);
 //  3) screenshot con telecamere fisse (iPhone orizzontale grande e piccolo, primi piani di nuoto, verticale e dall'alto),
 //     con oggetti disegnati e triangoli, da confrontare prima/dopo (--dist=<build> per fotografare una build già fatta).
-// Uso: node tests/aspetto.mjs [cartella di uscita] [--no-build] [--dist=cartella] [--salva=f.json] [--confronta=f.json] [--solo-gioco]
+// Uso: node tests/aspetto.mjs [cartella di uscita] [--no-build] [--dist=cartella] [--salva=f.json] [--confronta=f.json] [--solo-gioco|--solo-foto]
+// --solo-foto completa le sei viste quando il gioco/gambe è già PASS nella
+// stessa build (es. npm run prove), senza duplicare una partita simulata.
 import { chromium } from 'playwright';
 import { build, preview } from 'vite';
 import fs from 'node:fs';
@@ -15,6 +17,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const arg = (k, d) => { const a = process.argv.find(x => x.startsWith('--' + k + '=')); return a ? a.slice(k.length + 3) : d; };
 const USCITA = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : path.join(ROOT, 'tests/screenshot/aspetto');
 const DIST = arg('dist', ''), SALVA = arg('salva', ''), CONFRONTA = arg('confronta', ''), SOLO_GIOCO = process.argv.includes('--solo-gioco');
+const SOLO_FOTO = process.argv.includes('--solo-foto');
+if(SOLO_GIOCO&&SOLO_FOTO)throw new Error('Scegliere solo gioco oppure solo foto');
 fs.mkdirSync(USCITA, { recursive: true });
 if (!DIST && !process.argv.includes('--no-build')) await build({ root: ROOT, logLevel: 'warn' });
 const server = await preview({ root: ROOT, logLevel: 'warn', build: DIST ? { outDir: DIST } : {}, preview: { port: +arg('porta', 4181), host: '127.0.0.1' } });
@@ -40,7 +44,7 @@ async function apri(viewport, telefono) {
 let ok = true; const nota = (bene, testo) => { console.log(`${bene ? 'OK ' : 'NO '} ${testo}`); if (!bene) ok = false; };
 
 // ---------- 1 e 2: partita simulata + gambe fuori dall'acqua ----------
-{
+if(!SOLO_FOTO){
   const pg = await apri({ width: 640, height: 360 }, false);
   const r = await pg.evaluate(() => {
     const H = window.__pallanuoto; H.scegliSquadre('ITA', 'USA'); H.game.autoplay = true; for (const t of H.teams) t.human = false;

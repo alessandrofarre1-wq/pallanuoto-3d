@@ -1,0 +1,19 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: portiere-laterale-squadra0-1-1-0.12: squadra annunciata
+
+1 !== 0
+
+    at riprendi (file:///workspace/pallanuoto-v072/tests/rimesse-v072.mjs:65:10)
+    at file:///workspace/pallanuoto-v072/tests/rimesse-v072.mjs:118:5 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

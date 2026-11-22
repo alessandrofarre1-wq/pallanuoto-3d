@@ -3,6 +3,15 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.72
+- Preset automatico quadrella alta anche su ogni rigore≥0,8 → sui rigori potenza e scelta di bersaglio vengono separate: distribuzione naturale alta/bassa/laterale, mirino coerente, precisione/velocità/lettura0,7 conservate. Il gigante precedente mascherava237/240gol con la scala corretta; test240rigori ripetuto con soglia70–86% invariata. In azione il forte alle quadrelle resta.
+- Verifica visuale sempre con nuova simulazione completa → se `prove` ha appena validato gioco/gambe sulla stessa build, `aspetto --solo-foto` completa le sei viste senza ripetere quella partita. I due esiti restano separati nei log.
+- V0.71 aveva lasciatoVIS1,45 sui corpi: il GLB in bind risultava2,547m, palla22,12cm e porta3m. Dopo la segnalazione di Ale sulle proporzioni complessive, VIS1,10 dà un adulto base1,932m, con le differenze individuali esistenti. Campo25×20m, porta3×0,90m e palla22,12cm restano nella stessa unità. Non viene ripristinata la sfera39cm. La decisione «VIS/punto di lancio assoluto invariati» è quindi superata: sagomaGK e p.ballW devono seguire la nuova altezza. Posa locale, comandi, tempi e velocità nominale del tiro conservati.
+- Bicicletta simmetrica durante il classico e mano libera quasi statica → gambe asimmetriche, anche/core e appoggio attivo, solo animazione sulle24ossa esistenti. Nessuna conversioneFBX/Mixamo necessaria.
+- Rimessa laterale dedotta da `lastTeam` (lanciatore) → ultimo tocco reale: dopoGK l’attacco conserva palla18s; sul fondo corner. Conservata l’eccezione WA12.3.1.1: tiro murato da un giocatore di movimento e uscito lateralmente va alla difesa28s; anche sul fondo rimessaGK.
+
+Dati, verifica e parti escluse nel [rapporto v0.72](versioni/v072-proporzioni-tiro-rimesse.md).
+
 ## v0.71
 - Replay verificato sul vecchio raggio0,195m → misura del raggio effettivo0,1106m; fit prospettico più vicino solo se serve a conservare4pxCSS, FOV/orbita conservati. Margine extra del primo piano eliminato, vincoli di viso/mani/pannelli conservati.
 - Tuffo laterale sempre sul `crossZ` vero → corpo e braccia seguono la medesima lettura dopo il tempo di reazione, anche sulla deviazione ancora in arrivo; il recupero della respinta uscente resta libero.

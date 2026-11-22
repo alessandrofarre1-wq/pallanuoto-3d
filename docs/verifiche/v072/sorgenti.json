@@ -1,0 +1,18 @@
+{
+  "base": "7827854b8f6790a616129261378ccce476a68f18",
+  "fase": "prodotto finale con scala1.10,carica-.32,decal7 e bersagli rigore naturali; verifiche di chiusura/riprese mirate locali e CI completa sullo SHA pubblicato",
+  "sha256": {
+    "src/scala-grafica.js": "cea83393539776f86ccbdeb3e5a5627174c37d4ca4888e8f142cf0e5d7bbabfe",
+    "src/costanti.js": "2a7d46f1d12c877c65fc8a1daac18a0d4d578935a3bfee30b27abe55531caaa6",
+    "src/grafica/dimensioni-palla.js": "4de7b8624c2716cfdac0e6692d8db603daaa271872ffaf3def6040cde49597b4",
+    "src/grafica/pose.js": "cfd58a0d84df2ddbba90d80ab5024b89971dc63ce53c9e0f08097de65587259c",
+    "src/grafica/corpo.js": "313951ce0dafc50d6ffdf479ea7338bd60e07a97f4bb334f73be6ec0fd0ec971",
+    "src/grafica/tiro-vista.js": "7eb6e468e77f19fc7716549c0bb28de639009965ff4110ebd4fcbc05eab7c2ac",
+    "src/grafica/render.js": "a4ecdd6c457058f8a05a0fafd10a35d3c8375967ec9056de8d07b367236d57f8",
+    "src/grafica/scena.js": "09fc06301b4e39cce5d0fe6c509e5deccea942229642fa02d1ef60b3561a43ac",
+    "src/grafica/illuminazione.js": "a69be04122e5793dcf28c2a7b49d752c53279e7a1f2cfc53d4ebf63e13e45a38",
+    "src/parata-portiere.js": "c72ab4d91ca417d529757bd3d5fa8f38b2e2eee94fd1e4730c67d957661623a4",
+    "src/regole.js": "dd96bed48aa96ffdf4236532f2174e58bb898d074b96e27a5b2317721d6f86c8",
+    "src/tiri.js": "bfb5cd46401f453b69bd67a66d2ecf2108d54cd3332cb9bee8a869ee6e5af938"
+  }
+}

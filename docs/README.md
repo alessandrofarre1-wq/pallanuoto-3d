@@ -1,5 +1,8 @@
 # Documenti di WATERPOLO 7
 
+Versione corrente **v0.72**: [proporzioni, tiro e rimesse](versioni/v072-proporzioni-tiro-rimesse.md), [dati e verifiche](verifiche/v072/README.md), [confronto tiro](immagini/v072/tiro-prima-dopo.png).
+
+
 | Dove | Cosa c'è |
 |---|---|
 | `../CLAUDE.md` | Memoria del progetto: regole di lavoro, decisioni **in vigore**, numeri attuali, cosa resta da fare. |

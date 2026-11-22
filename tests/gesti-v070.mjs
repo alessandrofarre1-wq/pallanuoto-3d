@@ -71,6 +71,7 @@ try{
  await page.waitForFunction(()=>window.__pallanuoto?.modelloPronto,null,{polling:100,timeout:120000});
  const r=await page.evaluate(async(foto)=>{
   const [S,P,A,F,R]=await Promise.all(['stato','grafica/pose','tiri','fisica','regole'].map(n=>import('/src/'+n+'.js')));
+  const {VIS}=await import('/src/costanti.js');
   const {renderer,camera,scene,ball3d,freccia,ring,passMark}=await import('/src/grafica/scena.js');const H=window.__pallanuoto,draw=renderer.render.bind(renderer);
   H.renderer.render=()=>{};const dt=1/60,misure=[],traccia=[],immagini=[];let numero=0;
   const round=x=>Math.round(x*1e9)/1e9;
@@ -92,7 +93,7 @@ try{
     P.updateRig(p,dt,S.game.time);
     for(const key of P.JK)for(let j=0;j<3;j++)supFisica=Math.max(supFisica,Math.abs(p.J[key][j]-expected[key][j]));
     const mh=mano==='S'?p.J.hL:p.J.hR;
-    if(T.ballHand){const l=[mh[0]+.02,mh[1]+.13,mh[2]],w=[p.x+1.45*(l[0]*p.fx-l[2]*p.fz),1.45*l[1],p.z+1.45*(l[0]*p.fz+l[2]*p.fx)];
+    if(T.ballHand){const l=[mh[0]+.02,mh[1]+.13,mh[2]],w=[p.x+VIS*(l[0]*p.fx-l[2]*p.fz),VIS*l[1],p.z+VIS*(l[0]*p.fz+l[2]*p.fx)];
      for(let j=0;j<3;j++)supFisica=Math.max(supFisica,Math.abs(p.ballW[j]-w[j]));}
     else if(p.ballW!==null)supFisica=Infinity;
     const v=bone(),step=Math.hypot(...v.map((x,i)=>x-precedente[i]));massimo=Math.max(massimo,step);precedente=v;

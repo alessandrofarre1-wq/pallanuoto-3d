@@ -1,0 +1,550 @@
+{
+  "raggioVistaPalla": 0.1106,
+  "quotaGalleggiamentoVistaPalla": 0.07342985996986247,
+  "misure": [
+    {
+      "width": 844,
+      "height": 390,
+      "mano": "D",
+      "diametro": [
+        0.22120000422000885,
+        0.22120000422000885,
+        0.22120000422000885
+      ],
+      "campo": [
+        25,
+        20
+      ],
+      "porte": [
+        {
+          "x": 12.5,
+          "luce": 3,
+          "altezza": 0.8999999761581421
+        },
+        {
+          "x": -12.5,
+          "luce": 3,
+          "altezza": 0.8999999761581421
+        }
+      ],
+      "altezzeAtleti": [
+        {
+          "nome": "Nicosia",
+          "portiere": true,
+          "altezzaBindWorld": 1.968450894539402,
+          "spalle": 0.44825000000000015,
+          "aperturaMani": 0.6213414625503342
+        },
+        {
+          "nome": "Gianazza",
+          "portiere": false,
+          "altezzaBindWorld": 1.944298122827262,
+          "spalle": 0.4427500000000005,
+          "aperturaMani": 1.2064654208511054
+        },
+        {
+          "nome": "Carnesecchi",
+          "portiere": false,
+          "altezzaBindWorld": 1.914107158187087,
+          "spalle": 0.43587500000000035,
+          "aperturaMani": 1.2121490719612869
+        },
+        {
+          "nome": "Alesiani",
+          "portiere": false,
+          "altezzaBindWorld": 1.938259929899227,
+          "spalle": 0.4413750000000001,
+          "aperturaMani": 1.229908952693173
+        },
+        {
+          "nome": "Ferrero",
+          "portiere": false,
+          "altezzaBindWorld": 1.8597634218347723,
+          "spalle": 0.42350000000000027,
+          "aperturaMani": 1.2254754419030873
+        },
+        {
+          "nome": "Cannella",
+          "portiere": false,
+          "altezzaBindWorld": 1.8839161935469122,
+          "spalle": 0.42900000000000066,
+          "aperturaMani": 1.1485258582864544
+        },
+        {
+          "nome": "Iocchi Gratta",
+          "portiere": false,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.4441249999999998,
+          "aperturaMani": 1.1816519374661023
+        },
+        {
+          "nome": "Csoma",
+          "portiere": true,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.44412500000000005,
+          "aperturaMani": 1.214948945025474
+        },
+        {
+          "nome": "Kovacs",
+          "portiere": false,
+          "altezzaBindWorld": 1.9805272803954714,
+          "spalle": 0.451,
+          "aperturaMani": 1.2487144921687479
+        },
+        {
+          "nome": "Burian",
+          "portiere": false,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.4441250000000001,
+          "aperturaMani": 1.239667058718309
+        },
+        {
+          "nome": "Manhercz",
+          "portiere": false,
+          "altezzaBindWorld": 1.9261835440431572,
+          "spalle": 0.43862500000000004,
+          "aperturaMani": 1.2086234302843821
+        },
+        {
+          "nome": "Nagy Akos",
+          "portiere": false,
+          "altezzaBindWorld": 1.920145351115122,
+          "spalle": 0.43725000000000036,
+          "aperturaMani": 1.1820613766831247
+        },
+        {
+          "nome": "Vigvari",
+          "portiere": false,
+          "altezzaBindWorld": 1.914107158187087,
+          "spalle": 0.4358749999999997,
+          "aperturaMani": 1.038551641406352
+        },
+        {
+          "nome": "Nagy Adam",
+          "portiere": false,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.4441249999999998,
+          "aperturaMani": 1.1940844802347417
+        }
+      ],
+      "larghezzaTesta": 0.2815227157315876,
+      "rapportoPallaTesta": 0.7857270190264424,
+      "distanzaPalmo": 0.11059977622872316,
+      "pixelCss": 7.193486351760837,
+      "corpi": 14,
+      "gpu": {
+        "calls": 63,
+        "triangles": 142160
+      },
+      "fisicaImmutata": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "mano": "S",
+      "diametro": [
+        0.22120000422000885,
+        0.22120000422000885,
+        0.22120000422000885
+      ],
+      "campo": [
+        25,
+        20
+      ],
+      "porte": [
+        {
+          "x": 12.5,
+          "luce": 3,
+          "altezza": 0.8999999761581421
+        },
+        {
+          "x": -12.5,
+          "luce": 3,
+          "altezza": 0.8999999761581421
+        }
+      ],
+      "altezzeAtleti": [
+        {
+          "nome": "Nicosia",
+          "portiere": true,
+          "altezzaBindWorld": 1.968450894539402,
+          "spalle": 0.44825000000000015,
+          "aperturaMani": 0.6213414640022645
+        },
+        {
+          "nome": "Gianazza",
+          "portiere": false,
+          "altezzaBindWorld": 1.944298122827262,
+          "spalle": 0.4427500000000005,
+          "aperturaMani": 1.2064654208894465
+        },
+        {
+          "nome": "Carnesecchi",
+          "portiere": false,
+          "altezzaBindWorld": 1.914107158187087,
+          "spalle": 0.43587500000000035,
+          "aperturaMani": 1.2121490719271657
+        },
+        {
+          "nome": "Alesiani",
+          "portiere": false,
+          "altezzaBindWorld": 1.938259929899227,
+          "spalle": 0.4413750000000001,
+          "aperturaMani": 1.229908952610398
+        },
+        {
+          "nome": "Ferrero",
+          "portiere": false,
+          "altezzaBindWorld": 1.8597634218347723,
+          "spalle": 0.4234999999999998,
+          "aperturaMani": 1.2303349243148698
+        },
+        {
+          "nome": "Cannella",
+          "portiere": false,
+          "altezzaBindWorld": 1.8839161935469122,
+          "spalle": 0.42900000000000066,
+          "aperturaMani": 1.1485258583133813
+        },
+        {
+          "nome": "Iocchi Gratta",
+          "portiere": false,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.4441249999999998,
+          "aperturaMani": 1.1816519375512522
+        },
+        {
+          "nome": "Csoma",
+          "portiere": true,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.44412500000000005,
+          "aperturaMani": 1.2149489450837148
+        },
+        {
+          "nome": "Kovacs",
+          "portiere": false,
+          "altezzaBindWorld": 1.9805272803954714,
+          "spalle": 0.451,
+          "aperturaMani": 1.2487144921542295
+        },
+        {
+          "nome": "Burian",
+          "portiere": false,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.4441250000000001,
+          "aperturaMani": 1.2396670586431349
+        },
+        {
+          "nome": "Manhercz",
+          "portiere": false,
+          "altezzaBindWorld": 1.9261835440431572,
+          "spalle": 0.43862500000000015,
+          "aperturaMani": 1.2086234302102756
+        },
+        {
+          "nome": "Nagy Akos",
+          "portiere": false,
+          "altezzaBindWorld": 1.920145351115122,
+          "spalle": 0.43725000000000036,
+          "aperturaMani": 1.1820613766885983
+        },
+        {
+          "nome": "Vigvari",
+          "portiere": false,
+          "altezzaBindWorld": 1.914107158187087,
+          "spalle": 0.4358749999999997,
+          "aperturaMani": 1.0385516413951346
+        },
+        {
+          "nome": "Nagy Adam",
+          "portiere": false,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.4441249999999999,
+          "aperturaMani": 1.19408448030651
+        }
+      ],
+      "larghezzaTesta": 0.28057291040387167,
+      "rapportoPallaTesta": 0.788386889887558,
+      "distanzaPalmo": 0.11025553276872778,
+      "pixelCss": 6.84646086810964,
+      "corpi": 14,
+      "gpu": {
+        "calls": 63,
+        "triangles": 142160
+      },
+      "fisicaImmutata": true
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "mano": "D",
+      "diametro": [
+        0.22120000422000885,
+        0.22120000422000885,
+        0.22120000422000885
+      ],
+      "campo": [
+        25,
+        20
+      ],
+      "porte": [
+        {
+          "x": 12.5,
+          "luce": 3,
+          "altezza": 0.8999999761581421
+        },
+        {
+          "x": -12.5,
+          "luce": 3,
+          "altezza": 0.8999999761581421
+        }
+      ],
+      "altezzeAtleti": [
+        {
+          "nome": "Nicosia",
+          "portiere": true,
+          "altezzaBindWorld": 1.968450894539402,
+          "spalle": 0.44825000000000015,
+          "aperturaMani": 0.6213414625503342
+        },
+        {
+          "nome": "Gianazza",
+          "portiere": false,
+          "altezzaBindWorld": 1.944298122827262,
+          "spalle": 0.4427500000000005,
+          "aperturaMani": 1.2064654208511054
+        },
+        {
+          "nome": "Carnesecchi",
+          "portiere": false,
+          "altezzaBindWorld": 1.914107158187087,
+          "spalle": 0.43587500000000035,
+          "aperturaMani": 1.2121490719612869
+        },
+        {
+          "nome": "Alesiani",
+          "portiere": false,
+          "altezzaBindWorld": 1.938259929899227,
+          "spalle": 0.4413750000000001,
+          "aperturaMani": 1.229908952693173
+        },
+        {
+          "nome": "Ferrero",
+          "portiere": false,
+          "altezzaBindWorld": 1.8597634218347723,
+          "spalle": 0.42350000000000027,
+          "aperturaMani": 1.2254754419030873
+        },
+        {
+          "nome": "Cannella",
+          "portiere": false,
+          "altezzaBindWorld": 1.8839161935469122,
+          "spalle": 0.42900000000000066,
+          "aperturaMani": 1.1485258582864544
+        },
+        {
+          "nome": "Iocchi Gratta",
+          "portiere": false,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.4441249999999998,
+          "aperturaMani": 1.1816519374661023
+        },
+        {
+          "nome": "Csoma",
+          "portiere": true,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.44412500000000005,
+          "aperturaMani": 1.214948945025474
+        },
+        {
+          "nome": "Kovacs",
+          "portiere": false,
+          "altezzaBindWorld": 1.9805272803954714,
+          "spalle": 0.451,
+          "aperturaMani": 1.2487144921687479
+        },
+        {
+          "nome": "Burian",
+          "portiere": false,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.4441250000000001,
+          "aperturaMani": 1.239667058718309
+        },
+        {
+          "nome": "Manhercz",
+          "portiere": false,
+          "altezzaBindWorld": 1.9261835440431572,
+          "spalle": 0.43862500000000004,
+          "aperturaMani": 1.2086234302843821
+        },
+        {
+          "nome": "Nagy Akos",
+          "portiere": false,
+          "altezzaBindWorld": 1.920145351115122,
+          "spalle": 0.43725000000000036,
+          "aperturaMani": 1.1820613766831247
+        },
+        {
+          "nome": "Vigvari",
+          "portiere": false,
+          "altezzaBindWorld": 1.914107158187087,
+          "spalle": 0.4358749999999997,
+          "aperturaMani": 1.038551641406352
+        },
+        {
+          "nome": "Nagy Adam",
+          "portiere": false,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.4441249999999998,
+          "aperturaMani": 1.1940844802347417
+        }
+      ],
+      "larghezzaTesta": 0.2815227157315876,
+      "rapportoPallaTesta": 0.7857270190264424,
+      "distanzaPalmo": 0.11059977622872316,
+      "pixelCss": 6.916813799770045,
+      "corpi": 14,
+      "gpu": {
+        "calls": 63,
+        "triangles": 142160
+      },
+      "fisicaImmutata": true
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "mano": "S",
+      "diametro": [
+        0.22120000422000885,
+        0.22120000422000885,
+        0.22120000422000885
+      ],
+      "campo": [
+        25,
+        20
+      ],
+      "porte": [
+        {
+          "x": 12.5,
+          "luce": 3,
+          "altezza": 0.8999999761581421
+        },
+        {
+          "x": -12.5,
+          "luce": 3,
+          "altezza": 0.8999999761581421
+        }
+      ],
+      "altezzeAtleti": [
+        {
+          "nome": "Nicosia",
+          "portiere": true,
+          "altezzaBindWorld": 1.968450894539402,
+          "spalle": 0.44825000000000015,
+          "aperturaMani": 0.6213414640022645
+        },
+        {
+          "nome": "Gianazza",
+          "portiere": false,
+          "altezzaBindWorld": 1.944298122827262,
+          "spalle": 0.4427500000000005,
+          "aperturaMani": 1.2064654208894465
+        },
+        {
+          "nome": "Carnesecchi",
+          "portiere": false,
+          "altezzaBindWorld": 1.914107158187087,
+          "spalle": 0.43587500000000035,
+          "aperturaMani": 1.2121490719271657
+        },
+        {
+          "nome": "Alesiani",
+          "portiere": false,
+          "altezzaBindWorld": 1.938259929899227,
+          "spalle": 0.4413750000000001,
+          "aperturaMani": 1.229908952610398
+        },
+        {
+          "nome": "Ferrero",
+          "portiere": false,
+          "altezzaBindWorld": 1.8597634218347723,
+          "spalle": 0.4234999999999998,
+          "aperturaMani": 1.2303349243148698
+        },
+        {
+          "nome": "Cannella",
+          "portiere": false,
+          "altezzaBindWorld": 1.8839161935469122,
+          "spalle": 0.42900000000000066,
+          "aperturaMani": 1.1485258583133813
+        },
+        {
+          "nome": "Iocchi Gratta",
+          "portiere": false,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.4441249999999998,
+          "aperturaMani": 1.1816519375512522
+        },
+        {
+          "nome": "Csoma",
+          "portiere": true,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.44412500000000005,
+          "aperturaMani": 1.2149489450837148
+        },
+        {
+          "nome": "Kovacs",
+          "portiere": false,
+          "altezzaBindWorld": 1.9805272803954714,
+          "spalle": 0.451,
+          "aperturaMani": 1.2487144921542295
+        },
+        {
+          "nome": "Burian",
+          "portiere": false,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.4441250000000001,
+          "aperturaMani": 1.2396670586431349
+        },
+        {
+          "nome": "Manhercz",
+          "portiere": false,
+          "altezzaBindWorld": 1.9261835440431572,
+          "spalle": 0.43862500000000015,
+          "aperturaMani": 1.2086234302102756
+        },
+        {
+          "nome": "Nagy Akos",
+          "portiere": false,
+          "altezzaBindWorld": 1.920145351115122,
+          "spalle": 0.43725000000000036,
+          "aperturaMani": 1.1820613766885983
+        },
+        {
+          "nome": "Vigvari",
+          "portiere": false,
+          "altezzaBindWorld": 1.914107158187087,
+          "spalle": 0.4358749999999997,
+          "aperturaMani": 1.0385516413951346
+        },
+        {
+          "nome": "Nagy Adam",
+          "portiere": false,
+          "altezzaBindWorld": 1.9503363157552966,
+          "spalle": 0.4441249999999999,
+          "aperturaMani": 1.19408448030651
+        }
+      ],
+      "larghezzaTesta": 0.28057291040387167,
+      "rapportoPallaTesta": 0.788386889887558,
+      "distanzaPalmo": 0.11025553276872778,
+      "pixelCss": 6.583135450105407,
+      "corpi": 14,
+      "gpu": {
+        "calls": 63,
+        "triangles": 142160
+      },
+      "fisicaImmutata": true
+    }
+  ]
+}

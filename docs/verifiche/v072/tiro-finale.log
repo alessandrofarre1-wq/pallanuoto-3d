@@ -1,0 +1,44 @@
+{
+  "prima": null,
+  "casi": [
+    {
+      "nome": "shot-1-D",
+      "dir": 1,
+      "mano": "D",
+      "supFisica": 0,
+      "callback": 1,
+      "rilascio": 0.17503107444632768,
+      "frusta": 0.17503107344632768
+    },
+    {
+      "nome": "shot-1-S",
+      "dir": 1,
+      "mano": "S",
+      "supFisica": 0,
+      "callback": 1,
+      "rilascio": 0.17503107444632768,
+      "frusta": 0.17503107344632768
+    },
+    {
+      "nome": "shot--1-D",
+      "dir": -1,
+      "mano": "D",
+      "supFisica": 0,
+      "callback": 1,
+      "rilascio": 0.17503107444632768,
+      "frusta": 0.17503107344632768
+    },
+    {
+      "nome": "shot--1-S",
+      "dir": -1,
+      "mano": "S",
+      "supFisica": 0,
+      "callback": 1,
+      "rilascio": 0.17503107444632768,
+      "frusta": 0.17503107344632768
+    }
+  ],
+  "fisicaSHA256": "2efc0a240ac2fb77fe2a3bc251e2f6d0542ee7c1894f0f926bd3f6ba65e00528",
+  "render": 18
+}
+PASS tiro fasi v0.72: quattro casi, invarianti fisiche, 24 pose del rig; 18 render selezionati

@@ -1,0 +1,22 @@
+{
+  "2-sprint-iniziale.png": {
+    "prima": "5e6d08bf2aba777370b79966e88b73ff14d476718e4512b37f163abeb080b416",
+    "dopo": "0ee9013d2eaa64105e83911652a4934e48b67e467b4f45fa88d886db0ab5ffd6",
+    "ispezione": "Confronto affiancato ispezionato: corpi ridimensionati, porte/palla/HUD coerenti; in azione sequenza diversa per nuova origine fisica del lancio. Soglia0,5% invariata."
+  },
+  "3-azione.png": {
+    "prima": "2c7676c579b37abc66b8c2dcbe149b07e414dd4349b2cc850a4d55effe19e342",
+    "dopo": "414aed96d0585e864e9c5cb7344c586ef3b922ec56c9f52ffda176d6b115ea24",
+    "ispezione": "Confronto affiancato ispezionato: corpi ridimensionati, porte/palla/HUD coerenti; in azione sequenza diversa per nuova origine fisica del lancio. Soglia0,5% invariata."
+  },
+  "4-iphone-piccolo.png": {
+    "prima": "9a095d8f0230728d41d2c3431d2a5094bb617952778b0a1ad2e27a8274935e45",
+    "dopo": "4cd4f56993c40ad9e9decd1f4683e7b5b115a1ba6f0abc966da9866930f41aca",
+    "ispezione": "Confronto affiancato ispezionato: corpi ridimensionati, porte/palla/HUD coerenti; in azione sequenza diversa per nuova origine fisica del lancio. Soglia0,5% invariata."
+  },
+  "5-iphone-orizzontale.png": {
+    "prima": "2f4241ea90ce6c5b56b6dffede8beba782dfb9a915ea1b1c5ce00106090a3aaf",
+    "dopo": "7314490bb3104f8ccf5959e66d35d74e7675669d9e02b792dd618f9597c26456",
+    "ispezione": "Confronto affiancato ispezionato: corpi ridimensionati, porte/palla/HUD coerenti; in azione sequenza diversa per nuova origine fisica del lancio. Soglia0,5% invariata."
+  }
+}

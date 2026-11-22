@@ -1,0 +1,98 @@
+[
+  {
+    "nome": "gesti-fix",
+    "codice": 0,
+    "secondi": 15.36,
+    "cmd": [
+      "npm",
+      "run",
+      "gesti",
+      "--",
+      "--no-build"
+    ]
+  },
+  {
+    "nome": "costumi-fix",
+    "codice": 0,
+    "secondi": 117.49,
+    "cmd": [
+      "npm",
+      "run",
+      "costumi",
+      "--",
+      "--no-build"
+    ]
+  },
+  {
+    "nome": "sezione1-finale",
+    "codice": 0,
+    "secondi": 29.07,
+    "cmd": [
+      "npm",
+      "run",
+      "sezione1",
+      "--",
+      "--no-build"
+    ]
+  },
+  {
+    "nome": "dimensioni-finali",
+    "codice": 0,
+    "secondi": 29.21,
+    "cmd": [
+      "npm",
+      "run",
+      "dimensioni-palla",
+      "--",
+      "--salva=docs/verifiche/v072/proporzioni.json",
+      "--foto=docs/immagini/v072/proporzioni"
+    ]
+  },
+  {
+    "nome": "verifica",
+    "codice": 1,
+    "secondi": 89.66,
+    "cmd": [
+      "npm",
+      "run",
+      "verifica",
+      "--",
+      "--partite=0"
+    ]
+  },
+  {
+    "nome": "aspetto-foto",
+    "codice": 0,
+    "secondi": 96.95,
+    "cmd": [
+      "npm",
+      "run",
+      "aspetto",
+      "--",
+      "/tmp/v072-aspetto-finale",
+      "--no-build",
+      "--solo-foto"
+    ]
+  },
+  {
+    "nome": "fluidita",
+    "codice": 0,
+    "secondi": 82.41,
+    "cmd": [
+      "node",
+      "strumenti/misura-fluidita.mjs"
+    ]
+  },
+  {
+    "nome": "tiro-finale",
+    "codice": 0,
+    "secondi": 35.59,
+    "cmd": [
+      "node",
+      "tests/tiro-fasi-v072.mjs",
+      "--salva=/tmp/v072-tiro-finale.json",
+      "--confronta=/tmp/v072-tiro-prima.json",
+      "--foto=/tmp/v072-tiro-finale"
+    ]
+  }
+]

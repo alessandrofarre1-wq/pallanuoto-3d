@@ -1,0 +1,17 @@
+
+> pallanuoto-3d@0.72.0 aspetto
+> node tests/aspetto.mjs /tmp/v072-aspetto-finale --no-build --solo-gioco --salva=docs/verifiche/v072/aspetto-statistiche.json
+
+OK  partita simulata arrivata alla fine
+   gambe sopra l'acqua (verticale): 0 campioni su 7684 (0%)
+   gambe sopra l'acqua (in nuotata): 0 campioni su 5144 (0%)
+   gambe sopra l'acqua (a metà): 0 campioni su 1200 (0%)
+   punto delle gambe più alto: 0 cm sopra la superficie
+   statistiche salvate in docs/verifiche/v072/aspetto-statistiche.json
+
+Tutto a posto.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice
