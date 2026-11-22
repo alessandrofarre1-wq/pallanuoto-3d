@@ -1,0 +1,55 @@
+{
+  "id": "tiro-plask-01",
+  "state": "analizzato_non_integrato_nel_gioco",
+  "originalFileName": "waterpolo shoot.glb",
+  "animationName": "waterpolo shoot 2.mov",
+  "sha256": "41c8bebc664fa2f5afd0d2c1e6488051686132ab98cbc0b73fb91468b037ab98",
+  "bytes": 8209080,
+  "durationSeconds": 6.916666507720947,
+  "skins": 1,
+  "joints": 52,
+  "meshPrimitives": 3,
+  "triangles": 34550,
+  "animationChannels": {
+    "rotation": 52,
+    "translation": 1
+  },
+  "samplesInInspection": 415,
+  "baseMain": "9e95c00ccd683c3d795eef6cd8466ca85d7ca0ac",
+  "baseVersion": "0.73.0",
+  "observations": {
+    "initialRootJumpM": 2.3583319947415595,
+    "rightHandPeakRelativeToHips": {
+      "timeSeconds": 5.916666666666667,
+      "speedSourceUnitsPerSecond": 23.018447526191068,
+      "excludesFirstTPoseSample": true
+    },
+    "rightElbowAngleAt6sDegrees": 23.9,
+    "trackingConcernSeconds": [
+      5.9,
+      6.1
+    ]
+  },
+  "candidatePartsSeconds": {
+    "preparationAndLift": [
+      4.8,
+      5.9
+    ],
+    "followThroughAndRecovery": [
+      6.1,
+      6.8
+    ]
+  },
+  "missingForFaithfulTiming": [
+    "Video sorgente waterpolo shoot 2.mov",
+    "Fattore effettivo di slow motion",
+    "Istante del distacco della palla, assente nel GLB"
+  ],
+  "restrictions": [
+    "Nessun import della mesh pesante nel runtime",
+    "Traslazione radice e gambe del tracking non sostituiscono nuoto/bicicletta",
+    "Nessuna modifica a volto, J, ballW, regole o tempi del tiro",
+    "Candidato da ripulire e confrontare nel renderer effettivo prima di una PR"
+  ],
+  "regulationContext": "Il gioco corrente consente tiro libero diretto dopo fallo ordinario fuori dai 6m; la linea5m riguarda il rigore. Nessuna regola cambiata."
+}
