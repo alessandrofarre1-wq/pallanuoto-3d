@@ -31,6 +31,7 @@ jobs:
       - run: npm run traiettorie
       - run: npm run portiere -- --salva=tests/screenshot/portiere-v071.json
       - run: npm run tiro-visuale
+      - run: npm run tiro-registrato
       - run: npm run rig-mani
       - run: npm run rimesse
       - run: npm run dimensioni-palla -- --salva=tests/screenshot/dimensioni-v072.json --foto=tests/screenshot/dimensioni-v072

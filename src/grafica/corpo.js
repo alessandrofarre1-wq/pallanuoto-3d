@@ -9,6 +9,7 @@ import riservaIndici from './modelli/riserva-indici.json';
 import { sottAcqua } from './sottacqua.js';
 import { preparaViso } from './espressioni.js';
 import { preparaMani } from './mani.js';
+import { preparaTiroRegistrato } from './tiro-plask-vista.js';
 import { valoriDisegno } from '../aspetto.js';
 import { atlanteCostumi, profiloCostume } from './costumi.js';
 
@@ -141,6 +142,7 @@ function attaccaFumetto(R,colori,num,seme){
     K.prese[lato]=presa;
     K.normaliPrese[lato]=palmoBind.clone().applyQuaternion(presa.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize();
   }
+  K.tiroRegistrato=preparaTiroRegistrato(R,K);
   return K;
 }
 // R = "manichino" del giocatore creato in modello.js; colori = { costume, calottina, paraorecchie, testo }

@@ -1,3 +1,17 @@
+# Passaggio WATERPOLO7 — v0.74 tiro Plask, modello invariato
+
+Base main `9e95c00` (PR64 unita, CI45014844635 verde), ramo `codex/v074-tiro-plask`, worktree `/workspace/pallanuoto-v074`. Versione0.74.0. Prima di altro lavoro riallineare main/PR/CI e diff; preservare Claude. Esito CI finale e SHA nella PR, nessun merge/deploy.
+
+**Ultima istruzione di Ale:** il modello è già corretto e non va stravolto. Correggere la mano rovesciata applicando bene le pose; il viso si vedrà dopo. Questo supera il vecchio incarico di aggiungere ossa a viso/piedi. Non riaprire il prototipo facciale `/workspace/pallanuoto-v073`, non toccare mesh/rig/pesi/proporzioni. GLB runtime SHA256 `8fd658a8a89ad0dd242100133daf920eb6cfa492af8f39e95f6ff92124ba6745`, identico alla v0.73.
+
+Il tiro fornito da Ale è trasferito su tutte le52ossa corrispondenti, incluse30falangi/caviglie/punte;415pose dall’inizio animato1/60s alla fine6,917s. Solo Tpose artificiale a0 esclusa; traslazione radice adattata alla vasca, nessun salto/spostamento sul campo. Controller solo visuale dopo `muoviCorpo` e mani. Calibrazione anatomica/rest, D/S senza scala negativa, tempi dei comandi conservati. Tiro standard caricato/torsione; gesti rapidi/speciali non convertiti. Tre ossa del braccio destro raccordate5,9–6,1s per perdita tracking fuori dal video; non inventare distacco o fattore slowmotion. OriginaleSHA41c8bebc… e videoSHAfc44fb47… nei dati generati. Originale integrale sul [ramo di consegna](https://github.com/alessandrofarre1-wq/pallanuoto-3d/tree/655a30fa6236de6edc78190134b6b2e812370b86/animazioni/tiro-plask-01); video locale, non pubblicato.
+
+La mano alzata dell’esultanza usa ora il palmo trasversale davanti e polso quasi neutro. Test60campioni/due direzioni, foto confrontate; nessuna modifica al file della mano. Tutte le giunture/palla del motore conservate: confronto fisico4casiD/S×dueversi identico,rilascio175,031ms,errore0. Prove, foto e numeri finali con fase in [rapporto](versioni/v074-tiro-plask.md) e [verifiche](verifiche/v074/README.md). Non attribuire al finale i numeri dei prototipi parziali o quelli che usavano solo2,117s: superati.
+
+Vincoli invariati: iPhone<100draw/<150000tri anche2cambi/replay,14corpi completi; logoC,cameraunica,SPEED1,controlli/carica0,9s/rilascio,riflessoalta,CAMBI basso centro44px. Non fare nuove partite di bilancio: modifica visuale verificata con tracce fisiche accoppiate. Sei partite standard una volta nellaCI completa finale; localeprove mirate/verifica immagini0partite/aspetto. Una solaChrome pesante. Nessuna nuova prova o modifica facciale. Restano giudizio di Ale sulla naturalezza, iPhone fisico e bilanciamento già aperto.
+
+---
+
 # Passaggio WATERPOLO 7 — v0.73 mani e polsi
 
 Ramo `codex/v073-mani-polsi`, worktree `/workspace/pallanuoto-v073-mani`, base main `1452f1a` (PR #63 unita), versione 0.73.0. Prima di altri interventi controllare main, PR, CI e modifiche locali: preservare il lavoro di Claude Code.

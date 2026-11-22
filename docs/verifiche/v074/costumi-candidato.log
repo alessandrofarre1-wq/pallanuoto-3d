@@ -1,0 +1,19 @@
+
+> pallanuoto-3d@0.74.0 costumi
+> node tests/costumi-v044.mjs --no-build
+
+OK atlante condiviso entro 1024×1024
+OK 24 nazionali: bandiere disegnate, profilo assegnato, calottine e colori HUD corretti
+OK 24 bandiere distinte, senza celle vuote o ripetute
+OK due nazioni × due mani × due lati: tutti i 14 corpi completi disegnati
+OK stessa nazionale sui due lati: costume identico, calottina diversa
+OK bandiera conservata dopo cambio portiere e cambio dal pozzetto, compresa la riserva visibile
+OK iPhone 844: 66 chiamate / 138686 triangoli, 2 riserve visibili (limiti v0.43: 69 / 148734)
+OK iPhone 667: 66 chiamate / 138686 triangoli, 2 riserve visibili (limiti v0.43: 69 / 148734)
+OK nessun errore pagina/WebGL/shader (0)
+Fotografie e rapporto: /tmp/pallanuoto-costumi-v044
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

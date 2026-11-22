@@ -1,0 +1,40 @@
+
+> pallanuoto-3d@0.74.0 prove
+> node tests/prove.mjs --solo=lint,tiro-visuale,tiro-registrato,rig-mani,dimensioni-palla,gesti-fluidi,costumi,replay,desktop,aspetto
+
+costruisco il gioco, poi 10 passi della CI (la verifica a parte: npm run verifica)
+ 1/10 npm run lint ... PASS (4 s)
+ 2/10 npm run tiro-visuale ... PASS (0 s)
+ 3/10 npm run tiro-registrato ... PASS (9 s)
+ 4/10 npm run rig-mani ... PASS (1 s)
+ 5/10 npm run dimensioni-palla -- --salva=tests/screenshot/dimensioni-v072.json --foto=tests/screenshot/dimensioni-v072 ... FAIL (14 s)
+   ultime righe:
+   |     at process.processImmediate (node:internal/timers:541:9) {
+   |   generatedMessage: false,
+   |   code: 'ERR_ASSERTION',
+   |   actual: false,
+   |   expected: true,
+   |   operator: '==',
+   |   diff: 'simple'
+   | }
+   | 
+   | Node.js v24.22.1
+   | npm notice
+   | npm notice New major version of npm available! 11.9.0 -> 12.2.3
+   | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+   | npm notice To update run: npm install -g npm@12.2.3
+   | npm notice
+ 6/10 npm run gesti-fluidi ... PASS (10 s)
+ 7/10 npm run desktop -- --no-build ... PASS (9 s)
+ 8/10 npm run costumi -- --no-build ... PASS (107 s)
+ 9/10 npm run replay -- --no-build ... PASS (54 s)
+10/10 npm run aspetto -- --no-build --solo-gioco ... PASS (177 s)
+
+RIEPILOGO: 9 PASS, 1 FAIL su 10 passi in 6.4 minuti
+falliti: dimensioni-palla
+registri completi: /tmp/prove-OOBe1F
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

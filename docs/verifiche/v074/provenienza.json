@@ -1,0 +1,28 @@
+{
+  "phase": "FINALE: 415pose/52ossa, modello invariato",
+  "baseMain": "9e95c00ccd683c3d795eef6cd8466ca85d7ca0ac",
+  "sourceGLB": "41c8bebc664fa2f5afd0d2c1e6488051686132ab98cbc0b73fb91468b037ab98",
+  "sourceVideo": "fc44fb47fdf037d376cce0dc9d809281a5156f6a8515ee98c74764821a93c453",
+  "files": {
+    "src/grafica/dati/tiro-plask-01.js": {
+      "bytes": 466845,
+      "sha256": "68750e8d40c47d20803b3fc271da7cee117dfd142f6c1009712375dc600f0855"
+    },
+    "src/grafica/tiro-plask-vista.js": {
+      "bytes": 7362,
+      "sha256": "596dbe6869eabb28599659fe9b0715a0daffb02fb016b99ad9ab298aacc9c52a"
+    },
+    "src/grafica/pose.js": {
+      "bytes": 59630,
+      "sha256": "cd12c608a5716991c07016dc710b9afa682b9f90cb15fec8ad5a257cf650dcf4"
+    },
+    "src/grafica/corpo.js": {
+      "bytes": 31873,
+      "sha256": "c683e5289eb3d2aadd0997e83fae713f14d9a01741a0f300618b178b9a5529fa"
+    },
+    "src/grafica/modelli/pallanuotista.glb": {
+      "bytes": 4523896,
+      "sha256": "8fd658a8a89ad0dd242100133daf920eb6cfa492af8f39e95f6ff92124ba6745"
+    }
+  }
+}
