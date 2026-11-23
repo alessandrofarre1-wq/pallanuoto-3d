@@ -45,7 +45,10 @@ try{
     }
     function finta(p,wind=.18){let fine=null;T.startAct(p,'fake',wind,()=>{fine=G.time;});return ()=>fine;}
     function buffer(key,modifica){
-      const p=prepara(),m=p.team.players[4];m.x=7;m.z=4;const fine=finta(p);for(let i=0;i<6;i++)frame(p);
+      const p=prepara(),m=p.team.players[4];m.x=7;m.z=4;const fine=finta(p);
+      // Il comando si anticipa di150ms sul gesto effettivo, anche quando la
+      // finta ha un accenno più lungo; la finestra del buffer resta200ms.
+      while(p.act&&!p.act.done&&p.act.wind+p.act.frusta-p.act.t>.15)frame(p);
       tocco(p,key);if(modifica) modifica(p);let inizio=null;
       for(let i=0;i<50;i++){frame(p);if(!inizio&&p.act&&p.act.kind!=='fake')inizio=G.time;}
       return {esecuzioni:G.passaggi,azione:B.kind,ritardo:inizio&&fine()?+(inizio-fine()).toFixed(4):null};

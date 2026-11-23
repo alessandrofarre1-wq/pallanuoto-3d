@@ -1,0 +1,35 @@
+{
+  "base": "6b0d2b918b7b8be30939d4e3774357c8dcc5e3be",
+  "pr_base": 66,
+  "ci_base": 45200501806,
+  "versione": "0.76.0",
+  "video_di_Ale": [
+    {
+      "file": "1-ScreenRecording_11-23-2026-18-49-37_1.mov",
+      "sha256": "555c7ac43266feba11ff735dc5ccb13d6a5957608cc7058f2388e62dcaeafc7d"
+    },
+    {
+      "file": "2-ScreenRecording_11-23-2026-18-52-53_1.mov",
+      "sha256": "1cf4147a237e3782ac89040f53837110321088f056ba63451074555a681827e1"
+    },
+    {
+      "file": "3-ScreenRecording_11-23-2026-18-52-53_1.mov",
+      "sha256": "e25628db402c666006c534d4ef77c78044b0bb6e16562434a7aaec51cadfb7fd"
+    }
+  ],
+  "glb_sha256": "8fd658a8a89ad0dd242100133daf920eb6cfa492af8f39e95f6ff92124ba6745",
+  "baseline_root": "pallanuoto-v075, stesso runtime del main unito",
+  "finale_root": "pallanuoto-v076",
+  "scene": 24,
+  "cicli": 48,
+  "foto": "8 pose dello stesso ciclo, non una stima FPS del telefono",
+  "sha256_finali": {
+    "src/finta-movimento.js": "c22cabc8f2cca28f6eb3dacd0791fbcf6f87ef4cfc72740ddcd3649fd431c9a2",
+    "src/tiri.js": "40aea335bf47c821d2b8280fa57c6892d4d5609faa85b9828e68ff29e73163e4",
+    "src/controllo.js": "f39ddd90e582b97b40c3277af30ceb573f92594b58cc9f97bb75976ee726163a",
+    "src/grafica/gesto-vista.js": "422c51077f476454004c472e9ae37cfb27be96b096a4d929f089faa5a35a0921",
+    "src/grafica/pose.js": "a662d3b21006dc5194aad68de07b82d79e21f846f54532a74b5d09984b5e07f4",
+    "src/grafica/tiro-plask-vista.js": "55003d5ae4b0f8dac439910d886eb0042678016f8cf663750eef9caf1bf25ec8",
+    "tests/finta-fluida-v076.mjs": "d5af1838ef9585279dd800d3ad69baa6dfbb596ccfe28d94cae034be16914765"
+  }
+}

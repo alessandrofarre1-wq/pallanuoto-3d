@@ -5,6 +5,9 @@ export const GIUNTI_GESTO_VISTA=['hip','chest','head','sR','sL','eR','eL','hR','
 const memorie=new WeakMap();
 const vettori=()=>Object.fromEntries(GIUNTI_GESTO_VISTA.map(k=>[k,[0,0,0]]));
 const copia=(a,b)=>{for(const k of GIUNTI_GESTO_VISTA)for(let i=0;i<3;i++)a[k][i]=b[k][i];};
+// Una presa nuova cancella i vecchi recuperi; la finta mantiene invece la palla
+// e deve disegnare anche il ritorno, senza saltare subito alla carica del tiro.
+export const attoVista=(p,hold)=>hold&&p.act?.done&&p.act.kind!=='fake'?null:p.act;
 
 // Le due cubiche condividono posizione e velocità al rilascio. Le tangenti sono
 // limitate per evitare che l'accompagnamento superi i punti della traiettoria.

@@ -7,6 +7,7 @@ import { fightOn, girata } from './lotta.js';
 import { contrasto, doFake } from './regole.js';
 import { fintaDi } from './finte.js';
 import { TIRO_COMANDO } from './tiro-comando.js';
+import { FINTA_MOVIMENTO } from './finta-movimento.js';
 import { aggiornaQte, tiroSpeciale } from './controfuga.js';
 import { ball, ctrl, fight, game, goalX, ownGoalX, setCtrl, teams } from './stato.js';
 import { diSchiena, doPass, doShoot, humanPassTarget, shotKind, startAct } from './tiri.js';
@@ -64,7 +65,7 @@ function aggiornaTiroTenuto(p,dt,passa,lob){
     }
     return true;
   }
-  if(game.time>=c.prossimaFinta&&(!p.act||p.act.done)){
+  if(game.time>=c.prossimaFinta&&!p.act){
     const carica=p.chargeT,f=fintaDi(p);
     p.fintaLatoVoluto=Math.abs(inp.z)>.35?Math.sign(inp.z):0;
     startAct(p,'fake',f.wind,()=>{
@@ -72,7 +73,7 @@ function aggiornaTiroTenuto(p,dt,passa,lob){
         doFake(p,{continua:true});if(ball.holder===p)p.fintaFino=game.time+1.2;
       }
     });
-    c.act=p.act;c.prossimaFinta=game.time+Math.max(TIRO_COMANDO.pausaFinta,f.wind+.09+.36+.2);
+    c.act=p.act;c.prossimaFinta=game.time+Math.max(TIRO_COMANDO.pausaFinta,p.act.wind+p.act.frusta+FINTA_MOVIMENTO.recupero+.12);
     p.charging=true;p.chargeT=carica;
   }
   return true;

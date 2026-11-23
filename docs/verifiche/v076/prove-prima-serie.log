@@ -1,0 +1,40 @@
+
+> pallanuoto-3d@0.76.0 prove
+> node tests/prove.mjs --solo=lint,finta-fluida,tiro-comando,tiro-registrato,gesti-fluidi,finta,desktop,gesti,replay,aspetto
+
+costruisco il gioco, poi 10 passi della CI (la verifica a parte: npm run verifica)
+ 1/10 npm run lint ... PASS (4 s)
+ 2/10 npm run tiro-registrato ... PASS (11 s)
+ 3/10 npm run tiro-comando ... FAIL (15 s)
+   ultime righe:
+   |     at file:///workspace/pallanuoto-v076/tests/tiro-comando-v075.mjs:146:12 {
+   |   generatedMessage: false,
+   |   code: 'ERR_ASSERTION',
+   |   actual: false,
+   |   expected: true,
+   |   operator: '==',
+   |   diff: 'simple'
+   | }
+   | 
+   | Node.js v24.22.1
+   | npm notice
+   | npm notice New major version of npm available! 11.9.0 -> 12.2.3
+   | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+   | npm notice To update run: npm install -g npm@12.2.3
+   | npm notice
+ 4/10 npm run finta-fluida ... PASS (29 s)
+ 5/10 npm run gesti-fluidi ... PASS (15 s)
+ 6/10 npm run finta -- --no-build ... PASS (18 s)
+ 7/10 npm run desktop -- --no-build ... PASS (15 s)
+ 8/10 npm run gesti -- --no-build ... PASS (19 s)
+ 9/10 npm run replay -- --no-build ... PASS (69 s)
+10/10 npm run aspetto -- --no-build --solo-gioco ... PASS (186 s)
+
+RIEPILOGO: 9 PASS, 1 FAIL su 10 passi in 6.4 minuti
+falliti: tiro-comando
+registri completi: /tmp/prove-2h2Sgd
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

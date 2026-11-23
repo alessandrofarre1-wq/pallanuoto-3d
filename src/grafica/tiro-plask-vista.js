@@ -1,6 +1,7 @@
 // Trasferimento del gesto completo sul modello esistente. Nessuna mesh o peso modificati.
 import * as THREE from 'three';
 import dati from './dati/tiro-plask-01.js';
+import { FINTA_MOVIMENTO, impulsoFinta } from '../finta-movimento.js';
 const bytes=Uint8Array.from(atob(dati.packed),c=>c.charCodeAt(0)),view=new DataView(bytes.buffer);
 const valori=new Float32Array(bytes.length/2);for(let i=0;i<valori.length;i++)valori[i]=view.getInt16(i*2,true)/32767;
 const N=dati.bones.length,STRIDE=N*4,CONTROL=dati.frames*STRIDE;
@@ -34,10 +35,14 @@ export function preparaTiroRegistrato(R,C){
     const axis=desc.child?punto(vicino).sub(pos):pos.sub(punto(vicino));
     const f=frame(axis,desc.reference==='up'?up:front),bind=osso.getWorldQuaternion(new THREE.Quaternion()).premultiply(qg);
     const tail=f.invert().multiply(bind),mirror=dati.bones.findIndex(x=>x.target===opposite(desc.target));
-    return {osso,tail,index,mirror:mirror<0?index:mirror};
+    const latoFinta=[C.ossa.bracD,C.ossa.avamD,C.ossa.manoD].includes(osso)?1:[C.ossa.bracS,C.ossa.avamS,C.ossa.manoS].includes(osso)?-1:0;
+    let latoMano=0;
+    for(let o=osso.parent;o;o=o.parent){if(o===C.ossa.manoD){latoMano=1;break;}if(o===C.ossa.manoS){latoMano=-1;break;}}
+    return {osso,tail,index,mirror:mirror<0?index:mirror,latoFinta,latoMano,mondoFinta:latoFinta?new THREE.Quaternion():null};
   });
   return {nodi,pose:nodi.map(()=>new THREE.Quaternion()),peso:0,eta:0,attivo:false,tempo:dati.source.start,velocita:0,flight:null,
-    uid:null,numero:null,scheda:null,ultimaPartita:null,footD:new THREE.Quaternion(),toeD:new THREE.Quaternion(),footS:new THREE.Quaternion(),toeS:new THREE.Quaternion(),correzioniGambe:0};
+    uid:null,numero:null,scheda:null,ultimaPartita:null,footD:new THREE.Quaternion(),toeD:new THREE.Quaternion(),footS:new THREE.Quaternion(),toeS:new THREE.Quaternion(),correzioniGambe:0,
+    manoFintaD:nodi.find(n=>n.osso===C.ossa.manoD),manoFintaS:nodi.find(n=>n.osso===C.ossa.manoS),deltaMano:new THREE.Quaternion()};
 }
 // La posa attraversa carica, rilascio e recupero senza azzerare la velocità al lancio.
 function hermite(A,B,u,D,v0,v1){u=clamp(u);const u2=u*u,u3=u2*u;return (2*u3-3*u2+1)*A+(u3-2*u2+u)*D*v0+(-2*u3+3*u2)*B+(u3-u2)*D*v1;}
@@ -57,26 +62,51 @@ function abbassaEstremo(osso,figlio,y){
   qd.setFromUnitVectors(old,c);osso.getWorldQuaternion(qc).premultiply(qd);mondo(osso,qc);return true;
 }
 const visuali={hip:'bacino',head:'testa',sR:'bracD',sL:'bracS',eR:'avamD',eL:'avamS',hR:'manoD',hL:'manoS',kR:'gambaD',kL:'gambaS',fR:'piedeD',fL:'piedeS'};
+function rotazioneRegistrata(n,s,manoS,out){
+  out.copy(s.pose[manoS?n.mirror:n.index]);if(manoS)out.set(-out.x,-out.y,out.z,out.w);
+  return out.multiply(n.tail).premultiply(qg);
+}
 export function applicaTiroRegistrato(R,p,T,J,memoria,dt){
   const C=R.corpo,s=C?.tiroRegistrato;if(!s)return false;
   const reset=s.uid!==p.uid||s.numero!==p.num||s.scheda!==p.scheda||s.ultimaPartita!==null&&(memoria.gameTime<s.ultimaPartita||memoria.gameTime-s.ultimaPartita>.25);
   if(reset){s.peso=s.eta=0;s.attivo=false;s.flight=null;s.tempo=dati.source.start;s.velocita=0;}
   s.uid=p.uid;s.numero=p.num;s.scheda=p.scheda;s.ultimaPartita=memoria.gameTime;
   const kind=p.act?.kind||(p.charging?'shot':null),atto=p.act;
-  const attivo=(kind==='shot'||kind==='torsione')&&!p.isGK&&(p.charging||atto&&(atto.wind>=.06||memoria.caricaIngresso>.4));
+  const finta=kind==='fake'&&p.charging&&memoria.hold;
+  const attivo=((kind==='shot'||kind==='torsione')&&(p.charging||atto&&(atto.wind>=.06||memoria.caricaIngresso>.4))||finta)&&!p.isGK;
   if(attivo){
     if(!s.attivo)s.eta=0;s.eta+=Math.max(0,dt);s.peso=ease(s.eta/.10);
-    const precedente=s.tempo;s.tempo=Math.max(dati.source.start,Math.min(dati.source.end,tempoDelGesto(s,p,memoria)));
+    const precedente=s.tempo;
+    // La finta parte e torna alla medesima carica: il corpo non passa più da
+    // Plask al procedurale e viceversa due volte per ciclo.
+    if(finta){s.flight=null;s.tempo=dati.source.start+(dati.source.loadEnd-dati.source.start)*ease((p.chargeT||0)/.5);}
+    else s.tempo=Math.max(dati.source.start,Math.min(dati.source.end,tempoDelGesto(s,p,memoria)));
     if(dt>0)s.velocita=(s.tempo-precedente)/dt;
   }else{
     if(s.attivo){s.eta=0;s.daPeso=s.peso;}
     s.eta+=Math.max(0,dt);s.peso=(s.daPeso||0)*(1-ease(s.eta/.12));s.flight=null;
   }
   s.attivo=attivo;const peso=s.peso*(1-ease(T.oriz||0));if(peso<1e-6)return false;
+  const lato=T.manoS?-1:1,impulso=finta?impulsoFinta(atto):0,ampiezza=impulso*FINTA_MOVIMENTO.braccio;
+  if(finta)for(const n of s.nodi)if(n.latoFinta===lato)n.osso.getWorldQuaternion(n.mondoFinta);
   campionaPosaRegistrata(s.tempo,s.pose);R.g.getWorldQuaternion(qg);
+  if(finta){
+    const mano=T.manoS?s.manoFintaS:s.manoFintaD;
+    rotazioneRegistrata(mano,s,T.manoS,qb);
+    s.deltaMano.copy(qb).slerp(mano.mondoFinta,ampiezza).multiply(qb.invert());
+  }
   for(const n of s.nodi){
-    qa.copy(s.pose[T.manoS?n.mirror:n.index]);if(T.manoS)qa.set(-qa.x,-qa.y,qa.z,qa.w);
-    qa.multiply(n.tail).premultiply(qg);n.osso.parent.getWorldQuaternion(qp).invert();qa.premultiply(qp).normalize();n.osso.quaternion.slerp(qa,peso);
+    rotazioneRegistrata(n,s,T.manoS,qa);
+    if(finta&&n.latoFinta===lato)qa.slerp(n.mondoFinta,ampiezza);
+    // Le dita seguono la mano mantenendo la presa della clip, senza ruotare
+    // in senso opposto quando cambia l'orientamento del polso.
+    if(finta&&n.latoMano===lato)qa.premultiply(s.deltaMano);
+    n.osso.parent.getWorldQuaternion(qp).invert();qa.premultiply(qp).normalize();n.osso.quaternion.slerp(qa,peso);
+  }
+  if(finta&&C.schiena.length){
+    const busto=C.schiena[0],verso=p.fintaLatoGesto?Math.sign(p.fintaLatoGesto*p.fx):-lato;
+    busto.getWorldQuaternion(qc);qd.setFromAxisAngle(up,verso*FINTA_MOVIMENTO.torace*impulso);
+    mondo(busto,qc.premultiply(qd));
   }
   // La radice della registrazione non muove il giocatore. Si adatta la quota
   // alla vasca, mantenendo la forma e la coordinazione della posa completa.

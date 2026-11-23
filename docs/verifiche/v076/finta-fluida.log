@@ -1,0 +1,10 @@
+
+> pallanuoto-3d@0.76.0 finta-fluida
+> node tests/finta-fluida-v076.mjs
+
+Finta v0.76: {"scene":24,"massimi":{"anca":0,"torso":0.0073406909860869295,"passoMano":0.07734944522019244,"percorsoAnca":0,"percorsoTorso":0.1999999999939713,"derivaAnca":0,"derivaTorso":0,"ditaMaxDelta":5.16191365590357e-8,"ditaMaxPasso":5.16191365590357e-8},"violazioni":0}
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

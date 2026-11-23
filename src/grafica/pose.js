@@ -12,7 +12,7 @@ import { braccioMuro, braccioVerso } from '../muro.js';
 import { visoGiocatore } from './espressioni.js';
 import { aggiornaMani } from './mani.js';
 import { puoMuoversiSuFallo } from '../gioco-fermo.js';
-import { conservaGestoVista, frustaVista, preparaGestoVista, raccordaGestoVista, smussoGestoVista } from './gesto-vista.js';
+import { attoVista, conservaGestoVista, frustaVista, preparaGestoVista, raccordaGestoVista, smussoGestoVista } from './gesto-vista.js';
 import { raggioVistaPalla } from './dimensioni-palla.js';
 import { RAPPORTO_SCALA_PRECEDENTE as scalaAtleta } from '../scala-grafica.js';
 import { raccordaCatenaTiroVista } from './tiro-vista.js';
@@ -394,7 +394,7 @@ function articolaVista(p,J,T,t,gestoVista){
       braccio(s,mano,hint,palmo,recupera?-0.10+0.12*(-sn):0.12+0.22*sn,e);
     }
   }
-  const a=hold&&p.act?.done?null:p.act;
+  const a=attoVista(p,hold);
   const kind=a?.kind||(p.charging?shotKind(p):null), th=kind?(THROW[kind]||THROW.shot):null;
   const fr=a?.frusta||0.18, tt=a?a.t-a.wind:0, carica=gestoVista.carica;
   const volo=a?clamp(tt/fr,0,1):0, chiude=a?clamp((tt-fr)/0.36,0,1):0;
@@ -635,7 +635,7 @@ export function updateRig(p,dt,t){
   // e girato (v0.51, video e diagnosi di Ale su iPhone: corpo contro moto fino al 35% dopo i replay).
   R.g.position.set(p.x,0,p.z); R.g.rotation.set(0,Math.atan2(-p.fz,p.fx),0);
   const resetVista=!p.giuntiVista||game.state==='countdown'||(!p.act&&!p.charging&&game.state!=='play'&&!puoMuoversiSuFallo(p));
-  const gestoVista=preparaGestoVista(p,ball.holder===p&&p.act?.done?null:p.act,ball.holder===p,game.time,dt,t,resetVista);
+  const gestoVista=preparaGestoVista(p,attoVista(p,ball.holder===p),ball.holder===p,game.time,dt,t,resetVista);
   const parataCondivisa=p.isGK&&ball.holder!==p&&p.tentativoPortiere?.attiva;
   const vista=articolaVista(p,posturaVista(p,J,T.oriz||0,inclinazioneVerticale(p,T,dt)),T,t,gestoVista);
   const Jv=parataCondivisa?vista:raccordaGestoVista(gestoVista,vista,T);

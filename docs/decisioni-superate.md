@@ -3,6 +3,13 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.76
+
+- Finta visibile soltanto fino a done → recupero completo nel disegno, ritorno alla stessa carica.
+- Accenno in0,09s e preparazioni anche da0,04s → minimo0,16s di preparazione e0,18s di accenno;0,36s di recupero conservati, ripetizione successiva dopo la chiusura.
+- Spegnimento Plask e ritorno alla carica di tutto il corpo → base registrata continua nella tenuta, movimento additivo del braccio e torace limitato. Falangi solidali alla mano.
+- Nessun cambiamento a modello/rig/pesi/volto o clip integrale, massimo0,9s e tiro al rilascio anche durante il recupero restano in vigore.
+
 ## v0.75
 
 - Tocco TIRO = finta e lunga attesa nella carica → tocco/rilascio = polso, tenuta = finte continue e preparazione, rilascio = tiro. Massimo0,9s conservato; nessuna precisione assegnata da una barra oscillante.
