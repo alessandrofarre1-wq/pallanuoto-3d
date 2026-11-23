@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.75.0",
+  "version": "0.76.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -88,6 +88,7 @@
     "rig-mani": "node tests/rig-mani-v073.mjs",
     "tiro-registrato": "node tests/tiro-registrato.mjs && node tests/esultanza-mano.mjs",
     "tiro-comando": "node tests/tiro-comando-v075.mjs",
+    "finta-fluida": "node tests/finta-fluida-v076.mjs",
     "scatto-inizio": "node tests/scatto-inizio-v075.mjs"
   },
   "dependencies": {

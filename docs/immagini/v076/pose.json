@@ -1,0 +1,42 @@
+[
+  {
+    "t": 0.01666666666666572,
+    "gesto": "fake",
+    "done": false
+  },
+  {
+    "t": 0.11666666666666003,
+    "gesto": "fake",
+    "done": false
+  },
+  {
+    "t": 0.21666666666665435,
+    "gesto": "fake",
+    "done": false
+  },
+  {
+    "t": 0.29999999999998295,
+    "gesto": "fake",
+    "done": false
+  },
+  {
+    "t": 0.38333333333331154,
+    "gesto": "fake",
+    "done": true
+  },
+  {
+    "t": 0.5166666666666373,
+    "gesto": "fake",
+    "done": true
+  },
+  {
+    "t": 0.7333333333332916,
+    "gesto": "fake",
+    "done": true
+  },
+  {
+    "t": 0.833333333333286,
+    "gesto": "carica",
+    "done": false
+  }
+]

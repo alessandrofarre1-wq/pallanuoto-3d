@@ -33,6 +33,7 @@ jobs:
       - run: npm run tiro-visuale
       - run: npm run tiro-registrato
       - run: npm run tiro-comando
+      - run: npm run finta-fluida
       - run: npm run scatto-inizio
       - run: npm run rig-mani
       - run: npm run rimesse

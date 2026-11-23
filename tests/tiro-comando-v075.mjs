@@ -69,7 +69,13 @@ try{
       window.__avanza(1);if(p.act?.kind==='fake'&&!p.act.done&&p.act.t>.03)return true;
     }return false;},
     movimento(){const p=H.teams[0].players[4],C=p.mesh.corpo,O=C.ossa,campioni=[];
-      for(let i=0;i<24;i++){window.__avanza(4);campioni.push([O.bracD,O.avamD,O.manoD,C.schiena.at(-1)].map(o=>o.quaternion.toArray()));}
+      for(let i=0;i<24;i++){
+        window.__avanza(4);
+        // Il torace può muoversi dalla prima vertebra: misurare soltanto la
+        // rotazione locale dell'ultima ignorava il movimento dei suoi genitori.
+        const inversa=p.mesh.g.getWorldQuaternion(O.bacino.quaternion.clone()).invert();
+        campioni.push([O.bracD,O.avamD,O.manoD,C.schiena.at(-1)].map(o=>o.getWorldQuaternion(o.quaternion.clone()).premultiply(inversa).normalize().toArray()));
+      }
       const angolo=(a,b)=>2*Math.acos(Math.min(1,Math.abs(a.reduce((s,x,i)=>s+x*b[i],0))));
       const escursione=campioni[0].map((q,j)=>Math.max(...campioni.map(c=>angolo(q,c[j]))));
       return {braccio:Math.max(...escursione.slice(0,3)),busto:escursione[3],...this.stato()};

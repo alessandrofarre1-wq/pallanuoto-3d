@@ -1,3 +1,13 @@
+# Passaggio WATERPOLO7 — v0.76 finta fluida
+
+Base main6b0d2b9, PR66 unita e CI45200501806 verde. Ramo `codex/v076-finta-fluida`, workspace `/workspace/pallanuoto-v076`, versione0.76.0. Prima di proseguire riallineare GitHub e diff; preservare Claude. Nessun merge/deploy.
+
+Corretti finta troppo rapida e avvitamento dei video: recupero visuale completo, tempi minimi0,16+0,18+0,36s e ripetizione dopo la chiusura. Plask rimane base continua durante la tenuta; braccio dominante additivo, torace limitato0,10rad, dita solidali. Non cambiare GLB/rig/pesi/volto/nuoto o clip integrale di Ale. Massimo0,9s e tiro al rilascio anche nel recupero conservati.
+
+24scene/48cicli:120→0violazioni,24rilasci reali; dati/fasi e8pose nel [rapporto](versioni/v076-finta-fluida.md) e nelle [verifiche](verifiche/v076/README.md). Esito CI e SHA finale nella PR. Non vendere i test come qualità professionale o FPS di un iPhone. Meno100call/150000tri anche2cambi/replay,14corpi; logoC/camera unica/SPEED1/CAMBI basso e riflessoalta conservati. Nessuna nuova taratura estesa, nessun lavoro sul viso. Sei gare standard nella sola CI finale, una Chromium pesante alla volta.
+
+---
+
 # Passaggio WATERPOLO7 — v0.75 tiro continuo, scatto e boa
 
 Base main1ec69ca(PR65 unita, CI45058084563 verde), ramo `codex/v075-tiro-fintee-anello`, worktree `/workspace/pallanuoto-v075`, versione0.75.0. Prima di altro lavoro riallineare main/PR/CI e diff; preservare tutto. Non fare merge/deploy. La PR riporta lo SHA e l’esito finale; non riaprire il vecchio lavoro v068–v074.

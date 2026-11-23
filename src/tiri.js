@@ -4,6 +4,7 @@ import { azioneAperta, registraTiro, tipoDiTiro } from './statistiche.js';
 import { controllaInterferenza } from './regole.js';
 import { annuncia } from './cronaca.js';
 import { FIRMA, firma } from './finte.js';
+import { FINTA_MOVIMENTO } from './finta-movimento.js';
 import { ALZATA, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, paloUomo, postoPortiere, setteControSei, viciniUomo } from './ia.js';
 import { faseUomo } from './uomo-in-piu.js';
@@ -28,7 +29,8 @@ export function startAct(p,kind,wind,fn,aim){
   if(kind!=='colonnello'&&kind!=='schizzo') wind+=(kind==='pass'?0.4:1)*ALZATA*(p.oriz||0);
   // "frusta" = tempo dal braccio caricato al rilascio. Dati riportati nella tesi Patumi (Melchiorri 2015): 166 ms per i
   // professionisti, 189 ms per i semi-professionisti: chi tira meglio rilascia prima. Passaggio e finta sono gesti più corti.
-  const frusta = kind==='pass'||kind==='fake' ? 0.09 : kind==='polso' ? 0.11 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
+  if(kind==='fake')wind=Math.max(wind,FINTA_MOVIMENTO.anticipazione);
+  const frusta = kind==='fake'?FINTA_MOVIMENTO.frusta:kind==='pass' ? 0.09 : kind==='polso' ? 0.11 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
   // finta di lato (v0.59, finte.js FINTA_LATO): la prima dritta, dalla seconda verso un palo (scelto con la levetta o alternato)
   if(kind==='fake'){ let lato=0;
     if((p.fakeCount||0)>0){ lato=p.fintaLatoVoluto||(p.ultimoLatoFinta?-p.ultimoLatoFinta:(rnd()<0.5?1:-1)); p.ultimoLatoFinta=lato; }

@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.75). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.76). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -108,7 +108,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Raccordi visuali v0.70 (`grafica/gesto-vista.js`): carica già raggiunta conservata, ingresso/uscita dalla posa precedente, curva continua al rilascio e filtro graduale. Stato solo visuale per atleta; giunture fisiche, punto/tempi del lancio e carica0,9s conservati. Nessuna nuova geometria.
 - Chi nuota con la palla davanti alla testa, prima di tirare, passare o fintare la pesca dall'acqua e la porta di lato all'altezza
   della spalla (solo disegno, dentro i tempi del gesto).
-- Finte: tenere TIRO; sei stili personali (larga, a raffica, di polso, mezza, di bomba, di spalla) con un piccolo vantaggio sul
+- Finte v0.76: almeno 0,16 s preparazione + 0,18 s accenno + 0,36 s recupero, ripetizione dopo il recupero. Durante la tenuta la base Plask resta continua, braccio additivo e torace limitato a 0,10 rad; niente spegnimento/riaccensione di tutto il corpo. Dita solidali alla mano. Massimo 0,9 s e rilascio durante finta/recupero conservati; sei stili personali (larga, a raffica, di polso, mezza, di bomba, di spalla) con un piccolo vantaggio sul
   seguito tipico; dalla seconda finta il braccio va di lato e sposta difensore e portiere.
 - Portiere: segue il passaggio, para in base a posizione, Riflessi, stanchezza, sorpresa e muro; para meno dopo un cambio di lato,
   in superiorità, dopo una finta o su tiri vicini; mentre l'avversario carica sale a braccia larghe (solo disegno).
@@ -170,10 +170,8 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.75 — tiro continuo, scatto e comandi alla boa
+## Stato v0.76 — finta fluida
 
-Base main1ec69ca(PR65 unita; CI45058084563 verde), ramo `codex/v075-tiro-fintee-anello`, versione0.75.0. Riallineamento GitHub prima dello sviluppo e prima della pubblicazione; nessun nuovo intervento di Claude da duplicare. Modello, rig, pesi, volto, clip Plask integrale e nuoto precedenti conservati; GLB SHA2568fd658a8… invariato. Nessuna nuova prova facciale.
+Base main6b0d2b9 (PR66 unita, CI45200501806 verde), ramo `codex/v076-finta-fluida`, versione0.76.0. Richiesta: correggere velocità/scatti della finta e avvitamento finale mostrati nei tre video di Ale. Recupero visuale conservato; tempi della sola finta più distesi; carica Plask continua con braccio/torace sovrapposti. GLB, rig, pesi, volto, nuoto e clip integrale del tiro invariati.
 
-Dettagli, file, misure con fase esplicita, esiti e limiti nel [rapporto v0.75](docs/versioni/v075-tiro-scatto-boa.md) e nelle [verifiche](docs/verifiche/v075/README.md). Prima serie locale13/13PASS inclusi tiro registrato, rig, regole/nuoto/replay e aspetto gioco; prove finali mirate e CI completa sono riportate con la loro provenienza. Sei partite standard soltanto nella CI finale, nessuna nuova taratura generale. PrimaCI45069119661:6partite PASS(108gol/257tiri), poi FAIL sul vecchio controllo conservato al kickoff nel test entrate-integrazione. Aggiornata solo quell’attesa (scattista al kickoff, controllo conservato nelle altre riprese), regressione locale PASS; runtime invariato. Necessaria una seconda CI completa anche per i passi saltati. SecondaCI45070404033: stesso108gol/257tiri e integrazionePASS, poi FAIL foglio inferiorità che lasciava ctrl3 nonostante autoplay. Corretta solo fixture (__setCtrl(null), assert carica effettiva); muro/pose/runtime invariati. Coda9passi provata localmente prima della CI successiva, senza nuove sei partite locali. Coda locale8/9PASS: cronaca attendeva la stabilità di Pausa con RAF finto pur avendolo visibile. Corretto solo test con visibilità/hit test e touchscreen.tap reale, bloccoA completo ripristinato. Riprova cronaca completa PASS: tutti9i controlli della coda verificati, aspetto finale0/7707verticali,0/5075nuoto,0/1218transizioni. CI completa finale nella PR. La PR indica lo SHA e l’esito finale; non fare merge/deploy.
-
-La posa a L segnalata da Ale nella foto dello scatto era un errore del test: spostamenti avanzati60frame, articolazioni aggiornate una sola volta. Corretto il test per aggiornare anche il rig a ogni frame; non cambiata la nuotata nel gioco. Non pubblicare le vecchie catture come prova del nuoto. Restano giudizio visivo di Ale, FPS su iPhone fisico e bilanciamento generale già aperto. Nessuna promessa di qualità professionale dai soli test numerici.
+[Rapporto](docs/versioni/v076-finta-fluida.md), [prove con fasi e misure](docs/verifiche/v076/README.md). Test 24 scene/48 cicli: violazioni120→0, salto torso0,552→0,00734rad/frame, mano0,198→0,07735m/frame;24rilasci reali e15falangi verificate,8pose ispezionate. Non è una promessa di resa professionale o una misura di FPS sul telefono. Massimo0,9s e tiro al rilascio conservati. Sei gare standard una volta nella CI finale; niente nuovo bilanciamento esteso. Locale: prima serie9/10 poi comandi correttiPASS, gameplayPASS, verifica0partitePASS e5confronti ispezionati, aspetto completoPASS(gambe0/8539,0/4316,0/1229),6foto ispezionate. Due cambi/anello68call/139200tri. La PR riporta SHA e CI finale; non fare merge/deploy.

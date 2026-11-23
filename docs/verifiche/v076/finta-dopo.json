@@ -1,0 +1,1998 @@
+{
+  "root": "/workspace/pallanuoto-v076",
+  "scene": [
+    {
+      "stile": "larga",
+      "mano": "D",
+      "dir": 1,
+      "fase": "frusta",
+      "frames": 185,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 54,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.006938887618787145,
+            "braccio": 0.30570863103471324,
+            "avambraccio": 0.1833150120185969,
+            "mano": 0.39063046382761635
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19994887719398183
+          },
+          "passoMano": 0.07670570099447527,
+          "escursioneMano": 0.26239505185438605,
+          "escursioneBraccio": 2.015977831446368,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 54,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.006938887618787145,
+            "braccio": 0.3323360423930724,
+            "avambraccio": 0.201507202432413,
+            "mano": 0.3975946099540553
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19994887719147011
+          },
+          "passoMano": 0.07489814691698367,
+          "escursioneMano": 0.2501844148832298,
+          "escursioneBraccio": 1.5470229153326431,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": false,
+        "t": 0.2666666666666643,
+        "wind": 0.2,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.722447043460292,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "larga",
+      "mano": "D",
+      "dir": -1,
+      "fase": "frusta",
+      "frames": 184,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 54,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.006938887618659145,
+            "braccio": 0.33320777254199496,
+            "avambraccio": 0.19850884358546003,
+            "mano": 0.3972057139835603
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19994887716978943
+          },
+          "passoMano": 0.07494599593516174,
+          "escursioneMano": 0.24987593809565392,
+          "escursioneBraccio": 1.5471006099617837,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 54,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.006938887618787145,
+            "braccio": 0.30609575694657587,
+            "avambraccio": 0.18208660605728438,
+            "mano": 0.3903125155685845
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.1999488771773452
+          },
+          "passoMano": 0.07670197859195639,
+          "escursioneMano": 0.26215013776022794,
+          "escursioneBraccio": 2.015512109723674,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": false,
+        "t": 0.26666666666666966,
+        "wind": 0.2,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.697984110733593,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "larga",
+      "mano": "S",
+      "dir": 1,
+      "fase": "recupero",
+      "frames": 184,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 54,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.006938887618723145,
+            "braccio": 0.3056466653609596,
+            "avambraccio": 0.18375158182160337,
+            "mano": 0.390705149131322
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19994887718488052
+          },
+          "passoMano": 0.07674823290484425,
+          "escursioneMano": 0.26289864969264826,
+          "escursioneBraccio": 2.016317452069935,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 54,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.006938887618787145,
+            "braccio": 0.33265680057812386,
+            "avambraccio": 0.20062106074924568,
+            "mano": 0.39751619381859066
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19994887717526613
+          },
+          "passoMano": 0.07493604241274918,
+          "escursioneMano": 0.25009007494258184,
+          "escursioneBraccio": 1.5473018910199476,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": true,
+        "t": 0.4833333333333156,
+        "wind": 0.2,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.719292758531136,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "larga",
+      "mano": "S",
+      "dir": -1,
+      "fase": "recupero",
+      "frames": 184,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 54,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.006938887618531144,
+            "braccio": 0.30648274042164175,
+            "avambraccio": 0.18139012810771088,
+            "mano": 0.3900665593385362
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19994887719655338
+          },
+          "passoMano": 0.07673831406841258,
+          "escursioneMano": 0.2623898829416419,
+          "escursioneBraccio": 2.0153496160679913,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 54,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.006938887618531144,
+            "braccio": 0.33197088577312917,
+            "avambraccio": 0.20206616213048303,
+            "mano": 0.39765680128865716
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.1999488771956516
+          },
+          "passoMano": 0.07491979687569217,
+          "escursioneMano": 0.2503060427638018,
+          "escursioneBraccio": 1.5472531530893805,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": true,
+        "t": 0.4833333333333686,
+        "wind": 0.2,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.184887501102285,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "raffica",
+      "mano": "D",
+      "dir": 1,
+      "fase": "frusta",
+      "frames": 177,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690985905438,
+            "braccio": 0.2812320568250121,
+            "avambraccio": 0.14755188357749435,
+            "mano": 0.3499175880652357
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.1997723349139809
+          },
+          "passoMano": 0.07129449857110759,
+          "escursioneMano": 0.29411494220369977,
+          "escursioneBraccio": 1.5284571336139106,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690985905438,
+            "braccio": 0.24002091700262587,
+            "avambraccio": 0.1387521762226597,
+            "mano": 0.3566629839148406
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233492152593
+          },
+          "passoMano": 0.072365128357402,
+          "escursioneMano": 0.3041104807595809,
+          "escursioneBraccio": 1.9894473717100345,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": false,
+        "t": 0.23333333333335035,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.674515611713147,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "raffica",
+      "mano": "D",
+      "dir": -1,
+      "fase": "frusta",
+      "frames": 177,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.239838339512033,
+            "avambraccio": 0.1388729898063929,
+            "mano": 0.35675147837624344
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233491041366
+          },
+          "passoMano": 0.06091049957374696,
+          "escursioneMano": 0.3041946050040277,
+          "escursioneBraccio": 1.9896847159481672,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690985905438,
+            "braccio": 0.2809254965062355,
+            "avambraccio": 0.1472788044845739,
+            "mano": 0.3499986691921368
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233491122154
+          },
+          "passoMano": 0.04868392840295233,
+          "escursioneMano": 0.29420066621501495,
+          "escursioneBraccio": 1.5284348329692639,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": false,
+        "t": 0.23333333333335035,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.241145358059047,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "raffica",
+      "mano": "S",
+      "dir": 1,
+      "fase": "recupero",
+      "frames": 177,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690985965936,
+            "braccio": 0.2811558169793453,
+            "avambraccio": 0.14750590505491826,
+            "mano": 0.3501162282111383
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233490637844
+          },
+          "passoMano": 0.06935439814498486,
+          "escursioneMano": 0.2941635273356345,
+          "escursioneBraccio": 1.5287020459169405,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.24001890176756674,
+            "avambraccio": 0.13891106097771114,
+            "mano": 0.35682113344335914
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233490337762
+          },
+          "passoMano": 0.072554308785672,
+          "escursioneMano": 0.3046197454554306,
+          "escursioneBraccio": 1.9897247808597125,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": true,
+        "t": 0.4500000000000328,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.22700786989714,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "raffica",
+      "mano": "S",
+      "dir": -1,
+      "fase": "recupero",
+      "frames": 179,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690985965936,
+            "braccio": 0.2816054909509643,
+            "avambraccio": 0.14795303175855462,
+            "mano": 0.3500989671314772
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.1997723349101095
+          },
+          "passoMano": 0.0532120483320813,
+          "escursioneMano": 0.2939832039842807,
+          "escursioneBraccio": 1.5287500452344571,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690985844942,
+            "braccio": 0.2394215532936801,
+            "avambraccio": 0.13931211149107925,
+            "mano": 0.3570760029981111
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233491808827
+          },
+          "passoMano": 0.056285313620205474,
+          "escursioneMano": 0.30504552293391624,
+          "escursioneBraccio": 1.9907747447738393,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": true,
+        "t": 0.44999999999993434,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.69610099674066,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "polso",
+      "mano": "D",
+      "dir": 1,
+      "fase": "frusta",
+      "frames": 179,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.0073406909860869295,
+            "braccio": 0.2174851080929761,
+            "avambraccio": 0.16943074576648368,
+            "mano": 0.39075212604594856
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233491183774
+          },
+          "passoMano": 0.06874052490337683,
+          "escursioneMano": 0.29929576890576826,
+          "escursioneBraccio": 1.9885783018544148,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.2648494062789205,
+            "avambraccio": 0.16585755397507973,
+            "mano": 0.391138758451479
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233490771606
+          },
+          "passoMano": 0.06049749678001623,
+          "escursioneMano": 0.2951780789826441,
+          "escursioneBraccio": 1.5261249523818257,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": false,
+        "t": 0.23333333333329945,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.73904797107489,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "polso",
+      "mano": "D",
+      "dir": -1,
+      "fase": "frusta",
+      "frames": 179,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.21722771967262733,
+            "avambraccio": 0.16968151091228326,
+            "mano": 0.3908941950915194
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.1997723349096439
+          },
+          "passoMano": 0.046198397690752784,
+          "escursioneMano": 0.2993662752872543,
+          "escursioneBraccio": 1.9888306457170144,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690985905438,
+            "braccio": 0.2637259254182431,
+            "avambraccio": 0.1661758634010637,
+            "mano": 0.3913505531642944
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233490927507
+          },
+          "passoMano": 0.052828213595797535,
+          "escursioneMano": 0.2955265904181635,
+          "escursioneBraccio": 1.5260309906679113,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": false,
+        "t": 0.23333333333329945,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.748283602540624,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "polso",
+      "mano": "S",
+      "dir": 1,
+      "fase": "recupero",
+      "frames": 179,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.21746310196292498,
+            "avambraccio": 0.16966444396078695,
+            "mano": 0.3909476282148991
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233491943092
+          },
+          "passoMano": 0.06883359488281304,
+          "escursioneMano": 0.29981867345169166,
+          "escursioneBraccio": 1.9888757267418604,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.0073406909860869295,
+            "braccio": 0.2648716620213356,
+            "avambraccio": 0.16600631453491446,
+            "mano": 0.39134935293398393
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.1997723349004222
+          },
+          "passoMano": 0.06262110618837101,
+          "escursioneMano": 0.29521968826677203,
+          "escursioneBraccio": 1.52638588832736,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": true,
+        "t": 0.44999999999993434,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.76598603246223,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "polso",
+      "mano": "S",
+      "dir": -1,
+      "fase": "recupero",
+      "frames": 179,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690985844942,
+            "braccio": 0.21709338199256473,
+            "avambraccio": 0.17001477703677192,
+            "mano": 0.391135485408263
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233491808827
+          },
+          "passoMano": 0.04621451373013985,
+          "escursioneMano": 0.2999534713194568,
+          "escursioneBraccio": 1.9892862184840812,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.0073406909860869295,
+            "braccio": 0.2638857552553545,
+            "avambraccio": 0.1662722227639704,
+            "mano": 0.39152353251847916
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233490594432
+          },
+          "passoMano": 0.060883622973234866,
+          "escursioneMano": 0.2955301656007491,
+          "escursioneBraccio": 1.5262932956864574,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": true,
+        "t": 0.44999999999993434,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.704303700979334,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "mezza",
+      "mano": "D",
+      "dir": 1,
+      "fase": "frusta",
+      "frames": 179,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.0073406909860869295,
+            "braccio": 0.26621045036866947,
+            "avambraccio": 0.13524595608151538,
+            "mano": 0.35274233825719475
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233491183774
+          },
+          "passoMano": 0.04252241122073076,
+          "escursioneMano": 0.3065718267887438,
+          "escursioneBraccio": 2.0040078418281206,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.30845768763610193,
+            "avambraccio": 0.16087223171522358,
+            "mano": 0.345367959997509
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233490771606
+          },
+          "passoMano": 0.03859081920497779,
+          "escursioneMano": 0.2974902316703028,
+          "escursioneBraccio": 1.5463161229468874,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": false,
+        "t": 0.23333333333329945,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.706491738522644,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "mezza",
+      "mano": "D",
+      "dir": -1,
+      "fase": "frusta",
+      "frames": 179,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690985905438,
+            "braccio": 0.3078012519088631,
+            "avambraccio": 0.1602413530421085,
+            "mano": 0.34538545966270057
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233490927507
+          },
+          "passoMano": 0.038598150763224315,
+          "escursioneMano": 0.2977365802303807,
+          "escursioneBraccio": 1.546471987198074,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.2659660179709561,
+            "avambraccio": 0.13547657469979413,
+            "mano": 0.35279011709241176
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.1997723349096439
+          },
+          "passoMano": 0.04254161748867575,
+          "escursioneMano": 0.3068668067258847,
+          "escursioneBraccio": 2.004950044007945,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": false,
+        "t": 0.23333333333329945,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.254497164310546,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "mezza",
+      "mano": "S",
+      "dir": 1,
+      "fase": "recupero",
+      "frames": 179,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.2662086718336933,
+            "avambraccio": 0.1353798748712574,
+            "mano": 0.35287792373762505
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233491943092
+          },
+          "passoMano": 0.04254111704692317,
+          "escursioneMano": 0.3070817005363116,
+          "escursioneBraccio": 2.0042754717376314,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.0073406909860869295,
+            "braccio": 0.30850268040267853,
+            "avambraccio": 0.1609366152039885,
+            "mano": 0.34552707528645277
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.1997723349004222
+          },
+          "passoMano": 0.03858846613562415,
+          "escursioneMano": 0.297503404248462,
+          "escursioneBraccio": 1.5465453661077282,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": true,
+        "t": 0.44999999999993434,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.220372482491655,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "mezza",
+      "mano": "S",
+      "dir": -1,
+      "fase": "recupero",
+      "frames": 178,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.30772357997628813,
+            "avambraccio": 0.16018244042407592,
+            "mano": 0.3455393416772943
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233492527588
+          },
+          "passoMano": 0.03859574461767809,
+          "escursioneMano": 0.2978013221655771,
+          "escursioneBraccio": 1.5467299172141968,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.0073406909860869295,
+            "braccio": 0.26606439701426327,
+            "avambraccio": 0.13551712001730443,
+            "mano": 0.35290280822542647
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233491018687
+          },
+          "passoMano": 0.042552011011097825,
+          "escursioneMano": 0.3072672601806024,
+          "escursioneBraccio": 2.0048508940430256,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": true,
+        "t": 0.4500000000001307,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.223505005151182,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "bomba",
+      "mano": "D",
+      "dir": 1,
+      "fase": "frusta",
+      "frames": 179,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007137458157810104,
+            "braccio": 0.2414022970485639,
+            "avambraccio": 0.14538215387201722,
+            "mano": 0.37799669640654476
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19999999998879087
+          },
+          "passoMano": 0.07466103029272132,
+          "escursioneMano": 0.24368333013517274,
+          "escursioneBraccio": 1.4859462316808676,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007137458157810104,
+            "braccio": 0.21824343649342176,
+            "avambraccio": 0.15950302872540795,
+            "mano": 0.37940821698390553
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.1999999999939713
+          },
+          "passoMano": 0.07730919134740208,
+          "escursioneMano": 0.2524614939978335,
+          "escursioneBraccio": 1.9824796938406712,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": false,
+        "t": 0.23333333333340125,
+        "wind": 0.17,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.720651737474615,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "bomba",
+      "mano": "D",
+      "dir": -1,
+      "fase": "frusta",
+      "frames": 179,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007137458157623445,
+            "braccio": 0.24025691404560348,
+            "avambraccio": 0.14522810549668339,
+            "mano": 0.3783180937034684
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.1999999999869881
+          },
+          "passoMano": 0.07462616169220639,
+          "escursioneMano": 0.24411610535879458,
+          "escursioneBraccio": 1.4859462674044548,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007137458157747884,
+            "braccio": 0.2187250549197912,
+            "avambraccio": 0.15944429378841576,
+            "mano": 0.3791833530083851
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19999999997707057
+          },
+          "passoMano": 0.0773013126918298,
+          "escursioneMano": 0.2522509973309605,
+          "escursioneBraccio": 1.9820162569569,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": false,
+        "t": 0.23333333333340125,
+        "wind": 0.17,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.693984223035702,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "bomba",
+      "mano": "S",
+      "dir": 1,
+      "fase": "recupero",
+      "frames": 179,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007137458157747884,
+            "braccio": 0.24140718036648476,
+            "avambraccio": 0.14535816718606948,
+            "mano": 0.37800873067074686
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19999999997731796
+          },
+          "passoMano": 0.07467652849863203,
+          "escursioneMano": 0.24369834118637304,
+          "escursioneBraccio": 1.4862171920665028,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007137458157872323,
+            "braccio": 0.21827793898577064,
+            "avambraccio": 0.1595493504633683,
+            "mano": 0.3793741571971287
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19999999998627094
+          },
+          "passoMano": 0.07734944522019244,
+          "escursioneMano": 0.2529407947288804,
+          "escursioneBraccio": 1.9827233195815666,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": true,
+        "t": 0.4500000000001307,
+        "wind": 0.17,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.72269398651485,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "bomba",
+      "mano": "S",
+      "dir": -1,
+      "fase": "recupero",
+      "frames": 179,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007137458157685664,
+            "braccio": 0.24034278167690767,
+            "avambraccio": 0.14521613320366972,
+            "mano": 0.37831320692283593
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19999999998978518
+          },
+          "passoMano": 0.07464169177895033,
+          "escursioneMano": 0.24409904428885493,
+          "escursioneBraccio": 1.4862103561778137,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 52,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007137458157810104,
+            "braccio": 0.21887824273479864,
+            "avambraccio": 0.15949246970774433,
+            "mano": 0.37908040217308175
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19999999999031742
+          },
+          "passoMano": 0.07734588489889661,
+          "escursioneMano": 0.25267763213355054,
+          "escursioneBraccio": 1.9821613241621894,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": true,
+        "t": 0.4500000000001307,
+        "wind": 0.17,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.702951622200658,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "spalla",
+      "mano": "D",
+      "dir": 1,
+      "fase": "frusta",
+      "frames": 178,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.29208614778983816,
+            "avambraccio": 0.15438458418710493,
+            "mano": 0.33441783306064005
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233491664415
+          },
+          "passoMano": 0.05781709328992439,
+          "escursioneMano": 0.2988856479419161,
+          "escursioneBraccio": 1.5276073444272398,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.25305315687564756,
+            "avambraccio": 0.1444585847129883,
+            "mano": 0.34429314930866634
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.1997723349133688
+          },
+          "passoMano": 0.0524177510103889,
+          "escursioneMano": 0.310753821937469,
+          "escursioneBraccio": 1.990243143729736,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": false,
+        "t": 0.23333333333340125,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.708427390143644,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "spalla",
+      "mano": "D",
+      "dir": -1,
+      "fase": "frusta",
+      "frames": 178,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.25322255456386134,
+            "avambraccio": 0.14431068198679048,
+            "mano": 0.34420459376405155
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233489467267
+          },
+          "passoMano": 0.07370062891054419,
+          "escursioneMano": 0.3106643672340548,
+          "escursioneBraccio": 1.9899674030258572,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.2923871509744947,
+            "avambraccio": 0.15468995796324733,
+            "mano": 0.33434514057209064
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.199772334909878
+          },
+          "passoMano": 0.07039267847259606,
+          "escursioneMano": 0.2988028270570245,
+          "escursioneBraccio": 1.5276646170607997,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": false,
+        "t": 0.23333333333340125,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.700611155065715,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "spalla",
+      "mano": "S",
+      "dir": 1,
+      "fase": "recupero",
+      "frames": 178,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.2533898676875988,
+            "avambraccio": 0.14426781371129102,
+            "mano": 0.34435923569409443
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233490848337
+          },
+          "passoMano": 0.0625762976384737,
+          "escursioneMano": 0.3109105510591975,
+          "escursioneBraccio": 1.989665151313838,
+          "falangi": 15,
+          "ditaMaxDelta": 5.16191365590357e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690985905438,
+            "braccio": 0.29126835229395,
+            "avambraccio": 0.15353579478248913,
+            "mano": 0.3346838837465336
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233490218693
+          },
+          "passoMano": 0.049867017300735075,
+          "escursioneMano": 0.29919653193010504,
+          "escursioneBraccio": 1.5277410510314304,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 4.2146848510894035e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": true,
+        "t": 0.4500000000001307,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.727472381463876,
+          "libera": true
+        }
+      ]
+    },
+    {
+      "stile": "spalla",
+      "mano": "S",
+      "dir": -1,
+      "fase": "recupero",
+      "frames": 178,
+      "carica09": 0.9,
+      "maxCarica": 0.9,
+      "cicli": [
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.0073406909860869295,
+            "braccio": 0.2533243211314384,
+            "avambraccio": 0.1443849529419188,
+            "mano": 0.34434684892807854
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233491018687
+          },
+          "passoMano": 0.0749676218242548,
+          "escursioneMano": 0.31108257637004644,
+          "escursioneBraccio": 1.9900088544917411,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        },
+        {
+          "frames": 51,
+          "maxPasso": {
+            "anca": 0,
+            "torso": 0.007340690986026433,
+            "braccio": 0.292397577672034,
+            "avambraccio": 0.15473952374868521,
+            "mano": 0.33455969358571347
+          },
+          "percorso": {
+            "anca": 0,
+            "torso": 0.19977233492527588
+          },
+          "passoMano": 0.06998196275537227,
+          "escursioneMano": 0.2988121749557062,
+          "escursioneBraccio": 1.5279207070381633,
+          "falangi": 15,
+          "ditaMaxDelta": 4.2146848510894035e-8,
+          "ditaMaxPasso": 5.16191365590357e-8,
+          "derivaAnca": 0,
+          "derivaTorso": 0
+        }
+      ],
+      "tenuta": {
+        "finte": 3,
+        "carica": 0.9,
+        "tiene": true,
+        "lanci": 0
+      },
+      "trovata": true,
+      "da": {
+        "kind": "fake",
+        "done": true,
+        "t": 0.4500000000001307,
+        "wind": 0.16,
+        "frusta": 0.18
+      },
+      "rilascio": {
+        "gesto": "shot",
+        "potenza": 1
+      },
+      "lanci": [
+        {
+          "uid": 4,
+          "kind": "shot",
+          "potenza": 1,
+          "velocita": 25.72124346446966,
+          "libera": true
+        }
+      ]
+    }
+  ],
+  "limiti": {
+    "passoAnca": 0.25,
+    "passoTorso": 0.3,
+    "percorsoAnca": 1.5,
+    "percorsoTorso": 3.5,
+    "derivaAnca": 0.3,
+    "derivaTorso": 0.4,
+    "passoMano": 0.16,
+    "passoBraccio": 0.9,
+    "ditaMaxDelta": 0.55,
+    "ditaMaxPasso": 0.35
+  },
+  "massimi": {
+    "anca": 0,
+    "torso": 0.0073406909860869295,
+    "passoMano": 0.07734944522019244,
+    "percorsoAnca": 0,
+    "percorsoTorso": 0.1999999999939713,
+    "derivaAnca": 0,
+    "derivaTorso": 0,
+    "ditaMaxDelta": 5.16191365590357e-8,
+    "ditaMaxPasso": 5.16191365590357e-8
+  },
+  "violazioni": [],
+  "errori": []
+}
