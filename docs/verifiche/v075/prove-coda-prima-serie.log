@@ -1,0 +1,39 @@
+
+> pallanuoto-3d@0.75.0 prove
+> node tests/prove.mjs --da=inferiorita
+
+costruisco il gioco, poi 9 passi della CI (la verifica a parte: npm run verifica)
+ 1/9 npm run inferiorita ... PASS (18 s)
+ 2/9 npm run v046 -- --no-build ... PASS (14 s)
+ 3/9 npm run sezione6 -- --no-build ... PASS (17 s)
+ 4/9 npm run dati-tesi -- --no-build ... PASS (33 s)
+ 5/9 npm run statistiche -- --no-build ... PASS (25 s)
+ 6/9 npm run azione -- --no-build ... PASS (13 s)
+ 7/9 npm run aspetto -- --no-build --solo-gioco ... PASS (165 s)
+ 8/9 npm run cronaca -- --no-build --solo-controlli ... FAIL (137 s)
+   ultime righe:
+   |   log: [
+   |     "  - waiting for locator('#tPause')",
+   |     '    - locator resolved to <div id="tPause">II</div>',
+   |     '  - attempting tap action',
+   |     '    - waiting for element to be visible, enabled and stable'
+   |   ],
+   |   name: 'TimeoutError'
+   | }
+   | 
+   | Node.js v24.22.1
+   | npm notice
+   | npm notice New major version of npm available! 11.9.0 -> 12.2.3
+   | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+   | npm notice To update run: npm install -g npm@12.2.3
+   | npm notice
+ 9/9 npm run menu -- --no-build --solo-controlli ... PASS (56 s)
+
+RIEPILOGO: 8 PASS, 1 FAIL su 9 passi in 8.0 minuti
+falliti: cronaca
+registri completi: /tmp/prove-ghKTaZ
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

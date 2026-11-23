@@ -12,11 +12,13 @@ import { allPlayers, ball, ctrl, game, teams } from '../stato.js';
 import { humanPassTarget } from '../tiri.js';
 import { comparseVisibili } from '../panchina.js';
 import { TRAIETTORIE_TIRO as TIRO } from '../taratura.js';
+import { prontezzaTiro } from '../tiro-comando.js';
 export const RACCORDO_PRESA=0.12;      // secondi in cui la palla disegnata arriva nella mano dopo la presa (v0.56)
 export const camPos=new THREE.Vector3(0,10.5,16), camLook=new THREE.Vector3(), _cv=new THREE.Vector3();
 export let prevBY=quotaGalleggiamentoVistaPalla;
 let camLargo=0;
 const _wv=new THREE.Vector3(), _wq=new THREE.Quaternion();
+const ORO_PREPARA=new THREE.Color(0xb98e36), ORO_PRONTO=new THREE.Color(0xffe49a);
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
 export function render(dt,now){
   if(trattieniMondoReplay()){
@@ -53,20 +55,26 @@ export function render(dt,now){
   if(wl>0.01){ _wq.setFromAxisAngle(_wv.divideScalar(wl),wl*dt); ball3d.quaternion.premultiply(_wq); }
   shadow.position.set(ball3d.position.x,0.015,ball3d.position.z);
   shadow.visible=ball3d.position.y>raggioVistaPalla+0.15;
-  // anello del giocatore controllato
-  ring.visible=false;
+  // Preparazione del tiro: lo stesso anello sul pelo dell'acqua si schiarisce
+  // fino al pronto e resta stabile mentre si tiene premuto, anche durante le finte.
+  const prepara=!!(ctrl&&ctrl.team.human&&!ctrl.excluded&&ball.holder===ctrl&&ctrl.charging&&game.state==='play');
+  const prontezza=prepara?prontezzaTiro(ctrl):0;
+  ring.visible=prepara;
+  ring.material.color.lerpColors(ORO_PREPARA,ORO_PRONTO,prontezza);
+  ring.scale.setScalar(1+0.1*prontezza);
+  if(prepara) ring.position.set(ctrl.x,0.055,ctrl.z);
   freccia.visible=!!ctrl&&!ctrl.excluded&&game.state!=='menu';
   if(ctrl){ ctrl.mesh.spr.getWorldPosition(_cv); freccia.position.set(_cv.x,_cv.y+0.48+Math.sin(now*0.006)*0.05,_cv.z); }
   // mirino: mentre il giocatore controllato carica o esegue un tiro, mostra il punto della porta a cui mira
   mirino.visible=false;
   if(ctrl&&ball.holder===ctrl&&!ctrl.isGK&&game.state==='play'&&(ctrl.charging||(ctrl.act&&!ctrl.act.done&&ctrl.act.kind!=='pass'&&ctrl.act.kind!=='fake'))){
     const gk=teams[1-ctrl.team.idx].players[0];
-    const potenza=ctrl.charging?Math.min(1,(ctrl.chargeT||0)/0.9):(ctrl.act?.potenza||0);
-    const tipo=ctrl.act?.kind||'shot',forte=game.penalty!==ctrl&&potenza>=TIRO.forteDa&&!['lob','polso','torsione','schizzo','colonnello'].includes(tipo);
+    const potenza=ctrl.charging?prontezzaTiro(ctrl):(ctrl.act?.potenza||0);
+    const tipo=ctrl.charging?'shot':ctrl.act?.kind||'shot',forte=game.penalty!==ctrl&&potenza>=TIRO.forteDa&&!['lob','polso','torsione','schizzo','colonnello'].includes(tipo);
     const az=Math.abs(inp.z)>0.3 ? clamp(inp.z*1.28,-1.28,1.28) : -Math.sign(gk.z||1)*(forte?TIRO.quadrellaZ+TIRO.quadrellaLarghezza/2:1.04);
     const ay=tipo==='lob'?0.55:forte?TIRO.quadrellaY+TIRO.quadrellaAltezza/2:0.425;
     mirino.visible=true; mirino.position.set(HL*ctrl.team.dir,ay,az);
-    const s=0.95-0.3*Math.min(1,(ctrl.chargeT||0)/0.9); mirino.scale.set(s,s,1);      // si stringe mentre il tiro si carica
+    const s=0.95-0.3*prontezzaTiro(ctrl); mirino.scale.set(s,s,1);      // si stringe mentre il tiro si prepara
   }
   // indicatore del compagno a cui passeresti
   passMark.visible=false;

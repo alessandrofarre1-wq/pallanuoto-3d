@@ -35,7 +35,11 @@ export function aggiornaSprint(premuto,t){
 export let inp={x:0,z:0}, prev={x:0,z:0}, padStart=false;
 export let inputEpoch=0;
 let faseInput=game.state;
+let tiroDaRilasciare=false;
 export function resetInput(){
+  // Il controller resta fisicamente premuto anche dopo blur/pausa. Quel tasto
+  // deve tornare neutro prima di poter iniziare un nuovo tiro.
+  tiroDaRilasciare=tiroDaRilasciare||!!inp.shoot||!!keys.Space||!!keys.KeyK||!!touch.btn.shoot;
   for(const k in keys) keys[k]=false;
   for(const k in touch.btn) touch.btn[k]=false;
   touch.x=touch.z=0;
@@ -77,6 +81,10 @@ export function pollInput(){
   for(const k of ['sprint','pass','shoot','lob','sw','cmd','to']) if(touch.btn[k]) n[k]=true;
   n.legacyShoot=n.shoot;
   n.shoot=n.shoot||n.desktopShoot;  // HUD e rigori leggono il comando TIRO comune.
+  if(tiroDaRilasciare){
+    if(!n.shoot)tiroDaRilasciare=false;
+    n.shoot=n.legacyShoot=n.desktopShoot=false;
+  }
   n.sprint=aggiornaSprint(n.sprint,game.time)&&!(ctrl&&ctrl.stamina<0.06);
   if(sprintBtn) sprintBtn.classList.toggle('scatto',n.sprint);
   const l=Math.hypot(n.x,n.z); if(l>1){ n.x/=l; n.z/=l; }
@@ -136,7 +144,8 @@ if('ontouchstart' in window || navigator.maxTouchPoints>0) document.body.classLi
     if(k==='sprint') sprintBtn=b;      // sprint a tocchi: il pulsante resta acceso (classe «scatto») finché lo scatto dura
     b.addEventListener('touchstart',e=>{ e.preventDefault(); touch.btn[k]=true; b.classList.add('on'); },{passive:false});
     const up=e=>{ e.preventDefault(); touch.btn[k]=false; b.classList.remove('on'); };
-    b.addEventListener('touchend',up,{passive:false}); b.addEventListener('touchcancel',up,{passive:false});
+    b.addEventListener('touchend',up,{passive:false});
+    b.addEventListener('touchcancel',e=>{ e.preventDefault();resetInput(); },{passive:false});
   });
   $('tPause').addEventListener('touchstart',e=>{ e.preventDefault(); togglePause(); },{passive:false});
 }

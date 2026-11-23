@@ -1,0 +1,25 @@
+
+> pallanuoto-3d@0.75.0 v046
+> node tests/v046.mjs --no-build
+
+✓ il tiro chiude l'azione in corso (esito «tiro»)
+✓ se il tiro diventa gol, l'esito diventa «gol»
+✓ l'espulsione procurata chiude l'azione e apre una superiorità (superiorita)
+✓ chi ferma con un fallo un giocatore che palleggia viene espulso (espulsione)
+✓ regola del vantaggio: in controfuga il fallo semplice non ferma il gioco (play)
+✓ interferenza: chi ha fatto fallo e resta entro 1 m da chi batte il tiro libero viene espulso
+✓ espulsioni simultanee: centroboa e marcatore fuori, tempo dell'azione invariato (11)
+✓ simulazione: fallo contro, poi cartellino giallo alla squadra, poi espulsione di chi simula (3, giallo true, espulso true)
+✓ cambio di marcatura: i due difensori si scambiano gli uomini
+✓ controfuga organizzata: la prima linea va avanti, davanti alla palla, su tre corsie (lato: -4, 0, 4 m)
+✓ uomo in più: 10 schemi validi, compresi i due del manuale USA e l'uscita del 6 (v0.58)
+✓ centroboa di spalle: conta la spalla coperta, non il numero dei tiri (beduina/beduina → sciarpa)
+✓ minuti in acqua contati a gioco in corso (0.03 → 0.20 min)
+✓ nessun errore nella pagina
+
+v0.46: tutte le prove superate
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

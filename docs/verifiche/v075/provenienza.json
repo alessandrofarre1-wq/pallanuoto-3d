@@ -1,0 +1,23 @@
+{
+  "base": "1ec69ca31adf7f072101edee8407ef399f7eb629",
+  "versione": "0.75.0",
+  "sha256": {
+    "src/controllo.js": "e44d55855190b13074fb20d3575daa2ba3739aac9b4e232073100bc581f04dcb",
+    "src/input.js": "a07780a7c13c9f3781944b83744314949849a22ac8ef0226704000b079b47ba5",
+    "src/partita.js": "5c4ef0ce47b952b521e1f7116a2ee0baa9e920b99b7bf775a003ef8c50a43dae",
+    "src/tiri.js": "6fa40784471d372ba7350e5a6f2006c0861e7e36a07a2150ccbcf0cf0be79413",
+    "src/regole.js": "9db4d6fcea3caebc242f4e66fad7c19ab890c5288a1b4d94773f754c95b3754e",
+    "src/ia.js": "0c7e4f632146bbaf473c6af2ceb25d1767f7fa00f65a34248d67f3062c85c1a3",
+    "src/grafica/render.js": "00553794c9aa266d06ea6eda810c3955ebc744e34f026d95fd332b6bbf055c98",
+    "src/scatto-inizio.js": "183ed9abf8d5fbedbed6bea46fc8fd247aa2b775f5577487af82adc75a128aab",
+    "src/tiro-comando.js": "393ca9ba28eb2e14d7138a9fb91787079d81bc2001c9d5c4f9f041dd97625955",
+    "src/grafica/modelli/pallanuotista.glb": "8fd658a8a89ad0dd242100133daf920eb6cfa492af8f39e95f6ff92124ba6745"
+  },
+  "fasi": {
+    "prima_serie": "13/13 prima delle ultime modifiche boa e rubata",
+    "finale": "comando/boa e scatto/rubata; confronto immagini locale0partite; CI completa sulla PR"
+  },
+  "partite_standard": "una sola volta nella CI finale",
+  "iPhone_fisico": "non misurato",
+  "modello_volto_nuoto": "invariati"
+}

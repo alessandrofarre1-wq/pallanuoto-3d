@@ -25,6 +25,9 @@ try {
   await page.evaluate(()=>document.querySelector('#vSquadre .m-cta').click());
   const regia=await page.evaluate(()=>{
     const H=window.__pallanuoto;document.getElementById('goBtn').click();window.__step(181);
+    // Misura il ritmo a possesso iniziato: lo scatto iniziale attende il primo
+    // tocco reale e ha una prova dedicata per posizioni e conto alla rovescia.
+    H.game.state='play';H.game.after=null;H.regole.giveBall(H.teams[0].players[6]);H.__setCtrl(H.teams[0].players[6]);
     H.imposta('spd','1.25');const clock=H.game.clock;window.__step(60);const secondo=clock-H.game.clock;
     H.game.state='paused';H.ball.state='free';H.ball.holder=null;H.ball.x=-9;H.ball.z=0;window.__step(420);
     const left=H.camera.getWorldDirection(H.camera.position.clone()).x;
@@ -48,11 +51,14 @@ try {
     const b=document.querySelector('.tb[data-b="shoot"]');
     const r={trattenuta:H.ball.holder===p,max:b.classList.contains('massimo'),testo:b.querySelector('small').textContent,carica:p.chargeT};
     window.dispatchEvent(new KeyboardEvent('keyup',{code:'KeyK'}));window.__step(1);
-    r.azione=p.act?.kind;r.potenza=p.act?.potenza;window.__step(6);r.gesto=!!p.tiroVista;
+    r.azione=p.act?.kind;r.potenza=p.act?.potenza;
+    const braccio=p.mesh.corpo.ossa[p.mano==='S'?'bracS':'bracD'],prima=braccio.quaternion.clone();
+    window.__step(6);r.escursione=prima.angleTo(braccio.quaternion);r.gesto=r.escursione>.01;
     window.__step(25);r.lanciata=H.ball.shooter===p&&H.ball.holder!==p;
     return r;
   });
-  assert.ok(carica.trattenuta&&carica.max&&carica.testo==='MAX','a potenza massima si aspetta il rilascio');
+  assert.ok(carica.trattenuta&&carica.max&&carica.testo==='PRONTO','a potenza massima si aspetta il rilascio');
+  assert.equal(await page.locator('#power').count(),0,'la preparazione usa l’anello senza la vecchia barra');
   assert.equal(carica.carica,.9);assert.equal(carica.azione,'shot');assert.equal(carica.potenza,1);
   assert.ok(carica.gesto&&carica.lanciata,'al rilascio partono gesto potente e tiro');
   if(process.argv.includes('--foto')){
@@ -68,10 +74,11 @@ try {
   for(const tipo of ['shot','beduina','schizzo','colonnello']){
     const gesto=await page.evaluate(tipo=>{
       const H=window.__pallanuoto,p=H.teams[0].players[6];H.regole.giveBall(p);H.game.state='paused';
-      p.x=0;p.z=0;p.fx=tipo==='beduina'?-1:1;p.fz=0;p.vx=p.vz=0;p.oriz=['schizzo','colonnello'].includes(tipo)?1:0;p.charging=false;p.tiroVista=null;
+      p.x=0;p.z=0;p.fx=tipo==='beduina'?-1:1;p.fz=0;p.vx=p.vz=0;p.oriz=['schizzo','colonnello'].includes(tipo)?1:0;p.charging=false;
       H.prova.startAct(p,tipo,.12,()=>{});p.act.potenza=1;p.act.t=p.act.wind+p.act.frusta*.72;
       H.vista={pos:[p.fx*2.8,1.2,3.4],look:[0,.05,0],fov:35};window.__step(30);H.__ridisegna();
-      return {tipo,accento:!!p.tiroVista,ampiezza:Math.hypot(p.tiroVista.chest[0]-p.J.chest[0],p.tiroVista.chest[1]-p.J.chest[1],p.tiroVista.chest[2]-p.J.chest[2])};
+      const vista=p.giuntiVista;
+      return {tipo,accento:!!vista,ampiezza:Math.hypot(vista.chest[0]-p.J.chest[0],vista.chest[1]-p.J.chest[1],vista.chest[2]-p.J.chest[2])};
     },tipo);
     assert.ok(gesto.accento&&gesto.ampiezza>.001,'gesto riconoscibile: '+tipo);speciali.push(gesto);
     if(process.argv.includes('--foto'))await page.screenshot({path:'/tmp/pallanuoto-gesto-'+tipo+'.png',timeout:120000});

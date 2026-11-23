@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.74.0",
+  "version": "0.75.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -86,7 +86,9 @@
     "tiro-visuale": "node tests/tiro-visuale-v072.mjs",
     "rimesse": "node tests/rimesse-v072.mjs",
     "rig-mani": "node tests/rig-mani-v073.mjs",
-    "tiro-registrato": "node tests/tiro-registrato.mjs && node tests/esultanza-mano.mjs"
+    "tiro-registrato": "node tests/tiro-registrato.mjs && node tests/esultanza-mano.mjs",
+    "tiro-comando": "node tests/tiro-comando-v075.mjs",
+    "scatto-inizio": "node tests/scatto-inizio-v075.mjs"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",

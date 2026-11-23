@@ -1,0 +1,1889 @@
+{
+  "dati": {
+    "scelto": 4,
+    "paritaDeterministica": true,
+    "direzioni": 2,
+    "purezza": true
+  },
+  "scene": [
+    {
+      "periodo": 1,
+      "dir": 1,
+      "indici": [
+        2,
+        5
+      ],
+      "iniziale": {
+        "controllato": 2,
+        "corpi": 14,
+        "gruppi": 14,
+        "selezionati": [
+          2,
+          5
+        ],
+        "nuotatori": [
+          {
+            "x": -12.2,
+            "z": 0,
+            "dir": 1,
+            "linea": -12.5
+          },
+          {
+            "x": 12.2,
+            "z": 0,
+            "dir": -1,
+            "linea": 12.5
+          }
+        ],
+        "portieri": [
+          {
+            "x": -11.8,
+            "z": 3.75,
+            "dir": 1,
+            "linea": -12.5
+          },
+          {
+            "x": 11.8,
+            "z": -3.75,
+            "dir": -1,
+            "linea": 12.5
+          }
+        ],
+        "espulsi": [
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          },
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          }
+        ],
+        "minimaSeparazione": 1.3124404748406682,
+        "pallaPulita": true
+      },
+      "conto": {
+        "prima": [
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            -7.5
+          ],
+          [
+            -12.2,
+            5
+          ],
+          [
+            -12.2,
+            -5
+          ],
+          [
+            -12.2,
+            -2.5
+          ],
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            -7.5
+          ],
+          [
+            12.2,
+            7.5
+          ],
+          [
+            12.2,
+            -5
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            2.5
+          ]
+        ],
+        "tempo": 120,
+        "clock": 480,
+        "residui": [
+          12,
+          12
+        ],
+        "immobili": true,
+        "passi": 181,
+        "state": "play",
+        "time": 120,
+        "alVia": [
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            -7.5
+          ],
+          [
+            -12.2,
+            5
+          ],
+          [
+            -12.2,
+            -5
+          ],
+          [
+            -12.2,
+            -2.5
+          ],
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            -7.5
+          ],
+          [
+            12.2,
+            7.5
+          ],
+          [
+            12.2,
+            -5
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            2.5
+          ]
+        ],
+        "clockAlVia": 480
+      },
+      "primo": {
+        "nuotatori": [
+          {
+            "avanzamento": 0.0021694371332756646,
+            "d": 0.0021694371332756646,
+            "sprint": true
+          },
+          {
+            "avanzamento": 0.002135431442363611,
+            "d": 0.002135431442363611,
+            "sprint": true
+          }
+        ],
+        "portieri": [
+          {
+            "z": 3.718813559322034,
+            "rientra": true
+          },
+          {
+            "z": -3.7166101694915255,
+            "rientra": true
+          }
+        ],
+        "clock": 480,
+        "scattando": true
+      },
+      "durata": 4.049999999999991,
+      "maxPasso": 0.05022877523941105,
+      "clockFermo": true,
+      "residuiFermi": true,
+      "ritornoPortieri": true,
+      "presa": {
+        "squadra": 0,
+        "indice": 2,
+        "scattista": true,
+        "scattando": false,
+        "stato": "held",
+        "distanza": 0.555623008236821
+      },
+      "statisticheIntatte": true,
+      "nessunBonusStamina": true,
+      "corpiFinali": 14
+    },
+    {
+      "periodo": 1,
+      "dir": -1,
+      "indici": [
+        2,
+        5
+      ],
+      "iniziale": {
+        "controllato": 2,
+        "corpi": 14,
+        "gruppi": 14,
+        "selezionati": [
+          2,
+          5
+        ],
+        "nuotatori": [
+          {
+            "x": 12.2,
+            "z": 0,
+            "dir": -1,
+            "linea": 12.5
+          },
+          {
+            "x": -12.2,
+            "z": 0,
+            "dir": 1,
+            "linea": -12.5
+          }
+        ],
+        "portieri": [
+          {
+            "x": 11.8,
+            "z": -3.75,
+            "dir": -1,
+            "linea": 12.5
+          },
+          {
+            "x": -11.8,
+            "z": 3.75,
+            "dir": 1,
+            "linea": -12.5
+          }
+        ],
+        "espulsi": [
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          },
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          }
+        ],
+        "minimaSeparazione": 1.3124404748406682,
+        "pallaPulita": true
+      },
+      "conto": {
+        "prima": [
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            7.5
+          ],
+          [
+            12.2,
+            -5
+          ],
+          [
+            12.2,
+            5
+          ],
+          [
+            12.2,
+            2.5
+          ],
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            7.5
+          ],
+          [
+            -12.2,
+            -7.5
+          ],
+          [
+            -12.2,
+            5
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            -2.5
+          ]
+        ],
+        "tempo": 120,
+        "clock": 480,
+        "residui": [
+          12,
+          12
+        ],
+        "immobili": true,
+        "passi": 181,
+        "state": "play",
+        "time": 120,
+        "alVia": [
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            7.5
+          ],
+          [
+            12.2,
+            -5
+          ],
+          [
+            12.2,
+            5
+          ],
+          [
+            12.2,
+            2.5
+          ],
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            7.5
+          ],
+          [
+            -12.2,
+            -7.5
+          ],
+          [
+            -12.2,
+            5
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            -2.5
+          ]
+        ],
+        "clockAlVia": 480
+      },
+      "primo": {
+        "nuotatori": [
+          {
+            "avanzamento": 0.0021694371332756646,
+            "d": 0.0021694371332756646,
+            "sprint": true
+          },
+          {
+            "avanzamento": 0.002135431442363611,
+            "d": 0.002135431442363611,
+            "sprint": true
+          }
+        ],
+        "portieri": [
+          {
+            "z": -3.718813559322034,
+            "rientra": true
+          },
+          {
+            "z": 3.7166101694915255,
+            "rientra": true
+          }
+        ],
+        "clock": 480,
+        "scattando": true
+      },
+      "durata": 4.049999999999991,
+      "maxPasso": 0.05022877523941105,
+      "clockFermo": true,
+      "residuiFermi": true,
+      "ritornoPortieri": true,
+      "presa": {
+        "squadra": 0,
+        "indice": 2,
+        "scattista": true,
+        "scattando": false,
+        "stato": "held",
+        "distanza": 0.555623008236821
+      },
+      "statisticheIntatte": true,
+      "nessunBonusStamina": true,
+      "corpiFinali": 14
+    },
+    {
+      "periodo": 2,
+      "dir": 1,
+      "indici": [
+        3,
+        4
+      ],
+      "iniziale": {
+        "controllato": 3,
+        "corpi": 14,
+        "gruppi": 14,
+        "selezionati": [
+          3,
+          4
+        ],
+        "nuotatori": [
+          {
+            "x": -12.2,
+            "z": 0,
+            "dir": 1,
+            "linea": -12.5
+          },
+          {
+            "x": 12.2,
+            "z": 0,
+            "dir": -1,
+            "linea": 12.5
+          }
+        ],
+        "portieri": [
+          {
+            "x": -11.8,
+            "z": 3.75,
+            "dir": 1,
+            "linea": -12.5
+          },
+          {
+            "x": 11.8,
+            "z": -3.75,
+            "dir": -1,
+            "linea": 12.5
+          }
+        ],
+        "espulsi": [
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          },
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          }
+        ],
+        "minimaSeparazione": 1.3124404748406682,
+        "pallaPulita": true
+      },
+      "conto": {
+        "prima": [
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            7.5
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            5
+          ],
+          [
+            -12.2,
+            -5
+          ],
+          [
+            -12.2,
+            -2.5
+          ],
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            -7.5
+          ],
+          [
+            12.2,
+            7.5
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            5
+          ],
+          [
+            12.2,
+            2.5
+          ]
+        ],
+        "tempo": 140,
+        "clock": 480,
+        "residui": [
+          12,
+          12
+        ],
+        "immobili": true,
+        "passi": 181,
+        "state": "play",
+        "time": 140,
+        "alVia": [
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            7.5
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            5
+          ],
+          [
+            -12.2,
+            -5
+          ],
+          [
+            -12.2,
+            -2.5
+          ],
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            -7.5
+          ],
+          [
+            12.2,
+            7.5
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            5
+          ],
+          [
+            12.2,
+            2.5
+          ]
+        ],
+        "clockAlVia": 480
+      },
+      "primo": {
+        "nuotatori": [
+          {
+            "avanzamento": 0.0021694371332756646,
+            "d": 0.0021694371332756646,
+            "sprint": true
+          },
+          {
+            "avanzamento": 0.002135431442363611,
+            "d": 0.002135431442363611,
+            "sprint": true
+          }
+        ],
+        "portieri": [
+          {
+            "z": 3.718813559322034,
+            "rientra": true
+          },
+          {
+            "z": -3.7166101694915255,
+            "rientra": true
+          }
+        ],
+        "clock": 480,
+        "scattando": true
+      },
+      "durata": 4.049999999999991,
+      "maxPasso": 0.05022877523941105,
+      "clockFermo": true,
+      "residuiFermi": true,
+      "ritornoPortieri": true,
+      "presa": {
+        "squadra": 0,
+        "indice": 3,
+        "scattista": true,
+        "scattando": false,
+        "stato": "held",
+        "distanza": 0.555623008236821
+      },
+      "statisticheIntatte": true,
+      "nessunBonusStamina": true,
+      "corpiFinali": 14
+    },
+    {
+      "periodo": 2,
+      "dir": -1,
+      "indici": [
+        3,
+        4
+      ],
+      "iniziale": {
+        "controllato": 3,
+        "corpi": 14,
+        "gruppi": 14,
+        "selezionati": [
+          3,
+          4
+        ],
+        "nuotatori": [
+          {
+            "x": 12.2,
+            "z": 0,
+            "dir": -1,
+            "linea": 12.5
+          },
+          {
+            "x": -12.2,
+            "z": 0,
+            "dir": 1,
+            "linea": -12.5
+          }
+        ],
+        "portieri": [
+          {
+            "x": 11.8,
+            "z": -3.75,
+            "dir": -1,
+            "linea": 12.5
+          },
+          {
+            "x": -11.8,
+            "z": 3.75,
+            "dir": 1,
+            "linea": -12.5
+          }
+        ],
+        "espulsi": [
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          },
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          }
+        ],
+        "minimaSeparazione": 1.3124404748406682,
+        "pallaPulita": true
+      },
+      "conto": {
+        "prima": [
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            -7.5
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            -5
+          ],
+          [
+            12.2,
+            5
+          ],
+          [
+            12.2,
+            2.5
+          ],
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            7.5
+          ],
+          [
+            -12.2,
+            -7.5
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            -5
+          ],
+          [
+            -12.2,
+            -2.5
+          ]
+        ],
+        "tempo": 140,
+        "clock": 480,
+        "residui": [
+          12,
+          12
+        ],
+        "immobili": true,
+        "passi": 181,
+        "state": "play",
+        "time": 140,
+        "alVia": [
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            -7.5
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            -5
+          ],
+          [
+            12.2,
+            5
+          ],
+          [
+            12.2,
+            2.5
+          ],
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            7.5
+          ],
+          [
+            -12.2,
+            -7.5
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            -5
+          ],
+          [
+            -12.2,
+            -2.5
+          ]
+        ],
+        "clockAlVia": 480
+      },
+      "primo": {
+        "nuotatori": [
+          {
+            "avanzamento": 0.0021694371332756646,
+            "d": 0.0021694371332756646,
+            "sprint": true
+          },
+          {
+            "avanzamento": 0.002135431442363611,
+            "d": 0.002135431442363611,
+            "sprint": true
+          }
+        ],
+        "portieri": [
+          {
+            "z": -3.718813559322034,
+            "rientra": true
+          },
+          {
+            "z": 3.7166101694915255,
+            "rientra": true
+          }
+        ],
+        "clock": 480,
+        "scattando": true
+      },
+      "durata": 4.049999999999991,
+      "maxPasso": 0.05022877523941105,
+      "clockFermo": true,
+      "residuiFermi": true,
+      "ritornoPortieri": true,
+      "presa": {
+        "squadra": 0,
+        "indice": 3,
+        "scattista": true,
+        "scattando": false,
+        "stato": "held",
+        "distanza": 0.555623008236821
+      },
+      "statisticheIntatte": true,
+      "nessunBonusStamina": true,
+      "corpiFinali": 14
+    },
+    {
+      "periodo": 3,
+      "dir": 1,
+      "indici": [
+        4,
+        3
+      ],
+      "iniziale": {
+        "controllato": 4,
+        "corpi": 14,
+        "gruppi": 14,
+        "selezionati": [
+          4,
+          3
+        ],
+        "nuotatori": [
+          {
+            "x": -12.2,
+            "z": 0,
+            "dir": 1,
+            "linea": -12.5
+          },
+          {
+            "x": 12.2,
+            "z": 0,
+            "dir": -1,
+            "linea": 12.5
+          }
+        ],
+        "portieri": [
+          {
+            "x": -11.8,
+            "z": 3.75,
+            "dir": 1,
+            "linea": -12.5
+          },
+          {
+            "x": 11.8,
+            "z": -3.75,
+            "dir": -1,
+            "linea": 12.5
+          }
+        ],
+        "espulsi": [
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          },
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          }
+        ],
+        "minimaSeparazione": 1.3124404748406682,
+        "pallaPulita": true
+      },
+      "conto": {
+        "prima": [
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            7.5
+          ],
+          [
+            -12.2,
+            -7.5
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            -5
+          ],
+          [
+            -12.2,
+            -2.5
+          ],
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            -7.5
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            -5
+          ],
+          [
+            12.2,
+            5
+          ],
+          [
+            12.2,
+            2.5
+          ]
+        ],
+        "tempo": 160,
+        "clock": 480,
+        "residui": [
+          12,
+          12
+        ],
+        "immobili": true,
+        "passi": 181,
+        "state": "play",
+        "time": 160,
+        "alVia": [
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            7.5
+          ],
+          [
+            -12.2,
+            -7.5
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            -5
+          ],
+          [
+            -12.2,
+            -2.5
+          ],
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            -7.5
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            -5
+          ],
+          [
+            12.2,
+            5
+          ],
+          [
+            12.2,
+            2.5
+          ]
+        ],
+        "clockAlVia": 480
+      },
+      "primo": {
+        "nuotatori": [
+          {
+            "avanzamento": 0.0021694371332756646,
+            "d": 0.0021694371332756646,
+            "sprint": true
+          },
+          {
+            "avanzamento": 0.002135431442363611,
+            "d": 0.002135431442363611,
+            "sprint": true
+          }
+        ],
+        "portieri": [
+          {
+            "z": 3.718813559322034,
+            "rientra": true
+          },
+          {
+            "z": -3.7166101694915255,
+            "rientra": true
+          }
+        ],
+        "clock": 480,
+        "scattando": true
+      },
+      "durata": 4.049999999999991,
+      "maxPasso": 0.05022877523941105,
+      "clockFermo": true,
+      "residuiFermi": true,
+      "ritornoPortieri": true,
+      "presa": {
+        "squadra": 0,
+        "indice": 4,
+        "scattista": true,
+        "scattando": false,
+        "stato": "held",
+        "distanza": 0.555623008236821
+      },
+      "statisticheIntatte": true,
+      "nessunBonusStamina": true,
+      "corpiFinali": 14
+    },
+    {
+      "periodo": 3,
+      "dir": -1,
+      "indici": [
+        4,
+        3
+      ],
+      "iniziale": {
+        "controllato": 4,
+        "corpi": 14,
+        "gruppi": 14,
+        "selezionati": [
+          4,
+          3
+        ],
+        "nuotatori": [
+          {
+            "x": 12.2,
+            "z": 0,
+            "dir": -1,
+            "linea": 12.5
+          },
+          {
+            "x": -12.2,
+            "z": 0,
+            "dir": 1,
+            "linea": -12.5
+          }
+        ],
+        "portieri": [
+          {
+            "x": 11.8,
+            "z": -3.75,
+            "dir": -1,
+            "linea": 12.5
+          },
+          {
+            "x": -11.8,
+            "z": 3.75,
+            "dir": 1,
+            "linea": -12.5
+          }
+        ],
+        "espulsi": [
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          },
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          }
+        ],
+        "minimaSeparazione": 1.3124404748406682,
+        "pallaPulita": true
+      },
+      "conto": {
+        "prima": [
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            -7.5
+          ],
+          [
+            12.2,
+            7.5
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            5
+          ],
+          [
+            12.2,
+            2.5
+          ],
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            7.5
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            5
+          ],
+          [
+            -12.2,
+            -5
+          ],
+          [
+            -12.2,
+            -2.5
+          ]
+        ],
+        "tempo": 160,
+        "clock": 480,
+        "residui": [
+          12,
+          12
+        ],
+        "immobili": true,
+        "passi": 181,
+        "state": "play",
+        "time": 160,
+        "alVia": [
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            -7.5
+          ],
+          [
+            12.2,
+            7.5
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            5
+          ],
+          [
+            12.2,
+            2.5
+          ],
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            7.5
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            5
+          ],
+          [
+            -12.2,
+            -5
+          ],
+          [
+            -12.2,
+            -2.5
+          ]
+        ],
+        "clockAlVia": 480
+      },
+      "primo": {
+        "nuotatori": [
+          {
+            "avanzamento": 0.0021694371332756646,
+            "d": 0.0021694371332756646,
+            "sprint": true
+          },
+          {
+            "avanzamento": 0.002135431442363611,
+            "d": 0.002135431442363611,
+            "sprint": true
+          }
+        ],
+        "portieri": [
+          {
+            "z": -3.718813559322034,
+            "rientra": true
+          },
+          {
+            "z": 3.7166101694915255,
+            "rientra": true
+          }
+        ],
+        "clock": 480,
+        "scattando": true
+      },
+      "durata": 4.049999999999991,
+      "maxPasso": 0.05022877523941105,
+      "clockFermo": true,
+      "residuiFermi": true,
+      "ritornoPortieri": true,
+      "presa": {
+        "squadra": 0,
+        "indice": 4,
+        "scattista": true,
+        "scattando": false,
+        "stato": "held",
+        "distanza": 0.555623008236821
+      },
+      "statisticheIntatte": true,
+      "nessunBonusStamina": true,
+      "corpiFinali": 14
+    },
+    {
+      "periodo": 4,
+      "dir": 1,
+      "indici": [
+        5,
+        2
+      ],
+      "iniziale": {
+        "controllato": 5,
+        "corpi": 14,
+        "gruppi": 14,
+        "selezionati": [
+          5,
+          2
+        ],
+        "nuotatori": [
+          {
+            "x": -12.2,
+            "z": 0,
+            "dir": 1,
+            "linea": -12.5
+          },
+          {
+            "x": 12.2,
+            "z": 0,
+            "dir": -1,
+            "linea": 12.5
+          }
+        ],
+        "portieri": [
+          {
+            "x": -11.8,
+            "z": 3.75,
+            "dir": 1,
+            "linea": -12.5
+          },
+          {
+            "x": 11.8,
+            "z": -3.75,
+            "dir": -1,
+            "linea": 12.5
+          }
+        ],
+        "espulsi": [
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          },
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          }
+        ],
+        "minimaSeparazione": 1.3124404748406682,
+        "pallaPulita": true
+      },
+      "conto": {
+        "prima": [
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            7.5
+          ],
+          [
+            -12.2,
+            -7.5
+          ],
+          [
+            -12.2,
+            5
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            -2.5
+          ],
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            7.5
+          ],
+          [
+            12.2,
+            -5
+          ],
+          [
+            12.2,
+            5
+          ],
+          [
+            12.2,
+            2.5
+          ]
+        ],
+        "tempo": 180,
+        "clock": 480,
+        "residui": [
+          12,
+          12
+        ],
+        "immobili": true,
+        "passi": 181,
+        "state": "play",
+        "time": 180,
+        "alVia": [
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            7.5
+          ],
+          [
+            -12.2,
+            -7.5
+          ],
+          [
+            -12.2,
+            5
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            -2.5
+          ],
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            7.5
+          ],
+          [
+            12.2,
+            -5
+          ],
+          [
+            12.2,
+            5
+          ],
+          [
+            12.2,
+            2.5
+          ]
+        ],
+        "clockAlVia": 480
+      },
+      "primo": {
+        "nuotatori": [
+          {
+            "avanzamento": 0.0021694371332756646,
+            "d": 0.0021694371332756646,
+            "sprint": true
+          },
+          {
+            "avanzamento": 0.002135431442363611,
+            "d": 0.002135431442363611,
+            "sprint": true
+          }
+        ],
+        "portieri": [
+          {
+            "z": 3.718813559322034,
+            "rientra": true
+          },
+          {
+            "z": -3.7166101694915255,
+            "rientra": true
+          }
+        ],
+        "clock": 480,
+        "scattando": true
+      },
+      "durata": 4.049999999999991,
+      "maxPasso": 0.05022877523941105,
+      "clockFermo": true,
+      "residuiFermi": true,
+      "ritornoPortieri": true,
+      "presa": {
+        "squadra": 0,
+        "indice": 5,
+        "scattista": true,
+        "scattando": false,
+        "stato": "held",
+        "distanza": 0.555623008236821
+      },
+      "statisticheIntatte": true,
+      "nessunBonusStamina": true,
+      "corpiFinali": 14
+    },
+    {
+      "periodo": 4,
+      "dir": -1,
+      "indici": [
+        5,
+        2
+      ],
+      "iniziale": {
+        "controllato": 5,
+        "corpi": 14,
+        "gruppi": 14,
+        "selezionati": [
+          5,
+          2
+        ],
+        "nuotatori": [
+          {
+            "x": 12.2,
+            "z": 0,
+            "dir": -1,
+            "linea": 12.5
+          },
+          {
+            "x": -12.2,
+            "z": 0,
+            "dir": 1,
+            "linea": -12.5
+          }
+        ],
+        "portieri": [
+          {
+            "x": 11.8,
+            "z": -3.75,
+            "dir": -1,
+            "linea": 12.5
+          },
+          {
+            "x": -11.8,
+            "z": 3.75,
+            "dir": 1,
+            "linea": -12.5
+          }
+        ],
+        "espulsi": [
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          },
+          {
+            "escluso": true,
+            "nelPozzetto": true,
+            "d": 0
+          }
+        ],
+        "minimaSeparazione": 1.3124404748406682,
+        "pallaPulita": true
+      },
+      "conto": {
+        "prima": [
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            -7.5
+          ],
+          [
+            12.2,
+            7.5
+          ],
+          [
+            12.2,
+            -5
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            2.5
+          ],
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            -7.5
+          ],
+          [
+            -12.2,
+            5
+          ],
+          [
+            -12.2,
+            -5
+          ],
+          [
+            -12.2,
+            -2.5
+          ]
+        ],
+        "tempo": 180,
+        "clock": 480,
+        "residui": [
+          12,
+          12
+        ],
+        "immobili": true,
+        "passi": 181,
+        "state": "play",
+        "time": 180,
+        "alVia": [
+          [
+            11.8,
+            -3.75
+          ],
+          [
+            11.9,
+            -11
+          ],
+          [
+            12.2,
+            -7.5
+          ],
+          [
+            12.2,
+            7.5
+          ],
+          [
+            12.2,
+            -5
+          ],
+          [
+            12.2,
+            0
+          ],
+          [
+            12.2,
+            2.5
+          ],
+          [
+            -11.8,
+            3.75
+          ],
+          [
+            -11.9,
+            -11
+          ],
+          [
+            -12.2,
+            0
+          ],
+          [
+            -12.2,
+            -7.5
+          ],
+          [
+            -12.2,
+            5
+          ],
+          [
+            -12.2,
+            -5
+          ],
+          [
+            -12.2,
+            -2.5
+          ]
+        ],
+        "clockAlVia": 480
+      },
+      "primo": {
+        "nuotatori": [
+          {
+            "avanzamento": 0.0021694371332756646,
+            "d": 0.0021694371332756646,
+            "sprint": true
+          },
+          {
+            "avanzamento": 0.002135431442363611,
+            "d": 0.002135431442363611,
+            "sprint": true
+          }
+        ],
+        "portieri": [
+          {
+            "z": -3.718813559322034,
+            "rientra": true
+          },
+          {
+            "z": 3.7166101694915255,
+            "rientra": true
+          }
+        ],
+        "clock": 480,
+        "scattando": true
+      },
+      "durata": 4.049999999999991,
+      "maxPasso": 0.05022877523941105,
+      "clockFermo": true,
+      "residuiFermi": true,
+      "ritornoPortieri": true,
+      "presa": {
+        "squadra": 0,
+        "indice": 5,
+        "scattista": true,
+        "scattando": false,
+        "stato": "held",
+        "distanza": 0.555623008236821
+      },
+      "statisticheIntatte": true,
+      "nessunBonusStamina": true,
+      "corpiFinali": 14
+    }
+  ],
+  "manuale": {
+    "laterale": 0.5698376836137558,
+    "sprint": false,
+    "controllo": true,
+    "cambiato": true,
+    "controlloConservato": true,
+    "scattando": true,
+    "selezionatoFermo": 0.00002682281660959518,
+    "sprintSelezionato": false,
+    "nuotatoreAI": 5.697210083371026
+  },
+  "cambio": {
+    "chiesto": true,
+    "nelCountdown": true,
+    "tempoFermo": true,
+    "identita": true,
+    "piuVeloce": true,
+    "controllato": true,
+    "centro": true,
+    "precedenteDiLato": true,
+    "nessunMoto": true,
+    "fermoFinoAlVia": true
+  },
+  "rubata": {
+    "state": "play",
+    "cronometro": 0.01666666666667993,
+    "holder": true,
+    "possesso": true,
+    "nessunaRipresa": true,
+    "slancioFinito": true,
+    "colpi": 1
+  },
+  "fotografie": [
+    "tempo1-dir1-countdown",
+    "tempo1-dir1-nuoto-1s",
+    "tempo1-dir-1-countdown",
+    "tempo1-dir-1-nuoto-1s"
+  ],
+  "errori": []
+}

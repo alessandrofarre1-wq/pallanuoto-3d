@@ -23,7 +23,9 @@ await pg.goto(server.resolvedUrls.local[0]);
 await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto',null,{timeout:120000,polling:100});
 await pg.evaluate(solo=>{ const H=window.__pallanuoto; H.scegliSquadre('ITA','HUN'); H.imposta('len','480'); document.getElementById('goBtn').click();
   if(solo) H.renderer.render=()=>{};   // solo controlli: niente disegno (molto più veloce)
-  for(const t of H.teams) t.human=false; H.game.autoplay=true; for(let i=0;i<240;i++) window.__passo(); },solo);
+  for(const t of H.teams) t.human=false; H.game.autoplay=true;
+  // L'autoplay non cancella da solo il selezionato della partenza: tutta la scena è IA.
+  H.__setCtrl(null);for(let i=0;i<240;i++) window.__passo(); },solo);
 // UI 1..4 → indice di ruolo dell'attaccante (FORM_UP; l'Italia attacca verso +x, la sua destra è +z)
 const CASI=[{n:1,i:2},{n:2,i:4},{n:3,i:5},{n:4,i:3}];
 const esiti=[], foto=[];
@@ -47,7 +49,7 @@ for(const caso of CASI){
     const ruolo=q=>D.postiAssegnati?.get(q);
     const alto=q=>{ const J=q.J; return J.hR[1]>J.hL[1]+0.08?'destro':J.hL[1]>J.hR[1]+0.08?'sinistro':'nessuno'; };
     const centrale=dif.find(q=>ruolo(q)===0), suTiro=dif.reduce((a,b)=>Math.hypot(b.x-h.x,b.z-h.z)<Math.hypot(a.x-h.x,a.z-h.z)?b:a);
-    return { mano:h.mano, h:{x:+(ogx-h.x).toFixed(2),z:+h.z.toFixed(2)},
+    return { mano:h.mano,carica:h.charging&&H.ball.holder===h, h:{x:+(ogx-h.x).toFixed(2),z:+h.z.toFixed(2)},
       centrale:{x:+(ogx-centrale.x).toFixed(2),z:+centrale.z.toFixed(2),braccio:alto(centrale),copre:centrale.copreLungo?.lato, fx:+centrale.fx.toFixed(2)},
       suTiro:{x:+(ogx-suTiro.x).toFixed(2),z:+suTiro.z.toFixed(2),braccio:alto(suTiro),d:+Math.hypot(suTiro.x-h.x,suTiro.z-h.z).toFixed(2),ruolo:ruolo(suTiro)},
       altri:dif.map(q=>{ const tg=H.prova.markTarget(q); return {r:ruolo(q),x:+(ogx-q.x).toFixed(1),z:+q.z.toFixed(1),tx:+(ogx-tg.x).toFixed(1),tz:+tg.z.toFixed(1)}; }) };
@@ -110,6 +112,7 @@ for(const {caso,r} of esiti){
   console.log('   difensori: '+r.altri.map(a=>`r${a.r} (${a.x}, ${a.z} → ${a.tx}, ${a.tz})`).join(' '));
   console.log(`   su chi tira: ruolo ${r.suTiro.ruolo} a ${r.suTiro.d} m, braccio ${r.suTiro.braccio}`);
   const specchio=r.mano==='S'?'destro':'sinistro';
+  (r.carica?si:no)(`palla a ${caso.n}: il tiratore sta davvero caricando con la palla in mano`);
   (r.suTiro.braccio===specchio?si:no)(`palla a ${caso.n}: chi esce sul tiratore alza il braccio ${specchio} (a specchio): ${r.suTiro.braccio}`);
   (r.centrale.copre===-Math.sign(r.h.z)?si:no)(`palla a ${caso.n}: il centrale copre il palo lungo`);
   // il centrale guarda il tiratore (verso -x); il palo lungo con z di segno opposto al tiratore: per chi guarda verso -x la destra è -z

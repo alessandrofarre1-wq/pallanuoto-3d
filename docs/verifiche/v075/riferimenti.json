@@ -1,0 +1,19 @@
+{
+  "fase": "Dopo ispezione di tutti i5confronti finali",
+  "metodo": "copiati solo i4scatti cambiati dall\u2019aggiornamento dello scatto e dai controlli; menu conservato",
+  "scarti_prima_percento": {
+    "1-menu.png": 0.01,
+    "2-sprint-iniziale.png": 7.14,
+    "3-azione.png": 47.09,
+    "4-iphone-piccolo.png": 33.17,
+    "5-iphone-orizzontale.png": 36.28
+  },
+  "sha256": {
+    "2-sprint-iniziale.png": "06e341fcb99c9ecd2d1149cc2e24d8adb75b1eb9bfd08576bb37ffca6f2d6e5a",
+    "3-azione.png": "227bba7ad2e840ec80c909fa6d7150e83c9e42dc9af5b10e8082ade49ae912d0",
+    "4-iphone-piccolo.png": "d24009df320e2a5daf1302df52463ed7998d0c511d44b68a5ffe43c93ceb0240",
+    "5-iphone-orizzontale.png": "01fc4cf56806e8264a9dae5a0aaa65229010579a39505631919301e001df8ad7"
+  },
+  "verifica_locale": "0partite; primo confronto FAIL per4riferimenti precedenti, ispezionati e aggiornati; non dichiarato PASS retroattivo",
+  "verifica_finale": "CI intera nella PR,6partite una sola volta"
+}

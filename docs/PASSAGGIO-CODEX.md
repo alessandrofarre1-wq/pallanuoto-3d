@@ -1,3 +1,21 @@
+# Passaggio WATERPOLO7 — v0.75 tiro continuo, scatto e boa
+
+Base main1ec69ca(PR65 unita, CI45058084563 verde), ramo `codex/v075-tiro-fintee-anello`, worktree `/workspace/pallanuoto-v075`, versione0.75.0. Prima di altro lavoro riallineare main/PR/CI e diff; preservare tutto. Non fare merge/deploy. La PR riporta lo SHA e l’esito finale; non riaprire il vecchio lavoro v068–v074.
+
+TIRO tocco/rilascio=polso; tenuta=preparazione e finte continue, massimo0,9s e tiro al rilascio anche dalla propria finta. Un solo contesto per touch/tastiera/controller e annullamenti robusti; anello oro/PRONTO senza barra di potenza. Controfuga speciale e rigori conservati. Alla boa gesto secondo assetto, anche su ricezione; TAGLIO tolto dal touch, chiamate A/B/C conservate. Scatto: più veloce disponibile al centro della porta; GK laterale prima del via e rientro nuotato. Nessun bonus o teletrasporto dopo il via; controllo umano prioritario. Rubata da slancio: corretto il bersaglio vecchio che causava subito sfondamento, senza immunità ai falli.
+
+**Nuoto e modello invariati**: la foto a L segnalata da Ale era un errore del test (60passi fisici e un solo aggiornamento del rig). Corretto il test e rifatte le foto; non alterare il crawl per replicare quella cattura sbagliata. GLB SHA2568fd658a8… invariato; clip Plask completa415pose/52ossa, volto/rig/pesi conservati. Nessuna nuova prova facciale.
+
+PrimaCI45069119661 sullo SHA b5aae8d:6partite PASS, poi arresto sul vecchio assert del controllato al kickoff in entrate-integrazione. Corretto soltanto il test, regressione locale PASS; runtime invariato. Nuova CI completa necessaria per terminare i passi saltati; l’idea di un solo giro standard è superata da questo arresto. Esito finale nella PR.
+
+SecondaCI45070404033: integrazionePASS,6gare identiche108gol/257tiri; poi errore del foglio inferiorità (ctrl3 residuo anche in autoplay annullava la carica). Corretta solo fixture con selezionato nullo e precondizione carica effettiva. Runtime invariato; coda9passi locale prima della CI finale per evitare altri controlli saltati. La PR riporta la CI finale, le due precedenti non sono verdi.
+
+Coda locale8/9PASS: Pausa nel test cronaca era visibile, ma locator.tap attendeva la stabilità sul RAF finto. Corretto solo test con visibilità/hit espliciti e tocco touchscreen reale; bloccoA ripristinato, nessun force/clickJS. Riprova completa cronaca PASS; con gli8PASS precedenti, tutti9i controlli della coda sono verificati. Lint/diff-check PASS, runtime sempre invariato. CI completa finale nelle verifiche/PR.
+
+Leggere [CLAUDE.md](../CLAUDE.md), [rapporto](versioni/v075-tiro-scatto-boa.md), [verifiche](verifiche/v075/README.md) e [decisioni superate](decisioni-superate.md). Misure con fase esplicita: non attribuire il primo13/13 o le foto precedenti al codice finale. Sei partite soltanto nella CI; confronto locale0partite. Una sola Chromium pesante. Limiti iPhone<100call/<150000tri sempre,14corpi completi, logoC, camera/SPEED1, CAMBI centro basso44px, riflessoalta. Restano giudizio di Ale, iPhone fisico e bilanciamento generale già aperto. Nessun nuovo sviluppo artistico in questa consegna.
+
+---
+
 # Passaggio WATERPOLO7 — v0.74 tiro Plask, modello invariato
 
 Base main `9e95c00` (PR64 unita, CI45014844635 verde), ramo `codex/v074-tiro-plask`, worktree `/workspace/pallanuoto-v074`. Versione0.74.0. Prima di altro lavoro riallineare main/PR/CI e diff; preservare Claude. Esito CI finale e SHA nella PR, nessun merge/deploy.
