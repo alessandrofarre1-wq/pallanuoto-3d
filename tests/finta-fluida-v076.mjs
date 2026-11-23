@@ -16,7 +16,7 @@ const server=await createServer({root,logLevel:'warn',server:{host:'127.0.0.1',p
 await server.listen();
 const executablePath=process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE||(fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined);
 const browser=await chromium.launch({executablePath,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
-const errori=[],violazioni=[],scene=[];
+const errori=[],violazioni=[],scene=[],rilasciPrecoci=[];
 try{
   const page=await browser.newPage({viewport:{width:844,height:390},hasTouch:true,isMobile:true});
   page.on('pageerror',e=>errori.push(e.message));
@@ -32,7 +32,7 @@ try{
         const prima=H.ball.revisioneTiro||0,portatore=H.ball.holder;
         ora+=1000/60;window.__raf(ora);
         if((H.ball.revisioneTiro||0)!==prima&&portatore&&H.ball.shooter===portatore&&H.ball.holder!==portatore){
-          window.__finta?.lanci.push({uid:portatore.uid,kind:H.ball.kind,potenza:H.ball.shotPower,
+          window.__finta?.lanci.push({uid:portatore.uid,kind:H.ball.kind,potenza:H.ball.shotPower,tempo:H.game.time,
             velocita:Math.hypot(H.ball.vx,H.ball.vy,H.ball.vz),libera:H.ball.holder===null});
         }
       }}finally{H.renderer.render=draw;}
@@ -102,12 +102,21 @@ try{
         derivaAnca:angolo(primo.rot.anca,ultimo.rot.anca),derivaTorso:angolo(primo.rot.torso,ultimo.rot.torso)};
     },esegui(stile,mano,dir,fase){
       const p=this.prepara(stile,mano,dir),inizio=H.game.time,cicli=[];
+      const iniziale=this.campiona(p),campioniAvvio=[iniziale],profiloAvvio=[{t:0,carica:p.chargeT,gesto:null,
+        maxPasso:{anca:0,torso:0,braccio:0,avambraccio:0,mano:0},passoMano:0}];
       window.__pad.buttons[2]={pressed:true,value:1};
-      let corrente=null,campioni=[],coda=0,carica09=null,maxCarica=0,prima=this.campiona(p),frames=0;
-      // Due cicli interi dopo la piena carica: anche entrata, done e uscita
-      // vengono osservati. La posa iniziale della clip non altera le misure.
+      let corrente=null,campioni=[],coda=0,carica09=null,maxCarica=0,prima=iniziale,frames=0;
+      // L'avvio parte dalla posa realmente visibile prima della pressione.
+      // I due cicli dopo piena carica restano misurati separatamente.
       for(;frames<420&&cicli.length<2;frames++){
         window.__avanza(1);const a=p.act,campione=this.campiona(p);
+        const t=H.game.time-inizio;
+        if(t<=1.2+1e-6){
+          campioniAvvio.push(campione);
+          profiloAvvio.push({t,carica:p.chargeT,gesto:a?.kind||'carica',attoT:a?.t??null,done:a?.done||false,
+            maxPasso:Object.fromEntries(Object.keys(campione.rot).map(n=>[n,angolo(campione.rot[n],prima.rot[n])])),
+            passoMano:distanza(campione.mano,prima.mano)});
+        }
         maxCarica=Math.max(maxCarica,p.chargeT);
         if(carica09===null&&H.game.time-inizio>=.9+1e-6)carica09=p.chargeT;
         if(corrente){
@@ -137,8 +146,17 @@ try{
       window.__pad.buttons[2]={pressed:false,value:0};window.__avanza(1);
       const rilascio={gesto:p.act?.kind,potenza:p.act?.potenza};
       window.__avanza(32);
-      return {stile,mano,dir,fase,frames,carica09,maxCarica,cicli,tenuta,trovata,da,rilascio,
+      const avvio={...this.ciclo(campioniAvvio),durata:profiloAvvio.at(-1).t,profilo:profiloAvvio};
+      return {stile,mano,dir,fase,frames,carica09,maxCarica,avvio,cicli,tenuta,trovata,da,rilascio,
         lanci:this.lanci.filter(x=>x.uid===p.uid)};
+    },rilasciaPresto(mano,dir){
+      const p=this.prepara('larga',mano,dir),inizio=H.game.time;
+      window.__pad.buttons[2]={pressed:true,value:1};window.__avanza(24);
+      const tenuta=H.game.time-inizio,carica=p.chargeT,rilasciato=H.game.time;
+      window.__pad.buttons[2]={pressed:false,value:0};window.__avanza(1);
+      const a=p.act,rilascio={gesto:a?.kind,potenza:a?.potenza,wind:a?.wind,frusta:a?.frusta,t:a?.t};
+      window.__avanza(32);
+      return {mano,dir,tenuta,carica,rilasciato,rilascio,lanci:this.lanci.filter(x=>x.uid===p.uid)};
     }};
   });
   const verifica=(ok,messaggio)=>{if(!ok)violazioni.push(messaggio);};
@@ -148,6 +166,16 @@ try{
     verifica(m.cicli.length===2,id+': due cicli completi dopo la piena carica');
     verifica(Math.abs(m.carica09-.9)<1e-6&&Math.abs(m.maxCarica-.9)<1e-6,id+': carica massima a .9s');
     verifica(m.tenuta.tiene&&m.tenuta.lanci===0&&m.tenuta.finte>=2,id+': tenuta ripetuta senza lancio');
+    verifica(m.avvio.frames===73&&Math.abs(m.avvio.durata-1.2)<1e-6,id+': avvio completo dalla pressione a 1.2s');
+    verifica(m.avvio.maxPasso.anca<.12&&m.avvio.maxPasso.torso<.12,id+': continuità anca/torso fin dalla prima pressione');
+    verifica(m.avvio.passoMano<.16,id+': mano senza scatto durante avvio');
+    m.avvio.limitiBraccio={};m.avvio.rapportiBraccio={};
+    for(const n of ['braccio','avambraccio','mano']){
+      const steady=Math.max(...m.cicli.map(c=>c.maxPasso[n]));
+      const limite=Math.max(.15,1.5*steady);
+      m.avvio.limitiBraccio[n]=limite;m.avvio.rapportiBraccio[n]=steady>0?m.avvio.maxPasso[n]/steady:null;
+      verifica(m.avvio.maxPasso[n]<=limite,id+': picco '+n+' avvio entro max(.15rad, 1.5×picco cicli caricati)');
+    }
     for(const [i,c] of m.cicli.entries()){
       const nome=id+' ciclo '+(i+1);
       verifica(c.escursioneMano>.035&&c.escursioneBraccio>.06,nome+': movimento reale del braccio dominante');
@@ -164,30 +192,44 @@ try{
     verifica(['shot','torsione'].includes(m.rilascio.gesto)&&m.rilascio.potenza===1,id+': il rilascio avvia subito il tiro carico');
     verifica(m.lanci.length===1&&m.lanci[0].kind==='shot'&&m.lanci[0].libera&&m.lanci[0].potenza===1&&m.lanci[0].velocita>10,id+': un tiro reale senza residui');
   }
+  if(!soloFoto)for(const mano of ['D','S'])for(const dir of [1,-1]){
+    const m=await page.evaluate(({mano,dir})=>window.__finta.rilasciaPresto(mano,dir),{mano,dir});
+    rilasciPrecoci.push(m);const id='rilascio precoce/'+mano+'/'+dir,potenza=.4/.9;
+    verifica(Math.abs(m.tenuta-.4)<1e-6&&Math.abs(m.carica-.4)<1e-6,id+': pressione mantenuta .4s');
+    verifica(['shot','torsione'].includes(m.rilascio.gesto)&&m.rilascio.wind===0&&Math.abs(m.rilascio.potenza-potenza)<1e-6,
+      id+': rilascio avvia subito il tiro con potenza .4/.9');
+    verifica(m.lanci.length===1&&m.lanci[0].kind==='shot'&&m.lanci[0].libera&&Math.abs(m.lanci[0].potenza-potenza)<1e-6,
+      id+': un tiro reale alla potenza prevista');
+    verifica(m.lanci.length===1&&m.lanci[0].tempo-m.rilasciato<=m.rilascio.frusta+1/30+1e-6,
+      id+': lancio entro la frusta, senza attendere il completamento ingresso');
+  }
   verifica(errori.length===0,'errori browser: '+errori.join('; '));
   const massimi={};
   for(const m of scene)for(const c of m.cicli)for(const [k,v] of Object.entries({anca:c.maxPasso.anca,torso:c.maxPasso.torso,
     passoMano:c.passoMano,percorsoAnca:c.percorso.anca,percorsoTorso:c.percorso.torso,derivaAnca:c.derivaAnca,derivaTorso:c.derivaTorso,
     ditaMaxDelta:c.ditaMaxDelta,ditaMaxPasso:c.ditaMaxPasso}))massimi[k]=Math.max(massimi[k]||0,v);
-  const misure={root,scene,limiti:{passoAnca:.25,passoTorso:.30,percorsoAnca:1.5,percorsoTorso:3.5,
-    derivaAnca:.30,derivaTorso:.40,passoMano:.16,passoBraccio:.9,ditaMaxDelta:.55,ditaMaxPasso:.35},massimi,violazioni,errori};
+  const massimiAvvio={};
+  for(const m of scene)for(const [k,v] of Object.entries({anca:m.avvio.maxPasso.anca,torso:m.avvio.maxPasso.torso,
+    braccio:m.avvio.maxPasso.braccio,avambraccio:m.avvio.maxPasso.avambraccio,mano:m.avvio.maxPasso.mano,
+    passoMano:m.avvio.passoMano}))massimiAvvio[k]=Math.max(massimiAvvio[k]||0,v);
+  const misure={root,scene,rilasciPrecoci,limiti:{passoAnca:.25,passoTorso:.30,percorsoAnca:1.5,percorsoTorso:3.5,
+    derivaAnca:.30,derivaTorso:.40,passoMano:.16,passoBraccio:.9,ditaMaxDelta:.55,ditaMaxPasso:.35,
+    avvio:{durata:1.2,passoAnca:.12,passoTorso:.12,passoMano:.16,rapportoBraccio:1.5,minimoLimiteBraccio:.15}},
+    massimi,massimiAvvio,violazioni,errori};
   if(arg('misure')){const dest=path.resolve(arg('misure'));fs.mkdirSync(path.dirname(dest),{recursive:true});fs.writeFileSync(dest,JSON.stringify(misure,null,2)+'\n');}
   if(arg('foto')){
     const dir=path.resolve(arg('foto'));fs.mkdirSync(dir,{recursive:true});
     const pose=await page.evaluate(()=>{
       const H=window.__pallanuoto,p=window.__finta.prepara('larga','D',1);
+      const camera={pos:[p.x+3.8,2.2,p.z+3.2],look:[p.x,.5,p.z],fov:35};H.vista=camera;
+      // La camera viene applicata dal RAF: prepararla prima del campione t=0.
+      window.__avanza(1);
+      const inizio=H.game.time,tempi=[0,.10,.20,.35,.5,.7,.9,1.15],pose=[];
       window.__pad.buttons[2]={pressed:true,value:1};
-      for(let i=0;i<240;i++){
-        window.__avanza(1);
-        if(p.chargeT>=.9-1e-6&&p.act?.kind==='fake'&&p.act.t<.04)break;
-      }
-      const a=p.act,inizio=H.game.time,totale=a.wind+a.frusta+.36;
-      const tempi=[0,a.wind*.5,a.wind,a.wind+a.frusta*.5,a.wind+a.frusta,
-        a.wind+a.frusta+.12,totale-.02,totale+.08],pose=[];
-      H.vista={pos:[p.x+3.8,2.2,p.z+3.2],look:[p.x,.5,p.z],fov:35};
       for(const t of tempi){
-        do{window.__avanza(1);}while(H.game.time-inizio<t);
-        H.__ridisegna();pose.push({t:H.game.time-inizio,gesto:p.act?.kind||'carica',done:p.act?.done||false,
+        while(H.game.time-inizio<t-1e-6)window.__avanza(1);
+        H.__ridisegna();pose.push({tRichiesto:t,t:H.game.time-inizio,primaDellaPressione:t===0,carica:p.chargeT,
+          gesto:p.act?.kind||(p.charging?'carica':null),done:p.act?.done||false,camera,
           png:H.renderer.domElement.toDataURL('image/png')});
       }
       H.vista=null;return pose;
@@ -197,7 +239,7 @@ try{
     }
     fs.writeFileSync(path.join(dir,'pose.json'),JSON.stringify(pose,null,2)+'\n');
   }
-  console.log('Finta v0.76: '+JSON.stringify({scene:scene.length,massimi,violazioni:violazioni.length}));
+  console.log('Finta v0.76: '+JSON.stringify({scene:scene.length,rilasciPrecoci:rilasciPrecoci.length,massimi,massimiAvvio,violazioni:violazioni.length}));
   assert.equal(violazioni.length,0,'finte complete, continuità e rilascio: '+JSON.stringify(violazioni.slice(0,8))+
     (violazioni.length>8?' (elenco completo nel file --misure)':''));
 }finally{await browser.close();await server.close();}

@@ -1,6 +1,6 @@
 # Documenti di WATERPOLO 7
 
-Versione corrente **v0.76**: [finta fluida](versioni/v076-finta-fluida.md), [verifiche](verifiche/v076/README.md). Precedente **v0.75**: [tiro continuo, scatto e boa](versioni/v075-tiro-scatto-boa.md).
+Versione corrente **v0.77**: [ingresso fluido nella finta](versioni/v077-avvio-finta.md), [verifiche](verifiche/v077/README.md). Precedente **v0.76**: [finta fluida](versioni/v076-finta-fluida.md).
 
 
 | Dove | Cosa c'è |
