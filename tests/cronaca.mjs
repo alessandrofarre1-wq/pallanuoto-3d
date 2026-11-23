@@ -54,6 +54,20 @@ const controlla = (g, cosa) => {
   nota(g.fs >= 13, `${cosa}: testo leggibile (${g.fs}px)`);
 };
 
+// Con RAF finto il locator.tap aspetterebbe due frame che il test non avanza.
+// Manteniamo il tocco reale: visibilità e bersaglio vengono controllati prima.
+async function tocca(pg,sel){
+  const r=await pg.evaluate(sel=>{
+    const el=document.querySelector(sel);if(!el)return null;
+    const b=el.getBoundingClientRect(),s=getComputedStyle(el),x=b.x+b.width/2,y=b.y+b.height/2;
+    const hit=document.elementFromPoint(x,y);
+    return {x,y,visibile:b.width>0&&b.height>0&&s.visibility==='visible'&&s.display!=='none',
+      bersaglio:hit===el||el.contains(hit)};
+  },sel);
+  if(!r?.visibile||!r.bersaglio)throw new Error('Tocco non disponibile: '+sel);
+  await pg.touchscreen.tap(r.x,r.y);
+}
+
 // ---------- A) partita vera, computer contro computer ----------
 {
   const pg = await apri();
@@ -156,7 +170,7 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
 // dalla v0.44 il registro si apre dal menu di pausa (scelta di Ale): pausa → «Eventi della partita»
 { const r = await pg.evaluate(() => { const H = window.__pallanuoto; H.game.state = 'play'; const t0 = H.game.clock; return { t0, logVisibile: getComputedStyle(document.getElementById('tLog')).display !== 'none' }; });
   nota(!r.logVisibile, '7. il pulsante del registro non è più a schermo durante il gioco');
-  await pg.tap('#tPause'); await pg.evaluate(() => window.__vai(2)); await pg.tap('#vaiRegistro'); await pg.evaluate(() => window.__vai(2));
+  await tocca(pg,'#tPause'); await pg.evaluate(() => window.__vai(2)); await tocca(pg,'#vaiRegistro'); await pg.evaluate(() => window.__vai(2));
   const g = await pg.evaluate(t0 => { const H = window.__pallanuoto; window.__salta(60); window.__vai(1); const el = document.getElementById('registro');
     return { aperto: el.classList.contains('vis'), voci: el.querySelectorAll('li').length, fermo: H.game.clock === t0 || H.game.state === 'paused', stato: H.game.state, ordine: [...el.querySelectorAll('.tm')].map(x => x.textContent) }; }, r.t0);
   nota(g.aperto && g.voci > 3, `7. registro aperto: ${g.voci} eventi (${g.ordine.slice(0, 3).join(', ')} …)`); nota(g.stato === 'paused', '7. gioco fermo mentre il registro è aperto');
@@ -164,7 +178,7 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
   // un tocco sul campo mentre il registro è aperto non muove il giocatore
   await pg.touchscreen.tap(200, 300); const mosso = await pg.evaluate(() => { const H = window.__pallanuoto; return H.ctrl ? Math.hypot(H.ctrl.vx, H.ctrl.vz) : 0; });
   nota(mosso < 0.01 || g.stato === 'paused', '7. i tocchi sul registro non arrivano ai comandi');
-  await pg.tap('#regChiudi'); const ch = await pg.evaluate(() => { window.__vai(2); return { aperto: document.getElementById('registro').classList.contains('vis'), stato: window.__pallanuoto.game.state, pausa: document.getElementById('vPausa').getBoundingClientRect().height > 0 }; });
+  await tocca(pg,'#regChiudi'); const ch = await pg.evaluate(() => { window.__vai(2); return { aperto: document.getElementById('registro').classList.contains('vis'), stato: window.__pallanuoto.game.state, pausa: document.getElementById('vPausa').getBoundingClientRect().height > 0 }; });
   nota(!ch.aperto && ch.stato === 'paused' && ch.pausa, `7. registro chiuso: si torna al menu di pausa (${ch.stato})`);
   await pg.evaluate(() => window.__pallanuoto.pausa()); const rip = await pg.evaluate(() => { window.__vai(2); return window.__pallanuoto.game.state; });
   nota(rip !== 'paused', `7. Riprendi: il gioco riparte (${rip})`); }

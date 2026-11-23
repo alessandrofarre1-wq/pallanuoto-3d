@@ -1,0 +1,74 @@
+
+> pallanuoto-3d@0.75.0 menu
+> node tests/menu.mjs --no-build --solo-controlli
+
+
+iphone-verticale (393×852)
+OK  titolo della pagina: WATERPOLO 7
+OK  home: PARTITA VELOCE visibile senza scorrere
+OK  home: logo largo 255 punti (leggibile)
+OK  home: giocatore in primo piano caricato
+OK  informazioni: regole e suggerimenti
+OK  squadre: CONTINUA visibile senza scorrere
+OK  squadre: Italia contro Ungheria
+OK  squadre: toccare una bandiera cambia la tua squadra
+OK  impostazioni: GIOCA visibile senza scorrere
+OK  indietro: le squadre scelte restano
+OK  indietro e avanti: le impostazioni restano
+OK  partita avviata (countdown)
+OK  in campo ITA contro HUN
+OK  durata scelta applicata (300 s)
+OK  dalla home alla partita in 4 tocchi (3 senza toccare le impostazioni)
+OK  avviso di rotazione in partita: flex
+OK  pausa: schermata di pausa (anche in verticale, senza avviso di rotazione)
+OK  comandi: raggiungibili anche dalla pausa
+OK  riprendi: si torna in partita
+
+iphone-orizzontale (852×393)
+OK  titolo della pagina: WATERPOLO 7
+OK  home: PARTITA VELOCE visibile senza scorrere
+OK  home: logo largo 247 punti (leggibile)
+OK  home: giocatore in primo piano caricato
+OK  informazioni: regole e suggerimenti
+OK  squadre: CONTINUA visibile senza scorrere
+OK  squadre: Italia contro Ungheria
+OK  squadre: toccare una bandiera cambia la tua squadra
+OK  impostazioni: GIOCA visibile senza scorrere
+OK  indietro: le squadre scelte restano
+OK  indietro e avanti: le impostazioni restano
+OK  partita avviata (countdown)
+OK  in campo ITA contro HUN
+OK  durata scelta applicata (300 s)
+OK  dalla home alla partita in 4 tocchi (3 senza toccare le impostazioni)
+OK  avviso di rotazione in partita: none
+OK  pausa: schermata di pausa (anche in verticale, senza avviso di rotazione)
+OK  comandi: raggiungibili anche dalla pausa
+OK  riprendi: si torna in partita
+
+iphone-se-orizzontale-safari (667×320)
+OK  titolo della pagina: WATERPOLO 7
+OK  home: PARTITA VELOCE visibile senza scorrere
+OK  home: logo largo 220 punti (leggibile)
+OK  home: giocatore in primo piano caricato
+OK  informazioni: regole e suggerimenti
+OK  squadre: CONTINUA visibile senza scorrere
+OK  squadre: Italia contro Ungheria
+OK  squadre: toccare una bandiera cambia la tua squadra
+OK  impostazioni: GIOCA visibile senza scorrere
+OK  indietro: le squadre scelte restano
+OK  indietro e avanti: le impostazioni restano
+OK  partita avviata (countdown)
+OK  in campo ITA contro HUN
+OK  durata scelta applicata (300 s)
+OK  dalla home alla partita in 4 tocchi (3 senza toccare le impostazioni)
+OK  avviso di rotazione in partita: none
+OK  pausa: schermata di pausa (anche in verticale, senza avviso di rotazione)
+OK  comandi: raggiungibili anche dalla pausa
+OK  riprendi: si torna in partita
+
+Tutto a posto.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

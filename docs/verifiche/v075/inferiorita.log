@@ -1,0 +1,53 @@
+
+> pallanuoto-3d@0.75.0 inferiorita
+> node strumenti/inferiorita-foglio.mjs --prova
+
+3-3, palla a 2 (a 4.8 m dalla porta, z 3.4): difensori di mezzo (4.79 m, z -1.33, a 4.73 m dalla palla) (3.89 m, z 2.81, a 1.08 m dalla palla)
+  ✓ 3-3, palla a 2: un difensore salta su chi ha la palla (a 1.08 m)
+  ✓ 3-3, palla a 2: l'altro difensore sta a metà tra 3 e il 6 (4.79 m, z -1.33)
+3-3, palla a 6 (a 5.6 m dalla porta, z 0): difensori di mezzo (4.7 m, z -0.08, a 0.9 m dalla palla) (4.61 m, z 2.34, a 2.54 m dalla palla)
+  ✓ 3-3, palla a 6: un difensore salta su chi ha la palla (a 0.9 m)
+3-3, palla a 3 (a 4.8 m dalla porta, z -3.4): difensori di mezzo (3.94 m, z -2.82, a 1.04 m dalla palla) (4.81 m, z 1.35, a 4.75 m dalla palla)
+  ✓ 3-3, palla a 3: un difensore salta su chi ha la palla (a 1.04 m)
+palla a 1 (tiratore a 2 m dalla porta, z 5.4, mano S):
+   centrale: 1.73 m, z 0.92, braccio destro, copre palo -z
+   difensori: r0 (1.7, 0.9 → 1.7, 1) r4 (1.9, -3 → 1.9, -2.9) r2 (3.6, -0.7 → 3.6, -0.6) r3 (1.8, 4.5 → 1.8, 4.6) r1 (3.7, 2.5 → 3.6, 2.6)
+   su chi tira: ruolo 3 a 0.9 m, braccio destro
+  ✓ palla a 1: il tiratore sta davvero caricando con la palla in mano
+  ✓ palla a 1: chi esce sul tiratore alza il braccio destro (a specchio): destro
+  ✓ palla a 1: il centrale copre il palo lungo
+  ✓ palla a 1: il centrale alza il braccio dalla parte del palo lungo (destro): destro
+  ✓ palla a 1: il centrale sta sulle spalle del difensore del palo dalla parte della palla (z 0.92)
+palla a 2 (tiratore a 5.2 m dalla porta, z 2.5, mano D):
+   centrale: 1.97 m, z 0.3, braccio destro, copre palo -z
+   difensori: r0 (2, 0.3 → 2, 0.2) r4 (1.9, -3 → 1.9, -2.9) r2 (3.6, -1.1 → 3.6, -1.1) r3 (1.8, 2.5 → 1.9, 2.3) r1 (4.2, 2.3 → 4.2, 2.2)
+   su chi tira: ruolo 1 a 1.04 m, braccio sinistro
+  ✓ palla a 2: il tiratore sta davvero caricando con la palla in mano
+  ✓ palla a 2: chi esce sul tiratore alza il braccio sinistro (a specchio): sinistro
+  ✓ palla a 2: il centrale copre il palo lungo
+  ✓ palla a 2: il centrale alza il braccio dalla parte del palo lungo (destro): destro
+  ✓ palla a 2: il centrale è sulla linea dell'incrociato (z 0.3, linea 0.22)
+palla a 3 (tiratore a 5.2 m dalla porta, z -2.5, mano D):
+   centrale: 2 m, z -0.14, braccio sinistro, copre palo +z
+   difensori: r0 (2, -0.1 → 2, -0.2) r4 (1.8, -2.5 → 1.9, -2.3) r2 (4.2, -2.2 → 4.2, -2.2) r3 (1.9, 2.8 → 1.9, 2.9) r1 (3.6, 1.2 → 3.6, 1.1)
+   su chi tira: ruolo 2 a 1.04 m, braccio sinistro
+  ✓ palla a 3: il tiratore sta davvero caricando con la palla in mano
+  ✓ palla a 3: chi esce sul tiratore alza il braccio sinistro (a specchio): sinistro
+  ✓ palla a 3: il centrale copre il palo lungo
+  ✓ palla a 3: il centrale alza il braccio dalla parte del palo lungo (sinistro): sinistro
+  ✓ palla a 3: il centrale è sulla linea dell'incrociato (z -0.14, linea -0.22)
+palla a 4 (tiratore a 2 m dalla porta, z -5.4, mano D):
+   centrale: 1.72 m, z -0.92, braccio sinistro, copre palo +z
+   difensori: r0 (1.7, -0.9 → 1.7, -1) r4 (1.8, -4.5 → 1.8, -4.6) r2 (3.6, -2.5 → 3.6, -2.6) r3 (1.9, 2.8 → 1.9, 2.9) r1 (3.6, 0.7 → 3.6, 0.6)
+   su chi tira: ruolo 4 a 0.89 m, braccio sinistro
+  ✓ palla a 4: il tiratore sta davvero caricando con la palla in mano
+  ✓ palla a 4: chi esce sul tiratore alza il braccio sinistro (a specchio): sinistro
+  ✓ palla a 4: il centrale copre il palo lungo
+  ✓ palla a 4: il centrale alza il braccio dalla parte del palo lungo (sinistro): sinistro
+  ✓ palla a 4: il centrale sta sulle spalle del difensore del palo dalla parte della palla (z -0.92)
+Uomo in meno: tutte le prove superate
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

@@ -37,3 +37,19 @@ Lint finale e `git diff --check`: PASS. Provenienza dei file runtime in [proveni
 [CI45069119661](https://github.com/alessandrofarre1-wq/pallanuoto-3d/actions/runs/45069119661), SHA b5aae8d:6partite completate,108gol/257tiri, verifica PASS con5avvisi immagini non bloccanti (font server; scarti1,04–5,64%). Non sono dati di taratura. Poi FAIL in entrate-integrazione: il vecchio assert conservava il controllato precedente anche al kickoff. Il nuovo requisito seleziona invece lo scattista più veloce. Nel setup tutti hanno Velocità90, quindi indice1; aggiornata questa attesa precisa, conservati tutti gli assert di schema/difesa/riposizionamento e il controllo manuale nelle altre riprese. [Estratto CI](ci-prima-serie.log), [regressione locale dopo fix](entrate-integrazione.log) PASS.
 
 Nessuna modifica runtime dopo quella CI: corretto soltanto il test e documentata la fase. Il fallimento interrompe gli altri passi: serve quindi una nuova CI intera sull’ultimo SHA, che ripete anche il suo giro standard; nessuna simulazione aggiuntiva locale. La precedente previsione di un unico giro CI è superata da questo arresto del test. Risultato finale nella PR.
+
+## Seconda CI: scena di inferiorità
+
+[CI45070404033](https://github.com/alessandrofarre1-wq/pallanuoto-3d/actions/runs/45070404033), SHA d6120f9: entrate-integrazione corretto e tutti i passi fino a uomo PASS; le sei partite ripetono esattamente108gol/257tiri. Poi FAIL del foglio inferiorità, caso4: atteso braccio sinistro, misurato destro. [Estratto](ci-seconda-serie.log). Diagnosi reale: la fixture impostava autoplay e squadre non umane, ma conservava ctrl=3, proprio il tiratore del caso4; humanControl annullava la carica sotto pressione e il foglio stava misurando un contrasto invece del muro in carica. Cinque e cambi assenti, nessun difetto di muro/GLB.
+
+Corretto soltanto `strumenti/inferiorita-foglio.mjs`: selezionato nullo per rendere tutta la scena automatica e assert aggiuntivo charging+holder prima di controllare il braccio. Assert di posizione, lato e braccio originali conservati. Stesso difensore a0,89m: ora sinistro. Nessuna modifica runtime. Prima di un terzo giro CI vengono eseguiti in locale i9passi rimasti da inferiorità in poi, senza le sei partite, per verificare anche i controlli saltati. La terza CI completa sarà la fonte dello SHA finale; non attribuire verde alle due precedenti.
+
+## Coda locale prima della terza CI
+
+[Primo giro](prove-coda-prima-serie.log):8/9PASS. [Inferiorità](inferiorita.log), v046, sezione6, dati tesi, statistiche, azioni, [aspetto gioco](aspetto-gioco-finale.log) e [menu](menu.log) PASS. Aspetto finale conferma0/7707verticali,0/5075nuoto,0/1218transizioni fuori acqua; insieme alle sei foto finali sullo stesso runtime completa l’aspetto senza altre simulazioni.
+
+Resta nel primo giro un [timeout del test cronaca](cronaca-prima-serie.log), scenario7: tap su Pausa non visibile dopo la preparazione manuale dello stato. Scenari1–6 PASS; la correzione/riprova viene riportata separatamente, senza trasformare8/9in un esito giàverde.
+
+Diagnosi del registro: Pausa era visibile e raggiungibile (menu none, replay nullo, punto centrale su tPause), ma locator.tap attendeva fotogrammi di stabilità bloccati dal RAF finto. Corretto solo il test: posizione/visibilità e bersaglio effettivo verificati, poi touchscreen.tap reale; nessun force e nessun click JavaScript. Ripristinata integralmente la partita del bloccoA, disattivata soltanto durante la diagnosi; stampe diagnostiche rimosse. Riprova completa riportata separatamente.
+
+Riprova completa `cronaca --no-build --solo-controlli`: [PASS](cronaca-finale.log), partitaA inclusa, registro aperto/chiuso con tocco reale, pausa, rotazione e ripresa. La coda precedente resta8/9nel suo log; con la riprova separata tutti9i controlli sono ora PASS sullo stesso runtime. Lint e diff-check finali PASS. Non è un nuovo bilanciamento e non sono state ripetute le sei partite in locale.
