@@ -1,0 +1,170 @@
+[
+  {
+    "tRichiesto": 0,
+    "t": 0,
+    "primaDellaPressione": true,
+    "carica": 0,
+    "gesto": null,
+    "done": false,
+    "camera": {
+      "pos": [
+        7.8,
+        2.2,
+        3.2
+      ],
+      "look": [
+        4,
+        0.5,
+        0
+      ],
+      "fov": 35
+    }
+  },
+  {
+    "tRichiesto": 0.1,
+    "t": 0.09999999999999432,
+    "primaDellaPressione": false,
+    "carica": 0.09999999999999978,
+    "gesto": "carica",
+    "done": false,
+    "camera": {
+      "pos": [
+        7.8,
+        2.2,
+        3.2
+      ],
+      "look": [
+        4,
+        0.5,
+        0
+      ],
+      "fov": 35
+    }
+  },
+  {
+    "tRichiesto": 0.2,
+    "t": 0.19999999999998863,
+    "primaDellaPressione": false,
+    "carica": 0.1999999999999996,
+    "gesto": "carica",
+    "done": false,
+    "camera": {
+      "pos": [
+        7.8,
+        2.2,
+        3.2
+      ],
+      "look": [
+        4,
+        0.5,
+        0
+      ],
+      "fov": 35
+    }
+  },
+  {
+    "tRichiesto": 0.35,
+    "t": 0.3499999999999801,
+    "primaDellaPressione": false,
+    "carica": 0.34999999999999915,
+    "gesto": "carica",
+    "done": false,
+    "camera": {
+      "pos": [
+        7.8,
+        2.2,
+        3.2
+      ],
+      "look": [
+        4,
+        0.5,
+        0
+      ],
+      "fov": 35
+    }
+  },
+  {
+    "tRichiesto": 0.5,
+    "t": 0.4999999999999716,
+    "primaDellaPressione": false,
+    "carica": 0.4999999999999986,
+    "gesto": "fake",
+    "done": false,
+    "camera": {
+      "pos": [
+        7.8,
+        2.2,
+        3.2
+      ],
+      "look": [
+        4,
+        0.5,
+        0
+      ],
+      "fov": 35
+    }
+  },
+  {
+    "tRichiesto": 0.7,
+    "t": 0.6999999999999602,
+    "primaDellaPressione": false,
+    "carica": 0.6999999999999992,
+    "gesto": "fake",
+    "done": false,
+    "camera": {
+      "pos": [
+        7.8,
+        2.2,
+        3.2
+      ],
+      "look": [
+        4,
+        0.5,
+        0
+      ],
+      "fov": 35
+    }
+  },
+  {
+    "tRichiesto": 0.9,
+    "t": 0.8999999999999488,
+    "primaDellaPressione": false,
+    "carica": 0.8999999999999998,
+    "gesto": "fake",
+    "done": true,
+    "camera": {
+      "pos": [
+        7.8,
+        2.2,
+        3.2
+      ],
+      "look": [
+        4,
+        0.5,
+        0
+      ],
+      "fov": 35
+    }
+  },
+  {
+    "tRichiesto": 1.15,
+    "t": 1.1499999999999346,
+    "primaDellaPressione": false,
+    "carica": 0.9,
+    "gesto": "fake",
+    "done": true,
+    "camera": {
+      "pos": [
+        7.8,
+        2.2,
+        3.2
+      ],
+      "look": [
+        4,
+        0.5,
+        0
+      ],
+      "fov": 35
+    }
+  }
+]

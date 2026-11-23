@@ -1,0 +1,10 @@
+
+> pallanuoto-3d@0.77.0 tiro-comando
+> node tests/tiro-comando-v075.mjs
+
+PASS tiro v0.75: touch vero, Space/K/controller, polso, finte e ossa in movimento, rilascio, boa e annullamenti {"misure":[{"canale":"touch","braccio":1.892,"busto":0.1,"finte":3},{"canale":"Space","braccio":1.756,"busto":0.1,"finte":3},{"canale":"k","braccio":2.005,"busto":0.1,"finte":3},{"canale":"pad","braccio":1.755,"busto":0.1,"finte":3}],"budget":[],"ricezioniBoa":[{"dir":1,"mano":"D","coperto":true,"volo":false,"gesto":"sciarpa"},{"dir":-1,"mano":"S","coperto":true,"volo":false,"gesto":"sciarpa"},{"dir":1,"mano":"S","coperto":false,"volo":false,"gesto":"beduina"},{"dir":-1,"mano":"D","coperto":false,"volo":false,"gesto":"beduina"},{"dir":1,"mano":"D","coperto":true,"volo":true,"gesto":"sciarpa"},{"dir":1,"mano":"D","coperto":false,"volo":true,"gesto":"beduina"}]}
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

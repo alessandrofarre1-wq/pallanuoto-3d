@@ -1,0 +1,242 @@
+
+> pallanuoto-3d@0.77.0 gesti-fluidi
+> node tests/gesti-v070.mjs
+
+PASS helper gesti: ancore, velocità al rilascio, niente overshoot, carica e filtro continui, reset e fisica intatta
+{
+  "prima": null,
+  "casi": [
+    {
+      "tipo": "polso-caricato",
+      "dir": 1,
+      "mano": "D",
+      "primo": 0.006225711531852497,
+      "massimo": 0.10541290207434079,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "polso-caricato",
+      "dir": 1,
+      "mano": "S",
+      "primo": 0.045481535045690566,
+      "massimo": 0.1656341217970374,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "polso-caricato",
+      "dir": -1,
+      "mano": "D",
+      "primo": 0.04581946023366706,
+      "massimo": 0.1667693797276316,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "polso-caricato",
+      "dir": -1,
+      "mano": "S",
+      "primo": 0.04548011464940317,
+      "massimo": 0.16563972975173313,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "tiro-caricato",
+      "dir": 1,
+      "mano": "D",
+      "primo": 0.05999999999999994,
+      "massimo": 0.14339168785575102,
+      "rilascio": 10,
+      "supFisica": 0
+    },
+    {
+      "tipo": "tiro-caricato",
+      "dir": 1,
+      "mano": "S",
+      "primo": 0.05999999999999994,
+      "massimo": 0.1455246544308808,
+      "rilascio": 10,
+      "supFisica": 0
+    },
+    {
+      "tipo": "tiro-caricato",
+      "dir": -1,
+      "mano": "D",
+      "primo": 0.06000000000000005,
+      "massimo": 0.14103235546430556,
+      "rilascio": 10,
+      "supFisica": 0
+    },
+    {
+      "tipo": "tiro-caricato",
+      "dir": -1,
+      "mano": "S",
+      "primo": 0.06000000000000005,
+      "massimo": 0.14687849593093658,
+      "rilascio": 10,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-avanti",
+      "dir": 1,
+      "mano": "D",
+      "primo": 0.06118061654635535,
+      "massimo": 0.35082543297215607,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-avanti",
+      "dir": 1,
+      "mano": "S",
+      "primo": 0.060894911719981355,
+      "massimo": 0.3486246621675078,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-avanti",
+      "dir": -1,
+      "mano": "D",
+      "primo": 0.06118114130619346,
+      "massimo": 0.350843239305772,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-avanti",
+      "dir": -1,
+      "mano": "S",
+      "primo": 0.06089491060085227,
+      "massimo": 0.34862540457010677,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-opposto",
+      "dir": 1,
+      "mano": "D",
+      "primo": 0.06118114130835009,
+      "massimo": 0.44361389478513036,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-opposto",
+      "dir": 1,
+      "mano": "S",
+      "primo": 0.06089491060084732,
+      "massimo": 0.2665399882655623,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-opposto",
+      "dir": -1,
+      "mano": "D",
+      "primo": 0.061181141308349875,
+      "massimo": 0.4436151930794705,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-opposto",
+      "dir": -1,
+      "mano": "S",
+      "primo": 0.06089491060084752,
+      "massimo": 0.2665418913762046,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-stesso",
+      "dir": 1,
+      "mano": "D",
+      "primo": 0.061181141308350076,
+      "massimo": 0.26892432078904904,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-stesso",
+      "dir": 1,
+      "mano": "S",
+      "primo": 0.06089491060084744,
+      "massimo": 0.4425011659250423,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-stesso",
+      "dir": -1,
+      "mano": "D",
+      "primo": 0.06118114130834987,
+      "massimo": 0.2689224478192017,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "passa-stesso",
+      "dir": -1,
+      "mano": "S",
+      "primo": 0.060894910600847486,
+      "massimo": 0.44249986420730714,
+      "rilascio": 8,
+      "supFisica": 0
+    },
+    {
+      "tipo": "palomba",
+      "dir": 1,
+      "mano": "D",
+      "primo": 0.06118114130835006,
+      "massimo": 0.36207412888930646,
+      "rilascio": 17,
+      "supFisica": 0
+    },
+    {
+      "tipo": "palomba",
+      "dir": 1,
+      "mano": "S",
+      "primo": 0.060896200473496385,
+      "massimo": 0.3597313783470889,
+      "rilascio": 17,
+      "supFisica": 0
+    },
+    {
+      "tipo": "palomba",
+      "dir": -1,
+      "mano": "D",
+      "primo": 0.06117990123043138,
+      "massimo": 0.36200244180821434,
+      "rilascio": 17,
+      "supFisica": 0
+    },
+    {
+      "tipo": "palomba",
+      "dir": -1,
+      "mano": "S",
+      "primo": 0.060896203082488394,
+      "massimo": 0.3597153656135441,
+      "rilascio": 17,
+      "supFisica": 0
+    }
+  ],
+  "curve": [
+    1.818227,
+    1.818227,
+    1.818319,
+    1.818319,
+    1.515194,
+    1.515194,
+    1.649011,
+    1.649011
+  ]
+}
+PASS gesti v0.70: 24 casi, invarianti J/ballW e callback, confronto PRIMA/DOPO se richiesto
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

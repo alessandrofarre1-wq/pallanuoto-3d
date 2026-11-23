@@ -1,0 +1,21 @@
+{
+  "comando": "npm run prove -- --solo=lint,tiro-comando,tiro-registrato,gesti-fluidi,gameplay,finta,desktop,gesti,replay,aspetto",
+  "pass": 10,
+  "fail": 0,
+  "minuti": 6.3,
+  "registriOriginali": "/tmp/prove-Qnotj5",
+  "aspettoGioco": {
+    "verticale": [
+      0,
+      8539
+    ],
+    "nuoto": [
+      0,
+      4316
+    ],
+    "transizioni": [
+      0,
+      1229
+    ]
+  }
+}

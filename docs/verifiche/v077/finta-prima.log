@@ -1,0 +1,19 @@
+Finta v0.76: {"scene":24,"rilasciPrecoci":4,"massimi":{"anca":0,"torso":0.0073406909860869295,"passoMano":0.07734944522019244,"percorsoAnca":0,"percorsoTorso":0.1999999999939713,"derivaAnca":0,"derivaTorso":0,"ditaMaxDelta":5.16191365590357e-8,"ditaMaxPasso":5.16191365590357e-8},"massimiAvvio":{"anca":0.5929378439291315,"torso":1.0064059451710978,"braccio":1.179597956040925,"avambraccio":1.266136567644989,"mano":1.263543194982661,"passoMano":0.4192258715843142},"violazioni":120}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: finte complete, continuità e rilascio: ["larga/D/1: continuità anca/torso fin dalla prima pressione","larga/D/1: mano senza scatto durante avvio","larga/D/1: picco braccio avvio entro max(.15rad, 1.5×picco cicli caricati)","larga/D/1: picco avambraccio avvio entro max(.15rad, 1.5×picco cicli caricati)","larga/D/1: picco mano avvio entro max(.15rad, 1.5×picco cicli caricati)","larga/D/-1: continuità anca/torso fin dalla prima pressione","larga/D/-1: mano senza scatto durante avvio","larga/D/-1: picco braccio avvio entro max(.15rad, 1.5×picco cicli caricati)"] (elenco completo nel file --misure)
+
+120 !== 0
+
+    at file:///workspace/pallanuoto-v077/tests/finta-fluida-v076.mjs:241:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 120,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

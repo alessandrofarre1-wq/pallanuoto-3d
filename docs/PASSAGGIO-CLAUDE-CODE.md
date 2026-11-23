@@ -1,3 +1,15 @@
+# Passaggio WATERPOLO7 — v0.77 avvio della finta
+
+Base main `7218d09`, PR67 unita e CI45246753540 verde. Ramo `codex/v077-avvio-finta`, workspace `/workspace/pallanuoto-v077`, versione0.77.0. Prima di proseguire riallineare main/PR/CI/diff; preservare Claude e i worktree precedenti. Nessun merge/deploy.
+
+Il nuovo video mostra un tratto iniziale ancora accelerato. Ora raccordo dalla posa realmente disegnata in acqua alla posa caricata Plask in0,70s, prima finta sovrapposta; gerarchia locale coerente anche su dita/polso. **Decisione superata:** non riprodurre più il prefisso registrato5,9s in0,5s prima delle finte. Originale e dati415pose/52ossa integri, rilascio registrato conservato; percorso CPU/diretto precedente invariato. Non ripristinare la vecchia compressione per sostenere che tutta la preparazione venga attraversata nella tenuta.
+
+Nessun cambio a GLB/rig/pesi/viso/nuoto. Controlli, massimo0,9s, prima finta0,45s e cadenza0,16+0,18+0,36s conservati. Rilascio durante l’ingresso immediato; cache per atleta invalidata da identità/tempo, annullamento dall’ultima posa.
+
+Test ora include primi1,2s e4rilasci a0,4s:24scene,120→0violazioni,48cicli/28rilasci PASS,8pose iniziali ispezionate, soglie invariate. [Rapporto](versioni/v077-avvio-finta.md), [prove con fasi/costi](verifiche/v077/README.md). Esito CI completa dell’ultimo SHA nella PR. Non dichiarare qualità professionale o FPS misurati su iPhone. Limiti <100call/<150000tri anche2cambi/replay,14corpi, logoC/camera unica/SPEED1/CAMBI basso44px e riflessoalta conservati. Nessun nuovo bilanciamento o prova facciale; sei gare standard solo nella CI finale, una Chromium pesante alla volta.
+
+---
+
 # Passaggio WATERPOLO7 — v0.76 finta fluida
 
 Base main6b0d2b9, PR66 unita e CI45200501806 verde. Ramo `codex/v076-finta-fluida`, workspace `/workspace/pallanuoto-v076`, versione0.76.0. Prima di proseguire riallineare GitHub e diff; preservare Claude. Nessun merge/deploy.

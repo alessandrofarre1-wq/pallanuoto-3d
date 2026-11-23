@@ -3,6 +3,13 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.77
+
+- Quasi5,9s di preparazione Plask compressi nei primi0,5s di tenuta → raccordo0,70s dalla posa reale in acqua alla posa caricata, prima finta sovrapposta. Le415pose originali non sono alterate, ma il prefisso non viene più interamente riprodotto durante la tenuta. Rilascio registrato e percorso CPU/diretto conservati.
+- Ingresso dal procedurale corrente a ogni frame, in spazio mondo → posa precedente memorizzata e raccordo delle catene in spazio locale, comprese dita/polso; annullamento dall’ultima posa disegnata.
+- Misure soltanto dopo piena carica → anche primi1,2s/73campioni, più4rilasci precoci a0,4s. Soglie precedenti conservate.
+- Nessun cambio a modello/rig/pesi/viso/nuoto, controlli, tempi fisici, potenza o cadenza delle finte.
+
 ## v0.76
 
 - Finta visibile soltanto fino a done → recupero completo nel disegno, ritorno alla stessa carica.
