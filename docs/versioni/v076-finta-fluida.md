@@ -20,6 +20,8 @@ Il tasto rilasciato interrompe subito la propria finta e avvia il tiro, anche ne
 
 Prove locali: prima serie mirata9/10PASS, poi comandi PASS con misura della catena completa anziché dell’ultima vertebra locale (soglie conservate); gameplay PASS con anticipo150ms sulla durata reale e finestra200ms invariata. Verifica immagini0partite PASS, tutti5confronti ispezionati, nessun riferimento cambiato. Aspetto completo PASS:0/8539verticali,0/4316nuoto,0/1229transizioni fuori acqua;6foto ispezionate, iPhone56/131872. Due cambi con anello68/139200,14corpi completi+2comparse. Nessuna simulazione delle sei gare duplicata in locale; CI completa finale nella PR.
 
+PrimaCI45238473320 fermata prima delle partite sul test isolato traiettorie: aggiunta nel suo contesto la nuova costante dei tempi e usato il confine reale della finta invece del vecchio0,27s fisso, con assert aggiuntivo contro un effetto anticipato. Riprova traiettorie e lint PASS, runtime invariato. CI completa finale sullo SHA aggiornato nella PR.
+
 ## Limiti e non fatto
 
 Nessuna geometria aggiunta; restano meno di 100 chiamate e 150.000 triangoli su iPhone, anche con due cambi e replay, e 14 corpi completi. Misure finali nel rapporto delle prove. Logo C, camera in diretta, velocità unica, CAMBI in basso e riflesso solo alta conservati. Nessuna nuova meccanica, nuova animazione del viso, modifica al nuoto o ritocco globale di precisione/potenza. Nessuna taratura estesa o FPS su iPhone fisico; giudizio di Ale sulla naturalezza ancora necessario. Nessun merge o deploy.

@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { profiloTraiettoria } from '../src/profili-traiettorie.js';
 import { P } from '../src/fisica-palla/parametri.js';
 import { FIRMA, TRAIETTORIE_TIRO as T } from '../src/taratura.js';
+import { FINTA_MOVIMENTO } from '../src/finta-movimento.js';
 // La fisica della partita usa Rapier anche qui, senza renderer o browser.
 globalThis.window=globalThis;
 globalThis.localStorage={getItem:()=>null,setItem:()=>{}};
@@ -60,7 +61,7 @@ const corpo=sorgente.replace(/^import .*;.*\n/gm,'').replace(/^export \{.*\};.*\
 const ball={},game={time:10,state:'play',penalty:null},teams=[{idx:0,dir:1,human:true,short:'ITA',players:[]},{idx:1,dir:-1,short:'HUN',players:[]}],allPlayers=[];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),dist=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z),other=t=>teams[1-t.idx],goalX=t=>12.5*t.dir;
 let caso=.5,profiloScelto;
-const contesto={ball,game,teams,allPlayers,clamp,dist,other,goalX,P,T,FIRMA,ALZATA,profiloTraiettoria:o=>{profiloScelto=profiloTraiettoria(o);return profiloScelto;},velocitaDiLancio:H.velocitaDiLancio,rnd:()=>caso,gauss:()=>0,
+const contesto={ball,game,teams,allPlayers,clamp,dist,other,goalX,P,T,FIRMA,ALZATA,FINTA_MOVIMENTO,profiloTraiettoria:o=>{profiloScelto=profiloTraiettoria(o);return profiloScelto;},velocitaDiLancio:H.velocitaDiLancio,rnd:()=>caso,gauss:()=>0,
   azioneAperta:()=>null,tipoDiTiro:()=> 'fuori',registraTiro:()=>{},registraTiroReplay:()=>{},paloCoperto:()=>0,postoPortiere:()=>0,manUp:()=>false,firma:()=>false};
 const tiro=new Function(...Object.keys(contesto),corpo+'\nreturn {doShoot,launch,startAct,updateActs};')(...Object.values(contesto));
 const p={team:teams[0],x:4.5,z:0,fx:1,fz:0,ballW:[4.5,1.2,0],stamina:1,s:{pot:76.25,pre:90,frz:85,res:85},st:{sht:.9},fakeCount:0};
@@ -99,7 +100,8 @@ const ai=new Function('fintaDi','startAct','doFake','ball','game','doShoot','sho
   ()=>({wind:.17,pausa:[.35,.6]}),tiro.startAct,q=>{finte++;q.fakeCount++;q.ultimaFintaT=game.time;},ball,game,tiro.doShoot,()=> 'shot',()=>.5);
 ball.holder=p;ball.state='held';p.fakeCount=0;p.act=null;ai(p,.4,true);
 assert.equal(p.act.kind,'fake','CPU prepara almeno una finta personale');
-tiro.updateActs(.27);assert.equal(finte,1);assert.equal(p.act.kind,'lob');assert.equal(ball.state,'held');
+tiro.updateActs(p.act.wind+p.act.frusta-.001);assert.equal(finte,0,'effetto della finta non anticipato');
+tiro.updateActs(.002);assert.equal(finte,1);assert.equal(p.act.kind,'lob');assert.equal(ball.state,'held');
 tiro.updateActs(.55);assert.equal(ball.lob,true);assert.equal(ball.state,'flight');
 ball.holder=p;p.act=null;ai(p,.4,true);assert.equal(p.act.kind,'lob','una finta già completata basta');
 console.log(JSON.stringify(misure,null,2));

@@ -31,3 +31,7 @@ Riprova [comandi finale](comandi-finale.log): PASS su touch/tastiera/controller,
 [Gameplay e buffer finale](gameplay.log): PASS. Il tocco del test viene ora inviato150ms prima della fine effettiva della finta più lunga, dentro la stessa finestra di200ms; tutte le soglie, gli annullamenti e il rifiuto del tocco troppo anticipato sono conservati. Nessun buffer più permissivo.
 
 [Aspetto foto](aspetto-foto.log):6/6PASS e ispezionate, insieme ai5confronti della verifica. iPhone844/667:56chiamate/131872triangoli; vista ravvicinata massima146138triangoli. [Costi](aspetto-costi.txt). Due cambi con anello: massimo68/139200,14atleti completi e2comparse. Nessun riferimento immagini modificato. Tutti i controlli coinvolti verificati, con la riprova comandi separata dal primo9/10; non si dichiara un prove locale completo60/60.
+
+## Prima CI e dipendenze del test isolato
+
+CI45238473320, SHA e45a4ff: arresto prima delle sei partite in traiettorie. Il test estrae tiri.js in una funzione isolata: mancava la nuova costante FINTA_MOVIMENTO nel suo contesto. Importata/iniettata e sostituito il vecchio anticipo fisso0,27s con il confine effettivo wind+frusta, verificando anche che l’effetto non parta prima. Nessuna soglia delle traiettorie cambiata, nessun ritocco runtime. [Riprova locale traiettorie](traiettorie.log) PASS, lint PASS. Serve la CI intera dello SHA successivo; nessuna simulazione delle sei gare è stata eseguita in questa prima CI.
