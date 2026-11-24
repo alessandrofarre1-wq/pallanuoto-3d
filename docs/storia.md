@@ -10,6 +10,25 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.85 — finte** (Claude Code, 24/11/2026; rapporto `docs/versioni/v085-finte.md`). RICHIESTA: Ale, «davanti alla porta finta
+  veloce ma non troppo»; «ora quelle vicino alla porta sono troppo veloci, vanno rallentate»; «la finta di tiro può essere fatta sia
+  mandando la palla avanti e indietro ma, più frequentemente, da destra verso sinistra; in generale con movimenti stretti e veloci o più
+  ampi e lenti e con il braccio teso o piegato». CODICE: il computer partiva con il gesto dopo la finta (quasi sempre un passaggio) a
+  metà del ritorno del braccio, 0,50 s dall'inizio della finta (ritorno interrotto 82 volte su 100 tra 5 e 7 m, sonda nuova
+  `npm run sonda-finte`); la prima finta sempre dritta, di lato solo dalla seconda alternando i pali (98 finte su 100 erano la prima);
+  tempi uguali per tutte. CAMBIAMENTI: `FINTA_RITMO.attesa` 0,2 s (video di Varga): il gesto dopo la finta parte a braccio tornato
+  carico più l'attesa, per il computer (`p.fintaPronto`, `aiCarrier`) e per la tenuta di TIRO (prima 0,12 s); `FINTA_LATO.quota` 0,65:
+  ogni finta di lato da destra verso sinistra attraverso il corpo (mancino al contrario; levetta = palo scelto); `FINTA_AMPIEZZA`:
+  larghezza a ogni finta dallo stile (`largo` in `finte.js`) ± caso, più stretta davanti alla porta, stretta con i tempi minimi della
+  v0.76 e ampia fino a 0,10 + 0,10 + 0,12 s più lenta (`a.recupero`); solo disegno `FINTA_FORMA` (braccio teso o piegato, `piegato`
+  per stile). MISURE: gesto dopo la finta 0,50 → 1,05 s; ritorno interrotto 82% → 4%; 16 partite: gol 19,1 → 19,3, tiri 39,0 → 39,3,
+  superiorità 48,1% → 47,1% (secondo campione 42% → 41%), 7 voci su 15 a posto (prima 8: esce la palla in mano prima del passaggio,
+  1,00 s). PROVA NUOVA `npm run finte` (11 controlli, anche nella CI); foglio `npm run finte-forme`; prove adattate: `finta`,
+  `finta-fluida` (forme uguali tra avvio e cicli), `traiettorie` (costanti nuove, palombella dopo il ritorno; il salvataggio intermedio
+  169f7ed la faceva fallire). VERIFICHE: lint PASS; prove 67 PASS e 0 FAIL (18,2 minuti); verifica `--partite=0`: «3-azione» diversa solo per la situazione di gioco (a 2:45 la palla è all'Italia invece che all'Ungheria), controllata, riferimento aggiornato e confronto ripetuto con immagini identiche; aspetto «Tutto a posto» (iPhone 56 oggetti, 131.872 triangoli). DECISIONI SUPERATE: gesto dopo la finta a metà ritorno; prima finta sempre
+  dritta e lati alternati; tempi uguali per tutte. NON FATTO: giudizio di Ale sul movimento; la finta stretta non è più veloce dei tempi
+  della v0.76.
+
 - **v0.84 — rigore** (Claude Code, 24/11/2026; rapporto `docs/versioni/v084-rigore.md`). RICHIESTA: Ale, «rigore: la palla deve
   partire dall'acqua e il movimento deve essere continuo, altrimenti controfallo». CODICE: palla in mano alta fin dal fischio; carica
   tenibile fino a 7 s. CAMBIAMENTI: `pose.js` (solo disegno): prima del gesto la palla galleggia davanti a chi tira e la carica la

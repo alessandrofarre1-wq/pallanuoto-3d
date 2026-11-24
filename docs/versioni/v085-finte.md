@@ -1,9 +1,11 @@
-# v0.85 — Finte: più lente vicino alla porta, più spesso di lato, larghe o strette, braccio piegato o dritto
+# v0.85 — Finte: più lente vicino alla porta, da destra verso sinistra, strette e veloci o ampie e lente, braccio teso o piegato
 
 ## Richiesta
 Ale (24/11/2026), punti 7 e 8 della lista: «davanti alla porta finta veloce ma non troppo»; «finte: avanti-indietro ma più spesso
 destra-sinistra, larghe o strette, braccio piegato o dritto». Poi, senza video: «quello che ti posso dire è che ora quelle vicino alla
-porta sono troppo veloci, vanno rallentate».
+porta sono troppo veloci, vanno rallentate». E dopo la prima versione: «la finta di tiro può essere fatta sia mandando la palla avanti
+e indietro ma, più frequentemente, da destra verso sinistra. In generale può essere fatta con movimenti stretti e veloci o più ampi e
+lenti e con il braccio teso o piegato».
 
 ## Il riferimento
 Non ho trovato studi con la durata delle finte di tiro. Resta il video di Dénes Varga che Ale aveva mandato (analisi della v0.58):
@@ -44,61 +46,78 @@ Il giocatore che tiene TIRO faceva una finta ogni 0,82 s (accenno 0,34 s, ritorn
 ## Misure (sonda-finte, 4 partite, per squadra a partita)
 | misura | v0.84 | v0.85 |
 |---|---|---|
-| finte del computer | 45,3 | 38,9 |
-| dall'inizio della finta al gesto dopo (metà dei casi) | 0,50 s | 0,92 s |
-| … il 10% più veloce | 0,37 s | 0,90 s |
-| tra 5 e 7 m: gesto dopo, in media | 0,55 s | 0,91 s |
-| tra 5 e 7 m: ritorno del braccio interrotto | 82% | 7% (quasi tutte palombelle: il gesto parte, la palla esce a braccio carico) |
-| prima finta di lato | 0% | 63% (prova) |
-| giocatore che tiene TIRO: una finta ogni | 0,82 s | 0,92 s |
+| finte del computer | 45,3 | 37,0 |
+| dall'inizio della finta al gesto dopo (metà dei casi) | 0,50 s | 1,05 s |
+| … il 10% più veloce | 0,37 s | 0,93 s |
+| tra 5 e 7 m: gesto dopo, in media | 0,55 s | 1,04 s |
+| tra 5 e 7 m: ritorno del braccio interrotto | 82% | 4% (quasi tutte palombelle: il gesto parte, la palla esce a braccio carico) |
+| andata della finta (preparazione + accenno), per stile | 0,36-0,43 s | raffica 0,42, spalla 0,42, mezza 0,43, polso 0,47, bomba 0,58 s |
+| finte di lato | quasi mai (98 su 100 erano la prima, sempre dritta) | 57-63 su 100 nelle prove, tutte da destra verso sinistra |
+| giocatore che tiene TIRO (stile a raffica): una finta ogni | 0,82 s | 1,02-1,03 s |
 
 ## Gioco contro realtà (16 partite ITA–HUN, per squadra a partita)
 | voce | v0.84 | v0.85 | reale |
 |---|---|---|---|
-| tiri | 39,0 | 39,0 | 33 |
-| gol | 19,1 | 19,8 | 13,3 |
-| tiri in gol | 48,9% | 50,9% | 40% |
-| espulsioni | 11,6 | 11,3 (a posto) | 11 |
-| espulsioni dalla lotta al centro | 60,5% | 59,8% | 66% |
-| superiorità trasformate | 48,1% | 42,1% | 52% |
-| azioni a partita | 74,4 | 74,5 | 50 |
+| tiri | 39,0 | 39,3 | 33 |
+| gol | 19,1 | 19,3 | 13,3 |
+| tiri in gol | 48,9% | 49,1% | 40% |
+| espulsioni | 11,6 | 11,8 (a posto) | 11 |
+| espulsioni dalla lotta al centro | 60,5% | 62,7% (a posto) | 66% |
+| superiorità trasformate | 48,1% | 47,1% (a posto) | 52% |
+| rigori | 1,9 | 1,8 (a posto) | 1,8 |
+| azioni a partita | 74,4 | 75,2 | 50 |
 | parità: durata dell'azione | 13,1 s | 13,0 s | 21 s |
 | palla in mano prima del passaggio | 0,98 s | 1,00 s | 0,6-1 s |
-| voci a posto | 8 su 15 | 5 su 15 | |
+| voci a posto | 8 su 15 | 7 su 15 | |
 
-Le voci che passano da «a posto» a «da guardare» sono tre, tutte vicine al confine (espulsioni dal centro 59,8% contro la soglia
-del 60%, palla in mano 1,00 s, superiorità). La superiorità era già oscillata tra il 42% e il 48% tra versioni quasi uguali; il
-secondo campione della sonda della superiorità è qui sotto.
-
-Secondo campione (sonda della superiorità, 6 partite per versione): in corso.
+Le finte non cambiano l'equilibrio della partita: tutte le voci restano entro le oscillazioni del caso; esce dalla fascia solo la palla in
+mano prima del passaggio (1,00 s, il limite è 1 s), perché lo scarico dopo la finta ora aspetta il ritorno del braccio. Secondo
+campione (sonda della superiorità, 6 partite per versione con semi diversi): superiorità trasformate **42% sulla v0.84 e 41% sulla
+v0.85**. Il 48% della taratura della v0.84 era il caso di quel campione (nella prima versione della v0.85 era uscito 42%).
 
 ## Prove
-- **Nuova `npm run finte`** (anche nella CI), nove controlli: il gesto del computer dopo la finta parte a braccio tornato carico più
-  l'attesa (0,93 s contro un minimo di 0,92 s) e arriva comunque; il giocatore che tiene TIRO fa una finta ogni 0,92 s; la prima
-  finta va di lato 63 volte su 100; disegno: braccio dritto (gomito a 143°) e piegato (103-118°), la finta larga va più di lato della
-  stretta, nelle finte scelte dal gioco ci sono le due braccia.
-- **`npm run finta`** (v0.55): il controllo «la prima dritta, poi di lato alternando» diventa «di lato alternando» più «con la levetta
-  inclinata la prima va già da quella parte» (decisione superata qui sotto).
-- **`npm run finta-fluida`** (v0.76 di Codex): avvio e finte caricate si confrontano a parità di forma (ogni scena usa una delle
-  quattro forme, a rotazione; ogni stile le prova tutte). Con forme diverse il confronto «picco dell'avvio entro 1,5 volte il picco
-  dei cicli» falliva in 3 scene su 24 solo perché i due cicli di confronto erano usciti a braccio piegato, che si muove meno: con le
-  forme uguali 0 violazioni su 24 scene.
-- **`npm run finte-forme`** (strumento nuovo): foglio con otto finte (dritta o di lato, stretta o larga, braccio dritto o piegato) da
-  due lati, `docs/immagini/v085-finte-forme.png`.
+- **Nuova `npm run finte`** (anche nella CI), undici controlli: il gesto del computer dopo la finta parte a braccio tornato carico più
+  l'attesa e arriva comunque; il giocatore che tiene TIRO fa una finta ogni 1,02-1,03 s (accenno + ritorno + attesa); le finte vanno
+  di lato 57 volte su 100 nella prova, tutte da destra verso sinistra attraverso il corpo; stretta e veloce contro ampia e lenta (accenno
+  0,38 contro 0,51 s, ritorno 0,39 contro 0,46 s); davanti alla porta più strette (larghezza 0,61 a 3,5 m contro 0,87 a 8 m); disegno:
+  braccio teso (gomito 143-149°) e piegato (103-119°), la finta ampia va più di lato della stretta, nelle finte scelte dal gioco ci sono
+  le due braccia.
+- **`npm run finta`** (v0.55): il controllo «la prima dritta, poi di lato alternando» diventa «di lato da destra verso sinistra,
+  attraverso il corpo» più «con la levetta inclinata la prima va già da quella parte» (decisione superata qui sotto).
+- **`npm run traiettorie`** (v0.71 di Codex): la prova esegue `tiri.js` e un pezzo di `ia.js` in un ambiente ridotto; ha le costanti
+  nuove (`FINTA_AMPIEZZA`, `FINTA_LATO`, `FINTA_RITMO`) e controlla la palombella del computer dopo la finta con la regola nuova: parte a
+  braccio tornato carico (prima doveva essere in volo 0,55 s dopo la finta). Nel salvataggio intermedio 169f7ed questa prova falliva
+  (costante mancante): corretta nel salvataggio successivo.
+- **`npm run finta-fluida`** (v0.76 di Codex): avvio e finte caricate si confrontano a parità di forma (ogni scena usa una delle quattro
+  forme a rotazione, con i tempi della sua larghezza; ogni stile le prova tutte). Con forme diverse il confronto «picco dell'avvio entro
+  1,5 volte il picco dei cicli» falliva in 3 scene su 24 solo perché i due cicli di confronto erano usciti a braccio piegato, che si
+  muove meno: con le forme uguali 0 violazioni su 24 scene.
+- **`npm run finte-forme`** (strumento nuovo): foglio con otto finte (dritta o di lato, stretta o ampia, braccio teso o piegato) da due
+  lati, `docs/immagini/v085-finte-forme.png`.
 
 ## Verifiche
-In corso: `npm run lint` PASS; `npm run finte`, `npm run finta` e `npm run finta-fluida` PASS; `npm run prove`, `npm run verifica
--- --partite=0` e `npm run aspetto -- --no-build --solo-foto` da completare.
+- **`npm run lint`**: PASS.
+- **`npm run prove`**: **67 PASS, 0 FAIL** su 67 passi in 18,2 minuti, con `finte` (11 controlli), `finta`, `finta-fluida` e
+  `traiettorie` adattate.
+- **`npm run verifica -- --partite=0`**: «3-azione» diversa dal riferimento per la sola situazione di gioco (con le finte nuove a 2:45
+  la palla è all'Italia invece che all'Ungheria; disegno, acqua e tabellone a posto): controllata, riferimento aggiornato con
+  `npm run verifica:aggiorna -- --partite=0`, confronto ripetuto con le cinque immagini identiche.
+- **`npm run aspetto -- --no-build --solo-foto`**: «Tutto a posto»; viste iPhone 56 oggetti disegnati e 131.872 triangoli, al massimo
+  145.148 triangoli nelle sei viste.
+- **`npm run finte-forme`**: foglio `docs/immagini/v085-finte-forme.png` (otto finte, di lato e da dietro).
 
 ## Decisioni superate
 - Il gesto del computer dopo una finta partiva alla fine dell'accenno, a metà del ritorno del braccio → parte a braccio tornato carico
   più 0,2 s (anche per il giocatore che tiene TIRO, prima 0,12 s).
-- La prima finta sempre dritta, di lato solo dalla seconda (v0.59) → anche la prima di lato, 65 volte su 100; con la levetta sempre.
-- Ogni stile con un solo disegno della finta → a ogni finta larga o stretta, braccio dritto o piegato (solo disegno), con la tendenza
-  dello stile.
+- La prima finta sempre dritta, di lato solo dalla seconda alternando i due pali (v0.59) → ogni finta di lato 65 volte su 100, sempre
+  da destra verso sinistra attraverso il corpo (per un mancino al contrario); con la levetta il palo lo sceglie il giocatore.
+- Tempi della finta uguali per tutte (v0.76: 0,16 + 0,18 + 0,36 s) → la stretta tiene questi tempi, l'ampia fino a 0,10 + 0,10 +
+  0,12 s in più; davanti alla porta più strette.
+- Ogni stile con un solo disegno della finta → a ogni finta braccio teso o piegato (solo disegno), con la tendenza dello stile.
 
 ## Non fatto
-- La durata dell'accenno (0,34-0,45 s) e del ritorno (0,36 s) restano quelle della v0.76: sono già vicine al video di Varga.
+- La finta stretta ha ancora i tempi della v0.76 (dopo i video di Ale a Codex «accenno troppo veloce e scattoso»): non è più veloce di
+  così.
 - Chi abbocca alla finta resta fuori tempo quanto prima (difensore 0,7 s, portiere 1,1 s): con il gesto dopo più lento lo «scarico»
   dopo la finta arriva quasi alla fine del vantaggio. Da rivedere solo se Ale trova le finte inutili.
 - Il giudizio sul movimento spetta ad Ale, giocando o guardando il foglio delle forme.

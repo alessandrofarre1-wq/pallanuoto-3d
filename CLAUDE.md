@@ -117,12 +117,15 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   della spalla (solo disegno, dentro i tempi del gesto).
 - Avvio finta v0.77: tenuta umana dalla posa realmente in acqua alla posa caricata Plask in 0,70 s, con rotazioni locali e prima finta sovrapposta. Non comprimere l’intero prefisso registrato in 0,5 s. Originale/dati Plask integri, parte di rilascio conservata; tiri diretti/CPU sul percorso precedente. Cache invalidata con identità/tempo; annullamento dall’ultima posa. Solo disegno, controlli e tempi fisici invariati.
 - Finte v0.76: almeno 0,16 s preparazione + 0,18 s accenno + 0,36 s recupero, ripetizione dopo il recupero. Durante la tenuta la base Plask resta continua, braccio additivo e torace limitato a 0,10 rad; niente spegnimento/riaccensione di tutto il corpo. Dita solidali alla mano. Massimo 0,9 s e rilascio durante finta/recupero conservati; sei stili personali (larga, a raffica, di polso, mezza, di bomba, di spalla) con un piccolo vantaggio sul
-  seguito tipico; la finta di lato (dalla seconda sempre, la prima 65 volte su 100, con la levetta sempre) sposta difensore e portiere.
-- Finte v0.85 (Ale: «vicino alla porta troppo veloci, vanno rallentate»; `FINTA_RITMO`, `FINTA_LATO.prima`): dopo ogni finta il gesto
-  successivo (finta, tiro o passaggio) parte a braccio tornato carico più 0,2 s (video di Varga), per il computer e per la tenuta di
-  TIRO; il rilascio di TIRO tira sempre subito. Solo disegno (`FINTA_FORMA`, `grafica/pose.js`): a ogni finta larga o stretta (più
-  stretta vicino alla porta) e braccio dritto o piegato, con la tendenza dello stile. Prova `npm run finte`, sonda `npm run sonda-finte`,
-  foglio `npm run finte-forme`.
+  seguito tipico; la finta di lato sposta difensore e portiere.
+- Finte v0.85 (Ale: «vicino alla porta troppo veloci, vanno rallentate»; «avanti e indietro ma, più frequentemente, da destra verso
+  sinistra; stretti e veloci o più ampi e lenti; braccio teso o piegato»): dopo ogni finta il gesto successivo (finta, tiro o passaggio)
+  parte a braccio tornato carico più 0,2 s (`FINTA_RITMO`, video di Varga), per il computer e per la tenuta di TIRO; il rilascio di
+  TIRO tira sempre subito. Ogni finta va di lato 65 volte su 100 (`FINTA_LATO.quota`), da destra verso sinistra attraverso il corpo
+  (mancino al contrario; con la levetta il palo lo sceglie il giocatore), le altre avanti e indietro. Larghezza a ogni finta
+  (`FINTA_AMPIEZZA`, stile ± caso, più stretta davanti alla porta): la stretta ha i tempi minimi della v0.76, l'ampia è più lenta in
+  andata e ritorno (`a.recupero`). Braccio teso o piegato solo nel disegno (`FINTA_FORMA`). Prova `npm run finte`, sonda `npm run
+  sonda-finte`, foglio `npm run finte-forme`.
 - Portiere: segue il passaggio, para in base a posizione, Riflessi, stanchezza, sorpresa e muro; para meno dopo un cambio di lato,
   in superiorità, dopo una finta o su tiri vicini; mentre l'avversario carica sale a braccia larghe (solo disegno).
 - Portiere v0.71: il sorteggio decide il tentativo, non una presa senza contatto. Sagoma numerica condivisa con il disegno, sweep3D e reazione/velocità delle mani limitate; corpo/testa respingono, le prese ravvicinate richiedono la mano e sono rare. Stesse regole per le due squadre. Proporzioni v0.72: campo25×20m, porta3×0,90m e palla22,12cm nello stesso mondo. Scala delle giuntureVIS1,45→1,10: modello base2,547→1,932m in bind, profili individuali conservati. Sagoma/mani del portiere, palla sul palmo, ombra e contatto acqua seguono il corpo. Il punto fisico di lancio segue necessariamente la nuova altezza; tempi e velocità del tiro conservati.
@@ -203,7 +206,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.84 — rigore con la palla dall'acqua (Claude Code)
+## Stato v0.85 — finte (Claude Code)
 
 Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` v0.77 (Codex, PR #59-#68). Ale (24/11/2026) ha mandato 13 punti. Fatti:
 v0.78 interfaccia (CONTRASTA in difesa, tasti colorati, energia con il cognome; [rapporto](docs/versioni/v078-comandi-interfaccia.md));
@@ -215,15 +218,18 @@ tirate subito, più palla al centroboa; espulsioni 7,8 → 9,8, gol 19,5 → 19,
 appena entrato lontano, cambi liberi del computer a gioco fermo; sonda `npm run sonda-cambi`;
 [rapporto](docs/versioni/v082-cambi-volanti.md)); v0.83 time-out (palla al portiere a metà campo, squadra già schierata in attacco,
 time-out del computer per l'attacco finale; [rapporto](docs/versioni/v083-timeout.md)); v0.84 rigore (palla dall'acqua, fermo a
-braccio carico = controfallo; [rapporto](docs/versioni/v084-rigore.md)). Nelle prove computer contro computer l'Ungheria segna il doppio dell'Italia (26 a 13, già
-nella v0.77): nel database le valutazioni medie dei primi 14 sono 83 contro 76. Da rivedere con le rose.
-Prossimi, in quest'ordine: finte (davanti alla porta veloce ma non troppo; più destra-sinistra, larghe o strette, braccio piegato o
-dritto), rose dei giocatori a disposizione dei CT. Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
+braccio carico = controfallo; [rapporto](docs/versioni/v084-rigore.md)); v0.85 finte (gesto dopo la finta a braccio tornato carico,
+0,50 → 1,05 s; di lato da destra verso sinistra 65 volte su 100; strette e veloci o ampie e lente; braccio teso o piegato; equilibrio
+della partita invariato; [rapporto](docs/versioni/v085-finte.md)). Nelle prove computer contro computer l'Ungheria segna il doppio
+dell'Italia (26 a 13, già nella v0.77): nel database le valutazioni medie dei primi 14 sono 83 contro 76. Da rivedere con le rose.
+Prossimo: rose (v0.86; Ale: in partita veloce tutti i disponibili nella schermata Squadre, in partita i più forti per ruolo con una
+riserva per ruolo; nei tornei 15 convocati scelti all'inizio). Da riprendere: centroboa libero o con il marcatore in anticipo che riceve
+girato e segna (difesa).
 
-**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.83, `npm run taratura -- --partite=16`): 19,1 gol e 39,0 tiri per squadra
-(veri 13,3 e 33), tiri in gol 48,9% (40%), espulsioni 11,6 (11; dal centro 61%, vero 66%), superiorità 48% (52%), parità: gol 21,1%
-delle azioni (6-19%), espulsione procurata 18,1% (22%), durata 13,1 s (21), azioni 74 (50); 8 voci su 15 a posto. Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
+**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.85, `npm run taratura -- --partite=16`): 19,3 gol e 39,3 tiri per squadra
+(veri 13,3 e 33), tiri in gol 49,1% (40%), espulsioni 11,8 (11; dal centro 63%, vero 66%), superiorità 47% (52%; con altri semi 41%),
+parità: gol 21,4% delle azioni (6-19%), espulsione procurata 18,5% (22%), durata 13,0 s (21), azioni 75 (50); 7 voci su 15 a posto. Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
 partite); Codex misurava 16,1 e 41,4 nella v0.70 e 17,4 e 43,3 nella v0.71 (8 partite, passaggio di consegne v0.71); v0.77 20,5 e
-42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4, v0.82 20,2 e 41,0 (16 partite).
+42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4, v0.82 20,2 e 41,0, v0.83-v0.84 19,1 e 39,0 (16 partite).
 
 Stato precedente (v0.77, Codex): avvio fluido della finta, [rapporto](docs/versioni/v077-avvio-finta.md).

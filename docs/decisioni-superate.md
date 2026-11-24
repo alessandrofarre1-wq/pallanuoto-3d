@@ -7,10 +7,13 @@ completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in
 - Dopo una finta il gesto del computer (passaggio, tiro o un'altra finta) partiva alla fine dell'accenno, a metà del ritorno del
   braccio (ritorno interrotto 82 volte su 100 tra 5 e 7 m) → parte a braccio tornato carico più 0,2 s (`FINTA_RITMO.attesa`, video di
   Varga); anche il giocatore che tiene TIRO ripete la finta dopo 0,2 s invece di 0,12 s. Il rilascio di TIRO tira sempre subito.
-- La prima finta sempre dritta, di lato solo dalla seconda (v0.59) → anche la prima va di lato 65 volte su 100 (`FINTA_LATO.prima`);
-  con la levetta inclinata va da quella parte già dalla prima.
-- Un solo disegno della finta per stile → a ogni finta larga o stretta, braccio dritto o piegato (solo disegno, `FINTA_FORMA` in
-  `grafica/pose.js`), con la tendenza dello stile (`largo`, `piegato` in `finte.js`); più stretta vicino alla porta.
+- La prima finta sempre dritta e, dalla seconda, di lato alternando i due pali (v0.59) → ogni finta va di lato 65 volte su 100
+  (`FINTA_LATO.quota`), sempre da destra verso sinistra attraverso il corpo (per un mancino al contrario); le altre avanti e indietro;
+  con la levetta il palo lo sceglie il giocatore.
+- Tempi uguali per tutte le finte (v0.76: preparazione 0,16 s, accenno 0,18 s, ritorno 0,36 s) → la stretta tiene questi tempi,
+  l'ampia fino a 0,10 + 0,10 + 0,12 s in più (`FINTA_AMPIEZZA`, larghezza decisa dal gioco a ogni finta, più stretta davanti alla porta).
+- Un solo disegno della finta per stile → a ogni finta braccio teso o piegato (solo disegno, `FINTA_FORMA` in `grafica/pose.js`), con
+  la tendenza dello stile (`piegato` in `finte.js`).
 
 ## v0.84
 - Palla in mano, alta, fin dal fischio del rigore → palla in acqua davanti a chi tira, pescata all'inizio della carica (solo disegno).

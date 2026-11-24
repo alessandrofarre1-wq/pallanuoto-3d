@@ -41,16 +41,16 @@ for (const f of FORME) {
       H.prova.startAct(p, 'fake', 0.16, () => {}); if (!f.lato) p.fintaLatoGesto = 0;
       const a = p.act;
       while (a.t < a.wind + a.frusta - 1e-6) { tieni(); p.act = a; window.__salta(1); }
-      H.vista = vista === 'lato' ? { pos: [p.x - A.dir * 0.6, 1.25, p.z + 3.1], look: [p.x + A.dir * 0.2, 0.55, p.z], fov: 40 }
-        : { pos: [p.x - A.dir * 3.2, 1.45, p.z + 0.35], look: [p.x + A.dir * 0.6, 0.6, p.z], fov: 40 };
+      H.vista = vista === 'lato' ? { pos: [p.x - A.dir * 0.3, 1.05, p.z + 2.2], look: [p.x + A.dir * 0.1, 0.75, p.z], fov: 34 }
+        : { pos: [p.x - A.dir * 2.1, 1.2, p.z + 0.25], look: [p.x + A.dir * 0.4, 0.8, p.z], fov: 34 };
       window.__salta(1); H.__ridisegna(); const url = H.renderer.domElement.toDataURL('image/png'); H.vista = null; window.__formaFinta = null;
       return url.split(',')[1];
     }, { f, vista }));
   }
 }
 const nomi = FORME.map(f => `${f.lato ? 'di lato' : 'dritta'} · ${f.largo > 0.5 ? 'larga' : 'stretta'} · braccio ${f.piegato ? 'piegato' : 'dritto'}`);
-const pf = await browser.newPage({ viewport: { width: 1280, height: 2100 } });
-await pf.setContent(`<body style="margin:0;background:#111;color:#fff;font:600 15px system-ui;display:grid;grid-template-columns:repeat(4,1fr);gap:3px">${scatti.map((s, i) => `<div style="position:relative"><img style="width:100%;display:block" src="data:image/png;base64,${s}"><b style="position:absolute;left:6px;top:5px;text-shadow:0 1px 3px #000">${nomi[i >> 1]}<br>${i % 2 ? 'da dietro' : 'di lato'}</b></div>`).join('')}</body>`);
+const pf = await browser.newPage({ viewport: { width: 1280, height: 400 } });
+await pf.setContent(`<body style="margin:0;background:#111;color:#fff;font:600 15px system-ui;display:grid;grid-template-columns:repeat(4,1fr);gap:3px;align-content:start">${scatti.map((s, i) => `<div style="position:relative"><img style="width:100%;display:block" src="data:image/png;base64,${s}"><b style="position:absolute;left:6px;top:5px;text-shadow:0 1px 3px #000">${nomi[i >> 1]}<br>${i % 2 ? 'da dietro' : 'di lato'}</b></div>`).join('')}</body>`);
 await pf.screenshot({ path: USCITA, fullPage: true });
 if (errori.length) console.log('errori: ' + errori.slice(0, 2).join(' | '));
 await browser.close(); await new Promise(r => server.httpServer.close(r));

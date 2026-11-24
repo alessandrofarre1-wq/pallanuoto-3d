@@ -1,20 +1,20 @@
 # Passaggio WATERPOLO7 — v0.85 finte (Claude Code)
 
-Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.85.0. Cambia la partita (ritmo delle finte del computer, lato della prima
-finta) e il disegno della finta. Rispetta la v0.76/v0.77: tempi del gesto (`FINTA_MOVIMENTO`), tenuta Plask e rilascio libero
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.85.0. Cambia la partita (ritmo, lato e tempi delle finte) e il disegno della
+finta. Rispetta la v0.76/v0.77: i tempi minimi (`FINTA_MOVIMENTO`) restano quelli della finta stretta; tenuta Plask e rilascio libero
 invariati.
-- `FINTA_RITMO.attesa` (0,2 s) e `FINTA_LATO.prima` (0,65) in `src/taratura.js`. `startAct` (`src/tiri.js`) per la finta: lato anche
-  alla prima (levetta o caso), `p.fintaPronto = fine del ritorno + attesa`. `aiCarrier` (`src/ia.js`): finché `game.time <
-  p.fintaPronto` nessun gesto nuovo (`decideT` intanto scorre); la palombella dopo la finta del computer ha `wind` ≥ ritorno + attesa.
-  `controllo.js`: cadenza della tenuta con `FINTA_RITMO.attesa` al posto di 0,12. `fintaPronto` azzerato in `giveBall`, nel reset di
-  `regole.js` e in `menu.js`.
-- Solo disegno (`src/grafica/pose.js`): `formaFinta(p,a)` sceglie per ogni gesto (WeakMap sull'atto, `rndGrafica`) larghezza e braccio
-  dritto/piegato dalle tendenze `largo`/`piegato` di `FINTE` (`src/finte.js`); `FINTA_FORMA` decide arrivo della mano, torsione e
-  angolo della finta di lato. `window.__formaFinta` forza una forma (strumenti e prove).
-- `tests/finta-fluida-v076.mjs`: ogni scena forza una delle quattro forme a rotazione, così avvio e cicli si confrontano a parità di
-  forma (con forme diverse il rapporto 1,5 tra i picchi falliva in 3 scene su 24 senza scatti veri). `tests/finta-v055.mjs`: il
-  controllo sui lati segue la regola nuova.
-- Prova nuova `npm run finte` (anche nella CI); sonda `npm run sonda-finte`; foglio `npm run finte-forme`.
+- `src/taratura.js`: `FINTA_RITMO.attesa` (0,2 s), `FINTA_LATO.quota` (0,65), `FINTA_AMPIEZZA` (varia, vicino, stretta, preparazione,
+  accenno, ritorno). `startAct` (`src/tiri.js`) per la finta: larghezza `a.largo` (stile `largo` di `FINTE` ± caso, più stretta vicino
+  alla porta; `window.__formaFinta.largo` la forza negli strumenti e nelle prove), `wind`/`frusta`/`a.recupero` dalla larghezza, lato
+  `(mano==='S'?1:-1)*team.dir` (attraverso il corpo) con probabilità `quota` o quello della levetta, `a.pronto` e `p.fintaPronto`.
+- Il ritorno di ogni gesto è `a.recupero` (0,36 se manca): `updateActs`/`updateRecuperi`, `impulsoFinta`, `chiude` in `pose.js`,
+  `smussoGestoVista`. `aiCarrier` (`src/ia.js`): nessun gesto nuovo finché `game.time < p.fintaPronto`; la palombella dopo la finta del
+  computer ha `wind` ≥ `a.pronto - a.t`. `controllo.js`: cadenza della tenuta con `a.recupero + FINTA_RITMO.attesa`.
+- Solo disegno (`src/grafica/pose.js`): `formaFinta(p,a)` (WeakMap sull'atto) prende `a.largo` e sceglie il braccio teso/piegato con
+  `rndGrafica` (tendenza `piegato` di `FINTE`); `FINTA_FORMA` decide arrivo della mano, torsione e angolo della finta di lato.
+- Prove: `tests/traiettorie-v071.mjs` (costanti nuove nel contesto, palombella dopo il ritorno), `tests/finta-fluida-v076.mjs` (ogni
+  scena forza una delle quattro forme a rotazione, così avvio e cicli si confrontano a parità di forma), `tests/finta-v055.mjs` (lato
+  attraverso il corpo). Prova nuova `npm run finte` (anche nella CI); sonda `npm run sonda-finte`; foglio `npm run finte-forme`.
   [Rapporto](versioni/v085-finte.md).
 
 ---
