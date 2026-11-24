@@ -14,7 +14,9 @@ Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.86.0. Cambiano le rose 
   `preparaGaraTorneo` mette `convocati`/`liste` della nazionale, `preparaSingola` li toglie. `window.__pallanuoto.rose` per le prove.
 - Prova nuova `npm run rose` (anche nella CI); `tests/sezione5.mjs` con 7 riserve e il pulsante della riserva che porta l'id del
   giocatore; `tests/azione.mjs`: `fermi()` azzera anche `colpi` (con le rose nuove il terzo tocco del computer fischiava un fallo e
-  fermava il cronometro, come già previsto in `sezione1`/`sezione3`). [Rapporto](versioni/v086-rose.md).
+  fermava il cronometro, come già previsto in `sezione1`/`sezione3`). `tests/finta-fluida-v076.mjs`: ogni scena fissa anche il lato
+  della finta (`window.__formaFinta.lato`: 0 avanti e indietro, 1 di lato; letto in `startAct`, mai impostato in partita), perché dalla
+  v0.85 il lato è a caso e la prova falliva a caso (finta dell'avvio avanti, cicli di confronto di lato). [Rapporto](versioni/v086-rose.md).
 
 ---
 

@@ -21,8 +21,12 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
   `src/dati/rose-db.json` (`tutti`, 482 giocatori); `src/dati/rose.js` (`tutti`, `listaPartita`, `numeriLista`, `rosa` con `liste` e
   `convocati`); `giocatori.js` (formazione per id); `menu.js` (schermata Squadre con gli altri disponibili e lo scambio con la
   panchina, «Scelta automatica»; convocazione dei tornei, `vConvocazione`, 15 con 2-3 portieri fino alla prima partita); `aspetto.js`
-  (aspetto stabile per chi c'era). MISURE: 16 partite: senza correzione gol 19,3 → 21,3 (metà per i più forti, metà per la riserva in più: con 13 a partita 20,2); con la forza al ranking 19,4 (Italia 13,4, Ungheria 25,5 come nella v0.85), espulsioni dal centro 62,7% → 55%, 6 voci su 15 a posto. PROVA NUOVA `npm run rose` (15 controlli, anche nella CI); prova adattata `sezione5`
-  (7 riserve, 14 nella Panchina). VERIFICHE: in corso. DECISIONI SUPERATE: rosa di 13 → tutti i disponibili e 14 in partita scelti per
+  (aspetto stabile per chi c'era). MISURE: 16 partite: senza correzione gol 19,3 → 21,3 (metà per i più forti, metà per la riserva in più: con 13 a partita 20,2); con la forza al ranking 19,4 (Italia 13,4, Ungheria 25,5 come nella v0.85), espulsioni dal centro 62,7% → 55%, 6 voci su 15 a posto. PROVA NUOVA `npm run rose` (15 controlli, anche nella CI); prove adattate `sezione5`
+  (7 riserve, 14 nella Panchina, riserva per id) e `azione` (scena senza contrasti: anche `colpi`); `finta-fluida` (v0.76) falliva a caso
+  dalla v0.85 perché il lato di ogni finta è a caso: ora ogni scena fissa anche il lato (`window.__formaFinta.lato`, solo prove e
+  strumenti). VERIFICHE: lint PASS; prove 67 PASS e 1 FAIL (`finta-fluida`, poi corretta: tre giri PASS identici; `finte`, `finta`,
+  `traiettorie` PASS); verifica `--partite=0` con quattro riferimenti aggiornati dopo il controllo (altri giocatori e altra situazione di
+  gioco), poi cinque immagini identiche; aspetto «Tutto a posto» (iPhone 56 oggetti, 131.872 triangoli). DECISIONI SUPERATE: rosa di 13 → tutti i disponibili e 14 in partita scelti per
   ruolo; formazione per numero → per id; rosa fissa nei tornei → 15 convocati. NON FATTO: statistiche dei doppioni non sommate;
   valutazioni ancora stime dei tornei del database.
 

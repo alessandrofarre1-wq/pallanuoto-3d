@@ -125,7 +125,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   (mancino al contrario; con la levetta il palo lo sceglie il giocatore), le altre avanti e indietro. Larghezza a ogni finta
   (`FINTA_AMPIEZZA`, stile ± caso, più stretta davanti alla porta): la stretta ha i tempi minimi della v0.76, l'ampia è più lenta in
   andata e ritorno (`a.recupero`). Braccio teso o piegato solo nel disegno (`FINTA_FORMA`). Prova `npm run finte`, sonda `npm run
-  sonda-finte`, foglio `npm run finte-forme`.
+  sonda-finte`, foglio `npm run finte-forme`; nelle prove e negli strumenti `window.__formaFinta` fissa larghezza, braccio e lato.
 - Portiere: segue il passaggio, para in base a posizione, Riflessi, stanchezza, sorpresa e muro; para meno dopo un cambio di lato,
   in superiorità, dopo una finta o su tiri vicini; mentre l'avversario carica sale a braccia larghe (solo disegno).
 - Portiere v0.71: il sorteggio decide il tentativo, non una presa senza contatto. Sagoma numerica condivisa con il disegno, sweep3D e reazione/velocità delle mani limitate; corpo/testa respingono, le prese ravvicinate richiedono la mano e sono rare. Stesse regole per le due squadre. Proporzioni v0.72: campo25×20m, porta3×0,90m e palla22,12cm nello stesso mondo. Scala delle giuntureVIS1,45→1,10: modello base2,547→1,932m in bind, profili individuali conservati. Sagoma/mani del portiere, palla sul palmo, ombra e contatto acqua seguono il corpo. Il punto fisico di lancio segue necessariamente la nuova altezza; tempi e velocità del tiro conservati.

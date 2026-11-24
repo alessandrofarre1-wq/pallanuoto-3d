@@ -46,7 +46,9 @@ export function startAct(p,kind,wind,fn,aim){
   const frusta = kind==='fake'?FINTA_MOVIMENTO.frusta+FINTA_AMPIEZZA.accenno*largo:kind==='pass' ? 0.09 : kind==='polso' ? 0.11 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
   let pronto;
   if(kind==='fake'){
-    const lato=p.fintaLatoVoluto||(rnd()<FINTA_LATO.quota?(p.mano==='S'?1:-1)*p.team.dir:0);
+    // strumenti e prove possono fissare anche il lato (window.__formaFinta.lato: 0 avanti e indietro, 1 di lato); in partita non c'è
+    const traverso=(p.mano==='S'?1:-1)*p.team.dir, latoForzato=typeof window!=='undefined'?window.__formaFinta?.lato:undefined;
+    const lato=p.fintaLatoVoluto||(latoForzato!==undefined?(latoForzato?traverso:0):(rnd()<FINTA_LATO.quota?traverso:0));
     p.fintaLatoGesto=lato; p.fintaLatoVoluto=0; if(lato) p.ultimoLatoFinta=lato;
     pronto=wind+frusta+recupero+FINTA_RITMO.attesa; p.fintaPronto=game.time+pronto;
   }

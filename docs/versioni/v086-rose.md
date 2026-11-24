@@ -90,7 +90,24 @@ titolari più forti nel ruolo; la schermata Squadre con 7 + 7 + gli altri dispon
 automatica; torneo con 15 convocati proposti, conferma solo con 15, lista della partita dai convocati; di nuovo tutti in partita veloce.
 
 ## Verifiche
-In corso: `npm run lint`, `npm run prove`, `npm run verifica -- --partite=0`, `npm run aspetto -- --no-build --solo-foto`.
+- **`npm run lint`**: PASS.
+- **`npm run prove`**: 67 PASS e 1 FAIL su 68 passi in 17,2 minuti. Il passo fallito è `finta-fluida` (prova della v0.76 di Codex), che
+  falliva a caso dalla v0.85: lì il gioco usa il caso vero e ogni finta va di lato o avanti a caso (di lato 65 volte su 100), così in una
+  scena su 24 la finta dell'avvio era andata avanti e i due cicli di confronto di lato, due gesti diversi (picco del braccio 0,191 contro
+  0,125: oltre 1,5 volte). Con lo stesso codice è fallita due volte e passata due volte (e nella CI). Corretta: ogni scena fissa anche il
+  lato (`window.__formaFinta.lato`, letto in `startAct` solo da prove e strumenti: in partita non cambia nulla) e ogni forma prova i due
+  lati (larga, polso e bomba avanti e indietro; raffica, mezza e spalla di lato). Dopo la correzione tre giri di `finta-fluida` tutti
+  PASS e identici (avvio al massimo al 68% del limite); PASS anche `finte`, `finta`, `traiettorie` e `lint`.
+- **`npm run verifica -- --partite=0`**: quattro immagini diverse dal riferimento (2-sprint 3,42%, 3-azione 52,38%, iPhone piccolo 20,23%,
+  iPhone orizzontale 21,92%), controllate in `tests/screenshot/confronto/`: disegno, acqua, tabellone e comandi uguali; cambiano i
+  giocatori in acqua (altri titolari, altri aspetti) e quindi la situazione di gioco (in «3-azione» a 2:43 l'Italia è con l'uomo in
+  meno). Riferimenti aggiornati con `npm run verifica:aggiorna -- --partite=0` (il menu, identico, lasciato com'era); confronto ripetuto:
+  cinque immagini identiche, «Verifica superata», con le prove della qualità e dei tornei.
+- **`npm run aspetto -- --no-build --solo-foto`**: «Tutto a posto»; viste iPhone 56 oggetti disegnati e 131.872 triangoli, al massimo
+  145.150 triangoli nelle sei viste.
+- **Prove adattate alle rose**: `sezione5` (7 riserve, 14 nella Panchina; il pulsante della riserva porta l'id del giocatore e il numero
+  si legge dalla lista) e `azione` (la scena del cronometro ferma tutti i contrasti azzerando anche `colpi`, come già `sezione1` e
+  `sezione3`: con le rose nuove il terzo tocco di un difensore del computer fischiava un fallo e fermava il cronometro).
 
 ## Decisioni superate
 - Rosa di 13 dalla convocazione più recente → tutti i disponibili della nazionale; in partita 14 (regole 2026), scelti per ruolo con una
