@@ -57,7 +57,9 @@ try{
   await up('d');assert.equal((await stato()).act,'pass','D rilasciato avvia il passaggio');await frame(45);
   assert.equal((await stato()).passaggi,1,'un solo passaggio al rilascio');await frame(45);assert.equal((await stato()).passaggi,1);
 
-  await prepara();await down('Space',120);s=await stato();
+  // v0.87: la durata di una finta dipende dalla larghezza del giocatore (marchio di fabbrica): da 0,9 a 1,22 s per ciclo, quindi la
+  // seconda finta può arrivare fino a 2,12 s dalla pressione (carica 0,9 s + un ciclo): si tiene 2,5 s
+  await prepara();await down('Space',150);s=await stato();
   assert.ok(s.trattenuta&&s.charging&&s.finte>=2,'SPACE tenuto esegue finte e conserva la palla');
   assert.equal(s.carica,.9,'carica massima dopo 0,9 s');assert.equal(s.passaggi,0);
   await up('Space');s=await stato();assert.equal(s.act,'shot','rilascio interrompe la finta e tira');assert.equal(s.potenza,1);

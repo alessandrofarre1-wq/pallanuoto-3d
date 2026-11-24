@@ -13,7 +13,8 @@ Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #69 (v0.78-v0
   `largo` dalla firma, lato da `versoFinta` (`window.__formaFinta.lato` −1/0/1 nelle prove). `menu.js` scheda con verso e braccio.
   `window.__pallanuoto.finte` per le prove.
 - Prove: nuova `npm run finte-mano` (`tests/finte-v087.mjs`, anche nella CI); adattate `finta` (tenuta 4 s, verso del giocatore, scena
-  dell'anticipo senza lotta al centro), `finte` (verso del giocatore) e `traiettorie` (contesto con `firmaFinta`/`versoFinta`).
+  dell'anticipo senza lotta al centro), `finte` (verso del giocatore), `traiettorie` (contesto con `firmaFinta`/`versoFinta`) e
+  `desktop` (Spazio tenuto 2,5 s: una finta ampia dura fino a 1,22 s).
   Strumento `npm run finte-mano-foglio`; `sonda-finte` conta versi e larghezze. [Rapporto](versioni/v087-finte-mano.md).
 
 ---

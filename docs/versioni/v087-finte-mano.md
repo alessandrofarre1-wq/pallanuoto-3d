@@ -116,9 +116,23 @@ L'equilibrio non cambia: gol identici, le altre voci dentro le oscillazioni di 1
   lotta, regolare, era contata come sanzione per l'anticipo in 1 scena su 20).
 - **`npm run finte`** (v0.85): il controllo del lato diventa «il verso del giocatore 70 volte su 100, gli altri due le altre volte».
 - **`npm run traiettorie`** (v0.71 di Codex): il contesto ridotto ha anche `firmaFinta` e `versoFinta`.
+- **`npm run desktop`** (v0.44 di Codex): Spazio tenuto 2,5 s invece di 2 s prima di contare due finte (vedi Verifiche).
 
 ## Verifiche
-VERIFICHE_V087
+- **`npm run lint`**: PASS.
+- **`npm run prove`**: 68 PASS e 1 FAIL su 69 passi in 15,8 minuti. Il passo fallito è `desktop` (v0.44 di Codex): «Spazio tenuto 2 s =
+  almeno due finte»; con la larghezza del giocatore un ciclo di finta dura da 0,9 a 1,22 s e la seconda finta può arrivare a 2,12 s
+  dalla pressione (0,9 s di carica più un ciclo). La prova ora tiene Spazio 2,5 s, come la prova touch `finta` tiene TIRO 4 s: poi PASS.
+  Nella stessa build PASS anche `finte-mano` (13 controlli), `finta`, `finte`, `finta-fluida`, `traiettorie`, `tiro-registrato` e gli
+  altri passi.
+- **`npm run verifica -- --partite=0`**: «3-azione» diversa dal riferimento (16,77%) per la sola situazione di gioco: stesso momento
+  (2:43, 6 contro 5, Alesiani espulso), giocatori e braccia spostati di poco perché cambiano le finte del computer; disegno, acqua e
+  tabellone a posto. Controllata, riferimento aggiornato con `npm run verifica:aggiorna -- --partite=0` (le altre quattro, identiche o
+  entro la tolleranza, lasciate com'erano); confronto ripetuto: «Verifica superata», cinque immagini identiche o entro la tolleranza.
+- **`npm run aspetto -- --no-build --solo-foto`**: «Tutto a posto»; viste iPhone 56 oggetti disegnati e 131.872 triangoli, al massimo
+  145.546 triangoli nelle sei viste.
+- **Partita identica con le sole modifiche del disegno**: `aspetto --solo-gioco` tra la v0.86 e la build intermedia (mano, ritorno,
+  tenuta): «partita simulata identica».
 
 ## Decisioni superate
 - Palmo nella finta: in avanti e un po' in su durante la carica, in giù nel ritorno → segue la mano rispetto alla testa (al cielo dietro,
