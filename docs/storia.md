@@ -10,6 +10,16 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.83 — time-out** (Claude Code, 24/11/2026; rapporto `docs/versioni/v083-timeout.md`). RICHIESTA: Ale, «time-out chiamato
+  quando si subisce un break, o negli ultimi minuti per preparare un attacco; i giocatori si schierano nella metà campo avversaria;
+  l'arbitro dà la palla al portiere a metà campo, che la passa al compagno libero e torna in porta nuotando». CODICE: alla ripresa
+  tutti nella propria metà e il punto con la palla a metà campo; il computer chiamava il time-out solo per break, espulsioni, 7 contro
+  6 e stanchezza. CAMBIAMENTI: `schieraTimeout` (palla al portiere a metà campo, compagni ai posti d'attacco nella metà avversaria,
+  difensori a un metro dal loro uomo; `markTarget` lì avrebbe letto un rientro); `TIMEOUT` (ultimo minuto e mezzo, pari o sotto di
+  uno, appena ripresa la palla, una volta). 16 partite: time-out 1,53 → 1,34 a squadra, gol 20,2 → 19,1, 8 voci su 15 a posto (prima
+  6), differenze per lo più del caso. PROVA NUOVA `npm run timeout` (7 controlli, anche nella CI). VERIFICHE: lint PASS; prove 65 PASS
+  e 0 FAIL; verifica `--partite=0` superata; aspetto «Tutto a posto». NON FATTO: nessuno schema particolare dopo il time-out.
+
 - **v0.82 — cambi volanti** (Claude Code, 24/11/2026; rapporto `docs/versioni/v082-cambi-volanti.md`). RICHIESTA: Ale, «cambi
   volanti: non quando l'attacco è già impostato; il sostituto deve entrare da metà campo con il cinque; niente passaggi a un
   giocatore appena entrato a 20 m». REGOLE: World Aquatics 25/6/2025, art. 18: la zona dei cambi volanti va dalla linea di porta alla

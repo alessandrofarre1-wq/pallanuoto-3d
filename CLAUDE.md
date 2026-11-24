@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.82). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.83). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -172,6 +172,10 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   movimento = rimessa del portiere; fuori di lato = tiro libero agli avversari di chi ha toccato per ultimo. Nessun tempo per
   superare la metà campo; passare indietro e al portiere è permesso; fallo per chi rinuncia apposta al possesso. Time-out 2 a
   squadra, solo in possesso, ripresa da metà campo; rigori finali nei tornei.
+- Time-out v0.83 (Ale; `schieraTimeout`, `TIMEOUT`): alla ripresa la palla è al portiere a metà campo (nella propria metà), i compagni
+  sono schierati ai posti d'attacco nella metà campo avversaria e i difensori sul loro uomo; il portiere passa al compagno libero e
+  torna in porta nuotando. Il computer lo chiama dopo un break di tre gol subiti, dopo tre espulsioni in 2 minuti, all'inizio del 7
+  contro 6, quando è stanco e nell'ultimo minuto e mezzo pari o sotto di un gol appena ripresa la palla.
 - Arbitro: espulsioni dalla lotta al centro (crescono con l'azione; quota misurata nella sezione Stato), contrasto a tre livelli, sfondamento, vantaggio
   in controfuga, simulazione e interferenza sul tiro libero. Il semplice anticipo battuto al centroboa non è un fallo.
 - Espulso che nuota al pozzetto e rientra solo da lì; cambio dal pozzetto senza «cinque»; cambi volanti con il cinque, immediati
@@ -191,7 +195,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.82 — cambi volanti in transizione e da metà campo (Claude Code)
+## Stato v0.83 — time-out con il portiere a metà campo (Claude Code)
 
 Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` v0.77 (Codex, PR #59-#68). Ale (24/11/2026) ha mandato 13 punti. Fatti:
 v0.78 interfaccia (CONTRASTA in difesa, tasti colorati, energia con il cognome; [rapporto](docs/versioni/v078-comandi-interfaccia.md));
@@ -201,15 +205,15 @@ v0.81 tiri (tasto speciale solo in controfuga vera e tocco/tenuta, centroboa di 
 tirate subito, più palla al centroboa; espulsioni 7,8 → 9,8, gol 19,5 → 19,3; sonda nuova `npm run sonda-centro`;
 [rapporto](docs/versioni/v081-tiri.md)); v0.82 cambi volanti (solo in transizione, zona vicino alla metà campo, niente palla a chi è
 appena entrato lontano, cambi liberi del computer a gioco fermo; sonda `npm run sonda-cambi`;
-[rapporto](docs/versioni/v082-cambi-volanti.md)). Nelle prove computer contro computer l'Ungheria segna il doppio dell'Italia (26 a 13, già
+[rapporto](docs/versioni/v082-cambi-volanti.md)); v0.83 time-out (palla al portiere a metà campo, squadra già schierata in attacco,
+time-out del computer per l'attacco finale; [rapporto](docs/versioni/v083-timeout.md)). Nelle prove computer contro computer l'Ungheria segna il doppio dell'Italia (26 a 13, già
 nella v0.77): nel database le valutazioni medie dei primi 14 sono 83 contro 76. Da rivedere con le rose.
-Prossimi, in quest'ordine: time-out con il portiere a metà campo, rigore con la palla dall'acqua, finte, rose dei giocatori a
-disposizione dei CT. Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
+Prossimi, in quest'ordine: rigore con la palla dall'acqua e il movimento continuo, finte, rose dei giocatori a disposizione dei CT. Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
 
-**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.82, `npm run taratura -- --partite=16`): 20,2 gol e 41,0 tiri per squadra
-(veri 13,3 e 33), tiri in gol 49,2% (40%), espulsioni 10,3 (11; dal centro 60%, vero 66%), superiorità 42% (52%), parità: gol 23,3%
-delle azioni (6-19%), espulsione procurata 15,8% (22%), durata 12,7 s (21), azioni 76 (50). Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
+**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.83, `npm run taratura -- --partite=16`): 19,1 gol e 39,0 tiri per squadra
+(veri 13,3 e 33), tiri in gol 48,9% (40%), espulsioni 11,6 (11; dal centro 61%, vero 66%), superiorità 48% (52%), parità: gol 21,1%
+delle azioni (6-19%), espulsione procurata 18,1% (22%), durata 13,1 s (21), azioni 74 (50); 8 voci su 15 a posto. Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
 partite); Codex misurava 16,1 e 41,4 nella v0.70 e 17,4 e 43,3 nella v0.71 (8 partite, passaggio di consegne v0.71); v0.77 20,5 e
-42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4 (16 partite).
+42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4, v0.82 20,2 e 41,0 (16 partite).
 
 Stato precedente (v0.77, Codex): avvio fluido della finta, [rapporto](docs/versioni/v077-avvio-finta.md).

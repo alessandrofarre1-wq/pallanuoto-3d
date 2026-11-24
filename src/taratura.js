@@ -204,6 +204,12 @@ export const STANCO=0.82, CON_PALLA=0.93, SPRINT_CONSUMO=0.0098;
 // PRESSING_CONSUMO = fatica al secondo di chi difende a pressing (in più di scatti e contatti; partita.js, prima scritto nel codice).
 // v0.67: 0,012 → 0,008 (sonda degli scatti: anche con meno scatti i giocatori passavano un quarto del tempo sotto la soglia dei cambi).
 export const PRESSING_CONSUMO=0.008;
+// TIME-OUT (v0.83, Ale: «chiamato quando si subisce un break, o negli ultimi minuti per preparare un attacco; i giocatori si
+// schierano nella metà campo avversaria; l'arbitro dà la palla al portiere a metà campo, che la passa al compagno libero e torna in
+// porta nuotando»). finale = negli ultimi «finale» secondi dell'ultimo tempo il computer pari o sotto di un gol chiama il time-out
+// per preparare l'attacco, appena riprende la palla (entro «eta» secondi dal recupero); recupero = energia recuperata nel minuto di
+// time-out. Il break (tre gol di fila subiti) c'era già (regole.js).
+export const TIMEOUT={ finale:90, eta:4, recupero:0.4 };
 // PANCHINA (v0.32): recupero = stamina recuperata al secondo in panchina; stanco/fresco = soglie del consiglio di cambio;
 // controllo = ogni quanti secondi il computer guarda la panchina; pausaComputer = secondi minimi tra due cambi del computer;
 // stancoComputer = sotto questa stamina il computer cambia; stancoPozzetto = soglia del cambio dal pozzetto; velBordo, cinque,

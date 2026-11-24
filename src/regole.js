@@ -1,6 +1,6 @@
 import { datiGolReplay, segnalaGolReplay } from './replay.js';
 // ================= REGOLE / FASI =================
-import { CONTRO, chiLasciare, chiamaUomo, manUp, passaAZona, scegliDifesa, setteControSei, uomoDi } from './ia.js';
+import { CONTRO, attackTarget, chiLasciare, chiamaUomo, manUp, markTarget, passaAZona, scegliDifesa, setteControSei, uomoDi } from './ia.js';
 import { siglaUomo } from './uomo-in-piu.js';
 import { elevazione } from './tiri.js';
 import { riservaPer, vesti } from './giocatori.js';
@@ -22,7 +22,7 @@ import { resetDisposizioneTattica } from './entrate.js';
 import { preparaEspulsoAlTempo } from './espulsioni-tempi.js';
 import { formazioneScatto, stessaFormazioneScatto } from './scatto-inizio.js';
 import { leggiRigore } from './decisione-rigore.js';
-import { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI } from './taratura.js';      // numeri del bilanciamento
+import { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI, TIMEOUT } from './taratura.js';      // numeri del bilanciamento
 export { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI };
 const serieAttiva = () => game.rigoriFinali && !game.rigoriFinali.terminati;
 export function deadBall(t,fn,fermi=null){
@@ -309,12 +309,29 @@ export function timeout(t){       // art. 5: due time-out a squadra, solo in pos
   annuncia('timeout','Time-out',{squadra:t,dettaglio:`${t.name} · ne resta${t.timeouts===1?'':'no'} ${t.timeouts}`});
   ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0;
   deadBall(2.6,()=>{
-    for(const q of allPlayers){ q.stamina=Math.min(1,q.stamina+0.4); q.cut=null; }
+    for(const q of allPlayers){ q.stamina=Math.min(1,q.stamina+TIMEOUT.recupero); q.cut=null; }
     placeHalves();
-    const r=t.players[6].excluded ? closestTo(t,{x:0,z:0}) : t.players[6];
-    r.x=-t.dir*0.4; r.z=0; giveBall(r); r.freeThrow=true;
+    schieraTimeout(t);
   });
   return true;
+}
+// v0.83 (Ale): ripresa del time-out come nelle partite vere. L'arbitro dà la palla al portiere a metà campo (nella propria metà); i
+// compagni sono già schierati ai posti d'attacco nella metà campo avversaria e i difensori sul loro uomo. Il portiere passa al compagno
+// libero e torna in porta nuotando (gkTarget). Prima ripartiva il punto a metà campo con tutti nella propria metà, come a inizio tempo.
+export function schieraTimeout(t){
+  const d=other(t), gk=t.players[0], r=gk.excluded ? closestTo(t,{x:0,z:0}) : gk;
+  t.contro=null;
+  r.x=-t.dir*0.4; r.z=0; r.vx=r.vz=0; giveBall(r); r.freeThrow=true;
+  for(const p of t.players){ if(p===r||p.isGK||p.excluded) continue; const tg=attackTarget(p); p.x=tg.x; p.z=tg.z; p.fx=t.dir; p.fz=0; }
+  // i difensori tra il loro uomo e la propria porta, a un metro da lui (markTarget qui leggerebbe un rientro: la palla è a metà campo)
+  const ogx=ownGoalX(d);
+  for(const p of d.players){
+    if(p.isGK||p.excluded) continue;
+    const a=uomoDi(p); if(!a||a.excluded){ const tg=markTarget(p); p.x=tg.x; p.z=tg.z; continue; }
+    const vx=ogx-a.x, vz=-a.z, l=Math.hypot(vx,vz)||1;
+    p.x=a.x+vx/l; p.z=a.z+vz/l; p.fx=-vx/l; p.fz=-vz/l;
+  }
+  riallineaRiferimenti();
 }
 export function callPlay(i){
   if(!Number.isInteger(i)||i<0||i>3) return;

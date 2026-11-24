@@ -1,3 +1,15 @@
+# Passaggio WATERPOLO7 — v0.83 time-out (Claude Code)
+
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.83.0. Cambia la partita (ripresa del time-out, time-out del computer).
+- `schieraTimeout(t)` (`src/regole.js`, esportata), chiamata dalla callback del `timeout` dopo `placeHalves`: palla al portiere
+  (o al più vicino alla metà campo se è espulso) a `-t.dir*0,4`, `freeThrow`; compagni su `attackTarget`; difensori a un metro dal
+  loro uomo verso la propria porta (non `markTarget`, che con la palla a metà campo legge un rientro); `riallineaRiferimenti`.
+- `TIMEOUT` (`src/taratura.js`): `finale` 90 s, `eta` 4 s, `recupero` 0,4. In `aiCarrier` (decisione periodica) il computer chiama
+  il time-out nell'ultimo tempo, pari o sotto di uno, appena ripresa la palla; `t.timeoutFinale` (azzerato in `menu.js`).
+- Prova nuova `npm run timeout` (anche nella CI). [Rapporto](versioni/v083-timeout.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.82 cambi volanti (Claude Code)
 
 Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.82.0. Cambia la partita (cambi volanti).

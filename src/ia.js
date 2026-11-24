@@ -13,8 +13,8 @@ import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } fr
 import { paloCoperto } from './muro.js';
 import { QTE, aiControfuga, occasioneControfuga, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, entrataPronta, laneClear, openness, passLaneRisk, shotKind, situazioneTiro, startAct } from './tiri.js';
-import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIRO_LIBERATO } from './taratura.js';      // numeri del bilanciamento
-export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIRO_LIBERATO };
+import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO } from './taratura.js';      // numeri del bilanciamento
+export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO };
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 // l'uomo che marca p: di regola quello del ruolo (MARK); dopo un CAMBIO DI MARCATURA su un'entrata («time switching», Nitzkowski e
 // manuale USA Water Polo) i due difensori si scambiano gli uomini per qualche secondo
@@ -891,6 +891,9 @@ export function aiCarrier(p,dt){
   p.decideT=0.3+rnd()*0.35;
   // time-out dell'allenatore: dopo un parziale negativo, dopo una serie di espulsioni subite, o per preparare il 7 contro 6
   if(t.timeouts>0 && !t.human && t.vuoleTimeout && timeout(t)){ t.vuoleTimeout=false; t.parzialeSubito=0; return; }
+  // v0.83 (Ale: «negli ultimi minuti per preparare un attacco»): pari o sotto di un gol nell'ultimo tempo, appena ripresa la palla
+  if(t.timeouts>0 && !t.human && !t.timeoutFinale && game.period>=4 && game.clock<TIMEOUT.finale && game.time-(game.possT||0)<TIMEOUT.eta &&
+    t.score-other(t).score<=0 && t.score-other(t).score>=-1 && timeout(t)){ t.timeoutFinale=true; return; }
   if(t.timeouts>0 && !t.human && rnd()<0.25){ let st=0,n=0; for(const q of t.players){ if(!q.isGK&&!q.excluded){ st+=q.stamina; n++; } } if(n&&st/n<0.3&&timeout(t)) return; }
   if(p.shootNext){ p.shootNext=false; if(dGoal<9&&!ft){ const f=fintaDi(p);
       if((p.fakeCount||0)<f.max&&game.shot>4&&rnd()<0.42){ p.shootNext=true; pausaFinta(p,f); startAct(p,'fake',f.wind*(0.8+rnd()*0.4),()=>doFake(p)); return; }

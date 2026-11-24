@@ -3,6 +3,12 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.83
+- Ripresa del time-out: tutti nella propria metà come a inizio tempo e il punto con la palla a metà campo → palla al portiere a metà
+  campo, compagni già schierati in attacco nella metà campo avversaria, difensori sul loro uomo; il portiere passa e torna in porta.
+- Time-out del computer solo dopo un break, tre espulsioni, il 7 contro 6 o la stanchezza → anche nell'ultimo minuto e mezzo, pari o
+  sotto di un gol, appena ripresa la palla, per preparare l'attacco.
+
 ## v0.82
 - Zona dei cambi volanti a 3,2 m dalla propria linea di porta, sostituto che compare dietro la linea di porta → zona a 11 m, vicino
   alla metà campo (regole World Aquatics 2025, art. 18), sostituto che compare sul bordo a 8,5 m.
