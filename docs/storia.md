@@ -10,6 +10,21 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.78 — comandi e interfaccia** (Claude Code, 24/11/2026; rapporto `docs/versioni/v078-comandi-interfaccia.md`). RICHIESTA: Ale,
+  13 punti dopo le versioni di Codex, prima «riallinearsi agli sviluppi di Codex»; qui i due punti sull'interfaccia: in difesa il
+  tasto PASSA deve diventare CONTRASTA, colorare i tasti per riconoscerli, barra dell'energia con cognome e numero al posto di
+  «Energia». RIALLINEAMENTO: ramo ripartito da `main` v0.77 (PR #59-#68 di Codex unite), nessuna PR aperta. CAMBIAMENTI
+  (`index.html`, `src/hud.js`, `src/stile.css`): con la palla agli avversari il tasto dice CONTRASTA (icona a mano, rosa, «3° =
+  fallo», classe `in-difesa`), stesso comando di prima; colori per funzione su bordo e icona (TIRO arancione, PASSA blu, CONTRASTA
+  rosa, PALOMB. viola, SPRINT verde, CAMBIA bianco), lontani da oro, rosso e ciano che hanno un significato fisso; energia «#N
+  Cognome, barra, %» con il riquadro su telefono allargato da 148 a 170 px (iPhone piccoli da 118 a 152); pagina Comandi
+  aggiornata. PROVA NUOVA `npm run comandi-interfaccia` (iPhone 14 e SE: PASSA/CONTRASTA, sei colori distinti e lontani dai
+  riservati, numero e cognome interi), anche nella CI; al primo giro arancione e azzurro erano troppo vicini a oro e ciano, poi
+  corretti. MISURA DI PARTENZA (per le versioni successive, 16 partite ITA–HUN sulla v0.77): 20,5 gol e 42,3 tiri per squadra
+  (veri 13,3 e 33), tiri in gol 48,3% (40%), espulsioni 8,2 (11), parità: gol 25,6% delle azioni (6-19%), durata 13,4 s (21).
+  DECISIONI SUPERATE: in `docs/decisioni-superate.md`. VERIFICHE: lint PASS; prove 60/60 PASS in 16,3 minuti (con `comandi-interfaccia`, 17 controlli; gambe 0/8.539); verifica con --partite=0: cinque immagini diverse (tasti e energia, più i caratteri della macchina di Codex con cui erano stati fatti i riferimenti; posizioni identiche), guardate e aggiornate, ripetuta: identiche; aspetto delle viste «Tutto a posto», iPhone 56 oggetti e 131.872 triangoli. NON FATTO: giudizio di Ale sui colori; gli
+  altri undici punti.
+
 - **v0.77 — ingresso fluido nella finta** (Codex,23/11/2026): nuovo video di Ale mostra avvio accelerato prima delle finte lente. Raccordo0,70s dalla posa in acqua alla carica Plask, prima finta sovrapposta, rotazioni locali e uscita dalla posa mostrata. Superata la compressione del prefisso5,9s→0,5s nella tenuta; dati originali integri. File: finta-movimento, controller visuale Plask, test finta esteso, package/documenti.24scene/73campioni d’avvio:120→0violazioni, torso1,006→0,032rad/frame e mano0,419→0,076m;48cicli,24rilasci e4precoci PASS;8pose ispezionate. GLB8fd658a8… invariato. Nessun volto/nuoto/tattica/bilanciamento generale o FPS hardware. Esiti finali nel [rapporto](versioni/v077-avvio-finta.md) e nella PR; nessun merge/deploy.
 
 - **v0.76 — finta fluida** (Codex,23/11/2026): tre video di Ale mostrano scatto e avvitamento. Recupero non più saltato, sola finta a0,16+0,18+0,36s; ripetizione dopo il recupero. Base Plask continua, braccio e piccolo torace additivi, dita solidali. File: nuovo finta-movimento, tiri/controllo, gesto-vista/pose/controller Plask, nuovo test e CI/package/documenti. Prima/dopo24scene e48cicli:120→0violazioni, torso0,552→0,00734rad/frame, mano0,198→0,07735m/frame;24rilasci reali,8pose ispezionate. GLB8fd658a8… invariato. Superati salto del recupero e alternanza Plask/procedurale; massimo0,9s e rilascio conservati. Nessun volto/nuoto/bilanciamento generale o FPS hardware. Prove e CI definitive nel [rapporto](versioni/v076-finta-fluida.md).

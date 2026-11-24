@@ -1,3 +1,22 @@
+# Passaggio WATERPOLO7 — v0.78 comandi e interfaccia (Claude Code)
+
+Base `main` `7527d46` (PR #68 unita). Ramo `claude/gracious-rubin-rcvklk`, versione 0.78.0. Ale ha mandato 13 punti dopo la v0.77;
+questa versione fa solo i due sull'interfaccia: la partita non cambia (posizioni identiche nelle immagini della verifica).
+- PASSA → CONTRASTA con la palla agli avversari: classe `in-difesa` sul body (`src/hud.js`); in `index.html` le parti
+  `.et-passa/.et-contrasta` e `.ic-passa/.ic-contrasta`; stesso comando di prima.
+- Colori dei tasti con la variabile `--tb-c` per `data-b` (`src/stile.css`): TIRO #ff8a1f, PASSA #6d86ff, CONTRASTA #ff7cc8,
+  PALOMB. #c7a0ff, SPRINT #4fe393, CAMBIA #e9eef5; oro, rosso e ciano restano riservati come prima.
+- Energia: `#stamNome` (`#stamNumero` + `#stamCognome`) al posto di `.energia-label`; riquadro su telefono 170 px (iPhone piccoli 152).
+- Prova nuova `npm run comandi-interfaccia`, anche nella CI.
+- Riferimenti delle immagini rifatti sulla macchina di Claude Code: il gioco usa i caratteri di sistema (`system-ui`), diversi tra
+  le due macchine, quindi in locale le immagini possono differire solo per il tipo di carattere. Guardare le posizioni.
+- Misura di partenza v0.77 (16 partite ITA–HUN, `npm run taratura -- --partite=16`): 20,5 gol e 42,3 tiri per squadra, 48,3% in
+  gol; gol per tipo: perimetro 28%, centroboa 27%, entrata 20%, superiorità 17%, rigore 8%; controfughe 2,9 a partita (v0.67: 1,5).
+- Prossime versioni di Claude Code, nell'ordine: passaggi, tiri, cambi di marcatura, cambi volanti, time-out, rigore, finte, rose.
+  [Rapporto](versioni/v078-comandi-interfaccia.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.77 avvio della finta
 
 Base main `7218d09`, PR67 unita e CI45246753540 verde. Ramo `codex/v077-avvio-finta`, workspace `/workspace/pallanuoto-v077`, versione0.77.0. Prima di proseguire riallineare main/PR/CI/diff; preservare Claude e i worktree precedenti. Nessun merge/deploy.

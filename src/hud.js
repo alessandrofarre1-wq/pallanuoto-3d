@@ -60,7 +60,11 @@ export function updateHUD(){
     const vedi=!!ctrl&&(game.time<3||(dal>=0&&dal<3)); const pl=$('player'); pl.hidden=!ctrl;
     if(pl.classList.contains('vis')!==vedi) pl.classList.toggle('vis',vedi); }
   // pulsante PALOMB. solo quando la nostra squadra ha la palla (in difesa non serve)
-  { const nostra=game.possTeam===teams[0]; if(document.body.classList.contains('nostra-palla')!==nostra) document.body.classList.toggle('nostra-palla',nostra); }
+  { const nostra=game.possTeam===teams[0]; if(document.body.classList.contains('nostra-palla')!==nostra) document.body.classList.toggle('nostra-palla',nostra);
+    // v0.78 (Ale): con la palla agli avversari il tasto PASSA diventa CONTRASTA (stesso comando: 1-2 tocchi disturbano, il terzo è fallo)
+    const difesa=game.possTeam===teams[1];
+    if(document.body.classList.contains('in-difesa')!==difesa){ document.body.classList.toggle('in-difesa',difesa);
+      const b=document.querySelector('.tb[data-b="pass"]'); if(b) b.setAttribute('aria-label',difesa?'Contrasta: uno o due tocchi disturbano il portatore, il terzo ravvicinato è fallo':'Passa'); } }
   if(ctrl){
     { const sup=game.possTeam===ctrl.team&&manUp(ctrl.team);
       const posto=!sup&&game.possTeam===ctrl.team?postoAttacco(ctrl):ctrl.i;
@@ -74,6 +78,7 @@ export function updateHUD(){
     stam.firstChild.style.background= energia>0.5?'#4ade80':energia>0.25?'#facc15':'#ef4444';
     const numero='#'+ctrl.num,valore=percento+'%',etichetta=`Energia di ${numero} ${ctrl.name}: ${valore}`;
     if($('stamNumero').textContent!==numero)$('stamNumero').textContent=numero;
+    if($('stamCognome').textContent!==ctrl.name)$('stamCognome').textContent=ctrl.name;      // v0.78 (Ale): cognome accanto al numero
     if($('stamPerc').textContent!==valore)$('stamPerc').textContent=valore;
     if(stam.getAttribute('aria-label')!==etichetta)stam.setAttribute('aria-label',etichetta);
     if(stam.getAttribute('aria-valuenow')!==String(percento))stam.setAttribute('aria-valuenow',String(percento));

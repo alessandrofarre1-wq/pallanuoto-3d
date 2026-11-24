@@ -3,6 +3,14 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.78
+- Tasto PASSA sempre uguale, con «contrasto» scritto in piccolo → con la palla agli avversari diventa CONTRASTA (scritta, icona,
+  colore); con la palla nostra o libera resta PASSA, senza scritta sotto.
+- Tasti bianchi (TIRO e PASSA chiari, gli altri scuri) → bordo e icona con un colore per funzione; l'oro resta per «premuto» e
+  per le azioni richieste.
+- Energia «Energia #N, barra, %» (su iPhone piccoli la scritta spariva) → «#N Cognome, barra, %»; riquadro su telefono 148 → 170 px
+  (iPhone piccoli 118 → 152).
+
 ## v0.77
 
 - Quasi5,9s di preparazione Plask compressi nei primi0,5s di tenuta → raccordo0,70s dalla posa reale in acqua alla posa caricata, prima finta sovrapposta. Le415pose originali non sono alterate, ma il prefisso non viene più interamente riprodotto durante la tenuta. Rilascio registrato e percorso CPU/diretto conservati.

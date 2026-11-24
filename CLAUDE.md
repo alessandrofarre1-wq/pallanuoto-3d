@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.77). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.78). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -78,7 +78,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   cambio in corso (area di tocco 44 px); registro degli eventi dal menu di pausa; notifiche in stile telecronaca ai margini, mai al
   centro (`cronaca.js`); colori con significato fisso (oro = tu e azioni richieste, rosso = sanzioni e urgenza, ciano = servizio).
 - Chiamate in parità: dopo5,5s dal possesso (compreso il viaggio), se la boa non è davvero servibile, scelte touch A/B/C in basso al centro. Una scelta le nasconde; area44px, CAMBI rapido conservato; pausa nasconde le proposte. Il testo indica appoggio e avanzamento; i passaggi restano manuali.
-- Energia del selezionato: barra e percentuale sempre visibili durante il gioco; nome/ruolo restano temporanei. Vale in attacco e difesa, senza mostrare un pannello grande permanente.
+- Energia del selezionato: «#N Cognome», barra e percentuale sempre visibili durante il gioco (v0.78, richiesta di Ale; riquadro su telefono 170 px, iPhone piccoli 152); posto/ruolo e statistiche restano temporanei. Vale in attacco e difesa, senza mostrare un pannello grande permanente.
 - Replay del gol: 7,6 s saltabili (1,2 s diretta + 5,2 s replay + 1,2 s ripresa), motore fermo durante la clip; camera che gira di
   circa 35° attorno all'azione e scende, poi taglio con lampo sul primo piano a pelo d'acqua del marcatore che esulta (si alza e
   agita il pugno; 1,15 s registrati dopo la rete, 38% del replay; niente primo piano se è appena stato sostituito). Prova
@@ -87,7 +87,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   prepartita: sei preset e una personale, schemi dell'uomo in più) → Impostazioni (durata, difficoltà, arbitro) → Gioca.
 ### Comandi
 - Touch: levetta a sinistra; TIRO toccato e rilasciato = tiro rapido di polso, meno potente; tenuto = preparazione e finte continue, potenza massima in0,9s, tiro al rilascio anche durante la propria finta. Nessun tiro automatico normale e nessun minigioco di precisione. L’anello del selezionato diventa oro chiaro e il tasto indica PRONTO; nessuna barra sopra l’atleta o barra di potenza. Mira, stanchezza, pressione e abilità restano determinanti.
-- PASSA; in difesa = contrasto (1-2 tocchi in1,5s disturbano, il terzo ravvicinato è fallo). SPRINT a tocchi, CAMBIA al più vicino alla palla. TAGLIO tolto dal touch su richiesta di Ale; chiamate A/B/C conservate. PALOMB., T.O. e pausa conservati. TIRO durante un passaggio in arrivo conserva il tiro al volo; alla boa spalle alla porta sceglie beduina/sciarpa dalla situazione. QTE di controfuga e procedura dei rigori conservati.
+- PASSA; con la palla agli avversari lo stesso tasto diventa CONTRASTA (v0.78: scritta, icona a mano, rosa, «3° = fallo»): 1-2 tocchi in 1,5 s disturbano, il terzo ravvicinato è fallo. Tasti colorati per funzione su bordo e icona (TIRO arancione, PASSA blu, CONTRASTA rosa, PALOMB. viola, SPRINT verde, CAMBIA bianco), lontani da oro/rosso/ciano; premuto e azioni richieste restano oro; prova `npm run comandi-interfaccia`. SPRINT a tocchi, CAMBIA al più vicino alla palla. TAGLIO tolto dal touch su richiesta di Ale; chiamate A/B/C conservate. PALOMB., T.O. e pausa conservati. TIRO durante un passaggio in arrivo conserva il tiro al volo; alla boa spalle alla porta sceglie beduina/sciarpa dalla situazione. QTE di controfuga e procedura dei rigori conservati.
 - Tastiera: frecce; Spazio/K stessa tenuta-finte-rilascio (K anche al volo in arrivo, Spazio tenuto prima della presa non tira da solo); D passaggio al rilascio/contrasto; L palombella; Shift sprint a tocchi; C cambia; F comando avanzato taglio/girata/raddoppio conservato; Q/W/E o1/2/3 schemi,4 boa, T time-out,B cambio consigliato,P/Esc pausa. Controller con la stessa logica. Annullamenti per pausa/blur/touchcancel/perdita possesso o controllo; un tasto fisicamente ancora premuto dopo reset deve prima essere rilasciato.
 ### Nuoto e corpo (indicazioni di Ale, ex nuotatore)
 - Tiro standard caricato/torsione v0.74: pose Plask di Ale trasferite sull’intera catena di52ossa, modello/rig/pesi invariati. Tutti gli altri gesti restano procedurali. Stile libero a testa alta, mai rana o stella; chi
@@ -171,8 +171,18 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.77 — avvio fluido della finta
+## Stato v0.78 — comandi e interfaccia (Claude Code)
 
-Base main `7218d09` (PR67 unita, CI45246753540 verde), ramo `codex/v077-avvio-finta`, versione0.77.0. Il nuovo video mostra un difetto iniziale rimasto fuori dai test v0.76: quasi5,9s di preparazione compressi in0,5s. Ora ingresso dalla posa realmente mostrata in acqua alla carica Plask in0,70s; prima finta sovrapposta, catene locali coerenti. Questo supera la riproduzione accelerata dell’intero prefisso durante la tenuta, non modifica dati originali/GLB/rig/pesi/viso/nuoto. Tempi fisici, massimo0,9s e rilascio immediato conservati.
+Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` v0.77 (Codex, PR #59-#68). Ale (24/11/2026) ha mandato 13 punti: questa
+versione fa i due sull'interfaccia (CONTRASTA in difesa, tasti colorati, energia con il cognome); piano per gli altri nelle
+versioni successive: passaggi (meno errori; morbido sull'acqua o alto e teso), tiri (meno schizzo e colonnello, più beduine e palla
+al centro; occasioni chiare tirate subito), cambi di marcatura (meno controfughe finte), cambi volanti con senso, time-out con il
+portiere a metà campo, rigore con la palla dall'acqua e movimento continuo, finte, rose dei giocatori a disposizione dei CT.
+[Rapporto](docs/versioni/v078-comandi-interfaccia.md).
 
-[Rapporto](docs/versioni/v077-avvio-finta.md), [misure e fasi](docs/verifiche/v077/README.md).24scene con73campioni d’avvio ciascuna:120→0violazioni, torso1,006→0,032rad/frame, mano0,419→0,076m.48cicli/24rilasci e4rilasci precoci a0,4s PASS;8pose dalla prima pressione ispezionate. Soglie invariate. Non è una misura di FPS iPhone o qualità professionale. Locale10/10 prove mirate PASS, nuovo test avvio separato PASS; verifica0partite/5confronti e aspetto completo PASS,6foto ispezionate. Gambe0/8539,0/4316,0/1229; due cambi/anello68call/139200tri, replay49/136678, massimo ravvicinato146138tri. Nessun riferimento cambiato. Esito CI intera sull’ultimo SHA nella PR. Sei gare standard solo nella CI finale, nessun nuovo bilanciamento esteso, nessun merge/deploy.
+**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.77, `npm run taratura -- --partite=16`): 20,5 gol e 42,3 tiri per squadra
+(veri 13,3 e 33), tiri in gol 48,3% (40%), espulsioni 8,2 (11; dal centro 53%, vero 66%), superiorità 42% (52%), parità: gol 25,6%
+delle azioni (6-19%), espulsione procurata 12,8% (22%), durata 13,4 s (21). Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
+partite); Codex misurava 16,1 e 41,4 nella v0.70 e 17,4 e 43,3 nella v0.71 (8 partite, passaggio di consegne v0.71).
+
+Stato precedente (v0.77, Codex): avvio fluido della finta, [rapporto](docs/versioni/v077-avvio-finta.md).
