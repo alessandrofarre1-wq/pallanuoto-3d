@@ -1,4 +1,4 @@
-// Schermata «Panchina» (dalla pausa): chi è in acqua e le 6 riserve, con ruolo, mano, valutazione, statistiche chiave, stamina
+// Schermata «Panchina» (dalla pausa): chi è in acqua e le 7 riserve (v0.86; prima 6), con ruolo, mano, valutazione, statistiche chiave, stamina
 // e gol; suggerimenti per chi è stanco; si sceglie chi esce e chi entra e il cambio volante parte quando si riprende a giocare.
 import { CHIAVE, RUOLI, STAT_NOMI } from './dati/rose.js';
 import { iconaMano } from './mano.js';

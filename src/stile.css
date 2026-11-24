@@ -543,6 +543,9 @@ body.touch #qte{display:none}
 #rosa button.fig{font:inherit;color:inherit;text-align:left;cursor:pointer}
 #rosa .fig.scelto{outline:2px solid var(--h-oro,#f5c542)}
 #rosa .fig.puo{outline:1px dashed var(--h-oro,#f5c542)}
+#rosa .fig.altro{opacity:.6}
+#rosa .fig.altro.puo{opacity:.9}
+#rosa .fig small{font-size:10px;color:#cfe3ff}
 #rosa .fm-posto{display:block;font-style:normal;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--h-oro,#f5c542)}
 #rosa .fm-ripristina{grid-column:1/-1;justify-self:start;margin-top:6px;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer}
 #rosa .fm-dati{display:block;font-size:11px;color:#9fc3ef;margin-top:2px}
@@ -1126,3 +1129,18 @@ body.replay :is(#hud,#espulsioni,#tac,#cronaca,#qte,#fight,#player,#tCambi,#tLog
 
 /* Il gol sulla sirena precede il risultato finale senza cambiare lo stato della gara. */
 body.replay #menu,body.replay-attesa-fine #menu{visibility:hidden;pointer-events:none}
+
+/* convocazione del torneo (v0.86) */
+.torneo-convocati{margin:8px 0 2px;padding:8px 10px;border:1px solid rgba(255,255,255,.18);border-radius:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px}
+.torneo-convocati b{color:var(--h-oro,#f5c542)}
+.torneo-convocati small{color:#cfe3ff;flex-basis:100%}
+.torneo-convocati button{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:6px 10px;min-height:44px;cursor:pointer}
+.contenuto-convocazione{padding:0 16px 90px}
+.conv-contatore{font:800 14px system-ui;color:var(--h-oro,#f5c542)}
+.conv-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px}
+.conv-lista .fm-titolo{grid-column:1/-1;font:800 12px system-ui;text-transform:uppercase;letter-spacing:.06em;color:var(--h-oro,#f5c542);margin-top:8px}
+.conv-lista button.fig{font:inherit;color:inherit;text-align:left;cursor:pointer;opacity:.6;min-height:44px}
+.conv-lista button.fig.on{opacity:1;outline:2px solid var(--h-oro,#f5c542)}
+.conv-lista .fig small{font-size:10px;color:#cfe3ff}
+.conv-lista .fm-dati{display:block;font-size:11px;color:#9fc3ef;margin-top:2px}
+.conv-lista .fm-finta{display:block;font-size:11px;color:#ffd479;margin-top:2px}

@@ -9,6 +9,7 @@ import dati from './squadre.json';
 import MANI from './mancini.json';
 import DB from './rose-db.json';
 import { profiliSquadra } from '../aspetto.js';
+import { LISTA, listaPartita as sceltaLista } from './lista-partita.js';
 
 const NOMI={
   ESP:['Lorenzo','Granados','Munárriz','Sanahuja','Cabanas','Larumbe','Famera','Perrone','Tahull','Bustos','Valera','Asensio','Aguirre'],
@@ -55,16 +56,53 @@ export const scala=v=>0.6+(v-40)/59*0.45;
 export function valoriMotore(s){ return { spd:scala(s.vel), sht:scala(s.pre), pas:scala(s.pas), def:scala(s.dif), frz:scala(s.frz) }; }
 export function ovr(s,ruolo){ const w=PESI[ruolo]; let a=0,b=0; for(const k in w){ a+=s[k]*w[k]; b+=w[k]; } return Math.round(a/b); }
 
-const rose={};
-export function rosa(codice){
-  if(rose[codice]) return rose[codice];
-  // ROSE VERE (v0.34): giocatori, numeri, ruoli e mano dal database di Ale, statistiche calcolate dai tornei con
-  // strumenti/rose-dal-database.mjs. Le voci di src/dati/mancini.json correggono la mano (chiave «ITA-7»).
-  // ogni scheda riceve anche il suo profilo visivo stabile (src/aspetto.js: solo disegno)
-  if(DB.rose[codice]) return rose[codice]=profiliSquadra(DB.rose[codice].map(g=>{
+// TUTTI I DISPONIBILI (v0.86, Ale: «mettimi tutti ... non farlo solo per l'Italia ma per tutte le nazionali; considerali tutti»): chi la
+// nazionale ha convocato in almeno un torneo del database di Ale (Mondiali 2025, Europei 2026, Coppa del Mondo 2026), con giocatori,
+// numeri, ruoli e mano veri e le statistiche calcolate dai tornei (strumenti/rose-dal-database.mjs). Le voci di src/dati/mancini.json
+// correggono la mano (chiave «ITA-7»). Ogni scheda riceve anche il suo profilo visivo stabile (src/aspetto.js: solo disegno).
+const disponibili={};
+export function tutti(codice){
+  if(disponibili[codice]) return disponibili[codice];
+  if(DB.tutti[codice]) return disponibili[codice]=profiliSquadra(DB.tutti[codice].map(g=>{
     const m=MANI[`${codice}-${g.num}`], mano=m==='sinistra'?'S':m==='destra'?'D':g.mano;
-    return { ...g, mano, s:{ ...g.s }, ovr:ovr(g.s,g.ruolo) };
+    return { ...g, numDb:g.num, numStimatoDb:!!g.numStimato, mano, s:{ ...g.s }, ovr:ovr(g.s,g.ruolo) };
   }),codice);
+  return disponibili[codice]=generata(codice);
+}
+// LA LISTA DELLA PARTITA (v0.86): la scelta è in dati/lista-partita.js (anche per il costruttore delle rose); qui con la valutazione ovr
+export { LISTA };
+export const listaPartita=(giocatori,n=LISTA.partita)=>sceltaLista(giocatori,n,ovr);
+// numeri di calottina unici nella lista: ognuno tiene il numero della sua convocazione più recente (numDb); se due hanno lo stesso
+// numero lo tiene chi era nella rosa usata finora, poi chi l'ha indossato nel torneo più recente; gli altri prendono il primo libero
+// (portieri 1, 13, 15; gli altri da 2 a 12, poi 14 e 15).
+const EVENTI=['wc2026_finals','wc2026_div1','wc2026_div2','euro2026','wch2025'];
+const recente=g=>{ const k=EVENTI.indexOf((g.convocazioni||[])[0]); return k<0?EVENTI.length:k; };
+export function numeriLista(L){
+  const usati=new Set(), ordine=[...L].sort((a,b)=>(b.inRosa13?1:0)-(a.inRosa13?1:0)||recente(a)-recente(b)), senza=[];
+  for(const g of ordine){ const n=g.numDb??g.num;
+    if(n>0&&n<=15&&!usati.has(n)){ g.num=n; g.numStimato=g.numStimatoDb||false; usati.add(n); } else senza.push(g); }
+  for(const g of senza){
+    const pref=g.ruolo===0?[1,13,15]:[2,3,4,5,6,7,8,9,10,11,12,14,15];
+    let nuovo=pref.find(v=>!usati.has(v)); for(let v=16;nuovo===undefined;v++) if(!usati.has(v)) nuovo=v;
+    g.num=nuovo; g.numStimato=true; usati.add(nuovo); }
+  return L;
+}
+// liste scelte a mano (schermata Squadre, id dei giocatori) e convocati dei tornei (id): le mette il menu (menu.js)
+export const liste={}, convocati={};
+export function listaValida(L){
+  const gk=L.filter(g=>g.ruolo===0).length;
+  return L.length>=7&&L.length<=LISTA.partita&&new Set(L).size===L.length&&gk>=1&&gk<=LISTA.portieri&&L.length-gk<=LISTA.partita-LISTA.portieri;
+}
+// chi può giocare la partita: nei tornei i convocati, altrimenti tutti i disponibili
+export const candidati=codice=>{ const P=tutti(codice), c=convocati[codice]; return c&&c.length?P.filter(g=>c.includes(g.id)):P; };
+// la lista della partita: quella scelta a mano se è valida, altrimenti quella automatica
+export function rosa(codice){
+  const C=candidati(codice), a=liste[codice];
+  const scelta=a&&a.length?C.filter(g=>a.includes(g.id)):null;
+  return numeriLista(scelta&&scelta.length===a.length&&listaValida(scelta)?listaPartita(scelta,scelta.length):listaPartita(C));
+}
+// rose generate per le vecchie squadre senza dati (non crea nomi per nuove nazionali)
+function generata(codice){
   const sq=dati.squadre.find(x=>x.codice===codice), nomi=NOMI[codice];
   if(!sq||!nomi) throw new Error(`Rosa verificata non disponibile per ${codice}`);
   const r=generatore(codice), base=57+(sq.forza-60)*0.72; // da 57 (forza 60) a 80 (forza 92)
@@ -81,9 +119,9 @@ export function rosa(codice){
     for(const st of ['vel','res','pot','pre','pas','vis','dif','dis','frz']) s[st]=lim(base+P[st]+extra*(st==='dis'?0.3:1)+(r()-0.5)*9);
     const gk=ruolo===0?base+3+extra:base-28;
     for(const st of ['rif','pos','usc','rig']) s[st]=lim(gk+(r()-0.5)*9);
-    return { num:k+1, nome:nomi[k], ruolo, titolare:!riserva, mano:mano(k), s, ovr:ovr(s,ruolo), campione:campioni.has(k) };
+    return { id:`${codice}-${k+1}`, num:k+1, nome:nomi[k], ruolo, titolare:!riserva, mano:mano(k), s, ovr:ovr(s,ruolo), campione:campioni.has(k), inRosa13:true };
   });
-  return rose[codice]=profiliSquadra(out,codice);
+  return profiliSquadra(out,codice);
 }
 export const squadre=dati.squadre;
 export const squadra=codice=>dati.squadre.find(x=>x.codice===codice);

@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.85). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.86). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -201,12 +201,18 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   bandiera; numero sulla cuffia; niente loghi o stemmi.
 - Acqua unica disegnata, colori sott’acqua per profondità, contatti e scie dal movimento vero; qualità automatica che abbassa e recupera la risoluzione; riflesso completo solo in qualità alta. Arena v0.68: sedute/pensilina/corrimani, panchine attrezzate, tavolo e ufficiali3D, porte con pontoni/giunti e rete leggibile anche da lontano. Un atlante1024² e le stesse6mesh statiche;8296tri CPU(+212). Acqua, camera e corpi conservati. Fotografie confrontabili e dati nel rapporto.
 ### Squadre, tornei, valutazioni
-- 24 nazionali; rose vere dal database di Ale (`npm run rose-db`, metodo in `docs/riferimenti/valutazioni.md`), nomi veri
-  autorizzati; statistiche 40-99 che cambiano davvero le prestazioni; formazione ricordata per nazionale.
+- 24 nazionali; giocatori veri dal database di Ale (`npm run rose-db`, metodo in `docs/riferimenti/valutazioni.md`), nomi veri
+  autorizzati; statistiche 40-99 che cambiano davvero le prestazioni. Rose v0.86 (Ale): tutti i convocati della nazionale in almeno un
+  torneo del database (nessuno escluso per ritiro), doppioni uniti, forza della nazionale riportata al ranking (i 14 valgono quanto i
+  13 di prima); in partita 14 (regole World Aquatics 2026: 12 di movimento e 2
+  portieri) scelti dal gioco: titolari i più forti nel ruolo, in panchina una riserva per ogni posto (`listaPartita`, anche secondi
+  ruoli); nella schermata Squadre tutti i disponibili, scambio panchina ↔ altri, «Scelta automatica»; formazione e lista ricordate per
+  nazionale (per id). Tornei: 15 convocati proposti dal gioco e scelti prima della prima partita (2-3 portieri), a ogni partita i 14 tra
+  i convocati. Prova `npm run rose`.
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.85 — finte (Claude Code)
+## Stato v0.86 — rose (Claude Code)
 
 Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` v0.77 (Codex, PR #59-#68). Ale (24/11/2026) ha mandato 13 punti. Fatti:
 v0.78 interfaccia (CONTRASTA in difesa, tasti colorati, energia con il cognome; [rapporto](docs/versioni/v078-comandi-interfaccia.md));
@@ -220,11 +226,10 @@ appena entrato lontano, cambi liberi del computer a gioco fermo; sonda `npm run 
 time-out del computer per l'attacco finale; [rapporto](docs/versioni/v083-timeout.md)); v0.84 rigore (palla dall'acqua, fermo a
 braccio carico = controfallo; [rapporto](docs/versioni/v084-rigore.md)); v0.85 finte (gesto dopo la finta a braccio tornato carico,
 0,50 → 1,05 s; di lato da destra verso sinistra 65 volte su 100; strette e veloci o ampie e lente; braccio teso o piegato; equilibrio
-della partita invariato; [rapporto](docs/versioni/v085-finte.md)). Nelle prove computer contro computer l'Ungheria segna il doppio
-dell'Italia (26 a 13, già nella v0.77): nel database le valutazioni medie dei primi 14 sono 83 contro 76. Da rivedere con le rose.
-Prossimo: rose (v0.86; Ale: in partita veloce tutti i disponibili nella schermata Squadre, in partita i più forti per ruolo con una
-riserva per ruolo; nei tornei 15 convocati scelti all'inizio). Da riprendere: centroboa libero o con il marcatore in anticipo che riceve
-girato e segna (difesa).
+della partita invariato; [rapporto](docs/versioni/v085-finte.md)); v0.86 rose (tutti i disponibili, 14 in partita scelti per ruolo,
+15 convocati nei tornei; [rapporto](docs/versioni/v086-rose.md)). I 13 punti di Ale del 24/11 sono fatti. Nelle prove computer contro
+computer l'Ungheria segna più del doppio dell'Italia: nel database le valutazioni medie sono 84 contro 76 (forza del ranking).
+Prossimo: il bilanciamento (sotto). Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
 
 **Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.85, `npm run taratura -- --partite=16`): 19,3 gol e 39,3 tiri per squadra
 (veri 13,3 e 33), tiri in gol 49,1% (40%), espulsioni 11,8 (11; dal centro 63%, vero 66%), superiorità 47% (52%; con altri semi 41%),

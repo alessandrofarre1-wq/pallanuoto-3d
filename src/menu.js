@@ -8,7 +8,7 @@ import { azzeraStatistiche } from './statistiche.js';
 import { initAudio } from './audio.js';
 import { PERIOD_LEN, SHOT_CLOCK, setArbitro, setDiff, setPeriodLen } from './costanti.js';
 import { $, aggiornaTabellone, fmt, fpsIniziale, setFps } from './hud.js';
-import { RUOLI, CHIAVE, STAT_NOMI, squadre } from './dati/rose.js';
+import { RUOLI, CHIAVE, STAT_NOMI, candidati, convocati, liste, listaPartita, squadre, tutti } from './dati/rose.js';
 import { bandiera } from './dati/bandiere.js';
 import { LOGO } from './logo.js';
 import { applicaSquadre, formazioneValida, formazioni } from './giocatori.js';
@@ -33,7 +33,7 @@ const leggi=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } 
 for(const id of ['logoHome','logoPausa','logoFine']) $(id).innerHTML=LOGO();
 
 // ---------- navigazione tra le schermate ----------
-const VISTE={ home:'vHome', squadre:'vSquadre', impostazioni:'vImpostazioni', comandi:'vComandi', info:'vInfo', opzioni:'vOpzioni', pausa:'vPausa', panchina:'vPanchina', fine:'vFine', nazionale:'vNazionale', torneo:'vTorneo', bacheca:'vBacheca', tattiche:'vTattiche', cerimonia:'vCerimonia', strategie:'vStrategie', uomo:'vUomo' };
+const VISTE={ home:'vHome', squadre:'vSquadre', impostazioni:'vImpostazioni', comandi:'vComandi', info:'vInfo', opzioni:'vOpzioni', pausa:'vPausa', panchina:'vPanchina', fine:'vFine', nazionale:'vNazionale', torneo:'vTorneo', convocazione:'vConvocazione', bacheca:'vBacheca', tattiche:'vTattiche', cerimonia:'vCerimonia', strategie:'vStrategie', uomo:'vUomo' };
 const storia=[];
 export function vai(v,senzaStoria){
   const M=$('menu'), prima=M.dataset.vista;
@@ -44,6 +44,7 @@ export function vai(v,senzaStoria){
   if(v==='home') disegnaHome();
   if(v==='nazionale') disegnaNazionali();
   if(v==='torneo') disegnaTorneo();
+  if(v==='convocazione') disegnaConvocazione();
   if(v==='bacheca') disegnaBacheca();
   if(v==='tattiche') disegnaTattiche();
   if(v==='squadre') disegnaSquadre();
@@ -93,28 +94,53 @@ const datiTornei=g=>{ const d=g.dati; if(!d) return '<small class="fm-dati">ness
   return `<small class="fm-dati">${d.partite} partite · ${d.parate!=null?`parate ${d.parate}/${d.tiriSubiti}`:`${d.gol}/${d.tiri} al tiro · ${d.assist} assist`}</small>`; };
 // finta personale (v0.55, finte.js): si legge nella scheda, così si impara a riconoscere i giocatori (non per i portieri)
 const fintaScheda=g=>g.ruolo===0?'':`<small class="fm-finta" title="${FINTE[stileFinta(g)].descr}">Finta ${FINTE[stileFinta(g)].nome}</small>`;
-const scheda=(g,extra)=>`<span class="ov">${g.ovr}</span><b>#${g.num} ${g.nome}${iconaMano(g.mano)}</b><br>${RUOLI[g.ruolo]}${extra||''}${fintaScheda(g)}${datiTornei(g)}`+
+// v0.86: chi non è nella lista della partita non ha ancora un numero (si assegna a ogni lista): si mostrano i ruoli e i tornei
+const ruoliScheda=g=>(g.ruoli||[]).filter(r=>r!==g.ruolo).map(r=>RUOLI[r]).join(', ');
+const scheda=(g,extra,fuori)=>`<span class="ov">${g.ovr}</span><b>${fuori?'':`#${g.num} `}${g.nome}${iconaMano(g.mano)}</b><br>${RUOLI[g.ruolo]}${ruoliScheda(g)?` <small>(anche ${ruoliScheda(g)})</small>`:''}${extra||''}${fintaScheda(g)}${datiTornei(g)}`+
   `<div class="st">${CHIAVE[g.ruolo].map(k=>`<span>${STAT_NOMI[k].slice(0,3).toUpperCase()} ${g.s[k]}</span>`).join('')}</div>`;
+// LISTA DELLA PARTITA (v0.86, Ale: «per le rose su partita singola mettimi tutti i giocatori disponibili nella sezione in cui scelgo la
+// squadra; ma per la partita scegli i più forti nel ruolo»): in acqua i 7, in panchina gli altri della lista (14 in tutto) e sotto tutti
+// gli altri disponibili della nazionale (nei tornei gli altri convocati). Toccando un giocatore della panchina e poi uno degli altri li
+// si scambia; «Scelta automatica» torna ai più forti per ruolo (dati/rose.js, listaPartita).
+let riservaScelta=null;
+function salvaLista(cod,ids){
+  liste[cod]=ids;
+  if(torneoAttivo&&torneoAttivo.nazionale===cod){ torneoAttivo.lista=ids; salvaTorneo(torneoAttivo); } else salva('pallanuoto-lista-'+cod,ids?ids.join(','):'');
+}
 function disegnaRosa(){
   const t=teams[0], R=t.rosa, inAcqua=t.players.map(p=>p.scheda);
   const riserve=R.filter(g=>!inAcqua.includes(g));
-  $('rosa').innerHTML=`<p class="fm-aiuto fm-fonte">Giocatori, numeri, ruoli e mano dalle convocazioni vere; valutazioni stimate dalle statistiche di Mondiali 2025, Europei 2026 e Coppa del Mondo 2026.</p><p class="fm-aiuto">${postoScelto===null?'Tocca un posto per cambiare chi parte in acqua.':`Scegli chi mettere come <b>${POSTI[postoScelto]}</b> (panchina o un altro posto).`}</p>`+
+  const inTorneo=!!(convocati[t.codice]&&convocati[t.codice].length);
+  const altri=candidati(t.codice).filter(g=>!R.includes(g)).sort((a,b)=>b.ovr-a.ovr);
+  if(riservaScelta&&!riserve.includes(riservaScelta)) riservaScelta=null;
+  const aiuto=postoScelto!==null?`Scegli chi mettere come <b>${POSTI[postoScelto]}</b> (panchina o un altro posto).`
+    :riservaScelta?`Scegli chi mettere in lista al posto di <b>${riservaScelta.nome}</b> tra ${inTorneo?'gli altri convocati':'gli altri disponibili'}.`
+    :`Tocca un posto per cambiare chi parte in acqua, oppure un giocatore della panchina per sostituirlo con ${inTorneo?'un altro convocato':'un altro giocatore della nazionale'}.`;
+  $('rosa').innerHTML=`<p class="fm-aiuto fm-fonte">${inTorneo?'I tuoi convocati per il torneo.':'Tutti i giocatori convocati dalla nazionale in almeno un torneo (Mondiali 2025, Europei 2026, Coppa del Mondo 2026), con numeri, ruoli e mano veri; valutazioni stimate dalle loro statistiche.'} In partita ne vanno 14 (12 di movimento e 2 portieri): il gioco sceglie i più forti per ruolo e in panchina una riserva per ogni ruolo.</p><p class="fm-aiuto">${aiuto}</p>`+
     `<div class="fm-titolo">In acqua</div>`+inAcqua.map((g,i)=>`<button type="button" class="fig fm${postoScelto===i?' scelto':''}${g.campione?' camp':''}" data-posto="${i}"><i class="fm-posto">${POSTI[i]}</i>${scheda(g)}</button>`).join('')+
     `<div class="fm-titolo">Panchina</div>`+riserve.map(g=>{ const ok=postoScelto!==null&&(g.ruolo===0)===(postoScelto===0);
-      return `<button type="button" class="fig ris${ok?' puo':''}${g.campione?' camp':''}" data-riserva="${g.num}">${scheda(g)}</button>`; }).join('')+
-    `<button type="button" class="fm-ripristina" id="fmRipristina">Formazione di partenza</button>`;
-  const salvaF=F=>{ formazioni[t.codice]=F; salva('pallanuoto-formazione2-'+t.codice,F.join(',')); postoScelto=null; applicaSquadre(scelta[0],scelta[1]); aggiornaTabellone(); disegnaRosa(); };
-  const attuale=()=>t.players.map(p=>p.scheda.num);
-  $('rosa').querySelectorAll('[data-posto]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.posto;
+      return `<button type="button" class="fig ris${ok?' puo':''}${riservaScelta===g?' scelto':''}${g.campione?' camp':''}" data-riserva="${g.id}">${scheda(g)}</button>`; }).join('')+
+    (altri.length?`<div class="fm-titolo">${inTorneo?'Altri convocati':'Altri disponibili'} (${altri.length})</div>`+altri.map(g=>{ const ok=riservaScelta&&(g.ruolo===0)===(riservaScelta.ruolo===0);
+      return `<button type="button" class="fig ris altro${ok?' puo':''}${g.campione?' camp':''}" data-altro="${g.id}">${scheda(g,'',true)}</button>`; }).join(''):'')+
+    `<button type="button" class="fm-ripristina" id="fmRipristina">Scelta automatica: i più forti per ruolo</button>`;
+  const ridisegna=()=>{ applicaSquadre(scelta[0],scelta[1]); aggiornaTabellone(); disegnaRosa(); };
+  const salvaF=F=>{ formazioni[t.codice]=F; salva('pallanuoto-formazione3-'+t.codice,F.join(',')); postoScelto=null; riservaScelta=null; ridisegna(); };
+  const attuale=()=>t.players.map(p=>p.scheda.id);
+  $('rosa').querySelectorAll('[data-posto]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.posto; riservaScelta=null;
     if(postoScelto===null||postoScelto===i){ postoScelto=postoScelto===i?null:i; disegnaRosa(); return; }
     const F=attuale(); [F[postoScelto],F[i]]=[F[i],F[postoScelto]];          // scambio tra due posti (il portiere resta portiere)
     if(formazioneValida(R,F)) salvaF(F); else { postoScelto=i; disegnaRosa(); } });
-  $('rosa').querySelectorAll('[data-riserva]').forEach(b=>b.onclick=()=>{ if(postoScelto===null) return;
-    const F=attuale(); F[postoScelto]=+b.dataset.riserva; if(formazioneValida(R,F)) salvaF(F); });
-  $('fmRipristina').onclick=()=>{ delete formazioni[t.codice]; salva('pallanuoto-formazione2-'+t.codice,''); postoScelto=null; applicaSquadre(scelta[0],scelta[1]); disegnaRosa(); };
+  $('rosa').querySelectorAll('[data-riserva]').forEach(b=>b.onclick=()=>{ const g=R.find(x=>x.id===b.dataset.riserva); if(!g) return;
+    if(postoScelto!==null){ const F=attuale(); F[postoScelto]=g.id; if(formazioneValida(R,F)) salvaF(F); return; }
+    riservaScelta=riservaScelta===g?null:g; disegnaRosa(); });
+  $('rosa').querySelectorAll('[data-altro]').forEach(b=>b.onclick=()=>{ const g=altri.find(x=>x.id===b.dataset.altro); if(!g||!riservaScelta) return;
+    if((g.ruolo===0)!==(riservaScelta.ruolo===0)) return;      // un portiere solo con un portiere: in lista restano 2 portieri
+    salvaLista(t.codice,R.map(x=>x===riservaScelta?g.id:x.id)); riservaScelta=null; postoScelto=null; ridisegna(); });
+  $('fmRipristina').onclick=()=>{ delete formazioni[t.codice]; salva('pallanuoto-formazione3-'+t.codice,''); salvaLista(t.codice,null); postoScelto=null; riservaScelta=null; ridisegna(); };
 }
-// formazioni ricordate dalle volte precedenti
-for(const q of squadre){ const v=leggi('pallanuoto-formazione2-'+q.codice); if(v) formazioni[q.codice]=v.split(',').map(Number); }
+// formazioni e liste ricordate dalle volte precedenti (v0.86: per id; la vecchia chiave per numero non vale più)
+for(const q of squadre){ const v=leggi('pallanuoto-formazione3-'+q.codice); if(v) formazioni[q.codice]=v.split(',');
+  const l=leggi('pallanuoto-lista-'+q.codice); if(l) liste[q.codice]=l.split(','); }
 const sq=c=>squadre.find(q=>q.codice===c);
 export function scegliSquadre(a,b){
   if(a===b) b=squadre.find(q=>q.codice!==a).codice;
@@ -199,6 +225,7 @@ export function creaCampagna(tipo,nazionale,seme){
   const semeNuovo=()=>globalThis.crypto?.getRandomValues?crypto.getRandomValues(new Uint32Array(1))[0]:Date.now();
   const t=creaTorneo(tipo,nazionale,seme??semeNuovo());
   t.id=`${tipo}-${Date.now()}-${t.seed}`; t.impostazioni={durata:$('selLen').value,difficolta:$('selDiff').value,arbitro:$('selArb').value};
+  t.convocati=convocatiAutomatici(nazionale); t.lista=null;      // v0.86: i 15 convocati, da cambiare prima della prima partita
   torneoAttivo=t; partitaTorneo=null; game.state='menu'; game.torneoMatch=null;
   salvaTorneo(t); apriMenu('torneo'); return t;
 }
@@ -219,6 +246,10 @@ function disegnaTorneo(){
   $('torneoProssima').innerHTML=m?`<div><p class="soprattitolo">${faseNome(m.fase)}${m.girone?` · GIRONE ${m.girone}`:''}${m.turno?` · GIORNATA ${m.turno}`:''}</p><h2>${bandiera(m.casa)}<span>${nome(m.casa)}</span><i>VS</i><span>${nome(m.ospite)}</span>${bandiera(m.ospite)}</h2></div><span class="tag-tu">TU: ${t.nazionale}</span>`:`<div><p class="soprattitolo">${esitoTorneo(t)}</p><h2>${t.medaglia==='oro'?'IL MONDO È TUO.':t.medaglia?'UN POSTO SUL PODIO.':'IL PERCORSO SI FERMA QUI.'}</h2><p class="testo-tenue">Campione: ${nome(t.campione||t.nazionale)} · ${t.piazzamento||'—'}° posto con ${nome(t.nazionale)}</p></div>`;
   $('torneoGioca').hidden=!m;
   $('simulaBronzo').hidden=!m||m.fase!=='bronzo';
+  if(!t.convocati) t.convocati=convocatiAutomatici(t.nazionale);      // tornei salvati prima della v0.86
+  { const P=tutti(t.nazionale), C=P.filter(g=>t.convocati.includes(g.id)), cambiabili=!giocataDalla(t);
+    $('torneoConvocati').innerHTML=`<span>Convocati: <b>${C.length}</b> · ${C.filter(g=>g.ruolo===0).length} portieri</span><button type="button" id="torneoConvocatiApri">${cambiabili?'Scegli i convocati':'Vedi i convocati'}</button><small>${cambiabili?`Prima della prima partita scegli i ${CONVOCATI.totale} tra tutti i ${P.length} disponibili della nazionale; poi a ogni partita ne vanno in lista 14.`:'La convocazione vale per tutto il torneo: a ogni partita ne vanno in lista 14.'}</small>`;
+    $('torneoConvocatiApri').onclick=()=>vai('convocazione'); }
   $('torneoNota').textContent=memoriaDisponibile?(finale?'Percorso registrato nella bacheca.':t.eliminatoDalTitolo?'Resta una medaglia: gioca o simula la finale per il bronzo.':'Sorteggio e risultati salvati automaticamente dopo ogni gara.'): 'La memoria del browser non è disponibile: i progressi restano solo in questa sessione.';
   const fasi=t.tipo==='mondiali'?['gironi','spareggi','quarti','semifinali','finale']:['gironi','seconda_fase','semifinali','finale'];
   $('torneoPercorso').innerHTML=fasi.map(f=>`<div class="tappa${t.fase===f?' attuale':''}"><b>${faseNome(f)}</b><small>${t.partite.filter(p=>p.fase===f&&(p.casa===t.nazionale||p.ospite===t.nazionale)&&p.golCasa!=null).length} gare completate</small></div>`).join('');
@@ -234,14 +265,50 @@ function preparaGaraTorneo(){
   if(!torneoAttivo||finito(torneoAttivo)) return;
   const m=prossimaSalvata(torneoAttivo); if(!m) return;
   partitaTorneo=m; game.state='menu';
+  if(!torneoAttivo.convocati) torneoAttivo.convocati=convocatiAutomatici(torneoAttivo.nazionale);
+  convocati[torneoAttivo.nazionale]=torneoAttivo.convocati; liste[torneoAttivo.nazionale]=torneoAttivo.lista||null;
   scegliSquadre(torneoAttivo.nazionale,m.casa===torneoAttivo.nazionale?m.ospite:m.casa);
   document.querySelector('#vImpostazioni h2').textContent=`${COMPETIZIONI[torneoAttivo.tipo].nome} · ${faseNome(m.fase)}`;
   vai('impostazioni');
 }
 function preparaSingola(){
   torneoAttivo=null; partitaTorneo=null; game.torneoMatch=null; game.torneo=false; game.state='menu';
+  // v0.86: in partita veloce tutti i disponibili, e le liste scelte per la partita veloce
+  for(const k of Object.keys(convocati)) delete convocati[k];
+  for(const q of squadre){ const l=leggi('pallanuoto-lista-'+q.codice); liste[q.codice]=l?l.split(','):null; }
+  scegliSquadre(scelta[0],scelta[1]);
   document.querySelector('#vImpostazioni h2').textContent='Impostazioni partita';
 }
+// CONVOCAZIONE DEL TORNEO (v0.86, Ale: «mettimi tutti e poi scelgo io all'inizio della competizione chi convocare»). Regole World
+// Aquatics del 18 febbraio 2026 (parte sei, appendice: 15 giocatori ai Mondiali, 14 in lista più una riserva); agli Europei 2026 le
+// nazionali ne hanno convocati 15. Il gioco propone i 15 più forti per ruolo (dati/rose.js, listaPartita); si cambiano fino alla prima
+// partita della propria nazionale; i portieri da 2 a 3.
+const CONVOCATI={ totale:15, portieriMin:2, portieriMax:3 };
+function convocatiAutomatici(cod){ return listaPartita(tutti(cod),CONVOCATI.totale).map(g=>g.id); }
+const giocataDalla=t=>t.partite.some(p=>p.golCasa!=null&&(p.casa===t.nazionale||p.ospite===t.nazionale));
+let bozzaConvocati=null;
+function disegnaConvocazione(){
+  const t=torneoAttivo; if(!t) return;
+  if(!t.convocati) t.convocati=convocatiAutomatici(t.nazionale);
+  const P=tutti(t.nazionale), cambiabili=!giocataDalla(t);
+  if(!bozzaConvocati||bozzaConvocati.torneo!==t.id) bozzaConvocati={ torneo:t.id, ids:new Set(t.convocati) };
+  const C=bozzaConvocati.ids, gk=P.filter(g=>g.ruolo===0&&C.has(g.id)).length;
+  const ok=C.size===CONVOCATI.totale&&gk>=CONVOCATI.portieriMin&&gk<=CONVOCATI.portieriMax;
+  $('convTesto').textContent=`${nome(t.nazionale)} · ${COMPETIZIONI[t.tipo].nome}: tutti i ${P.length} giocatori convocati in almeno un torneo (Mondiali 2025, Europei 2026, Coppa del Mondo 2026). Scegline ${CONVOCATI.totale}, con ${CONVOCATI.portieriMin} o ${CONVOCATI.portieriMax} portieri: a ogni partita ne vanno in lista 14 (12 di movimento e 2 portieri), i più forti per ruolo.${cambiabili?'':' Il torneo è cominciato: la convocazione non si cambia più.'}`;
+  $('convContatore').textContent=`${C.size} convocati su ${CONVOCATI.totale} · ${gk} portieri${ok?'':C.size>CONVOCATI.totale?' · troppi':''}`;
+  const gruppi=[['Portieri',[0]],['Centroboa',[1]],['Difensori e punto',[6]],['Ali',[2,3]],['Mezzi',[4,5]]];
+  $('convLista').innerHTML=gruppi.map(([titolo,ruoli])=>{ const G=P.filter(g=>ruoli.includes(g.ruolo)).sort((a,b)=>b.ovr-a.ovr);
+    return G.length?`<div class="fm-titolo">${titolo} (${G.filter(g=>C.has(g.id)).length} su ${G.length})</div>`+G.map(g=>`<button type="button" class="fig${C.has(g.id)?' on':''}${g.campione?' camp':''}" data-conv="${g.id}" aria-pressed="${C.has(g.id)}"${cambiabili?'':' disabled'}>${scheda(g,'',true)}<small class="fm-dati">${(g.convocazioni||[]).map(e=>NOMI_EVENTI[e]||e).join(' · ')}</small></button>`).join(''):''; }).join('');
+  $('convLista').querySelectorAll('[data-conv]').forEach(b=>b.onclick=()=>{ if(!cambiabili) return; const id=b.dataset.conv, g=P.find(x=>x.id===id);
+    if(C.has(id)) C.delete(id);
+    else if(C.size<CONVOCATI.totale&&!(g.ruolo===0&&gk>=CONVOCATI.portieriMax)) C.add(id);
+    disegnaConvocazione(); });
+  $('convConferma').disabled=!ok||!cambiabili;
+  $('convAuto').disabled=!cambiabili;
+}
+const NOMI_EVENTI={ wch2025:'Mondiali 2025', euro2026:'Europei 2026', wc2026_div1:'Coppa del Mondo 2026', wc2026_div2:'Coppa del Mondo 2026', wc2026_finals:'Coppa del Mondo 2026, finali' };
+$('convConferma').onclick=()=>{ const t=torneoAttivo; if(!t||!bozzaConvocati) return; t.convocati=[...bozzaConvocati.ids]; t.lista=null; bozzaConvocati=null; salvaTorneo(t); vai('torneo'); };
+$('convAuto').onclick=()=>{ const t=torneoAttivo; if(!t) return; bozzaConvocati={ torneo:t.id, ids:new Set(convocatiAutomatici(t.nazionale)) }; disegnaConvocazione(); };
 function archiviaTorneo(t){
   if(!finito(t)) return;
   const id=t.id||`${t.tipo}-${t.seed}`; if(bacheca.some(v=>v.id===id)) return;

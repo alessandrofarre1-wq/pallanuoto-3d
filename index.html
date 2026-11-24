@@ -104,9 +104,21 @@
       <div class="torneo-prossima" id="torneoProssima"></div>
       <div class="torneo-azioni"><button type="button" class="m-cta corta" id="torneoGioca"><span class="m-play"></span><span><b>Gioca la prossima</b></span><i>›</i></button><button type="button" class="strategia-accesso" id="btStrategieTorneo"><span class="strategia-icona" aria-hidden="true">⌘</span><span><b>Strategie</b><small id="schemaTorneo">Prepara il piano partita</small></span><i aria-hidden="true">›</i></button><button type="button" class="strategia-accesso uomo-accesso" id="btUomoTorneo"><span class="strategia-icona" aria-hidden="true">6c5</span><span><b>Uomo in più</b><small id="uomoRiepTorneo">I tuoi 3 schemi</small></span><i aria-hidden="true">›</i></button><button type="button" class="azione-secondaria" id="simulaBronzo" hidden>Simula la finale per il bronzo</button></div>
       <p class="nota-torneo" id="torneoNota" aria-live="polite"></p>
+      <div class="torneo-convocati" id="torneoConvocati"></div>
       <div class="torneo-percorso" id="torneoPercorso"></div>
       <div class="torneo-colonne"><section><h3 class="etichetta-sezione">Gironi e classifiche</h3><div id="torneoGruppi" class="torneo-gruppi"></div></section><section><h3 class="etichetta-sezione">Calendario e risultati</h3><div id="torneoCalendario" class="torneo-calendario"></div></section></div>
     </div>
+  </section>
+
+  <!-- CONVOCAZIONE DEL TORNEO (v0.86): i 15 convocati, scelti prima della prima partita -->
+  <section class="vista" id="vConvocazione">
+    <header class="m-testa"><button type="button" class="m-icona" data-indietro aria-label="Indietro">‹</button><h2>Convocazione</h2></header>
+    <div class="contenuto-convocazione">
+      <p class="testo-tenue" id="convTesto"></p>
+      <p class="conv-contatore" id="convContatore" aria-live="polite"></p>
+      <div id="convLista" class="conv-lista"></div>
+    </div>
+    <div class="m-fondo"><button type="button" class="azione-secondaria" id="convAuto">Scelta automatica</button><button type="button" class="m-cta corta" id="convConferma"><span><b>Conferma i convocati</b></span><i>›</i></button></div>
   </section>
 
   <section class="vista" id="vBacheca">
@@ -125,7 +137,7 @@
     </div>
     <div class="elenco-sq" id="elencoSq" aria-label="Tutte le squadre"></div>
     <div class="confronto" id="confronto"></div>
-    <details id="rosaBox"><summary>Formazione: scegli i 7 in acqua</summary><div id="rosa"></div></details>
+    <details id="rosaBox"><summary>Formazione: i 14 della partita e tutti i disponibili</summary><div id="rosa"></div></details>
     <div class="m-fondo con-strategie"><button type="button" class="strategia-accesso" id="btStrategieSquadre"><span class="strategia-icona" aria-hidden="true">⌘</span><span><b>Strategie</b><small id="schemaSquadre">Prepara il piano partita</small></span><i aria-hidden="true">›</i></button><button type="button" class="strategia-accesso uomo-accesso" id="btUomoSquadre"><span class="strategia-icona" aria-hidden="true">6c5</span><span><b>Uomo in più</b><small id="uomoRiepSquadre">I tuoi 3 schemi</small></span><i aria-hidden="true">›</i></button><button type="button" class="m-cta corta" data-va="impostazioni"><span><b>Continua</b></span><i>›</i></button></div>
   </section>
 

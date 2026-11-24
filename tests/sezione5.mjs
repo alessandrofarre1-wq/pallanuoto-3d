@@ -27,7 +27,8 @@ const rec = await pg.evaluate(() => {
   ris[0].stamina = 0.3; window.__salta(600);
   return { inAcqua: t.rosa.filter(g => g.inAcqua).length, riserve: ris.length, stamina: ris[0].stamina };
 });
-prova(rec.inAcqua === 7 && rec.riserve === 6, `rosa: ${rec.inAcqua} in acqua e ${rec.riserve} in panchina`);
+// v0.86 (regole World Aquatics 2026, al massimo 14 a partita): 7 in acqua e 7 in panchina (prima 6)
+prova(rec.inAcqua === 7 && rec.riserve === 7, `rosa: ${rec.inAcqua} in acqua e ${rec.riserve} in panchina`);
 prova(rec.stamina > 0.45, `in panchina si recupera: da 30% a ${Math.round(rec.stamina * 100)}% in 10 s`);
 
 // ---------- schermata Panchina in pausa, suggerimento, cambio programmato ----------
@@ -45,7 +46,7 @@ const vista = await pg.evaluate(() => {
   r.esce = p.num;
   return r;
 });
-prova(vista.visibile && vista.righe === 13, `schermata Panchina dalla pausa: ${vista.righe} giocatori (7 in acqua, 6 riserve)`);
+prova(vista.visibile && vista.righe === 14, `schermata Panchina dalla pausa: ${vista.righe} giocatori (7 in acqua, 7 riserve)`);
 prova(vista.sugg, `suggerimento per chi è stanco: «${vista.testoSugg.trim()}»`);
 prova(vista.coda.length === 1, `cambio programmato con un tocco: ${vista.coda.join(', ')}`);
 

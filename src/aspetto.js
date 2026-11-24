@@ -81,7 +81,8 @@ export function profiloVisivo(g, codice, tentativo = 0) {
 // generati, in ordine di id (non di caricamento); i valori documentati non si toccano mai.
 export function profiliSquadra(rosa, codice) {
   const visti = new Set();
-  for (const g of [...rosa].sort((a, b) => String(a.id || a.num).localeCompare(String(b.id || b.num)))) {
+  // v0.86: prima chi era nella rosa di 13 usata fino alla v0.85 (inRosa13), così il loro aspetto non cambia; poi gli altri disponibili
+  for (const g of [...rosa].sort((a, b) => (b.inRosa13 ? 1 : 0) - (a.inRosa13 ? 1 : 0) || String(a.id || a.num).localeCompare(String(b.id || b.num)))) {
     let p = profiloVisivo(g, codice), k = 0;
     const firma = q => `${q.skinTone}|${q.hairColor}|${q.beardStyle}|${q.bodyBuild}`;
     while (visti.has(firma(p)) && k < 8) p = profiloVisivo(g, codice, ++k);

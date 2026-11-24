@@ -96,6 +96,7 @@ jobs:
       - run: npm run timeout -- --no-build
       - run: npm run rigore -- --no-build
       - run: npm run finte -- --no-build
+      - run: npm run rose -- --no-build
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -1,5 +1,5 @@
 // ================= PANCHINA E CAMBI VOLANTI (sezione 5, v0.32) =================
-// Rosa di 13: 7 in acqua e 6 riserve. Ogni giocatore della rosa ha la sua stamina: chi è in panchina recupera, chi entra porta
+// Lista della partita (v0.86: 14, regole World Aquatics 2026): 7 in acqua e 7 riserve. Ogni giocatore della rosa ha la sua stamina: chi è in panchina recupera, chi entra porta
 // in acqua quella che ha. Regole World Aquatics (con le modifiche di giugno 2025):
 // - il cambio volante si fa senza fermare il gioco: chi esce raggiunge la zona dei cambi della propria squadra (sul bordo,
 //   nella propria metà) e il sostituto entra dopo il «cinque»; nei pozzetti (rientro degli espulsi) il cinque non serve più;

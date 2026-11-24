@@ -10,6 +10,22 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.86 — rose** (Claude Code, 24/11/2026; rapporto `docs/versioni/v086-rose.md`). RICHIESTA: Ale, «rose: usare i giocatori a
+  disposizione dei CT (all'Italia mancano Di Fulvio e Di Somma)»; «mettimi tutti e poi scelgo io all'inizio della competizione chi
+  convocare; non farlo solo per l'Italia ma per tutte le nazionali; in partita singola lasciami tutti i giocatori; considerali tutti»;
+  «per la partita scegli i più forti nel ruolo; se ci sono doppi ruoli scegli i secondi più forti dando variabilità ai cambi per coprire
+  il più possibile più ruoli». REGOLE: World Aquatics 18/02/2026, al massimo 14 a partita (12 di movimento, 2 portieri), 15 iscritti ai
+  Mondiali. CODICE: rosa di 13 dalla convocazione più recente. CAMBIAMENTI: `strumenti/rose-dal-database.mjs` (tutti i convocati di
+  almeno un torneo con le stesse medie della squadra; 23 doppioni del database uniti; ruoli doppi `ruoli`; `riportaAlRanking`: la
+  forza dei 14 riportata a quella dei 13 di prima, voci giù da 0 a 1,6 punti), `src/dati/lista-partita.js` (la scelta, pura),
+  `src/dati/rose-db.json` (`tutti`, 482 giocatori); `src/dati/rose.js` (`tutti`, `listaPartita`, `numeriLista`, `rosa` con `liste` e
+  `convocati`); `giocatori.js` (formazione per id); `menu.js` (schermata Squadre con gli altri disponibili e lo scambio con la
+  panchina, «Scelta automatica»; convocazione dei tornei, `vConvocazione`, 15 con 2-3 portieri fino alla prima partita); `aspetto.js`
+  (aspetto stabile per chi c'era). MISURE: in corso (16 partite). PROVA NUOVA `npm run rose` (15 controlli, anche nella CI); prova adattata `sezione5`
+  (7 riserve, 14 nella Panchina). VERIFICHE: in corso. DECISIONI SUPERATE: rosa di 13 → tutti i disponibili e 14 in partita scelti per
+  ruolo; formazione per numero → per id; rosa fissa nei tornei → 15 convocati. NON FATTO: statistiche dei doppioni non sommate;
+  valutazioni ancora stime dei tornei del database.
+
 - **v0.85 — finte** (Claude Code, 24/11/2026; rapporto `docs/versioni/v085-finte.md`). RICHIESTA: Ale, «davanti alla porta finta
   veloce ma non troppo»; «ora quelle vicino alla porta sono troppo veloci, vanno rallentate»; «la finta di tiro può essere fatta sia
   mandando la palla avanti e indietro ma, più frequentemente, da destra verso sinistra; in generale con movimenti stretti e veloci o più

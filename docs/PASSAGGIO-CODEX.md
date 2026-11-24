@@ -1,3 +1,21 @@
+# Passaggio WATERPOLO7 — v0.86 rose (Claude Code)
+
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.86.0. Cambiano le rose (chi gioca), la schermata Squadre e i tornei.
+- `strumenti/rose-dal-database.mjs`: `DISPONIBILI` (tutti i convocati, riga della convocazione più recente; chi era nei 13 tiene la sua),
+  doppioni uniti (stessa nazionale e data di nascita, stesso nome o iniziale + cognome in comune), stesse medie di ricentraggio dei 13
+  (`medie`), `ruoli` dall'anagrafica, `convocazioni`, `inRosa13`; `riportaAlRanking` (con `listaPartita` di `src/dati/lista-partita.js`,
+  funzione pura condivisa con il gioco) toglie a tutte le voci della nazionale quanto la valutazione media dei 14 supera quella dei 13 di
+  prima, sui valori con i decimali (`_grezzo`). Uscita `tutti` al posto di `rose` in `src/dati/rose-db.json`.
+- `src/dati/rose.js`: `tutti(codice)`, `listaPartita(giocatori,n=14)` (titolari più forti nel ruolo con `ovr` del ruolo, panchina una
+  riserva per posto), `numeriLista` (numeri unici: `numDb`), `liste` e `convocati` (id, li mette il menu), `rosa(codice)`.
+  `src/aspetto.js`: `profiliSquadra` prima `inRosa13`. `src/giocatori.js`: formazione per id.
+- `src/menu.js`: `disegnaRosa` (in acqua, panchina, `data-altro`; `salvaLista`), chiavi `pallanuoto-formazione3-` e `pallanuoto-lista-`;
+  tornei: `t.convocati` (15, `convocatiAutomatici`), `t.lista`, vista `convocazione` (`vConvocazione`), riquadro `torneoConvocati`;
+  `preparaGaraTorneo` mette `convocati`/`liste` della nazionale, `preparaSingola` li toglie. `window.__pallanuoto.rose` per le prove.
+- Prova nuova `npm run rose` (anche nella CI); `tests/sezione5.mjs` con 7 riserve. [Rapporto](versioni/v086-rose.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.85 finte (Claude Code)
 
 Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.85.0. Cambia la partita (ritmo, lato e tempi delle finte) e il disegno della

@@ -3,6 +3,17 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.86
+- Rosa di 13 per nazionale (la convocazione più recente: 2 portieri e gli 11 con più minuti) → tutti i giocatori convocati dalla
+  nazionale in almeno un torneo del database; in partita 14 (regole World Aquatics 2026: 12 di movimento e 2 portieri), scelti dal gioco
+  per ruolo con una riserva per posto (`listaPartita`); il giocatore può cambiare la lista nella schermata Squadre.
+- Formazione ricordata per numero di calottina → per id del giocatore (i numeri si assegnano a ogni lista, `numeriLista`).
+- Valutazioni ricentrate sui 13 della rosa → su tutti i disponibili, poi riportate al ranking: tutte le voci di una nazionale scendono di
+  quanto i 14 scelti superano i 13 di prima (Italia 0,41, Ungheria 0,70, Serbia 1,59 punti), così la forza della squadra resta quella
+  del ranking.
+- Nei tornei la stessa rosa della partita veloce → 15 convocati (proposti dal gioco, scelti prima della prima partita) e a ogni partita i
+  14 tra i convocati.
+
 ## v0.85
 - Dopo una finta il gesto del computer (passaggio, tiro o un'altra finta) partiva alla fine dell'accenno, a metà del ritorno del
   braccio (ritorno interrotto 82 volte su 100 tra 5 e 7 m) → parte a braccio tornato carico più 0,2 s (`FINTA_RITMO.attesa`, video di
