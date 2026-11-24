@@ -3,6 +3,22 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.87
+- Mano nella finta: palmo dietro la palla in avanti e un po' in su durante la carica e, nel ritorno, in giù qualunque fosse la posizione
+  della palla (a fine finta la palla stava davanti al viso con la mano sopra) → il palmo segue la mano rispetto alla testa: al cielo
+  («vassoio») dietro, in avanti sopra, in giù davanti con la palla attaccata (`MANO_FINTA`, solo disegno).
+- Ritorno della finta del computer alla palla tenuta sopra la testa → ritorno alla carica, dove il braccio resta finché non parte il
+  gesto dopo (solo disegno; i tempi del gioco erano già quelli del braccio tornato carico, v0.85).
+- Posa Plask della tenuta e della carica con il suo palmo (v0.74) → palmo corretto di 0,8 verso la regola della mano; la finta ampia
+  della tenuta arriva al gesto intero del disegno (prima 0,8 del gesto per tutte le finte, v0.76).
+- Finte di lato sempre da destra verso sinistra attraverso il corpo, 65 volte su 100 (`FINTA_LATO.quota`, v0.85) → verso preferito di
+  ogni giocatore (marchio di fabbrica, `FINTA_FIRMA`): di lato nei due sensi o avanti e indietro; nel complesso 45 finte su 100 da destra
+  verso sinistra, 23 da sinistra verso destra, 32 avanti e indietro.
+- Larghezza della finta = tendenza dello stile ± 0,25 a caso a ogni finta (v0.85) → larghezza del giocatore (stile ± 0,25, fissa) ± 0,1
+  a ogni finta. Braccio teso o piegato a caso a ogni finta con la tendenza dello stile → braccio del giocatore 85 volte su 100.
+- Stile della finta ricavato da id, nome e numero di calottina (v0.55) → solo dall'id: dalla v0.86 il numero cambia da una lista
+  all'altra e con lui poteva cambiare la finta.
+
 ## v0.86
 - Rosa di 13 per nazionale (la convocazione più recente: 2 portieri e gli 11 con più minuti) → tutti i giocatori convocati dalla
   nazionale in almeno un torneo del database; in partita 14 (regole World Aquatics 2026: 12 di movimento e 2 portieri), scelti dal gioco

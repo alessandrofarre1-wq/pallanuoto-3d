@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.86.0",
+  "version": "0.87.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -17,6 +17,8 @@
     "timeout": "node tests/timeout-v083.mjs",
     "rigore": "node tests/rigore-v084.mjs",
     "finte": "node tests/finte-v085.mjs",
+    "finte-mano": "node tests/finte-v087.mjs",
+    "finte-mano-foglio": "node strumenti/finte-mano-foglio.mjs",
     "sonda-finte": "node strumenti/sonda-finte.mjs",
     "finte-forme": "node strumenti/finte-forme-foglio.mjs",
     "rose": "node tests/rose-v086.mjs",

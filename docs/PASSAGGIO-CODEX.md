@@ -1,3 +1,23 @@
+# Passaggio WATERPOLO7 — v0.87 finte: mano e marchio di fabbrica (Claude Code)
+
+Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #69 (v0.78-v0.86), versione 0.87.0.
+- Solo disegno: `src/grafica/mano-finta.js` (`MANO_FINTA`, `palmoFinta(u)`: palmo e piega del polso dalla posizione della mano rispetto
+  alla testa, in unità del corpo). `grafica/pose.js`: nella finta `n`/`flex` da `palmoFinta`; la finta torna alla carica (`ritorno`,
+  `chiudeV = 0`) e `attoDisegnato` tiene l'ultima finta finché `game.time < p.fintaPronto`; il braccio di lato segue la preparazione
+  di questa finta (`quanto`); con la palla tenuta il palmo segue la mano disegnata (`p.bracciaVista`). `grafica/tiro-plask-vista.js`:
+  `correggiPalmo` ruota solo l'osso della mano verso `palmoFinta` (peso `MANO_FINTA.plask` × `s.pesoPalmo`, entra ed esce in 0,05 s)
+  nella tenuta (`p.charging && hold`) e nella carica di un gesto (`atto.t < atto.wind`); finta ampia: `ampiezza = impulso × (braccio +
+  (1 − braccio) × largo)`. Partita identica (aspetto `--confronta`) con le sole modifiche del disegno.
+- Gioco: `FINTA_FIRMA` in `taratura.js` (tolto `FINTA_LATO.quota`; `FINTA_AMPIEZZA.varia` 0,5 → 0,2); `finte.js` `firmaFinta(scheda)`
+  (verso, largo, piegato dall'id, WeakMap) e `versoFinta(scheda, r)`; `stileFinta` usa solo l'id (`chiave`). `tiri.js` `startAct`:
+  `largo` dalla firma, lato da `versoFinta` (`window.__formaFinta.lato` −1/0/1 nelle prove). `menu.js` scheda con verso e braccio.
+  `window.__pallanuoto.finte` per le prove.
+- Prove: nuova `npm run finte-mano` (`tests/finte-v087.mjs`, anche nella CI); adattate `finta` (tenuta 4 s, verso del giocatore, scena
+  dell'anticipo senza lotta al centro), `finte` (verso del giocatore) e `traiettorie` (contesto con `firmaFinta`/`versoFinta`).
+  Strumento `npm run finte-mano-foglio`; `sonda-finte` conta versi e larghezze. [Rapporto](versioni/v087-finte-mano.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.86 rose (Claude Code)
 
 Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.86.0. Cambiano le rose (chi gioca), la schermata Squadre e i tornei.

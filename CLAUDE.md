@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.86). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.87). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -121,17 +121,30 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Finte v0.85 (Ale: «vicino alla porta troppo veloci, vanno rallentate»; «avanti e indietro ma, più frequentemente, da destra verso
   sinistra; stretti e veloci o più ampi e lenti; braccio teso o piegato»): dopo ogni finta il gesto successivo (finta, tiro o passaggio)
   parte a braccio tornato carico più 0,2 s (`FINTA_RITMO`, video di Varga), per il computer e per la tenuta di TIRO; il rilascio di
-  TIRO tira sempre subito. Ogni finta va di lato 65 volte su 100 (`FINTA_LATO.quota`), da destra verso sinistra attraverso il corpo
-  (mancino al contrario; con la levetta il palo lo sceglie il giocatore), le altre avanti e indietro. Larghezza a ogni finta
-  (`FINTA_AMPIEZZA`, stile ± caso, più stretta davanti alla porta): la stretta ha i tempi minimi della v0.76, l'ampia è più lenta in
-  andata e ritorno (`a.recupero`). Braccio teso o piegato solo nel disegno (`FINTA_FORMA`). Prova `npm run finte`, sonda `npm run
-  sonda-finte`, foglio `npm run finte-forme`; nelle prove e negli strumenti `window.__formaFinta` fissa larghezza, braccio e lato.
+  TIRO tira sempre subito. Verso, larghezza e braccio dal marchio di fabbrica del giocatore (v0.87, sotto); con la levetta il palo lo
+  sceglie il giocatore. Larghezza (`FINTA_AMPIEZZA`) più stretta davanti alla porta: la stretta ha i tempi minimi della v0.76, l'ampia è
+  più lenta in andata e ritorno (`a.recupero`). Braccio teso o piegato solo nel disegno (`FINTA_FORMA`). Prova `npm run finte`, sonda
+  `npm run sonda-finte`, foglio `npm run finte-forme`; nelle prove e negli strumenti `window.__formaFinta` fissa larghezza, braccio e
+  lato (0 avanti e indietro, 1 attraverso il corpo, −1 verso l'esterno).
+- Finte v0.87 (Ale: «se la palla sta dietro la testa il palmo deve essere rivolto verso l'alto, come un vassoio; se la finta supera la
+  testa e va in avanti si ruota il polso e il palmo va verso il basso con la palla attaccata»; «da destra verso sinistra e da sinistra
+  verso destra, oppure avanti e indietro, per tutte le finte; sotto porta un po' più veloci»; «la finta è quasi un marchio di fabbrica
+  dei giocatori»). MANO (solo disegno, `grafica/mano-finta.js`, `MANO_FINTA`): il palmo segue la mano rispetto alla testa, al cielo
+  dietro, in avanti sopra (la palla tenuta della v0.55 resta com'era), in giù davanti con la palla attaccata sotto; vale per la finta
+  del computer, per la palla tenuta e per la tenuta di TIRO e la carica del tiro (la posa Plask si corregge di 0,8 verso questo palmo).
+  La palla disegnata sta sempre sul palmo. La finta del computer va avanti e torna alla carica, dove il braccio resta fino al gesto dopo
+  (`p.fintaPronto`); la finta ampia della tenuta arriva al gesto intero del disegno (braccio 0,8 + 0,2 × larghezza). MARCHIO DI
+  FABBRICA (`firmaFinta`, `versoFinta`, `FINTA_FIRMA`): dal suo id ogni giocatore ha un verso preferito (da destra verso sinistra 50
+  giocatori su 100, avanti e indietro 30, da sinistra verso destra 20; ogni finta nel suo verso 70 volte su 100), la sua larghezza
+  (stile ± 0,25; a ogni finta ± 0,1) e il suo braccio (85 volte su 100). Stile e marchio non dipendono dal numero di calottina. La
+  scheda del giocatore mostra «Finta larga · da destra a sinistra · braccio teso». Prova `npm run finte-mano`, foglio `npm run
+  finte-mano-foglio`.
 - Portiere: segue il passaggio, para in base a posizione, Riflessi, stanchezza, sorpresa e muro; para meno dopo un cambio di lato,
   in superiorità, dopo una finta o su tiri vicini; mentre l'avversario carica sale a braccia larghe (solo disegno).
 - Portiere v0.71: il sorteggio decide il tentativo, non una presa senza contatto. Sagoma numerica condivisa con il disegno, sweep3D e reazione/velocità delle mani limitate; corpo/testa respingono, le prese ravvicinate richiedono la mano e sono rare. Stesse regole per le due squadre. Proporzioni v0.72: campo25×20m, porta3×0,90m e palla22,12cm nello stesso mondo. Scala delle giuntureVIS1,45→1,10: modello base2,547→1,932m in bind, profili individuali conservati. Sagoma/mani del portiere, palla sul palmo, ombra e contatto acqua seguono il corpo. Il punto fisico di lancio segue necessariamente la nuova altezza; tempi e velocità del tiro conservati.
 - Traiettorie v0.71: palombella più tesa (CPU dopo una finta, nessun nuovo obbligo umano); forte alto verso le quadrelle con rotazione da tiro, mirino nominale coerente e suono sordo solo su urto reale palo/traversa. Rimbalzo mirato prima del portiere dalla fisica dell’acqua, solo con distanza/spazio adatti. Parametri in `TRAIETTORIE_TIRO`. Il corpo del portiere segue la stessa lettura delle mani, anche sui tiri deviati ancora in arrivo; aspetta la propria reazione e non anticipa il lato vero. Fattore rigore0,41→0,7 per la sola lettura, non per assegnare una parata:188/240gol nel controllo,78,3%; coefficienti globali di precisione/potenza conservati.
 - Tiro classico v0.72: gambe asimmetriche con perno controlaterale e dominante arretrata, anche che anticipano il braccio, core e mano libera (spazzata→trazione), gomito alto. Solo disegno su ossa esistenti; posa fisica, polso/frusta e tempi conservati. Fonte Solum2008 nel rapporto; non è un riferimento regolamentare.
-- Tiro Plask v0.74: `grafica/tiro-plask-vista` applica solo disegno dopo `muoviCorpo`/mani; piedi/punte e dita inclusi, assi calibrati, mancino speculare senza scala negativa. Originale6,917s integro nel ramo di consegna; i dati comprendono tutta la sequenza1/60–6,917s, esclusa solo la Tpose artificiale a0;415pose/52ossa. Dalla v0.77 nella tenuta umana si raccorda la posa in acqua alla carica senza attraversare accelerato il prefisso; parte registrata di rilascio conservata, percorso CPU/diretto precedente invariato. Solo tre ossa del braccio raccordate5,9–6,1s dove la mano esce dal video; rilascio originale non misurabile. Tempi fisici e carica0,9s conservati. Esultanza: palmo davanti e polso quasi neutro, nessun cambio al modello. Volto rimandato da Ale. Dettagli nel rapporto v0.74.
+- Tiro Plask v0.74: `grafica/tiro-plask-vista` applica solo disegno dopo `muoviCorpo`/mani; piedi/punte e dita inclusi, assi calibrati, mancino speculare senza scala negativa. Originale6,917s integro nel ramo di consegna; i dati comprendono tutta la sequenza1/60–6,917s, esclusa solo la Tpose artificiale a0;415pose/52ossa. Dalla v0.77 nella tenuta umana si raccorda la posa in acqua alla carica senza attraversare accelerato il prefisso; parte registrata di rilascio conservata, percorso CPU/diretto precedente invariato. Solo tre ossa del braccio raccordate5,9–6,1s dove la mano esce dal video; rilascio originale non misurabile. Tempi fisici e carica0,9s conservati. Esultanza: palmo davanti e polso quasi neutro, nessun cambio al modello. Volto rimandato da Ale. Dettagli nel rapporto v0.74. Dalla v0.87 nella tenuta e nella carica il palmo della posa si corregge verso la regola della mano (finte v0.87).
 ### Attacco del computer
 - Circolazione: palla in mano 0,4-0,7 s sul perimetro (`CIRCOLAZIONE`); costruzione di 18 s prima di cercare il tiro da libero,
   anche nella ripartenza alla pari (il tiro subito dopo la ricezione è sicuro solo nella controfuga con l'uomo in più); palla al

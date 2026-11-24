@@ -3,8 +3,9 @@
 // 1. Computer: dopo una finta il gesto successivo (finta, tiro o passaggio) parte solo a braccio tornato carico più
 //    FINTA_RITMO.attesa (prima partiva alla fine dell'accenno, a metà del ritorno).
 // 2. Giocatore che tiene TIRO: una finta dopo l'altra a braccio tornato carico più la stessa attesa (almeno 0,9 s).
-// 3. Le finte vanno di lato da destra verso sinistra circa due volte su tre (FINTA_LATO.quota), le altre avanti e indietro; strette
-//    e veloci o ampie e lente (FINTA_AMPIEZZA), più strette davanti alla porta.
+// 3. Le finte vanno di lato nei due sensi o avanti e indietro, più spesso nel verso preferito del giocatore (v0.87, FINTA_FIRMA; nella
+//    v0.85 di lato due volte su tre e sempre da destra verso sinistra); strette e veloci o ampie e lente (FINTA_AMPIEZZA), più strette
+//    davanti alla porta.
 // 4. Disegno: finte a braccio dritto e a braccio piegato, larghe e strette.
 // Uso: node tests/finte-v085.mjs [--no-build]
 import { chromium } from 'playwright';
@@ -83,15 +84,17 @@ const intervalli = umano.inizi.slice(1).map((x, i) => +(x.t - umano.inizi[i].t).
 prova(umano.inizi.length === 3 && intervalli.every((d, i) => d >= umano.inizi[i].durata + 0.2 - 1 / 60 - 1e-6 && d >= 0.9 - 1 / 60),
   `giocatore che tiene TIRO: una finta ogni ${intervalli.join(' e ')} s (accenno + ritorno + attesa, almeno 0,9 s)`);
 
-// 3. di lato da destra verso sinistra (attraverso il corpo) circa due volte su tre, le altre avanti e indietro
+// 3. v0.87: il verso di ogni finta (di lato attraverso il corpo, di lato verso l'esterno, avanti e indietro) è quello preferito dal
+// giocatore FINTA_FIRMA.verso volte su 100, gli altri due le altre volte
 await prepara(1, false, null);
 const lati = await pg.evaluate(() => {
-  const H = window.__pallanuoto, p = H.teams[1].players[4], attraverso = (p.mano === 'S' ? 1 : -1) * p.team.dir; let laterali = 0, giuste = 0;
-  for (let k = 0; k < 80; k++) { Object.assign(p, { act: null, fakeCount: 0, fintaLatoVoluto: 0 }); H.prova.startAct(p, 'fake', 0.16, () => {}); if (p.fintaLatoGesto) { laterali++; if (p.fintaLatoGesto === attraverso) giuste++; } }
-  p.act = null; return { quota: laterali / 80, giuste, laterali };
+  const H = window.__pallanuoto, p = H.teams[1].players[4], attraverso = (p.mano === 'S' ? 1 : -1) * p.team.dir, conta = { traverso: 0, fuori: 0, avanti: 0 };
+  for (let k = 0; k < 160; k++) { Object.assign(p, { act: null, fakeCount: 0, fintaLatoVoluto: 0 }); H.prova.startAct(p, 'fake', 0.16, () => {}); const l = p.fintaLatoGesto || 0; conta[l === attraverso ? 'traverso' : l ? 'fuori' : 'avanti']++; }
+  p.act = null; return { conta, verso: H.finte.firmaFinta(p.scheda).verso, quota: H.finte.FINTA_FIRMA.verso };
 });
-prova(lati.quota > 0.5 && lati.quota < 0.8 && lati.giuste === lati.laterali,
-  `finte di lato ${Math.round(lati.quota * 100)} volte su 100 (FINTA_LATO.quota 65), tutte da destra verso sinistra attraverso il corpo (${lati.giuste} su ${lati.laterali})`);
+{ const mio = lati.conta[lati.verso] / 160, altri = Object.entries(lati.conta).filter(([v]) => v !== lati.verso);
+  prova(Math.abs(mio - lati.quota) < 0.12 && altri.every(([, n]) => n > 0),
+    `finte nel verso del giocatore (${lati.verso}) ${Math.round(mio * 100)} volte su 100 (FINTA_FIRMA.verso ${lati.quota * 100}), le altre negli altri due (${altri.map(([v, n]) => v + ' ' + n).join(', ')} su 160)`); }
 
 // 3b. stretta e veloce, ampia e lenta: lo stile a raffica (stretto) contro lo stile largo, e la stessa finta vicino e lontano dalla porta
 const tempi = async (stile, metri) => { await prepara(1, false, stile); return pg.evaluate(metri => {

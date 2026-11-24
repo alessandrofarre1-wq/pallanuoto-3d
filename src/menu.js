@@ -18,7 +18,7 @@ import { apriRegistro } from './cronaca.js';
 import { kickoff } from './regole.js';
 import { allPlayers, ball, fight, game, teams } from './stato.js';
 import { iconaMano } from './mano.js';
-import { FINTE, stileFinta } from './finte.js';
+import { FINTE, firmaFinta, stileFinta } from './finte.js';
 import { chiamaUomo, passaAZona } from './ia.js';
 import { resetTap } from './controllo.js';
 import { COMPETIZIONI, classificaGirone, creaTorneo, prossimaPartita, registraPartita, simulaBronzo } from './tornei.js';
@@ -92,8 +92,12 @@ let postoScelto=null;
 // dati dei tornei (dal database): gol/tiri e assist per chi gioca, parate per i portieri
 const datiTornei=g=>{ const d=g.dati; if(!d) return '<small class="fm-dati">nessun dato nei tornei</small>';
   return `<small class="fm-dati">${d.partite} partite · ${d.parate!=null?`parate ${d.parate}/${d.tiriSubiti}`:`${d.gol}/${d.tiri} al tiro · ${d.assist} assist`}</small>`; };
-// finta personale (v0.55, finte.js): si legge nella scheda, così si impara a riconoscere i giocatori (non per i portieri)
-const fintaScheda=g=>g.ruolo===0?'':`<small class="fm-finta" title="${FINTE[stileFinta(g)].descr}">Finta ${FINTE[stileFinta(g)].nome}</small>`;
+// finta personale (v0.55, finte.js): si legge nella scheda, così si impara a riconoscere i giocatori (non per i portieri). v0.87: con
+// il marchio di fabbrica del giocatore (firmaFinta), cioè il verso preferito (per un mancino il gesto attraverso il corpo va da
+// sinistra a destra) e il braccio teso o piegato
+const versoScheda=g=>{ const v=firmaFinta(g).verso; return v==='avanti'?'avanti e indietro':(v==='traverso')===(g.mano!=='S')?'da destra a sinistra':'da sinistra a destra'; };
+const fintaScheda=g=>{ if(g.ruolo===0) return ''; const st=FINTE[stileFinta(g)];
+  return `<small class="fm-finta" title="${st.descr}">Finta ${st.nome} · ${versoScheda(g)} · braccio ${firmaFinta(g).piegato?'piegato':'teso'}</small>`; };
 // v0.86: chi non è nella lista della partita non ha ancora un numero (si assegna a ogni lista): si mostrano i ruoli e i tornei
 const ruoliScheda=g=>(g.ruoli||[]).filter(r=>r!==g.ruolo).map(r=>RUOLI[r]).join(', ');
 const scheda=(g,extra,fuori)=>`<span class="ov">${g.ovr}</span><b>${fuori?'':`#${g.num} `}${g.nome}${iconaMano(g.mano)}</b><br>${RUOLI[g.ruolo]}${ruoliScheda(g)?` <small>(anche ${ruoliScheda(g)})</small>`:''}${extra||''}${fintaScheda(g)}${datiTornei(g)}`+

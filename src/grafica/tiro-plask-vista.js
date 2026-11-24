@@ -3,6 +3,8 @@
 import * as THREE from 'three';
 import dati from './dati/tiro-plask-01.js';
 import { FINTA_MOVIMENTO, impulsoFinta } from '../finta-movimento.js';
+import { VIS } from '../scala-grafica.js';
+import { MANO_FINTA, palmoFinta } from './mano-finta.js';
 const bytes=Uint8Array.from(atob(dati.packed),c=>c.charCodeAt(0)),view=new DataView(bytes.buffer);
 const valori=new Float32Array(bytes.length/2);for(let i=0;i<valori.length;i++)valori[i]=view.getInt16(i*2,true)/32767;
 const N=dati.bones.length,STRIDE=N*4,CONTROL=dati.frames*STRIDE;
@@ -70,6 +72,21 @@ function abbassaEstremo(osso,figlio,y){
   qd.setFromUnitVectors(old,c);osso.getWorldQuaternion(qc).premultiply(qd);mondo(osso,qc);return true;
 }
 const visuali={hip:'bacino',head:'testa',sR:'bracD',sL:'bracS',eR:'avamD',eL:'avamS',hR:'manoD',hL:'manoS',kR:'gambaD',kL:'gambaS',fR:'piedeD',fL:'piedeS'};
+// MANO NELLA FINTA (v0.87, mano-finta.js): con la palla caricata dietro la testa (tenuta del giocatore e sue finte, carica del tiro)
+// il palmo della posa registrata si corregge verso quello del disegno del computer: al cielo dietro la testa («vassoio»), in avanti
+// sopra, in giù davanti con la palla attaccata. Ruota solo l'osso della mano (le dita, figlie, lo seguono); la palla disegnata si
+// rimette sul palmo in pose.js. Il peso entra ed esce in circa 0,05 s, anche al rilascio del tiro.
+const palmoAttuale=new THREE.Vector3(),palmoVoluto=new THREE.Vector3();
+function correggiPalmo(C,p,T,peso){
+  const lato=T.manoS?'S':'D',presa=C.prese?.[lato],normale=C.normaliPrese?.[lato],mano=T.manoS?C.ossa.manoS:C.ossa.manoD;
+  if(!presa||!normale||!mano||!C.ossa.testa)return;
+  presa.getWorldPosition(a);C.ossa.testa.getWorldPosition(b);
+  const n=palmoFinta(((a.x-b.x)*p.fx+(a.z-b.z)*p.fz)/VIS).n,z=T.manoS?-1:1;
+  palmoVoluto.set(n[0]*p.fx-n[2]*z*p.fz,n[1],n[0]*p.fz+n[2]*z*p.fx).normalize();
+  presa.getWorldQuaternion(qc);palmoAttuale.copy(normale).applyQuaternion(qc).normalize();
+  qd.setFromUnitVectors(palmoAttuale,palmoVoluto);qb.identity().slerp(qd,peso);
+  mano.getWorldQuaternion(qc);mondo(mano,qc.premultiply(qb));
+}
 function rotazioneRegistrata(n,s,manoS,out){
   out.copy(s.pose[manoS?n.mirror:n.index]);if(manoS)out.set(-out.x,-out.y,out.z,out.w);
   return out.multiply(n.tail).premultiply(qg);
@@ -77,7 +94,7 @@ function rotazioneRegistrata(n,s,manoS,out){
 export function applicaTiroRegistrato(R,p,T,J,memoria,dt){
   const C=R.corpo,s=C?.tiroRegistrato;if(!s)return false;
   const reset=s.uid!==p.uid||s.numero!==p.num||s.scheda!==p.scheda||s.ultimaPartita!==null&&(memoria.gameTime<s.ultimaPartita||memoria.gameTime-s.ultimaPartita>.25);
-  if(reset){s.peso=s.eta=0;s.attivo=false;s.flight=null;s.tempo=dati.source.start;s.velocita=0;s.ingressoTenuta=s.precedenteValida=false;}
+  if(reset){s.peso=s.eta=0;s.attivo=false;s.flight=null;s.tempo=dati.source.start;s.velocita=0;s.ingressoTenuta=s.precedenteValida=false;s.pesoPalmo=0;}
   s.uid=p.uid;s.numero=p.num;s.scheda=p.scheda;s.ultimaPartita=memoria.gameTime;
   const kind=p.act?.kind||(p.charging?'shot':null),atto=p.act;
   const finta=kind==='fake'&&p.charging&&memoria.hold;
@@ -103,7 +120,9 @@ export function applicaTiroRegistrato(R,p,T,J,memoria,dt){
   }
   s.attivo=attivo;const peso=s.peso*(1-ease(T.oriz||0));
   if(peso<1e-6){ricordaPosa(s,!!memoria.hold);return false;}
-  const lato=T.manoS?-1:1,impulso=finta?impulsoFinta(atto):0,ampiezza=impulso*FINTA_MOVIMENTO.braccio;
+  // v0.87: la finta ampia porta il braccio fino al gesto intero del disegno (la mano passa davanti alla testa e il palmo può girarsi
+  // in giù, MANO_FINTA); la stretta resta a FINTA_MOVIMENTO.braccio come nella v0.76
+  const lato=T.manoS?-1:1,impulso=finta?impulsoFinta(atto):0,ampiezza=impulso*(FINTA_MOVIMENTO.braccio+(1-FINTA_MOVIMENTO.braccio)*(atto?.largo??.5));
   if(finta)for(const n of s.nodi)if(n.latoFinta===lato)n.osso.getWorldQuaternion(n.mondoFinta);
   campionaPosaRegistrata(s.tempo,s.pose);R.g.getWorldQuaternion(qg);
   if(finta){
@@ -137,6 +156,9 @@ export function applicaTiroRegistrato(R,p,T,J,memoria,dt){
     busto.getWorldQuaternion(qc);qd.setFromAxisAngle(up,verso*FINTA_MOVIMENTO.torace*impulso);
     mondo(busto,qc.premultiply(qd));
   }
+  {const carica=p.charging&&memoria.hold||atto&&!atto.done&&atto.t<atto.wind;
+    s.pesoPalmo=(s.pesoPalmo||0)+((carica?MANO_FINTA.plask:0)-(s.pesoPalmo||0))*(1-Math.exp(-Math.max(0,dt)/.05));
+    if(s.pesoPalmo>1e-3)correggiPalmo(C,p,T,s.pesoPalmo*peso);}
   // La radice della registrazione non muove il giocatore. Si adatta la quota
   // alla vasca, mantenendo la forma e la coordinazione della posa completa.
   const O=C.ossa,pv=O.bacino.position;pv.set(0,0,0);
