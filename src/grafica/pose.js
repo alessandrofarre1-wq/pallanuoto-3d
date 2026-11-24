@@ -464,6 +464,12 @@ function articolaVista(p,J,T,t,gestoVista){
       // CENTROBOA CON IL DIFENSORE DIETRO (v0.55, Ale: «la palla non può stare nel dorso della mano: o sta in acqua oppure il
       // giocatore per tenerla in mano si deve girare o tirare una beduina o una sciarpa»): finché non fa un gesto, la palla resta in
       // acqua davanti a lui, con la mano sopra (palmo in giù); girata, beduina e sciarpa sono i gesti che la alzano
+      // RIGORE (v0.84, Ale: «la palla deve partire dall'acqua»): prima del gesto la palla sta in acqua davanti a chi tira, con la mano
+      // sopra (come il centroboa con il difensore dietro); la carica la pesca dall'acqua (PESCA). Solo disegno: p.ballW non cambia.
+      if(game.penalty===p&&!p.charging&&!(p.act&&!p.act.done)){
+        const pl=add3(V['s'+suff],locale(BOA_ACQUA));
+        braccio(lato,pl,locale([-0.2,-0.6,1]),locale([0.12,-1,0.05]),0.15,1-e);
+        T.pallaInAcqua=1-e; T.rigoreAcqua=[pl[0],0.05,pl[2]]; return V; }
       if(fight.active&&fight.boa===p&&fight.def){ const q=fight.def, dx=q.x-p.x, dz=q.z-p.z, l=Math.hypot(dx,dz)||1;
         if((dx*p.fx+dz*p.fz)/l<-0.3){
           braccio(lato,add3(V['s'+suff],locale(BOA_ACQUA)),locale([-0.2,-0.6,1]),locale([0.12,-1,0.05]),0.15,1-e);
@@ -691,6 +697,7 @@ export function updateRig(p,dt,t){
   // per la pesca (v0.63): quanto la palla è in acqua davanti alla testa e dove, nel sistema del giocatore
   p.davantiVista=T.ballHand?(T.ballDavanti||0):0;
   if(p.davantiVista>0) p.pallaDavantiLocale=[Jv.head[0]+0.30,0.05,Jv.head[2]];
+  if(T.rigoreAcqua){ p.davantiVista=1; p.pallaDavantiLocale=T.rigoreAcqua; }      // v0.84: il rigore parte dalla palla in acqua (pesca)
   // LA PALLA NON ENTRA NEGLI ALTRI CORPI (v0.55): se la palla disegnata finisce dentro la testa o il busto di un altro giocatore
   // vicino viene spinta fuori, in orizzontale, fino a toccarlo appena (raggio PALLA_FUORI dal suo asse). Solo disegno.
   if(p.ballVistaW){ const b=p.ballVistaW;

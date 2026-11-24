@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.83). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.84). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -165,6 +165,9 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   ripreso dall'attacco; dopo un tiro respinto il cronometro resta fermo finché qualcuno riprende palla. Espulsione 18 s (rientro
   anticipato su gol o palla riconquistata), terzo fallo grave = fuori per il resto della partita (entra un sostituto); cambi
   illimitati.
+- Rigore v0.84 (Ale; `RIGORE_TIRO`, `controfalloRigore`): la palla parte dall'acqua (galleggia davanti a chi tira, la carica la
+  pesca; solo disegno) e il movimento è continuo: fermo a braccio carico oltre 0,5 s = controfallo, palla al portiere avversario
+  (nella serie finale rigore sbagliato).
 - Rigore dai 5 m con gli altri sulla linea dei 6 ad almeno 3 m dal tiratore; tiro libero: dentro i 6 m si passa, fuori si può
   tirare subito; area di porta (2 m, fino a 2 m oltre i pali): attaccante dentro l'area davanti alla linea della palla = fallo.
   I compagni che entrano troppo presto sotto i2m rientrano nuotando (v0.68), senza correzioni istantanee delle coordinate; il controllo di permanenza irregolare vale per tutti.
@@ -195,7 +198,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.83 — time-out con il portiere a metà campo (Claude Code)
+## Stato v0.84 — rigore con la palla dall'acqua (Claude Code)
 
 Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` v0.77 (Codex, PR #59-#68). Ale (24/11/2026) ha mandato 13 punti. Fatti:
 v0.78 interfaccia (CONTRASTA in difesa, tasti colorati, energia con il cognome; [rapporto](docs/versioni/v078-comandi-interfaccia.md));
@@ -206,9 +209,11 @@ tirate subito, più palla al centroboa; espulsioni 7,8 → 9,8, gol 19,5 → 19,
 [rapporto](docs/versioni/v081-tiri.md)); v0.82 cambi volanti (solo in transizione, zona vicino alla metà campo, niente palla a chi è
 appena entrato lontano, cambi liberi del computer a gioco fermo; sonda `npm run sonda-cambi`;
 [rapporto](docs/versioni/v082-cambi-volanti.md)); v0.83 time-out (palla al portiere a metà campo, squadra già schierata in attacco,
-time-out del computer per l'attacco finale; [rapporto](docs/versioni/v083-timeout.md)). Nelle prove computer contro computer l'Ungheria segna il doppio dell'Italia (26 a 13, già
+time-out del computer per l'attacco finale; [rapporto](docs/versioni/v083-timeout.md)); v0.84 rigore (palla dall'acqua, fermo a
+braccio carico = controfallo; [rapporto](docs/versioni/v084-rigore.md)). Nelle prove computer contro computer l'Ungheria segna il doppio dell'Italia (26 a 13, già
 nella v0.77): nel database le valutazioni medie dei primi 14 sono 83 contro 76. Da rivedere con le rose.
-Prossimi, in quest'ordine: rigore con la palla dall'acqua e il movimento continuo, finte, rose dei giocatori a disposizione dei CT. Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
+Prossimi, in quest'ordine: finte (davanti alla porta veloce ma non troppo; più destra-sinistra, larghe o strette, braccio piegato o
+dritto), rose dei giocatori a disposizione dei CT. Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
 
 **Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.83, `npm run taratura -- --partite=16`): 19,1 gol e 39,0 tiri per squadra
 (veri 13,3 e 33), tiri in gol 48,9% (40%), espulsioni 11,6 (11; dal centro 61%, vero 66%), superiorità 48% (52%), parità: gol 21,1%

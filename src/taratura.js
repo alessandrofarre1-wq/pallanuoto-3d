@@ -204,6 +204,10 @@ export const STANCO=0.82, CON_PALLA=0.93, SPRINT_CONSUMO=0.0098;
 // PRESSING_CONSUMO = fatica al secondo di chi difende a pressing (in più di scatti e contatti; partita.js, prima scritto nel codice).
 // v0.67: 0,012 → 0,008 (sonda degli scatti: anche con meno scatti i giocatori passavano un quarto del tempo sotto la soglia dei cambi).
 export const PRESSING_CONSUMO=0.008;
+// RIGORE (v0.84, Ale: «la palla deve partire dall'acqua e il movimento deve essere continuo, altrimenti controfallo»): chi tira il
+// rigore e resta fermo a braccio caricato (carica piena) per più di «fermo» secondi commette controfallo: palla al portiere (nella
+// serie finale il rigore è sbagliato). Prima si poteva tenere la carica fino a 7 s.
+export const RIGORE_TIRO={ fermo:0.5 };
 // TIME-OUT (v0.83, Ale: «chiamato quando si subisce un break, o negli ultimi minuti per preparare un attacco; i giocatori si
 // schierano nella metà campo avversaria; l'arbitro dà la palla al portiere a metà campo, che la passa al compagno libero e torna in
 // porta nuotando»). finale = negli ultimi «finale» secondi dell'ultimo tempo il computer pari o sotto di un gol chiama il time-out

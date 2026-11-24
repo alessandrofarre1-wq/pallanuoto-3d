@@ -1,3 +1,15 @@
+# Passaggio WATERPOLO7 — v0.84 rigore (Claude Code)
+
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.84.0. Cambia la partita (controfallo del rigore) e il disegno del rigore.
+- `RIGORE_TIRO.fermo` (0,5 s, `src/taratura.js`); in `partita.js`, nel rigore della partita e nella serie finale, `s.fermoRigore`
+  conta i secondi a carica piena con TIRO tenuto: oltre la soglia `controfalloRigore(s)` (nuova, `src/regole.js`: palla al portiere
+  avversario con `freeThrow`, `chiudiAzione('persa')`) o `concludiRigoreFinale(false,'controfallo')` (testo «Controfallo»).
+- `src/grafica/pose.js` (solo disegno): con `game.penalty===p` e nessun gesto la mano va sulla palla in acqua (`BOA_ACQUA`,
+  `T.pallaInAcqua`); `T.rigoreAcqua` imposta `p.davantiVista`/`p.pallaDavantiLocale` così la carica parte con la `PESCA` della v0.63.
+- Prova nuova `npm run rigore` (anche nella CI; `--foto` salva le due immagini). [Rapporto](versioni/v084-rigore.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.83 time-out (Claude Code)
 
 Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.83.0. Cambia la partita (ripresa del time-out, time-out del computer).

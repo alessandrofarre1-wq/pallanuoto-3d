@@ -22,7 +22,8 @@ import { resetDisposizioneTattica } from './entrate.js';
 import { preparaEspulsoAlTempo } from './espulsioni-tempi.js';
 import { formazioneScatto, stessaFormazioneScatto } from './scatto-inizio.js';
 import { leggiRigore } from './decisione-rigore.js';
-import { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI, TIMEOUT } from './taratura.js';      // numeri del bilanciamento
+import { ANTICIPO, ARBITRI, ESPULSIONI, RIGORE_TIRO, RIGORI, TIMEOUT } from './taratura.js';      // numeri del bilanciamento
+export { RIGORE_TIRO };
 export { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI };
 const serieAttiva = () => game.rigoriFinali && !game.rigoriFinali.terminati;
 export function deadBall(t,fn,fermi=null){
@@ -214,8 +215,8 @@ export function setupPenalty(t,tiratore){    // tiro dai 5 metri; tutti gli altr
   }
   for(const lato of [1,-1]) lati[lato].forEach((q,k)=>{ q.x=gx-t.dir*6; q.z=lato*(3+0.95*k); q.fx=t.dir; q.fz=0; q.lagX=q.x; q.lagZ=q.z; });
   ball.daTiro=false;
-  giveBall(s); game.possTeam=t; game.penalty=s; game.penT=0;
-  if(t.human){ setCtrl(s); annuncia('avviso','Rigore: tieni premuto TIRO e rilascia',{p:s,durata:2}); }
+  giveBall(s); game.possTeam=t; game.penalty=s; game.penT=0; s.fermoRigore=0;
+  if(t.human){ setCtrl(s); annuncia('avviso','Rigore: carica e tira in un solo movimento',{p:s,dettaglio:'fermarsi a braccio carico è controfallo',durata:2.2}); }
 }
 
 function azzeraGestiRigori(){
@@ -262,6 +263,19 @@ export function preparaProssimoRigoreFinale(){
     p,dettaglio:`${p.name} · serie ${game.rigoriFinali.gol[0]} – ${game.rigoriFinali.gol[1]}`,durata:2});
 }
 
+// v0.84 (Ale: «rigore: la palla deve partire dall'acqua e il movimento deve essere continuo, altrimenti controfallo»): chi resta fermo
+// a braccio caricato oltre RIGORE_TIRO.fermo secondi commette controfallo: tiro libero al portiere avversario
+export function controfalloRigore(s){
+  if(game.penalty!==s||ball.holder!==s) return false;
+  const d=other(s.team), gk=d.players[0].excluded ? closestTo(d,{x:ownGoalX(d),z:0}) : d.players[0];
+  game.penalty=null; s.charging=false; s.chargeT=0; s.act=null; s.fermoRigore=0;
+  chiudiAzione('persa'); whistle(0.22);
+  annuncia('fallo','Controfallo',{p:s,dettaglio:'rigore: carica e tiro in un solo movimento'});
+  ball.state='dead'; ball.holder=null; ball.vx=ball.vy=ball.vz=0;
+  giveBall(gk); gk.freeThrow=true;
+  deadBall(0.9,null,[s,gk]);
+  return true;
+}
 export function concludiRigoreFinale(gol,esito){
   const serie=game.rigoriFinali;
   if(!serie || !registraRigoreFinale(serie,gol,esito)) return false;
@@ -271,8 +285,8 @@ export function concludiRigoreFinale(gol,esito){
   if(!gol){ ball.vx=ball.vy=ball.vz=0; ball.inRete=false; }
   for(const q of allPlayers){ q.act=null; q.charging=false; q.chargeT=0; }
   whistle(gol?0.35:0.18);
-  annuncia('rigore',gol?'Gol ai rigori':esito==='tempo'?'Rigore non eseguito':'Rigore non trasformato',{
-    p,dettaglio:`${esito==='tempo'?'Sette secondi scaduti · ':''}serie ${serie.gol[0]} – ${serie.gol[1]}${serie.terminati?' · vince '+teams[serie.vincitore].short:''}`,durata:1.8});
+  annuncia('rigore',gol?'Gol ai rigori':esito==='tempo'?'Rigore non eseguito':esito==='controfallo'?'Controfallo':'Rigore non trasformato',{
+    p,dettaglio:`${esito==='tempo'?'Sette secondi scaduti · ':esito==='controfallo'?'movimento interrotto · ':''}serie ${serie.gol[0]} – ${serie.gol[1]}${serie.terminati?' · vince '+teams[serie.vincitore].short:''}`,durata:1.8});
   return true;
 }
 export function sideOut(){        // WA 18/02/2026, 12.3.1: tiro libero contro l'ultimo tocco; 12.3.1.1: muro su tiro alla difesa

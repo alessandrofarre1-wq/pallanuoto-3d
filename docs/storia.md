@@ -10,6 +10,15 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.84 — rigore** (Claude Code, 24/11/2026; rapporto `docs/versioni/v084-rigore.md`). RICHIESTA: Ale, «rigore: la palla deve
+  partire dall'acqua e il movimento deve essere continuo, altrimenti controfallo». CODICE: palla in mano alta fin dal fischio; carica
+  tenibile fino a 7 s. CAMBIAMENTI: `pose.js` (solo disegno): prima del gesto la palla galleggia davanti a chi tira e la carica la
+  pesca (`PESCA` v0.63); `RIGORE_TIRO.fermo` 0,5 s: fermo a braccio carico = `controfalloRigore` (palla al portiere avversario) o,
+  nella serie finale, rigore sbagliato («Controfallo»); avviso nuovo all'inizio del rigore. MISURE: 16 partite computer contro
+  computer identiche alla v0.83 (il computer tira già con un gesto unico). Foto `docs/immagini/v084-rigore-*.png`. PROVA NUOVA `npm
+  run rigore` (6 controlli, anche nella CI). VERIFICHE: lint PASS; prove 66 PASS e 0 FAIL; verifica `--partite=0` superata;
+  aspetto «Tutto a posto». NON FATTO: giudizio di Ale sul gesto.
+
 - **v0.83 — time-out** (Claude Code, 24/11/2026; rapporto `docs/versioni/v083-timeout.md`). RICHIESTA: Ale, «time-out chiamato
   quando si subisce un break, o negli ultimi minuti per preparare un attacco; i giocatori si schierano nella metà campo avversaria;
   l'arbitro dà la palla al portiere a metà campo, che la passa al compagno libero e torna in porta nuotando». CODICE: alla ripresa
