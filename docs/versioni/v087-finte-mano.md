@@ -60,7 +60,50 @@ guarda il palmo (+1 al cielo, −1 in giù). Sulla v0.86:
    gesto attraverso il corpo va da sinistra a destra).
 
 ## Misure
-MISURE_V087
+### Mano (strumento `npm run finte-mano-foglio`; palmo +1 al cielo, −1 in giù)
+Foglio `docs/immagini/v087-finte-mano.png` (sette finte di lato in sei momenti); prima e dopo in
+`docs/immagini/v087-finte-mano-prima-dopo.png`.
+
+| | v0.86 | v0.87 |
+|---|---|---|
+| computer, palla dietro la testa: palmo in media | 0,56-0,82 | 0,94-1,00 |
+| computer, mano davanti alla testa (finta ampia a braccio dritto) | −0,72 | −0,67 |
+| computer, fine della finta | palla davanti al viso, palmo in giù (−0,67) | palla 64 cm dietro la testa, palmo al cielo (1,00) |
+| tenuta di TIRO, palla dietro la testa: palmo in media | 0,48-0,54 | 0,93-0,95 |
+| tenuta di TIRO, finta ampia: la mano passa davanti alla testa di | 6 cm, palmo mai in giù | 11 cm, palmo in giù (−0,85) |
+| palla attaccata: centro della palla dal palmo | 10,4-11 cm | 10,4-11 cm |
+
+Le sole modifiche del disegno non cambiano la partita: `aspetto --confronta` tra la v0.86 e la build con mano, ritorno e tenuta nuovi
+(prima del marchio di fabbrica) dà «partita simulata identica».
+
+### Finte del computer (`npm run sonda-finte`, 2 partite ITA–HUN; v0.85: 4 partite)
+| | v0.85 | v0.87 |
+|---|---|---|
+| finte per squadra a partita | 37,0 | 35,8 |
+| dall'inizio della finta al gesto dopo (metà dei casi) | 1,05 s | 1,03 s |
+| tra 5 e 7 m: ritorno del braccio interrotto | 4% | 6% |
+| da destra verso sinistra / da sinistra verso destra / avanti e indietro | 65 / 0 / 35 (la regola) | 49 / 19 / 32 |
+| nel verso più frequente del giocatore (chi ne fa almeno 6) | – | 73% (10 giocatori) |
+
+### Gioco contro realtà (16 partite ITA–HUN, per squadra a partita)
+| voce | v0.86 | v0.87 | reale |
+|---|---|---|---|
+| tiri | 39,1 | 40,1 | 33 |
+| gol | 19,4 | 19,4 | 13,3 |
+| gol dell'Italia / dell'Ungheria | 13,4 / 25,5 | 13,3 / 25,5 | |
+| tiri in gol | 49,8% | 48,4% | 40% |
+| espulsioni | 11,5 | 10,8 (a posto) | 11 |
+| espulsioni dalla lotta al centro | 55,0% | 57,1% | 66% |
+| superiorità trasformate | 45,8% | 47,0% (a posto) | 52% |
+| rigori | 1,6 | 2,2 (a posto) | 1,8 |
+| azioni a partita | 74,3 | 73,8 | 50 |
+| parità: durata dell'azione | 12,9 s | 13,1 s | 21 s |
+| parità: espulsione procurata | 18,3% | 16,8% | 22% |
+| palla in mano prima del passaggio | 1,01 s | 1,01 s | 0,6-1 s |
+| voci a posto | 6 su 15 | 5 su 15 | |
+
+L'equilibrio non cambia: gol identici, le altre voci dentro le oscillazioni di 16 partite. L'espulsione procurata in parità (18,3% →
+16,8%) esce dalla fascia per poco ed è la voce a posto in meno.
 
 ## Prove
 - **Nuova `npm run finte-mano`** (`tests/finte-v087.mjs`, anche nella CI), tredici controlli: palla dietro la testa = palmo al cielo e

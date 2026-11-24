@@ -225,9 +225,16 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.86 — rose (Claude Code)
+## Stato v0.87 — finte: mano e marchio di fabbrica (Claude Code)
 
-Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` v0.77 (Codex, PR #59-#68). Ale (24/11/2026) ha mandato 13 punti. Fatti:
+v0.87 (dopo la PR #69 con le versioni v0.78-v0.86, unita in `main` e pubblicata): Ale, guardando il foglio delle forme della finta,
+ha chiesto il palmo al cielo con la palla dietro la testa e in giù davanti, le finte nei due sensi o avanti e indietro per tutte le finte,
+e la finta come marchio di fabbrica di ogni giocatore. Fatto (regole sopra, finte v0.87; [rapporto](docs/versioni/v087-finte-mano.md)):
+palmo che segue la mano (solo disegno, partita identica), ritorno della finta alla carica, verso/larghezza/braccio di ogni giocatore
+(nel complesso 49% da destra verso sinistra, 19% da sinistra verso destra, 32% avanti e indietro nella sonda), scheda con la finta;
+equilibrio della partita invariato (gol 19,4, Italia 13,3 e Ungheria 25,5).
+
+Prima (stessa giornata, PR #69): ramo ripartito da `main` v0.77 (Codex, PR #59-#68). Ale (24/11/2026) ha mandato 13 punti. Fatti:
 v0.78 interfaccia (CONTRASTA in difesa, tasti colorati, energia con il cognome; [rapporto](docs/versioni/v078-comandi-interfaccia.md));
 v0.79 passaggi (morbido o teso, compagno puntato, levetta tenuta; [rapporto](docs/versioni/v079-passaggi.md)); v0.80 scambi di
 marcatura nei rientri (controfughe 2,5 → 1,9, gol 20,8 → 19,5, superiorità 47% → 42%; [rapporto](docs/versioni/v080-cambi-marcatura.md));
@@ -244,11 +251,11 @@ della partita invariato; [rapporto](docs/versioni/v085-finte.md)); v0.86 rose (t
 computer l'Ungheria segna più del doppio dell'Italia: nel database le valutazioni medie sono 84 contro 76 (forza del ranking).
 Prossimo: il bilanciamento (sotto). Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
 
-**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.86, `npm run taratura -- --partite=16`): 19,4 gol e 39,1 tiri per squadra
-(veri 13,3 e 33; Italia 13,4, Ungheria 25,5), tiri in gol 49,8% (40%), espulsioni 11,5 (11; dal centro 55%, vero 66%), superiorità
-46% (52%), parità: gol 21,7% delle azioni (6-19%), espulsione procurata 18,3% (22%), durata 12,9 s (21), azioni 74 (50); 6 voci su 15
+**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.87, `npm run taratura -- --partite=16`): 19,4 gol e 40,1 tiri per squadra
+(veri 13,3 e 33; Italia 13,3, Ungheria 25,5), tiri in gol 48,4% (40%), espulsioni 10,8 (11; dal centro 57%, vero 66%), superiorità
+47% (52%), parità: gol 22,6% delle azioni (6-19%), espulsione procurata 16,8% (22%), durata 13,1 s (21), azioni 74 (50); 5 voci su 15
 a posto. Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
 partite); Codex misurava 16,1 e 41,4 nella v0.70 e 17,4 e 43,3 nella v0.71 (8 partite, passaggio di consegne v0.71); v0.77 20,5 e
-42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4, v0.82 20,2 e 41,0, v0.83-v0.84 19,1 e 39,0, v0.85 19,3 e 39,3 (16 partite).
+42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4, v0.82 20,2 e 41,0, v0.83-v0.84 19,1 e 39,0, v0.85 19,3 e 39,3, v0.86 19,4 e 39,1 (16 partite).
 
 Stato precedente (v0.77, Codex): avvio fluido della finta, [rapporto](docs/versioni/v077-avvio-finta.md).
