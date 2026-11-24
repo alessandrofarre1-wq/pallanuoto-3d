@@ -46,16 +46,17 @@ prova(a.gesto === 'polso' && a.finte === 0, `un tocco e rilascio su TIRO = polso
 await prepara(); await premi(); await pg.evaluate(() => window.__salta(180)); const b = await stato();
 prova(b.tiene && b.finte >= 3, `TIRO tenuto = finte continue con la palla in mano (${b.finte})`);
 await rilascia();
-// v0.59 (video di Dénes Varga; Ale: «sposta sia il difensore che il portiere»): finte di lato verso un palo, alternando; il portiere
-// che abbocca alla finta di lato si sposta verso quel palo. v0.85 (Ale: «avanti-indietro ma più spesso destra-sinistra»): anche la
-// prima può andare di lato (prima era sempre dritta) e con la levetta inclinata va da quella parte già dalla prima.
+// v0.59 (video di Dénes Varga; Ale: «sposta sia il difensore che il portiere»): il portiere che abbocca alla finta di lato si sposta
+// verso quel palo. v0.85 (Ale: «avanti e indietro ma, più frequentemente, da destra verso sinistra»): la finta di lato attraversa il
+// corpo (per un destro verso la sua sinistra, per un mancino al contrario), anche la prima; con la levetta inclinata va da quella parte.
 await prepara(); await premi();
-const lati = await pg.evaluate(() => { const p=window.__pallanuoto.teams[0].players[4],lati=[]; let contate=0;
-  for(let i=0;i<300&&lati.length<3;i++){ window.__salta(1); if(p.fakeCount>contate){contate=p.fakeCount;lati.push(p.fintaLatoGesto||0);} } return lati; });
+const lati = await pg.evaluate(() => { const H=window.__pallanuoto,p=H.teams[0].players[4],lati=[]; let contate=0;
+  for(let i=0;i<420&&lati.length<4;i++){ window.__salta(1); if(p.fakeCount>contate){contate=p.fakeCount;lati.push(p.fintaLatoGesto||0);} }
+  return { lati, attraverso:(p.mano==='S'?1:-1)*p.team.dir }; });
 await rilascia();
-const laterali = lati.filter(l => l !== 0);
-prova(lati.length === 3 && laterali.length >= 2 && lati.slice(1).every(l => l !== 0) && laterali.every((l, i) => i === 0 || l === -laterali[i - 1]),
-  `finte: di lato verso un palo, alternando (${lati.join(', ')})`);
+const laterali = lati.lati.filter(l => l !== 0);
+prova(lati.lati.length === 4 && laterali.length >= 2 && laterali.every(l => l === lati.attraverso),
+  `finte: di lato da destra verso sinistra, attraverso il corpo (${lati.lati.join(', ')}; attraverso = ${lati.attraverso})`);
 await prepara();
 await pg.evaluate(() => window.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowDown' })));
 await premi();

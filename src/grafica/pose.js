@@ -327,23 +327,21 @@ export const ACCOMPAGNA={ shot:[0.54,0.20,-0.08], torsione:[0.50,0.18,-0.20], po
 // passaggio di lato (v0.63): quota dell'angolo verso il compagno fatta girando il busto (opposto = dalla parte opposta al braccio che
 // passa, stesso = dalla sua parte), giro massimo del busto e della testa (rad)
 export const PASSAGGIO_VISTA={ opposto:0.7, stesso:0.35, max:1.1, testa:1.3 };
-// FORMA DELLA FINTA (v0.85, Ale: «finte larghe o strette, braccio piegato o dritto»). Solo disegno, scelta a ogni finta con il caso
-// della grafica: larghezza = tendenza dello stile personale (finte.js, largo) ± varia/2, più stretta di «stretta» entro «vicino» metri
-// dalla porta (da 2 m prima). Braccio dritto: il braccio si distende, verso l'alto nella stretta («dritto», arco corto) e verso la
-// porta nella larga («dritto2», arco lungo); piegato: il gomito resta piegato e l'avambraccio spinge la mano di «piegato» (× 0,7-1,3
-// con la larghezza) davanti alla carica, al massimo a «raggio» dalla spalla (gomito a circa 90°). La larga gira di più il busto
-// (torsione × 0,75-1,25) e nella finta di lato porta il braccio più verso il palo (FINTA_LATO.gesto × 0,55-1,45); a braccio piegato la
-// mano, vicina alla testa, si sposta anche di lato di «latoPiegato» × (0,5 + larghezza) metri (girare il braccio raccolto non basta).
-export const FINTA_FORMA={ varia:0.5, vicino:6, stretta:0.25, dritto:[0.04,0.60,0.06], dritto2:[0.26,0.56,0.04], piegato:[0.16,0.05,0.03], raggio:0.43, latoPiegato:0.1 };
+// FORMA DELLA FINTA (v0.85, Ale: «movimenti stretti e veloci o più ampi e lenti e con il braccio teso o piegato»). La larghezza e i
+// tempi li decide il gioco a ogni finta (a.largo, tiri.js startAct, FINTA_AMPIEZZA in taratura.js); qui solo il disegno, con il caso
+// della grafica per il braccio. Braccio dritto: il braccio si distende, verso l'alto nella stretta («dritto», arco corto) e verso la
+// porta nell'ampia («dritto2», arco lungo); piegato: il gomito resta piegato e l'avambraccio spinge la mano di «piegato» (× 0,7-1,3 con
+// la larghezza) davanti alla carica, al massimo a «raggio» dalla spalla (gomito a circa 90°). L'ampia gira di più il busto (torsione
+// × 0,75-1,25) e nella finta di lato, da destra verso sinistra, porta il braccio più in là (FINTA_LATO.gesto × 0,55-1,45); a braccio
+// piegato la mano, vicina alla testa, si sposta anche di lato di «latoPiegato» × (0,5 + larghezza) metri.
+export const FINTA_FORMA={ dritto:[0.04,0.60,0.06], dritto2:[0.26,0.56,0.04], piegato:[0.16,0.05,0.03], raggio:0.43, latoPiegato:0.1 };
 const formeFinta=new WeakMap();      // una forma per ogni gesto di finta (la memoria è del disegno, non del giocatore)
 export function formaFinta(p,a){
   let f=formeFinta.get(a); if(f) return f;
   // solo per i fogli di foto e le prove (strumenti/finte-forme-foglio.mjs, tests/finte-v085.mjs, tests/finta-fluida-v076.mjs): una
-  // forma scelta a mano
-  if(typeof window!=='undefined'&&window.__formaFinta){ f={...window.__formaFinta}; formeFinta.set(a,f); return f; }
-  const st=fintaDi(p), dGoal=Math.hypot(goalX(p.team)-p.x,p.z), vicino=clamp((FINTA_FORMA.vicino-dGoal)/2,0,1);
-  const largo=clamp((st.largo??0.5)+(rndGrafica()-0.5)*FINTA_FORMA.varia-FINTA_FORMA.stretta*vicino,0,1);
-  f={ largo, piegato:rndGrafica()<(st.piegato??0.4) };
+  // forma scelta a mano (la larghezza vale anche per i tempi, tiri.js)
+  const forzata=typeof window!=='undefined'?window.__formaFinta:null;
+  f={ largo:a.largo??forzata?.largo??0.5, piegato:forzata?forzata.piegato:rndGrafica()<(fintaDi(p).piegato??0.4) };
   formeFinta.set(a,f); return f;
 }
 // ricezione (v0.63): chi aspetta un passaggio gira la testa verso la palla in volo, fino a RICEZIONE_TESTA rad
@@ -416,7 +414,7 @@ function articolaVista(p,J,T,t,gestoVista){
   const a=attoVista(p,hold);
   const kind=a?.kind||(p.charging?shotKind(p):null), th=kind?(THROW[kind]||THROW.shot):null;
   const fr=a?.frusta||0.18, tt=a?a.t-a.wind:0, carica=gestoVista.carica;
-  const volo=a?clamp(tt/fr,0,1):0, chiude=a?clamp((tt-fr)/0.36,0,1):0;
+  const volo=a?clamp(tt/fr,0,1):0, chiude=a?clamp((tt-fr)/(a.recupero??0.36),0,1):0;
   const tiro=T.tiroVista=raccordaCatenaTiroVista(gestoVista,kind==='shot',carica,volo,chiude,lato,e);
   const suff=lato>0?'R':'L', locale=v=>[v[0],v[1],v[2]*lato];
   if(th) T['morbido'+suff]=0.2; else if(hold) T['morbido'+suff]=Math.min(T['morbido'+suff],0.45);

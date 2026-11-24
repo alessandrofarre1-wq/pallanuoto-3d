@@ -194,10 +194,16 @@ export const FIRMA=Object.freeze({ entro:1.6, sorpresa:0.08, intercetto:0.7 });
 // sposta il braccio da quella parte (muro × lontano sul lato opposto, × vicino sullo stesso); il portiere si sposta di «portiere»
 // metri verso quel palo e para meno sul lato opposto (parataLontano) e un po' di più sullo stesso (parataVicino); gesto =
 // rotazione del braccio di lato (solo disegno).
-// prima (v0.85, Ale: «avanti-indietro ma più spesso destra-sinistra») = probabilità che anche la PRIMA finta vada di lato (prima era
-// sempre dritta: nelle partite del computer 98 finte su 100 erano la prima, quindi quasi tutte dritte); con la levetta inclinata il
-// giocatore la manda da quella parte già dalla prima. Dalla seconda resta sempre di lato, alternando.
-export const FINTA_LATO={ durata:1.1, portiere:0.45, lontano:0.4, vicino:1.15, parataLontano:0.35, parataVicino:0.08, gesto:0.5, prima:0.65 };
+// quota (v0.85, Ale: «la finta di tiro può essere fatta sia mandando la palla avanti e indietro ma, più frequentemente, da destra verso
+// sinistra») = quante finte su cento vanno di lato, da destra verso sinistra attraverso il corpo (per un mancino da sinistra verso
+// destra); le altre avanti e indietro verso la porta. Con la levetta inclinata il giocatore sceglie il lato. Prima la prima finta era
+// sempre dritta e dalla seconda si alternavano i due pali: nelle partite del computer 98 finte su 100 erano la prima, quasi tutte dritte.
+export const FINTA_LATO={ durata:1.1, portiere:0.45, lontano:0.4, vicino:1.15, parataLontano:0.35, parataVicino:0.08, gesto:0.5, quota:0.65 };
+// AMPIEZZA DELLE FINTE (v0.85, Ale: «in generale può essere fatta con movimenti stretti e veloci o più ampi e lenti»). A ogni finta la
+// larghezza (0 stretta, 1 ampia) = tendenza dello stile personale (finte.js, largo) ± varia/2; entro «vicino» metri dalla porta più
+// stretta di «stretta» (da 2 m prima: davanti alla porta finte veloci). Stretta = veloce: i tempi minimi della v0.76 (FINTA_MOVIMENTO:
+// preparazione 0,16 s, accenno 0,18 s, ritorno 0,36 s); ampia = lenta: fino a «preparazione», «accenno» e «ritorno» secondi in più.
+export const FINTA_AMPIEZZA={ varia:0.5, vicino:6, stretta:0.25, preparazione:0.10, accenno:0.10, ritorno:0.12 };
 // RITMO DELLE FINTE (v0.85, Ale: «davanti alla porta finta veloce ma non troppo»; «ora quelle vicino alla porta sono troppo veloci,
 // vanno rallentate»). Video di Dénes Varga (v0.58): finta larga circa 0,6 s tra andata e ritorno, tiro circa 0,2 s dopo la ricarica.
 // Prima il computer partiva con il gesto successivo (quasi sempre un passaggio) a metà del ritorno del braccio: 0,50 s in media

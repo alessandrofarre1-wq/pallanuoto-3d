@@ -10,8 +10,8 @@
 // FIRMA (scelta di Ale: «piccolo vantaggio»): chiudere la finta con il suo seguito entro FIRMA.entro secondi spiazza un po' di più
 // portiere e difensori (sorpresa del tiro, oppure passaggio più difficile da intercettare). Numeri FIRMA e FINTA_LATO in taratura.js.
 import { game } from './stato.js';
-import { FINTA_LATO, FINTA_RITMO, FIRMA } from './taratura.js';      // numeri del bilanciamento
-export { FINTA_LATO, FINTA_RITMO, FIRMA };
+import { FINTA_AMPIEZZA, FINTA_LATO, FINTA_RITMO, FIRMA } from './taratura.js';      // numeri del bilanciamento
+export { FINTA_AMPIEZZA, FINTA_LATO, FINTA_RITMO, FIRMA };
 export const FINTE=Object.freeze({
   larga:  { alza:0.03, nome:'larga',      wind:0.20, largo:0.85, piegato:0.1, vista:[-0.50,0.50,0.22], torsione:1.25, pausa:[0.5,0.8],  max:2, seguito:'shot',  scarico:0.3,
             descr:'lenta e larga, braccio teso, poi tiro forte' },

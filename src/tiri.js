@@ -3,7 +3,7 @@ import { registraTiroReplay } from './replay.js';
 import { azioneAperta, registraTiro, tipoDiTiro } from './statistiche.js';
 import { controllaInterferenza } from './regole.js';
 import { annuncia } from './cronaca.js';
-import { FINTA_LATO, FINTA_RITMO, FIRMA, firma } from './finte.js';
+import { FINTA_AMPIEZZA, FINTA_LATO, FINTA_RITMO, FIRMA, fintaDi, firma } from './finte.js';
 import { FINTA_MOVIMENTO } from './finta-movimento.js';
 import { ALZATA, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, paloUomo, postoPortiere, setteControSei, viciniUomo } from './ia.js';
@@ -30,16 +30,27 @@ export function startAct(p,kind,wind,fn,aim){
   if(kind!=='colonnello'&&kind!=='schizzo') wind+=(kind==='pass'?0.4:1)*ALZATA*(p.oriz||0);
   // "frusta" = tempo dal braccio caricato al rilascio. Dati riportati nella tesi Patumi (Melchiorri 2015): 166 ms per i
   // professionisti, 189 ms per i semi-professionisti: chi tira meglio rilascia prima. Passaggio e finta sono gesti più corti.
-  if(kind==='fake')wind=Math.max(wind,FINTA_MOVIMENTO.anticipazione);
-  const frusta = kind==='fake'?FINTA_MOVIMENTO.frusta:kind==='pass' ? 0.09 : kind==='polso' ? 0.11 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
-  // finta di lato (v0.59, finte.js FINTA_LATO): verso un palo, scelto con la levetta o alternato. v0.85 (Ale: «più spesso
-  // destra-sinistra»): anche la prima va di lato, con la levetta sempre, altrimenti FINTA_LATO.prima volte su cento (prima era sempre
-  // dritta). Il gesto successivo parte solo a braccio tornato carico, più FINTA_RITMO.attesa (ia.js, aiCarrier; controllo.js).
-  if(kind==='fake'){ let lato=0;
-    if((p.fakeCount||0)>0||p.fintaLatoVoluto||rnd()<FINTA_LATO.prima){ lato=p.fintaLatoVoluto||(p.ultimoLatoFinta?-p.ultimoLatoFinta:(rnd()<0.5?1:-1)); p.ultimoLatoFinta=lato; }
-    p.fintaLatoGesto=lato; p.fintaLatoVoluto=0;
-    p.fintaPronto=game.time+wind+frusta+FINTA_MOVIMENTO.recupero+FINTA_RITMO.attesa; }
-  p.act={t:0,kind,wind,frusta,fn,aim,done:false,potenza:p.charging?Math.min(1,p.chargeT/0.9):0}; p.charging=false; p.chargeT=0;
+  // FINTE (v0.85, Ale: «avanti e indietro ma, più frequentemente, da destra verso sinistra; movimenti stretti e veloci o più ampi e
+  // lenti»). Larghezza a ogni finta (FINTA_AMPIEZZA, finte.js): la stretta ha i tempi minimi della v0.76 (FINTA_MOVIMENTO), l'ampia
+  // prepara, accenna e torna più lentamente; davanti alla porta più strette. Lato (FINTA_LATO.quota): da destra verso sinistra
+  // attraverso il corpo (per un mancino al contrario), oppure avanti e indietro (lato 0); con la levetta il giocatore sceglie il palo.
+  // Il gesto successivo parte solo a braccio tornato carico più FINTA_RITMO.attesa (p.fintaPronto: ia.js aiCarrier, controllo.js).
+  let largo=null, recupero=0.36;
+  if(kind==='fake'){
+    const A=FINTA_AMPIEZZA, forzata=typeof window!=='undefined'?window.__formaFinta:null;      // forma scelta a mano: solo strumenti e prove
+    const vicino=clamp((A.vicino-Math.hypot(gx-p.x,p.z))/2,0,1);
+    largo=forzata?.largo??clamp((fintaDi(p).largo??0.5)+(rnd()-0.5)*A.varia-A.stretta*vicino,0,1);
+    wind=Math.max(wind,FINTA_MOVIMENTO.anticipazione+A.preparazione*largo);
+    recupero=FINTA_MOVIMENTO.recupero+A.ritorno*largo;
+  }
+  const frusta = kind==='fake'?FINTA_MOVIMENTO.frusta+FINTA_AMPIEZZA.accenno*largo:kind==='pass' ? 0.09 : kind==='polso' ? 0.11 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
+  let pronto;
+  if(kind==='fake'){
+    const lato=p.fintaLatoVoluto||(rnd()<FINTA_LATO.quota?(p.mano==='S'?1:-1)*p.team.dir:0);
+    p.fintaLatoGesto=lato; p.fintaLatoVoluto=0; if(lato) p.ultimoLatoFinta=lato;
+    pronto=wind+frusta+recupero+FINTA_RITMO.attesa; p.fintaPronto=game.time+pronto;
+  }
+  p.act={t:0,kind,wind,frusta,recupero,largo,pronto,fn,aim,done:false,potenza:p.charging?Math.min(1,p.chargeT/0.9):0}; p.charging=false; p.chargeT=0;
   if(diSchiena(kind)) p.tiriDiSchiena=(p.tiriDiSchiena||0)+1;
 }
 // tiri del centroboa spalle alla porta
@@ -49,7 +60,7 @@ export function updateActs(dt){
     const a=p.act; if(!a) continue;
     a.t+=dt;
     if(!a.done && a.t>=a.wind+a.frusta){ a.done=true; if(ball.holder===p && game.state==='play') a.fn(); }
-    if(a.t>a.wind+a.frusta+0.36) p.act=null;
+    if(a.t>a.wind+a.frusta+(a.recupero??0.36)) p.act=null;
   }
 }
 // La chiusura già rilasciata continua nella pausa regolamentare. Nessuna
@@ -58,7 +69,7 @@ export function updateRecuperi(dt){
   for(const p of allPlayers){
     const a=p.act; if(!a?.done) continue;
     a.t+=dt;
-    if(a.t>a.wind+a.frusta+0.36) p.act=null;
+    if(a.t>a.wind+a.frusta+(a.recupero??0.36)) p.act=null;
   }
 }
 export function launch(p,tx,ty,tz,t,kind,giriVoluti){

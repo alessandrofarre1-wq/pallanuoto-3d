@@ -7,7 +7,6 @@ import { fightOn, girata } from './lotta.js';
 import { contrasto, doFake } from './regole.js';
 import { FINTA_RITMO, fintaDi } from './finte.js';
 import { TIRO_COMANDO } from './tiro-comando.js';
-import { FINTA_MOVIMENTO } from './finta-movimento.js';
 import { aggiornaQte, occasioneControfuga, tiroSpeciale } from './controfuga.js';
 import { ball, ctrl, fight, game, goalX, ownGoalX, setCtrl, teams } from './stato.js';
 import { diSchiena, doPass, doShoot, humanPassTarget, shotKind, startAct } from './tiri.js';
@@ -77,7 +76,7 @@ function aggiornaTiroTenuto(p,dt,passa,lob){
       }
     });
     // v0.85: la finta dopo parte a braccio tornato carico più FINTA_RITMO.attesa (prima 0,12 s), come per il computer
-    c.act=p.act;c.prossimaFinta=game.time+Math.max(TIRO_COMANDO.pausaFinta,p.act.wind+p.act.frusta+FINTA_MOVIMENTO.recupero+FINTA_RITMO.attesa);
+    c.act=p.act;c.prossimaFinta=game.time+Math.max(TIRO_COMANDO.pausaFinta,p.act.wind+p.act.frusta+p.act.recupero+FINTA_RITMO.attesa);
     p.charging=true;p.chargeT=carica;
   }
   return true;

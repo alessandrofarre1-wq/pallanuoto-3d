@@ -3,7 +3,8 @@
 // 1. Computer: dopo una finta il gesto successivo (finta, tiro o passaggio) parte solo a braccio tornato carico più
 //    FINTA_RITMO.attesa (prima partiva alla fine dell'accenno, a metà del ritorno).
 // 2. Giocatore che tiene TIRO: una finta dopo l'altra a braccio tornato carico più la stessa attesa (almeno 0,9 s).
-// 3. La prima finta va di lato circa due volte su tre (FINTA_LATO.prima; prima era sempre dritta).
+// 3. Le finte vanno di lato da destra verso sinistra circa due volte su tre (FINTA_LATO.quota), le altre avanti e indietro; strette
+//    e veloci o ampie e lente (FINTA_AMPIEZZA), più strette davanti alla porta.
 // 4. Disegno: finte a braccio dritto e a braccio piegato, larghe e strette.
 // Uso: node tests/finte-v085.mjs [--no-build]
 import { chromium } from 'playwright';
@@ -53,7 +54,7 @@ for (let k = 0; k < 6; k++) {
     // decisione già pronta (tiro dopo la finta, nessuna pausa personale): senza la regola v0.85 il gesto dopo partirebbe a fine accenno
     Object.assign(p, { shootNext: true, decideT: 0, scaricoDopoFinta: false });
     H.prova.startAct(p, 'fake', 0.16, () => {});
-    const a = p.act, t0 = g.time, attesa = a.wind + a.frusta + 0.36 + 0.2;
+    const a = p.act, t0 = g.time, attesa = a.wind + a.frusta + a.recupero + 0.2;
     let dopo = null;
     for (let i = 0; i < 150 && !dopo; i++) {
       window.__salta(1);
@@ -74,22 +75,36 @@ await pg.evaluate(() => window.dispatchEvent(new KeyboardEvent('keydown', { code
 const umano = await pg.evaluate(() => {
   const H = window.__pallanuoto, g = H.game, p = H.teams[0].players[4], inizi = [];
   let ultimo = null;
-  for (let i = 0; i < 60 * 4 && inizi.length < 3; i++) { window.__salta(1); if (p.act && p.act !== ultimo && p.act.kind === 'fake') { ultimo = p.act; inizi.push({ t: g.time, durata: p.act.wind + p.act.frusta }); } }
+  for (let i = 0; i < 60 * 4 && inizi.length < 3; i++) { window.__salta(1); if (p.act && p.act !== ultimo && p.act.kind === 'fake') { ultimo = p.act; inizi.push({ t: g.time, durata: p.act.wind + p.act.frusta + p.act.recupero }); } }
   return { tiene: H.ball.holder === p, inizi: inizi.map(x => ({ t: +x.t.toFixed(3), durata: +x.durata.toFixed(3) })) };
 });
 await pg.evaluate(() => window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyK' })));
 const intervalli = umano.inizi.slice(1).map((x, i) => +(x.t - umano.inizi[i].t).toFixed(3));
-prova(umano.inizi.length === 3 && intervalli.every((d, i) => d >= umano.inizi[i].durata + 0.36 + 0.2 - 1 / 60 - 1e-6 && d >= 0.9 - 1 / 60),
+prova(umano.inizi.length === 3 && intervalli.every((d, i) => d >= umano.inizi[i].durata + 0.2 - 1 / 60 - 1e-6 && d >= 0.9 - 1 / 60),
   `giocatore che tiene TIRO: una finta ogni ${intervalli.join(' e ')} s (accenno + ritorno + attesa, almeno 0,9 s)`);
 
-// 3. la prima finta di lato circa due volte su tre
+// 3. di lato da destra verso sinistra (attraverso il corpo) circa due volte su tre, le altre avanti e indietro
 await prepara(1, false, null);
 const lati = await pg.evaluate(() => {
-  const H = window.__pallanuoto, p = H.teams[1].players[4]; let laterali = 0;
-  for (let k = 0; k < 80; k++) { Object.assign(p, { act: null, fakeCount: 0, ultimoLatoFinta: 0, fintaLatoVoluto: 0 }); H.prova.startAct(p, 'fake', 0.16, () => {}); if (p.fintaLatoGesto) laterali++; }
-  p.act = null; return laterali / 80;
+  const H = window.__pallanuoto, p = H.teams[1].players[4], attraverso = (p.mano === 'S' ? 1 : -1) * p.team.dir; let laterali = 0, giuste = 0;
+  for (let k = 0; k < 80; k++) { Object.assign(p, { act: null, fakeCount: 0, fintaLatoVoluto: 0 }); H.prova.startAct(p, 'fake', 0.16, () => {}); if (p.fintaLatoGesto) { laterali++; if (p.fintaLatoGesto === attraverso) giuste++; } }
+  p.act = null; return { quota: laterali / 80, giuste, laterali };
 });
-prova(lati > 0.5 && lati < 0.8, `la prima finta va di lato ${Math.round(lati * 100)} volte su 100 (FINTA_LATO.prima 65; prima mai)`);
+prova(lati.quota > 0.5 && lati.quota < 0.8 && lati.giuste === lati.laterali,
+  `finte di lato ${Math.round(lati.quota * 100)} volte su 100 (FINTA_LATO.quota 65), tutte da destra verso sinistra attraverso il corpo (${lati.giuste} su ${lati.laterali})`);
+
+// 3b. stretta e veloce, ampia e lenta: lo stile a raffica (stretto) contro lo stile largo, e la stessa finta vicino e lontano dalla porta
+const tempi = async (stile, metri) => { await prepara(1, false, stile); return pg.evaluate(metri => {
+  const H = window.__pallanuoto, p = H.teams[1].players[4], gx = 12.5 * p.team.dir, out = { accenno: 0, ritorno: 0, largo: 0 };
+  p.x = gx - p.team.dir * metri; p.z = 0;
+  for (let k = 0; k < 60; k++) { Object.assign(p, { act: null, fakeCount: 0, oriz: 0 }); H.prova.startAct(p, 'fake', 0.04, () => {}); const a = p.act; out.accenno += (a.wind + a.frusta) / 60; out.ritorno += a.recupero / 60; out.largo += a.largo / 60; }
+  p.act = null; for (const k in out) out[k] = +out[k].toFixed(3); return out;
+}, metri); };
+const stretta = await tempi('raffica', 8), ampia = await tempi('larga', 8), vicinoPorta = await tempi('larga', 3.5);
+prova(ampia.accenno >= stretta.accenno + 0.08 && ampia.ritorno >= stretta.ritorno + 0.05 && stretta.accenno <= 0.4,
+  `stretta e veloce, ampia e lenta: accenno ${stretta.accenno} contro ${ampia.accenno} s, ritorno ${stretta.ritorno} contro ${ampia.ritorno} s`);
+prova(vicinoPorta.largo <= ampia.largo - 0.15 && vicinoPorta.accenno < ampia.accenno,
+  `davanti alla porta più strette e veloci: larghezza ${vicinoPorta.largo} a 3,5 m contro ${ampia.largo} a 8 m (accenno ${vicinoPorta.accenno} s)`);
 
 // 4. disegno (giocatore che tiene TIRO, stile a raffica). Si misura l'angolo del gomito disegnato al culmine di ogni finta (180° =
 // braccio disteso) e quanto la mano va di lato: le quattro forme scelte a mano (window.__formaFinta, come nel foglio delle foto),

@@ -26,15 +26,20 @@ Il giocatore che tiene TIRO faceva una finta ogni 0,82 s (accenno 0,34 s, ritorn
    tiro o passaggio. Vale per il computer e per il giocatore che tiene TIRO (prima 0,12 s). Il rilascio di TIRO tira sempre subito,
    anche durante la finta: il comando del giocatore non aspetta. La palombella dopo la finta del computer parte a braccio tornato
    carico.
-2. **Più destra-sinistra** (`FINTA_LATO.prima` = 0,65): anche la prima finta va di lato verso un palo, 65 volte su 100 (prima mai);
-   con la levetta inclinata il giocatore la manda da quella parte già dalla prima. Dalla seconda resta sempre di lato, alternando.
-   Chi abbocca si sposta verso quel palo come nella v0.59.
-3. **Larghe o strette, braccio piegato o dritto** (solo disegno, `FINTA_FORMA` e `formaFinta` in `src/grafica/pose.js`; tendenze
-   `largo` e `piegato` per stile in `src/finte.js`): a ogni finta il disegno sceglie con il caso della grafica quanto è larga (dallo
-   stile personale, più stretta entro 6 m dalla porta) e se il braccio si distende (verso l'alto nella stretta, verso la porta nella
-   larga) o resta piegato (si muove l'avambraccio, la mano vicino alla testa; nella finta di lato la mano va anche di lato). La larga
-   gira di più il busto e va più verso il palo. Stili: larga e bomba quasi sempre larghe a braccio dritto; raffica stretta, metà a
-   braccio piegato; polso e spalla quasi sempre a braccio piegato; mezza in mezzo.
+2. **Di lato, da destra verso sinistra** (`FINTA_LATO.quota` = 0,65; Ale: «la finta di tiro può essere fatta sia mandando la palla
+   avanti e indietro ma, più frequentemente, da destra verso sinistra»): ogni finta va di lato 65 volte su 100, attraverso il corpo
+   (per un destro verso la sua sinistra, per un mancino al contrario); le altre avanti e indietro verso la porta. Con la levetta
+   inclinata il giocatore sceglie il palo, anche alla prima finta. Prima la prima finta era sempre dritta e dalla seconda si
+   alternavano i due pali. Chi abbocca si sposta verso quel palo come nella v0.59.
+3. **Strette e veloci o ampie e lente** (`FINTA_AMPIEZZA` in `src/taratura.js`, larghezza decisa in `startAct`; Ale: «in generale può
+   essere fatta con movimenti stretti e veloci o più ampi e lenti»): a ogni finta la larghezza viene dalla tendenza dello stile
+   personale (`largo` in `src/finte.js`) con un po' di caso, più stretta entro 6 m dalla porta. La stretta ha i tempi minimi della
+   v0.76 (preparazione 0,16 s, accenno 0,18 s, ritorno 0,36 s); l'ampia fino a 0,10 + 0,10 + 0,12 s in più. Ogni gesto porta il suo
+   ritorno (`a.recupero`), usato dal gioco e dal disegno.
+4. **Braccio teso o piegato** (solo disegno, `FINTA_FORMA` e `formaFinta` in `src/grafica/pose.js`; tendenza `piegato` per stile): il
+   braccio si distende (verso l'alto nella stretta, verso la porta nell'ampia) o resta piegato (si muove l'avambraccio, la mano vicino
+   alla testa; nella finta di lato la mano va anche di lato). L'ampia gira di più il busto e va più in là. Stili: larga e bomba quasi
+   sempre ampie a braccio teso; raffica stretta, metà a braccio piegato; polso e spalla quasi sempre a braccio piegato; mezza in mezzo.
 
 ## Misure (sonda-finte, 4 partite, per squadra a partita)
 | misura | v0.84 | v0.85 |
