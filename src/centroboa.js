@@ -3,6 +3,7 @@
 import { HW, clamp } from './costanti.js';
 import { ball, game, goalX, other } from './stato.js';
 import { difensoreEntrata, postoCentro } from './entrate.js';
+import { CENTRO_PALLA } from './taratura.js';      // numeri del bilanciamento
 
 export const difensoreCentro = boa => difensoreEntrata(boa);
 const unita = (x,z) => { const l=Math.hypot(x,z)||1; return {x:x/l,z:z/l}; };
@@ -24,7 +25,7 @@ export function boaFrontePorta(boa){
 
 export function leggiCentro(boa,def,portatore=ball){
   if(!def||def.excluded||def.uscendo||Math.hypot(def.x-boa.x,def.z-boa.z)>1.8)
-    return {tipo:'libero',ricevibile:true,apertura:1,vantaggio:1,lato:0,spalle:false};
+    return {tipo:'libero',ricevibile:true,apertura:1,vantaggio:1,lato:0,spalle:false,addosso:false};
   const g=unita(goalX(boa.team)-boa.x,-boa.z),dx=def.x-boa.x,dz=def.z-boa.z,r=Math.hypot(dx,dz)||0.001;
   // Se ha già palla il riferimento è il perimetro, opposto alla porta.
   const sx=portatore===boa||Math.hypot(portatore.x-boa.x,portatore.z-boa.z)<0.1?-g.x:portatore.x-boa.x;
@@ -36,7 +37,9 @@ export function leggiCentro(boa,def,portatore=ball){
   const tipo=fronte>0.5?'anticipo':porta>0.45?'dietro':'lato';
   return {tipo,ricevibile:!chiude&&apertura>0.28,apertura,
     vantaggio:clamp(apertura*1.5-0.7+porta*0.25,-1,1),
-    lato:Math.sign(-g.z*dx+g.x*dz),spalle:porta>0.45&&r<1.65};
+    lato:Math.sign(-g.z*dx+g.x*dz),spalle:porta>0.45&&r<1.65,
+    // v0.81: con la palla e il marcatore vicino al fianco o dietro, il centroboa non si gira da solo verso la porta (CENTRO_PALLA)
+    addosso:r<CENTRO_PALLA.addosso&&fronte<0.5};
 }
 
 export function centroTarget(boa){

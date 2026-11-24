@@ -27,7 +27,7 @@ try{
   const [F,S,T,P,C,Q]=await Promise.all([import('/src/fisica.js'),import('/src/stato.js'),import('/src/tiri.js'),import('/src/grafica/pose.js'),import('/src/controllo.js'),import('/src/controfuga.js')]);
   const G=S.game,B=S.ball,misure=[];let scena=0;
   function prepara(ti,mano,hold=true){
-   C.resetTap();Object.assign(G,{state:'play',time:100+(++scena)*10,autoplay:false,possTeam:S.teams[ti],possT:scena,penalty:null,rigoriFinali:null,clock:180,period:1,shot:28});S.fight.active=false;
+   C.resetTap();Object.assign(G,{state:'play',time:100+(++scena)*10,autoplay:false,possTeam:S.teams[ti],possT:100+scena*10-2,penalty:null,rigoriFinali:null,clock:180,period:1,shot:28});      // v0.81: palla recuperata da 2 s (controfuga vera, QTE.eta)S.fight.active=false;
    for(const q of S.allPlayers)Object.assign(q,{x:-10+q.i*2.5,z:q.team.idx?8:-8,vx:0,vz:0,fx:q.team.dir,fz:0,act:null,girata:null,turnedUntil:0,oriz:0,perno:false,charging:false,chargeT:0,stamina:1,excluded:false,uscendo:false,freeThrow:false,pressatoUntil:0,stunUntil:0,contactT:0,lunge:0,J:null,palmi:null,spina:null,orizPrec:0,phase:0});
    const p=S.teams[ti].players[4];Object.assign(p,{x:0,z:0,mano,s:{...p.s,vel:75,res:80}});S.setCtrl(p);
    Object.assign(B,{state:'held',holder:hold?p:S.teams[1-ti].players[3],holdTime:0,kind:null,target:null,daTiro:false,afterShot:false,inRete:false,x:-9*p.team.dir,z:0,y:.1,vx:0,vy:0,vz:0,intercept:new Set()});return p;

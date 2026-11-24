@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.80.0",
+  "version": "0.81.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,6 +12,8 @@
     "comandi-interfaccia": "node tests/comandi-interfaccia.mjs",
     "passaggi": "node tests/passaggi.mjs",
     "cambi-marcatura": "node tests/cambi-marcatura.mjs",
+    "tiri-centro": "node tests/tiri-centro-v081.mjs",
+    "sonda-centro": "node strumenti/sonda-centro.mjs",
     "sonda-rientri": "node strumenti/sonda-rientri.mjs",
     "sonda-tipi-passaggio": "node strumenti/sonda-tipi-passaggio.mjs",
     "verifica": "node tests/qualita.mjs && node tests/tornei.mjs && node tests/verifica.mjs --no-legacy",

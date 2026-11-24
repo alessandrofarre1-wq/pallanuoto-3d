@@ -18,6 +18,11 @@ import { difensoreCentro, leggiCentro, passoGirata } from './centroboa.js';
 import { centroAttacco } from './entrate.js';
 import { CON_PALLA, INTERCETTO, PARATA_PORTIERE, PARATA_SUP, PRESA, SPRINT_CONSUMO, STANCO } from './taratura.js';      // numeri del bilanciamento
 export { CON_PALLA, INTERCETTO, PARATA_SUP, PRESA, SPRINT_CONSUMO, STANCO };
+// v0.81: il centroboa che tiene la palla vicino alla porta con il marcatore dietro o al fianco resta di spalle alla porta
+function centroDiSpalle(p){
+  if(p!==centroAttacco(p.team)||game.penalty===p||Math.hypot(goalX(p.team)-p.x,p.z)>=4.5||other(p.team).players.some(q=>q.excluded)) return false;
+  const l=leggiCentro(p,difensoreCentro(p),p); return l.spalle||l.addosso;
+}
 export function movePlayer(p,dx,dz,sprint,dt){
   // La girata usa lo stesso movimento e gli stessi collisori del nuoto ordinario.
   const giroTarget=passoGirata(p);
@@ -69,12 +74,12 @@ export function movePlayer(p,dx,dz,sprint,dt){
   else if(difendeCentro){ tfx=ball.x-p.x;tfz=ball.z-p.z; }
   // scivolamento in verticale (v0.53): ci si sposta di lato o all'indietro con la bicicletta guardando la palla
   // (o la porta, se la palla ce l'ha lui), non la direzione in cui si scivola
-  else if(p.scivolaAI&&!swimming&&!p.isGK){ if(hold){ tfx=goalX(p.team)-p.x; tfz=-p.z; } else { tfx=ball.x-p.x; tfz=ball.z-p.z; } }
+  // v0.81: il centroboa con la palla e il marcatore dietro o al fianco (CENTRO_PALLA.addosso) resta di spalle alla porta, anche
+  // mentre scivola nella lotta. Prima lo scivolamento del computer lo girava sempre verso la porta (nessuna beduina) e il marcatore
+  // al fianco non bastava a tenerlo di spalle
+  else if(p.scivolaAI&&!swimming&&!p.isGK){ if(hold){ tfx=goalX(p.team)-p.x; tfz=-p.z; if(centroDiSpalle(p)){ tfx=-tfx; tfz=-tfz; } } else { tfx=ball.x-p.x; tfz=ball.z-p.z; } }
   else if((p.isGK?swimming:moving) && !giroTarget && !(p.isGK&&ball.state!=='held'&&!sprint)){ tfx=dx; tfz=dz; }
-  else if(hold){
-    tfx=goalX(p.team)-p.x; tfz=-p.z;
-    if(p===centroAttacco(p.team) && Math.hypot(tfx,tfz)<4.5 && game.penalty!==p&&!other(p.team).players.some(q=>q.excluded)&&leggiCentro(p,difensoreCentro(p),p).spalle){ tfx=-tfx; tfz=-tfz; }
-  }
+  else if(hold){ tfx=goalX(p.team)-p.x; tfz=-p.z; if(centroDiSpalle(p)){ tfx=-tfx; tfz=-tfz; } }
   else { tfx=ball.x-p.x; tfz=ball.z-p.z; }
   // Si decide prima dove guarda il giocatore: un gesto che guarda altrove
   // richiede la remata in verticale, non il crawl contro la direzione di marcia.

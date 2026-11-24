@@ -1,3 +1,25 @@
+# Passaggio WATERPOLO7 — v0.81 tiri: controfuga vera, centroboa di spalle, occasioni chiare (Claude Code)
+
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.81.0. Cambia la partita (tiri e centroboa) e un comando (tasto a comparsa).
+- `occasioneControfuga` (`src/controfuga.js`): solo entro `QTE.eta` (9 s) da `game.possT`. `QTE` è passato in `src/taratura.js`
+  (riesportato da `controfuga.js` con lo stesso nome).
+- `controllo.js`: con il tasto a comparsa acceso lo speciale parte al rilascio di un tocco (in `aggiornaTiroTenuto`, carica sotto
+  `TIRO_POLSO`); tenuto resta il tiro normale. Prima `pressed('legacyShoot')` faceva subito lo speciale. Testi in `hud.js` e nella
+  pagina Comandi.
+- `leggiCentro` (`src/centroboa.js`) restituisce anche `addosso` (marcatore entro `CENTRO_PALLA.addosso` = 1,8 m e non davanti);
+  `fisica.js` tiene di spalle alla porta il centroboa con la palla se `spalle||addosso` anche nel ramo dello scivolamento
+  (`p.scivolaAI`), che prima lo girava sempre verso la porta; `shotKind` (`src/tiri.js`) dà beduina o sciarpa anche con `addosso`.
+- `boaHold` (`src/lotta.js`): decisioni del computer da `CENTRO_PALLA`; girato con il marcatore entro 1,8 m aspetta
+  `CENTRO_PALLA.girarsi` (0,45 s) prima del tiro «boa fronte porta». La decisione v0.69 (girato e libero tira) resta.
+- `occasioneChiara` (`src/ia.js`, `OCCASIONE_CHIARA`): tiro subito dopo la ricezione, prima della scelta delle entrate; esclusa
+  quando c'è un'occasione di controfuga vera.
+- `bestPassTarget` (`src/tiri.js`): `CENTRO_ATTESA` 3-9 s e `CENTRO_ATTESA.ingresso` per il centroboa marcato dietro o al fianco.
+- Ganci di misura in `window.__pallanuoto.prova`: `centroAttacco`, `boaFrontePorta`, `difensoreCentro`, `leggiCentro`,
+  `occasioneControfuga`. Sonda nuova `npm run sonda-centro`; `sonda-rientri` conta anche i tasti con la regola del gioco.
+- Prova nuova `npm run tiri-centro` (anche nella CI); `sezione4` con due controlli nuovi. [Rapporto](versioni/v081-tiri.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.80 cambi di marcatura nei rientri (Claude Code)
 
 Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.80.0. Cambia la partita (difesa nei rientri).

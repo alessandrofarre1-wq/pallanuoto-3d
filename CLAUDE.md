@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.80). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.81). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -87,7 +87,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   prepartita: sei preset e una personale, schemi dell'uomo in più) → Impostazioni (durata, difficoltà, arbitro) → Gioca.
 ### Comandi
 - Touch: levetta a sinistra; TIRO toccato e rilasciato = tiro rapido di polso, meno potente; tenuto = preparazione e finte continue, potenza massima in0,9s, tiro al rilascio anche durante la propria finta. Nessun tiro automatico normale e nessun minigioco di precisione. L’anello del selezionato diventa oro chiaro e il tasto indica PRONTO; nessuna barra sopra l’atleta o barra di potenza. Mira, stanchezza, pressione e abilità restano determinanti.
-- PASSA; con la palla agli avversari lo stesso tasto diventa CONTRASTA (v0.78: scritta, icona a mano, rosa, «3° = fallo»): 1-2 tocchi in 1,5 s disturbano, il terzo ravvicinato è fallo. Tasti colorati per funzione su bordo e icona (TIRO arancione, PASSA blu, CONTRASTA rosa, PALOMB. viola, SPRINT verde, CAMBIA bianco), lontani da oro/rosso/ciano; premuto e azioni richieste restano oro; prova `npm run comandi-interfaccia`. SPRINT a tocchi, CAMBIA al più vicino alla palla. TAGLIO tolto dal touch su richiesta di Ale; chiamate A/B/C conservate. PALOMB., T.O. e pausa conservati. TIRO durante un passaggio in arrivo conserva il tiro al volo; alla boa spalle alla porta sceglie beduina/sciarpa dalla situazione. QTE di controfuga e procedura dei rigori conservati.
+- PASSA; con la palla agli avversari lo stesso tasto diventa CONTRASTA (v0.78: scritta, icona a mano, rosa, «3° = fallo»): 1-2 tocchi in 1,5 s disturbano, il terzo ravvicinato è fallo. Tasti colorati per funzione su bordo e icona (TIRO arancione, PASSA blu, CONTRASTA rosa, PALOMB. viola, SPRINT verde, CAMBIA bianco), lontani da oro/rosso/ciano; premuto e azioni richieste restano oro; prova `npm run comandi-interfaccia`. SPRINT a tocchi, CAMBIA al più vicino alla palla. TAGLIO tolto dal touch su richiesta di Ale; chiamate A/B/C conservate. PALOMB., T.O. e pausa conservati. TIRO durante un passaggio in arrivo conserva il tiro al volo; alla boa spalle alla porta sceglie beduina/sciarpa dalla situazione. Tasto a comparsa (QTE) solo nella controfuga vera, entro 9 s dal recupero (`QTE.eta`): un tocco di TIRO fa schizzo o colonnello, tenuto il tiro normale (v0.81, Ale: «troppi tiri a schizzo e colonnello»); procedura dei rigori conservata.
 - Tastiera: frecce; Spazio/K stessa tenuta-finte-rilascio (K anche al volo in arrivo, Spazio tenuto prima della presa non tira da solo); D passaggio al rilascio/contrasto; L palombella; Shift sprint a tocchi; C cambia; F comando avanzato taglio/girata/raddoppio conservato; Q/W/E o1/2/3 schemi,4 boa, T time-out,B cambio consigliato,P/Esc pausa. Controller con la stessa logica. Annullamenti per pausa/blur/touchcancel/perdita possesso o controllo; un tasto fisicamente ancora premuto dopo reset deve prima essere rilasciato.
 ### Nuoto e corpo (indicazioni di Ale, ex nuotatore)
 - Tiro standard caricato/torsione v0.74: pose Plask di Ale trasferite sull’intera catena di52ossa, modello/rig/pesi invariati. Tutti gli altri gesti restano procedurali. Stile libero a testa alta, mai rana o stella; chi
@@ -102,6 +102,9 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   il corpo esce quasi fino ai fianchi (solo disegno). Palla tenuta alta, mano dietro la palla, gomito in fuori; rilascio come
   accompagnamento; con un avversario vicino si protegge la palla girando busto e testa; il centroboa marcato tiene la palla in acqua
   finché non fa un gesto. Mancini con i gesti allo specchio.
+- Centroboa con la palla (v0.81, Ale: «poche beduine»; `CENTRO_PALLA`): con il marcatore dietro o al fianco entro 1,8 m (la lotta)
+  resta di spalle alla porta, anche quello del computer mentre scivola, e il suo tiro è una beduina o una sciarpa; si gira con la
+  girata, nuotando o se il marcatore è davanti (anticipo) o lontano. Vale per le due squadre.
 - Due modi di passare (v0.79, Ale; `tipoPassaggio`, `PASSAGGI`): morbido sull'acqua 0,3 m davanti al compagno (6,5-9 m/s, errore
   ×0,6) nella circolazione tranquilla con la linea libera; alto e teso alla mano (11-15,5 m/s) con l'uomo in più, negli ultimi 8 s,
   oltre 8 m, cambiando lato, in transizione, con un avversario vicino alla linea e al compagno libero in posizione di tiro. Presa alla mano (0,55 m, portiere 0,9 m); errore
@@ -124,8 +127,13 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 ### Attacco del computer
 - Circolazione: palla in mano 0,4-0,7 s sul perimetro (`CIRCOLAZIONE`); costruzione di 18 s prima di cercare il tiro da libero,
   anche nella ripartenza alla pari (il tiro subito dopo la ricezione è sicuro solo nella controfuga con l'uomo in più); palla al
-  centroboa nei duelli marginali dopo la costruzione (vantaggio che cresce dai 7 ai 15 s, `CENTRO_ATTESA`); una boa chiaramente libera con corridoio sicuro può essere servita subito (`SERVIZIO_BOA`); tiro subito dopo una ricezione libera
-  deciso una volta (circa 1 su 3 in parità); pazienza fino a fine azione (tiro di fine azione negli ultimi 4,5 s, `FINE_AZIONE`).
+  centroboa nei duelli marginali dopo la costruzione (vantaggio che cresce dai 3 ai 9 s, `CENTRO_ATTESA`, più un vantaggio per l'ingresso classico con il marcatore dietro o al fianco, v0.81); una boa chiaramente libera con corridoio sicuro può essere servita subito (`SERVIZIO_BOA`); tiro subito dopo una ricezione libera
+  deciso una volta (circa 1 su 3 in parità); le occasioni chiare (ricezione entro 5 m, di fronte alla porta, nessuno entro 2 m, linea
+  libera) si tirano sempre, a qualunque secondo, anche in superiorità (v0.81, Ale; `OCCASIONE_CHIARA`); pazienza fino a fine azione
+  (tiro di fine azione negli ultimi 4,5 s, `FINE_AZIONE`).
+- Centroboa del computer nella lotta (v0.81, `CENTRO_PALLA`): ogni 0,45-0,85 s, dopo 0,4 s beduina o sciarpa (30%), dopo 0,6 s
+  girata (15%), dopo 1,8 s scarico; girato verso la porta con il marcatore ancora nella lotta aspetta 0,45 s prima di tirare (se il
+  marcatore rientra si torna alla lotta); girato e libero tira subito (decisione v0.69 conservata).
 - Chiamate manuali v0.70: A3→2→5, B3→4→1 (mano/abilità adeguate), C2al palo, una per possesso. Il taglio parte al rilascio reale dell’appoggio; perdita/espulsione/scadenza annullano. Nessun cambio dello schema persistente o controllo forzato. PASSA neutro cerca appoggio chiamato, tagliante pronto, poi scelta assistita; una direzione manuale conserva la precedenza. Portiere, aiuti, linea2m e rischio reale restano nel servizio alla boa.
 - La squadra sale per corsie, scaglionata per ruolo: nessuno va tutto sulla palla (richiesta di Ale).
 - Recupero dopo slancio manuale: se il contrasto cambia possessore, si rilegge il comando umano invece di continuare verso il vecchio portatore; niente sfondamento causato da quel bersaglio ormai superato, nessuna immunità generale ai falli.
@@ -179,22 +187,23 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.80 — cambi di marcatura nei rientri (Claude Code)
+## Stato v0.81 — tiri, centroboa di spalle, occasioni chiare (Claude Code)
 
 Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` v0.77 (Codex, PR #59-#68). Ale (24/11/2026) ha mandato 13 punti. Fatti:
 v0.78 interfaccia (CONTRASTA in difesa, tasti colorati, energia con il cognome; [rapporto](docs/versioni/v078-comandi-interfaccia.md));
 v0.79 passaggi (morbido o teso, compagno puntato, levetta tenuta; [rapporto](docs/versioni/v079-passaggi.md)); v0.80 scambi di
-marcatura nei rientri (controfughe 2,5 → 1,9, gol 20,8 → 19,5, superiorità 47% → 42%; [rapporto](docs/versioni/v080-cambi-marcatura.md)).
-Nelle prove computer contro computer l'Ungheria segna il doppio dell'Italia (26 a 13, già nella v0.77): nel database le valutazioni
-medie dei primi 14 sono 83 contro 76. Da rivedere con le rose.
-Prossimi, in quest'ordine: tiri (schizzo e colonnello del giocatore fuori dalle vere controfughe, beduine del centroboa che oggi sono
-zero, occasioni chiare tirate subito, gol del centroboa girato verso la porta e delle entrate troppo facili), cambi volanti, time-out
-con il portiere a metà campo, rigore con la palla dall'acqua, finte, rose dei giocatori a disposizione dei CT.
+marcatura nei rientri (controfughe 2,5 → 1,9, gol 20,8 → 19,5, superiorità 47% → 42%; [rapporto](docs/versioni/v080-cambi-marcatura.md));
+v0.81 tiri (tasto speciale solo in controfuga vera e tocco/tenuta, centroboa di spalle con beduina e sciarpa, occasioni chiare
+tirate subito, più palla al centroboa; espulsioni 7,8 → 9,8, gol 19,5 → 19,3; sonda nuova `npm run sonda-centro`;
+[rapporto](docs/versioni/v081-tiri.md)). Nelle prove computer contro computer l'Ungheria segna il doppio dell'Italia (26 a 13, già
+nella v0.77): nel database le valutazioni medie dei primi 14 sono 83 contro 76. Da rivedere con le rose.
+Prossimi, in quest'ordine: cambi volanti, time-out con il portiere a metà campo, rigore con la palla dall'acqua, finte, rose dei
+giocatori a disposizione dei CT. Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
 
-**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.80, `npm run taratura -- --partite=16`): 19,5 gol e 40,3 tiri per squadra
-(veri 13,3 e 33), tiri in gol 48,4% (40%), espulsioni 7,8 (11; dal centro 53%, vero 66%), superiorità 42% (52%), parità: gol 25,4%
-delle azioni (6-19%), espulsione procurata 12,4% (22%), durata 13,9 s (21). Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
+**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.81, `npm run taratura -- --partite=16`): 19,3 gol e 41,4 tiri per squadra
+(veri 13,3 e 33), tiri in gol 46,5% (40%), espulsioni 9,8 (11; dal centro 59%, vero 66%), superiorità 43% (52%), parità: gol 23,5%
+delle azioni (6-19%), espulsione procurata 15,6% (22%), durata 13,5 s (21), azioni 72 (50). Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
 partite); Codex misurava 16,1 e 41,4 nella v0.70 e 17,4 e 43,3 nella v0.71 (8 partite, passaggio di consegne v0.71); v0.77 20,5 e
-42,3 (16 partite).
+42,3, v0.80 19,5 e 40,3 (16 partite).
 
 Stato precedente (v0.77, Codex): avvio fluido della finta, [rapporto](docs/versioni/v077-avvio-finta.md).

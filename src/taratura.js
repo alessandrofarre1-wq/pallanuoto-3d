@@ -27,6 +27,17 @@ export const COSTRUZIONE={ secondi:18, libero:0.3, vicino:4.5 };
 // altrimenti si continua a far girare palla; in superiorità TIRO_LIBERATO.superiorita; quick = quota delle superiorità in cui si
 // cerca il tiro nei primi 3 s. v0.60: parità 0,4 → 0,3, superiorità 0,85 → 1.
 export const TIRO_LIBERATO={ parita:0.3, superiorita:1, quick:0.3 };
+// OCCASIONE CHIARA (v0.81, Ale: «le occasioni chiare, passaggio con l'uomo davanti alla porta, si tirano indipendentemente dai
+// secondi trascorsi»): chi riceve un passaggio entro «distanza» m dalla porta, con apertura almeno «angolo» (distanza dalla linea di
+// porta divisa per la distanza dalla porta: 1 = di fronte), nessun avversario entro «spazio» m e la traiettoria libera («corridoio»),
+// tira subito, entro «entro» s dalla ricezione: anche nei primi 18 s (COSTRUZIONE) e in superiorità. Prima tirava subito solo una
+// volta su tre (TIRO_LIBERATO.parita) e, nei primi 18 s, solo entro 4,5 m.
+export const OCCASIONE_CHIARA={ distanza:5, angolo:0.7, spazio:2, corridoio:0.7, entro:0.6 };
+// TIRI SPECIALI IN CONTROFUGA (v0.31, prima scritti in controfuga.js): tasto a comparsa per il giocatore e scelta del computer.
+// durata e pausa del tasto (s); sotto «vicino» m colonnello, sopra schizzo; tra «min» e «max» m dalla porta; il computer arriva fino a
+// «maxComputer». v0.81 (Ale: «troppi tiri a schizzo e colonnello»): solo nella controfuga vera, entro «eta» s dal recupero della
+// palla. Prima bastava nuotare verso la porta senza nessuno davanti, anche a metà dell'attacco schierato.
+export const QTE={ durata:1.4, pausa:2.5, vicino:5.5, min:2.5, max:8, maxComputer:6.5, eta:9 };
 // PAZIENZA in parità: secondi di possesso (su 28) prima di cominciare a cercare il tiro anche senza occasioni, e secondi per
 // arrivare alla piena voglia di tirare. v0.64: [24, 3] → [25, 2,5].
 export const PAZIENZA=[25,2.5];
@@ -56,8 +67,22 @@ export const RIPARTENZA={ d3:7.0, arrivato:2.5, transizione:10 };
 // Prove su 16 partite: −0,5 / 4 m: controfughe da 3,5 a 0,9 a partita (reale circa 2); 0 / 3 m: 1,5 a partita.
 export const SCATTI={ ripartenza:0, spazio:3, rientro:0 };
 // CENTRO_ATTESA (v0.64): in parità la palla entra al centroboa dopo la costruzione: il vantaggio di passarla al centro cresce da
-// «da» ad «a» secondi d'azione (prima c'era subito, e l'azione finiva presto con espulsione, girata o fallo).
-export const CENTRO_ATTESA={ da:7, a:15 };
+// «da» ad «a» secondi d'azione (prima c'era subito, e l'azione finiva presto con espulsione, girata o fallo). v0.81 (Ale: «pochi
+// passaggi al centroboa»): da 7-15 a 3-9 s; «ingresso» = vantaggio in più per l'ingresso classico, con il marcatore dietro o al
+// fianco (palla in acqua davanti al centroboa, poi lotta): prima la palla gli arrivava quasi solo da libero o con il marcatore
+// davanti, e lui si girava e tirava.
+export const CENTRO_ATTESA={ da:3, a:9, ingresso:1.2 };
+// CENTROBOA CON LA PALLA (v0.81, Ale: «poche beduine e pochi passaggi al centroboa»). Studio su 11 partite d'élite maschili (7 di
+// campionato italiano, 4 di Champions League; «Elite water polo: a technical and tactical analysis of the centre forward role»): delle
+// azioni del centroboa, gol 6,7%, tiro senza gol 7,2%, espulsione procurata 41,4%, fallo in attacco 17,9%, palla rubata 16,6%,
+// passaggio sbagliato al centro 10,1%; il centroboa procura il 67,6% delle espulsioni. Prima della v0.81 il centroboa con la palla si
+// girava da solo verso la porta appena il marcatore non gli stava proprio dietro, e tirava di fronte (nessuna beduina).
+// addosso = entro questi metri (la distanza della lotta) il marcatore al fianco o dietro non lo lascia girare: tiene la palla di
+// spalle alla porta (con 1,3 m bastava che il marcatore si staccasse di poco perché si girasse da solo e tirasse); ogni
+// decisione (0,45-0,85 s), dopo «tiroDa» s di lotta tira di beduina o di sciarpa con probabilità «tiro», dopo «girataDa» s prova a
+// girarsi nuotando attorno al marcatore con probabilità «girata», dopo «scarico» s scarica al perimetro. girarsi = secondi di palla
+// in mano prima del tiro quando riceve già girato verso la porta con il marcatore ancora nella lotta (prima 0,12 s: tirava subito).
+export const CENTRO_PALLA={ addosso:1.8, tiroDa:0.4, tiro:0.3, girataDa:0.6, girata:0.15, scarico:1.8, girarsi:0.45 };
 // ENTRATA, il taglio verso la porta (v0.66, punto 4 di Ale: «gol su entrata quasi zero»; `strumenti/sonda-entrate.mjs`): il
 // computer non entrava mai (giocava sempre l'«Arco», che non ha tagliante) e, con lo schema «Entrata», a chi entrava la palla
 // arrivava appena partito, a 7,7 m dalla porta, e il taglio finiva lì (una entrata su 25 finiva con un tiro).

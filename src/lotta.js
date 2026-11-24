@@ -12,8 +12,8 @@ import { bestPassTarget } from './tiri.js';
 import { avviaGirata, boaFrontePorta, difensoreCentro, leggiCentro } from './centroboa.js';
 import { centroAttacco } from './entrate.js';
 import { azioneAperta, chiudiAzione } from './statistiche.js';
-import { CENTRO_SENZA_PALLA, LOTTA_FASE, LOTTA_PALLA } from './taratura.js';      // numeri del bilanciamento
-export { CENTRO_SENZA_PALLA, LOTTA_FASE, LOTTA_PALLA };
+import { CENTRO_PALLA, CENTRO_SENZA_PALLA, LOTTA_FASE, LOTTA_PALLA } from './taratura.js';      // numeri del bilanciamento
+export { CENTRO_PALLA, CENTRO_SENZA_PALLA, LOTTA_FASE, LOTTA_PALLA };
 export const boaDef = t => difensoreCentro(centroAttacco(t));
 export function fightOn(a,b){
   // Fronte porta il duello è diventato una normale occasione di tiro: il marcatore
@@ -75,7 +75,10 @@ export function boaHold(b,d,dt){
     // La finestra nasce dall'aggiramento fisico. Il rigore richiede un contrasto effettivo,
     // con le condizioni regolamentari comuni, non l'esito casuale della girata.
     if(d===ctrl&&d.aggrT>game.time&&dist(b,d)<1.15){ tackle(d,b,{fallo:true,origine:'centro'});return; }
-    if(b!==ctrl&&!b.freeThrow&&b.pressatoUntil<=game.time&&(!fronte||ball.holdTime>=.12)){
+    // v0.81: girato con il marcatore ancora nella lotta gli serve un attimo per alzarsi e tirare (CENTRO_PALLA.girarsi): se intanto
+    // il marcatore rientra tra lui e la porta si torna alla lotta
+    const pronto=ball.holdTime>=(dist(b,d)<CENTRO_PALLA.addosso?CENTRO_PALLA.girarsi:.12);
+    if(b!==ctrl&&!b.freeThrow&&b.pressatoUntil<=game.time&&(!fronte||pronto)){
       b.motivoTiro=fronte?'boa fronte porta':'girata'; aiShoot(b,0.75,false);
     }
     return;
@@ -100,12 +103,14 @@ export function boaHold(b,d,dt){
     if(r<(rE+rF+rO+rS)*dt){ giveBall(d); annuncia('possesso','Palla rubata al centroboa',{p:d}); return; }
   }
   if(b===ctrl) return;
-  // centroboa gestito dal computer: girata, beduina o scarico
+  // centroboa gestito dal computer: beduina o sciarpa di spalle, girata o scarico (v0.81, CENTRO_PALLA; prima la girata al
+  // 35% e il tiro al 15% solo dopo 0,8 s: le girate finivano in tiri di fronte e le beduine erano zero)
   fight.decT-=dt; if(fight.decT>0) return;
   fight.decT=0.45+rnd()*0.4;
-  if(fight.holdT>0.6&&v>-0.1&&rnd()<0.35){ girata(b,d); return; }
-  if(fight.holdT>0.8&&rnd()<0.15&&!b.freeThrow){ b.motivoTiro='centroboa'; aiShoot(b,0.6+rnd()*0.3,false); return; }
-  if(fight.holdT>1.8||(v<-0.4&&rnd()<0.5)){ const m=bestPassTarget(b); if(m) aiPass(b,m); }
+  const C=CENTRO_PALLA;
+  if(fight.holdT>C.tiroDa&&!b.freeThrow&&rnd()<C.tiro){ b.motivoTiro='centroboa'; aiShoot(b,0.6+rnd()*0.3,false); return; }
+  if(fight.holdT>C.girataDa&&v>-0.1&&rnd()<C.girata){ girata(b,d); return; }
+  if(fight.holdT>C.scarico||(v<-0.4&&rnd()<0.5)){ const m=bestPassTarget(b); if(m) aiPass(b,m); }
 }
 export function girata(b,d){
   if(!avviaGirata(b,d)) return false;

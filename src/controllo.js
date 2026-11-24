@@ -8,7 +8,7 @@ import { contrasto, doFake } from './regole.js';
 import { fintaDi } from './finte.js';
 import { TIRO_COMANDO } from './tiro-comando.js';
 import { FINTA_MOVIMENTO } from './finta-movimento.js';
-import { aggiornaQte, tiroSpeciale } from './controfuga.js';
+import { aggiornaQte, occasioneControfuga, tiroSpeciale } from './controfuga.js';
 import { ball, ctrl, fight, game, goalX, ownGoalX, setCtrl, teams } from './stato.js';
 import { diSchiena, doPass, doShoot, humanPassTarget, shotKind, startAct } from './tiri.js';
 export let tapT=-9, pendingQuick=null;
@@ -55,6 +55,9 @@ function aggiornaTiroTenuto(p,dt,passa,lob){
     if(p.act===c.act)p.act=null;
     tiroTenuto=null;p.voloPronto=false;pendingQuick=null;tapT=game.time;
     if(carica<TIRO_POLSO){
+      // v0.81: un tocco durante il tasto a comparsa della controfuga vera fa lo schizzo o il colonnello
+      const speciale=p.qte&&occasioneControfuga(p);
+      if(speciale){ tiroSpeciale(p,speciale,aimZ); return true; }
       // Il polso rimane utile vicino alla porta: meno potenza, stessa mira.
       const pw=.42;p.chargeT=pw*TIRO_COMANDO.carica;
       startAct(p,diSchiena(kind)?kind:'polso',.04,()=>doShoot(p,pw,false,aimZ,{polso:true,dopoFinta}));
@@ -116,8 +119,10 @@ export function humanControl(p,dt){
   const riceveTaglio=p.cut?.coordinata&&!hasBall&&ball.state==='flight'&&ball.kind==='pass'&&
     ball.target===p&&ball.shooter?.team===p.team&&Math.hypot(ix,iz)<.2;
   if(!riceveTaglio)p.cut=null;
-  const speciale=hasBall&&tiroLecito(p)&&aggiornaQte(p);
-  if(speciale&&pressed('legacyShoot')&&!passa&&!lob){ annullaTiroTenuto();pendingQuick=null;tiroSpeciale(p,speciale.tipo,Math.abs(iz)>.3?iz:null);return; }
+  // v0.81 (Ale: «troppi tiri a schizzo e colonnello»): nella controfuga vera il tasto a comparsa resta, ma lo speciale parte solo con
+  // un tocco di TIRO (al rilascio, in aggiornaTiroTenuto); tenendo premuto si prepara il tiro normale. Prima qualunque pressione di
+  // TIRO durante il tasto faceva lo schizzo o il colonnello.
+  if(hasBall&&tiroLecito(p)) aggiornaQte(p);
   if(aggiornaTiroTenuto(p,dt,passa,lob))return;
   if(p.act&&!p.act.done){
     const resto=p.act.wind+p.act.frusta-p.act.t;

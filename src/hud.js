@@ -50,7 +50,8 @@ export function updateHUD(){
     ultimoBip=urg?n:null; }
   // tasto a comparsa in controfuga (controfuga.js): pillola con il tasto, oppure pulsante TIRO illuminato sul telefono
   { const q=ctrl&&ctrl.qte&&game.state==='play'?ctrl.qte:null, el=$('qte'), b=document.querySelector('.tb[data-b="shoot"]');
-    const t=q?`Premi TIRO<small>(K) · ${q.tipo==="schizzo"?"tiro a schizzo":"colonnello"}</small>`:"";
+    // v0.81: il tocco fa lo speciale, tenuto resta il tiro normale
+    const t=q?`Tocca TIRO<small>(K) · ${q.tipo==="schizzo"?"tiro a schizzo":"colonnello"} · tenuto: tiro normale</small>`:"";
     if(el.dataset.t!==t){ el.dataset.t=t; el.innerHTML=t; el.classList.toggle('on',!!q); }
     if(b){ const on=!!q; if(b.classList.contains('premi')!==on) b.classList.toggle('premi',on); } }
   // Nome/ruolo per 3 s al cambio manuale e all'inizio; l'energia del selezionato
@@ -87,7 +88,7 @@ export function updateHUD(){
     const max=carica&&pot>=1, recente=ctrl&&ctrl.effettoTiro&&game.time-ctrl.effettoTiro.inizio>=0&&game.time-ctrl.effettoTiro.inizio<0.65?ctrl.effettoTiro:null;
     const nomi={beduina:'BEDUINA',sciarpa:'SCIARPA',rovesciata:'ROVESCIATA',schizzo:'SCHIZZO',colonnello:'COLONNELLO'};
     btn.classList.toggle('massimo',max);
-    const label=carica?(max?'PRONTO':'Rilascia'):recente&&(nomi[recente.tipo]||recente.forza>=0.98)?(nomi[recente.tipo]||'POTENTE'):ctrl&&ctrl.qte?'Premi!':'tocco: polso';
+    const label=carica?(max?'PRONTO':'Rilascia'):recente&&(nomi[recente.tipo]||recente.forza>=0.98)?(nomi[recente.tipo]||'POTENTE'):ctrl&&ctrl.qte?(ctrl.qte.tipo==='schizzo'?'tocco: schizzo':'tocco: colonnello'):'tocco: polso';
     const small=btn.querySelector('small'); if(small.textContent!==label) small.textContent=label;
     const stato=carica?(max?'Tiro pronto alla massima potenza: rilascia per tirare':'Tiro in preparazione: rilascia per tirare'):'';
     const aria=stato||'Tiro: tocco e rilascio per il polso; tieni premuto per preparare e fintare';

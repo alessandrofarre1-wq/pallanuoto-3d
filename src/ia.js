@@ -13,8 +13,8 @@ import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } fr
 import { paloCoperto } from './muro.js';
 import { QTE, aiControfuga, occasioneControfuga, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, entrataPronta, laneClear, openness, passLaneRisk, shotKind, situazioneTiro, startAct } from './tiri.js';
-import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIRO_LIBERATO } from './taratura.js';      // numeri del bilanciamento
-export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIRO_LIBERATO };
+import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIRO_LIBERATO } from './taratura.js';      // numeri del bilanciamento
+export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIRO_LIBERATO };
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 // l'uomo che marca p: di regola quello del ruolo (MARK); dopo un CAMBIO DI MARCATURA su un'entrata («time switching», Nitzkowski e
 // manuale USA Water Polo) i due difensori si scambiano gli uomini per qualche secondo
@@ -774,6 +774,14 @@ export function aiPass(p,m){ startAct(p,'pass',0.08,()=>doPass(p,m),[m.x,m.z]); 
 // COSTRUZIONE dell'azione in parità (v0.56), CIRCOLAZIONE sul perimetro (v0.61) e TIRO_LIBERATO dopo la ricezione (v0.59):
 // numeri e motivi in taratura.js
 // v0.64: la costruzione vale anche nella ripartenza alla pari (prima la ripartenza la toglieva per 12 s e in parità si tirava a 11 s)
+// v0.81 (Ale: «le occasioni chiare, passaggio con l'uomo davanti alla porta, si tirano indipendentemente dai secondi trascorsi»):
+// chi ha appena ricevuto libero davanti alla porta (OCCASIONE_CHIARA) tira subito, qualunque sia il secondo dell'azione
+export function occasioneChiara(p,dGoal=Math.hypot(goalX(p.team)-p.x,p.z)){
+  const C=OCCASIONE_CHIARA, gx=goalX(p.team);
+  if(p.isGK||!p.ricevutoPassaggio||game.time-(p.ricevutoT||-9)>C.entro||dGoal>C.distanza||Math.abs(gx-p.x)/Math.max(0.1,dGoal)<C.angolo) return false;
+  if(p.pressatoUntil>game.time||(p.freeThrow&&Math.abs(gx-p.x)<6)||game.penalty) return false;
+  return situazioneTiro(p).vicino>C.spazio&&laneClear(p,gx,0,p.team,C.corridoio);
+}
 function inCostruzione(t){ const az=azioneAperta(); return !!az&&az.t===t&&az.tipo==='parita'&&!manUp(t)&&game.time-az.t0<COSTRUZIONE.secondi&&game.shot>8; }
 export function aiCarrier(p,dt){
   const t=p.team, gx=goalX(t);
@@ -797,6 +805,8 @@ export function aiCarrier(p,dt){
     }
     return;
   }
+  // v0.81: occasione chiara dopo il passaggio (nella controfuga vera restano finta, schizzo e colonnello)
+  if(!slot.unoZero&&ball.holdTime>=0.1&&occasioneChiara(p,dGoal)&&!occasioneControfuga(p)){ p.motivoTiro='occasione chiara'; aiShoot(p,0.6+rnd()*0.35,false); return; }
   if(ball.holdTime>=0.18){
     const passabile=(a,m,taglio)=>!m.excluded&&!m.uscendo&&(!taglio||entrataPronta(m))&&
       laneClear(a,m.x,m.z,t,0.55)&&passLaneRisk(a,m)<0.25&&openness(m)>1.1;

@@ -10,6 +10,26 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.81 — tiri: controfuga vera, centroboa di spalle, occasioni chiare** (Claude Code, 24/11/2026; rapporto
+  `docs/versioni/v081-tiri.md`). RICHIESTA: Ale, «troppi tiri a schizzo e colonnello, poche beduine e pochi passaggi al centroboa»;
+  «le occasioni chiare (passaggio con l'uomo davanti alla porta): tirare indipendentemente dai secondi». MISURE: sonda nuova
+  `npm run sonda-centro`: sulla v0.80 il centroboa riceveva in 18,5% delle azioni in parità, già girato verso la porta nel 77%, e
+  tirava nel 90% dei suoi possessi (espulsioni procurate 1%, studio d'élite 41%); beduine e sciarpe zero. Causa: lo scivolamento
+  del computer lo girava sempre verso la porta, e con il marcatore al fianco si girava da solo. Il tasto a comparsa si accendeva
+  anche nell'attacco schierato e qualunque pressione di TIRO faceva lo speciale. CAMBIAMENTI: `QTE.eta` (9 s dal recupero) e
+  tocco = speciale, tenuto = tiro normale (`controllo.js`, `hud.js`, Comandi); `CENTRO_PALLA` (di spalle con il marcatore dietro o
+  al fianco entro 1,8 m, `leggiCentro.addosso`, `fisica.js` anche nello scivolamento; decisioni di `boaHold`: beduina o sciarpa
+  30% dopo 0,4 s, girata 15%, girato con il marcatore vicino aspetta 0,45 s); `OCCASIONE_CHIARA` (entro 5 m, apertura 0,7,
+  nessuno entro 2 m: tiro subito); `CENTRO_ATTESA` 3-9 s più `ingresso` 1,2. Ganci di misura in `prova`. MISURE DOPO: centroboa
+  22,2% delle azioni, girato 49%, tiro 62%, espulsioni 21%, beduine e sciarpe 15% dei suoi tiri; varianti a-a8 nel rapporto.
+  16 partite: gol 19,5 → 19,3, tiri 40,3 → 41,4, espulsioni 7,8 → 9,8 (a posto), dal centro 52,6% → 59,0%, superiorità
+  42,2% → 43,3%, espulsione procurata in parità 12,4% → 15,6%; 5 voci su 15 a posto (prima 4). PROVA NUOVA `npm run tiri-centro`
+  (10 controlli, anche nella CI); `sezione4` +2 controlli; `nuoto-coerente` adeguata (scene con possesso vecchio). VERIFICHE:
+  lint PASS; prove 62 PASS e 1 FAIL (`nuoto-coerente`, poi adeguata e PASS da sola), gambe fuori dall'acqua 0; verifica
+  `--partite=0` superata con immagini identiche; aspetto «Tutto a posto», iPhone 56 oggetti e 131.872 triangoli. NON FATTO: il
+  centroboa libero o con il marcatore in anticipo riceve ancora girato e segna (difesa: anticipo e aiuti); falli in attacco e
+  palle rubate al centroboa rari; gol e tiri ancora troppi.
+
 - **v0.80 — cambi di marcatura nei rientri** (Claude Code, 24/11/2026; rapporto `docs/versioni/v080-cambi-marcatura.md`).
   RICHIESTA: Ale, «non funzionano molto i cambi di marcatura in difesa: ogni giocatore guarda solo il proprio, e nascono controfughe
   che in realtà non esisterebbero». CODICE: `cambioMarcatura` scambiava solo sui tagli dell'attacco schierato e usciva subito nei

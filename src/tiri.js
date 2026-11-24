@@ -124,7 +124,7 @@ export function shotKind(p){
     const def=other(p.team).players.filter(q=>!q.excluded&&!q.isGK).sort((a,b)=>dist(a,p)-dist(b,p))[0];
     const lettura=leggiCentro(p,def,p),dx=goalX(p.team)-p.x,dz=-p.z;
     const fronte=(p.fx*dx+p.fz*dz)/(Math.hypot(dx,dz)||1);
-    if(lettura.spalle&&fronte<-.2){
+    if((lettura.spalle||lettura.addosso)&&fronte<-.2){
       const mano=p.mano==='S'?-1:1,f=Math.hypot(p.fx,p.fz)||1,nx=-p.fz/f*mano,nz=p.fx/f*mano;
       const distanza=dist(def,p)||.001;
       const portaDalBraccio=(dx*nx+dz*nz)/(Math.hypot(dx,dz)||1);
@@ -204,6 +204,8 @@ export function bestPassTarget(p,variabile=true,{assistita=false}={}){
     let s=Math.min(aperto,3)*1.2-dg*0.14-d*0.07-risk*6+(linea?0.8:-2.8);
     if(vicino) s+=schema.passaggi==='vicini'?2.4:schema.passaggi==='equilibrati'?1.7:1.25;
     if(interno) s+=(1.6+(schema.id==='boa'&&!sup?0.8:0))*(boaChiara||assistita&&!p.isGK?1:attesaCentro(p.team,sup));
+    // v0.81: l'ingresso classico al centroboa marcato dietro o al fianco (CENTRO_ATTESA.ingresso)
+    if(interno&&!sup&&!boaChiara){ const l=leggiCentro(m,difensoreCentro(m),p); if(l.ricevibile&&(l.tipo==='dietro'||l.tipo==='lato')) s+=CENTRO_ATTESA.ingresso*attesaCentro(p.team,sup); }
     if(taglio) s+=4.5;      // l'entrata riuscita è l'occasione migliore: la palla va lì
     // uomo in più: la fase in corso dello schema chiamato indica a chi dare la palla
     if(sup&&faseUomo(p.team)?.palla===m.i) s+=1.8;

@@ -3,6 +3,19 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.81
+- Tasto a comparsa di schizzo e colonnello ogni volta che chi ha la palla nuota verso la porta senza nessuno davanti (v0.31) → solo
+  nella controfuga vera, entro 9 s dal recupero della palla (`QTE.eta`).
+- Con il tasto acceso qualunque pressione di TIRO faceva lo speciale → un tocco fa lo speciale, tenuto il tiro normale.
+- Centroboa con la palla di spalle solo con il marcatore proprio dietro, e quello del computer, mentre scivolava nella lotta, sempre
+  girato verso la porta → di spalle con il marcatore dietro o al fianco entro 1,8 m, per le due squadre: tira di beduina o di sciarpa.
+- Centroboa del computer nella lotta: girata 35% dopo 0,6 s, tiro 15% dopo 0,8 s; girato verso la porta tirava dopo 0,12 s →
+  beduina o sciarpa 30% dopo 0,4 s, girata 15% dopo 0,6 s; girato con il marcatore ancora nella lotta aspetta 0,45 s (`CENTRO_PALLA`).
+- Tiro subito dopo una ricezione libera: una volta su tre, nei primi 18 s solo entro 4,5 m → le occasioni chiare (entro 5 m, di
+  fronte, nessuno entro 2 m, linea libera) si tirano sempre, a qualunque secondo (`OCCASIONE_CHIARA`).
+- Palla al centroboa: vantaggio che cresce dai 7 ai 15 s d'azione (v0.64) → dai 3 ai 9 s, più un vantaggio per l'ingresso classico
+  con il marcatore dietro o al fianco (`CENTRO_ATTESA`).
+
 ## v0.80
 - Nei rientri nessuno scambio di marcatura (ognuno inseguiva il suo uomo, `cambioMarcatura` solo sui tagli dell'attacco schierato)
   → l'attaccante più avanti lo prende il difensore meglio piazzato quando il suo marcatore è stato superato (`RIENTRO_SCAMBI`).

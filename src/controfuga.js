@@ -1,20 +1,24 @@
 // ================= TIRI SPECIALI IN CONTROFUGA (sezione 4, v0.31) =================
-// Solo in controfuga: chi porta palla nuotando e non ha più difensori davanti alla porta.
+// Solo in controfuga: chi porta palla nuotando e non ha più difensori davanti alla porta, entro QTE.eta s dal recupero (v0.81).
 // - SCHIZZO (descrizione di Ale): si resta distesi; la mano debole sta sotto la palla a pelo d'acqua e la mano forte la
 //   colpisce di schiaffo, in un solo gesto. Palla bassa e tesa, senza caricamento: il portiere la legge male. Più lontano.
 // - COLONNELLO: la mano forte prende la palla dall'acqua, la porta vicino alla spalla e la spinge in avanti. Da vicino.
-// Per il giocatore c'è un tasto a comparsa: compare «Premi TIRO» (sul telefono il pulsante TIRO si illumina con «Premi!»);
-// se non lo preme in tempo l'occasione sparisce e il tiro resta quello normale. Il computer li usa con la stessa regola.
+// Per il giocatore c'è un tasto a comparsa: compare «Tocca TIRO» (sul telefono il pulsante TIRO si illumina con «tocco: schizzo» o
+// «tocco: colonnello»); dalla v0.81 lo speciale parte con un tocco, tenendo premuto resta il tiro normale; se non lo tocca in tempo
+// l'occasione sparisce. Il computer li usa con la stessa regola (solo nella controfuga vera, QTE.eta).
 import { clamp, rnd } from './costanti.js';
 import { difensoriDavanti } from './statistiche.js';
 import { ball, game, goalX } from './stato.js';
 import { doShoot, startAct } from './tiri.js';
-export const QTE = { durata: 1.4, pausa: 2.5, vicino: 5.5, min: 2.5, max: 8, maxComputer: 6.5 };
+import { QTE } from './taratura.js';      // numeri del bilanciamento
+export { QTE };
 // che tiro speciale si può fare adesso (o null)
 export function occasioneControfuga(p) {
   if (ball.holder !== p || p.isGK || game.penalty === p || game.state !== 'play') return null;
   if (p.freeThrow && Math.abs(goalX(p.team) - p.x) < 6) return null;
   if (p.pressatoUntil > game.time) return null;
+  // v0.81 (Ale: «troppi tiri a schizzo e colonnello»): solo nella controfuga vera, poco dopo il recupero della palla (QTE.eta)
+  if (game.time - (game.possT || 0) > QTE.eta) return null;
   const d = Math.hypot(goalX(p.team) - p.x, p.z);
   if (d < QTE.min || d > QTE.max) return null;
   const inNuotata = (p.oriz || 0) > 0.35 || Math.hypot(p.vx, p.vz) > 0.9;
