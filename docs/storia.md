@@ -10,6 +10,22 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.79 — passaggi** (Claude Code, 24/11/2026; rapporto `docs/versioni/v079-passaggi.md`). RICHIESTA: Ale, «troppi passaggi
+  sbagliati»; due modi di passare: morbido sull'acqua vicino al compagno (perimetro tranquillo, palla al centroboa) o alto e teso
+  (uomo in più, palleggio prima della chiusura, cambio rapido di zona). MISURE: sonda nuova `npm run sonda-tipi-passaggio`: il
+  computer prende il 98,7% dei passaggi; il problema era la scelta del compagno del giocatore: su 379 scene vere d'attacco
+  schierato, puntando con ±10°, riceveva quello puntato il 54% delle volte e il 31% dei passaggi finiva al centroboa (precedenza
+  della v0.55 entro 60° verso la porta); con la levetta tenuta dopo il passaggio chi riceve nuotava via dalla palla. CAMBIAMENTI:
+  `tipoPassaggio` e `PASSAGGI` (morbido 6,5-9 m/s sull'acqua 0,3 m davanti al compagno, errore ×0,6; teso con l'uomo in più,
+  ultimi 8 s, oltre 8 m, cambio di lato, transizione, avversario entro 0,9 m dalla linea, compagno libero in posizione di tiro; al
+  centroboa marcato in acqua con la velocità del morbido, a quello libero in mano come nella v0.55); scelta del compagno solo sulla direzione (`MIRA_PASSAGGIO`, niente precedenza al centroboa); `aiutoGuida`:
+  con la levetta ancora nella direzione di mira chi riceve va incontro alla palla, e va a prendere il morbido caduto appena fuori
+  portata. La sonda dei tiri conta anche il gesto. NUMERI: compagno puntato 54,0% → 78,7%, centroboa per sbaglio 31% → 6%;
+  passaggi morbidi 22% (presi 99,5%); 16 partite: equilibrio uguale (gol 20,5 → 20,8, palla persa 17,3% → 16,0%). Gesti di tiro
+  del computer (v0.78, 4 partite): classico 75%, polso 13%, torsione 9%, colonnello 2 e schizzo 1 su 329, beduine e sciarpe 0 su 96
+  tiri del centroboa. PROVA NUOVA `npm run passaggi` (12 controlli), anche nella CI; `finta-v055` aggiornata (passaggio teso al compagno libero vicino alla porta). DECISIONI SUPERATE: in
+  `docs/decisioni-superate.md`. VERIFICHE: lint PASS; prove: primo giro FAIL in `finta` (scena tranquilla ora con passaggio morbido; centroboa libero mandato morbido per sbaglio, corretto), secondo giro 61/61 PASS in 15,2 minuti; verifica con --partite=0: foto «azione» diversa per un passaggio morbido in volo, guardata e aggiornata, ripetuta: identiche; aspetto delle viste «Tutto a posto», iPhone 56 oggetti e 131.872 triangoli. NON FATTO: gesto del passaggio morbido uguale al teso; giudizio di Ale.
+
 - **v0.78 — comandi e interfaccia** (Claude Code, 24/11/2026; rapporto `docs/versioni/v078-comandi-interfaccia.md`). RICHIESTA: Ale,
   13 punti dopo le versioni di Codex, prima «riallinearsi agli sviluppi di Codex»; qui i due punti sull'interfaccia: in difesa il
   tasto PASSA deve diventare CONTRASTA, colorare i tasti per riconoscerli, barra dell'energia con cognome e numero al posto di

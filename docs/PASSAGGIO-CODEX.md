@@ -1,3 +1,21 @@
+# Passaggio WATERPOLO7 — v0.79 passaggi (Claude Code)
+
+Stesso ramo della v0.78 (`claude/gracious-rubin-rcvklk`), versione 0.79.0. Cambia la partita (solo i passaggi).
+- `tipoPassaggio(p,m,d)` in `src/tiri.js` e `PASSAGGI` in `src/taratura.js`: morbido sull'acqua 0,3 m davanti al compagno
+  (6,5-9 m/s, errore ×0,6) nella circolazione tranquilla con la linea libera; teso come prima con l'uomo in più, ultimi 8 s, oltre
+  8 m, cambio di lato, transizione (passatore a oltre 10 m dalla porta), avversario entro 0,9 m dalla linea, compagno libero in
+  posizione di tiro (entro 6,5 m, nessuno entro 1,5 m). Al centroboa marcato: in acqua davanti a lui con la velocità del morbido;
+  a quello libero in mano (v0.55). `tests/finta-v055.mjs`: la scena del tiro al volo ora ha il ricevente libero. `ball.tipoPassaggio` dice il tipo del passaggio in volo.
+- `humanPassTarget`: conta la direzione (`MIRA_PASSAGGIO`, esposto anche in `window.__pallanuoto.prova`); tolta la precedenza al
+  centroboa (`BOA_PREFERITO`): su 379 scene vere il 31% dei passaggi gli arrivava senza volerlo. Il PASSA neutro (chiamate,
+  tagliante, scelta assistita) non cambia.
+- `aiutoGuida` in `src/controllo.js`: con la levetta ancora nella direzione di mira (`ball.levettaMira`) chi riceve va incontro
+  alla palla; va anche sul morbido caduto appena fuori portata.
+- Prova nuova `npm run passaggi` (anche nella CI); sonda `npm run sonda-tipi-passaggio`; la sonda dei tiri conta il gesto
+  (`window.__logTiri` ha `g` e `boa`). Equilibrio della partita uguale alla v0.77 (16 partite). [Rapporto](versioni/v079-passaggi.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.78 comandi e interfaccia (Claude Code)
 
 Base `main` `7527d46` (PR #68 unita). Ramo `claude/gracious-rubin-rcvklk`, versione 0.78.0. Ale ha mandato 13 punti dopo la v0.77;

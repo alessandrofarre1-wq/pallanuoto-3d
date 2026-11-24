@@ -3,6 +3,16 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.79
+- Passaggi sempre alti e tesi alla mano (v0.55) → due modi: morbido sull'acqua vicino al compagno (circolazione tranquilla con la
+  linea libera) o alto e teso (uomo in più, ultimi 8 s, oltre 8 m, cambio di lato, transizione, avversario vicino alla linea,
+  compagno libero in posizione di tiro). Resta della v0.55: al centroboa libero in mano, a quello marcato in acqua.
+- Palla al centroboa marcato in acqua a 0,8 volte la velocità del teso → con la velocità del morbido.
+- Scelta del compagno con la levetta: direzione ×4, distanza −0,07 al metro, +0,5 con la linea libera, precedenza al centroboa
+  (+1,2 entro 60° verso la porta, v0.55) → conta la direzione; la distanza decide solo gli spareggi; nessun premio.
+- Con la levetta tenuta dopo il passaggio chi riceve nuotava nella direzione della levetta → va incontro alla palla finché la
+  levetta resta nella direzione usata per mirare.
+
 ## v0.78
 - Tasto PASSA sempre uguale, con «contrasto» scritto in piccolo → con la palla agli avversari diventa CONTRASTA (scritta, icona,
   colore); con la palla nostra o libera resta PASSA, senza scritta sotto.

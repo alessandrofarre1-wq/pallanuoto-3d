@@ -69,13 +69,15 @@ prova(d.tiro, `tenuto 0,9 s e lasciato = tiro caricato (partito: ${d.tiro ? 'sì
 await pg.evaluate(() => { const H = window.__pallanuoto, it = H.teams[0], gx = 12.5 * it.dir, p = it.players[4], m = it.players[2];
   H.game.state = 'play'; H.game.after = null; H.game.penalty = null;
   m.x = gx - it.dir * 5; m.z = -3; m.vx = m.vz = 0; m.decideT = 99; p.x = gx - it.dir * 9; p.z = 3; H.regole.giveBall(p); H.__setCtrl(p); p.act = null;
+  // v0.79: il compagno è libero (nessun avversario entro 1,5 m) in posizione di tiro: il passaggio gli arriva alto e teso, in mano
+  for (const o of H.teams[1].players) if (!o.isGK && Math.hypot(o.x - m.x, o.z - m.z) < 2.5) { o.x = gx - it.dir * 8; o.z = 6; o.vx = o.vz = 0; }
   H.prova.doPass(p, m); window.__vPass = Math.hypot(H.ball.vx, H.ball.vz); window.__salta(3); });
 await tocco(60);
 // si guarda il primo secondo dopo il tocco: il tiro al volo parte appena arriva la palla (poi il portiere può già averla parata)
 const v = await pg.evaluate(() => { const H = window.__pallanuoto, m = H.teams[0].players[2]; let tipo = null, stato = null, tiratore = false;
   for (let i = 0; i < 60 && !tiratore; i++) { window.__salta(1); if (H.ball.kind === 'shot' && H.ball.shooter === m) { tipo = 'shot'; stato = H.ball.state; tiratore = true; } }
   return { velocita: window.__vPass, tipo, stato, tiratore }; });
-prova(v.velocita >= 11, `passaggio teso: ${v.velocita.toFixed(1)} m/s alla partenza (prima 8,5-12)`);
+prova(v.velocita >= 11, `passaggio teso al compagno libero vicino alla porta: ${v.velocita.toFixed(1)} m/s alla partenza (v0.79: morbido solo nella circolazione tranquilla)`);
 prova(v.tipo === 'shot' && v.tiratore, `un tocco su TIRO mentre arriva il passaggio = tiro al volo di chi riceve (${v.tipo}, ${v.stato})`);
 // passaggio (v0.55): in attacco mai al proprio portiere; con la levetta verso la porta il centroboa ha la precedenza
 const pas = await pg.evaluate(() => { const H = window.__pallanuoto, it = H.teams[0], gx = 12.5 * it.dir, p = it.players[4];

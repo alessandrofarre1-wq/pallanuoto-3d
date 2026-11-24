@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.78). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.79). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -35,7 +35,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   `grafica/acqua-eventi.js` (con i `LIMITI`); ogni materiale che va in acqua passa da `sottAcqua()`.
 - **Misurare prima di correggere**: `npm run taratura` (8 partite ITA–HUN tre alla volta, gioco contro realtà; `--salva=` e
   `--confronta=` per il prima e dopo), `npm run bilancio` (`--partite=8 --squadre=ITA,HUN --paralleli=3`, anche `--dist=` e
-  `--porta=` per girare in sottofondo), sonde in `strumenti/` (`sonda-tiri`, `sonda-azioni`, `sonda-superiorita`, `sonda-entrate`, `sonda-scatti`,
+  `--porta=` per girare in sottofondo), sonde in `strumenti/` (`sonda-tiri` anche per gesto, `sonda-tipi-passaggio`, `sonda-azioni`, `sonda-superiorita`, `sonda-entrate`, `sonda-scatti`,
   `misura-azione-v053`, `sonda-passaggi`, `sonda-ripartenza`, `foglio-tiro-v061`). Tra due giri da 8 partite c'è qualche punto di variazione:
   per decidere su differenze di pochi punti servono 16 partite (`--partite=16`) o più campioni (le sonde, `--squadre=ESP,HUN`). Per i movimenti
   `npm run primi-piani` (primi piani e sequenze), `npm run gesti`, `npm run gesti-foglio` (otto gesti da tre lati in sei momenti,
@@ -102,8 +102,12 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   il corpo esce quasi fino ai fianchi (solo disegno). Palla tenuta alta, mano dietro la palla, gomito in fuori; rilascio come
   accompagnamento; con un avversario vicino si protegge la palla girando busto e testa; il centroboa marcato tiene la palla in acqua
   finché non fa un gesto. Mancini con i gesti allo specchio.
-- Passaggi alti e tesi (11-15,5 m/s); presa alla mano (0,55 m, portiere 0,9 m); errore verosimile, mai grossi sbagli su passaggi
-  semplici; al centroboa marcato la palla arriva in acqua davanti a lui; mai al proprio portiere in attacco. Nel passaggio di lato
+- Due modi di passare (v0.79, Ale; `tipoPassaggio`, `PASSAGGI`): morbido sull'acqua 0,3 m davanti al compagno (6,5-9 m/s, errore
+  ×0,6) nella circolazione tranquilla con la linea libera; alto e teso alla mano (11-15,5 m/s) con l'uomo in più, negli ultimi 8 s,
+  oltre 8 m, cambiando lato, in transizione, con un avversario vicino alla linea e al compagno libero in posizione di tiro. Presa alla mano (0,55 m, portiere 0,9 m); errore
+  verosimile, mai grossi sbagli su passaggi semplici; al centroboa marcato la palla arriva morbida in acqua davanti a lui, a quello
+  libero in mano; mai al proprio portiere in attacco. PASSA con la levetta va al compagno puntato (conta la direzione, `MIRA_PASSAGGIO`; niente precedenza
+  al centroboa); con la levetta ancora nella direzione di mira chi riceve va incontro alla palla. Prova `npm run passaggi`. Nel passaggio di lato
   busto e testa girano verso il compagno e la mano non passa davanti al viso; chi riceve guarda la palla (solo disegno).
 - Raccordi visuali v0.70 (`grafica/gesto-vista.js`): carica già raggiunta conservata, ingresso/uscita dalla posa precedente, curva continua al rilascio e filtro graduale. Stato solo visuale per atleta; giunture fisiche, punto/tempi del lancio e carica0,9s conservati. Nessuna nuova geometria.
 - Chi nuota con la palla davanti alla testa, prima di tirare, passare o fintare la pesca dall'acqua e la porta di lato all'altezza
@@ -171,14 +175,15 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.78 — comandi e interfaccia (Claude Code)
+## Stato v0.79 — passaggi (Claude Code)
 
-Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` v0.77 (Codex, PR #59-#68). Ale (24/11/2026) ha mandato 13 punti: questa
-versione fa i due sull'interfaccia (CONTRASTA in difesa, tasti colorati, energia con il cognome); piano per gli altri nelle
-versioni successive: passaggi (meno errori; morbido sull'acqua o alto e teso), tiri (meno schizzo e colonnello, più beduine e palla
-al centro; occasioni chiare tirate subito), cambi di marcatura (meno controfughe finte), cambi volanti con senso, time-out con il
-portiere a metà campo, rigore con la palla dall'acqua e movimento continuo, finte, rose dei giocatori a disposizione dei CT.
-[Rapporto](docs/versioni/v078-comandi-interfaccia.md).
+Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` v0.77 (Codex, PR #59-#68). Ale (24/11/2026) ha mandato 13 punti. Fatti:
+v0.78 interfaccia (CONTRASTA in difesa, tasti colorati, energia con il cognome; [rapporto](docs/versioni/v078-comandi-interfaccia.md));
+v0.79 passaggi (morbido o teso, compagno puntato, levetta tenuta; [rapporto](docs/versioni/v079-passaggi.md)). Prossimi, in
+quest'ordine: cambi di marcatura nei rientri (oggi gli scambi avvengono solo sui tagli nell'attacco schierato: nei rientri ognuno
+insegue il suo uomo e restano attaccanti liberi), tiri (schizzo e colonnello del giocatore fuori dalle vere controfughe, beduine del
+centroboa che oggi sono zero, occasioni chiare tirate subito), cambi volanti, time-out con il portiere a metà campo, rigore con la
+palla dall'acqua, finte, rose dei giocatori a disposizione dei CT.
 
 **Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.77, `npm run taratura -- --partite=16`): 20,5 gol e 42,3 tiri per squadra
 (veri 13,3 e 33), tiri in gol 48,3% (40%), espulsioni 8,2 (11; dal centro 53%, vero 66%), superiorità 42% (52%), parità: gol 25,6%

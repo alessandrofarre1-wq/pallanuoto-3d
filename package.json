@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.78.0",
+  "version": "0.79.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,6 +10,8 @@
     "lint": "eslint src tests strumenti",
     "prove": "node tests/prove.mjs",
     "comandi-interfaccia": "node tests/comandi-interfaccia.mjs",
+    "passaggi": "node tests/passaggi.mjs",
+    "sonda-tipi-passaggio": "node strumenti/sonda-tipi-passaggio.mjs",
     "verifica": "node tests/qualita.mjs && node tests/tornei.mjs && node tests/verifica.mjs --no-legacy",
     "verifica:legacy": "node tests/verifica.mjs",
     "occasioni": "node tests/occasioni.mjs",

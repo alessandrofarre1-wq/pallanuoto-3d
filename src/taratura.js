@@ -97,6 +97,17 @@ export const INTERCETTO={ base:0.14, lungo:0.36 };
 // l'errore può capitare ma deve essere verosimile»): base 1,5 → 1,0, pressione 2,5 → 0,8, disteso 0,6 → 0,3; errore limitato a
 // «limite» deviazioni tipiche.
 export const ERRORE_PASSAGGIO={ base:1.0, pressione:0.8, disteso:0.3, limite:2 };
+// PASSAGGI (v0.79, Ale: «i passaggi possono essere di due modi: o morbido sull'acqua vicino al compagno (di solito quando il ritmo
+// è più rilassato sul perimetro o quando la si passa al centro boa) oppure alto e teso (di solito durante l'uomo in più o quando si
+// palleggia prima della chiusura dell'azione o per cambiare velocemente area del campo)»).
+// MORBIDO: velocità morbido[0] + morbido[1]×Passaggio m/s, arriva sull'acqua (altezza) «davanti» m dal compagno verso chi passa,
+// errore × «errore» (corto e lento: più facile da mettere giusto). TESO: quello di prima, 11-15,5 m/s alla mano alzata.
+// Si passa teso con l'uomo in più, negli ultimi «ultimi» secondi del possesso, oltre «lungo» m, cambiando lato (oltre «lato» m
+// di differenza), in transizione (chi passa a più di «transizione» m dalla porta avversaria), con un avversario entro «corridoio»
+// m dalla linea del passaggio e al compagno libero in posizione di tiro (entro «tiro» m dalla porta, nessun avversario entro
+// «libero» m: la palla gli arriva in mano e può tirare subito, anche al volo; vale anche per il centroboa che si è liberato, v0.55).
+// Al centroboa marcato il passaggio resta in acqua davanti a lui, con la velocità del morbido.
+export const PASSAGGI={ morbido:[6.5,2.5], altezza:0.12, davanti:0.3, errore:0.6, ultimi:8, lungo:8, lato:6, transizione:10, corridoio:0.9, tiro:6.5, libero:1.5 };
 // PRESA del passaggio: distanza orizzontale massima dal corpo (braccio teso verso la palla) e altezza massima della palla.
 // v0.56: alla mano 0,5 m (prima 0,85 m dal centro del corpo); v0.57: 0,5 → 0,55, il portiere arriva più lontano (due mani, tuffo).
 export const PRESA={ raggio:0.55, portiere:0.9, alto:1.5 };
