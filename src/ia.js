@@ -5,7 +5,8 @@ import { anticipoTarget, boaFrontePorta, centroTarget, leggiCentro } from './cen
 import { numeroPosizione, schemaSquadra } from './schemi.js';
 import { coperturaCambio } from './difesa-cambi.js';
 import { aggiornaEntrate, attesaEntrata, centroAttacco, destinatarioEntrata, postoAttacco, preparaEntrata, ricezioneAla, targetEntrata } from './entrate.js';
-import { FINTA_LATO, fintaDi, fintaLatoAttiva } from './finte.js';
+import { FINTA_LATO, FINTA_RITMO, fintaDi, fintaLatoAttiva } from './finte.js';
+import { FINTA_MOVIMENTO } from './finta-movimento.js';
 import { avanzaUomo, avviaUomo, ePalo, perimetroUomo, postiUomo, postiUomoDi, scelti as sceltiUomo, trova as trovaUomo, SCELTI_COMPUTER } from './uomo-in-piu.js';
 import { doFake, falloSenzaPalla, timeout } from './regole.js';
 import { annuncia as notifica } from './cronaca.js';
@@ -761,7 +762,8 @@ export function aiShoot(p,power,lob){
     const f=fintaDi(p);
     startAct(p,'fake',f.wind,()=>{
       doFake(p);
-      if(ball.holder===p&&game.state==='play')startAct(p,'lob',f.pausa[0],()=>doShoot(p,power,true,null));
+      // v0.85: la palombella parte a braccio tornato carico (ritorno della finta più FINTA_RITMO.attesa), non a metà del ritorno
+      if(ball.holder===p&&game.state==='play')startAct(p,'lob',Math.max(f.pausa[0],FINTA_MOVIMENTO.recupero+FINTA_RITMO.attesa),()=>doShoot(p,power,true,null));
     });
     return;
   }
@@ -799,6 +801,9 @@ export function aiCarrier(p,dt){
   const dGoal=Math.hypot(gx-p.x,p.z);
   p.target={x:slot.x+t.dir*0.8, z:slot.z, sprint: Math.abs(p.x-slot.x)>6};
   if(p.act&&!p.act.done) return;
+  // v0.85 (Ale: «le finte vicino alla porta sono troppo veloci»): dopo una finta nessun gesto nuovo finché il braccio non è tornato
+  // carico e ha atteso FINTA_RITMO.attesa (tiri.js, p.fintaPronto); la pausa personale della finta intanto scorre
+  if(game.time<(p.fintaPronto||0)){ p.decideT-=dt; return; }
   if(!manUp(t)&&centroAttacco(t)===p&&boaFrontePorta(p)){
     if(ball.holdTime>=.12&&!(p.pressatoUntil>game.time)){
       p.motivoTiro='boa fronte porta';aiShoot(p,.75,false);

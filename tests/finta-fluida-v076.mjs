@@ -50,6 +50,9 @@ try{
       window.__pad.buttons.forEach(b=>{b.pressed=false;b.value=0;});window.__pad.axes=[0,0];
       document.activeElement?.blur();document.querySelector('#menu').style.display='none';
       const time=100+ ++scena*20;
+      // v0.85: a ogni finta il disegno sceglie una forma (larga o stretta, braccio dritto o piegato: grafica/pose.js FINTA_FORMA).
+      // Avvio e cicli caricati si confrontano a parità di forma: ogni scena ne usa una, a rotazione, e ogni stile le prova tutte e quattro.
+      window.__formaFinta=[{largo:.9,piegato:false},{largo:.1,piegato:true},{largo:.1,piegato:false},{largo:.9,piegato:true}][scena%4];
       Object.assign(H.game,{state:'play',autoplay:false,time,clock:180,shot:28,period:1,after:null,
         fermoFallo:null,penalty:null,rigoriFinali:null,possTeam:H.teams[0],possT:time,passaggi:0,cambiLiberi:false});
       H.fight.active=false;

@@ -46,13 +46,24 @@ prova(a.gesto === 'polso' && a.finte === 0, `un tocco e rilascio su TIRO = polso
 await prepara(); await premi(); await pg.evaluate(() => window.__salta(180)); const b = await stato();
 prova(b.tiene && b.finte >= 3, `TIRO tenuto = finte continue con la palla in mano (${b.finte})`);
 await rilascia();
-// v0.59 (video di Dénes Varga; Ale: «sposta sia il difensore che il portiere»): la prima finta dritta, poi di lato verso un palo,
-// alternando; il portiere che abbocca alla finta di lato si sposta verso quel palo
+// v0.59 (video di Dénes Varga; Ale: «sposta sia il difensore che il portiere»): finte di lato verso un palo, alternando; il portiere
+// che abbocca alla finta di lato si sposta verso quel palo. v0.85 (Ale: «avanti-indietro ma più spesso destra-sinistra»): anche la
+// prima può andare di lato (prima era sempre dritta) e con la levetta inclinata va da quella parte già dalla prima.
 await prepara(); await premi();
 const lati = await pg.evaluate(() => { const p=window.__pallanuoto.teams[0].players[4],lati=[]; let contate=0;
-  for(let i=0;i<240&&lati.length<3;i++){ window.__salta(1); if(p.fakeCount>contate){contate=p.fakeCount;lati.push(p.fintaLatoGesto||0);} } return lati; });
+  for(let i=0;i<300&&lati.length<3;i++){ window.__salta(1); if(p.fakeCount>contate){contate=p.fakeCount;lati.push(p.fintaLatoGesto||0);} } return lati; });
 await rilascia();
-prova(lati[0] === 0 && Math.abs(lati[1]) === 1 && lati[2] === -lati[1], `finte: la prima dritta, poi di lato alternando (${lati.join(', ')})`);
+const laterali = lati.filter(l => l !== 0);
+prova(lati.length === 3 && laterali.length >= 2 && lati.slice(1).every(l => l !== 0) && laterali.every((l, i) => i === 0 || l === -laterali[i - 1]),
+  `finte: di lato verso un palo, alternando (${lati.join(', ')})`);
+await prepara();
+await pg.evaluate(() => window.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowDown' })));
+await premi();
+const conLevetta = await pg.evaluate(() => { const p=window.__pallanuoto.teams[0].players[4];
+  for(let i=0;i<120&&!(p.fakeCount>0);i++) window.__salta(1); return p.fakeCount>0 ? p.fintaLatoGesto||0 : null; });
+await rilascia();
+await pg.evaluate(() => window.dispatchEvent(new KeyboardEvent('keyup', { code: 'ArrowDown' })));
+prova(conLevetta === 1, `con la levetta inclinata la prima finta va già da quella parte (lato ${conLevetta})`);
 const gkSposta = await pg.evaluate(() => { const H = window.__pallanuoto, gk = H.teams[1].players[0];
   gk.fintaLato = null; const z0 = H.prova.gkTarget(gk).z; gk.fintaLato = { lato: 1, fino: H.game.time + 1 }; const z1 = H.prova.gkTarget(gk).z; gk.fintaLato = null; return z1 - z0; });
 prova(gkSposta > 0.3, `il portiere che abbocca alla finta di lato si sposta verso quel palo (${gkSposta.toFixed(2)} m)`);

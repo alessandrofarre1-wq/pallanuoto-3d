@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.84). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.85). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -117,7 +117,12 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   della spalla (solo disegno, dentro i tempi del gesto).
 - Avvio finta v0.77: tenuta umana dalla posa realmente in acqua alla posa caricata Plask in 0,70 s, con rotazioni locali e prima finta sovrapposta. Non comprimere l’intero prefisso registrato in 0,5 s. Originale/dati Plask integri, parte di rilascio conservata; tiri diretti/CPU sul percorso precedente. Cache invalidata con identità/tempo; annullamento dall’ultima posa. Solo disegno, controlli e tempi fisici invariati.
 - Finte v0.76: almeno 0,16 s preparazione + 0,18 s accenno + 0,36 s recupero, ripetizione dopo il recupero. Durante la tenuta la base Plask resta continua, braccio additivo e torace limitato a 0,10 rad; niente spegnimento/riaccensione di tutto il corpo. Dita solidali alla mano. Massimo 0,9 s e rilascio durante finta/recupero conservati; sei stili personali (larga, a raffica, di polso, mezza, di bomba, di spalla) con un piccolo vantaggio sul
-  seguito tipico; dalla seconda finta il braccio va di lato e sposta difensore e portiere.
+  seguito tipico; la finta di lato (dalla seconda sempre, la prima 65 volte su 100, con la levetta sempre) sposta difensore e portiere.
+- Finte v0.85 (Ale: «vicino alla porta troppo veloci, vanno rallentate»; `FINTA_RITMO`, `FINTA_LATO.prima`): dopo ogni finta il gesto
+  successivo (finta, tiro o passaggio) parte a braccio tornato carico più 0,2 s (video di Varga), per il computer e per la tenuta di
+  TIRO; il rilascio di TIRO tira sempre subito. Solo disegno (`FINTA_FORMA`, `grafica/pose.js`): a ogni finta larga o stretta (più
+  stretta vicino alla porta) e braccio dritto o piegato, con la tendenza dello stile. Prova `npm run finte`, sonda `npm run sonda-finte`,
+  foglio `npm run finte-forme`.
 - Portiere: segue il passaggio, para in base a posizione, Riflessi, stanchezza, sorpresa e muro; para meno dopo un cambio di lato,
   in superiorità, dopo una finta o su tiri vicini; mentre l'avversario carica sale a braccia larghe (solo disegno).
 - Portiere v0.71: il sorteggio decide il tentativo, non una presa senza contatto. Sagoma numerica condivisa con il disegno, sweep3D e reazione/velocità delle mani limitate; corpo/testa respingono, le prese ravvicinate richiedono la mano e sono rare. Stesse regole per le due squadre. Proporzioni v0.72: campo25×20m, porta3×0,90m e palla22,12cm nello stesso mondo. Scala delle giuntureVIS1,45→1,10: modello base2,547→1,932m in bind, profili individuali conservati. Sagoma/mani del portiere, palla sul palmo, ombra e contatto acqua seguono il corpo. Il punto fisico di lancio segue necessariamente la nuova altezza; tempi e velocità del tiro conservati.

@@ -1,3 +1,24 @@
+# Passaggio WATERPOLO7 — v0.85 finte (Claude Code)
+
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.85.0. Cambia la partita (ritmo delle finte del computer, lato della prima
+finta) e il disegno della finta. Rispetta la v0.76/v0.77: tempi del gesto (`FINTA_MOVIMENTO`), tenuta Plask e rilascio libero
+invariati.
+- `FINTA_RITMO.attesa` (0,2 s) e `FINTA_LATO.prima` (0,65) in `src/taratura.js`. `startAct` (`src/tiri.js`) per la finta: lato anche
+  alla prima (levetta o caso), `p.fintaPronto = fine del ritorno + attesa`. `aiCarrier` (`src/ia.js`): finché `game.time <
+  p.fintaPronto` nessun gesto nuovo (`decideT` intanto scorre); la palombella dopo la finta del computer ha `wind` ≥ ritorno + attesa.
+  `controllo.js`: cadenza della tenuta con `FINTA_RITMO.attesa` al posto di 0,12. `fintaPronto` azzerato in `giveBall`, nel reset di
+  `regole.js` e in `menu.js`.
+- Solo disegno (`src/grafica/pose.js`): `formaFinta(p,a)` sceglie per ogni gesto (WeakMap sull'atto, `rndGrafica`) larghezza e braccio
+  dritto/piegato dalle tendenze `largo`/`piegato` di `FINTE` (`src/finte.js`); `FINTA_FORMA` decide arrivo della mano, torsione e
+  angolo della finta di lato. `window.__formaFinta` forza una forma (strumenti e prove).
+- `tests/finta-fluida-v076.mjs`: ogni scena forza una delle quattro forme a rotazione, così avvio e cicli si confrontano a parità di
+  forma (con forme diverse il rapporto 1,5 tra i picchi falliva in 3 scene su 24 senza scatti veri). `tests/finta-v055.mjs`: il
+  controllo sui lati segue la regola nuova.
+- Prova nuova `npm run finte` (anche nella CI); sonda `npm run sonda-finte`; foglio `npm run finte-forme`.
+  [Rapporto](versioni/v085-finte.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.84 rigore (Claude Code)
 
 Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.84.0. Cambia la partita (controfallo del rigore) e il disegno del rigore.

@@ -327,6 +327,25 @@ export const ACCOMPAGNA={ shot:[0.54,0.20,-0.08], torsione:[0.50,0.18,-0.20], po
 // passaggio di lato (v0.63): quota dell'angolo verso il compagno fatta girando il busto (opposto = dalla parte opposta al braccio che
 // passa, stesso = dalla sua parte), giro massimo del busto e della testa (rad)
 export const PASSAGGIO_VISTA={ opposto:0.7, stesso:0.35, max:1.1, testa:1.3 };
+// FORMA DELLA FINTA (v0.85, Ale: «finte larghe o strette, braccio piegato o dritto»). Solo disegno, scelta a ogni finta con il caso
+// della grafica: larghezza = tendenza dello stile personale (finte.js, largo) ± varia/2, più stretta di «stretta» entro «vicino» metri
+// dalla porta (da 2 m prima). Braccio dritto: il braccio si distende, verso l'alto nella stretta («dritto», arco corto) e verso la
+// porta nella larga («dritto2», arco lungo); piegato: il gomito resta piegato e l'avambraccio spinge la mano di «piegato» (× 0,7-1,3
+// con la larghezza) davanti alla carica, al massimo a «raggio» dalla spalla (gomito a circa 90°). La larga gira di più il busto
+// (torsione × 0,75-1,25) e nella finta di lato porta il braccio più verso il palo (FINTA_LATO.gesto × 0,55-1,45); a braccio piegato la
+// mano, vicina alla testa, si sposta anche di lato di «latoPiegato» × (0,5 + larghezza) metri (girare il braccio raccolto non basta).
+export const FINTA_FORMA={ varia:0.5, vicino:6, stretta:0.25, dritto:[0.04,0.60,0.06], dritto2:[0.26,0.56,0.04], piegato:[0.16,0.05,0.03], raggio:0.43, latoPiegato:0.1 };
+const formeFinta=new WeakMap();      // una forma per ogni gesto di finta (la memoria è del disegno, non del giocatore)
+export function formaFinta(p,a){
+  let f=formeFinta.get(a); if(f) return f;
+  // solo per i fogli di foto e le prove (strumenti/finte-forme-foglio.mjs, tests/finte-v085.mjs, tests/finta-fluida-v076.mjs): una
+  // forma scelta a mano
+  if(typeof window!=='undefined'&&window.__formaFinta){ f={...window.__formaFinta}; formeFinta.set(a,f); return f; }
+  const st=fintaDi(p), dGoal=Math.hypot(goalX(p.team)-p.x,p.z), vicino=clamp((FINTA_FORMA.vicino-dGoal)/2,0,1);
+  const largo=clamp((st.largo??0.5)+(rndGrafica()-0.5)*FINTA_FORMA.varia-FINTA_FORMA.stretta*vicino,0,1);
+  f={ largo, piegato:rndGrafica()<(st.piegato??0.4) };
+  formeFinta.set(a,f); return f;
+}
 // ricezione (v0.63): chi aspetta un passaggio gira la testa verso la palla in volo, fino a RICEZIONE_TESTA rad
 export const RICEZIONE_TESTA=1.2;
 // fine di passaggio e palombella (v0.63): dove torna la mano, rispetto alla spalla (in acqua, di lato, come per remare)
@@ -491,7 +510,8 @@ function articolaVista(p,J,T,t,gestoVista){
   const busto=ease(clamp((volo-0.02)/0.70,0,1));
   const braccioK=ease(clamp((volo-0.14)/0.86,0,1)), polso=ease(clamp((volo-0.62)/0.38,0,1));
   const rientra=ease(clamp((chiude-0.55)/0.45,0,1));
-  const base0=kind==='fake'?-0.84*(fintaDi(p).torsione):kind==='shot'||kind==='torsione'?-0.84:kind==='beduina'||kind==='rovesciata'?0.72:kind==='sciarpa'?-0.72:th.tw0;
+  const ff=kind==='fake'&&a?formaFinta(p,a):null;      // v0.85: finta larga o stretta, braccio piegato o dritto (FINTA_FORMA)
+  const base0=kind==='fake'?-0.84*(fintaDi(p).torsione)*(ff?0.75+0.5*ff.largo:1):kind==='shot'||kind==='torsione'?-0.84:kind==='beduina'||kind==='rovesciata'?0.72:kind==='sciarpa'?-0.72:th.tw0;
   const base1=kind==='shot'?0.48:kind==='torsione'?0.72:th.tw1;
   // PASSAGGIO DI LATO (v0.63, foglio a tre lati): verso il compagno il busto gira (di più se il passaggio va dalla parte opposta al
   // braccio, dove prima l'avambraccio passava davanti al viso e la mano finiva sulla faccia), la testa lo guarda e la mano lo segue
@@ -536,6 +556,12 @@ function articolaVista(p,J,T,t,gestoVista){
     T.alzataTiro=k;      // corpo.js lascia salire il bacino fin quasi al pelo dell'acqua (le gambe restano sotto)
   }
   const caricata=mix3(HOLD_VISTA,fp?fp.vista:CARICA_VISTA[kind]||CARICA_VISTA.shot,carica);
+  if(ff){
+    if(ff.piegato){      // braccio piegato: l'avambraccio spinge la mano avanti, il gomito resta piegato
+      const k=0.7+0.6*ff.largo; rilascio=add3(caricata,FINTA_FORMA.piegato.map(v=>v*k));
+      const r=Math.hypot(...rilascio); if(r>FINTA_FORMA.raggio) rilascio=rilascio.map(v=>v*FINTA_FORMA.raggio/r);
+    } else rilascio=mix3(FINTA_FORMA.dritto,FINTA_FORMA.dritto2,ff.largo);      // braccio dritto verso la porta
+  }
   let off=tt>=0&&a&&kind!=='fake'
     ? frustaVista(gestoVista.off,caricata,rilascio,ACCOMPAGNA[kind]||th.F,tt,fr)
     : mix3(caricata,rilascio,braccioK);
@@ -544,6 +570,7 @@ function articolaVista(p,J,T,t,gestoVista){
   // «ad ala di pollo», gomito sotto e dietro la spalla)
   let hint=mix3(mix3(GOMITO_FUORI,[-0.3,0.15,1],carica),[-0.08,0.05,1],braccioK);
   if(kind==='shot')hint=mix3(hint,[-0.12,0.95,0.68],tiro.gomito);
+  if(ff?.piegato) hint=mix3(hint,[-0.25,0.35,1],carica*(1-ease(chiude)));      // v0.85: braccio piegato, gomito in fuori e alto
   hint=mix3(hint,[0.15,-0.7,0.8],ease(chiude));
   // palmo: dietro la palla, in avanti e un po' in su durante la carica (prima rivolto al cielo, «a vassoio»), verso il bersaglio
   // al rilascio, in giù nella chiusura
@@ -551,9 +578,10 @@ function articolaVista(p,J,T,t,gestoVista){
   n=mix3(n,ACCOMPAGNA[kind]?PALMO_ACCOMPAGNA:[0.15,-0.9,-0.2],ease(chiude));
   // finta di lato (v0.59, Varga): il braccio va verso il palo scelto, non dritto alla porta
   if(kind==='fake'&&p.fintaLatoGesto){
-    const la=p.fintaLatoGesto*p.fx*lato, ang=Math.sign(la)*FINTA_LATO.gesto*carica*(1-chiude), c=Math.cos(ang),s=Math.sin(ang);
+    const la=p.fintaLatoGesto*p.fx*lato, ang=Math.sign(la)*FINTA_LATO.gesto*(ff?0.55+0.9*ff.largo:1)*carica*(1-chiude), c=Math.cos(ang),s=Math.sin(ang);
     const ruota=v=>[v[0]*c-v[2]*s,v[1],v[0]*s+v[2]*c];
     off=ruota(off); hint=ruota(hint); n=ruota(n);
+    if(ff?.piegato) off[2]+=Math.sign(la)*FINTA_FORMA.latoPiegato*(0.5+ff.largo)*carica*(1-chiude);
   }
   if(kind==='pass'&&a?.aim){
     // il braccio punta al compagno fino al rientro (prima tornava dritto già nell'accompagnamento e attraversava la faccia)

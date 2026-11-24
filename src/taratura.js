@@ -194,7 +194,17 @@ export const FIRMA=Object.freeze({ entro:1.6, sorpresa:0.08, intercetto:0.7 });
 // sposta il braccio da quella parte (muro × lontano sul lato opposto, × vicino sullo stesso); il portiere si sposta di «portiere»
 // metri verso quel palo e para meno sul lato opposto (parataLontano) e un po' di più sullo stesso (parataVicino); gesto =
 // rotazione del braccio di lato (solo disegno).
-export const FINTA_LATO={ durata:1.1, portiere:0.45, lontano:0.4, vicino:1.15, parataLontano:0.35, parataVicino:0.08, gesto:0.5 };
+// prima (v0.85, Ale: «avanti-indietro ma più spesso destra-sinistra») = probabilità che anche la PRIMA finta vada di lato (prima era
+// sempre dritta: nelle partite del computer 98 finte su 100 erano la prima, quindi quasi tutte dritte); con la levetta inclinata il
+// giocatore la manda da quella parte già dalla prima. Dalla seconda resta sempre di lato, alternando.
+export const FINTA_LATO={ durata:1.1, portiere:0.45, lontano:0.4, vicino:1.15, parataLontano:0.35, parataVicino:0.08, gesto:0.5, prima:0.65 };
+// RITMO DELLE FINTE (v0.85, Ale: «davanti alla porta finta veloce ma non troppo»; «ora quelle vicino alla porta sono troppo veloci,
+// vanno rallentate»). Video di Dénes Varga (v0.58): finta larga circa 0,6 s tra andata e ritorno, tiro circa 0,2 s dopo la ricarica.
+// Prima il computer partiva con il gesto successivo (quasi sempre un passaggio) a metà del ritorno del braccio: 0,50 s in media
+// dall'inizio della finta, ritorno interrotto 82 volte su 100 tra 5 e 7 m (sonda-finte, 4 partite). Ora dopo ogni finta il braccio
+// torna alla carica (FINTA_MOVIMENTO.recupero, 0,36 s) e resta carico ancora «attesa» secondi prima del gesto successivo (finta,
+// tiro o passaggio), per il computer e per il giocatore che tiene TIRO (prima 0,12 s). Il rilascio di TIRO tira sempre subito.
+export const FINTA_RITMO={ attesa:0.2 };
 
 // ---------- FATICA E CAMBI (fisica.js, panchina.js) ----------
 // STANCO = quota della velocità che resta a stamina zero (−18%), CON_PALLA = velocità con la palla (−7%), SPRINT_CONSUMO = fatica

@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.84.0",
+  "version": "0.85.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,6 +16,9 @@
     "cambi-volanti": "node tests/cambi-volanti-v082.mjs",
     "timeout": "node tests/timeout-v083.mjs",
     "rigore": "node tests/rigore-v084.mjs",
+    "finte": "node tests/finte-v085.mjs",
+    "sonda-finte": "node strumenti/sonda-finte.mjs",
+    "finte-forme": "node strumenti/finte-forme-foglio.mjs",
     "sonda-cambi": "node strumenti/sonda-cambi.mjs",
     "sonda-centro": "node strumenti/sonda-centro.mjs",
     "sonda-rientri": "node strumenti/sonda-rientri.mjs",

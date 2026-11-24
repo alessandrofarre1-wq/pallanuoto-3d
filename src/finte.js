@@ -4,23 +4,26 @@
 // - alza: quanto si alza il busto in finta (m, solo disegno); wind: durata del gesto di finta (s); vista: dove va la mano in finta (solo disegno, sistema del giocatore, come CARICA_VISTA);
 //   torsione: quanto ruota il busto (negativo = da destra verso sinistra); pausa: attesa tra una finta e la mossa dopo (computer);
 //   max: quante finte di fila fa il computer; seguito: come la chiude di solito; scarico: quanto spesso il computer scarica dopo.
+// - largo, piegato (v0.85, Ale: «finte larghe o strette, braccio piegato o dritto»; solo disegno, grafica/pose.js FINTA_FORMA): la
+//   tendenza dello stile, poi ogni finta cambia un po'. largo 0 = stretta, 1 = larga; piegato = quante finte su cento a braccio
+//   piegato (si muove l'avambraccio, la mano resta vicino alla testa) invece che a braccio dritto verso la porta.
 // FIRMA (scelta di Ale: «piccolo vantaggio»): chiudere la finta con il suo seguito entro FIRMA.entro secondi spiazza un po' di più
 // portiere e difensori (sorpresa del tiro, oppure passaggio più difficile da intercettare). Numeri FIRMA e FINTA_LATO in taratura.js.
 import { game } from './stato.js';
-import { FINTA_LATO, FIRMA } from './taratura.js';      // numeri del bilanciamento
-export { FINTA_LATO, FIRMA };
+import { FINTA_LATO, FINTA_RITMO, FIRMA } from './taratura.js';      // numeri del bilanciamento
+export { FINTA_LATO, FINTA_RITMO, FIRMA };
 export const FINTE=Object.freeze({
-  larga:  { alza:0.03, nome:'larga',      wind:0.20, vista:[-0.50,0.50,0.22], torsione:1.25, pausa:[0.5,0.8],  max:2, seguito:'shot',  scarico:0.3,
+  larga:  { alza:0.03, nome:'larga',      wind:0.20, largo:0.85, piegato:0.1, vista:[-0.50,0.50,0.22], torsione:1.25, pausa:[0.5,0.8],  max:2, seguito:'shot',  scarico:0.3,
             descr:'lenta e larga, braccio teso, poi tiro forte' },
-  raffica:{ alza:0, nome:'a raffica',  wind:0.04, vista:[-0.08,0.40,0.10], torsione:0.40, pausa:[0.12,0.25], max:3, seguito:'polso', scarico:0.3,
+  raffica:{ alza:0, nome:'a raffica',  wind:0.04, largo:0.2, piegato:0.5, vista:[-0.08,0.40,0.10], torsione:0.40, pausa:[0.12,0.25], max:3, seguito:'polso', scarico:0.3,
             descr:'strette e frequenti, poi tiro di polso secco' },
-  polso:  { alza:0.01, nome:'di polso',   wind:0.09, vista:[-0.16,0.38,-0.08], torsione:-0.9, pausa:[0.25,0.45], max:2, seguito:'polso', scarico:0.25,
+  polso:  { alza:0.01, nome:'di polso',   wind:0.09, largo:0.4, piegato:0.75, vista:[-0.16,0.38,-0.08], torsione:-0.9, pausa:[0.25,0.45], max:2, seguito:'polso', scarico:0.25,
             descr:'da destra a sinistra, poi il polso la manda dall’altra parte' },
-  mezza:  { alza:0.11, nome:'mezza finta',wind:0.05, vista:[-0.06,0.46,0.06], torsione:0.45, pausa:[0.08,0.18], max:1, seguito:'shot',  scarico:0.2,
+  mezza:  { alza:0.11, nome:'mezza finta',wind:0.05, largo:0.35, piegato:0.4, vista:[-0.06,0.46,0.06], torsione:0.45, pausa:[0.08,0.18], max:1, seguito:'shot',  scarico:0.2,
             descr:'si alza, accenno breve e sparo immediato' },
-  bomba:  { alza:0.06, nome:'di bomba',   wind:0.17, vista:[-0.42,0.34,0.14], torsione:1.35, pausa:[0.35,0.6], max:2, seguito:'lob',   scarico:0.25,
+  bomba:  { alza:0.06, nome:'di bomba',   wind:0.17, largo:0.75, piegato:0.15, vista:[-0.42,0.34,0.14], torsione:1.35, pausa:[0.35,0.6], max:2, seguito:'lob',   scarico:0.25,
             descr:'carica da tiro potente, poi palombella' },
-  spalla: { alza:0, nome:'di spalla',  wind:0.06, vista:[0.02,0.40,0.12], torsione:0.75, pausa:[0.2,0.4],  max:2, seguito:'pass',  scarico:0.75,
+  spalla: { alza:0, nome:'di spalla',  wind:0.06, largo:0.25, piegato:0.85, vista:[0.02,0.40,0.12], torsione:0.75, pausa:[0.2,0.4],  max:2, seguito:'pass',  scarico:0.75,
             descr:'solo spalla e testa, poi scarico al compagno' },
 });
 const v01=(s,k)=>Math.max(0,((s?.[k]??60)-40)/59);

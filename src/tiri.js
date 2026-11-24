@@ -3,7 +3,7 @@ import { registraTiroReplay } from './replay.js';
 import { azioneAperta, registraTiro, tipoDiTiro } from './statistiche.js';
 import { controllaInterferenza } from './regole.js';
 import { annuncia } from './cronaca.js';
-import { FIRMA, firma } from './finte.js';
+import { FINTA_LATO, FINTA_RITMO, FIRMA, firma } from './finte.js';
 import { FINTA_MOVIMENTO } from './finta-movimento.js';
 import { ALZATA, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, paloUomo, postoPortiere, setteControSei, viciniUomo } from './ia.js';
@@ -32,10 +32,13 @@ export function startAct(p,kind,wind,fn,aim){
   // professionisti, 189 ms per i semi-professionisti: chi tira meglio rilascia prima. Passaggio e finta sono gesti più corti.
   if(kind==='fake')wind=Math.max(wind,FINTA_MOVIMENTO.anticipazione);
   const frusta = kind==='fake'?FINTA_MOVIMENTO.frusta:kind==='pass' ? 0.09 : kind==='polso' ? 0.11 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
-  // finta di lato (v0.59, finte.js FINTA_LATO): la prima dritta, dalla seconda verso un palo (scelto con la levetta o alternato)
+  // finta di lato (v0.59, finte.js FINTA_LATO): verso un palo, scelto con la levetta o alternato. v0.85 (Ale: «più spesso
+  // destra-sinistra»): anche la prima va di lato, con la levetta sempre, altrimenti FINTA_LATO.prima volte su cento (prima era sempre
+  // dritta). Il gesto successivo parte solo a braccio tornato carico, più FINTA_RITMO.attesa (ia.js, aiCarrier; controllo.js).
   if(kind==='fake'){ let lato=0;
-    if((p.fakeCount||0)>0){ lato=p.fintaLatoVoluto||(p.ultimoLatoFinta?-p.ultimoLatoFinta:(rnd()<0.5?1:-1)); p.ultimoLatoFinta=lato; }
-    p.fintaLatoGesto=lato; p.fintaLatoVoluto=0; }
+    if((p.fakeCount||0)>0||p.fintaLatoVoluto||rnd()<FINTA_LATO.prima){ lato=p.fintaLatoVoluto||(p.ultimoLatoFinta?-p.ultimoLatoFinta:(rnd()<0.5?1:-1)); p.ultimoLatoFinta=lato; }
+    p.fintaLatoGesto=lato; p.fintaLatoVoluto=0;
+    p.fintaPronto=game.time+wind+frusta+FINTA_MOVIMENTO.recupero+FINTA_RITMO.attesa; }
   p.act={t:0,kind,wind,frusta,fn,aim,done:false,potenza:p.charging?Math.min(1,p.chargeT/0.9):0}; p.charging=false; p.chargeT=0;
   if(diSchiena(kind)) p.tiriDiSchiena=(p.tiriDiSchiena||0)+1;
 }
