@@ -66,8 +66,22 @@ In acqua: Nicosia (74); Bruni (centroboa, 80); Carnesecchi, Alesiani, Ferrero, C
 Fulvio e Di Somma restano fuori dalla scelta automatica perché le loro valutazioni, stimate dai tornei del database, sono sotto quelle
 dei compagni di ruolo (Di Fulvio ha dati solo dei Mondiali 2025): si mettono in lista dalla schermata Squadre.
 
-## Misure
-In corso: 16 partite ITA–HUN sulla versione con la forza riportata al ranking.
+## Misure (16 partite ITA–HUN, per squadra a partita)
+| voce | v0.85 | v0.86 senza correzione | v0.86 con 13 a partita | v0.86 | reale |
+|---|---|---|---|---|---|
+| gol | 19,3 | 21,3 | 20,2 | **19,4** | 13,3 |
+| gol dell'Italia / dell'Ungheria | 13,2 / 25,4 | 13,2 / 29,5 | 12,8 / 27,7 | **13,4 / 25,5** | |
+| tiri | 39,3 | 40,8 | 39,3 | **39,1** | 33 |
+| tiri in gol | 49,1% | 52,3% | 51,4% | **49,8%** | 40% |
+| espulsioni | 11,8 | 11,8 | 11,8 | **11,5** (a posto) | 11 |
+| espulsioni dalla lotta al centro | 62,7% | 57,7% | 58,3% | **55,0%** | 66% |
+| superiorità trasformate | 47,1% | 46,8% | 43,0% | **45,8%** (a posto) | 52% |
+| voci a posto | 7 su 15 | 6 su 15 | 5 su 15 | **6 su 15** | |
+
+Senza la correzione del punto 7 i gol salivano di 2 a squadra: circa metà per i più forti (con 13 a partita 20,2), metà per la
+riserva in più (giocatori più freschi). Con la forza riportata al ranking l'equilibrio torna quello della v0.85. Le espulsioni dalla
+lotta al centro scendono al 55%: cambiano i centroboa e i loro marcatori (per l'Italia Bruni al posto di Gianazza); da guardare nel
+bilanciamento.
 
 ## Prova nuova: `npm run rose`
 Quindici controlli: 24 nazionali con tutti i disponibili; nessun giocatore due volte; 14 in partita (12 di movimento, 2 portieri); la

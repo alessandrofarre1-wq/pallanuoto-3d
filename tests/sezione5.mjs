@@ -178,7 +178,8 @@ const form = await pg.evaluate(() => {
   const prima = t.players[2].num;
   document.querySelector('#rosa [data-posto="2"]').click();
   const ris = [...document.querySelectorAll('#rosa [data-riserva]')].find(b => b.classList.contains('puo'));
-  const scelto = +ris.dataset.riserva; ris.click();
+  // v0.86: il pulsante porta l'id del giocatore (i numeri si assegnano a ogni lista); il numero è quello in lista
+  const scelto = t.rosa.find(g => g.id === ris.dataset.riserva).num; ris.click();
   const dopo = t.players[2].num;
   H.imposta('len', '480'); document.getElementById('goBtn').click(); window.__salta(5);
   return { prima, scelto, dopo, inPartita: t.players[2].num, postiInAcqua: document.querySelectorAll('#rosa [data-posto]').length };

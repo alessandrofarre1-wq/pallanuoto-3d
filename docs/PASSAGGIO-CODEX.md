@@ -12,7 +12,9 @@ Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.86.0. Cambiano le rose 
 - `src/menu.js`: `disegnaRosa` (in acqua, panchina, `data-altro`; `salvaLista`), chiavi `pallanuoto-formazione3-` e `pallanuoto-lista-`;
   tornei: `t.convocati` (15, `convocatiAutomatici`), `t.lista`, vista `convocazione` (`vConvocazione`), riquadro `torneoConvocati`;
   `preparaGaraTorneo` mette `convocati`/`liste` della nazionale, `preparaSingola` li toglie. `window.__pallanuoto.rose` per le prove.
-- Prova nuova `npm run rose` (anche nella CI); `tests/sezione5.mjs` con 7 riserve. [Rapporto](versioni/v086-rose.md).
+- Prova nuova `npm run rose` (anche nella CI); `tests/sezione5.mjs` con 7 riserve e il pulsante della riserva che porta l'id del
+  giocatore; `tests/azione.mjs`: `fermi()` azzera anche `colpi` (con le rose nuove il terzo tocco del computer fischiava un fallo e
+  fermava il cronometro, come già previsto in `sezione1`/`sezione3`). [Rapporto](versioni/v086-rose.md).
 
 ---
 

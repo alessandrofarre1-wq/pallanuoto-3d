@@ -231,10 +231,11 @@ della partita invariato; [rapporto](docs/versioni/v085-finte.md)); v0.86 rose (t
 computer l'Ungheria segna più del doppio dell'Italia: nel database le valutazioni medie sono 84 contro 76 (forza del ranking).
 Prossimo: il bilanciamento (sotto). Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
 
-**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.85, `npm run taratura -- --partite=16`): 19,3 gol e 39,3 tiri per squadra
-(veri 13,3 e 33), tiri in gol 49,1% (40%), espulsioni 11,8 (11; dal centro 63%, vero 66%), superiorità 47% (52%; con altri semi 41%),
-parità: gol 21,4% delle azioni (6-19%), espulsione procurata 18,5% (22%), durata 13,0 s (21), azioni 75 (50); 7 voci su 15 a posto. Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
+**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.86, `npm run taratura -- --partite=16`): 19,4 gol e 39,1 tiri per squadra
+(veri 13,3 e 33; Italia 13,4, Ungheria 25,5), tiri in gol 49,8% (40%), espulsioni 11,5 (11; dal centro 55%, vero 66%), superiorità
+46% (52%), parità: gol 21,7% delle azioni (6-19%), espulsione procurata 18,3% (22%), durata 12,9 s (21), azioni 74 (50); 6 voci su 15
+a posto. Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
 partite); Codex misurava 16,1 e 41,4 nella v0.70 e 17,4 e 43,3 nella v0.71 (8 partite, passaggio di consegne v0.71); v0.77 20,5 e
-42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4, v0.82 20,2 e 41,0, v0.83-v0.84 19,1 e 39,0 (16 partite).
+42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4, v0.82 20,2 e 41,0, v0.83-v0.84 19,1 e 39,0, v0.85 19,3 e 39,3 (16 partite).
 
 Stato precedente (v0.77, Codex): avvio fluido della finta, [rapporto](docs/versioni/v077-avvio-finta.md).
