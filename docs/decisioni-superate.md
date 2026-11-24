@@ -3,6 +3,83 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.86
+- Rosa di 13 per nazionale (la convocazione più recente: 2 portieri e gli 11 con più minuti) → tutti i giocatori convocati dalla
+  nazionale in almeno un torneo del database; in partita 14 (regole World Aquatics 2026: 12 di movimento e 2 portieri), scelti dal gioco
+  per ruolo con una riserva per posto (`listaPartita`); il giocatore può cambiare la lista nella schermata Squadre.
+- Formazione ricordata per numero di calottina → per id del giocatore (i numeri si assegnano a ogni lista, `numeriLista`).
+- Valutazioni ricentrate sui 13 della rosa → su tutti i disponibili, poi riportate al ranking: tutte le voci di una nazionale scendono di
+  quanto i 14 scelti superano i 13 di prima (Italia 0,41, Ungheria 0,70, Serbia 1,59 punti), così la forza della squadra resta quella
+  del ranking.
+- Nei tornei la stessa rosa della partita veloce → 15 convocati (proposti dal gioco, scelti prima della prima partita) e a ogni partita i
+  14 tra i convocati.
+
+## v0.85
+- Dopo una finta il gesto del computer (passaggio, tiro o un'altra finta) partiva alla fine dell'accenno, a metà del ritorno del
+  braccio (ritorno interrotto 82 volte su 100 tra 5 e 7 m) → parte a braccio tornato carico più 0,2 s (`FINTA_RITMO.attesa`, video di
+  Varga); anche il giocatore che tiene TIRO ripete la finta dopo 0,2 s invece di 0,12 s. Il rilascio di TIRO tira sempre subito.
+- La prima finta sempre dritta e, dalla seconda, di lato alternando i due pali (v0.59) → ogni finta va di lato 65 volte su 100
+  (`FINTA_LATO.quota`), sempre da destra verso sinistra attraverso il corpo (per un mancino al contrario); le altre avanti e indietro;
+  con la levetta il palo lo sceglie il giocatore.
+- Tempi uguali per tutte le finte (v0.76: preparazione 0,16 s, accenno 0,18 s, ritorno 0,36 s) → la stretta tiene questi tempi,
+  l'ampia fino a 0,10 + 0,10 + 0,12 s in più (`FINTA_AMPIEZZA`, larghezza decisa dal gioco a ogni finta, più stretta davanti alla porta).
+- Un solo disegno della finta per stile → a ogni finta braccio teso o piegato (solo disegno, `FINTA_FORMA` in `grafica/pose.js`), con
+  la tendenza dello stile (`piegato` in `finte.js`).
+
+## v0.84
+- Palla in mano, alta, fin dal fischio del rigore → palla in acqua davanti a chi tira, pescata all'inizio della carica (solo disegno).
+- Carica del rigore tenibile fino a 7 s → fermo a braccio carico oltre mezzo secondo = controfallo, palla al portiere avversario
+  (nella serie finale rigore sbagliato).
+
+## v0.83
+- Ripresa del time-out: tutti nella propria metà come a inizio tempo e il punto con la palla a metà campo → palla al portiere a metà
+  campo, compagni già schierati in attacco nella metà campo avversaria, difensori sul loro uomo; il portiere passa e torna in porta.
+- Time-out del computer solo dopo un break, tre espulsioni, il 7 contro 6 o la stanchezza → anche nell'ultimo minuto e mezzo, pari o
+  sotto di un gol, appena ripresa la palla, per preparare l'attacco.
+
+## v0.82
+- Zona dei cambi volanti a 3,2 m dalla propria linea di porta, sostituto che compare dietro la linea di porta → zona a 11 m, vicino
+  alla metà campo (regole World Aquatics 2025, art. 18), sostituto che compare sul bordo a 8,5 m.
+- Cambio volante del giocatore in qualunque momento d'attacco, del computer in qualunque momento (anche in difesa) → solo in
+  transizione (palla da meno di 7 s o nella propria metà), per tutti e due; il computer aspetta in coda.
+- Il sostituto appena entrato era subito un appoggio → riceve la palla quando arriva a 10,5 m dalla porta d'attacco (per 10 s).
+- A gioco fermo il computer cambiava un giocatore alla volta → cambia subito fino a due giocatori sotto il 45% di energia.
+
+## v0.81
+- Tasto a comparsa di schizzo e colonnello ogni volta che chi ha la palla nuota verso la porta senza nessuno davanti (v0.31) → solo
+  nella controfuga vera, entro 9 s dal recupero della palla (`QTE.eta`).
+- Con il tasto acceso qualunque pressione di TIRO faceva lo speciale → un tocco fa lo speciale, tenuto il tiro normale.
+- Centroboa con la palla di spalle solo con il marcatore proprio dietro, e quello del computer, mentre scivolava nella lotta, sempre
+  girato verso la porta → di spalle con il marcatore dietro o al fianco entro 1,8 m, per le due squadre: tira di beduina o di sciarpa.
+- Centroboa del computer nella lotta: girata 35% dopo 0,6 s, tiro 15% dopo 0,8 s; girato verso la porta tirava dopo 0,12 s →
+  beduina o sciarpa 30% dopo 0,4 s, girata 15% dopo 0,6 s; girato con il marcatore ancora nella lotta aspetta 0,45 s (`CENTRO_PALLA`).
+- Tiro subito dopo una ricezione libera: una volta su tre, nei primi 18 s solo entro 4,5 m → le occasioni chiare (entro 5 m, di
+  fronte, nessuno entro 2 m, linea libera) si tirano sempre, a qualunque secondo (`OCCASIONE_CHIARA`).
+- Palla al centroboa: vantaggio che cresce dai 7 ai 15 s d'azione (v0.64) → dai 3 ai 9 s, più un vantaggio per l'ingresso classico
+  con il marcatore dietro o al fianco (`CENTRO_ATTESA`).
+
+## v0.80
+- Nei rientri nessuno scambio di marcatura (ognuno inseguiva il suo uomo, `cambioMarcatura` solo sui tagli dell'attacco schierato)
+  → l'attaccante più avanti lo prende il difensore meglio piazzato quando il suo marcatore è stato superato (`RIENTRO_SCAMBI`).
+
+## v0.79
+- Passaggi sempre alti e tesi alla mano (v0.55) → due modi: morbido sull'acqua vicino al compagno (circolazione tranquilla con la
+  linea libera) o alto e teso (uomo in più, ultimi 8 s, oltre 8 m, cambio di lato, transizione, avversario vicino alla linea,
+  compagno libero in posizione di tiro). Resta della v0.55: al centroboa libero in mano, a quello marcato in acqua.
+- Palla al centroboa marcato in acqua a 0,8 volte la velocità del teso → con la velocità del morbido.
+- Scelta del compagno con la levetta: direzione ×4, distanza −0,07 al metro, +0,5 con la linea libera, precedenza al centroboa
+  (+1,2 entro 60° verso la porta, v0.55) → conta la direzione; la distanza decide solo gli spareggi; nessun premio.
+- Con la levetta tenuta dopo il passaggio chi riceve nuotava nella direzione della levetta → va incontro alla palla finché la
+  levetta resta nella direzione usata per mirare.
+
+## v0.78
+- Tasto PASSA sempre uguale, con «contrasto» scritto in piccolo → con la palla agli avversari diventa CONTRASTA (scritta, icona,
+  colore); con la palla nostra o libera resta PASSA, senza scritta sotto.
+- Tasti bianchi (TIRO e PASSA chiari, gli altri scuri) → bordo e icona con un colore per funzione; l'oro resta per «premuto» e
+  per le azioni richieste.
+- Energia «Energia #N, barra, %» (su iPhone piccoli la scritta spariva) → «#N Cognome, barra, %»; riquadro su telefono 148 → 170 px
+  (iPhone piccoli 118 → 152).
+
 ## v0.77
 
 - Quasi5,9s di preparazione Plask compressi nei primi0,5s di tenuta → raccordo0,70s dalla posa reale in acqua alla posa caricata, prima finta sovrapposta. Le415pose originali non sono alterate, ma il prefisso non viene più interamente riprodotto durante la tenuta. Rilascio registrato e percorso CPU/diretto conservati.

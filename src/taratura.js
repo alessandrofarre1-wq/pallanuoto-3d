@@ -27,6 +27,17 @@ export const COSTRUZIONE={ secondi:18, libero:0.3, vicino:4.5 };
 // altrimenti si continua a far girare palla; in superiorità TIRO_LIBERATO.superiorita; quick = quota delle superiorità in cui si
 // cerca il tiro nei primi 3 s. v0.60: parità 0,4 → 0,3, superiorità 0,85 → 1.
 export const TIRO_LIBERATO={ parita:0.3, superiorita:1, quick:0.3 };
+// OCCASIONE CHIARA (v0.81, Ale: «le occasioni chiare, passaggio con l'uomo davanti alla porta, si tirano indipendentemente dai
+// secondi trascorsi»): chi riceve un passaggio entro «distanza» m dalla porta, con apertura almeno «angolo» (distanza dalla linea di
+// porta divisa per la distanza dalla porta: 1 = di fronte), nessun avversario entro «spazio» m e la traiettoria libera («corridoio»),
+// tira subito, entro «entro» s dalla ricezione: anche nei primi 18 s (COSTRUZIONE) e in superiorità. Prima tirava subito solo una
+// volta su tre (TIRO_LIBERATO.parita) e, nei primi 18 s, solo entro 4,5 m.
+export const OCCASIONE_CHIARA={ distanza:5, angolo:0.7, spazio:2, corridoio:0.7, entro:0.6 };
+// TIRI SPECIALI IN CONTROFUGA (v0.31, prima scritti in controfuga.js): tasto a comparsa per il giocatore e scelta del computer.
+// durata e pausa del tasto (s); sotto «vicino» m colonnello, sopra schizzo; tra «min» e «max» m dalla porta; il computer arriva fino a
+// «maxComputer». v0.81 (Ale: «troppi tiri a schizzo e colonnello»): solo nella controfuga vera, entro «eta» s dal recupero della
+// palla. Prima bastava nuotare verso la porta senza nessuno davanti, anche a metà dell'attacco schierato.
+export const QTE={ durata:1.4, pausa:2.5, vicino:5.5, min:2.5, max:8, maxComputer:6.5, eta:9 };
 // PAZIENZA in parità: secondi di possesso (su 28) prima di cominciare a cercare il tiro anche senza occasioni, e secondi per
 // arrivare alla piena voglia di tirare. v0.64: [24, 3] → [25, 2,5].
 export const PAZIENZA=[25,2.5];
@@ -56,8 +67,22 @@ export const RIPARTENZA={ d3:7.0, arrivato:2.5, transizione:10 };
 // Prove su 16 partite: −0,5 / 4 m: controfughe da 3,5 a 0,9 a partita (reale circa 2); 0 / 3 m: 1,5 a partita.
 export const SCATTI={ ripartenza:0, spazio:3, rientro:0 };
 // CENTRO_ATTESA (v0.64): in parità la palla entra al centroboa dopo la costruzione: il vantaggio di passarla al centro cresce da
-// «da» ad «a» secondi d'azione (prima c'era subito, e l'azione finiva presto con espulsione, girata o fallo).
-export const CENTRO_ATTESA={ da:7, a:15 };
+// «da» ad «a» secondi d'azione (prima c'era subito, e l'azione finiva presto con espulsione, girata o fallo). v0.81 (Ale: «pochi
+// passaggi al centroboa»): da 7-15 a 3-9 s; «ingresso» = vantaggio in più per l'ingresso classico, con il marcatore dietro o al
+// fianco (palla in acqua davanti al centroboa, poi lotta): prima la palla gli arrivava quasi solo da libero o con il marcatore
+// davanti, e lui si girava e tirava.
+export const CENTRO_ATTESA={ da:3, a:9, ingresso:1.2 };
+// CENTROBOA CON LA PALLA (v0.81, Ale: «poche beduine e pochi passaggi al centroboa»). Studio su 11 partite d'élite maschili (7 di
+// campionato italiano, 4 di Champions League; «Elite water polo: a technical and tactical analysis of the centre forward role»): delle
+// azioni del centroboa, gol 6,7%, tiro senza gol 7,2%, espulsione procurata 41,4%, fallo in attacco 17,9%, palla rubata 16,6%,
+// passaggio sbagliato al centro 10,1%; il centroboa procura il 67,6% delle espulsioni. Prima della v0.81 il centroboa con la palla si
+// girava da solo verso la porta appena il marcatore non gli stava proprio dietro, e tirava di fronte (nessuna beduina).
+// addosso = entro questi metri (la distanza della lotta) il marcatore al fianco o dietro non lo lascia girare: tiene la palla di
+// spalle alla porta (con 1,3 m bastava che il marcatore si staccasse di poco perché si girasse da solo e tirasse); ogni
+// decisione (0,45-0,85 s), dopo «tiroDa» s di lotta tira di beduina o di sciarpa con probabilità «tiro», dopo «girataDa» s prova a
+// girarsi nuotando attorno al marcatore con probabilità «girata», dopo «scarico» s scarica al perimetro. girarsi = secondi di palla
+// in mano prima del tiro quando riceve già girato verso la porta con il marcatore ancora nella lotta (prima 0,12 s: tirava subito).
+export const CENTRO_PALLA={ addosso:1.8, tiroDa:0.4, tiro:0.3, girataDa:0.6, girata:0.15, scarico:1.8, girarsi:0.45 };
 // ENTRATA, il taglio verso la porta (v0.66, punto 4 di Ale: «gol su entrata quasi zero»; `strumenti/sonda-entrate.mjs`): il
 // computer non entrava mai (giocava sempre l'«Arco», che non ha tagliante) e, con lo schema «Entrata», a chi entrava la palla
 // arrivava appena partito, a 7,7 m dalla porta, e il taglio finiva lì (una entrata su 25 finiva con un tiro).
@@ -97,6 +122,27 @@ export const INTERCETTO={ base:0.14, lungo:0.36 };
 // l'errore può capitare ma deve essere verosimile»): base 1,5 → 1,0, pressione 2,5 → 0,8, disteso 0,6 → 0,3; errore limitato a
 // «limite» deviazioni tipiche.
 export const ERRORE_PASSAGGIO={ base:1.0, pressione:0.8, disteso:0.3, limite:2 };
+// SCAMBI NEI RIENTRI (v0.80, Ale: «non funzionano molto i cambi di marcatura in difesa. Sembra che ogni giocatore guardi solo il
+// proprio giocatore. Così facendo però si generano diverse controfughe che in realtà non esisterebbero»). Mentre la difesa rientra
+// (palla a più di «schierata» m dalla propria porta, come in inRientro; più vicino la difesa è schierata e scambia sui tagli,
+// cambioMarcatura), ogni «ogni» secondi: gli attaccanti più avanti della palla (fino a «davanti» m
+// dietro di lei) li prende, dal più vicino alla porta, il difensore meglio piazzato: costo = distanza + «dietro» per ogni metro in cui
+// il difensore è più lontano dalla porta di lui. Si scambia solo se il marcatore è stato superato (più lontano dalla porta del suo
+// uomo di oltre «battuto» m, o a più di «lontano» m da lui) e costa almeno «guadagno» più del migliore; chi ha appena scambiato
+// tiene il nuovo uomo per «tieni» secondi (senza queste due regole, 381-650 scambi a squadra per partita: avanti e indietro). Il
+// difensore comandato dal giocatore e chi rallenta il portatore non prendono un uomo nuovo (ma il loro può prenderlo un compagno).
+export const RIENTRO_SCAMBI={ ogni:0.3, schierata:9.2, davanti:1, dietro:2, battuto:1.5, lontano:5, guadagno:3, tieni:2.5 };
+// PASSAGGI (v0.79, Ale: «i passaggi possono essere di due modi: o morbido sull'acqua vicino al compagno (di solito quando il ritmo
+// è più rilassato sul perimetro o quando la si passa al centro boa) oppure alto e teso (di solito durante l'uomo in più o quando si
+// palleggia prima della chiusura dell'azione o per cambiare velocemente area del campo)»).
+// MORBIDO: velocità morbido[0] + morbido[1]×Passaggio m/s, arriva sull'acqua (altezza) «davanti» m dal compagno verso chi passa,
+// errore × «errore» (corto e lento: più facile da mettere giusto). TESO: quello di prima, 11-15,5 m/s alla mano alzata.
+// Si passa teso con l'uomo in più, negli ultimi «ultimi» secondi del possesso, oltre «lungo» m, cambiando lato (oltre «lato» m
+// di differenza), in transizione (chi passa a più di «transizione» m dalla porta avversaria), con un avversario entro «corridoio»
+// m dalla linea del passaggio e al compagno libero in posizione di tiro (entro «tiro» m dalla porta, nessun avversario entro
+// «libero» m: la palla gli arriva in mano e può tirare subito, anche al volo; vale anche per il centroboa che si è liberato, v0.55).
+// Al centroboa marcato il passaggio resta in acqua davanti a lui, con la velocità del morbido.
+export const PASSAGGI={ morbido:[6.5,2.5], altezza:0.12, davanti:0.3, errore:0.6, ultimi:8, lungo:8, lato:6, transizione:10, corridoio:0.9, tiro:6.5, libero:1.5 };
 // PRESA del passaggio: distanza orizzontale massima dal corpo (braccio teso verso la palla) e altezza massima della palla.
 // v0.56: alla mano 0,5 m (prima 0,85 m dal centro del corpo); v0.57: 0,5 → 0,55, il portiere arriva più lontano (due mani, tuffo).
 export const PRESA={ raggio:0.55, portiere:0.9, alto:1.5 };
@@ -148,7 +194,23 @@ export const FIRMA=Object.freeze({ entro:1.6, sorpresa:0.08, intercetto:0.7 });
 // sposta il braccio da quella parte (muro × lontano sul lato opposto, × vicino sullo stesso); il portiere si sposta di «portiere»
 // metri verso quel palo e para meno sul lato opposto (parataLontano) e un po' di più sullo stesso (parataVicino); gesto =
 // rotazione del braccio di lato (solo disegno).
-export const FINTA_LATO={ durata:1.1, portiere:0.45, lontano:0.4, vicino:1.15, parataLontano:0.35, parataVicino:0.08, gesto:0.5 };
+// quota (v0.85, Ale: «la finta di tiro può essere fatta sia mandando la palla avanti e indietro ma, più frequentemente, da destra verso
+// sinistra») = quante finte su cento vanno di lato, da destra verso sinistra attraverso il corpo (per un mancino da sinistra verso
+// destra); le altre avanti e indietro verso la porta. Con la levetta inclinata il giocatore sceglie il lato. Prima la prima finta era
+// sempre dritta e dalla seconda si alternavano i due pali: nelle partite del computer 98 finte su 100 erano la prima, quasi tutte dritte.
+export const FINTA_LATO={ durata:1.1, portiere:0.45, lontano:0.4, vicino:1.15, parataLontano:0.35, parataVicino:0.08, gesto:0.5, quota:0.65 };
+// AMPIEZZA DELLE FINTE (v0.85, Ale: «in generale può essere fatta con movimenti stretti e veloci o più ampi e lenti»). A ogni finta la
+// larghezza (0 stretta, 1 ampia) = tendenza dello stile personale (finte.js, largo) ± varia/2; entro «vicino» metri dalla porta più
+// stretta di «stretta» (da 2 m prima: davanti alla porta finte veloci). Stretta = veloce: i tempi minimi della v0.76 (FINTA_MOVIMENTO:
+// preparazione 0,16 s, accenno 0,18 s, ritorno 0,36 s); ampia = lenta: fino a «preparazione», «accenno» e «ritorno» secondi in più.
+export const FINTA_AMPIEZZA={ varia:0.5, vicino:6, stretta:0.25, preparazione:0.10, accenno:0.10, ritorno:0.12 };
+// RITMO DELLE FINTE (v0.85, Ale: «davanti alla porta finta veloce ma non troppo»; «ora quelle vicino alla porta sono troppo veloci,
+// vanno rallentate»). Video di Dénes Varga (v0.58): finta larga circa 0,6 s tra andata e ritorno, tiro circa 0,2 s dopo la ricarica.
+// Prima il computer partiva con il gesto successivo (quasi sempre un passaggio) a metà del ritorno del braccio: 0,50 s in media
+// dall'inizio della finta, ritorno interrotto 82 volte su 100 tra 5 e 7 m (sonda-finte, 4 partite). Ora dopo ogni finta il braccio
+// torna alla carica (FINTA_MOVIMENTO.recupero, 0,36 s) e resta carico ancora «attesa» secondi prima del gesto successivo (finta,
+// tiro o passaggio), per il computer e per il giocatore che tiene TIRO (prima 0,12 s). Il rilascio di TIRO tira sempre subito.
+export const FINTA_RITMO={ attesa:0.2 };
 
 // ---------- FATICA E CAMBI (fisica.js, panchina.js) ----------
 // STANCO = quota della velocità che resta a stamina zero (−18%), CON_PALLA = velocità con la palla (−7%), SPRINT_CONSUMO = fatica
@@ -158,11 +220,32 @@ export const STANCO=0.82, CON_PALLA=0.93, SPRINT_CONSUMO=0.0098;
 // PRESSING_CONSUMO = fatica al secondo di chi difende a pressing (in più di scatti e contatti; partita.js, prima scritto nel codice).
 // v0.67: 0,012 → 0,008 (sonda degli scatti: anche con meno scatti i giocatori passavano un quarto del tempo sotto la soglia dei cambi).
 export const PRESSING_CONSUMO=0.008;
+// RIGORE (v0.84, Ale: «la palla deve partire dall'acqua e il movimento deve essere continuo, altrimenti controfallo»): chi tira il
+// rigore e resta fermo a braccio caricato (carica piena) per più di «fermo» secondi commette controfallo: palla al portiere (nella
+// serie finale il rigore è sbagliato). Prima si poteva tenere la carica fino a 7 s.
+export const RIGORE_TIRO={ fermo:0.5 };
+// TIME-OUT (v0.83, Ale: «chiamato quando si subisce un break, o negli ultimi minuti per preparare un attacco; i giocatori si
+// schierano nella metà campo avversaria; l'arbitro dà la palla al portiere a metà campo, che la passa al compagno libero e torna in
+// porta nuotando»). finale = negli ultimi «finale» secondi dell'ultimo tempo il computer pari o sotto di un gol chiama il time-out
+// per preparare l'attacco, appena riprende la palla (entro «eta» secondi dal recupero); recupero = energia recuperata nel minuto di
+// time-out. Il break (tre gol di fila subiti) c'era già (regole.js).
+export const TIMEOUT={ finale:90, eta:4, recupero:0.4 };
 // PANCHINA (v0.32): recupero = stamina recuperata al secondo in panchina; stanco/fresco = soglie del consiglio di cambio;
 // controllo = ogni quanti secondi il computer guarda la panchina; pausaComputer = secondi minimi tra due cambi del computer;
 // stancoComputer = sotto questa stamina il computer cambia; stancoPozzetto = soglia del cambio dal pozzetto; velBordo, cinque,
 // distZona = velocità lungo il bordo, durata del «cinque», distanza dalla zona dei cambi.
-export const PANCHINA = { recupero: 0.025, stanco: 0.42, fresco: 0.7, controllo: 2, pausaComputer: 55, stancoComputer: 0.34, stancoPozzetto: 0.8, velBordo: 0.9, cinque: 0.5, distZona: 3.2 };
+// v0.82 (Ale: «cambi volanti: non quando l'attacco è già impostato; il sostituto deve entrare da metà campo con il cinque; niente
+// passaggi a un giocatore appena entrato a 20 m»; regole World Aquatics del 25/6/2025, art. 18: la zona dei cambi volanti va dalla
+// linea di porta davanti alla panchina alla metà campo): distZona 3,2 → 11 m (1,5 m prima della metà campo); ingresso = dove compare
+// il sostituto, a metri dalla propria linea di porta (prima sulla linea di porta); transizione = un cambio volante comincia solo nei
+// primi «transizione» secondi del possesso o con la palla nella propria metà, mai ad attacco impostato né in difesa (prima il
+// computer cambiava in qualunque momento: sulla v0.81, 4 partite, metà dei cambi cominciavano in difesa e il 29% ad attacco
+// impostato); appena = per questi secondi dopo il cinque il sostituto riceve la palla solo quando è a «zona» m dalla porta
+// d'attacco (sulla v0.81 6 passaggi di 12-24 m su 66 a chi era appena entrato, a 20-24 m dalla porta). stancoLibero/liberiMax: a
+// gioco fermo con i cambi liberi (dopo un gol, nel time-out, tra i tempi) il computer cambia subito chi è sotto «stancoLibero», fino a
+// «liberiMax» giocatori (prima uno alla volta, come i volanti: con i volanti solo in transizione i cambi scendevano da 24 a 11 per
+// squadra a partita e i giocatori restavano più spesso sotto il 20% di energia).
+export const PANCHINA = { recupero: 0.025, stanco: 0.42, fresco: 0.7, controllo: 2, pausaComputer: 55, stancoComputer: 0.34, stancoPozzetto: 0.8, velBordo: 0.9, cinque: 0.5, distZona: 11, ingresso: 8.5, transizione: 7, appena: 10, zona: 10.5, stancoLibero: 0.45, liberiMax: 2 };
 
 // ---------- LA REALTÀ A CUI PUNTIAMO (per squadra a partita) ----------
 // voce = come la stampa `npm run taratura`; dato = dove sta nel riassunto di tests/bilancio.mjs (--salva); reale = riferimento

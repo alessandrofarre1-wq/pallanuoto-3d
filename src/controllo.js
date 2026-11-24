@@ -5,10 +5,9 @@ import { closestTo, pallaVagante, startCut } from './ia.js';
 import { inp, inputEpoch, pressed, released } from './input.js';
 import { fightOn, girata } from './lotta.js';
 import { contrasto, doFake } from './regole.js';
-import { fintaDi } from './finte.js';
+import { FINTA_RITMO, fintaDi } from './finte.js';
 import { TIRO_COMANDO } from './tiro-comando.js';
-import { FINTA_MOVIMENTO } from './finta-movimento.js';
-import { aggiornaQte, tiroSpeciale } from './controfuga.js';
+import { aggiornaQte, occasioneControfuga, tiroSpeciale } from './controfuga.js';
 import { ball, ctrl, fight, game, goalX, ownGoalX, setCtrl, teams } from './stato.js';
 import { diSchiena, doPass, doShoot, humanPassTarget, shotKind, startAct } from './tiri.js';
 export let tapT=-9, pendingQuick=null;
@@ -55,6 +54,9 @@ function aggiornaTiroTenuto(p,dt,passa,lob){
     if(p.act===c.act)p.act=null;
     tiroTenuto=null;p.voloPronto=false;pendingQuick=null;tapT=game.time;
     if(carica<TIRO_POLSO){
+      // v0.81: un tocco durante il tasto a comparsa della controfuga vera fa lo schizzo o il colonnello
+      const speciale=p.qte&&occasioneControfuga(p);
+      if(speciale){ tiroSpeciale(p,speciale,aimZ); return true; }
       // Il polso rimane utile vicino alla porta: meno potenza, stessa mira.
       const pw=.42;p.chargeT=pw*TIRO_COMANDO.carica;
       startAct(p,diSchiena(kind)?kind:'polso',.04,()=>doShoot(p,pw,false,aimZ,{polso:true,dopoFinta}));
@@ -73,7 +75,8 @@ function aggiornaTiroTenuto(p,dt,passa,lob){
         doFake(p,{continua:true});if(ball.holder===p)p.fintaFino=game.time+1.2;
       }
     });
-    c.act=p.act;c.prossimaFinta=game.time+Math.max(TIRO_COMANDO.pausaFinta,p.act.wind+p.act.frusta+FINTA_MOVIMENTO.recupero+.12);
+    // v0.85: la finta dopo parte a braccio tornato carico più FINTA_RITMO.attesa (prima 0,12 s), come per il computer
+    c.act=p.act;c.prossimaFinta=game.time+Math.max(TIRO_COMANDO.pausaFinta,p.act.wind+p.act.frusta+p.act.recupero+FINTA_RITMO.attesa);
     p.charging=true;p.chargeT=carica;
   }
   return true;
@@ -116,8 +119,10 @@ export function humanControl(p,dt){
   const riceveTaglio=p.cut?.coordinata&&!hasBall&&ball.state==='flight'&&ball.kind==='pass'&&
     ball.target===p&&ball.shooter?.team===p.team&&Math.hypot(ix,iz)<.2;
   if(!riceveTaglio)p.cut=null;
-  const speciale=hasBall&&tiroLecito(p)&&aggiornaQte(p);
-  if(speciale&&pressed('legacyShoot')&&!passa&&!lob){ annullaTiroTenuto();pendingQuick=null;tiroSpeciale(p,speciale.tipo,Math.abs(iz)>.3?iz:null);return; }
+  // v0.81 (Ale: «troppi tiri a schizzo e colonnello»): nella controfuga vera il tasto a comparsa resta, ma lo speciale parte solo con
+  // un tocco di TIRO (al rilascio, in aggiornaTiroTenuto); tenendo premuto si prepara il tiro normale. Prima qualunque pressione di
+  // TIRO durante il tasto faceva lo schizzo o il colonnello.
+  if(hasBall&&tiroLecito(p)) aggiornaQte(p);
   if(aggiornaTiroTenuto(p,dt,passa,lob))return;
   if(p.act&&!p.act.done){
     const resto=p.act.wind+p.act.frusta-p.act.t;
@@ -144,7 +149,9 @@ export function humanControl(p,dt){
   if(hasBall){
     const aimZ=Math.abs(iz)>0.3?iz:null;
     const ftBlock = p.freeThrow && Math.abs(goalX(p.team)-p.x)<6;
-    if(passa){ pendingQuick=null; const m=humanPassTarget(p,ix,iz); if(m) startAct(p,'pass',0.05,()=>doPass(p,m),[m.x,m.z]); return; }
+    // v0.79: si ricorda la levetta usata per mirare: se resta tenuta così, chi riceve va lo stesso incontro alla palla (aiutoGuida)
+    if(passa){ pendingQuick=null; const m=humanPassTarget(p,ix,iz), mx=ix, mz=iz;
+      if(m) startAct(p,'pass',0.05,()=>{ doPass(p,m); if(ball.state==='flight'&&ball.kind==='pass'&&ball.target===m&&Math.hypot(mx,mz)>=0.3) ball.levettaMira={x:mx,z:mz}; },[m.x,m.z]); return; }
     if(ftBlock && (lob||pressed('shoot'))){ annuncia('avviso','Tiro libero dentro i 6 metri',{dettaglio:'devi passare o uscire oltre i 6',durata:1.6}); return; }
     if(ftBlock){ p.charging=false; p.chargeT=0; pendingQuick=null; }
     // sotto pressione non si tira: si passa o ci si allontana proteggendo la palla
@@ -187,11 +194,20 @@ export function aiutoGuida(p,ix,iz){
   _g[0]=ix; _g[1]=iz;
   const m=Math.hypot(ix,iz);
   // PASSAGGIO IN ARRIVO E LEVETTA FERMA (v0.57): il ricevente va da solo incontro alla palla, sul punto della sua traiettoria più
-  // vicino a lui (con la presa alla mano della v0.56 chi restava fermo se la lasciava sfuggire)
-  if(m<0.3&&ball.state==='flight'&&ball.kind==='pass'&&ball.target===p){
+  // vicino a lui (con la presa alla mano della v0.56 chi restava fermo se la lasciava sfuggire). v0.79: vale anche con la levetta
+  // ancora tenuta nella direzione usata per mirare il passaggio (il comando passa subito a chi riceve: prima nuotava via dalla palla)
+  const mira=ball.levettaMira, ml=mira?Math.hypot(mira.x,mira.z):0;
+  const comeFerma=m<0.3||(ml>0&&ball.target===p&&(ix*mira.x+iz*mira.z)/(m*ml)>0.82);
+  if(comeFerma&&ball.state==='flight'&&ball.kind==='pass'&&ball.target===p){
     const vx=ball.vx, vz=ball.vz, v2=vx*vx+vz*vz||1, u=Math.max(0,((p.x-ball.x)*vx+(p.z-ball.z)*vz)/v2);
     const dx=ball.x+vx*u-p.x, dz=ball.z+vz*u-p.z, d=Math.hypot(dx,dz);
-    if(d>0.2){ const k=Math.min(1,d/0.6); _g[0]=dx/d*k; _g[1]=dz/d*k; }
+    if(d>0.2){ const k=Math.min(1,d/0.6); _g[0]=dx/d*k; _g[1]=dz/d*k; } else { _g[0]=_g[1]=0; }
+    return _g;
+  }
+  // v0.79: il passaggio morbido arrivato sull'acqua appena fuori portata: chi doveva riceverlo va a prenderlo
+  if(comeFerma&&ball.state==='free'&&ball.kind==='pass'&&ball.target===p&&ball.shooter&&ball.shooter.team===p.team&&dist(p,ball)<2.5){
+    const dx=ball.x-p.x, dz=ball.z-p.z, d=Math.hypot(dx,dz);
+    if(d>0.2){ const k=Math.min(1,d/0.6); _g[0]=dx/d*k; _g[1]=dz/d*k; } else { _g[0]=_g[1]=0; }
     return _g;
   }
   if(m<0.3||ball.holder===p) return _g;

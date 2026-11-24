@@ -50,6 +50,13 @@ try{
       window.__pad.buttons.forEach(b=>{b.pressed=false;b.value=0;});window.__pad.axes=[0,0];
       document.activeElement?.blur();document.querySelector('#menu').style.display='none';
       const time=100+ ++scena*20;
+      // v0.85: a ogni finta il disegno sceglie una forma (larga o stretta, braccio dritto o piegato: grafica/pose.js FINTA_FORMA).
+      // Avvio e cicli caricati si confrontano a parità di forma: ogni scena ne usa una, a rotazione, e ogni stile le prova tutte e quattro.
+      // v0.86: anche il lato è fisso nella scena (in partita ogni finta va di lato 65 volte su 100, a caso): con una prima finta avanti
+      // e i due cicli di lato il confronto mescolava due gesti diversi e la prova falliva a caso. Larga, polso e bomba avanti e
+      // indietro, raffica, mezza e spalla di lato: ogni forma con i due lati.
+      window.__formaFinta={...[{largo:.9,piegato:false},{largo:.1,piegato:true},{largo:.1,piegato:false},{largo:.9,piegato:true}][scena%4],
+        lato:((scena-1)>>2)%2};
       Object.assign(H.game,{state:'play',autoplay:false,time,clock:180,shot:28,period:1,after:null,
         fermoFallo:null,penalty:null,rigoriFinali:null,possTeam:H.teams[0],possT:time,passaggi:0,cambiLiberi:false});
       H.fight.active=false;

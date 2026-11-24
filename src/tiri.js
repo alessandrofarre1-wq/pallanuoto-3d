@@ -3,7 +3,7 @@ import { registraTiroReplay } from './replay.js';
 import { azioneAperta, registraTiro, tipoDiTiro } from './statistiche.js';
 import { controllaInterferenza } from './regole.js';
 import { annuncia } from './cronaca.js';
-import { FIRMA, firma } from './finte.js';
+import { FINTA_AMPIEZZA, FINTA_LATO, FINTA_RITMO, FIRMA, fintaDi, firma } from './finte.js';
 import { FINTA_MOVIMENTO } from './finta-movimento.js';
 import { ALZATA, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, paloUomo, postoPortiere, setteControSei, viciniUomo } from './ia.js';
@@ -12,8 +12,9 @@ import { difensoreCentro, leggiCentro } from './centroboa.js';
 import { schemaSquadra, viciniPerimetro } from './schemi.js';
 import { centroAttacco, destinatarioEntrata, passaggioChiamato, postoAttacco, registraPassaggioEntrata } from './entrate.js';
 import { velocitaDiLancio } from './palla.js';
+import { sostitutoLontano } from './difesa-cambi.js';
 import { profiloTraiettoria } from './profili-traiettorie.js';
-import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO, PRESA, SERVIZIO_BOA as S, TRAIETTORIE_TIRO as T } from './taratura.js';      // numeri del bilanciamento
+import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO, PASSAGGI, PRESA, SERVIZIO_BOA as S, TRAIETTORIE_TIRO as T } from './taratura.js';      // numeri del bilanciamento
 export { ERRORE_PASSAGGIO };
 import { paloCoperto } from './muro.js';
 import { P } from './fisica-palla/parametri.js';
@@ -29,13 +30,29 @@ export function startAct(p,kind,wind,fn,aim){
   if(kind!=='colonnello'&&kind!=='schizzo') wind+=(kind==='pass'?0.4:1)*ALZATA*(p.oriz||0);
   // "frusta" = tempo dal braccio caricato al rilascio. Dati riportati nella tesi Patumi (Melchiorri 2015): 166 ms per i
   // professionisti, 189 ms per i semi-professionisti: chi tira meglio rilascia prima. Passaggio e finta sono gesti più corti.
-  if(kind==='fake')wind=Math.max(wind,FINTA_MOVIMENTO.anticipazione);
-  const frusta = kind==='fake'?FINTA_MOVIMENTO.frusta:kind==='pass' ? 0.09 : kind==='polso' ? 0.11 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
-  // finta di lato (v0.59, finte.js FINTA_LATO): la prima dritta, dalla seconda verso un palo (scelto con la levetta o alternato)
-  if(kind==='fake'){ let lato=0;
-    if((p.fakeCount||0)>0){ lato=p.fintaLatoVoluto||(p.ultimoLatoFinta?-p.ultimoLatoFinta:(rnd()<0.5?1:-1)); p.ultimoLatoFinta=lato; }
-    p.fintaLatoGesto=lato; p.fintaLatoVoluto=0; }
-  p.act={t:0,kind,wind,frusta,fn,aim,done:false,potenza:p.charging?Math.min(1,p.chargeT/0.9):0}; p.charging=false; p.chargeT=0;
+  // FINTE (v0.85, Ale: «avanti e indietro ma, più frequentemente, da destra verso sinistra; movimenti stretti e veloci o più ampi e
+  // lenti»). Larghezza a ogni finta (FINTA_AMPIEZZA, finte.js): la stretta ha i tempi minimi della v0.76 (FINTA_MOVIMENTO), l'ampia
+  // prepara, accenna e torna più lentamente; davanti alla porta più strette. Lato (FINTA_LATO.quota): da destra verso sinistra
+  // attraverso il corpo (per un mancino al contrario), oppure avanti e indietro (lato 0); con la levetta il giocatore sceglie il palo.
+  // Il gesto successivo parte solo a braccio tornato carico più FINTA_RITMO.attesa (p.fintaPronto: ia.js aiCarrier, controllo.js).
+  let largo=null, recupero=0.36;
+  if(kind==='fake'){
+    const A=FINTA_AMPIEZZA, forzata=typeof window!=='undefined'?window.__formaFinta:null;      // forma scelta a mano: solo strumenti e prove
+    const vicino=clamp((A.vicino-Math.hypot(gx-p.x,p.z))/2,0,1);
+    largo=forzata?.largo??clamp((fintaDi(p).largo??0.5)+(rnd()-0.5)*A.varia-A.stretta*vicino,0,1);
+    wind=Math.max(wind,FINTA_MOVIMENTO.anticipazione+A.preparazione*largo);
+    recupero=FINTA_MOVIMENTO.recupero+A.ritorno*largo;
+  }
+  const frusta = kind==='fake'?FINTA_MOVIMENTO.frusta+FINTA_AMPIEZZA.accenno*largo:kind==='pass' ? 0.09 : kind==='polso' ? 0.11 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
+  let pronto;
+  if(kind==='fake'){
+    // strumenti e prove possono fissare anche il lato (window.__formaFinta.lato: 0 avanti e indietro, 1 di lato); in partita non c'è
+    const traverso=(p.mano==='S'?1:-1)*p.team.dir, latoForzato=typeof window!=='undefined'?window.__formaFinta?.lato:undefined;
+    const lato=p.fintaLatoVoluto||(latoForzato!==undefined?(latoForzato?traverso:0):(rnd()<FINTA_LATO.quota?traverso:0));
+    p.fintaLatoGesto=lato; p.fintaLatoVoluto=0; if(lato) p.ultimoLatoFinta=lato;
+    pronto=wind+frusta+recupero+FINTA_RITMO.attesa; p.fintaPronto=game.time+pronto;
+  }
+  p.act={t:0,kind,wind,frusta,recupero,largo,pronto,fn,aim,done:false,potenza:p.charging?Math.min(1,p.chargeT/0.9):0}; p.charging=false; p.chargeT=0;
   if(diSchiena(kind)) p.tiriDiSchiena=(p.tiriDiSchiena||0)+1;
 }
 // tiri del centroboa spalle alla porta
@@ -45,7 +62,7 @@ export function updateActs(dt){
     const a=p.act; if(!a) continue;
     a.t+=dt;
     if(!a.done && a.t>=a.wind+a.frusta){ a.done=true; if(ball.holder===p && game.state==='play') a.fn(); }
-    if(a.t>a.wind+a.frusta+0.36) p.act=null;
+    if(a.t>a.wind+a.frusta+(a.recupero??0.36)) p.act=null;
   }
 }
 // La chiusura già rilasciata continua nella pausa regolamentare. Nessuna
@@ -54,7 +71,7 @@ export function updateRecuperi(dt){
   for(const p of allPlayers){
     const a=p.act; if(!a?.done) continue;
     a.t+=dt;
-    if(a.t>a.wind+a.frusta+0.36) p.act=null;
+    if(a.t>a.wind+a.frusta+(a.recupero??0.36)) p.act=null;
   }
 }
 export function launch(p,tx,ty,tz,t,kind,giriVoluti){
@@ -71,7 +88,7 @@ export function launch(p,tx,ty,tz,t,kind,giriVoluti){
   const giri = Number.isFinite(giriVoluti)?giriVoluti:kind==='pass' ? P.giriPassaggio : ty>0.55 ? P.giriPalombella : P.giriTiro;
   const L=velocitaDiLancio(ball.x,ball.y,ball.z,tx,ty,tz,t,giri);
   ball.vx=L.vx; ball.vy=L.vy; ball.vz=L.vz; ball.wx=L.wx; ball.wy=L.wy; ball.wz=L.wz;
-  ball.flightT=0; ball.intercept=new Set(); ball.saveChecked=false; ball.pickupCD=0.3;
+  ball.flightT=0; ball.intercept=new Set(); ball.saveChecked=false; ball.pickupCD=0.3; ball.tipoPassaggio=null; ball.levettaMira=null;
   ball.skip=false; ball.skipped=false; ball.schizzi=0; ball.daTiro=kind==='shot'; ball.inRete=false; ball.toccoDifesa=null; ball.toccoPortiere=false; ball.ignora=null;
   p.charging=false; p.chargeT=0;
 }
@@ -124,7 +141,7 @@ export function shotKind(p){
     const def=other(p.team).players.filter(q=>!q.excluded&&!q.isGK).sort((a,b)=>dist(a,p)-dist(b,p))[0];
     const lettura=leggiCentro(p,def,p),dx=goalX(p.team)-p.x,dz=-p.z;
     const fronte=(p.fx*dx+p.fz*dz)/(Math.hypot(dx,dz)||1);
-    if(lettura.spalle&&fronte<-.2){
+    if((lettura.spalle||lettura.addosso)&&fronte<-.2){
       const mano=p.mano==='S'?-1:1,f=Math.hypot(p.fx,p.fz)||1,nx=-p.fz/f*mano,nz=p.fx/f*mano;
       const distanza=dist(def,p)||.001;
       const portaDalBraccio=(dx*nx+dz*nz)/(Math.hypot(dx,dz)||1);
@@ -179,6 +196,7 @@ export function bestPassTarget(p,variabile=true,{assistita=false}={}){
   let best=null,bs=-1e9; const sup=manUp(p.team),schema=schemaSquadra(p.team),gx=goalX(p.team),press=openness(p);
   for(const m of p.team.players){
     if(m===p||m.excluded||m.uscendo||(m.isGK&&!setteControSei(p.team))) continue;
+    if(sostitutoLontano(m)) continue;      // v0.82: il sostituto appena entrato da metà campo riceve quando arriva in attacco
     const d=dist(p,m); if(d<1.2) continue;
     const dg=Math.hypot(gx-m.x,m.z),risk=passLaneRisk(p,m),linea=laneClear(p,m.x,m.z,p.team,0.55);
     const interno=(!sup&&centroAttacco(p.team)===m)||(sup&&paloUomo(m));
@@ -204,6 +222,8 @@ export function bestPassTarget(p,variabile=true,{assistita=false}={}){
     let s=Math.min(aperto,3)*1.2-dg*0.14-d*0.07-risk*6+(linea?0.8:-2.8);
     if(vicino) s+=schema.passaggi==='vicini'?2.4:schema.passaggi==='equilibrati'?1.7:1.25;
     if(interno) s+=(1.6+(schema.id==='boa'&&!sup?0.8:0))*(boaChiara||assistita&&!p.isGK?1:attesaCentro(p.team,sup));
+    // v0.81: l'ingresso classico al centroboa marcato dietro o al fianco (CENTRO_ATTESA.ingresso)
+    if(interno&&!sup&&!boaChiara){ const l=leggiCentro(m,difensoreCentro(m),p); if(l.ricevibile&&(l.tipo==='dietro'||l.tipo==='lato')) s+=CENTRO_ATTESA.ingresso*attesaCentro(p.team,sup); }
     if(taglio) s+=4.5;      // l'entrata riuscita è l'occasione migliore: la palla va lì
     // uomo in più: la fase in corso dello schema chiamato indica a chi dare la palla
     if(sup&&faseUomo(p.team)?.palla===m.i) s+=1.8;
@@ -236,43 +256,68 @@ export function humanPassTarget(p,ix,iz){
     const c=(dx*ix+dz*iz)/(d*il); if(c<0.35) continue;
     if(m.isGK&&!setteControSei(p.team)){ if(!inAttacco&&c>0.8) portiere=m; continue; }
     const boa=(!manUp(p.team)&&centroAttacco(p.team)===m)||(manUp(p.team)&&paloUomo(m));
-    const s=c*4 - d*0.07 + (laneClear(p,m.x,m.z,p.team)?0.5:0) + (boa&&versoPorta>0.55&&c>0.5?BOA_PREFERITO:0);
+    // v0.79 (Ale: «troppi passaggi sbagliati»): conta la direzione della levetta (MIRA_PASSAGGIO). Prima un compagno più vicino o
+    // più libero spostato di 25-30°, o il centroboa entro 60° verso la porta, vinceva su quello puntato
+    const s=c*MIRA_PASSAGGIO.direzione - d*MIRA_PASSAGGIO.distanza + (laneClear(p,m.x,m.z,p.team)?MIRA_PASSAGGIO.libero:0) + (boa&&versoPorta>0.55&&c>MIRA_PASSAGGIO.boaCono?MIRA_PASSAGGIO.boa:0);
     if(s>bs){ bs=s; best=m; }
   }
   return best||portiere||bestPassTarget(p,false);
 }
 // errore dei passaggi (v0.57, Ale: «l'errore può capitare ma deve essere verosimile»): ERRORE_PASSAGGIO in taratura.js
-export const PASSAGGIO_ALTEZZA=0.95, BOA_PREFERITO=1.2, BOA_DAVANTI=0.55;
+export const PASSAGGIO_ALTEZZA=0.95, BOA_DAVANTI=0.55;
+export { PASSAGGI };
+// v0.79: peso della direzione della levetta, della distanza e della linea libera nella scelta del compagno (humanPassTarget)
+// Misura su 379 scene vere d'attacco schierato, mira con ±10° di errore: prima (c×4, distanza 0,07, linea libera 0,5, centroboa
+// +1,2 entro 60° verso la porta) il compagno puntato riceveva nel 54% dei casi e il 31% dei passaggi finiva al centroboa senza
+// volerlo; contando solo la direzione 79% e 6% (quando due compagni sono quasi in fila decide il più allineato). La precedenza
+// al centroboa della v0.55 è superata: il centro si serve puntandolo.
+export const MIRA_PASSAGGIO={ direzione:10, distanza:0.01, libero:0, boa:0, boaCono:1 };
+// v0.79 (Ale): che passaggio fare, morbido sull'acqua o alto e teso (PASSAGGI in taratura.js). d = lunghezza del passaggio
+export function tipoPassaggio(p,m,d){
+  if(manUp(p.team)) return 'teso';                                          // uomo in più
+  if(game.shot<=PASSAGGI.ultimi) return 'teso';                              // si palleggia veloce prima della chiusura
+  if(d>PASSAGGI.lungo) return 'teso';                                        // cambio di zona
+  if(Math.abs(p.z-m.z)>PASSAGGI.lato&&Math.sign(p.z||1)!==Math.sign(m.z||1)) return 'teso';      // cambio di lato
+  if(Math.abs(goalX(p.team)-p.x)>PASSAGGI.transizione) return 'teso';        // transizione: palla veloce in avanti
+  if(!laneClear(p,m.x,m.z,p.team,PASSAGGI.corridoio)) return 'teso';         // un avversario vicino alla linea
+  // compagno libero in posizione di tiro: alla mano, per tirare subito (anche il centroboa che si è liberato, v0.55)
+  if(Math.hypot(goalX(p.team)-m.x,m.z)<PASSAGGI.tiro&&!other(p.team).players.some(o=>!o.excluded&&!o.isGK&&dist(o,m)<PASSAGGI.libero)) return 'teso';
+  return 'morbido';
+}
 export function doPass(p,m){
   if(!m) return;
   // v0.55 (Ale: «ad alti livelli il palleggio è alto, teso e veloce»): 11-15,5 m/s (prima 8,5-12) e arrivo alla mano alzata
   // di chi riceve (PASSAGGIO_ALTEZZA, prima 0,45 m: la palla scendeva verso l'acqua)
-  const spd=11+4.5*p.st.pas;
+  // v0.79 (Ale): due modi di passare, morbido sull'acqua vicino al compagno o alto e teso alla mano (tipoPassaggio, PASSAGGI)
+  const tipo=tipoPassaggio(p,m,dist(p,m)), morbido=tipo==='morbido';
+  const spd=morbido?PASSAGGI.morbido[0]+PASSAGGI.morbido[1]*p.st.pas:11+4.5*p.st.pas;
   let tx=m.x, tz=m.z; let t=dist(p,m)/spd;
   tx+=m.vx*t*0.8; tz+=m.vz*t*0.8;
+  if(morbido){ const ux=p.x-tx, uz=p.z-tz, l=Math.hypot(ux,uz)||1; tx+=ux/l*PASSAGGI.davanti; tz+=uz/l*PASSAGGI.davanti; }      // sull'acqua davanti a lui
   const d=Math.hypot(tx-p.x,tz-p.z); t=Math.max(0.25,d/spd);
   // v0.56 (taratura, palla persa 9% contro circa 20% delle partite vere): il passaggio fatto con un avversario addosso o da
   // distesi è meno preciso (ERRORE_PASSAGGIO); con la presa alla mano (fisica.js) quello che passa lontano finisce in acqua
   let press=99; for(const o of other(p.team).players){ if(!o.excluded) press=Math.min(press,dist(o,p)); }
   const err=(0.2+(1-p.stamina)*0.5)*(1.25-p.st.pas)*(0.3+d*0.05)*ERRORE_PASSAGGIO.base*
-    (1+ERRORE_PASSAGGIO.pressione*clamp((1.6-press)/1.6,0,1))*(1+ERRORE_PASSAGGIO.disteso*(p.oriz||0));
+    (1+ERRORE_PASSAGGIO.pressione*clamp((1.6-press)/1.6,0,1))*(1+ERRORE_PASSAGGIO.disteso*(p.oriz||0))*(morbido?PASSAGGI.errore:1);
   { const L=ERRORE_PASSAGGIO.limite, g=()=>clamp(gauss(),-L,L); tx+=g()*err; tz+=g()*err; }
   // PALLA AL CENTROBOA (v0.55, Ale: «al centroboa la palla va sempre data davanti e in acqua; poi lui la prende e si gira e tira
   // con una frustata oppure fa una beduina; se gli arriva in mano al volo è perché si è liberato del difensore»): con il marcatore
   // addosso il passaggio arriva basso, in acqua, BOA_DAVANTI m davanti a lui verso chi passa, e un po' più lento; in mano (alto,
   // al volo) solo se si è liberato. Se il difensore era in anticipo (tra palla e centroboa) e la palla passa, resta dietro di lui:
   // vantaggio da sfruttare: la ricezione da sola non assegna rigori o espulsioni.
-  let ty=PASSAGGIO_ALTEZZA, anticipo=null;
+  let ty=morbido?PASSAGGI.altezza:PASSAGGIO_ALTEZZA, anticipo=null, tipoFinale=tipo;
   if(!manUp(p.team)&&centroAttacco(p.team)===m&&!m.isGK&&Math.hypot(goalX(m.team)-m.x,m.z)<6){
     const def=difensoreCentro(m), lett=leggiCentro(m,def,p);
     if(lett.tipo!=='libero'){      // libero = difensore a più di 1,8 m (leggiCentro): si è liberato
       const ux=p.x-m.x, uz=p.z-m.z, l=Math.hypot(ux,uz)||1; tx=m.x+ux/l*BOA_DAVANTI; tz=m.z+uz/l*BOA_DAVANTI; ty=0.12;
-      t=Math.max(0.3,Math.hypot(tx-p.x,tz-p.z)/(spd*0.8));
+      // v0.79 (Ale: al centroboa si passa morbido sull'acqua): velocità del passaggio morbido
+      t=Math.max(0.3,Math.hypot(tx-p.x,tz-p.z)/(PASSAGGI.morbido[0]+PASSAGGI.morbido[1]*p.st.pas)); tipoFinale='morbido';
     }
     if(lett.tipo==='anticipo'&&def) anticipo=def;
   }
   registraPassaggioEntrata(p,m);
-  launch(p,tx,ty,tz,t,'pass'); ball.anticipoBattuto=anticipo; ball.target=m; ball.tx=tx; ball.tz=tz; ball.dopoFinta=p.fakeUntil>game.time||game.time<(p.fintaFino||0); ball.firma=firma(p,'pass'); if(ball.firma) p.ultimaFintaT=-9;
+  launch(p,tx,ty,tz,t,'pass'); ball.tipoPassaggio=tipoFinale; ball.anticipoBattuto=anticipo; ball.target=m; ball.tx=tx; ball.tz=tz; ball.dopoFinta=p.fakeUntil>game.time||game.time<(p.fintaFino||0); ball.firma=firma(p,'pass'); if(ball.firma) p.ultimaFintaT=-9;
   game.passaggi=(game.passaggi||0)+1; if(Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1)) game.cambiLato=(game.cambiLato||0)+1;
   m.daChi=p; ball.cambioLato=Math.abs(p.z-m.z)>5&&Math.sign(p.z||1)!==Math.sign(m.z||1);      // passaggio da un lato all'altro: chi riceve può tirare al volo
   if(p.team===teams[0]){ setCtrl(m);
@@ -300,7 +345,7 @@ const mira = pre => pre>=90 ? 0.18-(pre-90)/9*0.1 : 0.18+Math.pow((90-pre)/30,1.
 // o = variante: polso (tiro di solo polso, poco caricato), dopoFinta, torsione (finta di busto sul primo palo e chiusura in diagonale), volo
 export function doShoot(p,power,lob,aimZ,o){
   // misura (v0.59, solo con window.__logTiri nelle sonde): perché e dopo quanto tempo d'azione tira il computer
-  if(typeof window!=='undefined'&&window.__logTiri){ const az=azioneAperta(); window.__logTiri.push({m:p.motivoTiro||(p.team.human?'giocatore':'altro'),t:az?game.time-az.t0:-1,tipo:az?.tipo||'-',d:Math.hypot(goalX(p.team)-p.x,p.z)}); }
+  if(typeof window!=='undefined'&&window.__logTiri){ const az=azioneAperta(); window.__logTiri.push({m:p.motivoTiro||(p.team.human?'giocatore':'altro'),t:az?game.time-az.t0:-1,tipo:az?.tipo||'-',d:Math.hypot(goalX(p.team)-p.x,p.z),g:p.act?p.act.kind:'shot',boa:p===centroAttacco(p.team)}); }      // v0.79: anche il gesto (g) e se tira il centro (boa)
   p.motivoTiro=null;
   o=o||{};
   const tipoAzione=tipoDiTiro(p,ball);

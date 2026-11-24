@@ -46,13 +46,25 @@ prova(a.gesto === 'polso' && a.finte === 0, `un tocco e rilascio su TIRO = polso
 await prepara(); await premi(); await pg.evaluate(() => window.__salta(180)); const b = await stato();
 prova(b.tiene && b.finte >= 3, `TIRO tenuto = finte continue con la palla in mano (${b.finte})`);
 await rilascia();
-// v0.59 (video di Dénes Varga; Ale: «sposta sia il difensore che il portiere»): la prima finta dritta, poi di lato verso un palo,
-// alternando; il portiere che abbocca alla finta di lato si sposta verso quel palo
+// v0.59 (video di Dénes Varga; Ale: «sposta sia il difensore che il portiere»): il portiere che abbocca alla finta di lato si sposta
+// verso quel palo. v0.85 (Ale: «avanti e indietro ma, più frequentemente, da destra verso sinistra»): la finta di lato attraversa il
+// corpo (per un destro verso la sua sinistra, per un mancino al contrario), anche la prima; con la levetta inclinata va da quella parte.
 await prepara(); await premi();
-const lati = await pg.evaluate(() => { const p=window.__pallanuoto.teams[0].players[4],lati=[]; let contate=0;
-  for(let i=0;i<240&&lati.length<3;i++){ window.__salta(1); if(p.fakeCount>contate){contate=p.fakeCount;lati.push(p.fintaLatoGesto||0);} } return lati; });
+const lati = await pg.evaluate(() => { const H=window.__pallanuoto,p=H.teams[0].players[4],lati=[]; let contate=0;
+  for(let i=0;i<420&&lati.length<4;i++){ window.__salta(1); if(p.fakeCount>contate){contate=p.fakeCount;lati.push(p.fintaLatoGesto||0);} }
+  return { lati, attraverso:(p.mano==='S'?1:-1)*p.team.dir }; });
 await rilascia();
-prova(lati[0] === 0 && Math.abs(lati[1]) === 1 && lati[2] === -lati[1], `finte: la prima dritta, poi di lato alternando (${lati.join(', ')})`);
+const laterali = lati.lati.filter(l => l !== 0);
+prova(lati.lati.length === 4 && laterali.length >= 2 && laterali.every(l => l === lati.attraverso),
+  `finte: di lato da destra verso sinistra, attraverso il corpo (${lati.lati.join(', ')}; attraverso = ${lati.attraverso})`);
+await prepara();
+await pg.evaluate(() => window.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowDown' })));
+await premi();
+const conLevetta = await pg.evaluate(() => { const p=window.__pallanuoto.teams[0].players[4];
+  for(let i=0;i<120&&!(p.fakeCount>0);i++) window.__salta(1); return p.fakeCount>0 ? p.fintaLatoGesto||0 : null; });
+await rilascia();
+await pg.evaluate(() => window.dispatchEvent(new KeyboardEvent('keyup', { code: 'ArrowDown' })));
+prova(conLevetta === 1, `con la levetta inclinata la prima finta va già da quella parte (lato ${conLevetta})`);
 const gkSposta = await pg.evaluate(() => { const H = window.__pallanuoto, gk = H.teams[1].players[0];
   gk.fintaLato = null; const z0 = H.prova.gkTarget(gk).z; gk.fintaLato = { lato: 1, fino: H.game.time + 1 }; const z1 = H.prova.gkTarget(gk).z; gk.fintaLato = null; return z1 - z0; });
 prova(gkSposta > 0.3, `il portiere che abbocca alla finta di lato si sposta verso quel palo (${gkSposta.toFixed(2)} m)`);
@@ -69,13 +81,15 @@ prova(d.tiro, `tenuto 0,9 s e lasciato = tiro caricato (partito: ${d.tiro ? 'sì
 await pg.evaluate(() => { const H = window.__pallanuoto, it = H.teams[0], gx = 12.5 * it.dir, p = it.players[4], m = it.players[2];
   H.game.state = 'play'; H.game.after = null; H.game.penalty = null;
   m.x = gx - it.dir * 5; m.z = -3; m.vx = m.vz = 0; m.decideT = 99; p.x = gx - it.dir * 9; p.z = 3; H.regole.giveBall(p); H.__setCtrl(p); p.act = null;
+  // v0.79: il compagno è libero (nessun avversario entro 1,5 m) in posizione di tiro: il passaggio gli arriva alto e teso, in mano
+  for (const o of H.teams[1].players) if (!o.isGK && Math.hypot(o.x - m.x, o.z - m.z) < 2.5) { o.x = gx - it.dir * 8; o.z = 6; o.vx = o.vz = 0; }
   H.prova.doPass(p, m); window.__vPass = Math.hypot(H.ball.vx, H.ball.vz); window.__salta(3); });
 await tocco(60);
 // si guarda il primo secondo dopo il tocco: il tiro al volo parte appena arriva la palla (poi il portiere può già averla parata)
 const v = await pg.evaluate(() => { const H = window.__pallanuoto, m = H.teams[0].players[2]; let tipo = null, stato = null, tiratore = false;
   for (let i = 0; i < 60 && !tiratore; i++) { window.__salta(1); if (H.ball.kind === 'shot' && H.ball.shooter === m) { tipo = 'shot'; stato = H.ball.state; tiratore = true; } }
   return { velocita: window.__vPass, tipo, stato, tiratore }; });
-prova(v.velocita >= 11, `passaggio teso: ${v.velocita.toFixed(1)} m/s alla partenza (prima 8,5-12)`);
+prova(v.velocita >= 11, `passaggio teso al compagno libero vicino alla porta: ${v.velocita.toFixed(1)} m/s alla partenza (v0.79: morbido solo nella circolazione tranquilla)`);
 prova(v.tipo === 'shot' && v.tiratore, `un tocco su TIRO mentre arriva il passaggio = tiro al volo di chi riceve (${v.tipo}, ${v.stato})`);
 // passaggio (v0.55): in attacco mai al proprio portiere; con la levetta verso la porta il centroboa ha la precedenza
 const pas = await pg.evaluate(() => { const H = window.__pallanuoto, it = H.teams[0], gx = 12.5 * it.dir, p = it.players[4];

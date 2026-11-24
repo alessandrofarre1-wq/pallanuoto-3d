@@ -4,5 +4,5 @@ const ease=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);};
 export function impulsoFinta(a){
   if(a?.kind!=='fake')return 0;
   const avanti=a.wind+a.frusta;
-  return a.t<=avanti?ease(a.t/avanti):1-ease((a.t-avanti)/FINTA_MOVIMENTO.recupero);
+  return a.t<=avanti?ease(a.t/avanti):1-ease((a.t-avanti)/(a.recupero??FINTA_MOVIMENTO.recupero));
 }

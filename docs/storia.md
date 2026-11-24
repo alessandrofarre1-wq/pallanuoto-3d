@@ -10,6 +10,148 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.86 — rose** (Claude Code, 24/11/2026; rapporto `docs/versioni/v086-rose.md`). RICHIESTA: Ale, «rose: usare i giocatori a
+  disposizione dei CT (all'Italia mancano Di Fulvio e Di Somma)»; «mettimi tutti e poi scelgo io all'inizio della competizione chi
+  convocare; non farlo solo per l'Italia ma per tutte le nazionali; in partita singola lasciami tutti i giocatori; considerali tutti»;
+  «per la partita scegli i più forti nel ruolo; se ci sono doppi ruoli scegli i secondi più forti dando variabilità ai cambi per coprire
+  il più possibile più ruoli». REGOLE: World Aquatics 18/02/2026, al massimo 14 a partita (12 di movimento, 2 portieri), 15 iscritti ai
+  Mondiali. CODICE: rosa di 13 dalla convocazione più recente. CAMBIAMENTI: `strumenti/rose-dal-database.mjs` (tutti i convocati di
+  almeno un torneo con le stesse medie della squadra; 23 doppioni del database uniti; ruoli doppi `ruoli`; `riportaAlRanking`: la
+  forza dei 14 riportata a quella dei 13 di prima, voci giù da 0 a 1,6 punti), `src/dati/lista-partita.js` (la scelta, pura),
+  `src/dati/rose-db.json` (`tutti`, 482 giocatori); `src/dati/rose.js` (`tutti`, `listaPartita`, `numeriLista`, `rosa` con `liste` e
+  `convocati`); `giocatori.js` (formazione per id); `menu.js` (schermata Squadre con gli altri disponibili e lo scambio con la
+  panchina, «Scelta automatica»; convocazione dei tornei, `vConvocazione`, 15 con 2-3 portieri fino alla prima partita); `aspetto.js`
+  (aspetto stabile per chi c'era). MISURE: 16 partite: senza correzione gol 19,3 → 21,3 (metà per i più forti, metà per la riserva in più: con 13 a partita 20,2); con la forza al ranking 19,4 (Italia 13,4, Ungheria 25,5 come nella v0.85), espulsioni dal centro 62,7% → 55%, 6 voci su 15 a posto. PROVA NUOVA `npm run rose` (15 controlli, anche nella CI); prove adattate `sezione5`
+  (7 riserve, 14 nella Panchina, riserva per id) e `azione` (scena senza contrasti: anche `colpi`); `finta-fluida` (v0.76) falliva a caso
+  dalla v0.85 perché il lato di ogni finta è a caso: ora ogni scena fissa anche il lato (`window.__formaFinta.lato`, solo prove e
+  strumenti). VERIFICHE: lint PASS; prove 67 PASS e 1 FAIL (`finta-fluida`, poi corretta: tre giri PASS identici; `finte`, `finta`,
+  `traiettorie` PASS); verifica `--partite=0` con quattro riferimenti aggiornati dopo il controllo (altri giocatori e altra situazione di
+  gioco), poi cinque immagini identiche; aspetto «Tutto a posto» (iPhone 56 oggetti, 131.872 triangoli). DECISIONI SUPERATE: rosa di 13 → tutti i disponibili e 14 in partita scelti per
+  ruolo; formazione per numero → per id; rosa fissa nei tornei → 15 convocati. NON FATTO: statistiche dei doppioni non sommate;
+  valutazioni ancora stime dei tornei del database.
+
+- **v0.85 — finte** (Claude Code, 24/11/2026; rapporto `docs/versioni/v085-finte.md`). RICHIESTA: Ale, «davanti alla porta finta
+  veloce ma non troppo»; «ora quelle vicino alla porta sono troppo veloci, vanno rallentate»; «la finta di tiro può essere fatta sia
+  mandando la palla avanti e indietro ma, più frequentemente, da destra verso sinistra; in generale con movimenti stretti e veloci o più
+  ampi e lenti e con il braccio teso o piegato». CODICE: il computer partiva con il gesto dopo la finta (quasi sempre un passaggio) a
+  metà del ritorno del braccio, 0,50 s dall'inizio della finta (ritorno interrotto 82 volte su 100 tra 5 e 7 m, sonda nuova
+  `npm run sonda-finte`); la prima finta sempre dritta, di lato solo dalla seconda alternando i pali (98 finte su 100 erano la prima);
+  tempi uguali per tutte. CAMBIAMENTI: `FINTA_RITMO.attesa` 0,2 s (video di Varga): il gesto dopo la finta parte a braccio tornato
+  carico più l'attesa, per il computer (`p.fintaPronto`, `aiCarrier`) e per la tenuta di TIRO (prima 0,12 s); `FINTA_LATO.quota` 0,65:
+  ogni finta di lato da destra verso sinistra attraverso il corpo (mancino al contrario; levetta = palo scelto); `FINTA_AMPIEZZA`:
+  larghezza a ogni finta dallo stile (`largo` in `finte.js`) ± caso, più stretta davanti alla porta, stretta con i tempi minimi della
+  v0.76 e ampia fino a 0,10 + 0,10 + 0,12 s più lenta (`a.recupero`); solo disegno `FINTA_FORMA` (braccio teso o piegato, `piegato`
+  per stile). MISURE: gesto dopo la finta 0,50 → 1,05 s; ritorno interrotto 82% → 4%; 16 partite: gol 19,1 → 19,3, tiri 39,0 → 39,3,
+  superiorità 48,1% → 47,1% (secondo campione 42% → 41%), 7 voci su 15 a posto (prima 8: esce la palla in mano prima del passaggio,
+  1,00 s). PROVA NUOVA `npm run finte` (11 controlli, anche nella CI); foglio `npm run finte-forme`; prove adattate: `finta`,
+  `finta-fluida` (forme uguali tra avvio e cicli), `traiettorie` (costanti nuove, palombella dopo il ritorno; il salvataggio intermedio
+  169f7ed la faceva fallire). VERIFICHE: lint PASS; prove 67 PASS e 0 FAIL (18,2 minuti); verifica `--partite=0`: «3-azione» diversa solo per la situazione di gioco (a 2:45 la palla è all'Italia invece che all'Ungheria), controllata, riferimento aggiornato e confronto ripetuto con immagini identiche; aspetto «Tutto a posto» (iPhone 56 oggetti, 131.872 triangoli). DECISIONI SUPERATE: gesto dopo la finta a metà ritorno; prima finta sempre
+  dritta e lati alternati; tempi uguali per tutte. NON FATTO: giudizio di Ale sul movimento; la finta stretta non è più veloce dei tempi
+  della v0.76.
+
+- **v0.84 — rigore** (Claude Code, 24/11/2026; rapporto `docs/versioni/v084-rigore.md`). RICHIESTA: Ale, «rigore: la palla deve
+  partire dall'acqua e il movimento deve essere continuo, altrimenti controfallo». CODICE: palla in mano alta fin dal fischio; carica
+  tenibile fino a 7 s. CAMBIAMENTI: `pose.js` (solo disegno): prima del gesto la palla galleggia davanti a chi tira e la carica la
+  pesca (`PESCA` v0.63); `RIGORE_TIRO.fermo` 0,5 s: fermo a braccio carico = `controfalloRigore` (palla al portiere avversario) o,
+  nella serie finale, rigore sbagliato («Controfallo»); avviso nuovo all'inizio del rigore. MISURE: 16 partite computer contro
+  computer identiche alla v0.83 (il computer tira già con un gesto unico). Foto `docs/immagini/v084-rigore-*.png`. PROVA NUOVA `npm
+  run rigore` (6 controlli, anche nella CI). VERIFICHE: lint PASS; prove 66 PASS e 0 FAIL; verifica `--partite=0` superata;
+  aspetto «Tutto a posto». NON FATTO: giudizio di Ale sul gesto.
+
+- **v0.83 — time-out** (Claude Code, 24/11/2026; rapporto `docs/versioni/v083-timeout.md`). RICHIESTA: Ale, «time-out chiamato
+  quando si subisce un break, o negli ultimi minuti per preparare un attacco; i giocatori si schierano nella metà campo avversaria;
+  l'arbitro dà la palla al portiere a metà campo, che la passa al compagno libero e torna in porta nuotando». CODICE: alla ripresa
+  tutti nella propria metà e il punto con la palla a metà campo; il computer chiamava il time-out solo per break, espulsioni, 7 contro
+  6 e stanchezza. CAMBIAMENTI: `schieraTimeout` (palla al portiere a metà campo, compagni ai posti d'attacco nella metà avversaria,
+  difensori a un metro dal loro uomo; `markTarget` lì avrebbe letto un rientro); `TIMEOUT` (ultimo minuto e mezzo, pari o sotto di
+  uno, appena ripresa la palla, una volta). 16 partite: time-out 1,53 → 1,34 a squadra, gol 20,2 → 19,1, 8 voci su 15 a posto (prima
+  6), differenze per lo più del caso. PROVA NUOVA `npm run timeout` (7 controlli, anche nella CI). VERIFICHE: lint PASS; prove 65 PASS
+  e 0 FAIL; verifica `--partite=0` superata; aspetto «Tutto a posto». NON FATTO: nessuno schema particolare dopo il time-out.
+
+- **v0.82 — cambi volanti** (Claude Code, 24/11/2026; rapporto `docs/versioni/v082-cambi-volanti.md`). RICHIESTA: Ale, «cambi
+  volanti: non quando l'attacco è già impostato; il sostituto deve entrare da metà campo con il cinque; niente passaggi a un
+  giocatore appena entrato a 20 m». REGOLE: World Aquatics 25/6/2025, art. 18: la zona dei cambi volanti va dalla linea di porta alla
+  metà campo, sul lato delle panchine. MISURE: sonda nuova `npm run sonda-cambi`: sulla v0.81 24 cambi volanti per squadra a partita,
+  44% in difesa e 30% ad attacco impostato (il computer cambiava in qualunque momento), cinque a 2,7 m dalla propria porta, 4
+  passaggi di 12-24 m su 29 a chi era appena entrato; energia sotto il 20% per l'8,7% del tempo. CAMBIAMENTI (`PANCHINA`): zona a
+  11 m (vicino alla metà campo), sostituto che compare sul bordo a 8,5 m; cambi volanti solo in transizione (palla da meno di 7 s o
+  nella propria metà), anche per il computer, in coda; `sostitutoLontano`: niente palla a chi è appena entrato finché non è a 10,5 m
+  dalla porta; a gioco fermo il computer cambia subito fino a due giocatori sotto il 45%. MISURE DOPO: volanti 9,3 (tutti in
+  transizione), tutti i cambi 46,5, fuori 6,2 s, cinque a 10,5 m, nessun passaggio lungo a chi è appena entrato, energia sotto il 20%
+  per il 4,2% del tempo; varianti b1-b3 nel rapporto. 16 partite: gol 19,3 → 20,2, espulsioni 9,8 → 10,3 (a posto), 6 voci su 15 a
+  posto (prima 5). PROVA NUOVA `npm run cambi-volanti` (9 controlli, anche nella CI). VERIFICHE: lint PASS; prove 64 PASS e 0 FAIL;
+  verifica `--partite=0` superata con immagini identiche; aspetto «Tutto a posto». NON FATTO: due cambi volanti insieme; numero dei
+  cambi a gioco fermo alto finché i gol restano troppi.
+
+- **v0.81 — tiri: controfuga vera, centroboa di spalle, occasioni chiare** (Claude Code, 24/11/2026; rapporto
+  `docs/versioni/v081-tiri.md`). RICHIESTA: Ale, «troppi tiri a schizzo e colonnello, poche beduine e pochi passaggi al centroboa»;
+  «le occasioni chiare (passaggio con l'uomo davanti alla porta): tirare indipendentemente dai secondi». MISURE: sonda nuova
+  `npm run sonda-centro`: sulla v0.80 il centroboa riceveva in 18,5% delle azioni in parità, già girato verso la porta nel 77%, e
+  tirava nel 90% dei suoi possessi (espulsioni procurate 1%, studio d'élite 41%); beduine e sciarpe zero. Causa: lo scivolamento
+  del computer lo girava sempre verso la porta, e con il marcatore al fianco si girava da solo. Il tasto a comparsa si accendeva
+  anche nell'attacco schierato e qualunque pressione di TIRO faceva lo speciale. CAMBIAMENTI: `QTE.eta` (9 s dal recupero) e
+  tocco = speciale, tenuto = tiro normale (`controllo.js`, `hud.js`, Comandi); `CENTRO_PALLA` (di spalle con il marcatore dietro o
+  al fianco entro 1,8 m, `leggiCentro.addosso`, `fisica.js` anche nello scivolamento; decisioni di `boaHold`: beduina o sciarpa
+  30% dopo 0,4 s, girata 15%, girato con il marcatore vicino aspetta 0,45 s); `OCCASIONE_CHIARA` (entro 5 m, apertura 0,7,
+  nessuno entro 2 m: tiro subito); `CENTRO_ATTESA` 3-9 s più `ingresso` 1,2. Ganci di misura in `prova`. MISURE DOPO: centroboa
+  22,2% delle azioni, girato 49%, tiro 62%, espulsioni 21%, beduine e sciarpe 15% dei suoi tiri; varianti a-a8 nel rapporto.
+  16 partite: gol 19,5 → 19,3, tiri 40,3 → 41,4, espulsioni 7,8 → 9,8 (a posto), dal centro 52,6% → 59,0%, superiorità
+  42,2% → 43,3%, espulsione procurata in parità 12,4% → 15,6%; 5 voci su 15 a posto (prima 4). PROVA NUOVA `npm run tiri-centro`
+  (10 controlli, anche nella CI); `sezione4` +2 controlli; `nuoto-coerente` adeguata (scene con possesso vecchio). VERIFICHE:
+  lint PASS; prove 62 PASS e 1 FAIL (`nuoto-coerente`, poi adeguata e PASS da sola), gambe fuori dall'acqua 0; verifica
+  `--partite=0` superata con immagini identiche; aspetto «Tutto a posto», iPhone 56 oggetti e 131.872 triangoli. NON FATTO: il
+  centroboa libero o con il marcatore in anticipo riceve ancora girato e segna (difesa: anticipo e aiuti); falli in attacco e
+  palle rubate al centroboa rari; gol e tiri ancora troppi.
+
+- **v0.80 — cambi di marcatura nei rientri** (Claude Code, 24/11/2026; rapporto `docs/versioni/v080-cambi-marcatura.md`).
+  RICHIESTA: Ale, «non funzionano molto i cambi di marcatura in difesa: ogni giocatore guarda solo il proprio, e nascono controfughe
+  che in realtà non esisterebbero». CODICE: `cambioMarcatura` scambiava solo sui tagli dell'attacco schierato e usciva subito nei
+  rientri. MISURE: sonda nuova `npm run sonda-rientri`; v0.78: 5,8 occasioni da schizzo o colonnello (portatore verso la porta
+  senza nessuno davanti) per squadra a partita. CAMBIAMENTI: `scambiRientro` e `RIENTRO_SCAMBI`: nei rientri (palla oltre 9,2 m dalla
+  porta) l'attaccante più avanti lo prende il difensore meglio piazzato quando il suo marcatore è stato superato (oltre 1,5 m più lontano dalla porta o a
+  più di 5 m), con un guadagno di almeno 3 m; chi scambia tiene l'uomo 2,5 s; il difensore comandato e quello che rallenta il
+  portatore non prendono un uomo nuovo. PROVE: r1 senza tenuta 381 scambi (avanti e indietro), gol 18,2; r2 tenuta sbagliata 650
+  scambi; r3 con la palla già oltre 6 m: scambi anche nell'attacco schierato e tre prove fallite (errore mio); r4 (scelto, oltre
+  9,2 m come il rientro del gioco) 96 scambi, occasioni da schizzo o colonnello 5,8 → 2,5, gol 20,8 → 19,5, controfughe 2,5 → 1,9,
+  superiorità 47,1% → 42,2% (da ritarare). Nelle prove l'Ungheria segna il doppio dell'Italia già dalla v0.77: valutazioni medie del
+  database 83 contro 76 (rose, punto 11). PROVA NUOVA `npm run cambi-marcatura`, anche nella CI. DECISIONI SUPERATE: in
+  `docs/decisioni-superate.md`. VERIFICHE: lint PASS; prove: primo giro (soglia 6 m) tre FAIL (`chiamate-attacco`,
+  `entrate-integrazione`, `sezione3`), poi 62 PASS e 0 FAIL in 16,6 minuti, gambe fuori dall'acqua 0; verifica `--partite=0`: foto
+  «azione» e viste iPhone diverse per le posizioni dei difensori, grafica normale, riferimenti aggiornati e verifica ripetuta con
+  cinque immagini identiche; aspetto «Tutto a posto», iPhone 56 oggetti e 131.872 triangoli. NON FATTO: superiorità e gol da ritarare con i tiri; nessun ritorno
+  dello specialista sul centro dopo il rientro.
+
+- **v0.79 — passaggi** (Claude Code, 24/11/2026; rapporto `docs/versioni/v079-passaggi.md`). RICHIESTA: Ale, «troppi passaggi
+  sbagliati»; due modi di passare: morbido sull'acqua vicino al compagno (perimetro tranquillo, palla al centroboa) o alto e teso
+  (uomo in più, palleggio prima della chiusura, cambio rapido di zona). MISURE: sonda nuova `npm run sonda-tipi-passaggio`: il
+  computer prende il 98,7% dei passaggi; il problema era la scelta del compagno del giocatore: su 379 scene vere d'attacco
+  schierato, puntando con ±10°, riceveva quello puntato il 54% delle volte e il 31% dei passaggi finiva al centroboa (precedenza
+  della v0.55 entro 60° verso la porta); con la levetta tenuta dopo il passaggio chi riceve nuotava via dalla palla. CAMBIAMENTI:
+  `tipoPassaggio` e `PASSAGGI` (morbido 6,5-9 m/s sull'acqua 0,3 m davanti al compagno, errore ×0,6; teso con l'uomo in più,
+  ultimi 8 s, oltre 8 m, cambio di lato, transizione, avversario entro 0,9 m dalla linea, compagno libero in posizione di tiro; al
+  centroboa marcato in acqua con la velocità del morbido, a quello libero in mano come nella v0.55); scelta del compagno solo sulla direzione (`MIRA_PASSAGGIO`, niente precedenza al centroboa); `aiutoGuida`:
+  con la levetta ancora nella direzione di mira chi riceve va incontro alla palla, e va a prendere il morbido caduto appena fuori
+  portata. La sonda dei tiri conta anche il gesto. NUMERI: compagno puntato 54,0% → 78,7%, centroboa per sbaglio 31% → 6%;
+  passaggi morbidi 22% (presi 99,5%); 16 partite: equilibrio uguale (gol 20,5 → 20,8, palla persa 17,3% → 16,0%). Gesti di tiro
+  del computer (v0.78, 4 partite): classico 75%, polso 13%, torsione 9%, colonnello 2 e schizzo 1 su 329, beduine e sciarpe 0 su 96
+  tiri del centroboa. PROVA NUOVA `npm run passaggi` (12 controlli), anche nella CI; `finta-v055` aggiornata (passaggio teso al compagno libero vicino alla porta). DECISIONI SUPERATE: in
+  `docs/decisioni-superate.md`. VERIFICHE: lint PASS; prove: primo giro FAIL in `finta` (scena tranquilla ora con passaggio morbido; centroboa libero mandato morbido per sbaglio, corretto), secondo giro 61/61 PASS in 15,2 minuti; verifica con --partite=0: foto «azione» diversa per un passaggio morbido in volo, guardata e aggiornata, ripetuta: identiche; aspetto delle viste «Tutto a posto», iPhone 56 oggetti e 131.872 triangoli. NON FATTO: gesto del passaggio morbido uguale al teso; giudizio di Ale.
+
+- **v0.78 — comandi e interfaccia** (Claude Code, 24/11/2026; rapporto `docs/versioni/v078-comandi-interfaccia.md`). RICHIESTA: Ale,
+  13 punti dopo le versioni di Codex, prima «riallinearsi agli sviluppi di Codex»; qui i due punti sull'interfaccia: in difesa il
+  tasto PASSA deve diventare CONTRASTA, colorare i tasti per riconoscerli, barra dell'energia con cognome e numero al posto di
+  «Energia». RIALLINEAMENTO: ramo ripartito da `main` v0.77 (PR #59-#68 di Codex unite), nessuna PR aperta. CAMBIAMENTI
+  (`index.html`, `src/hud.js`, `src/stile.css`): con la palla agli avversari il tasto dice CONTRASTA (icona a mano, rosa, «3° =
+  fallo», classe `in-difesa`), stesso comando di prima; colori per funzione su bordo e icona (TIRO arancione, PASSA blu, CONTRASTA
+  rosa, PALOMB. viola, SPRINT verde, CAMBIA bianco), lontani da oro, rosso e ciano che hanno un significato fisso; energia «#N
+  Cognome, barra, %» con il riquadro su telefono allargato da 148 a 170 px (iPhone piccoli da 118 a 152); pagina Comandi
+  aggiornata. PROVA NUOVA `npm run comandi-interfaccia` (iPhone 14 e SE: PASSA/CONTRASTA, sei colori distinti e lontani dai
+  riservati, numero e cognome interi), anche nella CI; al primo giro arancione e azzurro erano troppo vicini a oro e ciano, poi
+  corretti. MISURA DI PARTENZA (per le versioni successive, 16 partite ITA–HUN sulla v0.77): 20,5 gol e 42,3 tiri per squadra
+  (veri 13,3 e 33), tiri in gol 48,3% (40%), espulsioni 8,2 (11), parità: gol 25,6% delle azioni (6-19%), durata 13,4 s (21).
+  DECISIONI SUPERATE: in `docs/decisioni-superate.md`. VERIFICHE: lint PASS; prove 60/60 PASS in 16,3 minuti (con `comandi-interfaccia`, 17 controlli; gambe 0/8.539); verifica con --partite=0: cinque immagini diverse (tasti e energia, più i caratteri della macchina di Codex con cui erano stati fatti i riferimenti; posizioni identiche), guardate e aggiornate, ripetuta: identiche; aspetto delle viste «Tutto a posto», iPhone 56 oggetti e 131.872 triangoli. NON FATTO: giudizio di Ale sui colori; gli
+  altri undici punti.
+
 - **v0.77 — ingresso fluido nella finta** (Codex,23/11/2026): nuovo video di Ale mostra avvio accelerato prima delle finte lente. Raccordo0,70s dalla posa in acqua alla carica Plask, prima finta sovrapposta, rotazioni locali e uscita dalla posa mostrata. Superata la compressione del prefisso5,9s→0,5s nella tenuta; dati originali integri. File: finta-movimento, controller visuale Plask, test finta esteso, package/documenti.24scene/73campioni d’avvio:120→0violazioni, torso1,006→0,032rad/frame e mano0,419→0,076m;48cicli,24rilasci e4precoci PASS;8pose ispezionate. GLB8fd658a8… invariato. Nessun volto/nuoto/tattica/bilanciamento generale o FPS hardware. Esiti finali nel [rapporto](versioni/v077-avvio-finta.md) e nella PR; nessun merge/deploy.
 
 - **v0.76 — finta fluida** (Codex,23/11/2026): tre video di Ale mostrano scatto e avvitamento. Recupero non più saltato, sola finta a0,16+0,18+0,36s; ripetizione dopo il recupero. Base Plask continua, braccio e piccolo torace additivi, dita solidali. File: nuovo finta-movimento, tiri/controllo, gesto-vista/pose/controller Plask, nuovo test e CI/package/documenti. Prima/dopo24scene e48cicli:120→0violazioni, torso0,552→0,00734rad/frame, mano0,198→0,07735m/frame;24rilasci reali,8pose ispezionate. GLB8fd658a8… invariato. Superati salto del recupero e alternanza Plask/procedurale; massimo0,9s e rilascio conservati. Nessun volto/nuoto/bilanciamento generale o FPS hardware. Prove e CI definitive nel [rapporto](versioni/v076-finta-fluida.md).

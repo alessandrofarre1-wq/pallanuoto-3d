@@ -29,7 +29,7 @@ export function caricaVista(a,carica,ingresso=0){
 // durante tutta la chiusura già prevista dal gesto, senza aggiungere una molla.
 export function smussoGestoVista(a,base=14,gesto=40){
   if(!a)return base;
-  const entra=ease(a.t/.06),esce=1-ease((a.t-a.wind-a.frusta)/.36);
+  const entra=ease(a.t/.06),esce=1-ease((a.t-a.wind-a.frusta)/(a.recupero??.36));
   return base+(gesto-base)*entra*esce;
 }
 export function preparaGestoVista(p,a,hold,gameTime,dt,renderTime,resetForzato=false){

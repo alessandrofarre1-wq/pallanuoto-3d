@@ -8,7 +8,7 @@ import { aggiornaDifesa, aggiornaSchemi, pos01, rif01, aiCarrier, aiTarget, clos
 import { inp, pollInput, pressed, released } from './input.js';
 import { fightOn, updateFight } from './lotta.js';
 import { endMatch } from './menu.js';
-import { aggiornaFormazioneScatto, areaFoul, avviaRigoriFinali, callPlay, concludiRigoreFinale, contrasto, deadBall, giveBall, kickoff, latoContrasto, pallaEsposta, preparaProssimoRigoreFinale, reenter, risolviRigoreDifferito, tackle, timeout } from './regole.js';
+import { RIGORE_TIRO, aggiornaFormazioneScatto, areaFoul, avviaRigoriFinali, callPlay, concludiRigoreFinale, contrasto, controfalloRigore, deadBall, giveBall, kickoff, latoContrasto, pallaEsposta, preparaProssimoRigoreFinale, reenter, risolviRigoreDifferito, tackle, timeout } from './regole.js';
 import { aggiornaScatto } from './espulsioni-tempi.js';
 import { aggiornaAzione, annullaAzione, chiudiAzione, difensoriDavanti } from './statistiche.js';
 import { allPlayers, ball, ctrl, game, goalX, other, setCtrl, teams } from './stato.js';
@@ -96,6 +96,9 @@ export function aggiornaRigoriFinali(dt){
     if(s.team.human&&!game.autoplay){
       setCtrl(s);
       if(inp.shoot){ s.charging=true; s.chargeT=Math.min(0.9,s.chargeT+dt); }
+      // v0.84: fermo a braccio carico = controfallo (RIGORE_TIRO); anche nella serie finale
+      s.fermoRigore=s.charging&&s.chargeT>=0.9&&inp.shoot?(s.fermoRigore||0)+dt:0;
+      if(!s.act&&s.fermoRigore>RIGORE_TIRO.fermo){ s.fermoRigore=0; concludiRigoreFinale(false,'controfallo'); return; }
       if(!s.act&&s.charging&&released('shoot')){
         const pw=clamp(s.chargeT/0.9,0.5,1), az=Math.abs(inp.z)>0.3?inp.z:null;
         startAct(s,'shot',0,()=>doShoot(s,pw,false,az));
@@ -149,6 +152,9 @@ export function update(dt){
       if(s.team.human){
         setCtrl(s);
         if(inp.shoot){ s.charging=true; s.chargeT=Math.min(0.9,s.chargeT+dt); }
+        // v0.84 (Ale): il rigore è un movimento continuo: fermo a braccio carico oltre RIGORE_TIRO.fermo = controfallo
+        s.fermoRigore=s.charging&&s.chargeT>=0.9&&inp.shoot?(s.fermoRigore||0)+dt:0;
+        if(!s.act&&s.fermoRigore>RIGORE_TIRO.fermo){ controfalloRigore(s); return; }
         if(!s.act&&((s.charging&&released('shoot'))||game.penT>7)){
           const pw=clamp(s.chargeT/0.9,0.5,1), az=Math.abs(inp.z)>0.3?inp.z:null;
           startAct(s,'shot',0,()=>doShoot(s,pw,false,az));

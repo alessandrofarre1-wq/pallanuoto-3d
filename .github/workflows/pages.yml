@@ -88,6 +88,15 @@ jobs:
       - run: npm run aspetto -- --no-build --solo-gioco
       - run: npm run cronaca -- --no-build --solo-controlli
       - run: npm run menu -- --no-build --solo-controlli
+      - run: npm run comandi-interfaccia -- --no-build
+      - run: npm run passaggi -- --no-build
+      - run: npm run cambi-marcatura -- --no-build
+      - run: npm run tiri-centro -- --no-build
+      - run: npm run cambi-volanti -- --no-build
+      - run: npm run timeout -- --no-build
+      - run: npm run rigore -- --no-build
+      - run: npm run finte -- --no-build
+      - run: npm run rose -- --no-build
       - uses: actions/upload-artifact@v4
         if: always()
         with:

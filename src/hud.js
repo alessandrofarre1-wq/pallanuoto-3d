@@ -50,7 +50,8 @@ export function updateHUD(){
     ultimoBip=urg?n:null; }
   // tasto a comparsa in controfuga (controfuga.js): pillola con il tasto, oppure pulsante TIRO illuminato sul telefono
   { const q=ctrl&&ctrl.qte&&game.state==='play'?ctrl.qte:null, el=$('qte'), b=document.querySelector('.tb[data-b="shoot"]');
-    const t=q?`Premi TIRO<small>(K) · ${q.tipo==="schizzo"?"tiro a schizzo":"colonnello"}</small>`:"";
+    // v0.81: il tocco fa lo speciale, tenuto resta il tiro normale
+    const t=q?`Tocca TIRO<small>(K) · ${q.tipo==="schizzo"?"tiro a schizzo":"colonnello"} · tenuto: tiro normale</small>`:"";
     if(el.dataset.t!==t){ el.dataset.t=t; el.innerHTML=t; el.classList.toggle('on',!!q); }
     if(b){ const on=!!q; if(b.classList.contains('premi')!==on) b.classList.toggle('premi',on); } }
   // Nome/ruolo per 3 s al cambio manuale e all'inizio; l'energia del selezionato
@@ -60,7 +61,11 @@ export function updateHUD(){
     const vedi=!!ctrl&&(game.time<3||(dal>=0&&dal<3)); const pl=$('player'); pl.hidden=!ctrl;
     if(pl.classList.contains('vis')!==vedi) pl.classList.toggle('vis',vedi); }
   // pulsante PALOMB. solo quando la nostra squadra ha la palla (in difesa non serve)
-  { const nostra=game.possTeam===teams[0]; if(document.body.classList.contains('nostra-palla')!==nostra) document.body.classList.toggle('nostra-palla',nostra); }
+  { const nostra=game.possTeam===teams[0]; if(document.body.classList.contains('nostra-palla')!==nostra) document.body.classList.toggle('nostra-palla',nostra);
+    // v0.78 (Ale): con la palla agli avversari il tasto PASSA diventa CONTRASTA (stesso comando: 1-2 tocchi disturbano, il terzo è fallo)
+    const difesa=game.possTeam===teams[1];
+    if(document.body.classList.contains('in-difesa')!==difesa){ document.body.classList.toggle('in-difesa',difesa);
+      const b=document.querySelector('.tb[data-b="pass"]'); if(b) b.setAttribute('aria-label',difesa?'Contrasta: uno o due tocchi disturbano il portatore, il terzo ravvicinato è fallo':'Passa'); } }
   if(ctrl){
     { const sup=game.possTeam===ctrl.team&&manUp(ctrl.team);
       const posto=!sup&&game.possTeam===ctrl.team?postoAttacco(ctrl):ctrl.i;
@@ -74,6 +79,7 @@ export function updateHUD(){
     stam.firstChild.style.background= energia>0.5?'#4ade80':energia>0.25?'#facc15':'#ef4444';
     const numero='#'+ctrl.num,valore=percento+'%',etichetta=`Energia di ${numero} ${ctrl.name}: ${valore}`;
     if($('stamNumero').textContent!==numero)$('stamNumero').textContent=numero;
+    if($('stamCognome').textContent!==ctrl.name)$('stamCognome').textContent=ctrl.name;      // v0.78 (Ale): cognome accanto al numero
     if($('stamPerc').textContent!==valore)$('stamPerc').textContent=valore;
     if(stam.getAttribute('aria-label')!==etichetta)stam.setAttribute('aria-label',etichetta);
     if(stam.getAttribute('aria-valuenow')!==String(percento))stam.setAttribute('aria-valuenow',String(percento));
@@ -82,7 +88,7 @@ export function updateHUD(){
     const max=carica&&pot>=1, recente=ctrl&&ctrl.effettoTiro&&game.time-ctrl.effettoTiro.inizio>=0&&game.time-ctrl.effettoTiro.inizio<0.65?ctrl.effettoTiro:null;
     const nomi={beduina:'BEDUINA',sciarpa:'SCIARPA',rovesciata:'ROVESCIATA',schizzo:'SCHIZZO',colonnello:'COLONNELLO'};
     btn.classList.toggle('massimo',max);
-    const label=carica?(max?'PRONTO':'Rilascia'):recente&&(nomi[recente.tipo]||recente.forza>=0.98)?(nomi[recente.tipo]||'POTENTE'):ctrl&&ctrl.qte?'Premi!':'tocco: polso';
+    const label=carica?(max?'PRONTO':'Rilascia'):recente&&(nomi[recente.tipo]||recente.forza>=0.98)?(nomi[recente.tipo]||'POTENTE'):ctrl&&ctrl.qte?(ctrl.qte.tipo==='schizzo'?'tocco: schizzo':'tocco: colonnello'):'tocco: polso';
     const small=btn.querySelector('small'); if(small.textContent!==label) small.textContent=label;
     const stato=carica?(max?'Tiro pronto alla massima potenza: rilascia per tirare':'Tiro in preparazione: rilascia per tirare'):'';
     const aria=stato||'Tiro: tocco e rilascio per il polso; tieni premuto per preparare e fintare';

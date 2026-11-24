@@ -13,8 +13,8 @@ import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } fr
 import { paloCoperto } from './muro.js';
 import { QTE, aiControfuga, occasioneControfuga, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, entrataPronta, laneClear, openness, passLaneRisk, shotKind, situazioneTiro, startAct } from './tiri.js';
-import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, PAZIENZA, RIPARTENZA, SCATTI, SUPERIORITA, TIRO_LIBERATO } from './taratura.js';      // numeri del bilanciamento
-export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, PAZIENZA, RIPARTENZA, SCATTI, SUPERIORITA, TIRO_LIBERATO };
+import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO } from './taratura.js';      // numeri del bilanciamento
+export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO };
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 // l'uomo che marca p: di regola quello del ruolo (MARK); dopo un CAMBIO DI MARCATURA su un'entrata («time switching», Nitzkowski e
 // manuale USA Water Polo) i due difensori si scambiano gli uomini per qualche secondo
@@ -699,9 +699,39 @@ export function passaAZona(t,quale,annuncia){
   t.defPlay=quale; t.lasciato=chiLasciare(t);
   if(annuncia&&t.lasciato) notifica('avviso',`${t.short}: ${quale===3?'zona a M':'zona'}`,{dettaglio:`si lascia tirare il #${t.lasciato.num} (${ROLES[t.lasciato.i].toLowerCase()})`,durata:1.6});
 }
+// v0.80 (Ale): nei rientri ci si scambia l'uomo (RIENTRO_SCAMBI in taratura.js). L'attaccante più vicino alla nostra porta lo prende
+// il difensore meglio piazzato, non per forza il suo marcatore, che prende l'uomo lasciato libero. Prima nei rientri ognuno
+// inseguiva il suo uomo (cambioMarcatura scambia solo sui tagli dell'attacco schierato) e restavano attaccanti liberi.
+function scambiRientro(t){
+  const att=other(t),R=RIENTRO_SCAMBI;
+  if(game.possTeam!==att||t.players.some(q=>q.excluded)||att.players.some(q=>q.excluded)) return;
+  const ogx=ownGoalX(t),ballD=Math.abs(ball.x-ogx);
+  if(ballD<R.schierata||game.time<(t.prossimoScambioRientro||0)) return;
+  t.prossimoScambioRientro=game.time+R.ogni;
+  uomoDi(t.players[1]);      // accoppiamenti pronti
+  const dG=q=>Math.hypot(q.x-ogx,q.z), costo=(d,q)=>dist(d,q)+R.dietro*Math.max(0,dG(d)-dG(q));
+  const rall=chiRallenta(t);
+  const liberi=new Set(t.players.filter(d=>!d.isGK&&!d.excluded&&!d.uscendo&&d!==rall&&d!==ctrl&&game.time>=(d.stunUntil||0)));
+  const pericolosi=att.players.filter(q=>!q.isGK&&!q.excluded&&!q.uscendo&&q!==ball.holder&&Math.abs(q.x-ogx)<ballD+R.davanti)
+    .sort((a,b)=>dG(a)-dG(b));
+  for(const q of pericolosi){
+    const a=t.players.find(d=>!d.excluded&&!d.isGK&&uomoDi(d)===q);
+    // il marcatore resta se non è stato superato, o se ha appena preso questo uomo in uno scambio
+    if(a&&(!(dG(a)>dG(q)+R.battuto||dist(a,q)>R.lontano)||game.time<(a.scambiatoFino||0))){ liberi.delete(a); continue; }
+    let b=null,bc=1e9;
+    for(const d of liberi){ if(game.time<(d.scambiatoFino||0)) continue; const c=costo(d,q); if(c<bc){ bc=c; b=d; } }
+    if(!b) continue;
+    if(a===b){ liberi.delete(b); continue; }
+    if(a&&costo(a,q)-bc<R.guadagno){ liberi.delete(a); continue; }
+    const ub=uomoDi(b); t.accoppiamenti.uomini[b.i]=q; if(a) t.accoppiamenti.uomini[a.i]=ub;
+    b.scambiatoFino=game.time+R.tieni; if(a) a.scambiatoFino=game.time+R.tieni;
+    liberi.delete(b); t.scambi=(t.scambi||0)+1; t.scambiRientro=(t.scambiRientro||0)+1;
+  }
+}
 // il computer, mentre difende: pressing all'inizio, zona nella seconda parte dell'azione se il centroboa sta vincendo il duello
 // (o comunque, a volte, negli ultimi secondi, per togliere riferimenti)
 export function aggiornaDifesa(t,dt){
+  scambiRientro(t);
   cambioMarcatura(t);
   if(t.schema){
     if((t.defPlay===1||t.defPlay===3)&&(!t.lasciato||game.time>(t.lasciatoT||0))){t.lasciato=chiLasciare(t);t.lasciatoT=game.time+0.8;}
@@ -731,7 +761,10 @@ export function aiShoot(p,power,lob){
     const f=fintaDi(p);
     startAct(p,'fake',f.wind,()=>{
       doFake(p);
-      if(ball.holder===p&&game.state==='play')startAct(p,'lob',f.pausa[0],()=>doShoot(p,power,true,null));
+      // v0.85: la palombella parte a braccio tornato carico (ritorno della finta più FINTA_RITMO.attesa: a.pronto, tiri.js), non a metà
+      // del ritorno
+      const a=p.act;
+      if(ball.holder===p&&game.state==='play')startAct(p,'lob',Math.max(f.pausa[0],(a?.pronto??0)-(a?.t??0)),()=>doShoot(p,power,true,null));
     });
     return;
   }
@@ -744,6 +777,14 @@ export function aiPass(p,m){ startAct(p,'pass',0.08,()=>doPass(p,m),[m.x,m.z]); 
 // COSTRUZIONE dell'azione in parità (v0.56), CIRCOLAZIONE sul perimetro (v0.61) e TIRO_LIBERATO dopo la ricezione (v0.59):
 // numeri e motivi in taratura.js
 // v0.64: la costruzione vale anche nella ripartenza alla pari (prima la ripartenza la toglieva per 12 s e in parità si tirava a 11 s)
+// v0.81 (Ale: «le occasioni chiare, passaggio con l'uomo davanti alla porta, si tirano indipendentemente dai secondi trascorsi»):
+// chi ha appena ricevuto libero davanti alla porta (OCCASIONE_CHIARA) tira subito, qualunque sia il secondo dell'azione
+export function occasioneChiara(p,dGoal=Math.hypot(goalX(p.team)-p.x,p.z)){
+  const C=OCCASIONE_CHIARA, gx=goalX(p.team);
+  if(p.isGK||!p.ricevutoPassaggio||game.time-(p.ricevutoT||-9)>C.entro||dGoal>C.distanza||Math.abs(gx-p.x)/Math.max(0.1,dGoal)<C.angolo) return false;
+  if(p.pressatoUntil>game.time||(p.freeThrow&&Math.abs(gx-p.x)<6)||game.penalty) return false;
+  return situazioneTiro(p).vicino>C.spazio&&laneClear(p,gx,0,p.team,C.corridoio);
+}
 function inCostruzione(t){ const az=azioneAperta(); return !!az&&az.t===t&&az.tipo==='parita'&&!manUp(t)&&game.time-az.t0<COSTRUZIONE.secondi&&game.shot>8; }
 export function aiCarrier(p,dt){
   const t=p.team, gx=goalX(t);
@@ -761,12 +802,17 @@ export function aiCarrier(p,dt){
   const dGoal=Math.hypot(gx-p.x,p.z);
   p.target={x:slot.x+t.dir*0.8, z:slot.z, sprint: Math.abs(p.x-slot.x)>6};
   if(p.act&&!p.act.done) return;
+  // v0.85 (Ale: «le finte vicino alla porta sono troppo veloci»): dopo una finta nessun gesto nuovo finché il braccio non è tornato
+  // carico e ha atteso FINTA_RITMO.attesa (tiri.js, p.fintaPronto); la pausa personale della finta intanto scorre
+  if(game.time<(p.fintaPronto||0)){ p.decideT-=dt; return; }
   if(!manUp(t)&&centroAttacco(t)===p&&boaFrontePorta(p)){
     if(ball.holdTime>=.12&&!(p.pressatoUntil>game.time)){
       p.motivoTiro='boa fronte porta';aiShoot(p,.75,false);
     }
     return;
   }
+  // v0.81: occasione chiara dopo il passaggio (nella controfuga vera restano finta, schizzo e colonnello)
+  if(!slot.unoZero&&ball.holdTime>=0.1&&occasioneChiara(p,dGoal)&&!occasioneControfuga(p)){ p.motivoTiro='occasione chiara'; aiShoot(p,0.6+rnd()*0.35,false); return; }
   if(ball.holdTime>=0.18){
     const passabile=(a,m,taglio)=>!m.excluded&&!m.uscendo&&(!taglio||entrataPronta(m))&&
       laneClear(a,m.x,m.z,t,0.55)&&passLaneRisk(a,m)<0.25&&openness(m)>1.1;
@@ -851,6 +897,9 @@ export function aiCarrier(p,dt){
   p.decideT=0.3+rnd()*0.35;
   // time-out dell'allenatore: dopo un parziale negativo, dopo una serie di espulsioni subite, o per preparare il 7 contro 6
   if(t.timeouts>0 && !t.human && t.vuoleTimeout && timeout(t)){ t.vuoleTimeout=false; t.parzialeSubito=0; return; }
+  // v0.83 (Ale: «negli ultimi minuti per preparare un attacco»): pari o sotto di un gol nell'ultimo tempo, appena ripresa la palla
+  if(t.timeouts>0 && !t.human && !t.timeoutFinale && game.period>=4 && game.clock<TIMEOUT.finale && game.time-(game.possT||0)<TIMEOUT.eta &&
+    t.score-other(t).score<=0 && t.score-other(t).score>=-1 && timeout(t)){ t.timeoutFinale=true; return; }
   if(t.timeouts>0 && !t.human && rnd()<0.25){ let st=0,n=0; for(const q of t.players){ if(!q.isGK&&!q.excluded){ st+=q.stamina; n++; } } if(n&&st/n<0.3&&timeout(t)) return; }
   if(p.shootNext){ p.shootNext=false; if(dGoal<9&&!ft){ const f=fintaDi(p);
       if((p.fakeCount||0)<f.max&&game.shot>4&&rnd()<0.42){ p.shootNext=true; pausaFinta(p,f); startAct(p,'fake',f.wind*(0.8+rnd()*0.4),()=>doFake(p)); return; }

@@ -24,7 +24,8 @@ const esiti = await pg.evaluate(() => {
   window.__pallanuoto.imposta('len', '480'); document.getElementById('goBtn').click();
   const gioca = (max, fine) => { for (let i = 0; i < max && !fine(); i++) window.__step(1); return fine(); };
   const A = H.teams[0], Bq = H.teams[1];
-  const fermi = () => { for (const p of H.allPlayers) { p.tackleCD = 9; p.decideT = 9; p.reazioneT = 9; } };      // nessuno tira, passa o contrasta: si guarda solo il cronometro
+  // nessuno tira, passa o contrasta: si guarda solo il cronometro (anche il terzo tocco, che azzera tackleCD e fischia il fallo: v0.86)
+  const fermi = () => { for (const p of H.allPlayers) { p.tackleCD = 9; p.colpi = []; p.decideT = 9; p.reazioneT = 9; } };
   // 1) primo possesso: 28 secondi
   gioca(60 * 30, () => G.state === 'play' && B.holder);
   out.push(['primo possesso: 28 secondi', Math.abs(G.shot - 28) < 0.6, G.shot.toFixed(1)]);

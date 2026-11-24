@@ -177,9 +177,12 @@ body.chiamate-visibili #fight{display:none!important}
 #player:not(.vis) :is(#pname,#pstat){display:none}
 #energia{display:flex;align-items:center;gap:4px;min-height:14px;line-height:1.2;font-size:10px;font-variant-numeric:tabular-nums}
 #player.vis #energia{margin-top:3px}
-#energia .energia-label{font-size:9px;color:var(--h-tenue)}
-#stamNumero{font-weight:800;white-space:nowrap}
-#energia #stam{flex:1;min-width:24px;height:4px;margin:0}
+/* v0.78 (Ale): numero e cognome del selezionato al posto della scritta «Energia»; un cognome lungo si accorcia con i puntini.
+   Nella scheda aperta (3 s dopo un cambio) numero e cognome sono già scritti sopra: lì restano solo barra e percentuale */
+#stamNome{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+#stamNumero{font-weight:800}
+#player.vis #stamNome{display:none}
+#energia #stam{flex:1 0 26px;min-width:26px;height:4px;margin:0}
 #stamPerc{min-width:27px;text-align:right;font-size:10px;white-space:nowrap}
 #pname{font-weight:800;display:flex;align-items:center;gap:5px}
 #pname .posto{flex:none;font-size:.85em;color:var(--h-ciano);font-variant-numeric:tabular-nums}
@@ -219,9 +222,26 @@ body.touch #touch{display:block}
 .tb.pri b{font-size:10px}
 .tb.sec{width:46px;height:46px}
 .tb.sec small{display:none}
+/* v0.78 (Ale): ogni comando ha il suo colore, su bordo e icona, per riconoscerlo a colpo d'occhio. Oro resta «premuto/azione
+   richiesta», rosso le sanzioni e ciano il servizio: i tasti usano altri colori (CAMBIA resta neutro) */
+.tb[data-b="shoot"]{--tb-c:#ff8a1f}
+.tb[data-b="pass"]{--tb-c:#6d86ff}
+.tb[data-b="lob"]{--tb-c:#c7a0ff}
+.tb[data-b="sprint"]{--tb-c:#4fe393}
+.tb[data-b="sw"]{--tb-c:#e9eef5}
+body.in-difesa .tb[data-b="pass"]{--tb-c:#ff7cc8}
+.tb[data-b]:not(.ang){border-color:var(--tb-c)}
+.tb[data-b]:not(.ang) svg{color:var(--tb-c)}
+.tb.pri[data-b]{background:rgba(12,27,48,.55);background:color-mix(in srgb,var(--tb-c) 24%,rgba(12,27,48,.6))}
+/* v0.78 (Ale): con la palla agli avversari il tasto PASSA diventa CONTRASTA (scritta, icona e colore) */
+.tb[data-b="pass"] :is(.ic-contrasta,.et-contrasta){display:none}
+body.in-difesa .tb[data-b="pass"] :is(.ic-passa,.et-passa){display:none}
+body.in-difesa .tb[data-b="pass"] :is(.ic-contrasta,.et-contrasta){display:block}
+.tb.pri b.et-contrasta{font-size:8.5px;letter-spacing:0}
 .tb.on{background:var(--h-oro);border-color:var(--h-oro);color:#0b1d33;transform:scale(.94)}
 .tb.on small{color:rgba(11,29,51,.7)}
 .tb.scatto{border-color:var(--h-oro);box-shadow:0 0 0 2px var(--h-oro)}      /* sprint a tocchi: acceso finché lo scatto dura */
+.tb.on svg{color:inherit}
 body.touch .tb[data-b="shoot"]{right:calc(16px + var(--sr));bottom:calc(66px + var(--sb))}
 body.touch .tb[data-b="pass"]{right:calc(88px + var(--sr));bottom:calc(14px + var(--sb))}
 body.touch .tb[data-b="sprint"]{right:calc(22px + var(--sr));bottom:calc(12px + var(--sb))}
@@ -234,7 +254,7 @@ body.touch .tb[data-b="sw"]{right:calc(164px + var(--sr));bottom:calc(10px + var
 #tPause,#tLog{position:fixed;top:calc(8px + var(--st));width:36px;height:36px;border-radius:var(--h-r);background:var(--h-bg);border:1px solid var(--h-linea);z-index:8;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--h-testo);box-shadow:var(--h-ombra)}
 #tPause{right:calc(10px + var(--sr))}
 /* Su telefono: giocatore e schema in alto a destra, distinti dal tabellone. */
-body.touch #player,body.touch #player.vis{top:calc(8px + var(--st));bottom:auto;left:auto;right:calc(100px + var(--sr));width:148px;min-width:0;max-width:150px;font-size:10.5px;padding:2px 6px 3px;background:var(--h-bg)}
+body.touch #player,body.touch #player.vis{top:calc(8px + var(--st));bottom:auto;left:auto;right:calc(100px + var(--sr));width:170px;min-width:0;max-width:172px;font-size:10.5px;padding:2px 6px 3px;background:var(--h-bg)}
 body.touch #pstat{display:none}
 body.touch #player .bar{height:3px;margin-top:3px}
 body.touch #pname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:12px}
@@ -248,8 +268,7 @@ body.touch #fps b{font-size:12px}
 @media (max-width:720px){
   #hud .sq{padding:0 7px;gap:5px} #score{padding:0 8px;font-size:19px} #hud .tempo{padding:0 7px;gap:4px} #shotclock{min-width:34px;padding:0 6px;font-size:18px}
   #hud .sq.tu .sigla::after{margin-left:3px}
-  body.touch #player,body.touch #player.vis{max-width:118px} #player .ruolo{display:none}
-  body.touch #energia .energia-label{display:none}
+  body.touch #player,body.touch #player.vis{max-width:152px} #player .ruolo{display:none}      /* v0.78: c'è anche il cognome */
 }
 @media (max-height:340px){
   #hud{height:28px} #hud .sq{padding:0 8px;font-size:12px} #score{font-size:18px;padding:0 9px} #clock{font-size:13px} #shotclock{font-size:17px;min-width:36px}
@@ -524,6 +543,9 @@ body.touch #qte{display:none}
 #rosa button.fig{font:inherit;color:inherit;text-align:left;cursor:pointer}
 #rosa .fig.scelto{outline:2px solid var(--h-oro,#f5c542)}
 #rosa .fig.puo{outline:1px dashed var(--h-oro,#f5c542)}
+#rosa .fig.altro{opacity:.6}
+#rosa .fig.altro.puo{opacity:.9}
+#rosa .fig small{font-size:10px;color:#cfe3ff}
 #rosa .fm-posto{display:block;font-style:normal;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--h-oro,#f5c542)}
 #rosa .fm-ripristina{grid-column:1/-1;justify-self:start;margin-top:6px;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer}
 #rosa .fm-dati{display:block;font-size:11px;color:#9fc3ef;margin-top:2px}
@@ -1107,3 +1129,18 @@ body.replay :is(#hud,#espulsioni,#tac,#cronaca,#qte,#fight,#player,#tCambi,#tLog
 
 /* Il gol sulla sirena precede il risultato finale senza cambiare lo stato della gara. */
 body.replay #menu,body.replay-attesa-fine #menu{visibility:hidden;pointer-events:none}
+
+/* convocazione del torneo (v0.86) */
+.torneo-convocati{margin:8px 0 2px;padding:8px 10px;border:1px solid rgba(255,255,255,.18);border-radius:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px}
+.torneo-convocati b{color:var(--h-oro,#f5c542)}
+.torneo-convocati small{color:#cfe3ff;flex-basis:100%}
+.torneo-convocati button{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:6px 10px;min-height:44px;cursor:pointer}
+.contenuto-convocazione{padding:0 16px 90px}
+.conv-contatore{font:800 14px system-ui;color:var(--h-oro,#f5c542)}
+.conv-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px}
+.conv-lista .fm-titolo{grid-column:1/-1;font:800 12px system-ui;text-transform:uppercase;letter-spacing:.06em;color:var(--h-oro,#f5c542);margin-top:8px}
+.conv-lista button.fig{font:inherit;color:inherit;text-align:left;cursor:pointer;opacity:.6;min-height:44px}
+.conv-lista button.fig.on{opacity:1;outline:2px solid var(--h-oro,#f5c542)}
+.conv-lista .fig small{font-size:10px;color:#cfe3ff}
+.conv-lista .fm-dati{display:block;font-size:11px;color:#9fc3ef;margin-top:2px}
+.conv-lista .fm-finta{display:block;font-size:11px;color:#ffd479;margin-top:2px}

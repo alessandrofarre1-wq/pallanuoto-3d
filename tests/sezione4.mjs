@@ -59,10 +59,11 @@ prova(lato.D.ferma > 0 && lato.S.ferma < 0, `palla in mano: destro a destra (${l
 prova(lato.D.carica > 0 && lato.S.carica < 0, `caricando il tiro: destro ${lato.D.carica.toFixed(2)} m, mancino ${lato.S.carica.toFixed(2)} m (gesto specchiato)`);
 
 // ---------- controfuga: tasto a comparsa ----------
-const controfuga = async (dGol, premi, difensoreDavanti) => pg.evaluate(({ dGol, premi, difensoreDavanti }) => {
+const controfuga = async (dGol, premi, difensoreDavanti, vecchio, tieni = 1) => pg.evaluate(({ dGol, premi, difensoreDavanti, vecchio, tieni }) => {
   const H = window.__pallanuoto, B = H.ball, T = H.teams[0], O = H.teams[1], p = T.players[4], gx = 12.5 * T.dir;
   p.mano = 'D'; H.game.state = 'play'; H.game.after = null; for (const q of H.allPlayers) { q.act = null; q.excluded = false; q.pressatoUntil = 0; q.qte = null; q.qteDopo = 0; }
   H.regole.giveBall(p); H.__setCtrl(p);
+  H.game.possT = H.game.time - (vecchio ? 15 : 0);      // v0.81: palla appena recuperata (controfuga) o attacco schierato
   const metti = () => {
     p.x = gx - T.dir * dGol; p.z = 0.5; p.fx = T.dir; p.fz = 0; p.vx = T.dir * 1.5; p.vz = 0; p.oriz = 1;
     for (const q of O.players) { if (q.isGK) continue; q.x = p.x - T.dir * (3 + q.i); q.z = q.i - 3.5; q.vx = q.vz = 0; }
@@ -72,10 +73,12 @@ const controfuga = async (dGol, premi, difensoreDavanti) => pg.evaluate(({ dGol,
   for (let i = 0; i < 20; i++) { metti(); if (B.holder !== p) H.regole.giveBall(p); window.__salta(1); }
   r.comparso = !!p.qte; r.tipo = p.qte && p.qte.tipo;
   r.pill = document.getElementById('qte').classList.contains('on');
-  const b = document.querySelector('.tb[data-b="shoot"]'); r.premi = b.classList.contains('premi') && /Premi/.test(b.textContent);
+  const b = document.querySelector('.tb[data-b="shoot"]'); r.premi = b.classList.contains('premi') && /tocco: (schizzo|colonnello)/.test(b.textContent);
   if (premi && p.qte) {
-    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyK' })); window.__salta(1);
-    window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyK' }));
+    // v0.81: un tocco (TIRO premuto per «tieni» fotogrammi e rilasciato) fa lo speciale; tenuto più a lungo, il tiro normale
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyK' }));
+    for (let i = 0; i < tieni; i++) { metti(); window.__salta(1); }
+    window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyK' })); metti(); window.__salta(1);
     r.gesto = p.act && p.act.kind;
     for (let i = 0; i < 30 && B.state === 'held'; i++) { metti(); window.__salta(1); }
     r.quotaPalla = B.state === 'flight' ? B.y : null; r.volo = B.state;
@@ -84,17 +87,21 @@ const controfuga = async (dGol, premi, difensoreDavanti) => pg.evaluate(({ dGol,
     r.sparito = !p.qte && !document.getElementById('qte').classList.contains('on');
   }
   return r;
-}, { dGol, premi, difensoreDavanti });
+}, { dGol, premi, difensoreDavanti, vecchio, tieni });
 const lontano = await controfuga(7, true, false);
 prova(lontano.comparso && lontano.tipo === 'schizzo', `controfuga a 7 m senza difensori davanti: compare il tasto (${lontano.tipo})`);
-prova(lontano.premi, 'sul telefono il pulsante TIRO si illumina con «Premi!»');
-prova(lontano.gesto === 'schizzo' && lontano.quotaPalla !== null && lontano.quotaPalla < 0.45, `premendo TIRO parte lo schizzo: gesto ${lontano.gesto}, palla in volo a ${lontano.quotaPalla == null ? '-' : lontano.quotaPalla.toFixed(2)} m dall'acqua`);
+prova(lontano.premi, 'sul telefono il pulsante TIRO si illumina con «tocco: schizzo»');
+prova(lontano.gesto === 'schizzo' && lontano.quotaPalla !== null && lontano.quotaPalla < 0.45, `con un tocco di TIRO parte lo schizzo: gesto ${lontano.gesto}, palla in volo a ${lontano.quotaPalla == null ? '-' : lontano.quotaPalla.toFixed(2)} m dall'acqua`);
+const tenuto = await controfuga(7, true, false, false, 36);
+prova(tenuto.gesto && tenuto.gesto !== 'schizzo' && tenuto.gesto !== 'colonnello', `v0.81: tenendo premuto TIRO per 0,6 s nella stessa controfuga parte il tiro normale (${tenuto.gesto || 'nessun tiro'})`);
 const vicino = await controfuga(4.2, true, false);
 prova(vicino.tipo === 'colonnello' && vicino.gesto === 'colonnello', `controfuga a 4 m: colonnello (${vicino.tipo}, gesto ${vicino.gesto})`);
 const attesa = await controfuga(7, false, false);
 prova(attesa.sparito, 'senza premere il tasto sparisce dopo un attimo');
 const marcato = await controfuga(7, false, true);
 prova(!marcato.comparso, `con un difensore davanti nessun tasto (${marcato.comparso ? 'comparso' : 'niente'})`);
+const schierato = await controfuga(7, false, false, true);
+prova(!schierato.comparso, `v0.81: nell'attacco schierato (palla presa 15 s prima) nessun tasto, schizzo e colonnello solo nella controfuga vera (${schierato.comparso ? 'comparso' : 'niente'})`);
 
 // ---------- il computer li usa anche quando decide di tirare subito ----------
 // Una partita libera non garantisce una controfuga eleggibile in 500 secondi.
@@ -115,6 +122,7 @@ const ai = await pg.evaluate(() => {
     if(vincolo==='difensore'){O.players[3].x=p.x+T.dir*1.5;O.players[3].z=p.z;}
     if(vincolo==='libero') p.freeThrow=true;
     if(vincolo==='pressione') p.pressatoUntil=101;
+    if(vincolo==='vecchio') H.game.possT=85;      // v0.81: attacco schierato, palla presa 15 s prima
     // .2 non attiva l'evento raro per fotogramma: prova la scelta al momento
     // della decisione rapida, senza aspettare né congelare quel percorso AI.
     window.__casoAI=caso;
@@ -123,12 +131,12 @@ const ai = await pg.evaluate(() => {
     return p.act?.kind||null;
   };
   return {schizzo:esegui(6.2),colonnello:esegui(4.2),classico:esegui(4.2,null,.8),lontano:esegui(6.8),
-    marcato:esegui(4.2,'difensore'),libero:esegui(4.2,'libero'),pressione:esegui(4.2,'pressione')};
+    marcato:esegui(4.2,'difensore'),libero:esegui(4.2,'libero'),pressione:esegui(4.2,'pressione'),vecchio:esegui(6.2,'vecchio')};
 });
 prova(ai.schizzo==='schizzo',`AI su ricezione libera a 6,2 m in nuotata: ${ai.schizzo}`);
 prova(ai.colonnello==='colonnello',`AI su ricezione libera a 4,2 m in nuotata: ${ai.colonnello}`);
 prova(ai.classico==='shot',`AI: il tiro classico resta disponibile nella stessa controfuga (${ai.classico})`);
-for(const [caso,tipo] of Object.entries({lontano:ai.lontano,marcato:ai.marcato,libero:ai.libero,pressione:ai.pressione}))
+for(const [caso,tipo] of Object.entries({lontano:ai.lontano,marcato:ai.marcato,libero:ai.libero,pressione:ai.pressione,vecchio:ai.vecchio}))
   prova(tipo!=='schizzo'&&tipo!=='colonnello',`AI: nessuno speciale con vincolo ${caso} (${tipo||'nessun tiro'})`);
 
 if (process.argv.includes('--foto')) {

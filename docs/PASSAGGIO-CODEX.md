@@ -1,3 +1,159 @@
+# Passaggio WATERPOLO7 — v0.86 rose (Claude Code)
+
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.86.0. Cambiano le rose (chi gioca), la schermata Squadre e i tornei.
+- `strumenti/rose-dal-database.mjs`: `DISPONIBILI` (tutti i convocati, riga della convocazione più recente; chi era nei 13 tiene la sua),
+  doppioni uniti (stessa nazionale e data di nascita, stesso nome o iniziale + cognome in comune), stesse medie di ricentraggio dei 13
+  (`medie`), `ruoli` dall'anagrafica, `convocazioni`, `inRosa13`; `riportaAlRanking` (con `listaPartita` di `src/dati/lista-partita.js`,
+  funzione pura condivisa con il gioco) toglie a tutte le voci della nazionale quanto la valutazione media dei 14 supera quella dei 13 di
+  prima, sui valori con i decimali (`_grezzo`). Uscita `tutti` al posto di `rose` in `src/dati/rose-db.json`.
+- `src/dati/rose.js`: `tutti(codice)`, `listaPartita(giocatori,n=14)` (titolari più forti nel ruolo con `ovr` del ruolo, panchina una
+  riserva per posto), `numeriLista` (numeri unici: `numDb`), `liste` e `convocati` (id, li mette il menu), `rosa(codice)`.
+  `src/aspetto.js`: `profiliSquadra` prima `inRosa13`. `src/giocatori.js`: formazione per id.
+- `src/menu.js`: `disegnaRosa` (in acqua, panchina, `data-altro`; `salvaLista`), chiavi `pallanuoto-formazione3-` e `pallanuoto-lista-`;
+  tornei: `t.convocati` (15, `convocatiAutomatici`), `t.lista`, vista `convocazione` (`vConvocazione`), riquadro `torneoConvocati`;
+  `preparaGaraTorneo` mette `convocati`/`liste` della nazionale, `preparaSingola` li toglie. `window.__pallanuoto.rose` per le prove.
+- Prova nuova `npm run rose` (anche nella CI); `tests/sezione5.mjs` con 7 riserve e il pulsante della riserva che porta l'id del
+  giocatore; `tests/azione.mjs`: `fermi()` azzera anche `colpi` (con le rose nuove il terzo tocco del computer fischiava un fallo e
+  fermava il cronometro, come già previsto in `sezione1`/`sezione3`). `tests/finta-fluida-v076.mjs`: ogni scena fissa anche il lato
+  della finta (`window.__formaFinta.lato`: 0 avanti e indietro, 1 di lato; letto in `startAct`, mai impostato in partita), perché dalla
+  v0.85 il lato è a caso e la prova falliva a caso (finta dell'avvio avanti, cicli di confronto di lato). [Rapporto](versioni/v086-rose.md).
+
+---
+
+# Passaggio WATERPOLO7 — v0.85 finte (Claude Code)
+
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.85.0. Cambia la partita (ritmo, lato e tempi delle finte) e il disegno della
+finta. Rispetta la v0.76/v0.77: i tempi minimi (`FINTA_MOVIMENTO`) restano quelli della finta stretta; tenuta Plask e rilascio libero
+invariati.
+- `src/taratura.js`: `FINTA_RITMO.attesa` (0,2 s), `FINTA_LATO.quota` (0,65), `FINTA_AMPIEZZA` (varia, vicino, stretta, preparazione,
+  accenno, ritorno). `startAct` (`src/tiri.js`) per la finta: larghezza `a.largo` (stile `largo` di `FINTE` ± caso, più stretta vicino
+  alla porta; `window.__formaFinta.largo` la forza negli strumenti e nelle prove), `wind`/`frusta`/`a.recupero` dalla larghezza, lato
+  `(mano==='S'?1:-1)*team.dir` (attraverso il corpo) con probabilità `quota` o quello della levetta, `a.pronto` e `p.fintaPronto`.
+- Il ritorno di ogni gesto è `a.recupero` (0,36 se manca): `updateActs`/`updateRecuperi`, `impulsoFinta`, `chiude` in `pose.js`,
+  `smussoGestoVista`. `aiCarrier` (`src/ia.js`): nessun gesto nuovo finché `game.time < p.fintaPronto`; la palombella dopo la finta del
+  computer ha `wind` ≥ `a.pronto - a.t`. `controllo.js`: cadenza della tenuta con `a.recupero + FINTA_RITMO.attesa`.
+- Solo disegno (`src/grafica/pose.js`): `formaFinta(p,a)` (WeakMap sull'atto) prende `a.largo` e sceglie il braccio teso/piegato con
+  `rndGrafica` (tendenza `piegato` di `FINTE`); `FINTA_FORMA` decide arrivo della mano, torsione e angolo della finta di lato.
+- Prove: `tests/traiettorie-v071.mjs` (costanti nuove nel contesto, palombella dopo il ritorno), `tests/finta-fluida-v076.mjs` (ogni
+  scena forza una delle quattro forme a rotazione, così avvio e cicli si confrontano a parità di forma), `tests/finta-v055.mjs` (lato
+  attraverso il corpo). Prova nuova `npm run finte` (anche nella CI); sonda `npm run sonda-finte`; foglio `npm run finte-forme`.
+  [Rapporto](versioni/v085-finte.md).
+
+---
+
+# Passaggio WATERPOLO7 — v0.84 rigore (Claude Code)
+
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.84.0. Cambia la partita (controfallo del rigore) e il disegno del rigore.
+- `RIGORE_TIRO.fermo` (0,5 s, `src/taratura.js`); in `partita.js`, nel rigore della partita e nella serie finale, `s.fermoRigore`
+  conta i secondi a carica piena con TIRO tenuto: oltre la soglia `controfalloRigore(s)` (nuova, `src/regole.js`: palla al portiere
+  avversario con `freeThrow`, `chiudiAzione('persa')`) o `concludiRigoreFinale(false,'controfallo')` (testo «Controfallo»).
+- `src/grafica/pose.js` (solo disegno): con `game.penalty===p` e nessun gesto la mano va sulla palla in acqua (`BOA_ACQUA`,
+  `T.pallaInAcqua`); `T.rigoreAcqua` imposta `p.davantiVista`/`p.pallaDavantiLocale` così la carica parte con la `PESCA` della v0.63.
+- Prova nuova `npm run rigore` (anche nella CI; `--foto` salva le due immagini). [Rapporto](versioni/v084-rigore.md).
+
+---
+
+# Passaggio WATERPOLO7 — v0.83 time-out (Claude Code)
+
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.83.0. Cambia la partita (ripresa del time-out, time-out del computer).
+- `schieraTimeout(t)` (`src/regole.js`, esportata), chiamata dalla callback del `timeout` dopo `placeHalves`: palla al portiere
+  (o al più vicino alla metà campo se è espulso) a `-t.dir*0,4`, `freeThrow`; compagni su `attackTarget`; difensori a un metro dal
+  loro uomo verso la propria porta (non `markTarget`, che con la palla a metà campo legge un rientro); `riallineaRiferimenti`.
+- `TIMEOUT` (`src/taratura.js`): `finale` 90 s, `eta` 4 s, `recupero` 0,4. In `aiCarrier` (decisione periodica) il computer chiama
+  il time-out nell'ultimo tempo, pari o sotto di uno, appena ripresa la palla; `t.timeoutFinale` (azzerato in `menu.js`).
+- Prova nuova `npm run timeout` (anche nella CI). [Rapporto](versioni/v083-timeout.md).
+
+---
+
+# Passaggio WATERPOLO7 — v0.82 cambi volanti (Claude Code)
+
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.82.0. Cambia la partita (cambi volanti).
+- `PANCHINA` (`src/taratura.js`): `distZona` 3,2 → 11 m, nuovi `ingresso` (8,5 m: dove compare il sostituto), `transizione` (7 s),
+  `appena`/`zona` (10 s, 10,5 m), `stancoLibero`/`liberiMax` (0,45, 2).
+- `momentoUtile` (`src/panchina.js`): oltre a «in attacco e lontano dalla palla», possesso da meno di `transizione` s o palla nella
+  propria metà. `cambiDelComputer` mette in coda con `attesa`, come i cambi del giocatore (prima partiva subito, anche in difesa).
+  Nuova `cambiLiberiDelComputer` chiamata da `aggiornaPanchina` quando i cambi sono liberi.
+- `sostitutoLontano(p)` (`src/difesa-cambi.js`, stessa mappa `rientri` della copertura difensiva): `bestPassTarget` salta il
+  sostituto appena entrato finché non è a `zona` m dalla porta d'attacco.
+- Ganci: `window.__pallanuoto.panchina` espone anche `momentoUtile`, `zonaCambi`, `PANCHINA`. Sonda nuova `npm run sonda-cambi`;
+  prova nuova `npm run cambi-volanti` (anche nella CI). [Rapporto](versioni/v082-cambi-volanti.md).
+
+---
+
+# Passaggio WATERPOLO7 — v0.81 tiri: controfuga vera, centroboa di spalle, occasioni chiare (Claude Code)
+
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.81.0. Cambia la partita (tiri e centroboa) e un comando (tasto a comparsa).
+- `occasioneControfuga` (`src/controfuga.js`): solo entro `QTE.eta` (9 s) da `game.possT`. `QTE` è passato in `src/taratura.js`
+  (riesportato da `controfuga.js` con lo stesso nome).
+- `controllo.js`: con il tasto a comparsa acceso lo speciale parte al rilascio di un tocco (in `aggiornaTiroTenuto`, carica sotto
+  `TIRO_POLSO`); tenuto resta il tiro normale. Prima `pressed('legacyShoot')` faceva subito lo speciale. Testi in `hud.js` e nella
+  pagina Comandi.
+- `leggiCentro` (`src/centroboa.js`) restituisce anche `addosso` (marcatore entro `CENTRO_PALLA.addosso` = 1,8 m e non davanti);
+  `fisica.js` tiene di spalle alla porta il centroboa con la palla se `spalle||addosso` anche nel ramo dello scivolamento
+  (`p.scivolaAI`), che prima lo girava sempre verso la porta; `shotKind` (`src/tiri.js`) dà beduina o sciarpa anche con `addosso`.
+- `boaHold` (`src/lotta.js`): decisioni del computer da `CENTRO_PALLA`; girato con il marcatore entro 1,8 m aspetta
+  `CENTRO_PALLA.girarsi` (0,45 s) prima del tiro «boa fronte porta». La decisione v0.69 (girato e libero tira) resta.
+- `occasioneChiara` (`src/ia.js`, `OCCASIONE_CHIARA`): tiro subito dopo la ricezione, prima della scelta delle entrate; esclusa
+  quando c'è un'occasione di controfuga vera.
+- `bestPassTarget` (`src/tiri.js`): `CENTRO_ATTESA` 3-9 s e `CENTRO_ATTESA.ingresso` per il centroboa marcato dietro o al fianco.
+- Ganci di misura in `window.__pallanuoto.prova`: `centroAttacco`, `boaFrontePorta`, `difensoreCentro`, `leggiCentro`,
+  `occasioneControfuga`. Sonda nuova `npm run sonda-centro`; `sonda-rientri` conta anche i tasti con la regola del gioco.
+- Prova nuova `npm run tiri-centro` (anche nella CI); `sezione4` con due controlli nuovi. [Rapporto](versioni/v081-tiri.md).
+
+---
+
+# Passaggio WATERPOLO7 — v0.80 cambi di marcatura nei rientri (Claude Code)
+
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.80.0. Cambia la partita (difesa nei rientri).
+- `scambiRientro(t)` in `src/ia.js`, chiamata all'inizio di `aggiornaDifesa` prima di `cambioMarcatura`; numeri in `RIENTRO_SCAMBI`.
+  Con la palla a più di 9,2 m dalla porta difesa (come `inRientro`) e nessuna espulsione: per gli attaccanti più avanti della palla, se il marcatore è
+  superato (oltre 1,5 m più lontano dalla porta o a più di 5 m) e un altro difensore costa almeno 3 m meno, si scambiano gli uomini
+  in `t.accoppiamenti.uomini` (come fanno le consegne). `p.scambiatoFino` tiene lo scambio 2,5 s (azzerato a inizio partita in
+  `menu.js`); `t.scambiRientro` li conta. Il difensore comandato (`ctrl`) e chi rallenta il portatore non prendono uomini nuovi.
+- Prova nuova `npm run cambi-marcatura` (anche nella CI); sonda `npm run sonda-rientri`.
+- Misure (16 partite): gol 20,8 → 19,5, controfughe 2,5 → 1,9, superiorità 47% → 42% (da ritarare). Con la soglia a 6 m gli scambi
+  entravano nell'attacco schierato e fallivano `chiamate-attacco`, `entrate-integrazione` e `sezione3`: la soglia è quella del
+  rientro (9,2 m). [Rapporto](versioni/v080-cambi-marcatura.md).
+
+---
+
+# Passaggio WATERPOLO7 — v0.79 passaggi (Claude Code)
+
+Stesso ramo della v0.78 (`claude/gracious-rubin-rcvklk`), versione 0.79.0. Cambia la partita (solo i passaggi).
+- `tipoPassaggio(p,m,d)` in `src/tiri.js` e `PASSAGGI` in `src/taratura.js`: morbido sull'acqua 0,3 m davanti al compagno
+  (6,5-9 m/s, errore ×0,6) nella circolazione tranquilla con la linea libera; teso come prima con l'uomo in più, ultimi 8 s, oltre
+  8 m, cambio di lato, transizione (passatore a oltre 10 m dalla porta), avversario entro 0,9 m dalla linea, compagno libero in
+  posizione di tiro (entro 6,5 m, nessuno entro 1,5 m). Al centroboa marcato: in acqua davanti a lui con la velocità del morbido;
+  a quello libero in mano (v0.55). `tests/finta-v055.mjs`: la scena del tiro al volo ora ha il ricevente libero. `ball.tipoPassaggio` dice il tipo del passaggio in volo.
+- `humanPassTarget`: conta la direzione (`MIRA_PASSAGGIO`, esposto anche in `window.__pallanuoto.prova`); tolta la precedenza al
+  centroboa (`BOA_PREFERITO`): su 379 scene vere il 31% dei passaggi gli arrivava senza volerlo. Il PASSA neutro (chiamate,
+  tagliante, scelta assistita) non cambia.
+- `aiutoGuida` in `src/controllo.js`: con la levetta ancora nella direzione di mira (`ball.levettaMira`) chi riceve va incontro
+  alla palla; va anche sul morbido caduto appena fuori portata.
+- Prova nuova `npm run passaggi` (anche nella CI); sonda `npm run sonda-tipi-passaggio`; la sonda dei tiri conta il gesto
+  (`window.__logTiri` ha `g` e `boa`). Equilibrio della partita uguale alla v0.77 (16 partite). [Rapporto](versioni/v079-passaggi.md).
+
+---
+
+# Passaggio WATERPOLO7 — v0.78 comandi e interfaccia (Claude Code)
+
+Base `main` `7527d46` (PR #68 unita). Ramo `claude/gracious-rubin-rcvklk`, versione 0.78.0. Ale ha mandato 13 punti dopo la v0.77;
+questa versione fa solo i due sull'interfaccia: la partita non cambia (posizioni identiche nelle immagini della verifica).
+- PASSA → CONTRASTA con la palla agli avversari: classe `in-difesa` sul body (`src/hud.js`); in `index.html` le parti
+  `.et-passa/.et-contrasta` e `.ic-passa/.ic-contrasta`; stesso comando di prima.
+- Colori dei tasti con la variabile `--tb-c` per `data-b` (`src/stile.css`): TIRO #ff8a1f, PASSA #6d86ff, CONTRASTA #ff7cc8,
+  PALOMB. #c7a0ff, SPRINT #4fe393, CAMBIA #e9eef5; oro, rosso e ciano restano riservati come prima.
+- Energia: `#stamNome` (`#stamNumero` + `#stamCognome`) al posto di `.energia-label`; riquadro su telefono 170 px (iPhone piccoli 152).
+- Prova nuova `npm run comandi-interfaccia`, anche nella CI.
+- Riferimenti delle immagini rifatti sulla macchina di Claude Code: il gioco usa i caratteri di sistema (`system-ui`), diversi tra
+  le due macchine, quindi in locale le immagini possono differire solo per il tipo di carattere. Guardare le posizioni.
+- Misura di partenza v0.77 (16 partite ITA–HUN, `npm run taratura -- --partite=16`): 20,5 gol e 42,3 tiri per squadra, 48,3% in
+  gol; gol per tipo: perimetro 28%, centroboa 27%, entrata 20%, superiorità 17%, rigore 8%; controfughe 2,9 a partita (v0.67: 1,5).
+- Prossime versioni di Claude Code, nell'ordine: passaggi, tiri, cambi di marcatura, cambi volanti, time-out, rigore, finte, rose.
+  [Rapporto](versioni/v078-comandi-interfaccia.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.77 avvio della finta
 
 Base main `7218d09`, PR67 unita e CI45246753540 verde. Ramo `codex/v077-avvio-finta`, workspace `/workspace/pallanuoto-v077`, versione0.77.0. Prima di proseguire riallineare main/PR/CI/diff; preservare Claude e i worktree precedenti. Nessun merge/deploy.

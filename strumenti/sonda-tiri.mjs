@@ -36,4 +36,14 @@ for(const [k,v] of Object.entries(per).sort((a,b)=>b[1].length-a[1].length)){
   const tm=v.reduce((s,x)=>s+x.t,0)/v.length, dm=v.reduce((s,x)=>s+x.d,0)/v.length;
   console.log(`  ${k.padEnd(34)} ${String(v.length).padStart(4)} (${(100*v.length/tutti.length).toFixed(1)}%) · dopo ${tm.toFixed(1)} s d'azione · da ${dm.toFixed(1)} m · entro 10 s: ${v.filter(x=>x.t>=0&&x.t<10).length}`);
 }
+// v0.79 (Ale: «troppi tiri a schizzo e colonnello e poche beduine»): i tiri per gesto e per situazione
+if(tutti.some(x=>x.g)){
+  console.log('\nPER GESTO (tiro classico, polso, beduina, sciarpa, schizzo, colonnello, palombella...)');
+  const pg={}; for(const x of tutti){ const k=x.g||'?'; (pg[k]=pg[k]||[]).push(x); }
+  for(const [k,v] of Object.entries(pg).sort((a,b)=>b[1].length-a[1].length)){
+    const sit={}; for(const x of v){ const s=x.tipo+(x.boa?' dal centro':''); sit[s]=(sit[s]||0)+1; }
+    console.log(`  ${k.padEnd(12)} ${String(v.length).padStart(4)} (${(100*v.length/tutti.length).toFixed(1)}%) · ${(v.length/partite/2).toFixed(1)} per squadra a partita · da ${(v.reduce((s,x)=>s+x.d,0)/v.length).toFixed(1)} m · ${Object.entries(sit).sort((a,b)=>b[1]-a[1]).map(([s,n])=>s+' '+n).join(', ')}`);
+  }
+  const boa=tutti.filter(x=>x.boa); console.log(`  tiri del centro: ${boa.length} (${(100*boa.length/tutti.length).toFixed(1)}%), di cui beduine ${boa.filter(x=>x.g==='beduina').length} e sciarpe ${boa.filter(x=>x.g==='sciarpa').length}`);
+}
 await browser.close(); server.httpServer.close();

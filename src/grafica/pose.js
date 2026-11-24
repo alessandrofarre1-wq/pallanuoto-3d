@@ -327,6 +327,23 @@ export const ACCOMPAGNA={ shot:[0.54,0.20,-0.08], torsione:[0.50,0.18,-0.20], po
 // passaggio di lato (v0.63): quota dell'angolo verso il compagno fatta girando il busto (opposto = dalla parte opposta al braccio che
 // passa, stesso = dalla sua parte), giro massimo del busto e della testa (rad)
 export const PASSAGGIO_VISTA={ opposto:0.7, stesso:0.35, max:1.1, testa:1.3 };
+// FORMA DELLA FINTA (v0.85, Ale: «movimenti stretti e veloci o più ampi e lenti e con il braccio teso o piegato»). La larghezza e i
+// tempi li decide il gioco a ogni finta (a.largo, tiri.js startAct, FINTA_AMPIEZZA in taratura.js); qui solo il disegno, con il caso
+// della grafica per il braccio. Braccio dritto: il braccio si distende, verso l'alto nella stretta («dritto», arco corto) e verso la
+// porta nell'ampia («dritto2», arco lungo); piegato: il gomito resta piegato e l'avambraccio spinge la mano di «piegato» (× 0,7-1,3 con
+// la larghezza) davanti alla carica, al massimo a «raggio» dalla spalla (gomito a circa 90°). L'ampia gira di più il busto (torsione
+// × 0,75-1,25) e nella finta di lato, da destra verso sinistra, porta il braccio più in là (FINTA_LATO.gesto × 0,55-1,45); a braccio
+// piegato la mano, vicina alla testa, si sposta anche di lato di «latoPiegato» × (0,5 + larghezza) metri.
+export const FINTA_FORMA={ dritto:[0.04,0.60,0.06], dritto2:[0.26,0.56,0.04], piegato:[0.16,0.05,0.03], raggio:0.43, latoPiegato:0.1 };
+const formeFinta=new WeakMap();      // una forma per ogni gesto di finta (la memoria è del disegno, non del giocatore)
+export function formaFinta(p,a){
+  let f=formeFinta.get(a); if(f) return f;
+  // solo per i fogli di foto e le prove (strumenti/finte-forme-foglio.mjs, tests/finte-v085.mjs, tests/finta-fluida-v076.mjs): una
+  // forma scelta a mano (la larghezza vale anche per i tempi, tiri.js)
+  const forzata=typeof window!=='undefined'?window.__formaFinta:null;
+  f={ largo:a.largo??forzata?.largo??0.5, piegato:forzata?forzata.piegato:rndGrafica()<(fintaDi(p).piegato??0.4) };
+  formeFinta.set(a,f); return f;
+}
 // ricezione (v0.63): chi aspetta un passaggio gira la testa verso la palla in volo, fino a RICEZIONE_TESTA rad
 export const RICEZIONE_TESTA=1.2;
 // fine di passaggio e palombella (v0.63): dove torna la mano, rispetto alla spalla (in acqua, di lato, come per remare)
@@ -397,7 +414,7 @@ function articolaVista(p,J,T,t,gestoVista){
   const a=attoVista(p,hold);
   const kind=a?.kind||(p.charging?shotKind(p):null), th=kind?(THROW[kind]||THROW.shot):null;
   const fr=a?.frusta||0.18, tt=a?a.t-a.wind:0, carica=gestoVista.carica;
-  const volo=a?clamp(tt/fr,0,1):0, chiude=a?clamp((tt-fr)/0.36,0,1):0;
+  const volo=a?clamp(tt/fr,0,1):0, chiude=a?clamp((tt-fr)/(a.recupero??0.36),0,1):0;
   const tiro=T.tiroVista=raccordaCatenaTiroVista(gestoVista,kind==='shot',carica,volo,chiude,lato,e);
   const suff=lato>0?'R':'L', locale=v=>[v[0],v[1],v[2]*lato];
   if(th) T['morbido'+suff]=0.2; else if(hold) T['morbido'+suff]=Math.min(T['morbido'+suff],0.45);
@@ -464,6 +481,12 @@ function articolaVista(p,J,T,t,gestoVista){
       // CENTROBOA CON IL DIFENSORE DIETRO (v0.55, Ale: «la palla non può stare nel dorso della mano: o sta in acqua oppure il
       // giocatore per tenerla in mano si deve girare o tirare una beduina o una sciarpa»): finché non fa un gesto, la palla resta in
       // acqua davanti a lui, con la mano sopra (palmo in giù); girata, beduina e sciarpa sono i gesti che la alzano
+      // RIGORE (v0.84, Ale: «la palla deve partire dall'acqua»): prima del gesto la palla sta in acqua davanti a chi tira, con la mano
+      // sopra (come il centroboa con il difensore dietro); la carica la pesca dall'acqua (PESCA). Solo disegno: p.ballW non cambia.
+      if(game.penalty===p&&!p.charging&&!(p.act&&!p.act.done)){
+        const pl=add3(V['s'+suff],locale(BOA_ACQUA));
+        braccio(lato,pl,locale([-0.2,-0.6,1]),locale([0.12,-1,0.05]),0.15,1-e);
+        T.pallaInAcqua=1-e; T.rigoreAcqua=[pl[0],0.05,pl[2]]; return V; }
       if(fight.active&&fight.boa===p&&fight.def){ const q=fight.def, dx=q.x-p.x, dz=q.z-p.z, l=Math.hypot(dx,dz)||1;
         if((dx*p.fx+dz*p.fz)/l<-0.3){
           braccio(lato,add3(V['s'+suff],locale(BOA_ACQUA)),locale([-0.2,-0.6,1]),locale([0.12,-1,0.05]),0.15,1-e);
@@ -485,7 +508,8 @@ function articolaVista(p,J,T,t,gestoVista){
   const busto=ease(clamp((volo-0.02)/0.70,0,1));
   const braccioK=ease(clamp((volo-0.14)/0.86,0,1)), polso=ease(clamp((volo-0.62)/0.38,0,1));
   const rientra=ease(clamp((chiude-0.55)/0.45,0,1));
-  const base0=kind==='fake'?-0.84*(fintaDi(p).torsione):kind==='shot'||kind==='torsione'?-0.84:kind==='beduina'||kind==='rovesciata'?0.72:kind==='sciarpa'?-0.72:th.tw0;
+  const ff=kind==='fake'&&a?formaFinta(p,a):null;      // v0.85: finta larga o stretta, braccio piegato o dritto (FINTA_FORMA)
+  const base0=kind==='fake'?-0.84*(fintaDi(p).torsione)*(ff?0.75+0.5*ff.largo:1):kind==='shot'||kind==='torsione'?-0.84:kind==='beduina'||kind==='rovesciata'?0.72:kind==='sciarpa'?-0.72:th.tw0;
   const base1=kind==='shot'?0.48:kind==='torsione'?0.72:th.tw1;
   // PASSAGGIO DI LATO (v0.63, foglio a tre lati): verso il compagno il busto gira (di più se il passaggio va dalla parte opposta al
   // braccio, dove prima l'avambraccio passava davanti al viso e la mano finiva sulla faccia), la testa lo guarda e la mano lo segue
@@ -530,6 +554,12 @@ function articolaVista(p,J,T,t,gestoVista){
     T.alzataTiro=k;      // corpo.js lascia salire il bacino fin quasi al pelo dell'acqua (le gambe restano sotto)
   }
   const caricata=mix3(HOLD_VISTA,fp?fp.vista:CARICA_VISTA[kind]||CARICA_VISTA.shot,carica);
+  if(ff){
+    if(ff.piegato){      // braccio piegato: l'avambraccio spinge la mano avanti, il gomito resta piegato
+      const k=0.7+0.6*ff.largo; rilascio=add3(caricata,FINTA_FORMA.piegato.map(v=>v*k));
+      const r=Math.hypot(...rilascio); if(r>FINTA_FORMA.raggio) rilascio=rilascio.map(v=>v*FINTA_FORMA.raggio/r);
+    } else rilascio=mix3(FINTA_FORMA.dritto,FINTA_FORMA.dritto2,ff.largo);      // braccio dritto verso la porta
+  }
   let off=tt>=0&&a&&kind!=='fake'
     ? frustaVista(gestoVista.off,caricata,rilascio,ACCOMPAGNA[kind]||th.F,tt,fr)
     : mix3(caricata,rilascio,braccioK);
@@ -538,6 +568,7 @@ function articolaVista(p,J,T,t,gestoVista){
   // «ad ala di pollo», gomito sotto e dietro la spalla)
   let hint=mix3(mix3(GOMITO_FUORI,[-0.3,0.15,1],carica),[-0.08,0.05,1],braccioK);
   if(kind==='shot')hint=mix3(hint,[-0.12,0.95,0.68],tiro.gomito);
+  if(ff?.piegato) hint=mix3(hint,[-0.25,0.35,1],carica*(1-ease(chiude)));      // v0.85: braccio piegato, gomito in fuori e alto
   hint=mix3(hint,[0.15,-0.7,0.8],ease(chiude));
   // palmo: dietro la palla, in avanti e un po' in su durante la carica (prima rivolto al cielo, «a vassoio»), verso il bersaglio
   // al rilascio, in giù nella chiusura
@@ -545,9 +576,10 @@ function articolaVista(p,J,T,t,gestoVista){
   n=mix3(n,ACCOMPAGNA[kind]?PALMO_ACCOMPAGNA:[0.15,-0.9,-0.2],ease(chiude));
   // finta di lato (v0.59, Varga): il braccio va verso il palo scelto, non dritto alla porta
   if(kind==='fake'&&p.fintaLatoGesto){
-    const la=p.fintaLatoGesto*p.fx*lato, ang=Math.sign(la)*FINTA_LATO.gesto*carica*(1-chiude), c=Math.cos(ang),s=Math.sin(ang);
+    const la=p.fintaLatoGesto*p.fx*lato, ang=Math.sign(la)*FINTA_LATO.gesto*(ff?0.55+0.9*ff.largo:1)*carica*(1-chiude), c=Math.cos(ang),s=Math.sin(ang);
     const ruota=v=>[v[0]*c-v[2]*s,v[1],v[0]*s+v[2]*c];
     off=ruota(off); hint=ruota(hint); n=ruota(n);
+    if(ff?.piegato) off[2]+=Math.sign(la)*FINTA_FORMA.latoPiegato*(0.5+ff.largo)*carica*(1-chiude);
   }
   if(kind==='pass'&&a?.aim){
     // il braccio punta al compagno fino al rientro (prima tornava dritto già nell'accompagnamento e attraversava la faccia)
@@ -691,6 +723,7 @@ export function updateRig(p,dt,t){
   // per la pesca (v0.63): quanto la palla è in acqua davanti alla testa e dove, nel sistema del giocatore
   p.davantiVista=T.ballHand?(T.ballDavanti||0):0;
   if(p.davantiVista>0) p.pallaDavantiLocale=[Jv.head[0]+0.30,0.05,Jv.head[2]];
+  if(T.rigoreAcqua){ p.davantiVista=1; p.pallaDavantiLocale=T.rigoreAcqua; }      // v0.84: il rigore parte dalla palla in acqua (pesca)
   // LA PALLA NON ENTRA NEGLI ALTRI CORPI (v0.55): se la palla disegnata finisce dentro la testa o il busto di un altro giocatore
   // vicino viene spinta fuori, in orizzontale, fino a toccarlo appena (raggio PALLA_FUORI dal suo asse). Solo disegno.
   if(p.ballVistaW){ const b=p.ballVistaW;

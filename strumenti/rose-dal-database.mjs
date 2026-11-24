@@ -21,6 +21,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { listaPartita } from '../src/dati/lista-partita.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = process.argv[2];
 if (!src) { console.error('Uso: node strumenti/rose-dal-database.mjs <waterpolo.json> [--output-dir=/tmp/rose]'); process.exit(1); }
@@ -115,7 +116,7 @@ function scegli(cod) {
 const FIS = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'dati-sorgente/aspetto-giocatori.json'), 'utf8')).records; } catch { return []; } })();
 const norm = t => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim();
 const FISi = new Map(FIS.map(r => [r.nazionale + '|' + norm(r.nome), r]));
-const collegati = { trovati: 0, mani: 0, disaccordi: [], altezze: 0, pesi: 0, aspetto: 0, mancanti: [] };
+const collegati = { trovati: 0, mani: 0, disaccordi: [], altezze: 0, pesi: 0, aspetto: 0, mancanti: [], doppioni: [] };
 function datiFisici(cod, nomeDb) {
   const intero = norm(nomeIntero(nomeDb)); let r = FISi.get(cod + '|' + intero);
   if (!r) {      // stesso cognome (unico nella nazionale) e stessa iniziale del nome
@@ -125,25 +126,59 @@ function datiFisici(cod, nomeDb) {
   }
   return r || null;
 }
+// una riga per giocatore: statistiche sommate, anagrafica, mano (database o file di Ale), dati fisici
+function riga(cod, ev, r, conta = true) {
+  const S = somma.get(r.player_id) || null, A = anag.get(r.player_id) || {};
+  const pos = (A.roles && A.roles[0]) || r.position || '';
+  let mano = r.hand || A.dominant_hand || null, manoFonte = mano ? 'database' : null;
+  const F = datiFisici(cod, r.name);
+  if (F) {
+    if (conta) collegati.trovati++;
+    const mf = F.manoDominante === 'sinistra' ? 'L' : F.manoDominante === 'destra' ? 'R' : null;
+    if (mf && !mano) { mano = mf; manoFonte = 'file di Ale'; if (conta) collegati.mani++; }
+    else if (mf && mano && mf !== mano && conta) collegati.disaccordi.push(`${cod} ${r.name}: database ${mano}, file ${mf}`);
+  } else if (conta) collegati.mancanti.push(cod + ' ' + r.name);
+  const altezza = r.height_cm || (F && F.altezzaCm) || null, peso = (F && F.pesoKg) || null;
+  if (conta && !r.height_cm && F && F.altezzaCm) collegati.altezze++;
+  if (conta && peso) collegati.pesi++;
+  return { cod, ev, r, S, pos, t: tipo(r.position || pos), mano, manoFonte, F, altezza, peso, min: S ? S.sec / 60 : 0, ruoliDb: A.roles || [] };
+}
 const tutti = [];
 for (const cod of CODICI) {
   const { ev, lista } = scegli(cod);
-  for (const r of lista) {
-    const S = somma.get(r.player_id) || null, A = anag.get(r.player_id) || {};
-    const pos = (A.roles && A.roles[0]) || r.position || '';
-    let mano = r.hand || A.dominant_hand || null, manoFonte = mano ? 'database' : null;
-    const F = datiFisici(cod, r.name);
-    if (F) {
-      collegati.trovati++;
-      const mf = F.manoDominante === 'sinistra' ? 'L' : F.manoDominante === 'destra' ? 'R' : null;
-      if (mf && !mano) { mano = mf; manoFonte = 'file di Ale'; collegati.mani++; }
-      else if (mf && mano && mf !== mano) collegati.disaccordi.push(`${cod} ${r.name}: database ${mano}, file ${mf}`);
-    } else collegati.mancanti.push(cod + ' ' + r.name);
-    const altezza = r.height_cm || (F && F.altezzaCm) || null, peso = (F && F.pesoKg) || null;
-    if (!r.height_cm && F && F.altezzaCm) collegati.altezze++;
-    if (peso) collegati.pesi++;
-    tutti.push({ cod, ev, r, S, pos, t: tipo(r.position || pos), mano, manoFonte, F, altezza, peso, min: S ? S.sec / 60 : 0 });
+  for (const r of lista) tutti.push(riga(cod, ev, r));
+}
+// TUTTI I DISPONIBILI (v0.86, Ale: «mettimi tutti e poi scelgo io all'inizio della competizione chi convocare; non farlo solo per
+// l'Italia ma per tutte le nazionali; non so chi si è ritirato quindi considerali tutti»): chi è stato convocato dalla nazionale in
+// almeno un torneo del database (Mondiali 2025, Europei 2026, Coppa del Mondo 2026). Numero, ruolo e mano dalla convocazione più
+// recente; chi era nella convocazione usata finora tiene la sua riga, quindi i suoi numeri non cambiano.
+const DISPONIBILI = {};
+for (const cod of CODICI) {
+  const perGiocatore = new Map();
+  for (const r of estratto.rosters.filter(r => r.team_code === cod)) { const g = perGiocatore.get(r.player_id) || []; g.push(r); perGiocatore.set(r.player_id, g); }
+  DISPONIBILI[cod] = [...perGiocatore.values()].map(righe => {
+    righe.sort((a, b) => (DATE[b.event_id] || '').localeCompare(DATE[a.event_id] || ''));
+    const x = tutti.find(y => y.cod === cod && y.r.player_id === righe[0].player_id) || riga(cod, righe[0].event_id, righe[0], false);
+    x.convocazioni = [...new Set(righe.map(r => r.event_id))];
+    return x;
+  });
+  // DOPPIONI: nel database lo stesso giocatore compare a volte con due schede, con il nome scritto in due modi («TAHULL Roger» e
+  // «TAHULL COMPTE Roger», «LAZIC Dorde» e «LAZIC Djordje»). Stessa nazionale, stessa data di nascita e stesso nome (o stessa iniziale e
+  // un cognome in comune) = stessa persona; i gemelli (stessa data, nomi diversi: HESSELS Sebastian e Benjamin) restano due. Si tiene la
+  // scheda della rosa usata finora o, altrimenti, la più recente, con tutte le convocazioni; le statistiche dell'altra scheda non si
+  // sommano (le valutazioni dei 13 restano quelle di prima).
+  const parole = n => String(n || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/\s+/);
+  const nomeProprio = n => (parole(n).find(w => w !== w.toUpperCase()) || '').split('-')[0].toLowerCase();
+  const cognomi = n => parole(n).filter(w => w === w.toUpperCase() && /[A-Z]/.test(w)).map(w => w.toLowerCase());
+  const stessaPersona = (a, b) => a.r.birth_date && a.r.birth_date === b.r.birth_date && (nomeProprio(a.r.name) === nomeProprio(b.r.name) ||
+    (nomeProprio(a.r.name)[0] === nomeProprio(b.r.name)[0] && cognomi(a.r.name).some(c => cognomi(b.r.name).includes(c))));
+  const unici = [];
+  for (const x of DISPONIBILI[cod].sort((a, b) => (tutti.includes(b) - tutti.includes(a)) || (DATE[b.r.event_id] || '').localeCompare(DATE[a.r.event_id] || ''))) {
+    const gia = unici.find(y => stessaPersona(x, y));
+    if (gia) { gia.convocazioni = [...new Set([...gia.convocazioni, ...x.convocazioni])].sort((a, b) => (DATE[b] || '').localeCompare(DATE[a] || '')); gia.doppione = x.r.name; collegati.doppioni.push(`${cod} ${gia.r.name} = ${x.r.name}`); }
+    else unici.push(x);
   }
+  DISPONIBILI[cod] = unici;
 }
 // medie e dispersioni per gruppo (portieri / movimento) sulle sole righe con almeno 60 minuti
 function stat(arr) { const m = arr.reduce((a, b) => a + b, 0) / Math.max(1, arr.length); const s = Math.sqrt(arr.reduce((a, b) => a + (b - m) ** 2, 0) / Math.max(1, arr.length)) || 1; return { m, s }; }
@@ -177,7 +212,29 @@ const PESI = [
 const ovr = (s, ruolo) => { const w = PESI[ruolo]; let a = 0, b = 0; for (const k in w) { a += s[k] * w[k]; b += w[k]; } return Math.round(a / b); };
 // ruolo del gioco per un tipo di giocatore (la mano decide il lato quando il ruolo vero non lo dice)
 const ruoloDi = (t, mano) => t === 'gk' ? 0 : t === 'boa' ? 1 : t === 'dif' || t === 'punto' ? 6 : t === 'aladx' ? 2 : t === 'alasx' ? 3 : t === 'ala' ? (mano === 'L' ? 2 : 3) : (mano === 'L' ? 4 : 5);
+// tutti i ruoli che sa fare (v0.86, Ale: «se ci sono doppi ruoli (molto probabile) scegli i secondi più forti dando variabilità ai
+// cambi per coprire il più possibile più ruoli»): il ruolo del gioco più quelli dell'anagrafica del database (per esempio «Centre
+// Forward, Driver»: centroboa e mezzo); i portieri solo in porta
+const ruoliDi = (x, ruolo) => ruolo === 0 ? [0] : [...new Set([ruolo, ...(x.ruoliDb || []).map(pos => ruoloDi(tipo(pos), x.mano)).filter(r => r !== 0)])];
 
+// FORZA DELLA SQUADRA AL RANKING (v0.86). La lista dei 14 scelta dal gioco tra tutti i disponibili (src/dati/lista-partita.js) è un po'
+// più forte dei 13 usati finora, e di più dove i disponibili sono tanti (la Croazia ne ha 34, il Giappone 15). Perché la forza di ogni
+// nazionale resti quella del ranking (docs/riferimenti/valutazioni.md, punto 1), tutte le voci dei suoi disponibili scendono di quanto la
+// valutazione media dei 14 supera quella dei 13 di prima (portieri e movimento a parte; la valutazione è una media pesata delle voci,
+// quindi scende della stessa quantità): chi è più forte resta più forte, e i 14 valgono quanto i 13 di prima.
+function riportaAlRanking(pool) {
+  const L = listaPartita(pool, 14, ovr), vecchi = pool.filter(g => g.inRosa13), scarti = {};
+  const media = q => q.reduce((x, g) => x + g.ovr, 0) / q.length;
+  for (const portiere of [true, false]) {
+    const a = L.filter(g => (g.ruolo === 0) === portiere), b = vecchi.filter(g => (g.ruolo === 0) === portiere);
+    if (!a.length || !b.length) continue;
+    const c = media(a) - media(b);
+    for (const g of pool) if ((g.ruolo === 0) === portiere && g._grezzo) { for (const k in g.s) g.s[k] = lim(g._grezzo[k] - c); g.ovr = ovr(g.s, g.ruolo); }
+    scarti[portiere ? 'portieri' : 'movimento'] = +c.toFixed(2);
+  }
+  return scarti;
+}
+const scartiRanking = {};
 for (const sq of SQ_DATABASE) {
   const cod = sq.codice, base = 57 + (sq.forza - 60) * 0.72;
   const gioc = tutti.filter(x => x.cod === cod);
@@ -196,15 +253,16 @@ for (const sq of SQ_DATABASE) {
   const tutti13 = [...gk, ...mov];
   const D = tutti13.map(diff);
   // ricentrare ogni voce sulla media della squadra (la forza della squadra resta quella del ranking)
-  for (const grp of [tutti13.map((x, i) => i).filter(i => tutti13[i].t === 'gk'), tutti13.map((x, i) => i).filter(i => tutti13[i].t !== 'gk')]) {
+  const medie = { gk: {}, campo: {} };      // le stesse medie valgono per gli altri disponibili (v0.86): le valutazioni dei 13 non cambiano
+  for (const [nomeGrp, grp] of [['gk', tutti13.map((x, i) => i).filter(i => tutti13[i].t === 'gk')], ['campo', tutti13.map((x, i) => i).filter(i => tutti13[i].t !== 'gk')]]) {
     const chiavi = new Set(grp.flatMap(i => Object.keys(D[i])));
-    for (const k of chiavi) { const m = grp.reduce((a, i) => a + (D[i][k] || 0), 0) / Math.max(1, grp.length); for (const i of grp) D[i][k] = (D[i][k] || 0) - m; }
+    for (const k of chiavi) { const m = grp.reduce((a, i) => a + (D[i][k] || 0), 0) / Math.max(1, grp.length); medie[nomeGrp][k] = m; for (const i of grp) D[i][k] = (D[i][k] || 0) - m; }
   }
-  const schede = tutti13.map((x, i) => {
+  const scheda = (x, Di) => {
     const ruolo = ruoloDi(x.t, x.mano), P = PROFILO[ruolo], s = {};
-    for (const st of ['vel', 'res', 'pot', 'pre', 'pas', 'vis', 'dif', 'dis', 'frz']) s[st] = base + P[st] + (D[i][st] || 0);
+    for (const st of ['vel', 'res', 'pot', 'pre', 'pas', 'vis', 'dif', 'dis', 'frz']) s[st] = base + P[st] + (Di[st] || 0);
     const gkb = ruolo === 0 ? base + 3 : base - 28;
-    for (const st of ['rif', 'pos', 'usc', 'rig']) s[st] = gkb + (D[i][st] || 0);
+    for (const st of ['rif', 'pos', 'usc', 'rig']) s[st] = gkb + (Di[st] || 0);
     // età (docs/riferimenti/valutazioni.md, punto 5)
     const e = eta(x.r.birth_date);
     if (e != null) {
@@ -213,6 +271,7 @@ for (const sq of SQ_DATABASE) {
       else if (e >= 31) { s.vel -= 3; s.res -= 2; s.vis += 3; }
     }
     if (x.r.captain) { s.vis += 1; s.dis += 1; }
+    const grezzo = { ...s };      // con i decimali: serve a riportare la forza al ranking prima di arrotondare (v0.86)
     for (const k in s) s[k] = lim(s[k]);
     const S = x.S, dati = S ? (x.t === 'gk' ? { tornei: new Set(S.eventi).size, partite: S.partite, parate: S.par, tiriSubiti: S.tir, minuti: Math.round(x.min) }
       : { tornei: new Set(S.eventi).size, partite: S.partite, minuti: Math.round(x.min), gol: S.G, tiri: S.T, assist: S.AS, rubate: S.ST, murati: S.BL, espulsioni: S.ESP }) : null;
@@ -224,8 +283,9 @@ for (const sq of SQ_DATABASE) {
     return { id: x.r.player_id, num: x.r.cap_number, nome: cognome(x.r.name), nomeIntero: nomeIntero(x.r.name), nomeCompleto: x.r.name, ruolo, ruoloVero: x.r.position || x.pos || null,
       mano: x.mano === 'L' ? 'S' : 'D', manoNota: x.mano ? (x.manoFonte === 'database' ? null : x.manoFonte) : 'sconosciuta', altezza: x.altezza || null, peso: x.peso || null,
       ...(Object.keys(aspetto).length ? { aspetto } : {}), nascita: x.r.birth_date || null, capitano: !!x.r.captain,
-      s, ovr: ovr(s, ruolo), dati, convocazione: x.ev };
-  });
+      s, ovr: ovr(s, ruolo), dati, convocazione: x.ev, convocazioni: x.convocazioni || [x.ev], ruoli: ruoliDi(x, ruolo), _grezzo: grezzo };
+  };
+  const schede = tutti13.map((x, i) => scheda(x, D[i]));
   // titolari: il miglior portiere e, posto per posto, il più forte disponibile del ruolo giusto (poi chi gli somiglia di più)
   const PREF = { 1: [1, 6, 5, 4], 2: [2, 3, 4, 5], 3: [3, 2, 5, 4], 4: [4, 5, 2, 3, 6], 5: [5, 4, 3, 2, 6], 6: [6, 1, 4, 5] };
   const liberi = new Set(schede.map((_, i) => i)), titolari = [];
@@ -243,14 +303,25 @@ for (const sq of SQ_DATABASE) {
   const usati = new Set(), dup = new Set();
   for (const g of ordine) { if (g.num > 0 && !usati.has(g.num)) usati.add(g.num); else dup.add(g); }
   for (const g of dup) { const pref = g.ruolo === 0 ? [1, 13, 15] : []; let n = pref.find(v => !usati.has(v)); for (let v = 1; n === undefined; v++) if (!usati.has(v)) n = v; g.num = n; usati.add(n); g.numStimato = true; }
+  // gli altri disponibili (v0.86): stesse statistiche, stesse medie della squadra (ricentrate come i 13), dal più forte
+  const altri = DISPONIBILI[cod].filter(x => !tutti13.includes(x)).map(x => {
+    const Dx = diff(x), m = x.t === 'gk' ? medie.gk : medie.campo;
+    for (const k in Dx) Dx[k] -= m[k] || 0;
+    return scheda(x, Dx);
+  }).sort((a, b) => b.ovr - a.ovr);
+  // inRosa13 = nella rosa di 13 del gioco fino alla v0.85 (la convocazione più recente): serve solo a tenere uguale l'aspetto e, a parità
+  // di forza, la scelta della partita
+  const pool = [...ordine.map(({ titolare, posto, ...g }) => ({ ...g, inRosa13: true })), ...altri];
   // cognomi uguali nella stessa squadra: si aggiunge l'iniziale del nome («Nagy A.», «Nagy Á.»)
-  const doppi = new Set(ordine.map(g => g.nome).filter((n, i, a) => a.indexOf(n) !== i));
-  for (const g of ordine) if (doppi.has(g.nome)) { const nomeProprio = g.nomeCompleto.split(/\s+/).find(w => w !== w.toUpperCase()); if (nomeProprio) g.nome += ' ' + nomeProprio[0] + '.'; }
-  { const ancora = new Set(ordine.map(g => g.nome).filter((n, i, a) => a.indexOf(n) !== i));      // stessa iniziale: nome intero
-    for (const g of ordine) if (ancora.has(g.nome)) { const np = g.nomeCompleto.split(/\s+/).find(w => w !== w.toUpperCase()); if (np) g.nome = g.nome.replace(/ \S+\.$/, ' ' + np); } }
+  const doppi = new Set(pool.map(g => g.nome).filter((n, i, a) => a.indexOf(n) !== i));
+  for (const g of pool) if (doppi.has(g.nome)) { const nomeProprio = g.nomeCompleto.split(/\s+/).find(w => w !== w.toUpperCase()); if (nomeProprio) g.nome += ' ' + nomeProprio[0] + '.'; }
+  { const ancora = new Set(pool.map(g => g.nome).filter((n, i, a) => a.indexOf(n) !== i));      // stessa iniziale: nome intero
+    for (const g of pool) if (ancora.has(g.nome)) { const np = g.nomeCompleto.split(/\s+/).find(w => w !== w.toUpperCase()); if (np) g.nome = g.nome.replace(/ \S+\.$/, ' ' + np); } }
   // il migliore della squadra (o i due migliori se staccati) sono i «campioni» della rosa
-  const top = [...ordine].sort((a, b) => b.ovr - a.ovr); top[0].campione = true; if (top[1].ovr >= top[0].ovr - 2) top[1].campione = true;
-  rose[cod] = ordine;
+  const top = [...pool].sort((a, b) => b.ovr - a.ovr); top[0].campione = true; if (top[1].ovr >= top[0].ovr - 2) top[1].campione = true;
+  scartiRanking[cod] = riportaAlRanking(pool);
+  for (const g of pool) delete g._grezzo;
+  rose[cod] = pool;
   riassunto.push(`${cod} (${ordine[0].convocazione}): ` + ordine.slice(0, 7).map(g => `${g.num} ${g.nome} ${g.ovr}`).join(', '));
 }
 // ---------- convocazioni ufficiali supplementari, senza statistiche individuali ----------
@@ -269,15 +340,17 @@ function rosaSupplementare(sq, fonte) {
   const ordine = [...F, ...selezionati.filter(p => !F.includes(p.numero) && !gk(p)).map(p => p.numero),
     ...selezionati.filter(p => !F.includes(p.numero) && gk(p)).map(p => p.numero)];
   const base = 57 + (sq.forza - 60) * 0.72;
-  const schede = ordine.map((n, k) => {
-    const p = selezionati.find(q => q.numero === n), ruolo = ruoloDi(tipo(posizioni[p.posizioneFonte]), p.manoFonte), s = {};
+  // v0.86: tutti i convocati ufficiali, prima i 13 selezionati per il gioco (inRosa13), poi gli altri
+  const tuttiNumeri = [...ordine, ...fonte.convocati.map(p => p.numero).filter(n => !ordine.includes(n))];
+  const schede = tuttiNumeri.map((n, k) => {
+    const p = fonte.convocati.find(q => q.numero === n), ruolo = ruoloDi(tipo(posizioni[p.posizioneFonte]), p.manoFonte), s = {};
     for (const st of ['vel', 'res', 'pot', 'pre', 'pas', 'vis', 'dif', 'dis', 'frz']) s[st] = lim(base + PROFILO[ruolo][st]);
     for (const st of ['rif', 'pos', 'usc', 'rig']) s[st] = lim(base + (ruolo === 0 ? 3 : -28));
     return { id: `euro2026_${cod}_${n}`, num: n, nome: cognome(p.nomeFonte), nomeIntero: nomeIntero(p.nomeFonte), nomeCompleto: p.nomeFonte,
       ruolo, ruoloVero: posizioni[p.posizioneFonte], mano: p.manoFonte === 'L' ? 'S' : 'D',
       manoNota: 'rapporto ufficiale European Aquatics / Microplus, 9 gennaio 2026', altezza: null, peso: null,
       nascita: p.nascita || null, capitano: !!p.capitano, s, ovr: ovr(s, ruolo), dati: null, convocazione: 'euro2026',
-      titolare: k < 7, posto: k < 7 ? k : null, campione: false, statisticheStimate: true,
+      convocazioni: ['euro2026'], ruoli: [ruolo], campione: false, statisticheStimate: true, ...(k < 13 ? { inRosa13: true } : {}),
       fonte: SUPPLEMENTO.fonte.url, fontePagina: fonte.pagina };
   });
   const doppi = new Set(schede.map(g => g.nome).filter((n, i, a) => a.indexOf(n) !== i));
@@ -293,14 +366,16 @@ for (const sq of SQ) {
   if (rose[sq.codice]) continue;
   const fonte = SUPPLEMENTO.squadre[sq.codice];
   if (!fonte) throw new Error(`Nessuna convocazione verificata per ${sq.codice}`);
-  rose[sq.codice] = rosaSupplementare(sq, fonte);
-  riassunto.push(`${sq.codice} (euro2026, statistiche STIMATE per squadra/ruolo): ` + rose[sq.codice].slice(0, 7).map(g => `${g.num} ${g.nome} ${g.ovr}`).join(', '));
+  rose[sq.codice] = rosaSupplementare(sq, fonte);      // statistiche stimate uguali per ruolo: i 14 valgono già quanto i 13
+  riassunto.push(`${sq.codice} (euro2026, statistiche STIMATE per squadra/ruolo, ${rose[sq.codice].length} convocati): ` + rose[sq.codice].slice(0, 7).map(g => `${g.num} ${g.nome} ${g.ovr}`).join(', '));
 }
 const risultato = {
   fonte: 'waterpolo_database di Ale, 13 novembre 2026 (World Aquatics, Microplus, Omega), per le 16 nazionali originali; rapporto ufficiale European Aquatics / Microplus del 9 gennaio 2026 per le 8 aggiunte europee.',
   metodo: '16 rose originali: strumenti/rose-dal-database.mjs; docs/riferimenti/valutazioni.md. 8 aggiunte europee: dati-sorgente/europei-2026-aggiunte.json; statistiche stimate per squadra e ruolo, senza dati individuali di prestazione.',
-  rose,
-  aggiunteEuropei2026: { fonte: SUPPLEMENTO.fonte.url, metodo: 'dati-sorgente/europei-2026-aggiunte.json: identita ufficiali, 13 selezionati per il gioco; statistiche e formazione STIMATE. Le rose precedenti dal database di Ale non sono state ricalcolate.' },
+  // v0.86: per ogni nazionale tutti i disponibili (prima i 13 della rosa usata fino alla v0.85, inRosa13); la lista dei 14 della partita
+  // la sceglie il gioco (src/dati/rose.js, listaPartita)
+  tutti: rose,
+  aggiunteEuropei2026: { fonte: SUPPLEMENTO.fonte.url, metodo: 'dati-sorgente/europei-2026-aggiunte.json: identita ufficiali di tutti i convocati (13 selezionati per il gioco fino alla v0.85); statistiche e formazione STIMATE. Le rose precedenti dal database di Ale non sono state ricalcolate.' },
 };
 // Scrivere soltanto dopo aver validato tutte le nazionali, anche quando l'output sostituisce i file del gioco.
 fs.mkdirSync(path.join(OUTPUT, 'dati-sorgente'), { recursive: true });
@@ -309,4 +384,6 @@ fs.writeFileSync(path.join(OUTPUT, 'dati-sorgente/database-giocatori.json'), JSO
 fs.writeFileSync(path.join(OUTPUT, 'src/dati/rose-db.json'), JSON.stringify(risultato, null, 1));
 console.log(riassunto.join('\n'));
 console.log('\nfile di Ale: ' + collegati.trovati + ' giocatori collegati; mani prese dal file ' + collegati.mani + '; altezze ' + collegati.altezze + '; pesi ' + collegati.pesi + '; con aspetto documentato ' + collegati.aspetto + '\n  disaccordi sulla mano (resta il database): ' + (collegati.disaccordi.join('; ') || 'nessuno') + '\n  non trovati nel file: ' + collegati.mancanti.length);
+console.log(`\ngiocatori con due schede nel database, uniti (v0.86): ${collegati.doppioni.length}\n  ` + collegati.doppioni.join('\n  '));
+console.log('\nforza riportata al ranking (v0.86), media delle voci tolte per nazionale: ' + Object.entries(scartiRanking).map(([c, v]) => `${c} ${v.movimento ?? 0}/${v.portieri ?? 0}`).join(', '));
 console.log('\nmani: ' + Object.values(rose).flat().filter(g => g.mano === 'S').length + ' mancini, ' + Object.values(rose).flat().filter(g => g.manoNota === 'sconosciuta').length + ' sconosciute su ' + Object.values(rose).flat().length);
