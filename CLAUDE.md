@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.79). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.80). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -142,6 +142,10 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Entrate reattive v0.68 (`entrate.js`): contro pressing stretto3→2→taglio verso5, specchio3→4→1 con mano/abilità adeguate,2 al palo e mezze entrate1/5 solo con testa avanti e marcatore vicino poco reattivo. Il taglio parte al rilascio reale dell’appoggio; il portatore sceglie fra entrante libero, ala che sale3,25m se il suo difensore stringe, oppure circolazione. A/B/C dopo almeno6s e2passaggi, senza interrompere la controfuga; dopo fallo recente si può partire subito. Resta pausa12s fra entrate automatiche; comandi manuali conservati. Vale anche dopo un fallo e la sua ripresa. Niente premio automatico al gol o al rigore.
 - Atleta, posto e accoppiamento sono distinti: `occupantiAttacco`/`postoAttacco`, `centroAttacco`, `accoppiamenti.uomini`. Dopo il taglio si coprono i posti nuotando; alla perdita palla si rientra dalle coordinate raggiunte. Preset **Falso centro**: non specialista al centro, uscita per trascinare il marcatore forte, attesa del corridoio e subentro della boa vera. La CPU legge una disposizione/situazione già presente; non costruisce da zero la preparazione del falso centro. Lo schema salvato non cambia. HUD con posto attuale e #calotta distinta.
 ### Difesa
+- Scambi nei rientri (v0.80, Ale: «ognuno guarda solo il proprio giocatore e nascono controfughe che non esisterebbero»;
+  `scambiRientro`, `RIENTRO_SCAMBI`): con la palla a più di 9,2 m dalla porta, l'attaccante più avanti lo prende il difensore meglio
+  piazzato se il suo marcatore è stato superato; chi scambia tiene l'uomo 2,5 s; il difensore comandato non prende uomini nuovi.
+  Prova `npm run cambi-marcatura`, sonda `npm run sonda-rientri`.
 - Accoppiamenti iniziali da `MARK`, con il marcatore specialista sul centro effettivo; consegne per identità conservate finché si riorganizza la difesa, senza ritorno automatico dopo5s in gioco vivo. Quando le regole ricollocano le squadre dopo gol/time-out o a inizio tempo, si ricostruiscono posti, marcature, riferimenti e memoria del cambio; nessun reset sui recuperi vivi. Pressing, zona e M scelgono chi lasciare sul perimetro usando i posti attuali. Un aiuto tardivo sul taglio può coprire temporaneamente a M o raddoppiare, conservando la scelta persistente del giocatore.
 - Cambio volante AVVERSARIO (`difesa-cambi.js`): il difensore non segue l’uscente verso la panchina. Copre palla-centroboa/porta; due coperture si dividono centro e lato debole. Il sostituto si marca quando è davvero rientrato nella zona d’attacco (entro10,5m dalla porta), anche dopo la fine del percorso visuale. Pressing ripreso se selezionato, zona conservata; mai spostamenti del difensore comandato dal giocatore.
 - Muro: braccio dalla parte del palo coperto in parità; con l'uomo in meno braccio a specchio del braccio di tiro e centrale tra i
@@ -175,19 +179,22 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.79 — passaggi (Claude Code)
+## Stato v0.80 — cambi di marcatura nei rientri (Claude Code)
 
 Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` v0.77 (Codex, PR #59-#68). Ale (24/11/2026) ha mandato 13 punti. Fatti:
 v0.78 interfaccia (CONTRASTA in difesa, tasti colorati, energia con il cognome; [rapporto](docs/versioni/v078-comandi-interfaccia.md));
-v0.79 passaggi (morbido o teso, compagno puntato, levetta tenuta; [rapporto](docs/versioni/v079-passaggi.md)). Prossimi, in
-quest'ordine: cambi di marcatura nei rientri (oggi gli scambi avvengono solo sui tagli nell'attacco schierato: nei rientri ognuno
-insegue il suo uomo e restano attaccanti liberi), tiri (schizzo e colonnello del giocatore fuori dalle vere controfughe, beduine del
-centroboa che oggi sono zero, occasioni chiare tirate subito), cambi volanti, time-out con il portiere a metà campo, rigore con la
-palla dall'acqua, finte, rose dei giocatori a disposizione dei CT.
+v0.79 passaggi (morbido o teso, compagno puntato, levetta tenuta; [rapporto](docs/versioni/v079-passaggi.md)); v0.80 scambi di
+marcatura nei rientri (controfughe 2,5 → 1,9, gol 20,8 → 19,5, superiorità 47% → 42%; [rapporto](docs/versioni/v080-cambi-marcatura.md)).
+Nelle prove computer contro computer l'Ungheria segna il doppio dell'Italia (26 a 13, già nella v0.77): nel database le valutazioni
+medie dei primi 14 sono 83 contro 76. Da rivedere con le rose.
+Prossimi, in quest'ordine: tiri (schizzo e colonnello del giocatore fuori dalle vere controfughe, beduine del centroboa che oggi sono
+zero, occasioni chiare tirate subito, gol del centroboa girato verso la porta e delle entrate troppo facili), cambi volanti, time-out
+con il portiere a metà campo, rigore con la palla dall'acqua, finte, rose dei giocatori a disposizione dei CT.
 
-**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.77, `npm run taratura -- --partite=16`): 20,5 gol e 42,3 tiri per squadra
-(veri 13,3 e 33), tiri in gol 48,3% (40%), espulsioni 8,2 (11; dal centro 53%, vero 66%), superiorità 42% (52%), parità: gol 25,6%
-delle azioni (6-19%), espulsione procurata 12,8% (22%), durata 13,4 s (21). Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
-partite); Codex misurava 16,1 e 41,4 nella v0.70 e 17,4 e 43,3 nella v0.71 (8 partite, passaggio di consegne v0.71).
+**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.80, `npm run taratura -- --partite=16`): 19,5 gol e 40,3 tiri per squadra
+(veri 13,3 e 33), tiri in gol 48,4% (40%), espulsioni 7,8 (11; dal centro 53%, vero 66%), superiorità 42% (52%), parità: gol 25,4%
+delle azioni (6-19%), espulsione procurata 12,4% (22%), durata 13,9 s (21). Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
+partite); Codex misurava 16,1 e 41,4 nella v0.70 e 17,4 e 43,3 nella v0.71 (8 partite, passaggio di consegne v0.71); v0.77 20,5 e
+42,3 (16 partite).
 
 Stato precedente (v0.77, Codex): avvio fluido della finta, [rapporto](docs/versioni/v077-avvio-finta.md).

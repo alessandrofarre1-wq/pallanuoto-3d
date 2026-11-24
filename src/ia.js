@@ -13,8 +13,8 @@ import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } fr
 import { paloCoperto } from './muro.js';
 import { QTE, aiControfuga, occasioneControfuga, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, entrataPronta, laneClear, openness, passLaneRisk, shotKind, situazioneTiro, startAct } from './tiri.js';
-import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, PAZIENZA, RIPARTENZA, SCATTI, SUPERIORITA, TIRO_LIBERATO } from './taratura.js';      // numeri del bilanciamento
-export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, PAZIENZA, RIPARTENZA, SCATTI, SUPERIORITA, TIRO_LIBERATO };
+import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIRO_LIBERATO } from './taratura.js';      // numeri del bilanciamento
+export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIRO_LIBERATO };
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 // l'uomo che marca p: di regola quello del ruolo (MARK); dopo un CAMBIO DI MARCATURA su un'entrata («time switching», Nitzkowski e
 // manuale USA Water Polo) i due difensori si scambiano gli uomini per qualche secondo
@@ -699,9 +699,39 @@ export function passaAZona(t,quale,annuncia){
   t.defPlay=quale; t.lasciato=chiLasciare(t);
   if(annuncia&&t.lasciato) notifica('avviso',`${t.short}: ${quale===3?'zona a M':'zona'}`,{dettaglio:`si lascia tirare il #${t.lasciato.num} (${ROLES[t.lasciato.i].toLowerCase()})`,durata:1.6});
 }
+// v0.80 (Ale): nei rientri ci si scambia l'uomo (RIENTRO_SCAMBI in taratura.js). L'attaccante più vicino alla nostra porta lo prende
+// il difensore meglio piazzato, non per forza il suo marcatore, che prende l'uomo lasciato libero. Prima nei rientri ognuno
+// inseguiva il suo uomo (cambioMarcatura scambia solo sui tagli dell'attacco schierato) e restavano attaccanti liberi.
+function scambiRientro(t){
+  const att=other(t),R=RIENTRO_SCAMBI;
+  if(game.possTeam!==att||t.players.some(q=>q.excluded)||att.players.some(q=>q.excluded)) return;
+  const ogx=ownGoalX(t),ballD=Math.abs(ball.x-ogx);
+  if(ballD<R.schierata||game.time<(t.prossimoScambioRientro||0)) return;
+  t.prossimoScambioRientro=game.time+R.ogni;
+  uomoDi(t.players[1]);      // accoppiamenti pronti
+  const dG=q=>Math.hypot(q.x-ogx,q.z), costo=(d,q)=>dist(d,q)+R.dietro*Math.max(0,dG(d)-dG(q));
+  const rall=chiRallenta(t);
+  const liberi=new Set(t.players.filter(d=>!d.isGK&&!d.excluded&&!d.uscendo&&d!==rall&&d!==ctrl&&game.time>=(d.stunUntil||0)));
+  const pericolosi=att.players.filter(q=>!q.isGK&&!q.excluded&&!q.uscendo&&q!==ball.holder&&Math.abs(q.x-ogx)<ballD+R.davanti)
+    .sort((a,b)=>dG(a)-dG(b));
+  for(const q of pericolosi){
+    const a=t.players.find(d=>!d.excluded&&!d.isGK&&uomoDi(d)===q);
+    // il marcatore resta se non è stato superato, o se ha appena preso questo uomo in uno scambio
+    if(a&&(!(dG(a)>dG(q)+R.battuto||dist(a,q)>R.lontano)||game.time<(a.scambiatoFino||0))){ liberi.delete(a); continue; }
+    let b=null,bc=1e9;
+    for(const d of liberi){ if(game.time<(d.scambiatoFino||0)) continue; const c=costo(d,q); if(c<bc){ bc=c; b=d; } }
+    if(!b) continue;
+    if(a===b){ liberi.delete(b); continue; }
+    if(a&&costo(a,q)-bc<R.guadagno){ liberi.delete(a); continue; }
+    const ub=uomoDi(b); t.accoppiamenti.uomini[b.i]=q; if(a) t.accoppiamenti.uomini[a.i]=ub;
+    b.scambiatoFino=game.time+R.tieni; if(a) a.scambiatoFino=game.time+R.tieni;
+    liberi.delete(b); t.scambi=(t.scambi||0)+1; t.scambiRientro=(t.scambiRientro||0)+1;
+  }
+}
 // il computer, mentre difende: pressing all'inizio, zona nella seconda parte dell'azione se il centroboa sta vincendo il duello
 // (o comunque, a volte, negli ultimi secondi, per togliere riferimenti)
 export function aggiornaDifesa(t,dt){
+  scambiRientro(t);
   cambioMarcatura(t);
   if(t.schema){
     if((t.defPlay===1||t.defPlay===3)&&(!t.lasciato||game.time>(t.lasciatoT||0))){t.lasciato=chiLasciare(t);t.lasciatoT=game.time+0.8;}

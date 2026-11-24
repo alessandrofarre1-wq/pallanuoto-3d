@@ -3,6 +3,10 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.80
+- Nei rientri nessuno scambio di marcatura (ognuno inseguiva il suo uomo, `cambioMarcatura` solo sui tagli dell'attacco schierato)
+  → l'attaccante più avanti lo prende il difensore meglio piazzato quando il suo marcatore è stato superato (`RIENTRO_SCAMBI`).
+
 ## v0.79
 - Passaggi sempre alti e tesi alla mano (v0.55) → due modi: morbido sull'acqua vicino al compagno (circolazione tranquilla con la
   linea libera) o alto e teso (uomo in più, ultimi 8 s, oltre 8 m, cambio di lato, transizione, avversario vicino alla linea,

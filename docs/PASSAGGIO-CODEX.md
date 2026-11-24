@@ -1,3 +1,18 @@
+# Passaggio WATERPOLO7 — v0.80 cambi di marcatura nei rientri (Claude Code)
+
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.80.0. Cambia la partita (difesa nei rientri).
+- `scambiRientro(t)` in `src/ia.js`, chiamata all'inizio di `aggiornaDifesa` prima di `cambioMarcatura`; numeri in `RIENTRO_SCAMBI`.
+  Con la palla a più di 9,2 m dalla porta difesa (come `inRientro`) e nessuna espulsione: per gli attaccanti più avanti della palla, se il marcatore è
+  superato (oltre 1,5 m più lontano dalla porta o a più di 5 m) e un altro difensore costa almeno 3 m meno, si scambiano gli uomini
+  in `t.accoppiamenti.uomini` (come fanno le consegne). `p.scambiatoFino` tiene lo scambio 2,5 s (azzerato a inizio partita in
+  `menu.js`); `t.scambiRientro` li conta. Il difensore comandato (`ctrl`) e chi rallenta il portatore non prendono uomini nuovi.
+- Prova nuova `npm run cambi-marcatura` (anche nella CI); sonda `npm run sonda-rientri`.
+- Misure (16 partite): gol 20,8 → 19,5, controfughe 2,5 → 1,9, superiorità 47% → 42% (da ritarare). Con la soglia a 6 m gli scambi
+  entravano nell'attacco schierato e fallivano `chiamate-attacco`, `entrate-integrazione` e `sezione3`: la soglia è quella del
+  rientro (9,2 m). [Rapporto](versioni/v080-cambi-marcatura.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.79 passaggi (Claude Code)
 
 Stesso ramo della v0.78 (`claude/gracious-rubin-rcvklk`), versione 0.79.0. Cambia la partita (solo i passaggi).

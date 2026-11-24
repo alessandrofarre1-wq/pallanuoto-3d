@@ -10,6 +10,24 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.80 — cambi di marcatura nei rientri** (Claude Code, 24/11/2026; rapporto `docs/versioni/v080-cambi-marcatura.md`).
+  RICHIESTA: Ale, «non funzionano molto i cambi di marcatura in difesa: ogni giocatore guarda solo il proprio, e nascono controfughe
+  che in realtà non esisterebbero». CODICE: `cambioMarcatura` scambiava solo sui tagli dell'attacco schierato e usciva subito nei
+  rientri. MISURE: sonda nuova `npm run sonda-rientri`; v0.78: 5,8 occasioni da schizzo o colonnello (portatore verso la porta
+  senza nessuno davanti) per squadra a partita. CAMBIAMENTI: `scambiRientro` e `RIENTRO_SCAMBI`: nei rientri (palla oltre 9,2 m dalla
+  porta) l'attaccante più avanti lo prende il difensore meglio piazzato quando il suo marcatore è stato superato (oltre 1,5 m più lontano dalla porta o a
+  più di 5 m), con un guadagno di almeno 3 m; chi scambia tiene l'uomo 2,5 s; il difensore comandato e quello che rallenta il
+  portatore non prendono un uomo nuovo. PROVE: r1 senza tenuta 381 scambi (avanti e indietro), gol 18,2; r2 tenuta sbagliata 650
+  scambi; r3 con la palla già oltre 6 m: scambi anche nell'attacco schierato e tre prove fallite (errore mio); r4 (scelto, oltre
+  9,2 m come il rientro del gioco) 96 scambi, occasioni da schizzo o colonnello 5,8 → 2,5, gol 20,8 → 19,5, controfughe 2,5 → 1,9,
+  superiorità 47,1% → 42,2% (da ritarare). Nelle prove l'Ungheria segna il doppio dell'Italia già dalla v0.77: valutazioni medie del
+  database 83 contro 76 (rose, punto 11). PROVA NUOVA `npm run cambi-marcatura`, anche nella CI. DECISIONI SUPERATE: in
+  `docs/decisioni-superate.md`. VERIFICHE: lint PASS; prove: primo giro (soglia 6 m) tre FAIL (`chiamate-attacco`,
+  `entrate-integrazione`, `sezione3`), poi 62 PASS e 0 FAIL in 16,6 minuti, gambe fuori dall'acqua 0; verifica `--partite=0`: foto
+  «azione» e viste iPhone diverse per le posizioni dei difensori, grafica normale, riferimenti aggiornati e verifica ripetuta con
+  cinque immagini identiche; aspetto «Tutto a posto», iPhone 56 oggetti e 131.872 triangoli. NON FATTO: superiorità e gol da ritarare con i tiri; nessun ritorno
+  dello specialista sul centro dopo il rientro.
+
 - **v0.79 — passaggi** (Claude Code, 24/11/2026; rapporto `docs/versioni/v079-passaggi.md`). RICHIESTA: Ale, «troppi passaggi
   sbagliati»; due modi di passare: morbido sull'acqua vicino al compagno (perimetro tranquillo, palla al centroboa) o alto e teso
   (uomo in più, palleggio prima della chiusura, cambio rapido di zona). MISURE: sonda nuova `npm run sonda-tipi-passaggio`: il

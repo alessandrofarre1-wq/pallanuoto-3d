@@ -97,6 +97,16 @@ export const INTERCETTO={ base:0.14, lungo:0.36 };
 // l'errore può capitare ma deve essere verosimile»): base 1,5 → 1,0, pressione 2,5 → 0,8, disteso 0,6 → 0,3; errore limitato a
 // «limite» deviazioni tipiche.
 export const ERRORE_PASSAGGIO={ base:1.0, pressione:0.8, disteso:0.3, limite:2 };
+// SCAMBI NEI RIENTRI (v0.80, Ale: «non funzionano molto i cambi di marcatura in difesa. Sembra che ogni giocatore guardi solo il
+// proprio giocatore. Così facendo però si generano diverse controfughe che in realtà non esisterebbero»). Mentre la difesa rientra
+// (palla a più di «schierata» m dalla propria porta, come in inRientro; più vicino la difesa è schierata e scambia sui tagli,
+// cambioMarcatura), ogni «ogni» secondi: gli attaccanti più avanti della palla (fino a «davanti» m
+// dietro di lei) li prende, dal più vicino alla porta, il difensore meglio piazzato: costo = distanza + «dietro» per ogni metro in cui
+// il difensore è più lontano dalla porta di lui. Si scambia solo se il marcatore è stato superato (più lontano dalla porta del suo
+// uomo di oltre «battuto» m, o a più di «lontano» m da lui) e costa almeno «guadagno» più del migliore; chi ha appena scambiato
+// tiene il nuovo uomo per «tieni» secondi (senza queste due regole, 381-650 scambi a squadra per partita: avanti e indietro). Il
+// difensore comandato dal giocatore e chi rallenta il portatore non prendono un uomo nuovo (ma il loro può prenderlo un compagno).
+export const RIENTRO_SCAMBI={ ogni:0.3, schierata:9.2, davanti:1, dietro:2, battuto:1.5, lontano:5, guadagno:3, tieni:2.5 };
 // PASSAGGI (v0.79, Ale: «i passaggi possono essere di due modi: o morbido sull'acqua vicino al compagno (di solito quando il ritmo
 // è più rilassato sul perimetro o quando la si passa al centro boa) oppure alto e teso (di solito durante l'uomo in più o quando si
 // palleggia prima della chiusura dell'azione o per cambiare velocemente area del campo)»).
