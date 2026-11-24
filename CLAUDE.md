@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.81). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.82). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -176,6 +176,10 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   in controfuga, simulazione e interferenza sul tiro libero. Il semplice anticipo battuto al centroboa non è un fallo.
 - Espulso che nuota al pozzetto e rientra solo da lì; cambio dal pozzetto senza «cinque»; cambi volanti con il cinque, immediati
   dopo gol, time-out e tra i tempi; il computer cambia chi scende sotto il 34%; consigli di cambio mai in difesa né nei primi 90 s.
+- Cambi volanti v0.82 (Ale; `PANCHINA`, regole 2025 art. 18): zona dei cambi a 11 m dalla propria linea di porta, vicino alla metà
+  campo; si cambia solo in transizione (palla da meno di 7 s o nella propria metà), mai ad attacco impostato né in difesa, per il
+  giocatore e per il computer (che aspetta in coda); il sostituto appena entrato riceve la palla solo a 10,5 m dalla porta
+  d'attacco (`sostitutoLontano`); a gioco fermo con i cambi liberi il computer cambia subito fino a due giocatori sotto il 45%.
 ### Grafica
 - Un solo modello (il pallanuotista del concept di Ale, v2 con espressioni), colorato per squadra; aspetto dal database (pelle,
   capelli, barba, altezza, corporatura); calottine: squadra del giocatore bianca, computer blu scuro, portieri rossi; costumi con
@@ -187,7 +191,7 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.81 — tiri, centroboa di spalle, occasioni chiare (Claude Code)
+## Stato v0.82 — cambi volanti in transizione e da metà campo (Claude Code)
 
 Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` v0.77 (Codex, PR #59-#68). Ale (24/11/2026) ha mandato 13 punti. Fatti:
 v0.78 interfaccia (CONTRASTA in difesa, tasti colorati, energia con il cognome; [rapporto](docs/versioni/v078-comandi-interfaccia.md));
@@ -195,15 +199,17 @@ v0.79 passaggi (morbido o teso, compagno puntato, levetta tenuta; [rapporto](doc
 marcatura nei rientri (controfughe 2,5 → 1,9, gol 20,8 → 19,5, superiorità 47% → 42%; [rapporto](docs/versioni/v080-cambi-marcatura.md));
 v0.81 tiri (tasto speciale solo in controfuga vera e tocco/tenuta, centroboa di spalle con beduina e sciarpa, occasioni chiare
 tirate subito, più palla al centroboa; espulsioni 7,8 → 9,8, gol 19,5 → 19,3; sonda nuova `npm run sonda-centro`;
-[rapporto](docs/versioni/v081-tiri.md)). Nelle prove computer contro computer l'Ungheria segna il doppio dell'Italia (26 a 13, già
+[rapporto](docs/versioni/v081-tiri.md)); v0.82 cambi volanti (solo in transizione, zona vicino alla metà campo, niente palla a chi è
+appena entrato lontano, cambi liberi del computer a gioco fermo; sonda `npm run sonda-cambi`;
+[rapporto](docs/versioni/v082-cambi-volanti.md)). Nelle prove computer contro computer l'Ungheria segna il doppio dell'Italia (26 a 13, già
 nella v0.77): nel database le valutazioni medie dei primi 14 sono 83 contro 76. Da rivedere con le rose.
-Prossimi, in quest'ordine: cambi volanti, time-out con il portiere a metà campo, rigore con la palla dall'acqua, finte, rose dei
-giocatori a disposizione dei CT. Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
+Prossimi, in quest'ordine: time-out con il portiere a metà campo, rigore con la palla dall'acqua, finte, rose dei giocatori a
+disposizione dei CT. Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
 
-**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.81, `npm run taratura -- --partite=16`): 19,3 gol e 41,4 tiri per squadra
-(veri 13,3 e 33), tiri in gol 46,5% (40%), espulsioni 9,8 (11; dal centro 59%, vero 66%), superiorità 43% (52%), parità: gol 23,5%
-delle azioni (6-19%), espulsione procurata 15,6% (22%), durata 13,5 s (21), azioni 72 (50). Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
+**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.82, `npm run taratura -- --partite=16`): 20,2 gol e 41,0 tiri per squadra
+(veri 13,3 e 33), tiri in gol 49,2% (40%), espulsioni 10,3 (11; dal centro 60%, vero 66%), superiorità 42% (52%), parità: gol 23,3%
+delle azioni (6-19%), espulsione procurata 15,8% (22%), durata 12,7 s (21), azioni 76 (50). Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
 partite); Codex misurava 16,1 e 41,4 nella v0.70 e 17,4 e 43,3 nella v0.71 (8 partite, passaggio di consegne v0.71); v0.77 20,5 e
-42,3, v0.80 19,5 e 40,3 (16 partite).
+42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4 (16 partite).
 
 Stato precedente (v0.77, Codex): avvio fluido della finta, [rapporto](docs/versioni/v077-avvio-finta.md).

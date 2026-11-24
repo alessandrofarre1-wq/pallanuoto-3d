@@ -1,3 +1,18 @@
+# Passaggio WATERPOLO7 — v0.82 cambi volanti (Claude Code)
+
+Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.82.0. Cambia la partita (cambi volanti).
+- `PANCHINA` (`src/taratura.js`): `distZona` 3,2 → 11 m, nuovi `ingresso` (8,5 m: dove compare il sostituto), `transizione` (7 s),
+  `appena`/`zona` (10 s, 10,5 m), `stancoLibero`/`liberiMax` (0,45, 2).
+- `momentoUtile` (`src/panchina.js`): oltre a «in attacco e lontano dalla palla», possesso da meno di `transizione` s o palla nella
+  propria metà. `cambiDelComputer` mette in coda con `attesa`, come i cambi del giocatore (prima partiva subito, anche in difesa).
+  Nuova `cambiLiberiDelComputer` chiamata da `aggiornaPanchina` quando i cambi sono liberi.
+- `sostitutoLontano(p)` (`src/difesa-cambi.js`, stessa mappa `rientri` della copertura difensiva): `bestPassTarget` salta il
+  sostituto appena entrato finché non è a `zona` m dalla porta d'attacco.
+- Ganci: `window.__pallanuoto.panchina` espone anche `momentoUtile`, `zonaCambi`, `PANCHINA`. Sonda nuova `npm run sonda-cambi`;
+  prova nuova `npm run cambi-volanti` (anche nella CI). [Rapporto](versioni/v082-cambi-volanti.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.81 tiri: controfuga vera, centroboa di spalle, occasioni chiare (Claude Code)
 
 Stesso ramo (`claude/gracious-rubin-rcvklk`), versione 0.81.0. Cambia la partita (tiri e centroboa) e un comando (tasto a comparsa).

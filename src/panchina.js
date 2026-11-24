@@ -16,9 +16,9 @@ import { puntoPozzetto } from './pozzetto.js';
 import { PANCHINA } from './taratura.js';      // soglie e tempi dei cambi: numeri del bilanciamento
 import { registraEntranteCambio } from './difesa-cambi.js';
 export { PANCHINA };
-// punti della propria metà (lato lontano dalla telecamera): A = dietro la linea di porta, dove compare chi entra;
-// Z = zona dei cambi lungo il bordo
-export const puntoIngresso = t => ({ x: ownGoalX(t) - t.dir * 0.4, z: -HW + 0.35 });
+// punti della propria metà (lato lontano dalla telecamera): A = dove compare chi entra, sul bordo poco prima della zona dei cambi
+// (v0.82; prima dietro la linea di porta); Z = zona dei cambi lungo il bordo, vicino alla metà campo (v0.82; prima a 3,2 m dalla porta)
+export const puntoIngresso = t => ({ x: ownGoalX(t) + t.dir * PANCHINA.ingresso, z: -HW + 0.35 });
 export const zonaCambi = t => ({ x: ownGoalX(t) + t.dir * PANCHINA.distZona, z: -HW + 0.45 });
 
 // chi entra o esce: un corpo in più per squadra, visibile solo durante il cambio
@@ -59,12 +59,14 @@ export function chiediCambio(t, p, g, subito = false) {
   t.coda.push({ esce: p, entra: g, attesa: !subito });
   return true;
 }
-// primo momento utile per un cambio scelto in pausa (oltre a gol, time-out e intervalli, che lo rendono immediato):
-// chi esce non ha la palla, è lontano dall'azione e la sua squadra ATTACCA. Mai mentre si difende (richiesta di Ale,
-// 15/11/2026: chi esce lascerebbe la squadra in inferiorità proprio quando deve difendere).
+// primo momento utile per un cambio volante (oltre a gol, time-out e intervalli, che lo rendono immediato): chi esce non ha la palla,
+// è lontano dall'azione e la sua squadra ATTACCA. Mai mentre si difende (richiesta di Ale, 15/11/2026: chi esce lascerebbe la squadra
+// in inferiorità proprio quando deve difendere). v0.82 (Ale: «non quando l'attacco è già impostato»): solo nella transizione, cioè nei
+// primi PANCHINA.transizione secondi del possesso o con la palla ancora nella propria metà. Vale per il giocatore e per il computer.
 export function momentoUtile(t, p) {
   if (ball.holder === p || dist(p, ball) < 6) return false;
-  return game.possTeam === t;
+  if (game.possTeam !== t) return false;
+  return game.time - (game.possT || 0) < PANCHINA.transizione || (ball.x - ownGoalX(t)) * t.dir < 12.5;
 }
 // consiglio da mostrare sul pulsante CAMBI durante il gioco (richiesta di Ale, 15/11/2026): niente nei primi 90 s di partita,
 // solo per chi in questo momento può uscire (squadra in attacco o gioco fermo dopo gol/time-out, lontano dalla palla)
@@ -115,8 +117,20 @@ function cambiDelComputer(t) {
     if (!best || pozzetto || p.stamina < best.p.stamina) best = { p, g };
     if (pozzetto) break;
   }
-  // un cambio alla volta, con almeno PANCHINA.pausaComputer secondi tra uno e l'altro (come una panchina vera)
-  if (best) { t.coda = [{ esce: best.p, entra: best.g }]; t.prossimoControllo = game.time + PANCHINA.pausaComputer; }
+  // un cambio alla volta, con almeno PANCHINA.pausaComputer secondi tra uno e l'altro (come una panchina vera); v0.82: aspetta il
+  // momento utile (transizione in attacco), come i cambi del giocatore; prima partiva subito, anche in difesa
+  if (best) { t.coda = [{ esce: best.p, entra: best.g, attesa: !(best.p.excluded && best.p.alPozzetto) }]; t.prossimoControllo = game.time + PANCHINA.pausaComputer; }
+}
+// v0.82: a gioco fermo con i cambi liberi il computer cambia subito tutti gli stanchi (fino a PANCHINA.liberiMax), come fanno le
+// panchine vere dopo un gol o nel time-out; i cambi volanti restano per la transizione
+function cambiLiberiDelComputer(t) {
+  if (t.cambio || (t.coda && t.coda.length)) return;
+  const usate = new Set();
+  const stanchi = t.players.filter(p => !p.isGK && !p.excluded && p.scheda && p.stamina < PANCHINA.stancoLibero).sort((a, b) => a.stamina - b.stamina);
+  for (const p of stanchi.slice(0, PANCHINA.liberiMax)) {
+    const g = riservaPer(p, usate); if (!g || (g.stamina ?? 1) < PANCHINA.fresco) continue;
+    usate.add(g); scambia(t, p, g);
+  }
 }
 // a ogni fotogramma di gioco
 export function aggiornaPanchina(dt, liberi = false) {
@@ -125,7 +139,7 @@ export function aggiornaPanchina(dt, liberi = false) {
     for (const g of t.rosa) if (!g.inAcqua) g.stamina = Math.min(1, (g.stamina ?? 1) + dt * PANCHINA.recupero);
     // minuti in acqua (v0.45, Melchiorri et al. 2020: in media 17,4 su 32, da 2,3 a 31,6): contano solo a gioco in corso
     if (game.state === 'play') for (const g of t.rosa) if (g.inAcqua) g.minuti = (g.minuti || 0) + dt / 60;
-    if (!t.human || game.autoplay) cambiDelComputer(t);
+    if (!t.human || game.autoplay) { if (liberi) cambiLiberiDelComputer(t); cambiDelComputer(t); }
     if (!t.cambio && t.coda && t.coda.length) {
       const r = t.coda[0], valido = t.players.includes(r.esce) && !r.entra.inAcqua && !r.entra.fuori;
       if (!valido || (r.esce.excluded && r.esce.pf >= 3)) t.coda.shift();

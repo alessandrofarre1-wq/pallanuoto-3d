@@ -208,7 +208,18 @@ export const PRESSING_CONSUMO=0.008;
 // controllo = ogni quanti secondi il computer guarda la panchina; pausaComputer = secondi minimi tra due cambi del computer;
 // stancoComputer = sotto questa stamina il computer cambia; stancoPozzetto = soglia del cambio dal pozzetto; velBordo, cinque,
 // distZona = velocità lungo il bordo, durata del «cinque», distanza dalla zona dei cambi.
-export const PANCHINA = { recupero: 0.025, stanco: 0.42, fresco: 0.7, controllo: 2, pausaComputer: 55, stancoComputer: 0.34, stancoPozzetto: 0.8, velBordo: 0.9, cinque: 0.5, distZona: 3.2 };
+// v0.82 (Ale: «cambi volanti: non quando l'attacco è già impostato; il sostituto deve entrare da metà campo con il cinque; niente
+// passaggi a un giocatore appena entrato a 20 m»; regole World Aquatics del 25/6/2025, art. 18: la zona dei cambi volanti va dalla
+// linea di porta davanti alla panchina alla metà campo): distZona 3,2 → 11 m (1,5 m prima della metà campo); ingresso = dove compare
+// il sostituto, a metri dalla propria linea di porta (prima sulla linea di porta); transizione = un cambio volante comincia solo nei
+// primi «transizione» secondi del possesso o con la palla nella propria metà, mai ad attacco impostato né in difesa (prima il
+// computer cambiava in qualunque momento: sulla v0.81, 4 partite, metà dei cambi cominciavano in difesa e il 29% ad attacco
+// impostato); appena = per questi secondi dopo il cinque il sostituto riceve la palla solo quando è a «zona» m dalla porta
+// d'attacco (sulla v0.81 6 passaggi di 12-24 m su 66 a chi era appena entrato, a 20-24 m dalla porta). stancoLibero/liberiMax: a
+// gioco fermo con i cambi liberi (dopo un gol, nel time-out, tra i tempi) il computer cambia subito chi è sotto «stancoLibero», fino a
+// «liberiMax» giocatori (prima uno alla volta, come i volanti: con i volanti solo in transizione i cambi scendevano da 24 a 11 per
+// squadra a partita e i giocatori restavano più spesso sotto il 20% di energia).
+export const PANCHINA = { recupero: 0.025, stanco: 0.42, fresco: 0.7, controllo: 2, pausaComputer: 55, stancoComputer: 0.34, stancoPozzetto: 0.8, velBordo: 0.9, cinque: 0.5, distZona: 11, ingresso: 8.5, transizione: 7, appena: 10, zona: 10.5, stancoLibero: 0.45, liberiMax: 2 };
 
 // ---------- LA REALTÀ A CUI PUNTIAMO (per squadra a partita) ----------
 // voce = come la stampa `npm run taratura`; dato = dove sta nel riassunto di tests/bilancio.mjs (--salva); reale = riferimento

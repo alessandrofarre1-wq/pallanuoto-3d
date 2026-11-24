@@ -2,10 +2,17 @@
 // la panchina ne cambia scheda/numero dopo il cinque, senza cambiare indice o uid.
 import { clamp, dist } from './costanti.js';
 import { ball, ctrl, game, goalX, ownGoalX } from './stato.js';
+import { PANCHINA } from './taratura.js';      // numeri del bilanciamento
 
 const rientri=new WeakMap();
 export function resetEntrantiCambio(t){ for(const p of t.players) rientri.delete(p); }
 // Solo il cambio volante ha un tragitto di ritorno dal bordo; cambi liberi e pozzetto conservano i loro compiti.
+// v0.82 (Ale: «niente passaggi a un giocatore appena entrato a 20 m»): per PANCHINA.appena secondi dopo il cinque il sostituto non è
+// un appoggio finché non arriva a PANCHINA.zona metri dalla porta d'attacco
+export function sostitutoLontano(p){
+  const r=rientri.get(p);
+  return !!r&&r.scheda===p.scheda&&game.time>=r.inizio&&game.time-r.inizio<PANCHINA.appena&&(goalX(p.team)-p.x)*p.team.dir>PANCHINA.zona;
+}
 export function registraEntranteCambio(p){
   rientri.set(p,{scheda:p.scheda,inizio:game.time});
 }

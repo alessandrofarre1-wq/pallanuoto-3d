@@ -3,6 +3,14 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.82
+- Zona dei cambi volanti a 3,2 m dalla propria linea di porta, sostituto che compare dietro la linea di porta → zona a 11 m, vicino
+  alla metà campo (regole World Aquatics 2025, art. 18), sostituto che compare sul bordo a 8,5 m.
+- Cambio volante del giocatore in qualunque momento d'attacco, del computer in qualunque momento (anche in difesa) → solo in
+  transizione (palla da meno di 7 s o nella propria metà), per tutti e due; il computer aspetta in coda.
+- Il sostituto appena entrato era subito un appoggio → riceve la palla quando arriva a 10,5 m dalla porta d'attacco (per 10 s).
+- A gioco fermo il computer cambiava un giocatore alla volta → cambia subito fino a due giocatori sotto il 45% di energia.
+
 ## v0.81
 - Tasto a comparsa di schizzo e colonnello ogni volta che chi ha la palla nuota verso la porta senza nessuno davanti (v0.31) → solo
   nella controfuga vera, entro 9 s dal recupero della palla (`QTE.eta`).

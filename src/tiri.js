@@ -12,6 +12,7 @@ import { difensoreCentro, leggiCentro } from './centroboa.js';
 import { schemaSquadra, viciniPerimetro } from './schemi.js';
 import { centroAttacco, destinatarioEntrata, passaggioChiamato, postoAttacco, registraPassaggioEntrata } from './entrate.js';
 import { velocitaDiLancio } from './palla.js';
+import { sostitutoLontano } from './difesa-cambi.js';
 import { profiloTraiettoria } from './profili-traiettorie.js';
 import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO, PASSAGGI, PRESA, SERVIZIO_BOA as S, TRAIETTORIE_TIRO as T } from './taratura.js';      // numeri del bilanciamento
 export { ERRORE_PASSAGGIO };
@@ -179,6 +180,7 @@ export function bestPassTarget(p,variabile=true,{assistita=false}={}){
   let best=null,bs=-1e9; const sup=manUp(p.team),schema=schemaSquadra(p.team),gx=goalX(p.team),press=openness(p);
   for(const m of p.team.players){
     if(m===p||m.excluded||m.uscendo||(m.isGK&&!setteControSei(p.team))) continue;
+    if(sostitutoLontano(m)) continue;      // v0.82: il sostituto appena entrato da metà campo riceve quando arriva in attacco
     const d=dist(p,m); if(d<1.2) continue;
     const dg=Math.hypot(gx-m.x,m.z),risk=passLaneRisk(p,m),linea=laneClear(p,m.x,m.z,p.team,0.55);
     const interno=(!sup&&centroAttacco(p.team)===m)||(sup&&paloUomo(m));

@@ -10,6 +10,21 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.82 — cambi volanti** (Claude Code, 24/11/2026; rapporto `docs/versioni/v082-cambi-volanti.md`). RICHIESTA: Ale, «cambi
+  volanti: non quando l'attacco è già impostato; il sostituto deve entrare da metà campo con il cinque; niente passaggi a un
+  giocatore appena entrato a 20 m». REGOLE: World Aquatics 25/6/2025, art. 18: la zona dei cambi volanti va dalla linea di porta alla
+  metà campo, sul lato delle panchine. MISURE: sonda nuova `npm run sonda-cambi`: sulla v0.81 24 cambi volanti per squadra a partita,
+  44% in difesa e 30% ad attacco impostato (il computer cambiava in qualunque momento), cinque a 2,7 m dalla propria porta, 4
+  passaggi di 12-24 m su 29 a chi era appena entrato; energia sotto il 20% per l'8,7% del tempo. CAMBIAMENTI (`PANCHINA`): zona a
+  11 m (vicino alla metà campo), sostituto che compare sul bordo a 8,5 m; cambi volanti solo in transizione (palla da meno di 7 s o
+  nella propria metà), anche per il computer, in coda; `sostitutoLontano`: niente palla a chi è appena entrato finché non è a 10,5 m
+  dalla porta; a gioco fermo il computer cambia subito fino a due giocatori sotto il 45%. MISURE DOPO: volanti 9,3 (tutti in
+  transizione), tutti i cambi 46,5, fuori 6,2 s, cinque a 10,5 m, nessun passaggio lungo a chi è appena entrato, energia sotto il 20%
+  per il 4,2% del tempo; varianti b1-b3 nel rapporto. 16 partite: gol 19,3 → 20,2, espulsioni 9,8 → 10,3 (a posto), 6 voci su 15 a
+  posto (prima 5). PROVA NUOVA `npm run cambi-volanti` (9 controlli, anche nella CI). VERIFICHE: lint PASS; prove 64 PASS e 0 FAIL;
+  verifica `--partite=0` superata con immagini identiche; aspetto «Tutto a posto». NON FATTO: due cambi volanti insieme; numero dei
+  cambi a gioco fermo alto finché i gol restano troppi.
+
 - **v0.81 — tiri: controfuga vera, centroboa di spalle, occasioni chiare** (Claude Code, 24/11/2026; rapporto
   `docs/versioni/v081-tiri.md`). RICHIESTA: Ale, «troppi tiri a schizzo e colonnello, poche beduine e pochi passaggi al centroboa»;
   «le occasioni chiare (passaggio con l'uomo davanti alla porta): tirare indipendentemente dai secondi». MISURE: sonda nuova
