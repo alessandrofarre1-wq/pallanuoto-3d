@@ -217,12 +217,15 @@ const ruoloDi = (t, mano) => t === 'gk' ? 0 : t === 'boa' ? 1 : t === 'dif' || t
 // Forward, Driver»: centroboa e mezzo); i portieri solo in porta
 const ruoliDi = (x, ruolo) => ruolo === 0 ? [0] : [...new Set([ruolo, ...(x.ruoliDb || []).map(pos => ruoloDi(tipo(pos), x.mano)).filter(r => r !== 0)])];
 
-// FORZA DELLA SQUADRA AL RANKING (v0.86). La lista dei 14 scelta dal gioco tra tutti i disponibili (src/dati/lista-partita.js) è un po'
+// FORZA DELLA SQUADRA AL RANKING (v0.86, TOLTA nella v0.88: Ale, «le valutazioni delle squadre dipendono dai giocatori che le compongono;
+// se seleziono i più forti da una rosa allargata, la squadra dovrebbe essere valutata meglio»; la funzione resta qui come riferimento ma
+// non si usa più: chi sceglie i più forti tra tutti i disponibili ha una squadra più forte). La lista dei 14 scelta dal gioco tra tutti i
+// disponibili (src/dati/lista-partita.js) è un po'
 // più forte dei 13 usati finora, e di più dove i disponibili sono tanti (la Croazia ne ha 34, il Giappone 15). Perché la forza di ogni
 // nazionale resti quella del ranking (docs/riferimenti/valutazioni.md, punto 1), tutte le voci dei suoi disponibili scendono di quanto la
 // valutazione media dei 14 supera quella dei 13 di prima (portieri e movimento a parte; la valutazione è una media pesata delle voci,
 // quindi scende della stessa quantità): chi è più forte resta più forte, e i 14 valgono quanto i 13 di prima.
-function riportaAlRanking(pool) {
+export function riportaAlRanking(pool) {
   const L = listaPartita(pool, 14, ovr), vecchi = pool.filter(g => g.inRosa13), scarti = {};
   const media = q => q.reduce((x, g) => x + g.ovr, 0) / q.length;
   for (const portiere of [true, false]) {
@@ -234,7 +237,6 @@ function riportaAlRanking(pool) {
   }
   return scarti;
 }
-const scartiRanking = {};
 for (const sq of SQ_DATABASE) {
   const cod = sq.codice, base = 57 + (sq.forza - 60) * 0.72;
   const gioc = tutti.filter(x => x.cod === cod);
@@ -319,7 +321,6 @@ for (const sq of SQ_DATABASE) {
     for (const g of pool) if (ancora.has(g.nome)) { const np = g.nomeCompleto.split(/\s+/).find(w => w !== w.toUpperCase()); if (np) g.nome = g.nome.replace(/ \S+\.$/, ' ' + np); } }
   // il migliore della squadra (o i due migliori se staccati) sono i «campioni» della rosa
   const top = [...pool].sort((a, b) => b.ovr - a.ovr); top[0].campione = true; if (top[1].ovr >= top[0].ovr - 2) top[1].campione = true;
-  scartiRanking[cod] = riportaAlRanking(pool);
   for (const g of pool) delete g._grezzo;
   rose[cod] = pool;
   riassunto.push(`${cod} (${ordine[0].convocazione}): ` + ordine.slice(0, 7).map(g => `${g.num} ${g.nome} ${g.ovr}`).join(', '));
@@ -385,5 +386,5 @@ fs.writeFileSync(path.join(OUTPUT, 'src/dati/rose-db.json'), JSON.stringify(risu
 console.log(riassunto.join('\n'));
 console.log('\nfile di Ale: ' + collegati.trovati + ' giocatori collegati; mani prese dal file ' + collegati.mani + '; altezze ' + collegati.altezze + '; pesi ' + collegati.pesi + '; con aspetto documentato ' + collegati.aspetto + '\n  disaccordi sulla mano (resta il database): ' + (collegati.disaccordi.join('; ') || 'nessuno') + '\n  non trovati nel file: ' + collegati.mancanti.length);
 console.log(`\ngiocatori con due schede nel database, uniti (v0.86): ${collegati.doppioni.length}\n  ` + collegati.doppioni.join('\n  '));
-console.log('\nforza riportata al ranking (v0.86), media delle voci tolte per nazionale: ' + Object.entries(scartiRanking).map(([c, v]) => `${c} ${v.movimento ?? 0}/${v.portieri ?? 0}`).join(', '));
+console.log('\nforza al ranking (v0.86): tolta nella v0.88, le valutazioni sono quelle dei giocatori');
 console.log('\nmani: ' + Object.values(rose).flat().filter(g => g.mano === 'S').length + ' mancini, ' + Object.values(rose).flat().filter(g => g.manoNota === 'sconosciuta').length + ' sconosciute su ' + Object.values(rose).flat().length);

@@ -4,7 +4,7 @@ import { chiudiPresentazioneReplay } from './replay-regia.js';
 // Punto d'ingresso: carica i moduli nell'ordine giusto e fa girare il ciclo di gioco
 import { movePlayer } from './fisica.js';
 import { MIRA_PASSAGGIO, bestPassTarget, doPass, doShoot, humanPassTarget, passLaneRisk, shotKind, startAct } from './tiri.js';
-import { LISTA, convocati as convocatiRose, listaPartita, liste as listeRose, rosa as rosaPartita, tutti as tuttiRose, valoriMotore } from './dati/rose.js';
+import { LISTA, convocati as convocatiRose, listaPartita, liste as listeRose, ratingLista, ratingSquadra, rosa as rosaPartita, roseTornei, tutti as tuttiRose, valoriMotore } from './dati/rose.js';
 import { FINTA_FIRMA, FINTE, firmaFinta, stileFinta, versoFinta } from './finte.js';
 import { colora, vesti } from './giocatori.js';
 import { atlanteCostumi, costumiPronti, profiloCostume } from './grafica/costumi.js';
@@ -16,7 +16,7 @@ import { CONTRO, contropiede, riceventeApertura, uomoDi } from './ia.js';
 import { simulazione, simultanea } from './lotta.js';
 import { boaFrontePorta, difensoreCentro, leggiCentro } from './centroboa.js';
 import { centroAttacco } from './entrate.js';
-import { occasioneControfuga } from './controfuga.js';
+import { PALOMBELLA, SPECIALI, occasioneControfuga, occasionePalombella, portiereFuori, sceltaTiroArea } from './controfuga.js';
 import { controllaInterferenza, ARBITRI } from './regole.js';
 import './stile.css';
 import './grafica/scena.js';
@@ -83,7 +83,7 @@ function loop(now){
 // accesso per le verifiche automatiche (tests/verifica.mjs) e per il debug dalla console
 // "vista" permette alla verifica di mettere la telecamera dove vuole (primi piani): { pos:[x,y,z], look:[x,y,z], fov };
 // "senzaCorpi" ferma l'animazione degli scheletri (serve solo ad accelerare le partite simulate)
-window.__pallanuoto = { imposta, ball3d, cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, replay:{...replay,diagnostica:diagnosticaReplay,forzaRegistrazione:false}, costumi:{pronti:costumiPronti,profilo:profiloCostume,atlante:atlanteCostumi,colora,vesti}, tornei:{creaCampagna,continuaTorneo,esportaSalvataggi}, rose:{ tutti:tuttiRose, listaPartita, rosa:rosaPartita, liste:listeRose, convocati:convocatiRose, LISTA }, finte:{ FINTA_FIRMA, FINTE, firmaFinta, stileFinta, versoFinta }, palla:{ passoPalla, velocitaDiLancio, diagnosi }, effetti:{ gocce:gocceMesh, schiuma, contatti, LIMITI, gocceAttive }, __ridisegna:()=>renderer.render(scene,camera), regole:{ callPlay, setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, uomo:UOMO, v046:{ statPartita, azioneAperta, ultimaAzioneChiusa, CONTRO, contropiede, uomoDi, simulazione, simultanea, controllaInterferenza, ARBITRI }, prova:{ centroAttacco, boaFrontePorta, difensoreCentro, leggiCentro, occasioneControfuga, doPass, gkTarget, humanPassTarget, MIRA_PASSAGGIO, riceventeApertura, paloUomo, schemiUomo, movePlayer, doShoot, startAct, valoriMotore, aiCarrier, bestPassTarget, passLaneRisk, shotKind, attackTarget, markTarget, aggiornaSchemi, applicaSchema, copiaSchema, validaSchema }, muro:{ paloCoperto, braccioMuro }, panchina:{ chiediCambio, suggerimento, momentoUtile, zonaCambi, PANCHINA }, pausa:togglePause, __setCtrl:setCtrl, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get inp(){ return input.inp; }, get modelloPronto(){ return modelloPronto; } };
+window.__pallanuoto = { imposta, ball3d, cronaca, camera, game, teams, ball, allPlayers, fight, renderer, vista:null, senzaCorpi:false, replay:{...replay,diagnostica:diagnosticaReplay,forzaRegistrazione:false}, costumi:{pronti:costumiPronti,profilo:profiloCostume,atlante:atlanteCostumi,colora,vesti}, tornei:{creaCampagna,continuaTorneo,esportaSalvataggi}, rose:{ tutti:tuttiRose, listaPartita, rosa:rosaPartita, liste:listeRose, convocati:convocatiRose, LISTA, ratingLista, ratingSquadra, roseTornei }, finte:{ FINTA_FIRMA, FINTE, firmaFinta, stileFinta, versoFinta }, palombella:{ PALOMBELLA, SPECIALI, occasionePalombella, portiereFuori, sceltaTiroArea }, palla:{ passoPalla, velocitaDiLancio, diagnosi }, effetti:{ gocce:gocceMesh, schiuma, contatti, LIMITI, gocceAttive }, __ridisegna:()=>renderer.render(scene,camera), regole:{ callPlay, setupPenalty, cornerThrow, exclude, giveBall, tackle, foul, penalty, timeout, goalScored }, scegliSquadre, uomo:UOMO, v046:{ statPartita, azioneAperta, ultimaAzioneChiusa, CONTRO, contropiede, uomoDi, simulazione, simultanea, controllaInterferenza, ARBITRI }, prova:{ centroAttacco, boaFrontePorta, difensoreCentro, leggiCentro, occasioneControfuga, doPass, gkTarget, humanPassTarget, MIRA_PASSAGGIO, riceventeApertura, paloUomo, schemiUomo, movePlayer, doShoot, startAct, valoriMotore, aiCarrier, bestPassTarget, passLaneRisk, shotKind, attackTarget, markTarget, aggiornaSchemi, applicaSchema, copiaSchema, validaSchema }, muro:{ paloCoperto, braccioMuro }, panchina:{ chiediCambio, suggerimento, momentoUtile, zonaCambi, PANCHINA }, pausa:togglePause, __setCtrl:setCtrl, get statistiche(){ return squadreStat(); }, get ctrl(){ return ctrl; }, get inp(){ return input.inp; }, get modelloPronto(){ return modelloPronto; } };
 // scena iniziale dietro al menu
 kickoff(); game.state='menu';
 requestAnimationFrame(loop);

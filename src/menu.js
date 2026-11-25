@@ -8,7 +8,7 @@ import { azzeraStatistiche } from './statistiche.js';
 import { initAudio } from './audio.js';
 import { PERIOD_LEN, SHOT_CLOCK, setArbitro, setDiff, setPeriodLen } from './costanti.js';
 import { $, aggiornaTabellone, fmt, fpsIniziale, setFps } from './hud.js';
-import { RUOLI, CHIAVE, STAT_NOMI, candidati, convocati, liste, listaPartita, squadre, tutti } from './dati/rose.js';
+import { RUOLI, CHIAVE, STAT_NOMI, candidati, convocati, liste, listaPartita, ratingLista, roseTornei, squadre, tutti } from './dati/rose.js';
 import { bandiera } from './dati/bandiere.js';
 import { LOGO } from './logo.js';
 import { applicaSquadre, formazioneValida, formazioni } from './giocatori.js';
@@ -107,6 +107,8 @@ const scheda=(g,extra,fuori)=>`<span class="ov">${g.ovr}</span><b>${fuori?'':`#$
 // gli altri disponibili della nazionale (nei tornei gli altri convocati). Toccando un giocatore della panchina e poi uno degli altri li
 // si scambia; «Scelta automatica» torna ai più forti per ruolo (dati/rose.js, listaPartita).
 let riservaScelta=null;
+// v0.88: la valutazione della squadra come scende in acqua (dati/rose.js, ratingLista): i 7 della formazione nei loro posti, poi la panchina
+const valutazione=t=>ratingLista([...t.players.map(p=>p.scheda),...t.rosa.filter(g=>!t.players.some(p=>p.scheda===g))]);
 function salvaLista(cod,ids){
   liste[cod]=ids;
   if(torneoAttivo&&torneoAttivo.nazionale===cod){ torneoAttivo.lista=ids; salvaTorneo(torneoAttivo); } else salva('pallanuoto-lista-'+cod,ids?ids.join(','):'');
@@ -127,7 +129,20 @@ function disegnaRosa(){
     (altri.length?`<div class="fm-titolo">${inTorneo?'Altri convocati':'Altri disponibili'} (${altri.length})</div>`+altri.map(g=>{ const ok=riservaScelta&&(g.ruolo===0)===(riservaScelta.ruolo===0);
       return `<button type="button" class="fig ris altro${ok?' puo':''}${g.campione?' camp':''}" data-altro="${g.id}">${scheda(g,'',true)}</button>`; }).join(''):'')+
     `<button type="button" class="fm-ripristina" id="fmRipristina">Scelta automatica: i più forti per ruolo</button>`;
-  const ridisegna=()=>{ applicaSquadre(scelta[0],scelta[1]); aggiornaTabellone(); disegnaRosa(); };
+  // ROSE (v0.88, Ale: «possiamo caricare 3 rose diverse per ogni squadra e nella partita singola si può scegliere con quale si vuole
+  // giocare, considerando che possono avere una valutazione complessiva diversa»): tutti i disponibili o i convocati di un torneo del
+  // database, ognuna con la sua valutazione (dati/rose.js, ratingLista); nei tornei valgono i convocati scelti
+  if(!inTorneo){
+    const chiave=L=>L.map(g=>g.id).sort().join(','), ora=chiave(R);
+    const voci=[{ chiave:'tutti', nome:'Tutti i disponibili', L:listaPartita(tutti(t.codice)) },
+      ...roseTornei(t.codice).map(r=>({ chiave:r.chiave, nome:r.nome, L:listaPartita(r.giocatori) }))];
+    $('rosa').insertAdjacentHTML('afterbegin',`<div class="fm-rose"><span class="fm-rose-t">Rosa · valutazione della squadra <b>${valutazione(t)}</b></span>`+
+      voci.map(v=>`<button type="button" class="fm-rosa${chiave(v.L)===ora?' on':''}" data-rosa="${v.chiave}">${v.nome} <b>${ratingLista(v.L)}</b></button>`).join('')+`</div>`);
+    $('rosa').querySelectorAll('[data-rosa]').forEach(b=>b.onclick=()=>{ const v=voci.find(x=>x.chiave===b.dataset.rosa); if(!v) return;
+      delete formazioni[t.codice]; salva('pallanuoto-formazione3-'+t.codice,''); salvaLista(t.codice,v.chiave==='tutti'?null:v.L.map(g=>g.id));
+      postoScelto=null; riservaScelta=null; applicaSquadre(scelta[0],scelta[1]); aggiornaTabellone(); disegnaRosa(); disegnaSquadre(); });
+  }
+  const ridisegna=()=>{ applicaSquadre(scelta[0],scelta[1]); aggiornaTabellone(); disegnaRosa(); disegnaSquadre(); };
   const salvaF=F=>{ formazioni[t.codice]=F; salva('pallanuoto-formazione3-'+t.codice,F.join(',')); postoScelto=null; riservaScelta=null; ridisegna(); };
   const attuale=()=>t.players.map(p=>p.scheda.id);
   $('rosa').querySelectorAll('[data-posto]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.posto; riservaScelta=null;
@@ -163,11 +178,14 @@ function disegnaSquadre(){
     c.classList.toggle('on',l===lato);
     c.querySelector('.cs-band').innerHTML=bandiera(q.codice,'band grande',true);
     c.querySelector('.cs-nome').textContent=q.nome;
-    c.querySelector('.cs-rating').innerHTML=`Rating <b>${q.forza}</b>`;
+    // v0.88 (Ale: «le valutazioni delle squadre dipendono dai giocatori che le compongono»): il Rating viene dai 14 della partita,
+    // come scendono in acqua (formazione scelta compresa)
+    c.querySelector('.cs-rating').innerHTML=`Rating <b>${valutazione(teams[l])}</b>`;
   });
-  const a=sq(scelta[0]), b=sq(scelta[1]), d=a.forza-b.forza;
-  $('confronto').innerHTML=`<span class="cf-sig">${a.codice}</span><div class="cf-barra"><i style="width:${a.forza/(a.forza+b.forza)*100}%"></i></div><span class="cf-sig">${b.codice}</span>`+
-    `<span class="cf-testo">${Math.abs(d)<=3?'Partita equilibrata':(d>0?a.nome:b.nome)+' favorita'+(Math.abs(d)>=10?' di molto':'')}</span>`;
+  const a=sq(scelta[0]), b=sq(scelta[1]), ra=valutazione(teams[0]), rb=valutazione(teams[1]), d=ra-rb;
+  // la barra allarga lo scarto (le valutazioni dei giocatori stanno tra 60 e 90): 1 punto di differenza = 4% della barra
+  $('confronto').innerHTML=`<span class="cf-sig">${a.codice}</span><div class="cf-barra"><i style="width:${Math.max(8,Math.min(92,50+d*4))}%"></i></div><span class="cf-sig">${b.codice}</span>`+
+    `<span class="cf-testo">${Math.abs(d)<=1?'Partita equilibrata':(d>0?a.nome:b.nome)+' favorita'+(Math.abs(d)>=6?' di molto':'')}</span>`;
   $('elencoSq').innerHTML=squadre.map(q=>`<button type="button" class="es${q.codice===scelta[lato]?' on':''}${q.codice===scelta[1-lato]?' altra':''}" data-sq="${q.codice}">${bandiera(q.codice,'band',true)}<span>${q.codice}</span></button>`).join('');
 }
 document.querySelectorAll('.card-sq').forEach(c=>{

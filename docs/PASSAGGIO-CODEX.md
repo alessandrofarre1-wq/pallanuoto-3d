@@ -1,3 +1,33 @@
+# Passaggio WATERPOLO7 — v0.88 palombella senza tasto, scelta del tiro, rigore, valutazione delle squadre (Claude Code)
+
+Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #70 (v0.87), versione 0.88.0.
+- Tiro: `controfuga.js` ha `portiereFuori(t)` (portiere della squadra che difende oltre `PALOMBELLA.portiereFuori` m dalla linea o
+  `fuoriLato` m di lato, o assente), `sceltaTiroArea(p)` (entro `PALOMBELLA.area` m: `'lob'` con il portiere fuori e il tiratore non di
+  spalle, altrimenti `occasioneControfuga(p)`), `occasioneControfuga(p)` (controfuga vera v0.81, dentro l'area, Precisione ≥
+  `SPECIALI.qualita`: colonnello con energia ≥ `SPECIALI.colonnello`, schizzo ≥ `SPECIALI.schizzo`), `occasionePalombella(p)` (fuori area
+  entro `max` m, angolo, nessun avversario entro `libero` m, portiere fuori), `aggiornaQte(p)` (ora solo `p.qte = {tipo:'lob'}` per
+  `durata`, poi `pausa`), `palombella(p, aimZ)`, `aiPalombella(p, dt)`. `controllo.js`: al rilascio di TIRO `'lob'` sempre, gli speciali
+  solo con il tocco (`carica < TIRO_POLSO`); L/Y solo con `p.qte?.tipo === 'lob'`. `ia.js`: `aiShoot` usa `sceltaTiroArea` (speciale con
+  probabilità `SPECIALI.computer`), il tiro rapido dopo la ricezione non tira più lui lo speciale, `lob` a caso tolto, `chiudiFinta`
+  «di bomba» in palombella solo con l'occasione. `hud.js`: `body.palomba` mostra il tasto PALOMB. (CSS), pillola «Palombella! (L)»,
+  scritta sotto TIRO da `sceltaTiroArea`.
+- Portiere: `gkTarget` esce verso chi porta palla quando `liberoVersoPorta(h, t, ogx)` (nessun difensore di movimento con proiezione
+  sulla linea palla-porta oltre −`USCITA_PORTIERE.dietro` m e distanza dalla linea sotto `corridoio` m) ed è entro `da` m:
+  `base + extra × (usc − 40)/59`, mai a meno di `distanza` m dal portatore (prima sempre a 0,7 m). Palombella in `doShoot`: errore × 
+  `PALOMBELLA.errore`, in lunghezza con `erroreAlto` al posto di 0,35.
+- Rigore (solo disegno): `RIGORE_VISTA` in `grafica/pose.js`, palla dietro e braccio dietro la schiena, mano sopra/sotto da
+  `abitudine(scheda, 'rigore', quota)` (nuova in `finte.js`); la pesca del rigore parte da lì (`pe.rigore`, `pe.sotto`).
+- Rose: `ratingLista(L)` (titolari 0-6 con `ovr(s, posto)` e peso 2, panchina con `ovr` e peso 1), `ratingSquadra`, `ROSE_TORNEI` e
+  `roseTornei(codice)` in `dati/rose.js`; `lista-partita.js` sceglie i titolari con `perPosto` (`LISTA.specialista`); `menu.js`
+  `valutazione(t)` dai giocatori in acqua e dalla panchina, bottoni `.fm-rose`; `strumenti/rose-dal-database.mjs` non chiama più
+  `riportaAlRanking` (la funzione resta esportata), `rose-db.json` rigenerato.
+- Prove: nuova `npm run palombella` (`tests/palombella-v088.mjs`, anche nella CI); adattate `rigore` (palla dietro), `sezione4`
+  (speciali senza tasto), `gameplay` (palombella anticipata con il portiere fuori dai pali) e `nuoto-coerente` (energia e Precisione per
+  lo schizzo). Sonda `npm run sonda-palombella`. Riferimenti della verifica 2-5 aggiornati dopo il controllo (stesso momento, formazioni
+  diverse). [Rapporto](versioni/v088-palombella-rigore-rose.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.87 finte: mano e marchio di fabbrica (Claude Code)
 
 Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #69 (v0.78-v0.86), versione 0.87.0.

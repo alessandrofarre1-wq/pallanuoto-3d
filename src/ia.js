@@ -11,10 +11,10 @@ import { doFake, falloSenzaPalla, timeout } from './regole.js';
 import { annuncia as notifica } from './cronaca.js';
 import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } from './stato.js';
 import { paloCoperto } from './muro.js';
-import { QTE, aiControfuga, occasioneControfuga, tiroSpeciale } from './controfuga.js';
+import { SPECIALI, aiControfuga, aiPalombella, occasioneControfuga, occasionePalombella, palombella, sceltaTiroArea, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, entrataPronta, laneClear, openness, passLaneRisk, shotKind, situazioneTiro, startAct } from './tiri.js';
-import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO } from './taratura.js';      // numeri del bilanciamento
-export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO };
+import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE } from './taratura.js';      // numeri del bilanciamento
+export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE };
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 // l'uomo che marca p: di regola quello del ruolo (MARK); dopo un CAMBIO DI MARCATURA su un'entrata («time switching», Nitzkowski e
 // manuale USA Water Polo) i due difensori si scambiano gli uomini per qualche secondo
@@ -582,6 +582,15 @@ export function muroSu(h){
     if(dist(q,h)<1.7 && Math.abs(q.x-ogx)<Math.abs(h.x-ogx)+0.3) return q; }
   return null;
 }
+// libero verso la porta (v0.88, uscita del portiere): nessun difensore di movimento tra chi porta palla e la porta, cioè alla sua altezza
+// o più avanti (fino a USCITA_PORTIERE.dietro m indietro) entro USCITA_PORTIERE.corridoio m dalla linea palla-porta; chi insegue da
+// dietro non conta
+export function liberoVersoPorta(h,t,ogx){
+  const dx=ogx-h.x, dz=-h.z, d=Math.hypot(dx,dz)||1, ux=dx/d, uz=dz/d, U=USCITA_PORTIERE;
+  return !t.players.some(q=>{ if(q.isGK||q.excluded) return false;
+    const rx=q.x-h.x, rz=q.z-h.z, avanti=rx*ux+rz*uz;
+    return avanti>-U.dietro&&avanti<d&&Math.abs(rx*uz-rz*ux)<U.corridoio; });
+}
 export function gkTarget(p){
   const t=p.team, ogx=ownGoalX(t);
   // Il corpo legge lo stesso lato delle braccia: un tentativo sbagliato non
@@ -595,6 +604,20 @@ export function gkTarget(p){
     const bersaglio=valida&&(parata.riuscita?parata.bersaglio:parata.bersaglioLetto);
     const reagisce=!!bersaglio&&ball.flightT-parata.voloInizio>=parata.reazione;
     return { x:ogx+t.dir*0.7, z:reagisce?clamp(bersaglio[2],-GW-0.2,GW+0.2):p.z, gk:true, tuffo:reagisce };
+  }
+  // USCITA (v0.88): su chi porta palla libero verso la porta (controfuga, entrata, difensore battuto che insegue da dietro) il portiere
+  // esce dai pali verso di lui per chiudere l'angolo; quanto, lo dice la sua Uscita (USCITA_PORTIERE). Chi esce lascia la porta scoperta
+  // alla palombella (controfuga.js). Prima restava sempre a 0,7 m.
+  { const h=ball.holder;
+    if(h&&h.team!==t&&!h.isGK&&ball.state==='held'){
+      const dx=h.x-ogx, dz=h.z, d=Math.hypot(dx,dz), U=USCITA_PORTIERE;
+      if(d<U.da&&d>U.distanza+0.7&&liberoVersoPorta(h,t,ogx)){
+        const fuori=Math.min(U.base+U.extra*clamp(((p.s?.usc??60)-40)/59,0,1),d-U.distanza);
+        let z=clamp(dz/d*fuori,-GW,GW);
+        { const fl=fintaLatoAttiva(p); if(fl) z=clamp(z+fl*FINTA_LATO.portiere,-GW,GW); }      // anche fuori dai pali abbocca alla finta di lato (v0.59)
+        return { x:ogx+dx/d*fuori, z, gk:true };
+      }
+    }
   }
   // la palla "vista" dal portiere: durante un passaggio guarda già dove arriverà, ma lo capisce con un ritardo
   let bx=ball.x, bz=ball.z;
@@ -749,11 +772,15 @@ export function aggiornaDifesa(t,dt){
 // finte personali (v0.55, finte.js): il ritmo tra una finta e l'altra e il seguito dipendono dallo stile del giocatore
 function pausaFinta(p,f){ p.decideT=f.pausa[0]+rnd()*(f.pausa[1]-f.pausa[0]); }
 function chiudiFinta(p,f,dGoal){
-  if(f.seguito==='lob'&&dGoal>5&&!p.isGK){ aiShoot(p,0.4,true); return; }
+  // v0.88: la palombella dopo la finta (stile di bomba) solo quando il portiere è fuori dai pali (controfuga.js); altrimenti il tiro
+  if(f.seguito==='lob'&&!p.isGK&&(occasionePalombella(p)||sceltaTiroArea(p)==='lob')){ palombella(p,null); return; }
   if(f.seguito==='polso'){ startAct(p,'polso',0.04,()=>doShoot(p,0.42,false,null,{polso:true,dopoFinta:p.fakeUntil>game.time})); return; }
   aiShoot(p,0.6+rnd()*0.4,false);
 }
 export function aiShoot(p,power,lob){
+  // v0.88 (Ale): dentro l'area il tiro lo sceglie la situazione, come per il giocatore (controfuga.js sceltaTiroArea): palombella con il
+  // portiere fuori dai pali; nella controfuga vera schizzo o colonnello SPECIALI.computer volte su uno, altrimenti il tiro classico
+  if(!lob){ const s=sceltaTiroArea(p); if(s==='lob') return palombella(p,null); if(s&&rnd()<SPECIALI.computer) return tiroSpeciale(p,s,null); }
   // Solo la scelta CPU prepara la palombella con la finta personale. I comandi
   // umani L/PALOMB. restano immediati; una finta già fatta basta anche se il
   // portiere non ha abboccato (fakeUntil non è un requisito).
@@ -823,6 +850,7 @@ export function aiCarrier(p,dt){
   // 1 contro 0 in controfuga: dentro i 5 metri una finta per far saltare il portiere, poi lo scivolamento e il tiro
   if(slot.unoZero&&dGoal<5.4&&!p.fakeUsed&&!(p.freeThrow&&Math.abs(gx-p.x)<6)&&rnd()<dt*3){ p.fakeUsed=true; p.shootNext=true; p.decideT=0.45; startAct(p,'fake',0.1,()=>doFake(p)); return; }
   if(aiControfuga(p,dt)) return;      // controfuga: schizzo o colonnello
+  if(aiPalombella(p,dt)) return;      // v0.88: palombella fuori area con il portiere fuori dai pali
   // Il palo conclude subito solo nella finestra creata dal passaggio e dalla scelta difensiva.
   // superiorità: nelle partite vere dura circa 15 s (Mondiali 2009): si fa girare palla e si tira dopo almeno 5-6 passaggi di tempo,
   // tranne il «quick» dei primi secondi; tempoSup = secondi da quando è iniziata la superiorità
@@ -864,12 +892,10 @@ export function aiCarrier(p,dt){
     const press=openness(p),sottoPressione=p.pressatoUntil>game.time;
     const sit=situazioneTiro(p),angolo=Math.abs(gx-p.x)/Math.max(0.1,dGoal);
     if(p.vuoleLiberato&&supPronta&&!ft&&!sottoPressione&&dGoal<(costr?COSTRUZIONE.vicino:7)&&angolo>0.68&&sit.liberato&&sit.marcato<0.2&&laneClear(p,gx,0,t,0.7)){
-      // Il tiro rapido non deve consumare quasi sempre la controfuga prima che
-      // il controllo per fotogramma scelga uno speciale. La decisione resta immediata.
-      const speciale=dGoal<=QTE.maxComputer?occasioneControfuga(p):null;
+      // Il tiro rapido non deve consumare quasi sempre la controfuga prima che il controllo per fotogramma scelga uno speciale: dalla
+      // v0.88 la scelta (schizzo o colonnello SPECIALI.computer volte su uno, prima 0,35 qui) la fa aiShoot. La decisione resta immediata.
       p.motivoTiro='liberato';
-      if(speciale&&rnd()<0.35) tiroSpeciale(p,speciale,null);
-      else aiShoot(p,0.55+rnd()*0.45,false);
+      aiShoot(p,0.55+rnd()*0.45,false);
       return;
     }
     // FINTA E SCARICO (v0.55, Ale): dopo una finta riuscita, se la scelta era di scaricare, la palla va subito al compagno libero
@@ -935,7 +961,9 @@ export function aiCarrier(p,dt){
       // dopo la finta, quasi una volta su due la palla va al compagno che si è liberato (aiCarrier, «finta e scarico»)
       { const f=fintaDi(p);
         if((p.fakeCount||0)<f.max && game.shot>5 && rnd()<(p.fakeCount?0.4:0.5)){ p.fakeUsed=true; p.shootNext=true; p.scaricoDopoFinta=rnd()<f.scarico; pausaFinta(p,f); startAct(p,'fake',f.wind*(0.8+rnd()*0.4),()=>doFake(p)); return; } }
-      const lob = dGoal>5 && rnd()<0.12; p.motivoTiro=game.shot<FINE_AZIONE.secondi?'fine azione':manUp(t)?'superiorita':davanti===0?'nessuno davanti':libero?'libero':'pazienza'; aiShoot(p,0.55+rnd()*0.45,lob); return;
+      // v0.88: niente più palombelle a caso (prima 12 tiri su 100 oltre i 5 m): la palombella la decidono il portiere fuori dai pali e
+      // la posizione (aiShoot e aiPalombella)
+      const lob = false; p.motivoTiro=game.shot<FINE_AZIONE.secondi?'fine azione':manUp(t)?'superiorita':davanti===0?'nessuno davanti':libero?'libero':'pazienza'; aiShoot(p,0.55+rnd()*0.45,lob); return;
     }
   }
   if(game.shot<2 && dGoal<13 && !ft){ p.motivoTiro='sirena'; aiShoot(p,0.9,false); return; }
