@@ -1,6 +1,6 @@
 # Documenti di WATERPOLO 7
 
-Versione corrente **v0.77**: [ingresso fluido nella finta](versioni/v077-avvio-finta.md), [verifiche](verifiche/v077/README.md). Precedente **v0.76**: [finta fluida](versioni/v076-finta-fluida.md).
+Versione corrente **v0.88**: [palombella senza tasto, scelta del tiro, rigore, valutazione delle squadre](versioni/v088-palombella-rigore-rose.md). Precedente **v0.87**: [finte, mano e marchio di fabbrica](versioni/v087-finte-mano.md). Le versioni v0.78-v0.86 hanno ognuna il suo rapporto in `versioni/`; v0.77: [ingresso fluido nella finta](versioni/v077-avvio-finta.md).
 
 
 | Dove | Cosa c'è |

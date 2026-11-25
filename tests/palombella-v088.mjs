@@ -92,15 +92,20 @@ prova(tenuto.gesto && tenuto.gesto !== 'schizzo' && tenuto.gesto !== 'colonnello
 await scena({ d: 5, fuori: 0.7 }); s = await stato();
 prova(s.scelta === null, `nell'attacco schierato niente speciali (${s.scelta})`);
 // 7. il portiere del computer esce dai pali nella controfuga avversaria, di più con Uscita alta
-const uscita = usc => pg.evaluate(async usc => {
+// «dif»: un difensore battuto che insegue da dietro (non conta) o uno davanti, tra chi porta palla e la porta (il portiere resta)
+const uscita = (usc, dif) => pg.evaluate(async ({ usc, dif }) => {
   const H = window.__pallanuoto, g = H.game, it = H.teams[0], hu = H.teams[1], gx = 12.5 * it.dir, gk = hu.players.find(q => q.isGK), p = it.players[4];
+  const q = hu.players.find(x => !x.isGK && x.i === 3);
   window.__tieni = null; gk.s = { ...gk.s, usc }; gk.x = gx - it.dir * 0.7; gk.z = 0; gk.vx = gk.vz = 0; gk.stunUntil = 0;
-  const tieni = () => { p.x = gx - it.dir * 7; p.z = 0; p.vx = it.dir * 1.3; p.oriz = 0.6; p.decideT = 99; p.act = null; };
+  const tieni = () => { p.x = gx - it.dir * 7; p.z = 0; p.vx = it.dir * 1.3; p.oriz = 0.6; p.decideT = 99; p.act = null;
+    q.x = dif ? p.x + it.dir * (dif === 'davanti' ? 1.5 : -1) : -gx * 0.6; q.z = dif === 'dietro' ? 0.3 : 0; q.vx = q.vz = 0; q.stunUntil = g.time + 9; };
   tieni(); H.regole.giveBall(p); g.possTeam = it; g.possT = g.time; window.__tieni = tieni; window.__salta(90);
   return +Math.abs(gk.x - gx).toFixed(2);
-}, usc);
+}, { usc, dif });
 const alta = await uscita(95), bassa = await uscita(40);
 prova(alta > 1.6 && bassa < 1.3, `il portiere esce dai pali nella controfuga: ${alta} m dalla linea con Uscita 95, ${bassa} m con Uscita 40`);
+const inseguito = await uscita(95, 'dietro'), coperto = await uscita(95, 'davanti');
+prova(inseguito > 1.6 && coperto < 1, `esce anche se il difensore battuto insegue da dietro (${inseguito} m), resta se c'è un difensore davanti (${coperto} m)`);
 prova(errori.length === 0, `nessun errore nella pagina${errori.length ? ': ' + errori.join(' | ') : ''}`);
 await browser.close(); await new Promise(r => server.httpServer.close(r));
 console.log(ok ? '\nPalombella v0.88: tutte le prove superate' : '\nPalombella v0.88: PROVE FALLITE');

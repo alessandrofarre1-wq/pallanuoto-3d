@@ -13,8 +13,11 @@ completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in
   (v0.31, v0.81) → nessun tasto: dentro l'area, nella controfuga vera, il tocco di TIRO sceglie il colonnello (energia almeno 0,6) o lo
   schizzo (almeno 0,35), solo con Precisione almeno 70 (`SPECIALI`); tenuto resta il tiro normale. Il computer, con la stessa
   occasione, sceglie lo speciale 35 volte su 100 quando tira (prima 35 su 100 nel solo tiro subito dopo la ricezione, fino a 6,5 m).
-- Portiere sempre a 0,7 m dalla linea di porta, Uscita mai usata in partita → esce verso chi porta palla senza difensori davanti entro
-  9 m, di 1 m più 1,4 m × Uscita (`USCITA_PORTIERE`).
+- Portiere sempre a 0,7 m dalla linea di porta, Uscita mai usata in partita → esce verso chi porta palla libero verso la porta entro
+  9 m (nessun difensore alla sua altezza o più avanti entro 2 m dalla linea palla-porta), di 1 m più 1,4 m × Uscita
+  (`USCITA_PORTIERE`, `liberoVersoPorta`).
+- Palombella con l'errore del tiro teso (con il portiere fuori dai pali entrava quasi sempre) → errore di lato × 1,5 e in lunghezza
+  1,2 × 1,5 invece di 0,35 (`PALOMBELLA.errore`, `erroreAlto`).
 - Rigore: palla in acqua davanti a chi tira con la mano sopra (v0.84) → palla dietro, dalla parte del braccio che tira, braccio teso
   dietro la schiena con la mano sopra o sotto la palla (abitudine del giocatore, `RIGORE_VISTA`); la carica la porta su in un solo
   movimento. Solo disegno; il controfallo resta quello della v0.84.

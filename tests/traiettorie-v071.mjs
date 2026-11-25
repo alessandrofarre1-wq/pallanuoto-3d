@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { profiloTraiettoria } from '../src/profili-traiettorie.js';
 import { P } from '../src/fisica-palla/parametri.js';
-import { FIRMA, FINTA_AMPIEZZA, FINTA_LATO, FINTA_RITMO, TRAIETTORIE_TIRO as T } from '../src/taratura.js';
+import { FIRMA, FINTA_AMPIEZZA, FINTA_LATO, FINTA_RITMO, PALOMBELLA, TRAIETTORIE_TIRO as T } from '../src/taratura.js';
 import { FINTA_MOVIMENTO } from '../src/finta-movimento.js';
 // La fisica della partita usa Rapier anche qui, senza renderer o browser.
 globalThis.window=globalThis;
@@ -61,7 +61,7 @@ const corpo=sorgente.replace(/^import .*;.*\n/gm,'').replace(/^export \{.*\};.*\
 const ball={},game={time:10,state:'play',penalty:null},teams=[{idx:0,dir:1,human:true,short:'ITA',players:[]},{idx:1,dir:-1,short:'HUN',players:[]}],allPlayers=[];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),dist=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z),other=t=>teams[1-t.idx],goalX=t=>12.5*t.dir;
 let caso=.5,profiloScelto;
-const contesto={ball,game,teams,allPlayers,clamp,dist,other,goalX,P,T,FIRMA,ALZATA,FINTA_MOVIMENTO,FINTA_AMPIEZZA,FINTA_LATO,FINTA_RITMO,
+const contesto={ball,game,teams,allPlayers,clamp,dist,other,goalX,P,T,FIRMA,ALZATA,FINTA_MOVIMENTO,FINTA_AMPIEZZA,FINTA_LATO,FINTA_RITMO,PALOMBELLA,
   fintaDi:()=>({largo:.5}),firmaFinta:()=>({largo:.5,verso:'avanti',piegato:false}),versoFinta:()=>'avanti',profiloTraiettoria:o=>{profiloScelto=profiloTraiettoria(o);return profiloScelto;},velocitaDiLancio:H.velocitaDiLancio,rnd:()=>caso,gauss:()=>0,
   azioneAperta:()=>null,tipoDiTiro:()=> 'fuori',registraTiro:()=>{},registraTiroReplay:()=>{},paloCoperto:()=>0,postoPortiere:()=>0,manUp:()=>false,firma:()=>false};
 const tiro=new Function(...Object.keys(contesto),corpo+'\nreturn {doShoot,launch,startAct,updateActs};')(...Object.values(contesto));

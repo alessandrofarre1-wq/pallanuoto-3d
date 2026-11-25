@@ -582,6 +582,15 @@ export function muroSu(h){
     if(dist(q,h)<1.7 && Math.abs(q.x-ogx)<Math.abs(h.x-ogx)+0.3) return q; }
   return null;
 }
+// libero verso la porta (v0.88, uscita del portiere): nessun difensore di movimento tra chi porta palla e la porta, cioè alla sua altezza
+// o più avanti (fino a USCITA_PORTIERE.dietro m indietro) entro USCITA_PORTIERE.corridoio m dalla linea palla-porta; chi insegue da
+// dietro non conta
+export function liberoVersoPorta(h,t,ogx){
+  const dx=ogx-h.x, dz=-h.z, d=Math.hypot(dx,dz)||1, ux=dx/d, uz=dz/d, U=USCITA_PORTIERE;
+  return !t.players.some(q=>{ if(q.isGK||q.excluded) return false;
+    const rx=q.x-h.x, rz=q.z-h.z, avanti=rx*ux+rz*uz;
+    return avanti>-U.dietro&&avanti<d&&Math.abs(rx*uz-rz*ux)<U.corridoio; });
+}
 export function gkTarget(p){
   const t=p.team, ogx=ownGoalX(t);
   // Il corpo legge lo stesso lato delle braccia: un tentativo sbagliato non
@@ -596,15 +605,17 @@ export function gkTarget(p){
     const reagisce=!!bersaglio&&ball.flightT-parata.voloInizio>=parata.reazione;
     return { x:ogx+t.dir*0.7, z:reagisce?clamp(bersaglio[2],-GW-0.2,GW+0.2):p.z, gk:true, tuffo:reagisce };
   }
-  // USCITA (v0.88): su chi porta palla senza difensori davanti (controfuga, entrata libera) il portiere esce dai pali verso di lui per
-  // chiudere l'angolo; quanto, lo dice la sua Uscita (USCITA_PORTIERE). Chi esce lascia la porta scoperta alla palombella
-  // (controfuga.js). Prima restava sempre a 0,7 m.
+  // USCITA (v0.88): su chi porta palla libero verso la porta (controfuga, entrata, difensore battuto che insegue da dietro) il portiere
+  // esce dai pali verso di lui per chiudere l'angolo; quanto, lo dice la sua Uscita (USCITA_PORTIERE). Chi esce lascia la porta scoperta
+  // alla palombella (controfuga.js). Prima restava sempre a 0,7 m.
   { const h=ball.holder;
     if(h&&h.team!==t&&!h.isGK&&ball.state==='held'){
       const dx=h.x-ogx, dz=h.z, d=Math.hypot(dx,dz), U=USCITA_PORTIERE;
-      if(d<U.da&&d>U.distanza+0.7&&difensoriDavanti(h)===0){
+      if(d<U.da&&d>U.distanza+0.7&&liberoVersoPorta(h,t,ogx)){
         const fuori=Math.min(U.base+U.extra*clamp(((p.s?.usc??60)-40)/59,0,1),d-U.distanza);
-        return { x:ogx+dx/d*fuori, z:clamp(dz/d*fuori,-GW,GW), gk:true };
+        let z=clamp(dz/d*fuori,-GW,GW);
+        { const fl=fintaLatoAttiva(p); if(fl) z=clamp(z+fl*FINTA_LATO.portiere,-GW,GW); }      // anche fuori dai pali abbocca alla finta di lato (v0.59)
+        return { x:ogx+dx/d*fuori, z, gk:true };
       }
     }
   }

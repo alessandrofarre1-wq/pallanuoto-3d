@@ -51,11 +51,16 @@ export const SPECIALI=Object.freeze({ colonnello:0.6, schizzo:0.35, qualita:70, 
 // PALOMBELLA se il portiere è fuori dai pali e il tiratore è in buona posizione: entro «max» m, non oltre «angolo» rad dal centro della
 // porta, nessun avversario entro «libero» m; dura «durata» s, poi «pausa» s prima di ricomparire. Il computer la tira con la stessa
 // occasione, ogni secondo con probabilità «computer». Non è detto che sia gol: precisione, distanza e rientro del portiere decidono.
-export const PALOMBELLA=Object.freeze({ area:6, max:10, angolo:0.6, libero:1.6, durata:1.2, pausa:2, portiereFuori:1.3, fuoriLato:2.2, computer:1.4 });
-// USCITA DEL PORTIERE (v0.88): quando chi porta palla non ha difensori davanti (controfuga, entrata libera) ed è entro «da» m dalla
-// porta, il portiere esce dai pali verso la palla per chiudere l'angolo: base + extra × Uscita (statistica del portiere da 40 a 99, prima
-// mai usata) metri dalla linea di porta, mai più vicino di «distanza» m a chi porta palla. Prima restava sempre a 0,7 m dalla linea.
-export const USCITA_PORTIERE=Object.freeze({ da:9, base:1.0, extra:1.4, distanza:1.6 });
+// La palombella è un gesto di misura (tiri.js doShoot): errore di lato × «errore», in lunghezza × «errore» con il fattore «erroreAlto» al
+// posto di 0,35 del tiro teso; la Precisione del tiratore lo riduce come per gli altri tiri.
+export const PALOMBELLA=Object.freeze({ area:6, max:10, angolo:0.6, libero:1.6, durata:1.2, pausa:2, portiereFuori:1.3, fuoriLato:2.2, computer:1.4,
+  errore:1.5, erroreAlto:1.2 });
+// USCITA DEL PORTIERE (v0.88): quando chi porta palla è libero verso la porta (nessun difensore di movimento alla sua altezza o più
+// avanti, fino a «dietro» m indietro, entro «corridoio» m dalla linea palla-porta: controfuga, entrata, difensore battuto che insegue)
+// ed è entro «da» m dalla porta, il portiere esce dai pali verso la palla per chiudere l'angolo: base + extra × Uscita (statistica del
+// portiere da 40 a 99, prima mai usata) metri dalla linea di porta, mai più vicino di «distanza» m a chi porta palla. Prima restava
+// sempre a 0,7 m dalla linea.
+export const USCITA_PORTIERE=Object.freeze({ da:9, base:1.0, extra:1.4, distanza:1.6, corridoio:2, dietro:0.5 });
 // PAZIENZA in parità: secondi di possesso (su 28) prima di cominciare a cercare il tiro anche senza occasioni, e secondi per
 // arrivare alla piena voglia di tirare. v0.64: [24, 3] → [25, 2,5].
 export const PAZIENZA=[25,2.5];

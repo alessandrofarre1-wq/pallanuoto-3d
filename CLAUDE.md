@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.87). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.88). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -88,7 +88,10 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 ### Comandi
 - Touch: levetta a sinistra; TIRO toccato e rilasciato = tiro rapido di polso, meno potente; tenuto = preparazione e finte continue, potenza massima in0,9s, tiro al rilascio anche durante la propria finta. Nessun tiro automatico normale e nessun minigioco di precisione. L’anello del selezionato diventa oro chiaro e il tasto indica PRONTO; nessuna barra sopra l’atleta o barra di potenza. Mira, stanchezza, pressione e abilità restano determinanti.
 - PASSA; con la palla agli avversari lo stesso tasto diventa CONTRASTA (v0.78: scritta, icona a mano, rosa, «3° = fallo»): 1-2 tocchi in 1,5 s disturbano, il terzo ravvicinato è fallo. Tasti colorati per funzione su bordo e icona (TIRO arancione, PASSA blu, CONTRASTA rosa, PALOMB. viola, SPRINT verde, CAMBIA bianco), lontani da oro/rosso/ciano; premuto e azioni richieste restano oro; prova `npm run comandi-interfaccia`. SPRINT a tocchi, CAMBIA al più vicino alla palla. TAGLIO tolto dal touch su richiesta di Ale; chiamate A/B/C conservate. T.O. e pausa conservati. TIRO durante un passaggio in arrivo conserva il tiro al volo; alla boa spalle alla porta sceglie beduina/sciarpa dalla situazione. Procedura dei rigori conservata.
-- Scelta del tiro e palombella v0.88 (Ale: «puoi anche togliere il tasto della palomba»; `controfuga.js`, `PALOMBELLA`, `SPECIALI`): dentro l'area (6 m) TIRO sceglie da solo il tipo di tiro: palombella con il portiere fuori dai pali (oltre 1,3 m dalla linea o 2,2 m di lato), se il tiratore non è di spalle; nella controfuga vera (v0.81, entro 9 s dal recupero, `QTE.eta`) colonnello con energia almeno 0,6 e schizzo almeno 0,35, solo con Precisione almeno 70; altrimenti il tiro normale (tocco = polso, tenuto = tiro potente e teso). La scritta sotto TIRO dice quale. Fuori area il tasto PALOMB. compare solo come tasto a comparsa (1,2 s, poi 2 s di pausa) con il portiere fuori dai pali e il tiratore in buona posizione (entro 10 m, entro 0,6 rad dal centro della porta, nessun avversario entro 1,6 m): premuto subito fa la palombella, non è detto che sia gol. Niente più tasto a comparsa per schizzo e colonnello. Stesse regole per il computer (fuori area 1,4 volte al secondo con l'occasione, più spesso con Visione alta; niente più palombelle a caso). Prova `npm run palombella`, sonda `npm run sonda-palombella`.
+- Scelta del tiro e palombella v0.88 (Ale: «puoi anche togliere il tasto della palomba»; `controfuga.js`, `PALOMBELLA`, `SPECIALI`): dentro l'area (6 m) TIRO sceglie da solo il tipo di tiro: palombella con il portiere fuori dai pali (oltre 1,3 m dalla linea o 2,2 m di lato), con un tocco o tenuto, se il tiratore non è di spalle; nella controfuga vera (v0.81, entro 9 s dal recupero, `QTE.eta`) con un tocco il colonnello con energia almeno 0,6 o lo schizzo almeno 0,35, solo con Precisione almeno 70; altrimenti il tiro normale (tocco = polso, tenuto = tiro potente e teso, anche in controfuga). La scritta sotto TIRO dice quale. Fuori area il tasto PALOMB. compare solo come tasto a comparsa (1,2 s, poi 2 s di pausa) con il portiere fuori dai pali e il tiratore in buona posizione (entro 10 m, entro 0,6 rad dal centro della porta, nessun avversario entro 1,6 m): premuto subito fa la palombella, non è detto che sia gol: è un gesto di misura, con più errore del tiro teso (di lato × 1,5, in lunghezza
+fattore 1,2 × 1,5 invece di 0,35; troppo lunga sopra la traversa, troppo corta in mano al portiere che rientra), meno per chi ha
+Precisione alta (in scena, tiratore libero e portiere fuori di 1,5-2 m: 62 su 100 in gol). Niente più tasto a comparsa per schizzo e
+colonnello. Stesse regole per il computer: dentro l'area palombella con il portiere fuori, schizzo o colonnello 35 volte su 100 quando tira nella controfuga vera (`SPECIALI.computer`), fuori area la palombella con l'occasione (probabilità 1,4 al secondo, da 0,6 a 1,2 volte tanto secondo la Visione); niente più palombelle a caso. Prova `npm run palombella`, sonda `npm run sonda-palombella`.
 - Tastiera: frecce; Spazio/K stessa tenuta-finte-rilascio (K anche al volo in arrivo, Spazio tenuto prima della presa non tira da solo); D passaggio al rilascio/contrasto; L palombella (solo quando compare); Shift sprint a tocchi; C cambia; F comando avanzato taglio/girata/raddoppio conservato; Q/W/E o1/2/3 schemi,4 boa, T time-out,B cambio consigliato,P/Esc pausa. Controller con la stessa logica. Annullamenti per pausa/blur/touchcancel/perdita possesso o controllo; un tasto fisicamente ancora premuto dopo reset deve prima essere rilasciato.
 ### Nuoto e corpo (indicazioni di Ale, ex nuotatore)
 - Tiro standard caricato/torsione v0.74: pose Plask di Ale trasferite sull’intera catena di52ossa, modello/rig/pesi invariati. Tutti gli altri gesti restano procedurali. Stile libero a testa alta, mai rana o stella; chi
@@ -142,9 +145,10 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   finte-mano-foglio`.
 - Portiere: segue il passaggio, para in base a posizione, Riflessi, stanchezza, sorpresa e muro; para meno dopo un cambio di lato,
   in superiorità, dopo una finta o su tiri vicini; mentre l'avversario carica sale a braccia larghe (solo disegno). Uscita v0.88
-  (`USCITA_PORTIERE`): nella controfuga avversaria (nessun difensore davanti a chi porta palla, entro 9 s dal recupero e 9 m dalla
-  porta) esce dai pali verso la palla di 1 m più 1,4 m × Uscita (la statistica, da 40 a 99), mai a meno di 1,6 m da chi porta palla;
-  così lascia lo spazio alla palombella. Prima stava sempre a 0,7 m dalla linea.
+  (`USCITA_PORTIERE`, `liberoVersoPorta`): quando chi porta palla è libero verso la porta entro 9 m (nessun difensore di movimento alla
+  sua altezza o più avanti entro 2 m dalla linea palla-porta; chi insegue da dietro non conta: controfuga, entrata, difensore battuto)
+  esce dai pali verso la palla di 1 m più 1,4 m × Uscita (la statistica, da 40 a 99), mai a meno di 1,6 m da chi porta palla; così
+  lascia lo spazio alla palombella (circa 12 uscite a partita). Prima stava sempre a 0,7 m dalla linea.
 - Portiere v0.71: il sorteggio decide il tentativo, non una presa senza contatto. Sagoma numerica condivisa con il disegno, sweep3D e reazione/velocità delle mani limitate; corpo/testa respingono, le prese ravvicinate richiedono la mano e sono rare. Stesse regole per le due squadre. Proporzioni v0.72: campo25×20m, porta3×0,90m e palla22,12cm nello stesso mondo. Scala delle giuntureVIS1,45→1,10: modello base2,547→1,932m in bind, profili individuali conservati. Sagoma/mani del portiere, palla sul palmo, ombra e contatto acqua seguono il corpo. Il punto fisico di lancio segue necessariamente la nuova altezza; tempi e velocità del tiro conservati.
 - Traiettorie v0.71: palombella più tesa (CPU dopo una finta, nessun nuovo obbligo umano); forte alto verso le quadrelle con rotazione da tiro, mirino nominale coerente e suono sordo solo su urto reale palo/traversa. Rimbalzo mirato prima del portiere dalla fisica dell’acqua, solo con distanza/spazio adatti. Parametri in `TRAIETTORIE_TIRO`. Il corpo del portiere segue la stessa lettura delle mani, anche sui tiri deviati ancora in arrivo; aspetta la propria reazione e non anticipa il lato vero. Fattore rigore0,41→0,7 per la sola lettura, non per assegnare una parata:188/240gol nel controllo,78,3%; coefficienti globali di precisione/potenza conservati.
 - Tiro classico v0.72: gambe asimmetriche con perno controlaterale e dominante arretrata, anche che anticipano il braccio, core e mano libera (spazzata→trazione), gomito alto. Solo disegno su ossa esistenti; posa fisica, polso/frusta e tempi conservati. Fonte Solum2008 nel rapporto; non è un riferimento regolamentare.
@@ -236,14 +240,19 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.87 — finte: mano e marchio di fabbrica (Claude Code)
+## Stato v0.88 — palombella senza tasto, scelta del tiro, rigore, valutazione delle squadre (Claude Code)
 
-v0.87 (dopo la PR #69 con le versioni v0.78-v0.86, unita in `main` e pubblicata): Ale, guardando il foglio delle forme della finta,
-ha chiesto il palmo al cielo con la palla dietro la testa e in giù davanti, le finte nei due sensi o avanti e indietro per tutte le finte,
-e la finta come marchio di fabbrica di ogni giocatore. Fatto (regole sopra, finte v0.87; [rapporto](docs/versioni/v087-finte-mano.md)):
-palmo che segue la mano (solo disegno, partita identica), ritorno della finta alla carica, verso/larghezza/braccio di ogni giocatore
-(nel complesso 49% da destra verso sinistra, 19% da sinistra verso destra, 32% avanti e indietro nella sonda), scheda con la finta;
-equilibrio della partita invariato (gol 19,4, Italia 13,3 e Ungheria 25,5).
+v0.88 (dopo la PR #70 con la v0.87, unita in `main`): Ale (25/11/2026) ha chiesto di togliere il tasto della palombella (a comparsa
+fuori area con il portiere fuori dai pali, tipo di tiro dentro l'area; in controfuga schizzo o colonnello secondo energia e qualità),
+la posizione iniziale del rigore (palla in acqua, braccio dietro la schiena, mano sopra o sotto) e valutazioni delle squadre dai
+giocatori, con la scelta tra più rose nella partita singola; poi il riequilibrio delle partite. Fatto (regole sopra: comandi, portiere,
+rigore, valutazione della squadra; [rapporto](docs/versioni/v088-palombella-rigore-rose.md)): scelta del tiro dentro l'area, tasto
+PALOMB. a comparsa, portiere che esce su chi è libero verso la porta (Uscita), palombella più difficile del tiro teso (in scena 62 su 100
+in gol), rigore con la palla dietro (solo disegno), Rating dai 14 della partita e rose dei tornei del database, titolari più forti nel
+posto. Palombelle circa 2-3 a squadra per partita; equilibrio invariato (gol 19,9, Italia 13,4 e Ungheria 26,5).
+
+v0.87 (PR #70): palmo che segue la mano nella finta (al cielo dietro la testa, in giù davanti), ritorno della finta alla carica,
+verso/larghezza/braccio di ogni giocatore (marchio di fabbrica), scheda con la finta; [rapporto](docs/versioni/v087-finte-mano.md).
 
 Prima (stessa giornata, PR #69): ramo ripartito da `main` v0.77 (Codex, PR #59-#68). Ale (24/11/2026) ha mandato 13 punti. Fatti:
 v0.78 interfaccia (CONTRASTA in difesa, tasti colorati, energia con il cognome; [rapporto](docs/versioni/v078-comandi-interfaccia.md));
@@ -260,13 +269,16 @@ braccio carico = controfallo; [rapporto](docs/versioni/v084-rigore.md)); v0.85 f
 della partita invariato; [rapporto](docs/versioni/v085-finte.md)); v0.86 rose (tutti i disponibili, 14 in partita scelti per ruolo,
 15 convocati nei tornei; [rapporto](docs/versioni/v086-rose.md)). I 13 punti di Ale del 24/11 sono fatti. Nelle prove computer contro
 computer l'Ungheria segna più del doppio dell'Italia: nel database le valutazioni medie sono 84 contro 76 (forza del ranking).
-Prossimo: il bilanciamento (sotto). Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
+Prossimo: il bilanciamento (v0.89, sotto). Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna
+(difesa).
 
-**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.87, `npm run taratura -- --partite=16`): 19,4 gol e 40,1 tiri per squadra
-(veri 13,3 e 33; Italia 13,3, Ungheria 25,5), tiri in gol 48,4% (40%), espulsioni 10,8 (11; dal centro 57%, vero 66%), superiorità
-47% (52%), parità: gol 22,6% delle azioni (6-19%), espulsione procurata 16,8% (22%), durata 13,1 s (21), azioni 74 (50); 5 voci su 15
-a posto. Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
+**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.88, `npm run taratura -- --partite=16`): 19,9 gol e 39,9 tiri per squadra
+(veri 13,3 e 33; Italia 13,4, Ungheria 26,5, Ungheria vince 16 su 16), tiri in gol 49,9% (40%; nello specchio 84,8%), espulsioni 11,2
+(11; dal centro 56%, vero 66%), superiorità 44,7% (52%), parità: gol 22,8% delle azioni (6-19%), tiro sbagliato 23,9% (32%), espulsione
+procurata 17,4% (22%), durata 13,0 s (21), azioni 74,8 (50); 5 voci su 15 a posto. Nel gioco la Precisione pesa molto (`mira` in
+`tiri.js`: l'errore dell'Italia, Precisione media 75,5, è circa il doppio di quello dell'Ungheria, 82,8). Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
 partite); Codex misurava 16,1 e 41,4 nella v0.70 e 17,4 e 43,3 nella v0.71 (8 partite, passaggio di consegne v0.71); v0.77 20,5 e
-42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4, v0.82 20,2 e 41,0, v0.83-v0.84 19,1 e 39,0, v0.85 19,3 e 39,3, v0.86 19,4 e 39,1 (16 partite).
+42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4, v0.82 20,2 e 41,0, v0.83-v0.84 19,1 e 39,0, v0.85 19,3 e 39,3, v0.86 19,4 e 39,1, v0.87 19,4 e
+40,1, v0.88 19,9 e 39,9 (16 partite).
 
 Stato precedente (v0.77, Codex): avvio fluido della finta, [rapporto](docs/versioni/v077-avvio-finta.md).

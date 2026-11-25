@@ -14,7 +14,7 @@ import { centroAttacco, destinatarioEntrata, passaggioChiamato, postoAttacco, re
 import { velocitaDiLancio } from './palla.js';
 import { sostitutoLontano } from './difesa-cambi.js';
 import { profiloTraiettoria } from './profili-traiettorie.js';
-import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO, PASSAGGI, PRESA, SERVIZIO_BOA as S, TRAIETTORIE_TIRO as T } from './taratura.js';      // numeri del bilanciamento
+import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO, PALOMBELLA, PASSAGGI, PRESA, SERVIZIO_BOA as S, TRAIETTORIE_TIRO as T } from './taratura.js';      // numeri del bilanciamento
 export { ERRORE_PASSAGGIO };
 import { paloCoperto } from './muro.js';
 import { P } from './fisica-palla/parametri.js';
@@ -383,7 +383,11 @@ export function doShoot(p,power,lob,aimZ,o){
   // forza la mira peggiora un poco (fino a +35% di errore al massimo); il rigore è escluso
   const sforzo=game.penalty===p?1:1+0.35*clamp((power-0.8)/0.2,0,1);
   const lato=Math.abs(p.z)>1.5?Math.sign(p.z*t.dir):0, mano=lato===0?1:((p.mano==='S')===(lato>0)?0.92:1.2);
-  az+=gauss()*errBase*mano*sforzo*(0.45+d*0.09); ay+=gauss()*errBase*mano*sforzo*(o.rimbalzo?0.15:0.35);
+  // PALOMBELLA (v0.88, Ale: «non è detto che sia gol per forza»): il pallonetto è un gesto di misura, più difficile del tiro teso:
+  // errore di lato × PALOMBELLA.errore e in lunghezza (troppo lunga sopra la traversa, troppo corta in mano al portiere che rientra)
+  // con il fattore PALOMBELLA.erroreAlto al posto di 0,35. Prima con il portiere fuori dai pali entrava quasi sempre.
+  const eLob=lob?PALOMBELLA.errore:1;
+  az+=gauss()*errBase*mano*sforzo*(0.45+d*0.09)*eLob; ay+=gauss()*errBase*mano*sforzo*(o.rimbalzo?0.15:lob?PALOMBELLA.erroreAlto:0.35)*eLob;
   // Velocità al rilascio (dati riportati nella tesi): professionisti 22,8 ± 2,4 m/s a tutta forza. La bravura al tiro sposta
   // il massimo tra circa 20 e 25 m/s; il tiro classico è il più veloce.
   const vMax=(22.8+(p.s.pot-75)*0.16)*(classico?1:tipo==='colonnello'?0.9:tipo==='schizzo'?0.82:0.85);      // Potenza: da circa 20 (60) a 25 m/s (90)
