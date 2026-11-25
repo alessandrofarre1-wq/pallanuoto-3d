@@ -55,7 +55,10 @@ try{
    if(tipo==='ricezione'){
     Object.assign(B,{state:'flight',holder:null,kind:'pass',target:p,shooter:p.team.players[3],lastTeam:p.team,x:p.x-d*.2,y:.65,z:p.z,vx:d,vy:0,vz:0,flightT:.2,tx:p.x,tz:p.z});F.updateBall(dt);
    }
-   const occasione=speciale?Q.occasioneControfuga(p):null;
+   // v0.88: schizzo e colonnello dipendono da energia (colonnello da 0,6, schizzo da 0,35) e Precisione (almeno 70, SPECIALI): la
+   // domanda si fa con l'energia e la Precisione adatte al gesto, senza cambiare la nuotata misurata
+   const occasione=speciale?(()=>{const e0=p.stamina,s0=p.s;p.stamina=speciale==='schizzo'?.45:1;p.s={...p.s,pre:Math.max(80,p.s?.pre??0)};
+    const o=Q.occasioneControfuga(p);p.stamina=e0;p.s=s0;return o;})():null;
    if(speciale)T.startAct(p,speciale,speciale==='schizzo'?.05:.08,()=>{B.state='free';B.holder=null;},[S.goalX(p.team),0]);
    const r={tipo,fps,ti,mano,occasione,campioniNuoto:0,campioniPalla:0,inversi:0,durataInversa:0,pallaDietro:0,minBodyDot:1,minBallDot:1,maxStep:0,esempi:[],finiti:true,px:p.x,pz:p.z};
    for(let i=0;i<fps;i++){

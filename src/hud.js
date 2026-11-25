@@ -14,6 +14,7 @@ import { nomePosizione, numeroPosizione } from './schemi.js';
 import { postoAttacco } from './entrate.js';
 import { etichettaChiamata, offertaChiamate } from './chiamate-attacco.js';
 import { prontezzaTiro } from './tiro-comando.js';
+import { sceltaTiroArea } from './controfuga.js';
 export const $ = id => document.getElementById(id);
 let tacKey='', schedaVista=null, ultimoBip=null, uomoAperto=null, uomoChiudi=null, chiamateKey='';
 const TOUCH='ontouchstart' in window || navigator.maxTouchPoints>0;
@@ -48,11 +49,12 @@ export function updateHUD(){
     el.textContent=n===null?'—':n; el.classList.toggle('urg',urg);
     if(urg&&n>0&&n!==ultimoBip){ bip(n<=2?1320:880); }
     ultimoBip=urg?n:null; }
-  // tasto a comparsa in controfuga (controfuga.js): pillola con il tasto, oppure pulsante TIRO illuminato sul telefono
-  { const q=ctrl&&ctrl.qte&&game.state==='play'?ctrl.qte:null, el=$('qte'), b=document.querySelector('.tb[data-b="shoot"]');
-    // v0.81: il tocco fa lo speciale, tenuto resta il tiro normale
-    const t=q?`Tocca TIRO<small>(K) · ${q.tipo==="schizzo"?"tiro a schizzo":"colonnello"} · tenuto: tiro normale</small>`:"";
+  // tasto a comparsa (v0.88: la PALOMBELLA fuori area, controfuga.js): pillola con il tasto, sul telefono compare il pulsante PALOMB.
+  // illuminato (body.palomba); prima era il tocco di TIRO per lo schizzo o il colonnello in controfuga
+  { const q=ctrl&&ctrl.qte&&ctrl.qte.tipo==='lob'&&game.state==='play'&&ball.holder===ctrl?ctrl.qte:null, el=$('qte'), b=document.querySelector('.tb[data-b="lob"]');
+    const t=q?`Palombella!<small>(L) · il portiere è fuori dai pali</small>`:"";
     if(el.dataset.t!==t){ el.dataset.t=t; el.innerHTML=t; el.classList.toggle('on',!!q); }
+    if(document.body.classList.contains('palomba')!==!!q) document.body.classList.toggle('palomba',!!q);
     if(b){ const on=!!q; if(b.classList.contains('premi')!==on) b.classList.toggle('premi',on); } }
   // Nome/ruolo per 3 s al cambio manuale e all'inizio; l'energia del selezionato
   // resta compatta e visibile anche in difesa. I cambi automatici aggiornano
@@ -60,7 +62,7 @@ export function updateHUD(){
   { const dal=game.time-ultimoCambioManuale();
     const vedi=!!ctrl&&(game.time<3||(dal>=0&&dal<3)); const pl=$('player'); pl.hidden=!ctrl;
     if(pl.classList.contains('vis')!==vedi) pl.classList.toggle('vis',vedi); }
-  // pulsante PALOMB. solo quando la nostra squadra ha la palla (in difesa non serve)
+  // la nostra squadra ha la palla (v0.88: il pulsante PALOMB. compare solo come tasto a comparsa, body.palomba)
   { const nostra=game.possTeam===teams[0]; if(document.body.classList.contains('nostra-palla')!==nostra) document.body.classList.toggle('nostra-palla',nostra);
     // v0.78 (Ale): con la palla agli avversari il tasto PASSA diventa CONTRASTA (stesso comando: 1-2 tocchi disturbano, il terzo è fallo)
     const difesa=game.possTeam===teams[1];
@@ -86,9 +88,12 @@ export function updateHUD(){
   }
   { const btn=document.querySelector('.tb[data-b="shoot"]'), carica=!!(ctrl&&ctrl.team.human&&!ctrl.excluded&&ctrl.charging&&ball.holder===ctrl&&game.state==='play'), pot=carica?prontezzaTiro(ctrl):0;
     const max=carica&&pot>=1, recente=ctrl&&ctrl.effettoTiro&&game.time-ctrl.effettoTiro.inizio>=0&&game.time-ctrl.effettoTiro.inizio<0.65?ctrl.effettoTiro:null;
-    const nomi={beduina:'BEDUINA',sciarpa:'SCIARPA',rovesciata:'ROVESCIATA',schizzo:'SCHIZZO',colonnello:'COLONNELLO'};
+    const nomi={beduina:'BEDUINA',sciarpa:'SCIARPA',rovesciata:'ROVESCIATA',schizzo:'SCHIZZO',colonnello:'COLONNELLO',lob:'PALOMBELLA'};
     btn.classList.toggle('massimo',max);
-    const label=carica?(max?'PRONTO':'Rilascia'):recente&&(nomi[recente.tipo]||recente.forza>=0.98)?(nomi[recente.tipo]||'POTENTE'):ctrl&&ctrl.qte?(ctrl.qte.tipo==='schizzo'?'tocco: schizzo':'tocco: colonnello'):'tocco: polso';
+    // v0.88: dentro l'area la scritta dice che tiro sceglierà TIRO (palombella con il portiere fuori dai pali, con un tocco schizzo o
+    // colonnello in controfuga); altrimenti il tocco è il polso
+    const scelta=ctrl&&ball.holder===ctrl&&game.state==='play'?sceltaTiroArea(ctrl):null;
+    const label=carica?(max?'PRONTO':'Rilascia'):recente&&(nomi[recente.tipo]||recente.forza>=0.98)?(nomi[recente.tipo]||'POTENTE'):scelta==='lob'?'palombella':scelta?'tocco: '+scelta:'tocco: polso';
     const small=btn.querySelector('small'); if(small.textContent!==label) small.textContent=label;
     const stato=carica?(max?'Tiro pronto alla massima potenza: rilascia per tirare':'Tiro in preparazione: rilascia per tirare'):'';
     const aria=stato||'Tiro: tocco e rilascio per il polso; tieni premuto per preparare e fintare';

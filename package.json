@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.87.0",
+  "version": "0.88.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -22,6 +22,8 @@
     "sonda-finte": "node strumenti/sonda-finte.mjs",
     "finte-forme": "node strumenti/finte-forme-foglio.mjs",
     "rose": "node tests/rose-v086.mjs",
+    "palombella": "node tests/palombella-v088.mjs",
+    "sonda-palombella": "node strumenti/sonda-palombella.mjs",
     "sonda-cambi": "node strumenti/sonda-cambi.mjs",
     "sonda-centro": "node strumenti/sonda-centro.mjs",
     "sonda-rientri": "node strumenti/sonda-rientri.mjs",

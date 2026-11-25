@@ -7,7 +7,7 @@ import { fightOn, girata } from './lotta.js';
 import { contrasto, doFake } from './regole.js';
 import { FINTA_RITMO, fintaDi } from './finte.js';
 import { TIRO_COMANDO } from './tiro-comando.js';
-import { aggiornaQte, occasioneControfuga, tiroSpeciale } from './controfuga.js';
+import { aggiornaQte, palombella, sceltaTiroArea, tiroSpeciale } from './controfuga.js';
 import { ball, ctrl, fight, game, goalX, ownGoalX, setCtrl, teams } from './stato.js';
 import { diSchiena, doPass, doShoot, humanPassTarget, shotKind, startAct } from './tiri.js';
 export let tapT=-9, pendingQuick=null;
@@ -45,7 +45,7 @@ function aggiornaTiroTenuto(p,dt,passa,lob){
   }
   if(!tiroTenuto)return false;
   if(tiroTenuto.p!==p)return false;
-  if(!tenutaValida(tiroTenuto)||passa||lob||pressed('cmd')||(!inp.shoot&&!released('shoot'))){ annullaTiroTenuto();return false; }
+  if(!tenutaValida(tiroTenuto)||passa||(lob&&p.qte?.tipo==='lob')||pressed('cmd')||(!inp.shoot&&!released('shoot'))){ annullaTiroTenuto();return false; }
   const c=tiroTenuto,aimZ=Math.abs(inp.z)>.3?inp.z:null;
   p.charging=true;p.chargeT=Math.min(TIRO_COMANDO.carica,p.chargeT+(inp.shoot?Math.max(0,dt):0));
   if(!p.mira0&&aimZ!==null)p.mira0=Math.sign(aimZ);
@@ -53,10 +53,13 @@ function aggiornaTiroTenuto(p,dt,passa,lob){
     const carica=p.chargeT,kind=shotKind(p),dopoFinta=game.time<(p.fintaFino||0);
     if(p.act===c.act)p.act=null;
     tiroTenuto=null;p.voloPronto=false;pendingQuick=null;tapT=game.time;
+    // v0.88 (Ale): dentro l'area TIRO sceglie da solo la palombella con il portiere fuori dai pali (tocco o tenuto) e, nella controfuga
+    // vera, con un tocco lo schizzo o il colonnello secondo energia e Precisione (controfuga.js); tenuto resta il tiro normale (v0.81).
+    // Prima lo speciale partiva con un tocco durante il tasto a comparsa e la palombella aveva il suo tasto.
+    const scelta=sceltaTiroArea(p);
+    if(scelta==='lob'){ palombella(p,aimZ); return true; }
     if(carica<TIRO_POLSO){
-      // v0.81: un tocco durante il tasto a comparsa della controfuga vera fa lo schizzo o il colonnello
-      const speciale=p.qte&&occasioneControfuga(p);
-      if(speciale){ tiroSpeciale(p,speciale,aimZ); return true; }
+      if(scelta){ tiroSpeciale(p,scelta,aimZ); return true; }
       // Il polso rimane utile vicino alla porta: meno potenza, stessa mira.
       const pw=.42;p.chargeT=pw*TIRO_COMANDO.carica;
       startAct(p,diSchiena(kind)?kind:'polso',.04,()=>doShoot(p,pw,false,aimZ,{polso:true,dopoFinta}));
@@ -119,10 +122,10 @@ export function humanControl(p,dt){
   const riceveTaglio=p.cut?.coordinata&&!hasBall&&ball.state==='flight'&&ball.kind==='pass'&&
     ball.target===p&&ball.shooter?.team===p.team&&Math.hypot(ix,iz)<.2;
   if(!riceveTaglio)p.cut=null;
-  // v0.81 (Ale: «troppi tiri a schizzo e colonnello»): nella controfuga vera il tasto a comparsa resta, ma lo speciale parte solo con
-  // un tocco di TIRO (al rilascio, in aggiornaTiroTenuto); tenendo premuto si prepara il tiro normale. Prima qualunque pressione di
-  // TIRO durante il tasto faceva lo schizzo o il colonnello.
-  if(hasBall&&tiroLecito(p)) aggiornaQte(p);
+  // v0.88: il tasto a comparsa è la PALOMBELLA fuori area (portiere fuori dai pali e tiratore in buona posizione, controfuga.js); il
+  // comando palombella (tasto, L, Y del controller) vale solo mentre è comparso
+  if(hasBall&&tiroLecito(p)) aggiornaQte(p); else if(!hasBall) p.qte=null;
+  if(lob&&!(hasBall&&p.qte?.tipo==='lob')) lob=false;
   if(aggiornaTiroTenuto(p,dt,passa,lob))return;
   if(p.act&&!p.act.done){
     const resto=p.act.wind+p.act.frusta-p.act.t;
@@ -135,7 +138,7 @@ export function humanControl(p,dt){
   if(intenzione){
     const c=intenzione; intenzione=null;
     // Un comando nuovo sostituisce quello anticipato; altrimenti si usa la direzione del tocco.
-    if(!passa&&!lob&&!pressed('legacyShoot')&&!pressed('desktopShoot')&&!pressed('cmd')){ passa=c.kind==='pass'; lob=c.kind==='lob'; ix=c.x; iz=c.z; }
+    if(!passa&&!lob&&!pressed('legacyShoot')&&!pressed('desktopShoot')&&!pressed('cmd')){ passa=c.kind==='pass'; lob=c.kind==='lob'&&p.qte?.tipo==='lob'; ix=c.x; iz=c.z; }
   }
   if(pressed('cmd') && hasBall && fightOn(p,fight.def) && fight.boa===p && !(p.turnedUntil>game.time)){ girata(p,fight.def); return; }
   if(pressed('cmd')){
@@ -158,7 +161,7 @@ export function humanControl(p,dt){
     if(p.pressatoUntil>game.time && !p.isGK){ p.charging=false; p.chargeT=0; p.voloPronto=false; pendingQuick=null;
       if(pressed('shoot')||lob) annuncia('avviso','Sotto pressione',{dettaglio:'proteggi la palla o passa',durata:0.9});
       return; }
-    if(lob&&!p.isGK){ pendingQuick=null; startAct(p,'lob',0.12,()=>doShoot(p,0.4,true,aimZ)); return; }
+    if(lob&&!p.isGK){ pendingQuick=null; palombella(p,aimZ); return; }
     // tiro al volo: TIRO tenuto premuto mentre il passaggio era in volo → si tira appena arriva la palla
     if(p.voloPronto && ball.holdTime<0.2 && !p.isGK && !ftBlock){ p.voloPronto=false; p.voloTocco=-9; p.charging=false; p.chargeT=0; startAct(p,shotKind(p),0.03,()=>doShoot(p,0.62,false,aimZ,{volo:true})); return; }
     p.voloPronto=false;

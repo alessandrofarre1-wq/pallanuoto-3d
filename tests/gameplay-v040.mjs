@@ -45,7 +45,10 @@ try{
     }
     function finta(p,wind=.18){let fine=null;T.startAct(p,'fake',wind,()=>{fine=G.time;});return ()=>fine;}
     function buffer(key,modifica){
-      const p=prepara(),m=p.team.players[4];m.x=7;m.z=4;const fine=finta(p);
+      const p=prepara(),m=p.team.players[4];m.x=7;m.z=4;
+      // v0.88: la palombella si comanda solo quando compare (portiere fuori dai pali, controfuga.js): il portiere avversario esce di 2,5 m
+      if(key==='KeyL'){const gk=S.teams[1].players[0];gk.x-=S.teams[0].dir*2.5;}
+      const fine=finta(p);
       // Il comando si anticipa di150ms sul gesto effettivo, anche quando la
       // finta ha un accenno più lungo; la finestra del buffer resta200ms.
       while(p.act&&!p.act.done&&p.act.wind+p.act.frusta-p.act.t>.15)frame(p);

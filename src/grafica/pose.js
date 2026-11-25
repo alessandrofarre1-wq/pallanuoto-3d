@@ -1,4 +1,4 @@
-import { FINTA_FIRMA, FINTA_LATO, fintaDi, firmaFinta } from '../finte.js';
+import { FINTA_FIRMA, FINTA_LATO, abitudine, fintaDi, firmaFinta } from '../finte.js';
 import * as THREE from 'three';
 // Pose e animazioni: nuotata, posizione verticale, gesti di tiro e passaggio
 import { BRV, VIS, clamp, dist, rndGrafica } from '../costanti.js';
@@ -354,6 +354,13 @@ export const FINE_LEGGERO=[0.18,-0.12,0.38];
 // PESCA DELLA PALLA DALL'ACQUA (v0.63, punto 9: Mandić nel video di Ale): durata massima (s, al massimo 0,8 della carica del gesto),
 // fasi (la mano arriva sulla palla, ci passa sotto, la porta su) e dove la porta: di lato, all'altezza della spalla
 export const PESCA={ durata:0.32, arriva:0.32, sotto:0.52, spalla:[0.06,0.16,0.27] };
+// RIGORE (v0.88, Ale: «la posizione iniziale per battere un rigore è palla in acqua e braccio dietro la schiena con mano o sopra la palla
+// o sotto. Poi parte il movimento che deve essere unico»): prima del gesto la palla galleggia dietro, dalla parte del braccio che tira
+// («palla»: metri indietro e di lato rispetto alla spalla, unità del corpo), con il braccio teso dietro la schiena e la mano sopra la palla
+// (palmo in giù) o sotto (palmo in su): un'abitudine del giocatore, sopra per «sopra» giocatori su cento. La carica la porta su in un solo
+// movimento fino al braccio caricato (con la mano sotto si parte già dalla salita). Prima (v0.84) la palla stava in acqua davanti.
+// Solo disegno: il controfallo per il movimento spezzato resta quello della v0.84 (RIGORE_TIRO).
+export const RIGORE_VISTA={ palla:[-0.40,0.24], sopra:0.6 };
 // ESULTANZA (v0.63, punto 10): quanto si alza il corpo (unità del corpo, ×1,45 = metri), altezza della mano sopra la spalla, ampiezza
 // e ritmo (colpi al secondo) del pugno agitato
 export const ESULTA={ su:0.08, alto:0.48, pugno:0.07, ritmo:2.2 };
@@ -496,10 +503,12 @@ function articolaVista(p,J,T,t,gestoVista){
       // acqua davanti a lui, con la mano sopra (palmo in giù); girata, beduina e sciarpa sono i gesti che la alzano
       // RIGORE (v0.84, Ale: «la palla deve partire dall'acqua»): prima del gesto la palla sta in acqua davanti a chi tira, con la mano
       // sopra (come il centroboa con il difensore dietro); la carica la pesca dall'acqua (PESCA). Solo disegno: p.ballW non cambia.
+      // v0.88 (RIGORE_VISTA): la palla dietro, il braccio dietro la schiena con la mano sopra o sotto la palla
       if(game.penalty===p&&!p.charging&&!(p.act&&!p.act.done)){
-        const pl=add3(V['s'+suff],locale(BOA_ACQUA));
-        braccio(lato,pl,locale([-0.2,-0.6,1]),locale([0.12,-1,0.05]),0.15,1-e);
-        T.pallaInAcqua=1-e; T.rigoreAcqua=[pl[0],0.05,pl[2]]; return V; }
+        const sopra=abitudine(p.scheda,'rigore',RIGORE_VISTA.sopra), sp=V['s'+suff];
+        const pl=[sp[0]+RIGORE_VISTA.palla[0],0.05,sp[2]+RIGORE_VISTA.palla[1]*lato];
+        braccio(lato,add3(pl,[0,sopra?0.10:-0.09,0]),locale([-0.35,-0.25,1]),locale(sopra?[0.1,-1,0.05]:[0.1,1,0.05]),sopra?0.15:-0.25,1-e);
+        T.pallaInAcqua=1-e; T.rigoreAcqua=pl; return V; }
       if(fight.active&&fight.boa===p&&fight.def){ const q=fight.def, dx=q.x-p.x, dz=q.z-p.z, l=Math.hypot(dx,dz)||1;
         if((dx*p.fx+dz*p.fz)/l<-0.3){
           braccio(lato,add3(V['s'+suff],locale(BOA_ACQUA)),locale([-0.2,-0.6,1]),locale([0.12,-1,0.05]),0.15,1-e);
@@ -627,11 +636,13 @@ function articolaVista(p,J,T,t,gestoVista){
     // una pesca già cominciata continua anche se la carica del giocatore diventa un gesto (tocco breve di TIRO)
     const inCorso=p.pesca&&game.time-p.pesca.t0<p.pesca.D*1.35;
     if(!inCorso) p.pesca=gestoId&&kind!=='colonnello'&&kind!=='schizzo'&&hold&&(p.davantiVista||0)>0.5&&p.pallaDavantiLocale
-      ? { t0:game.time, D:a?Math.min(PESCA.durata,0.8*Math.max(0.05,a.wind)):PESCA.durata, Pl:p.pallaDavantiLocale.slice() } : null; }
+      ? { t0:game.time, D:a?Math.min(PESCA.durata,0.8*Math.max(0.05,a.wind)):PESCA.durata, Pl:p.pallaDavantiLocale.slice(),
+        rigore:game.penalty===p, sotto:game.penalty===p&&!abitudine(p.scheda,'rigore',RIGORE_VISTA.sopra) } : null; }
   if(p.pesca){
-    const pe=p.pesca, u=(game.time-pe.t0)/pe.D;
+    // v0.88: nel rigore la palla sale da dietro fino al braccio caricato in un solo movimento (con la mano già sotto si parte dalla salita)
+    const pe=p.pesca, u0=(game.time-pe.t0)/pe.D, u=pe.sotto&&u0<1?PESCA.sotto+u0*(1-PESCA.sotto):u0;
     if(u<1.35&&hold){
-      const sopra=add3(pe.Pl,[-0.03,0.07,0.03*lato]), sotto=add3(pe.Pl,[-0.07,-0.05,0.04*lato]), su=add3(V['s'+suff],locale(PESCA.spalla));
+      const sopra=add3(pe.Pl,[-0.03,0.07,0.03*lato]), sotto=add3(pe.Pl,[-0.07,-0.05,0.04*lato]), su=pe.rigore?mano.slice():add3(V['s'+suff],locale(PESCA.spalla));
       const giu=[0.3,-1,0], palmoSu=[0.2,1,0.1*lato];
       let h, nn;
       if(u<PESCA.arriva){ h=sopra; nn=giu; }

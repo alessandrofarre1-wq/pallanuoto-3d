@@ -547,6 +547,12 @@ body.touch #qte{display:none}
 #rosa .fig.altro.puo{opacity:.9}
 #rosa .fig small{font-size:10px;color:#cfe3ff}
 #rosa .fm-posto{display:block;font-style:normal;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--h-oro,#f5c542)}
+#rosa .fm-rose{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:2px 0 6px}      /* v0.88: rose dei tornei */
+#rosa .fm-rose-t{flex-basis:100%;font:800 12px system-ui;text-transform:uppercase;letter-spacing:.06em;color:var(--h-oro,#f5c542)}
+#rosa .fm-rose-t b{color:#fff;font-size:14px;margin-left:4px}
+#rosa .fm-rosa{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;padding:6px 12px;cursor:pointer;font-size:13px;min-height:36px}
+#rosa .fm-rosa b{margin-left:4px;color:var(--h-oro,#f5c542)}
+#rosa .fm-rosa.on{border-color:var(--h-oro,#f5c542);background:rgba(245,197,66,.16)}
 #rosa .fm-ripristina{grid-column:1/-1;justify-self:start;margin-top:6px;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer}
 #rosa .fm-dati{display:block;font-size:11px;color:#9fc3ef;margin-top:2px}
 #rosa .fm-finta{display:block;font-size:11px;color:#ffd479;margin-top:2px}
@@ -1080,7 +1086,7 @@ body.touch #tac .chip[data-apri]{max-width:200px}
    registro degli eventi spostato nel menu di pausa (il T.O. resta sempre a schermo) */
 #player{opacity:1}
 #player.vis{opacity:1}
-body:not(.nostra-palla) .tb[data-b="lob"]{display:none}
+body:not(.palomba) .tb[data-b="lob"]{display:none}      /* v0.88: la palombella è un tasto a comparsa */
 #tLog{display:none}
 
 /* ===== Replay del gol (v0.47): informazioni ai margini, campo libero al centro ===== */

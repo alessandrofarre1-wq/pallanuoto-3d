@@ -3,6 +3,31 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.88
+- Tasto PALOMB. sempre visibile quando la nostra squadra ha la palla, palombella da qualunque distanza (v0.40) → tasto a comparsa solo
+  fuori area (6-10 m, entro 0,6 rad dal centro della porta, nessun avversario entro 1,6 m) con il portiere fuori dai pali, per 1,2 s;
+  dentro l'area la palombella è un tipo di tiro che TIRO sceglie da solo con il portiere fuori dai pali (`PALOMBELLA`, `sceltaTiroArea`).
+- Palombelle del computer a caso, 12 tiri su 100 decisi oltre i 5 m → solo con il portiere fuori dai pali (dentro l'area sempre, fuori
+  area con l'occasione); la finta «di bomba» finisce in palombella solo con il portiere fuori dai pali.
+- Tasto a comparsa (QTE) per schizzo e colonnello nella controfuga vera, colonnello sotto 5,5 m e schizzo da 5,5 a 8 m, per tutti
+  (v0.31, v0.81) → nessun tasto: dentro l'area, nella controfuga vera, il tocco di TIRO sceglie il colonnello (energia almeno 0,6) o lo
+  schizzo (almeno 0,35), solo con Precisione almeno 70 (`SPECIALI`); tenuto resta il tiro normale. Il computer, con la stessa
+  occasione, sceglie lo speciale 35 volte su 100 quando tira (prima 35 su 100 nel solo tiro subito dopo la ricezione, fino a 6,5 m).
+- Portiere sempre a 0,7 m dalla linea di porta, Uscita mai usata in partita → esce verso chi porta palla senza difensori davanti entro
+  9 m, di 1 m più 1,4 m × Uscita (`USCITA_PORTIERE`).
+- Rigore: palla in acqua davanti a chi tira con la mano sopra (v0.84) → palla dietro, dalla parte del braccio che tira, braccio teso
+  dietro la schiena con la mano sopra o sotto la palla (abitudine del giocatore, `RIGORE_VISTA`); la carica la porta su in un solo
+  movimento. Solo disegno; il controfallo resta quello della v0.84.
+- «Rating» della squadra = ranking della nazionale (`forza`) → valutazione dei 14 della partita come scendono in acqua (`ratingLista`:
+  titolari nel loro posto, peso doppio); confronto «equilibrata» entro 3 punti di ranking, «di molto» da 10 → entro 1 punto di
+  valutazione, «di molto» da 6.
+- Valutazioni dei giocatori riportate al ranking, abbassate di quanto i 14 più forti superavano i 13 della vecchia rosa (v0.86,
+  `riportaAlRanking`) → valutazioni del database (la funzione resta nello strumento, non si usa).
+- Titolari: sempre chi fa il ruolo, anche se più debole (v0.86) → il più forte nel posto, con 3 punti di vantaggio a chi lo fa di ruolo
+  e mezzo punto in meno per ogni gradino dei ruoli vicini (`LISTA.specialista`); la panchina copre i ruoli come prima.
+- Partita singola: tutti i disponibili o una lista fatta a mano (v0.86) → anche le rose dei tornei del database (Coppa del Mondo 2026,
+  Europei 2026, Mondiali 2025), ognuna con la sua valutazione (`ROSE_TORNEI`).
+
 ## v0.87
 - Mano nella finta: palmo dietro la palla in avanti e un po' in su durante la carica e, nel ritorno, in giù qualunque fosse la posizione
   della palla (a fine finta la palla stava davanti al viso con la mano sopra) → il palmo segue la mano rispetto alla testa: al cielo

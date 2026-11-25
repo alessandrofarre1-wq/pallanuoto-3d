@@ -101,6 +101,30 @@ export function rosa(codice){
   const scelta=a&&a.length?C.filter(g=>a.includes(g.id)):null;
   return numeriLista(scelta&&scelta.length===a.length&&listaValida(scelta)?listaPartita(scelta,scelta.length):listaPartita(C));
 }
+// VALUTAZIONE DELLA SQUADRA (v0.88, Ale: «le valutazioni delle squadre dipendono dai giocatori che le compongono; se seleziono i più
+// forti da una rosa allargata, la squadra dovrebbe essere valutata meglio»): media delle valutazioni della lista della partita, con i 7
+// titolari (i primi della lista) che contano il doppio della panchina. Prima il Rating era il numero fisso del ranking (squadre.json,
+// «forza»), uguale qualunque giocatore si scegliesse; il ranking resta per le fasce e le partite simulate dei tornei.
+// I titolari contano con la valutazione nel posto che occupano (la stessa che usa la scelta della lista: i primi 7 sono portiere,
+// centroboa e i posti da 2 a 6), così scegliere tra più giocatori non dà mai una squadra peggiore.
+export function ratingLista(L){
+  if(!L||!L.length) return 0;
+  let somma=0,pesi=0; L.forEach((g,i)=>{ const k=i<7?2:1; somma+=(i<7?ovr(g.s,i):g.ovr)*k; pesi+=k; });
+  return Math.round(somma/pesi);
+}
+export const ratingSquadra=codice=>ratingLista(rosa(codice));
+// LE ROSE DEI TORNEI (v0.88, Ale: «possiamo caricare 3 rose diverse per ogni squadra e nella partita singola si può scegliere con quale si
+// vuole giocare, considerando che possono avere una valutazione complessiva diversa»): oltre a tutti i disponibili, i convocati della
+// nazionale in ogni torneo del database (almeno 9, con un portiere); la lista della partita è la scelta automatica tra loro
+export const ROSE_TORNEI=Object.freeze([
+  { chiave:'wc2026', nome:'Coppa del Mondo 2026', eventi:['wc2026_finals','wc2026_div1','wc2026_div2'] },
+  { chiave:'euro2026', nome:'Europei 2026', eventi:['euro2026'] },
+  { chiave:'wch2025', nome:'Mondiali 2025', eventi:['wch2025'] }]);
+export function roseTornei(codice){
+  const P=tutti(codice);
+  return ROSE_TORNEI.map(r=>({ ...r, giocatori:P.filter(g=>(g.convocazioni||[]).some(e=>r.eventi.includes(e))) }))
+    .filter(r=>r.giocatori.length>=9&&r.giocatori.some(g=>g.ruolo===0));
+}
 // rose generate per le vecchie squadre senza dati (non crea nomi per nuove nazionali)
 function generata(codice){
   const sq=dati.squadre.find(x=>x.codice===codice), nomi=NOMI[codice];

@@ -10,6 +10,27 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.88 — palombella senza tasto, scelta del tiro, rigore, valutazione delle squadre** (Claude Code, 25/11/2026; rapporto
+  `docs/versioni/v088-palombella-rigore-rose.md`). RICHIESTA: Ale, «puoi anche togliere il tasto della palomba: da fuori area, se il
+  giocatore che ha la palla è in buona posizione e il portiere sta fuori dai pali, può comparire il tasto palomba, lo puoi premere con
+  prontezza ma non è detto che sia gol; da dentro l'area la palomba diventa un tipo di tiro: se il portiere esce dai pali, quando premerò
+  tiro l'ai sceglierà la palomba, se non esce un tiro potente e teso, in controfuga anche lo schizzo (se non è troppo stanco e ha qualità)
+  o il colonnello (se è meno stanco e ha qualità)»; «la posizione iniziale per battere un rigore è palla in acqua e braccio dietro la
+  schiena con mano o sopra la palla o sotto; poi parte il movimento che deve essere unico, se è spezzato l'arbitro fischia il contro
+  fallo»; «le valutazioni delle squadre dipendono dai giocatori che le compongono; se seleziono i più forti da una rosa allargata la
+  squadra dovrebbe essere valutata meglio; oppure possiamo caricare 3 rose diverse per ogni squadra e nella partita singola si può
+  scegliere con quale si vuole giocare»; «una volta fatto queste modifiche puoi anche riequilibrare le partite» (v0.89). CODICE: tasto
+  PALOMB. sempre visibile, palombelle del computer a caso (12% dei tiri oltre 5 m), tasto a comparsa per schizzo e colonnello uguale per
+  tutti, portiere sempre a 0,7 m (Uscita mai usata; fuori dai pali lo 0,7% del tempo), palla del rigore davanti, «Rating» = ranking,
+  valutazioni riportate al ranking (v0.86), titolari sempre di ruolo anche se più deboli. CAMBIAMENTI: `controfuga.js`
+  (`sceltaTiroArea`, `occasionePalombella`, `portiereFuori`, `palombella`, `aiPalombella`, `occasioneControfuga` con energia e
+  Precisione), `controllo.js` (scelta al rilascio di TIRO, L solo con il tasto comparso), `ia.js` (uscita del portiere in `gkTarget`,
+  `aiShoot` con la scelta dell'area, niente palombelle a caso), `hud.js` e `stile.css` (tasto PALOMB. a comparsa, scritta sotto TIRO),
+  `taratura.js` (`PALOMBELLA`, `SPECIALI`, `USCITA_PORTIERE`), `grafica/pose.js` (`RIGORE_VISTA`), `finte.js` (`abitudine`),
+  `dati/rose.js` (`ratingLista`, `ratingSquadra`, `ROSE_TORNEI`, `roseTornei`), `dati/lista-partita.js` (titolari per forza nel posto),
+  `menu.js` (Rating, confronto, bottoni delle rose), `strumenti/rose-dal-database.mjs` (tolto il riporto al ranking) e
+  `dati/rose-db.json`, `index.html` (comandi), `main.js` (agganci per le prove). DA_COMPLETARE_STORIA
+
 - **v0.87 — finte: mano e marchio di fabbrica** (Claude Code, 24/11/2026; rapporto `docs/versioni/v087-finte-mano.md`). RICHIESTA:
   Ale, sul foglio delle forme della finta: «se la palla sta dietro la testa il palmo della mano deve essere rivolto verso l'alto (come
   se il giocatore tenesse la palla su un vassoio); se la finta supera la testa e va in avanti l'unico modo per tenere la palla è ruotare

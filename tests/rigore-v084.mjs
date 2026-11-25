@@ -3,7 +3,7 @@
 // 2. Carica e rilascio senza fermarsi: il tiro parte.
 // 3. Fermo a braccio carico oltre mezzo secondo: controfallo, palla al portiere avversario.
 // 4. Il computer tira sempre con un movimento continuo.
-// Uso: node tests/rigore-v084.mjs [--no-build] [--foto]   (--foto salva due immagini in docs/immagini/)
+// Uso: node tests/rigore-v084.mjs [--no-build] [--foto]   (--foto salva due immagini in docs/immagini/, dalla v0.88 v088-rigore-*.png)
 import { chromium } from 'playwright';
 import { build, preview } from 'vite';
 import fs from 'node:fs';
@@ -36,7 +36,9 @@ const rigore = (squadra, umano) => pg.evaluate(({ squadra, umano }) => {
   g.state = 'play'; g.timer = 0; g.after = null;
   window.__salta(30);
   const s = g.penalty;
-  return { ok: !!s, ballY: s ? +s.ballVistaW[1].toFixed(2) : null, davanti: s ? s.davantiVista : null };
+  // v0.88: la palla è dietro (prodotto con la direzione del tiratore negativo) e il braccio dietro la schiena
+  const dietro = s ? +((s.ballVistaW[0] - s.x) * s.fx + (s.ballVistaW[2] - s.z) * s.fz).toFixed(2) : null;
+  return { ok: !!s, ballY: s ? +s.ballVistaW[1].toFixed(2) : null, davanti: s ? s.davantiVista : null, dietro };
 }, { squadra, umano });
 const tasto = (tipo) => pg.evaluate(tipo => window.dispatchEvent(new KeyboardEvent(tipo, { code: 'KeyK' })), tipo);
 const foto = async nome => {
@@ -48,11 +50,11 @@ const foto = async nome => {
 
 // 1-2. Italia (giocatore): palla in acqua, poi carica e rilascio continuo
 const a = await rigore(0, true);
-prova(a.ok && a.ballY !== null && a.ballY < 0.3 && a.davanti === 1, `prima del gesto la palla è in acqua davanti a chi tira (altezza ${a.ballY} m)`);
-if (process.argv.includes('--foto')) await foto('v084-rigore-palla-in-acqua.png');
+prova(a.ok && a.ballY !== null && a.ballY < 0.3 && a.davanti === 1 && a.dietro < -0.15, `v0.88: prima del gesto la palla è in acqua dietro chi tira, con il braccio dietro la schiena (altezza ${a.ballY} m, ${a.dietro} m dietro)`);
+if (process.argv.includes('--foto')) await foto('v088-rigore-palla-dietro.png');
 await tasto('keydown');
 const pesca = await pg.evaluate(() => { const H = window.__pallanuoto, s = H.game.penalty, y = []; for (let i = 0; i < 30; i++) { window.__salta(1); y.push(+s.ballVistaW[1].toFixed(2)); } return y; });
-if (process.argv.includes('--foto')) await foto('v084-rigore-carica.png');
+if (process.argv.includes('--foto')) await foto('v088-rigore-carica.png');
 prova(pesca[0] < 0.35 && Math.max(...pesca) > 0.6, `caricando la palla viene pescata dall'acqua e alzata (da ${pesca[0]} a ${Math.max(...pesca)} m)`);
 await pg.evaluate(() => window.__salta(10));
 await tasto('keyup');

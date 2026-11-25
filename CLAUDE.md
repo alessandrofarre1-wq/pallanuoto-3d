@@ -87,8 +87,9 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   prepartita: sei preset e una personale, schemi dell'uomo in più) → Impostazioni (durata, difficoltà, arbitro) → Gioca.
 ### Comandi
 - Touch: levetta a sinistra; TIRO toccato e rilasciato = tiro rapido di polso, meno potente; tenuto = preparazione e finte continue, potenza massima in0,9s, tiro al rilascio anche durante la propria finta. Nessun tiro automatico normale e nessun minigioco di precisione. L’anello del selezionato diventa oro chiaro e il tasto indica PRONTO; nessuna barra sopra l’atleta o barra di potenza. Mira, stanchezza, pressione e abilità restano determinanti.
-- PASSA; con la palla agli avversari lo stesso tasto diventa CONTRASTA (v0.78: scritta, icona a mano, rosa, «3° = fallo»): 1-2 tocchi in 1,5 s disturbano, il terzo ravvicinato è fallo. Tasti colorati per funzione su bordo e icona (TIRO arancione, PASSA blu, CONTRASTA rosa, PALOMB. viola, SPRINT verde, CAMBIA bianco), lontani da oro/rosso/ciano; premuto e azioni richieste restano oro; prova `npm run comandi-interfaccia`. SPRINT a tocchi, CAMBIA al più vicino alla palla. TAGLIO tolto dal touch su richiesta di Ale; chiamate A/B/C conservate. PALOMB., T.O. e pausa conservati. TIRO durante un passaggio in arrivo conserva il tiro al volo; alla boa spalle alla porta sceglie beduina/sciarpa dalla situazione. Tasto a comparsa (QTE) solo nella controfuga vera, entro 9 s dal recupero (`QTE.eta`): un tocco di TIRO fa schizzo o colonnello, tenuto il tiro normale (v0.81, Ale: «troppi tiri a schizzo e colonnello»); procedura dei rigori conservata.
-- Tastiera: frecce; Spazio/K stessa tenuta-finte-rilascio (K anche al volo in arrivo, Spazio tenuto prima della presa non tira da solo); D passaggio al rilascio/contrasto; L palombella; Shift sprint a tocchi; C cambia; F comando avanzato taglio/girata/raddoppio conservato; Q/W/E o1/2/3 schemi,4 boa, T time-out,B cambio consigliato,P/Esc pausa. Controller con la stessa logica. Annullamenti per pausa/blur/touchcancel/perdita possesso o controllo; un tasto fisicamente ancora premuto dopo reset deve prima essere rilasciato.
+- PASSA; con la palla agli avversari lo stesso tasto diventa CONTRASTA (v0.78: scritta, icona a mano, rosa, «3° = fallo»): 1-2 tocchi in 1,5 s disturbano, il terzo ravvicinato è fallo. Tasti colorati per funzione su bordo e icona (TIRO arancione, PASSA blu, CONTRASTA rosa, PALOMB. viola, SPRINT verde, CAMBIA bianco), lontani da oro/rosso/ciano; premuto e azioni richieste restano oro; prova `npm run comandi-interfaccia`. SPRINT a tocchi, CAMBIA al più vicino alla palla. TAGLIO tolto dal touch su richiesta di Ale; chiamate A/B/C conservate. T.O. e pausa conservati. TIRO durante un passaggio in arrivo conserva il tiro al volo; alla boa spalle alla porta sceglie beduina/sciarpa dalla situazione. Procedura dei rigori conservata.
+- Scelta del tiro e palombella v0.88 (Ale: «puoi anche togliere il tasto della palomba»; `controfuga.js`, `PALOMBELLA`, `SPECIALI`): dentro l'area (6 m) TIRO sceglie da solo il tipo di tiro: palombella con il portiere fuori dai pali (oltre 1,3 m dalla linea o 2,2 m di lato), se il tiratore non è di spalle; nella controfuga vera (v0.81, entro 9 s dal recupero, `QTE.eta`) colonnello con energia almeno 0,6 e schizzo almeno 0,35, solo con Precisione almeno 70; altrimenti il tiro normale (tocco = polso, tenuto = tiro potente e teso). La scritta sotto TIRO dice quale. Fuori area il tasto PALOMB. compare solo come tasto a comparsa (1,2 s, poi 2 s di pausa) con il portiere fuori dai pali e il tiratore in buona posizione (entro 10 m, entro 0,6 rad dal centro della porta, nessun avversario entro 1,6 m): premuto subito fa la palombella, non è detto che sia gol. Niente più tasto a comparsa per schizzo e colonnello. Stesse regole per il computer (fuori area 1,4 volte al secondo con l'occasione, più spesso con Visione alta; niente più palombelle a caso). Prova `npm run palombella`, sonda `npm run sonda-palombella`.
+- Tastiera: frecce; Spazio/K stessa tenuta-finte-rilascio (K anche al volo in arrivo, Spazio tenuto prima della presa non tira da solo); D passaggio al rilascio/contrasto; L palombella (solo quando compare); Shift sprint a tocchi; C cambia; F comando avanzato taglio/girata/raddoppio conservato; Q/W/E o1/2/3 schemi,4 boa, T time-out,B cambio consigliato,P/Esc pausa. Controller con la stessa logica. Annullamenti per pausa/blur/touchcancel/perdita possesso o controllo; un tasto fisicamente ancora premuto dopo reset deve prima essere rilasciato.
 ### Nuoto e corpo (indicazioni di Ale, ex nuotatore)
 - Tiro standard caricato/torsione v0.74: pose Plask di Ale trasferite sull’intera catena di52ossa, modello/rig/pesi invariati. Tutti gli altri gesti restano procedurali. Stile libero a testa alta, mai rana o stella; chi
   porta palla la spinge davanti alla testa. Da fermi acqua alle spalle, corpo comunque inclinato (bacino e gambe indietro, di più
@@ -140,7 +141,10 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   scheda del giocatore mostra «Finta larga · da destra a sinistra · braccio teso». Prova `npm run finte-mano`, foglio `npm run
   finte-mano-foglio`.
 - Portiere: segue il passaggio, para in base a posizione, Riflessi, stanchezza, sorpresa e muro; para meno dopo un cambio di lato,
-  in superiorità, dopo una finta o su tiri vicini; mentre l'avversario carica sale a braccia larghe (solo disegno).
+  in superiorità, dopo una finta o su tiri vicini; mentre l'avversario carica sale a braccia larghe (solo disegno). Uscita v0.88
+  (`USCITA_PORTIERE`): nella controfuga avversaria (nessun difensore davanti a chi porta palla, entro 9 s dal recupero e 9 m dalla
+  porta) esce dai pali verso la palla di 1 m più 1,4 m × Uscita (la statistica, da 40 a 99), mai a meno di 1,6 m da chi porta palla;
+  così lascia lo spazio alla palombella. Prima stava sempre a 0,7 m dalla linea.
 - Portiere v0.71: il sorteggio decide il tentativo, non una presa senza contatto. Sagoma numerica condivisa con il disegno, sweep3D e reazione/velocità delle mani limitate; corpo/testa respingono, le prese ravvicinate richiedono la mano e sono rare. Stesse regole per le due squadre. Proporzioni v0.72: campo25×20m, porta3×0,90m e palla22,12cm nello stesso mondo. Scala delle giuntureVIS1,45→1,10: modello base2,547→1,932m in bind, profili individuali conservati. Sagoma/mani del portiere, palla sul palmo, ombra e contatto acqua seguono il corpo. Il punto fisico di lancio segue necessariamente la nuova altezza; tempi e velocità del tiro conservati.
 - Traiettorie v0.71: palombella più tesa (CPU dopo una finta, nessun nuovo obbligo umano); forte alto verso le quadrelle con rotazione da tiro, mirino nominale coerente e suono sordo solo su urto reale palo/traversa. Rimbalzo mirato prima del portiere dalla fisica dell’acqua, solo con distanza/spazio adatti. Parametri in `TRAIETTORIE_TIRO`. Il corpo del portiere segue la stessa lettura delle mani, anche sui tiri deviati ancora in arrivo; aspetta la propria reazione e non anticipa il lato vero. Fattore rigore0,41→0,7 per la sola lettura, non per assegnare una parata:188/240gol nel controllo,78,3%; coefficienti globali di precisione/potenza conservati.
 - Tiro classico v0.72: gambe asimmetriche con perno controlaterale e dominante arretrata, anche che anticipano il braccio, core e mano libera (spazzata→trazione), gomito alto. Solo disegno su ossa esistenti; posa fisica, polso/frusta e tempi conservati. Fonte Solum2008 nel rapporto; non è un riferimento regolamentare.
@@ -186,9 +190,11 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
   ripreso dall'attacco; dopo un tiro respinto il cronometro resta fermo finché qualcuno riprende palla. Espulsione 18 s (rientro
   anticipato su gol o palla riconquistata), terzo fallo grave = fuori per il resto della partita (entra un sostituto); cambi
   illimitati.
-- Rigore v0.84 (Ale; `RIGORE_TIRO`, `controfalloRigore`): la palla parte dall'acqua (galleggia davanti a chi tira, la carica la
-  pesca; solo disegno) e il movimento è continuo: fermo a braccio carico oltre 0,5 s = controfallo, palla al portiere avversario
-  (nella serie finale rigore sbagliato).
+- Rigore v0.84 (Ale; `RIGORE_TIRO`, `controfalloRigore`): la palla parte dall'acqua e il movimento è continuo: fermo a braccio carico
+  oltre 0,5 s = controfallo, palla al portiere avversario (nella serie finale rigore sbagliato). Posizione iniziale v0.88 (Ale: «palla
+  in acqua e braccio dietro la schiena con mano o sopra la palla o sotto»; `RIGORE_VISTA`, solo disegno): la palla galleggia dietro,
+  dalla parte del braccio che tira, il braccio teso dietro la schiena con la mano sopra (60 giocatori su 100, abitudine fissa dall'id)
+  o sotto la palla; la carica la porta su in un solo movimento fino al braccio caricato.
 - Rigore dai 5 m con gli altri sulla linea dei 6 ad almeno 3 m dal tiratore; tiro libero: dentro i 6 m si passa, fuori si può
   tirare subito; area di porta (2 m, fino a 2 m oltre i pali): attaccante dentro l'area davanti alla linea della palla = fallo.
   I compagni che entrano troppo presto sotto i2m rientrano nuotando (v0.68), senza correzioni istantanee delle coordinate; il controllo di permanenza irregolare vale per tutti.
@@ -216,12 +222,17 @@ Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavor
 ### Squadre, tornei, valutazioni
 - 24 nazionali; giocatori veri dal database di Ale (`npm run rose-db`, metodo in `docs/riferimenti/valutazioni.md`), nomi veri
   autorizzati; statistiche 40-99 che cambiano davvero le prestazioni. Rose v0.86 (Ale): tutti i convocati della nazionale in almeno un
-  torneo del database (nessuno escluso per ritiro), doppioni uniti, forza della nazionale riportata al ranking (i 14 valgono quanto i
-  13 di prima); in partita 14 (regole World Aquatics 2026: 12 di movimento e 2
+  torneo del database (nessuno escluso per ritiro), doppioni uniti; in partita 14 (regole World Aquatics 2026: 12 di movimento e 2
   portieri) scelti dal gioco: titolari i più forti nel ruolo, in panchina una riserva per ogni posto (`listaPartita`, anche secondi
   ruoli); nella schermata Squadre tutti i disponibili, scambio panchina ↔ altri, «Scelta automatica»; formazione e lista ricordate per
   nazionale (per id). Tornei: 15 convocati proposti dal gioco e scelti prima della prima partita (2-3 portieri), a ogni partita i 14 tra
   i convocati. Prova `npm run rose`.
+- Valutazione della squadra v0.88 (Ale: «le valutazioni delle squadre dipendono dai giocatori che le compongono»; `ratingLista`): media
+  dei 14 della partita come scendono in acqua, i 7 titolari con la valutazione nel loro posto e peso doppio; scegliere tra più giocatori
+  non dà mai una squadra peggiore. Le valutazioni dei giocatori sono quelle del database (tolto il riporto al ranking della v0.86); il
+  ranking (`forza`) resta per le fasce e le partite simulate dei tornei. Nella partita singola si sceglie la rosa (`ROSE_TORNEI`,
+  `roseTornei`): tutti i disponibili o i convocati della Coppa del Mondo 2026, degli Europei 2026 o dei Mondiali 2025 (se ce ne sono
+  almeno 9 con un portiere), ognuna con la sua valutazione; la scheda della squadra e il confronto usano la valutazione.
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 

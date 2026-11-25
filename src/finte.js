@@ -44,6 +44,9 @@ export function stileFinta(g){
   return (g.finta='larga');
 }
 export const fintaDi=p=>FINTE[stileFinta(p?.scheda)]||FINTE.larga;
+// un'abitudine fissa del giocatore (v0.88, per esempio la mano sopra o sotto la palla nel rigore): vera «quota» volte su cento tra i
+// giocatori, sempre la stessa per lo stesso giocatore (dal suo id, niente caso del gioco)
+export const abitudine=(g,tag,quota)=>!!g&&hash(chiave(g)+'|'+tag)<quota;
 // MARCHIO DI FABBRICA (v0.87, Ale: «la finta è quasi un marchio di fabbrica dei giocatori (ognuno ce l'ha diversa)»; numeri
 // FINTA_FIRMA in taratura.js). Oltre allo stile, ogni giocatore ha la sua finta, sempre la stessa (dal suo id, niente caso del gioco):
 // il verso preferito (traverso = di lato da destra verso sinistra attraverso il corpo, per un mancino al contrario; fuori = di lato
