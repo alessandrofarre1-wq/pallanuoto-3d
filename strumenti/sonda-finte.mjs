@@ -50,7 +50,10 @@ async function partita(k) {
         }
         if (a.kind === 'fake') {
           const gx = 12.5 * h.team.dir, d = Math.hypot(gx - h.x, h.z);
+          // v0.87: verso della finta rispetto al braccio (attraverso il corpo = da destra verso sinistra per un destro) e larghezza
+          const traverso = (h.mano === 'S' ? 1 : -1) * h.team.dir, lato = h.fintaLatoGesto || 0;
           const r = { d: +d.toFixed(2), fascia: fascia(d), stile: h.scheda?.finta || '?', accenno: +(a.wind + a.frusta).toFixed(3), serie: (h.fakeCount || 0) + 1,
+            verso: lato === traverso ? 'traverso' : lato ? 'fuori' : 'avanti', largo: a.largo ?? null, chi: h.scheda?.id ?? h.name,
             superiorita: h.team.players.length > 0 && H.teams.find(t => t !== h.team).players.some(q => q.excluded), dopo: null, dopoT: null, interrotto: false };
           finte.push(r); aperta = { p: h, t0: g.time, fine: a.wind + a.frusta + 0.36, r };
         }
@@ -90,4 +93,12 @@ const gaps = tutte.filter(r => r.dopoT !== null && r.dopo !== 'persa o fischio')
 const quant = p => gaps.length ? gaps[Math.min(gaps.length - 1, Math.floor(p * gaps.length))] : NaN;
 console.log(`\nDall'inizio della finta al gesto successivo: 10% ${f2(quant(0.1))} s, metà ${f2(quant(0.5))} s, 90% ${f2(quant(0.9))} s`);
 console.log(`Serie: ${['1', '2', '3+'].map((s, i) => `${s} finta ${(100 * tutte.filter(r => i < 2 ? r.serie === i + 1 : r.serie >= 3).length / Math.max(1, tutte.length)).toFixed(0)}%`).join(', ')}`);
+{ const v = k => (100 * tutte.filter(r => r.verso === k).length / Math.max(1, tutte.length)).toFixed(0);
+  console.log(`Verso (v0.87): da destra verso sinistra (attraverso il corpo) ${v('traverso')}%, da sinistra verso destra ${v('fuori')}%, avanti e indietro ${v('avanti')}%`);
+  const lg = tutte.filter(r => r.largo != null), vic = lg.filter(r => r.d < 5), lon = lg.filter(r => r.d >= 7);
+  console.log(`Larghezza (0 stretta, 1 ampia): media ${f2(media(lg.map(r => r.largo)))}, entro 5 m ${f2(media(vic.map(r => r.largo)))}, oltre 7 m ${f2(media(lon.map(r => r.largo)))}`);
+  // marchio di fabbrica: per chi ha fatto almeno 6 finte, quante nel suo verso più frequente
+  const per = new Map(); for (const r of tutte) { const m = per.get(r.chi) || []; m.push(r); per.set(r.chi, m); }
+  const fedeli = [...per.values()].filter(m => m.length >= 6).map(m => Math.max(...['traverso', 'fuori', 'avanti'].map(k => m.filter(r => r.verso === k).length)) / m.length);
+  console.log(`Marchio di fabbrica: ${fedeli.length} giocatori con almeno 6 finte, in media ${(100 * media(fedeli)).toFixed(0)}% nel loro verso più frequente`); }
 console.log(`Gol: ${risultati.map(r => r.gol.join('-')).join(', ')}`);

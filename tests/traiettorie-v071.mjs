@@ -62,7 +62,7 @@ const ball={},game={time:10,state:'play',penalty:null},teams=[{idx:0,dir:1,human
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),dist=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z),other=t=>teams[1-t.idx],goalX=t=>12.5*t.dir;
 let caso=.5,profiloScelto;
 const contesto={ball,game,teams,allPlayers,clamp,dist,other,goalX,P,T,FIRMA,ALZATA,FINTA_MOVIMENTO,FINTA_AMPIEZZA,FINTA_LATO,FINTA_RITMO,
-  fintaDi:()=>({largo:.5}),profiloTraiettoria:o=>{profiloScelto=profiloTraiettoria(o);return profiloScelto;},velocitaDiLancio:H.velocitaDiLancio,rnd:()=>caso,gauss:()=>0,
+  fintaDi:()=>({largo:.5}),firmaFinta:()=>({largo:.5,verso:'avanti',piegato:false}),versoFinta:()=>'avanti',profiloTraiettoria:o=>{profiloScelto=profiloTraiettoria(o);return profiloScelto;},velocitaDiLancio:H.velocitaDiLancio,rnd:()=>caso,gauss:()=>0,
   azioneAperta:()=>null,tipoDiTiro:()=> 'fuori',registraTiro:()=>{},registraTiroReplay:()=>{},paloCoperto:()=>0,postoPortiere:()=>0,manUp:()=>false,firma:()=>false};
 const tiro=new Function(...Object.keys(contesto),corpo+'\nreturn {doShoot,launch,startAct,updateActs};')(...Object.values(contesto));
 const p={team:teams[0],x:4.5,z:0,fx:1,fz:0,ballW:[4.5,1.2,0],stamina:1,s:{pot:76.25,pre:90,frz:85,res:85},st:{sht:.9},fakeCount:0};

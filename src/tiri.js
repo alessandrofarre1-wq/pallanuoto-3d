@@ -3,7 +3,7 @@ import { registraTiroReplay } from './replay.js';
 import { azioneAperta, registraTiro, tipoDiTiro } from './statistiche.js';
 import { controllaInterferenza } from './regole.js';
 import { annuncia } from './cronaca.js';
-import { FINTA_AMPIEZZA, FINTA_LATO, FINTA_RITMO, FIRMA, fintaDi, firma } from './finte.js';
+import { FINTA_AMPIEZZA, FINTA_RITMO, FIRMA, firma, firmaFinta, versoFinta } from './finte.js';
 import { FINTA_MOVIMENTO } from './finta-movimento.js';
 import { ALZATA, clamp, dist, gauss, rnd } from './costanti.js';
 import { manUp, paloUomo, postoPortiere, setteControSei, viciniUomo } from './ia.js';
@@ -32,23 +32,26 @@ export function startAct(p,kind,wind,fn,aim){
   // professionisti, 189 ms per i semi-professionisti: chi tira meglio rilascia prima. Passaggio e finta sono gesti più corti.
   // FINTE (v0.85, Ale: «avanti e indietro ma, più frequentemente, da destra verso sinistra; movimenti stretti e veloci o più ampi e
   // lenti»). Larghezza a ogni finta (FINTA_AMPIEZZA, finte.js): la stretta ha i tempi minimi della v0.76 (FINTA_MOVIMENTO), l'ampia
-  // prepara, accenna e torna più lentamente; davanti alla porta più strette. Lato (FINTA_LATO.quota): da destra verso sinistra
-  // attraverso il corpo (per un mancino al contrario), oppure avanti e indietro (lato 0); con la levetta il giocatore sceglie il palo.
+  // prepara, accenna e torna più lentamente; davanti alla porta più strette. Dalla v0.87 larghezza e verso vengono dal marchio di
+  // fabbrica del giocatore (firmaFinta, versoFinta, FINTA_FIRMA): di lato da destra verso sinistra attraverso il corpo (per un mancino
+  // al contrario), di lato verso l'esterno, oppure avanti e indietro (lato 0); con la levetta il giocatore sceglie il palo.
   // Il gesto successivo parte solo a braccio tornato carico più FINTA_RITMO.attesa (p.fintaPronto: ia.js aiCarrier, controllo.js).
   let largo=null, recupero=0.36;
   if(kind==='fake'){
     const A=FINTA_AMPIEZZA, forzata=typeof window!=='undefined'?window.__formaFinta:null;      // forma scelta a mano: solo strumenti e prove
     const vicino=clamp((A.vicino-Math.hypot(gx-p.x,p.z))/2,0,1);
-    largo=forzata?.largo??clamp((fintaDi(p).largo??0.5)+(rnd()-0.5)*A.varia-A.stretta*vicino,0,1);
+    largo=forzata?.largo??clamp(firmaFinta(p.scheda).largo+(rnd()-0.5)*A.varia-A.stretta*vicino,0,1);
     wind=Math.max(wind,FINTA_MOVIMENTO.anticipazione+A.preparazione*largo);
     recupero=FINTA_MOVIMENTO.recupero+A.ritorno*largo;
   }
   const frusta = kind==='fake'?FINTA_MOVIMENTO.frusta+FINTA_AMPIEZZA.accenno*largo:kind==='pass' ? 0.09 : kind==='polso' ? 0.11 : 0.189-0.023*clamp((p.st.sht-0.7)/0.3,0,1);
   let pronto;
   if(kind==='fake'){
-    // strumenti e prove possono fissare anche il lato (window.__formaFinta.lato: 0 avanti e indietro, 1 di lato); in partita non c'è
+    // strumenti e prove possono fissare anche il lato (window.__formaFinta.lato: 0 avanti e indietro, 1 di lato attraverso il corpo,
+    // −1 di lato verso l'esterno); in partita non c'è
     const traverso=(p.mano==='S'?1:-1)*p.team.dir, latoForzato=typeof window!=='undefined'?window.__formaFinta?.lato:undefined;
-    const lato=p.fintaLatoVoluto||(latoForzato!==undefined?(latoForzato?traverso:0):(rnd()<FINTA_LATO.quota?traverso:0));
+    const verso=p.fintaLatoVoluto?null:latoForzato!==undefined?(latoForzato>0?'traverso':latoForzato<0?'fuori':'avanti'):versoFinta(p.scheda,rnd());
+    const lato=p.fintaLatoVoluto||(verso==='traverso'?traverso:verso==='fuori'?-traverso:0);
     p.fintaLatoGesto=lato; p.fintaLatoVoluto=0; if(lato) p.ultimoLatoFinta=lato;
     pronto=wind+frusta+recupero+FINTA_RITMO.attesa; p.fintaPronto=game.time+pronto;
   }

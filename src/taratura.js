@@ -194,16 +194,28 @@ export const FIRMA=Object.freeze({ entro:1.6, sorpresa:0.08, intercetto:0.7 });
 // sposta il braccio da quella parte (muro × lontano sul lato opposto, × vicino sullo stesso); il portiere si sposta di «portiere»
 // metri verso quel palo e para meno sul lato opposto (parataLontano) e un po' di più sullo stesso (parataVicino); gesto =
 // rotazione del braccio di lato (solo disegno).
-// quota (v0.85, Ale: «la finta di tiro può essere fatta sia mandando la palla avanti e indietro ma, più frequentemente, da destra verso
-// sinistra») = quante finte su cento vanno di lato, da destra verso sinistra attraverso il corpo (per un mancino da sinistra verso
-// destra); le altre avanti e indietro verso la porta. Con la levetta inclinata il giocatore sceglie il lato. Prima la prima finta era
-// sempre dritta e dalla seconda si alternavano i due pali: nelle partite del computer 98 finte su 100 erano la prima, quasi tutte dritte.
-export const FINTA_LATO={ durata:1.1, portiere:0.45, lontano:0.4, vicino:1.15, parataLontano:0.35, parataVicino:0.08, gesto:0.5, quota:0.65 };
+// Il verso di ogni finta (di lato nei due sensi o avanti e indietro) lo decide il marchio di fabbrica del giocatore (FINTA_FIRMA, v0.87;
+// prima, v0.85, FINTA_LATO.quota: di lato 65 volte su 100 e sempre da destra verso sinistra). Con la levetta il giocatore sceglie il palo.
+export const FINTA_LATO={ durata:1.1, portiere:0.45, lontano:0.4, vicino:1.15, parataLontano:0.35, parataVicino:0.08, gesto:0.5 };
+// MARCHIO DI FABBRICA DELLA FINTA (v0.87, Ale: «la finta è quasi un marchio di fabbrica dei giocatori (ognuno ce l'ha diversa)»; «le
+// finte possono essere da destra verso sinistra e da sinistra verso destra, oppure in avanti e poi indietro, con movimenti più veloci o
+// più lenti e con il braccio teso o piegato», per tutte le finte). Oltre allo stile (finte.js) ogni giocatore ha la sua finta, sempre la
+// stessa (dal suo id, senza il caso del gioco):
+//  - verso preferito, scelto con i pesi «versi»: traverso = di lato da destra verso sinistra, attraverso il corpo (per un mancino da
+//    sinistra verso destra), il più frequente; fuori = di lato dall'altra parte, verso l'esterno; avanti = avanti e indietro. Ogni finta
+//    va nel suo verso «verso» volte su 100, le altre negli altri due con gli stessi pesi. Nel complesso circa 45 finte su 100 da destra
+//    verso sinistra, 23 da sinistra verso destra e 32 avanti e indietro;
+//  - larghezza sua (stretta e veloce o ampia e lenta): quella dello stile ± «larghezza»; a ogni finta ± varia/2 (FINTA_AMPIEZZA: sotto
+//    porta più stretta, cioè più veloce);
+//  - braccio teso o piegato suo, «braccio» volte su 100 (solo disegno).
+// Non ci sono misure reali: sono le indicazioni di Ale.
+export const FINTA_FIRMA=Object.freeze({ versi:{ traverso:0.5, avanti:0.3, fuori:0.2 }, verso:0.7, larghezza:0.25, braccio:0.85 });
 // AMPIEZZA DELLE FINTE (v0.85, Ale: «in generale può essere fatta con movimenti stretti e veloci o più ampi e lenti»). A ogni finta la
-// larghezza (0 stretta, 1 ampia) = tendenza dello stile personale (finte.js, largo) ± varia/2; entro «vicino» metri dalla porta più
-// stretta di «stretta» (da 2 m prima: davanti alla porta finte veloci). Stretta = veloce: i tempi minimi della v0.76 (FINTA_MOVIMENTO:
+// larghezza (0 stretta, 1 ampia) = quella del giocatore (v0.87, FINTA_FIRMA; v0.85: la tendenza dello stile) ± varia/2 (v0.85: 0,5);
+// entro «vicino» metri dalla porta più stretta di «stretta» (da 2 m prima; Ale: «sotto porta hai meno tempo, di solito sono un po' più
+// veloci che da fuori area»). Stretta = veloce: i tempi minimi della v0.76 (FINTA_MOVIMENTO:
 // preparazione 0,16 s, accenno 0,18 s, ritorno 0,36 s); ampia = lenta: fino a «preparazione», «accenno» e «ritorno» secondi in più.
-export const FINTA_AMPIEZZA={ varia:0.5, vicino:6, stretta:0.25, preparazione:0.10, accenno:0.10, ritorno:0.12 };
+export const FINTA_AMPIEZZA={ varia:0.2, vicino:6, stretta:0.25, preparazione:0.10, accenno:0.10, ritorno:0.12 };
 // RITMO DELLE FINTE (v0.85, Ale: «davanti alla porta finta veloce ma non troppo»; «ora quelle vicino alla porta sono troppo veloci,
 // vanno rallentate»). Video di Dénes Varga (v0.58): finta larga circa 0,6 s tra andata e ritorno, tiro circa 0,2 s dopo la ricarica.
 // Prima il computer partiva con il gesto successivo (quasi sempre un passaggio) a metà del ritorno del braccio: 0,50 s in media

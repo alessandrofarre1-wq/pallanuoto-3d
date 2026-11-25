@@ -10,6 +10,29 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.87 — finte: mano e marchio di fabbrica** (Claude Code, 24/11/2026; rapporto `docs/versioni/v087-finte-mano.md`). RICHIESTA:
+  Ale, sul foglio delle forme della finta: «se la palla sta dietro la testa il palmo della mano deve essere rivolto verso l'alto (come
+  se il giocatore tenesse la palla su un vassoio); se la finta supera la testa e va in avanti l'unico modo per tenere la palla è ruotare
+  il polso e mettere il palmo rivolto verso il basso con la palla attaccata»; «le finte possono essere da destra verso sinistra e da
+  sinistra verso destra, oppure in avanti e poi indietro, più veloci o più lente, con il braccio teso o piegato, per tutte le finte;
+  sotto porta di solito un po' più veloci»; «la finta è quasi un marchio di fabbrica dei giocatori (ognuno ce l'ha diversa)». CODICE:
+  palmo in avanti nella carica e in giù nel ritorno, finta del computer che finiva con la palla davanti al viso, tenuta Plask con il
+  palmo a 33° e la finta ampia che non passava la testa, finte di lato solo da destra verso sinistra, stile della finta legato anche al
+  numero di calottina. CAMBIAMENTI: `grafica/mano-finta.js` (nuovo, `MANO_FINTA`, `palmoFinta`), `grafica/pose.js` (palmo dalla mano
+  rispetto alla testa, ritorno alla carica e attesa con `attoDisegnato`, palla tenuta), `grafica/tiro-plask-vista.js` (`correggiPalmo`,
+  finta ampia fino al gesto intero), `taratura.js` (`FINTA_FIRMA`, tolto `FINTA_LATO.quota`, `FINTA_AMPIEZZA.varia` 0,5 → 0,2),
+  `finte.js` (`firmaFinta`, `versoFinta`, stile solo dall'id), `tiri.js` (`startAct`), `menu.js` (scheda), `main.js` (`finte` per le
+  prove). MISURE: palmo con la palla dietro la testa 0,56-0,82 → 0,94-1,00 (computer) e 0,48-0,54 → 0,93-0,95 (tenuta); finta ampia
+  della tenuta: mano 6 → 11 cm davanti alla testa con il palmo in giù (−0,85); solo disegno = partita identica (`aspetto --confronta`);
+  sonda-finte (2 partite): 49% da destra verso sinistra, 19% da sinistra verso destra, 32% avanti e indietro, 73% nel verso del
+  giocatore, gesto dopo la finta 1,03 s; 16 partite: gol 19,4 → 19,4 (Italia 13,3, Ungheria 25,5), tiri 39,1 → 40,1, 5 voci su 15 a
+  posto. PROVA NUOVA `npm run finte-mano` (13 controlli, anche nella CI); prove adattate `finta`, `finte`, `traiettorie`, `desktop`; strumento
+  `npm run finte-mano-foglio` (foglio `docs/immagini/v087-finte-mano.png`, prima e dopo `v087-finte-mano-prima-dopo.png`).
+  VERIFICHE: lint PASS; prove 68 PASS e 1 FAIL (`desktop`: Spazio tenuto 2 s per due finte, ora 2,5 s perché una finta ampia dura fino a 1,22 s; poi PASS); verifica `--partite=0` con il riferimento «3-azione» aggiornato dopo il controllo (stesso momento, giocatori spostati di poco), poi cinque immagini a posto; aspetto «Tutto a posto» (iPhone 56 oggetti, 131.872 triangoli). DECISIONI SUPERATE: palmo della finta → segue la mano; ritorno alla palla tenuta → alla carica;
+  palmo Plask della tenuta → corretto; finte di lato solo da destra verso sinistra → verso del giocatore; larghezza e braccio a caso →
+  del giocatore; stile da id, nome e numero → solo id. NON FATTO: rilascio del tiro invariato; finta a braccio piegato dalla carica
+  molto arretrata tutta dietro la testa; pesi dei versi senza dati reali.
+
 - **v0.86 — rose** (Claude Code, 24/11/2026; rapporto `docs/versioni/v086-rose.md`). RICHIESTA: Ale, «rose: usare i giocatori a
   disposizione dei CT (all'Italia mancano Di Fulvio e Di Somma)»; «mettimi tutti e poi scelgo io all'inizio della competizione chi
   convocare; non farlo solo per l'Italia ma per tutte le nazionali; in partita singola lasciami tutti i giocatori; considerali tutti»;

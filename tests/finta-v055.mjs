@@ -43,20 +43,23 @@ const stato = () => pg.evaluate(() => { const H = window.__pallanuoto, p = H.tea
 
 await prepara(); await tocco(80); const a = await pg.evaluate(() => { window.__salta(1); const H=window.__pallanuoto,p=H.teams[0].players[4]; return {gesto:p.act?.kind,finte:p.fakeCount}; });
 prova(a.gesto === 'polso' && a.finte === 0, `un tocco e rilascio su TIRO = polso, senza finta (${a.gesto}, finte ${a.finte})`);
-await prepara(); await premi(); await pg.evaluate(() => window.__salta(180)); const b = await stato();
-prova(b.tiene && b.finte >= 3, `TIRO tenuto = finte continue con la palla in mano (${b.finte})`);
+// v0.87: la larghezza (e quindi la durata) delle finte è quella del giocatore (marchio di fabbrica): un ciclo dura da 0,9 a 1,22 s
+await prepara(); await premi(); await pg.evaluate(() => window.__salta(240)); const b = await stato();
+prova(b.tiene && b.finte >= 3, `TIRO tenuto = finte continue con la palla in mano (${b.finte} in 4 s)`);
 await rilascia();
 // v0.59 (video di Dénes Varga; Ale: «sposta sia il difensore che il portiere»): il portiere che abbocca alla finta di lato si sposta
-// verso quel palo. v0.85 (Ale: «avanti e indietro ma, più frequentemente, da destra verso sinistra»): la finta di lato attraversa il
-// corpo (per un destro verso la sua sinistra, per un mancino al contrario), anche la prima; con la levetta inclinata va da quella parte.
+// verso quel palo. v0.87 (Ale: «da destra verso sinistra e da sinistra verso destra, oppure in avanti e poi indietro»; «la finta è quasi
+// un marchio di fabbrica dei giocatori»): ogni finta va di lato nei due sensi (attraverso il corpo o verso l'esterno) o avanti e
+// indietro, e più spesso nel verso preferito del giocatore; con la levetta inclinata va da quella parte.
 await prepara(); await premi();
 const lati = await pg.evaluate(() => { const H=window.__pallanuoto,p=H.teams[0].players[4],lati=[]; let contate=0;
-  for(let i=0;i<420&&lati.length<4;i++){ window.__salta(1); if(p.fakeCount>contate){contate=p.fakeCount;lati.push(p.fintaLatoGesto||0);} }
-  return { lati, attraverso:(p.mano==='S'?1:-1)*p.team.dir }; });
+  for(let i=0;i<600&&lati.length<5;i++){ window.__salta(1); if(p.fakeCount>contate){contate=p.fakeCount;lati.push(p.fintaLatoGesto||0);} }
+  const attraverso=(p.mano==='S'?1:-1)*p.team.dir, verso=H.finte.firmaFinta(p.scheda).verso;
+  return { lati, attraverso, verso, mio:verso==='traverso'?attraverso:verso==='fuori'?-attraverso:0 }; });
 await rilascia();
-const laterali = lati.lati.filter(l => l !== 0);
-prova(lati.lati.length === 4 && laterali.length >= 2 && laterali.every(l => l === lati.attraverso),
-  `finte: di lato da destra verso sinistra, attraverso il corpo (${lati.lati.join(', ')}; attraverso = ${lati.attraverso})`);
+const miei = lati.lati.filter(l => l === lati.mio).length;
+prova(lati.lati.length === 5 && lati.lati.every(l => l === 0 || Math.abs(l) === 1) && miei >= 3,
+  `finte: di lato nei due sensi o avanti e indietro, più spesso nel verso del giocatore (${lati.lati.join(', ')}; il suo: ${lati.verso}, ${miei} su 5)`);
 await prepara();
 await pg.evaluate(() => window.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowDown' })));
 await premi();
@@ -111,9 +114,12 @@ const boa = await pg.evaluate(() => {
     if (dove === 'dietro') { d.x = gx - it.dir * 2.25; d.z = 0; } else if (dove === 'anticipo') { const ux = p.x - m.x, uz = p.z - m.z, l = Math.hypot(ux, uz); d.x = m.x + ux / l * 0.75; d.z = m.z + uz / l * 0.75; d.stunUntil = H.game.time + 0.6; }
     H.regole.giveBall(p); H.__setCtrl(p); p.act = null;
   };
+  // v0.87: nelle scene con l'anticipo battuto niente lotta al centro dopo l'arrivo (una sua espulsione, regolare, non è una sanzione
+  // automatica per l'anticipo: con un'altra sequenza del caso usciva in 1 scena su 20)
   const arrivo = dove => { scena(dove); H.prova.doPass(p, m); let y = null, esito = '';
     const reg = H.cronaca.registro.length;
-    for (let i = 0; i < 90 && !y; i++) { const prima = H.ball.y; window.__salta(1); if (H.ball.holder === m || H.ball.state !== 'flight') y = prima; }
+    for (let i = 0; i < 90 && !y; i++) { const prima = H.ball.y; if (dove === 'anticipo') H.fight.active = false; window.__salta(1); if (H.ball.holder === m || H.ball.state !== 'flight') y = prima; }
+    if (dove === 'anticipo') H.fight.active = false;
     window.__salta(2); esito = H.cronaca.registro.slice(reg).map(e => e.testo).join(',');
     return { y, esito, tiene: H.ball.holder === m }; };
   const marcato = arrivo('dietro'), libero = arrivo('libero');

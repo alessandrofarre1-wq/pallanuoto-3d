@@ -1,4 +1,4 @@
-import { FINTA_LATO, fintaDi } from '../finte.js';
+import { FINTA_FIRMA, FINTA_LATO, fintaDi, firmaFinta } from '../finte.js';
 import * as THREE from 'three';
 // Pose e animazioni: nuotata, posizione verticale, gesti di tiro e passaggio
 import { BRV, VIS, clamp, dist, rndGrafica } from '../costanti.js';
@@ -17,6 +17,7 @@ import { raggioVistaPalla } from './dimensioni-palla.js';
 import { RAPPORTO_SCALA_PRECEDENTE as scalaAtleta } from '../scala-grafica.js';
 import { raccordaCatenaTiroVista } from './tiro-vista.js';
 import { applicaTiroRegistrato } from './tiro-plask-vista.js';
+import { palmoFinta, MANO_FINTA } from './mano-finta.js';
 //<POSE>
 export const L1=0.30, L2=0.29;
 export function ik(S,H,l1,l2,hint){
@@ -341,7 +342,9 @@ export function formaFinta(p,a){
   // solo per i fogli di foto e le prove (strumenti/finte-forme-foglio.mjs, tests/finte-v085.mjs, tests/finta-fluida-v076.mjs): una
   // forma scelta a mano (la larghezza vale anche per i tempi, tiri.js)
   const forzata=typeof window!=='undefined'?window.__formaFinta:null;
-  f={ largo:a.largo??forzata?.largo??0.5, piegato:forzata?forzata.piegato:rndGrafica()<(fintaDi(p).piegato??0.4) };
+  // v0.87: il braccio è quello del marchio di fabbrica del giocatore (firmaFinta), FINTA_FIRMA.braccio volte su 100
+  const mio=firmaFinta(p.scheda).piegato;
+  f={ largo:a.largo??forzata?.largo??0.5, piegato:forzata?forzata.piegato:rndGrafica()<FINTA_FIRMA.braccio?mio:!mio };
   formeFinta.set(a,f); return f;
 }
 // ricezione (v0.63): chi aspetta un passaggio gira la testa verso la palla in volo, fino a RICEZIONE_TESTA rad
@@ -367,6 +370,16 @@ const CARICA_VISTA={
   beduina:[0.29,0.08,0.28],sciarpa:[0.27,0.09,0.30],rovesciata:[0.27,0.14,0.27],
   colonnello:[0.05,0.30,0.22],schizzo:[-0.22,0.02,0.28]
 };
+// v0.87: dopo la finta il braccio resta carico finché non parte il gesto dopo (p.fintaPronto, tiri.js): il disegno tiene l'ultima
+// finta, già tornata alla carica, invece di tornare per un istante alla palla tenuta sopra la testa
+const ultimeFinte=new WeakMap();
+function attoDisegnato(p,hold){
+  const a=attoVista(p,hold);
+  if(a?.kind==='fake'){ ultimeFinte.set(p,a); return a; }
+  if(a||!hold||p.charging) return a;
+  const f=ultimeFinte.get(p);
+  return f&&game.state==='play'&&game.time<(p.fintaPronto||0)&&(p.oriz||0)<0.3?f:null;
+}
 function articolaVista(p,J,T,t,gestoVista){
   const V=p.giuntiVista||(p.giuntiVista={});
   for(const key of JK){ const q=J[key],v=V[key]||(V[key]=[0,0,0]); v[0]=q[0]; v[1]=q[1]; v[2]=q[2]; }
@@ -411,7 +424,7 @@ function articolaVista(p,J,T,t,gestoVista){
       braccio(s,mano,hint,palmo,recupera?-0.10+0.12*(-sn):0.12+0.22*sn,e);
     }
   }
-  const a=attoVista(p,hold);
+  const a=attoDisegnato(p,hold);
   const kind=a?.kind||(p.charging?shotKind(p):null), th=kind?(THROW[kind]||THROW.shot):null;
   const fr=a?.frusta||0.18, tt=a?a.t-a.wind:0, carica=gestoVista.carica;
   const volo=a?clamp(tt/fr,0,1):0, chiude=a?clamp((tt-fr)/(a.recupero??0.36),0,1):0;
@@ -492,8 +505,11 @@ function articolaVista(p,J,T,t,gestoVista){
           braccio(lato,add3(V['s'+suff],locale(BOA_ACQUA)),locale([-0.2,-0.6,1]),locale([0.12,-1,0.05]),0.15,1-e);
           T.pallaInAcqua=1-e; return V; } }
       const R2=v=>{ const cs=Math.cos(giro), sn=Math.sin(giro); return [v[0]*cs-v[2]*sn,v[1],v[0]*sn+v[2]*cs]; };
-      const mano=R2(locale(mix3(HOLD_VISTA,[-0.06,0.38,0.30],k))), n=R2(locale(mix3(PALMO_PALLA,[0.25,0.85,0.25],k)));
-      braccio(lato,add3(V['s'+suff],mano),R2(locale(GOMITO_FUORI)),n,-0.28*(1-k)+0.1*k,1-e);
+      // v0.87 (MANO_FINTA): il palmo segue dove sta davvero la mano disegnata (per esempio mentre torna sopra la testa dalla carica
+      // di una finta): dietro la testa al cielo, sopra la testa in avanti come nella v0.55 (PALMO_PALLA), davanti in giù
+      const mano=R2(locale(mix3(HOLD_VISTA,[-0.06,0.38,0.30],k))), Bv=p.bracciaVista?.['h'+suff];
+      const pf=palmoFinta((Bv?Bv[0]:V['s'+suff][0]+mano[0])-V.head[0]), n=R2(locale(mix3(pf.n,[0.25,0.85,0.25],k)));
+      braccio(lato,add3(V['s'+suff],mano),R2(locale(GOMITO_FUORI)),n,pf.polso*(1-k)+0.1*k,1-e);
     }
     // BRACCIA «A POLPO» (v0.55): da verticali, senza palla e senza gesti, le mani remano larghe ai lati per coprire spazio
     if(!hold&&e<0.7&&!p.isGK){
@@ -505,9 +521,13 @@ function articolaVista(p,J,T,t,gestoVista){
     }
     return V;
   }
-  const busto=ease(clamp((volo-0.02)/0.70,0,1));
-  const braccioK=ease(clamp((volo-0.14)/0.86,0,1)), polso=ease(clamp((volo-0.62)/0.38,0,1));
-  const rientra=ease(clamp((chiude-0.55)/0.45,0,1));
+  // v0.87 (Ale: la finta va «avanti e indietro»): nel ritorno braccio e busto rifanno la strada al contrario fino alla posa caricata
+  // (MANO_FINTA.ritorno del recupero), dove restano finché non parte il gesto dopo; prima tornavano alla palla tenuta, con il palmo
+  // in giù e la palla davanti al viso. Niente chiusura del tiro nella finta (chiudeV = 0).
+  const finta=kind==='fake', ritorno=finta?ease(clamp(chiude/MANO_FINTA.ritorno,0,1)):0, chiudeV=finta?0:chiude;
+  const busto=ease(clamp((volo-0.02)/0.70,0,1))*(1-ritorno);
+  const braccioK=ease(clamp((volo-0.14)/0.86,0,1))*(1-ritorno), polso=ease(clamp((volo-0.62)/0.38,0,1));
+  const rientra=ease(clamp((chiudeV-0.55)/0.45,0,1));
   const ff=kind==='fake'&&a?formaFinta(p,a):null;      // v0.85: finta larga o stretta, braccio piegato o dritto (FINTA_FORMA)
   const base0=kind==='fake'?-0.84*(fintaDi(p).torsione)*(ff?0.75+0.5*ff.largo:1):kind==='shot'||kind==='torsione'?-0.84:kind==='beduina'||kind==='rovesciata'?0.72:kind==='sciarpa'?-0.72:th.tw0;
   const base1=kind==='shot'?0.48:kind==='torsione'?0.72:th.tw1;
@@ -522,15 +542,15 @@ function articolaVista(p,J,T,t,gestoVista){
     giroPass=clamp(-angPass*k,-PASSAGGIO_VISTA.max,PASSAGGIO_VISTA.max);
     T.testaGiro=clamp(-Math.atan2(laM,av),-PASSAGGIO_VISTA.testa,PASSAGGIO_VISTA.testa)*carica*(1-rientra);
   }
-  const twist=((base0*carica*(1-busto)+base1*busto)*(1-ease(chiude))+giroPass)*lato;
+  const twist=((base0*carica*(1-busto)+base1*busto)*(1-ease(chiudeV))+giroPass)*lato;
   const centro=mix3(V.sL,V.sR,0.5), mezzo=Math.hypot(V.sR[0]-V.sL[0],V.sR[2]-V.sL[2])/2;
   for(const s of [1,-1]){
     const spalla=V[s>0?'sR':'sL'];
     spalla[0]=centro[0]+s*mezzo*Math.sin(twist); spalla[2]=centro[2]+s*mezzo*Math.cos(twist);
-    spalla[1]+=0.018*carica*(1-chiude)*(s===lato?1:-0.3);
+    spalla[1]+=0.018*carica*(1-chiudeV)*(s===lato?1:-0.3);
   }
   T.torsioneVista=twist*(1-e*0.6);
-  const avanti=(-0.025*carica*(1-busto)+0.035*busto)*(1-chiude);
+  const avanti=(-0.025*carica*(1-busto)+0.035*busto)*(1-chiudeV);
   V.chest[0]+=avanti; V.head[0]+=avanti*0.6;
   // Il peso passa dal lato dominante arretrato al piede controlaterale avanti;
   // il core conclude la rotazione con un piccolo piegamento, restando verticale.
@@ -544,7 +564,7 @@ function articolaVista(p,J,T,t,gestoVista){
   }
   // finta personale (finte.js): ogni giocatore ha il suo gesto (larga, a raffica, di polso, mezza, di bomba, di spalla)
   const fp=kind==='fake'?fintaDi(p):null;
-  if(fp&&fp.alza){ const su=fp.alza*carica*(1-chiude); for(const k of ['head','chest','sR','sL']) V[k][1]+=su; }
+  if(fp&&fp.alza){ const su=fp.alza*carica*(1-chiudeV); for(const k of ['head','chest','sR','sL']) V[k][1]+=su; }
   // TIRO DA FUORI (v0.61, Mandić e Varga nei video di Ale): chi tira forte da lontano esce dall'acqua molto di più, quasi fino ai
   // fianchi, in circa 0,4 s. Solo il corpo disegnato: la palla parte sempre da p.ballW (il raccordo di render.js unisce i due).
   if((kind==='shot'||kind==='torsione')&&a){
@@ -563,23 +583,29 @@ function articolaVista(p,J,T,t,gestoVista){
   let off=tt>=0&&a&&kind!=='fake'
     ? frustaVista(gestoVista.off,caricata,rilascio,ACCOMPAGNA[kind]||th.F,tt,fr)
     : mix3(caricata,rilascio,braccioK);
-  if(kind==='fake')off=mix3(off,ACCOMPAGNA[kind]||th.F,ease(clamp(chiude/0.55,0,1)));
   // gomito in fuori e un po' indietro durante la carica (prima indietro e in alto: con la mano davanti il braccio si girava
   // «ad ala di pollo», gomito sotto e dietro la spalla)
   let hint=mix3(mix3(GOMITO_FUORI,[-0.3,0.15,1],carica),[-0.08,0.05,1],braccioK);
   if(kind==='shot')hint=mix3(hint,[-0.12,0.95,0.68],tiro.gomito);
-  if(ff?.piegato) hint=mix3(hint,[-0.25,0.35,1],carica*(1-ease(chiude)));      // v0.85: braccio piegato, gomito in fuori e alto
-  hint=mix3(hint,[0.15,-0.7,0.8],ease(chiude));
+  if(ff?.piegato) hint=mix3(hint,[-0.25,0.35,1],carica*(1-ease(chiudeV)));      // v0.85: braccio piegato, gomito in fuori e alto
+  hint=mix3(hint,[0.15,-0.7,0.8],ease(chiudeV));
   // palmo: dietro la palla, in avanti e un po' in su durante la carica (prima rivolto al cielo, «a vassoio»), verso il bersaglio
   // al rilascio, in giù nella chiusura
   let n=mix3(PALMO_PALLA,kind==='beduina'||kind==='sciarpa'||kind==='rovesciata'?[-1,0.15,0.1]:[1,0.1,0],polso);
-  n=mix3(n,ACCOMPAGNA[kind]?PALMO_ACCOMPAGNA:[0.15,-0.9,-0.2],ease(chiude));
+  n=mix3(n,ACCOMPAGNA[kind]?PALMO_ACCOMPAGNA:[0.15,-0.9,-0.2],ease(chiudeV));
+  // MANO NELLA FINTA (v0.87, mano-finta.js): il palmo segue la mano rispetto alla testa, nel verso della finta (prima della rotazione
+  // della finta di lato): al cielo dietro, in avanti sopra, in giù davanti con la palla attaccata sotto
+  const manoFinta=finta?palmoFinta(off[0]-(V.head[0]-V['s'+suff][0])):null;
+  if(manoFinta) n=manoFinta.n;
   // finta di lato (v0.59, Varga): il braccio va verso il palo scelto, non dritto alla porta
   if(kind==='fake'&&p.fintaLatoGesto){
-    const la=p.fintaLatoGesto*p.fx*lato, ang=Math.sign(la)*FINTA_LATO.gesto*(ff?0.55+0.9*ff.largo:1)*carica*(1-chiude), c=Math.cos(ang),s=Math.sin(ang);
+    // v0.87: il braccio va di lato nella preparazione di questa finta e torna al centro nel ritorno (prima: con la carica, che dalla
+    // seconda finta è già piena, e quindi di colpo)
+    const quanto=ease(clamp(a.t/Math.max(a.wind,0.05),0,1))*(1-ritorno);
+    const la=p.fintaLatoGesto*p.fx*lato, ang=Math.sign(la)*FINTA_LATO.gesto*(ff?0.55+0.9*ff.largo:1)*quanto, c=Math.cos(ang),s=Math.sin(ang);
     const ruota=v=>[v[0]*c-v[2]*s,v[1],v[0]*s+v[2]*c];
     off=ruota(off); hint=ruota(hint); n=ruota(n);
-    if(ff?.piegato) off[2]+=Math.sign(la)*FINTA_FORMA.latoPiegato*(0.5+ff.largo)*carica*(1-chiude);
+    if(ff?.piegato) off[2]+=Math.sign(la)*FINTA_FORMA.latoPiegato*(0.5+ff.largo)*quanto;
   }
   if(kind==='pass'&&a?.aim){
     // il braccio punta al compagno fino al rientro (prima tornava dritto già nell'accompagnamento e attraversava la faccia)
@@ -591,7 +617,7 @@ function articolaVista(p,J,T,t,gestoVista){
   // v0.63: dopo passaggio e palombella la mano rientra in acqua di lato (FINE_LEGGERO) invece di tornare davanti al mento
   const fine=kind==='pass'||kind==='lob'?add3(spalla,locale(FINE_LEGGERO)):V['h'+suff];
   let mano=mix3(target,fine,rientra), hintM=locale(hint), nM=locale(n);
-  let flex=(-0.46*carica*(1-polso)+0.54*polso)*(1-ease(chiude))+(ACCOMPAGNA[kind]?0.38:0.20)*ease(chiude);
+  let flex=manoFinta?manoFinta.polso:(-0.46*carica*(1-polso)+0.54*polso)*(1-ease(chiude))+(ACCOMPAGNA[kind]?0.38:0.20)*ease(chiude);
   // PESCA (v0.63, punto 9: Mandić nel video di Ale). Chi tira, passa o finta mentre nuota con la palla davanti alla testa prima la
   // prende dall'acqua: la mano arriva sulla palla, ci passa sotto e la porta di lato all'altezza della spalla, poi la carica di
   // sempre. La palla disegnata resta in acqua finché la mano non la raccoglie (prima saltava di colpo nella mano). Solo disegno: la
@@ -667,7 +693,7 @@ export function updateRig(p,dt,t){
   // e girato (v0.51, video e diagnosi di Ale su iPhone: corpo contro moto fino al 35% dopo i replay).
   R.g.position.set(p.x,0,p.z); R.g.rotation.set(0,Math.atan2(-p.fz,p.fx),0);
   const resetVista=!p.giuntiVista||game.state==='countdown'||(!p.act&&!p.charging&&game.state!=='play'&&!puoMuoversiSuFallo(p));
-  const gestoVista=preparaGestoVista(p,attoVista(p,ball.holder===p),ball.holder===p,game.time,dt,t,resetVista);
+  const gestoVista=preparaGestoVista(p,attoDisegnato(p,ball.holder===p),ball.holder===p,game.time,dt,t,resetVista);
   const parataCondivisa=p.isGK&&ball.holder!==p&&p.tentativoPortiere?.attiva;
   const vista=articolaVista(p,posturaVista(p,J,T.oriz||0,inclinazioneVerticale(p,T,dt)),T,t,gestoVista);
   const Jv=parataCondivisa?vista:raccordaGestoVista(gestoVista,vista,T);
