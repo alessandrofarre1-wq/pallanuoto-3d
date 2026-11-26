@@ -10,7 +10,7 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
-- **v0.90 — rigore (busto e schieramento), avvio della finta senza avvitamento, schemi contro il pressing, giocatore in porta**
+- **v0.90 — rigore (busto e schieramento), finta senza avvitamento e senza scatti, schemi contro il pressing, giocatore in porta**
   (Claude Code, 26/11/2026; rapporto `docs/versioni/v090-rigore-finta-schemi.md`). RICHIESTA: Ale, con una foto del rigore: «se il
   giocatore tiene il braccio in quel modo deve ruotare un po' il busto e le spalle verso la palla»; «all'inizio del movimento di finta
   continua a esserci questo avvitamento veloce e innaturale che, se non sai governare, ti chiederei di togliere»; «a volte i due giocatori
@@ -29,7 +29,23 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
   `RIGORE_SCHIERA`), `tests/ritocchi-v090.mjs` (nuova, `npm run ritocchi`, anche nella CI), `tests/tiro-registrato.mjs` (piedi confrontati
   con la clip girata di `s.giroAnche`). MISURE: bacino 56° → 18° (fino a 42°/s), spalle 32° invariate; spalla del braccio che tira dietro
   l'altra di 0,19; giocatori in porta 35 → 0; possessi contro il pressing senza schemi 57% → 38%, di quelli lunghi 19% → 7%, con due schemi
-  3 → 18. DA_COMPLETARE_STORIA
+  3 → 18. VIDEO DELLA FINTA (Ale, stesso giorno: «parte il movimento di finta e la palla viene traslata da davanti al giocatore alla sua
+  mano e poi parte quel movimento molto veloce che sembra quasi uno spasmo. Quindi o va rallentato o va tolto»; poi «Puoi procedere»):
+  analisi fotogramma per fotogramma del video (60 fps) e del gioco con due sonde nuove (scatti del corpo disegnato e salti della palla;
+  finte del computer rigiocate allo stesso seme): dopo la finta il computer si distendeva subito a nuotare verso il suo posto con il
+  braccio carico; i raccordi del disegno duravano sempre 0,08 s; alla presa il raccordo si azzerava. CAMBIAMENTI: `ia.js` `aiCarrier`
+  (durante la finta e fino al gesto dopo al massimo 1,2 m alla volta, `FINTA_RITMO.scivolo`), `grafica/gesto-vista.js` (`RACCORDO_VISTA`:
+  3 unità del corpo al secondo fino a 0,4 s; la presa raccorda), `grafica/pose.js` (`PRESA_ACQUA`), prove nuove in
+  `npm run ritocchi`. MISURE: finte seguite dalla nuotata con il braccio carico 3 su 5 → 0; scatti del corpo con la palla in mano 114 → 25
+  (alla presa 107 → 23); raccordo di un metro 0,08 → 0,33 s; palla disegnata oltre 20 cm in un fotogramma nei primi 0,15 s dopo la
+  presa 136 → 505 (ora arriva in mano insieme al braccio, in circa 0,3 s; da guardare). TARATURA (16 partite):
+  gol 17,6 → 18,9 (17,3 prima della correzione della finta: chi resta dritto dopo la finta tira di più da lì), tiri in gol 44,0% → 46,2%,
+  gol su entrata 19% → 28% dei gol, espulsioni 11,5 → 11,3, superiorità 47,2% → 42,8% (36,2% in una prima taratura; con altri tre campioni
+  37-45%: nessun cambio), voci a posto 7 → 6 su 15. VERIFICHE: lint PASS; prove 71 PASS su 71 (adattate `tiro-registrato` e
+  `finte`); verifica `--partite=0` con i riferimenti 3-5 aggiornati dopo il controllo, poi superata; aspetto «Tutto a posto» (iPhone 56
+  oggetti, 131.872 triangoli). DECISIONI SUPERATE: busto del rigore, bacino della posa Plask, entrate del computer contro il pressing, «apertura del 2», schieramento del rigore, nuotata dopo la finta, raccordo di 0,08 s,
+  reset alla presa, presa dei passaggi bassi. NON FATTO: il rilascio del tiro resta quello registrato; il ritmo
+  (azioni troppe e corte) resta da rifare, ora con 18,9 gol a squadra.
 
 - **v0.89 — riequilibrio: mira e peso delle statistiche** (Claude Code, 26/11/2026; rapporto `docs/versioni/v089-riequilibrio.md`).
   RICHIESTA: Ale, «una volta fatto queste modifiche puoi anche riequilibrare le partite»; poi «riparti e concludi». CODICE (v0.88, 16

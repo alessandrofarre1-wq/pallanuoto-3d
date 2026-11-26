@@ -354,6 +354,11 @@ export const FINE_LEGGERO=[0.18,-0.12,0.38];
 // PESCA DELLA PALLA DALL'ACQUA (v0.63, punto 9: Mandić nel video di Ale): durata massima (s, al massimo 0,8 della carica del gesto),
 // fasi (la mano arriva sulla palla, ci passa sotto, la porta su) e dove la porta: di lato, all'altezza della spalla
 export const PESCA={ durata:0.32, arriva:0.32, sotto:0.52, spalla:[0.06,0.16,0.27] };
+// PRESA DALL'ACQUA (v0.90, video di Ale: «la palla viene traslata da davanti al giocatore alla sua mano»): un passaggio che arriva
+// basso (palla sotto «alta» metri, il passaggio morbido sull'acqua) a chi è dritto non vola più da sola fino alla mano già alta: la
+// palla resta dov'è stata presa e la mano la raccoglie e la porta su come nella pesca, in «durata» secondi; se chi riceve riparte a
+// nuotare la raccolta si interrompe e la palla va davanti alla testa. Solo disegno: la presa del gioco e p.ballW non cambiano.
+export const PRESA_ACQUA=Object.freeze({ alta:0.3, durata:0.32, dritto:0.05 });      // dritto: solo chi riceve da fermo in verticale
 // RIGORE (v0.88, Ale: «la posizione iniziale per battere un rigore è palla in acqua e braccio dietro la schiena con mano o sopra la palla
 // o sotto. Poi parte il movimento che deve essere unico»): prima del gesto la palla galleggia dietro, dalla parte del braccio che tira
 // («palla»: metri indietro e di lato rispetto alla spalla, unità del corpo), con il braccio teso dietro la schiena e la mano sopra la palla
@@ -395,6 +400,12 @@ function articolaVista(p,J,T,t,gestoVista){
   // Copie: i palmi smussati della posa originale non diventano stato della nuova animazione.
   T.nR=T.nR.slice(); T.nL=T.nL.slice();
   const e=T.oriz||0, hold=ball.holder===p, lato=T.manoS?-1:1;
+  // PRESA_ACQUA: alla presa di una palla bassa davanti, la pesca parte dal punto della presa (sistema del giocatore, unità del corpo)
+  { const rp=ball.raccordoPresa;
+    if(hold&&!p.tenevaVista&&rp&&game.time-rp.t<0.05&&rp.y<PRESA_ACQUA.alta&&!p.act&&!p.charging&&(p.oriz||0)<PRESA_ACQUA.dritto){
+      const c=p.fx, sn=-p.fz, dx=rp.x-p.x, dz=rp.z-p.z, Pl=[(dx*c-dz*sn)/VIS,Math.max(0.03,rp.y/VIS),(dx*sn+dz*c)/VIS];
+      if(Pl[0]>0.05) { p.pesca={t0:game.time,D:PRESA_ACQUA.durata,Pl,presa:true}; p.pescaDi=null; } }
+    p.tenevaVista=hold; }
   T.polsoR=0.16+0.06*Math.sin(t*5.5+p.uid); T.polsoL=0.16-0.06*Math.sin(t*5.5+p.uid);
   // braccia morbide e distese (corpo.js, BRACCIO_MORBIDO): meno nella bracciata del crawl, che vuole il gomito alto
   T.morbidoR=T.morbidoL=1-0.75*(T.oriz||0);
@@ -526,7 +537,22 @@ function articolaVista(p,J,T,t,gestoVista){
       // di una finta): dietro la testa al cielo, sopra la testa in avanti come nella v0.55 (PALMO_PALLA), davanti in giù
       const mano=R2(locale(mix3(HOLD_VISTA,[-0.06,0.38,0.30],k))), Bv=p.bracciaVista?.['h'+suff];
       const pf=palmoFinta((Bv?Bv[0]:V['s'+suff][0]+mano[0])-V.head[0]), n=R2(locale(mix3(pf.n,[0.25,0.85,0.25],k)));
-      braccio(lato,add3(V['s'+suff],mano),R2(locale(GOMITO_FUORI)),n,pf.polso*(1-k)+0.1*k,1-e);
+      let hM=add3(V['s'+suff],mano), nM=n, hintM=R2(locale(GOMITO_FUORI)), flexM=pf.polso*(1-k)+0.1*k;
+      // PRESA_ACQUA: la mano arriva sopra la palla, ci passa sotto e la porta alla posizione della palla tenuta
+      // chi riparte subito a nuotare non raccoglie: la palla va davanti alla testa
+      if(p.pesca?.presa&&e>0.25) p.pesca=null;
+      if(p.pesca?.presa){ const pe=p.pesca, u=(game.time-pe.t0)/pe.D;
+        if(u<1.35){
+          const sopra=add3(pe.Pl,[-0.03,0.07,0.03*lato]), sotto=add3(pe.Pl,[-0.07,-0.05,0.04*lato]), giu=[0.3,-1,0], palmoSu=[0.2,1,0.1*lato];
+          let h, nn;
+          if(u<PESCA.arriva){ h=sopra; nn=giu; }
+          else if(u<PESCA.sotto){ const q=ease((u-PESCA.arriva)/(PESCA.sotto-PESCA.arriva)); h=mix3(sopra,sotto,q); nn=mix3(giu,palmoSu,q); }
+          else { const q=ease(clamp((u-PESCA.sotto)/(1-PESCA.sotto),0,1)); h=mix3(sotto,hM,q); nn=mix3(palmoSu,nM,q); }
+          const w=1-ease(clamp((u-1)/0.35,0,1));
+          hM=mix3(hM,h,w); nM=mix3(nM,nn,w); hintM=mix3(hintM,[-0.1,0.2,lato],w); flexM=flexM*(1-w)+0.1*w;
+          T.pescaPalla=u<PESCA.arriva?1:u<PESCA.sotto?1-ease((u-PESCA.arriva)/(PESCA.sotto-PESCA.arriva)):0; T.pescaPl=pe.Pl;
+        } else p.pesca=null; }
+      braccio(lato,hM,hintM,nM,flexM,1-e);
     }
     // BRACCIA «A POLPO» (v0.55): da verticali, senza palla e senza gesti, le mani remano larghe ai lati per coprire spazio
     if(!hold&&e<0.7&&!p.isGK){

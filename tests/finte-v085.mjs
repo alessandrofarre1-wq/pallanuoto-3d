@@ -118,7 +118,7 @@ const misuraFinte = (forme, quante) => pg.evaluate(({ forme, quante }) => {
   const gomito = V => { const u = [0, 1, 2].map(k => V.eR[k] - V.sR[k]), w = [0, 1, 2].map(k => V.hR[k] - V.eR[k]);
     const c = (u[0] * w[0] + u[1] * w[1] + u[2] * w[2]) / Math.hypot(...u) / Math.hypot(...w); return 180 - Math.acos(Math.max(-1, Math.min(1, c))) * 180 / Math.PI; };
   if (forme) window.__formaFinta = forme[0];
-  for (let i = 0; i < 60 * 16 && out.length < quante; i++) {
+  for (let i = 0; i < 60 * 30 && out.length < quante; i++) {
     window.__salta(1);
     const a = p.act, V = p.giuntiVista;
     if (a?.kind === 'fake' && a !== ultimo) { if (cur) out.push(cur); ultimo = a; cur = { gomito: 0, lato: 0, lato0: null, diLato: !!p.fintaLatoGesto }; if (forme) window.__formaFinta = forme[(out.length + 1) % forme.length]; }
@@ -142,7 +142,9 @@ prova(forzate.length === 4 && forzate.every(f => f.diLato) && dl.lato >= ds.lato
   `disegno: la finta di lato larga va più verso il palo della stretta (mano di lato: dritto ${dl.lato} contro ${ds.lato} m, piegato ${pl.lato} contro ${ps.lato} m)`);
 await prepara(0, true, 'raffica');
 await pg.evaluate(() => window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyK' })));
-const scelte = await misuraFinte(null, 12);
+// v0.90: 20 finte (prima 12): ogni giocatore usa il suo braccio 85 volte su 100 (marchio di fabbrica, v0.87), con 12 finte l'altro
+// braccio poteva mancare per caso (con 20 la probabilità scende da 14 a 4 su 100)
+const scelte = await misuraFinte(null, 20);
 await pg.evaluate(() => window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyK' })));
 const gomiti = scelte.map(f => f.gomito);
 prova(scelte.length >= 10 && gomiti.some(g => g >= 125) && gomiti.some(g => g <= 112),

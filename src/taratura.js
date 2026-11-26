@@ -270,7 +270,10 @@ export const FINTA_AMPIEZZA={ varia:0.2, vicino:6, stretta:0.25, preparazione:0.
 // dall'inizio della finta, ritorno interrotto 82 volte su 100 tra 5 e 7 m (sonda-finte, 4 partite). Ora dopo ogni finta il braccio
 // torna alla carica (FINTA_MOVIMENTO.recupero, 0,36 s) e resta carico ancora «attesa» secondi prima del gesto successivo (finta,
 // tiro o passaggio), per il computer e per il giocatore che tiene TIRO (prima 0,12 s). Il rilascio di TIRO tira sempre subito.
-export const FINTA_RITMO={ attesa:0.2 };
+// v0.90 (video di Ale: dopo la finta il giocatore del computer si distendeva subito a nuotare verso il suo posto con il braccio ancora
+// carico, «un movimento molto veloce che sembra quasi uno spasmo; o va rallentato o va tolto»): durante la finta e finché non parte il
+// gesto dopo (p.fintaPronto) chi ha la palla resta dritto e si sposta al massimo di «scivolo» metri alla volta con la bicicletta.
+export const FINTA_RITMO={ attesa:0.2, scivolo:1.2 };
 
 // ---------- FATICA E CAMBI (fisica.js, panchina.js) ----------
 // STANCO = quota della velocità che resta a stamina zero (−18%), CON_PALLA = velocità con la palla (−7%), SPRINT_CONSUMO = fatica

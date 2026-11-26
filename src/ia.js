@@ -13,7 +13,7 @@ import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } fr
 import { paloCoperto } from './muro.js';
 import { SPECIALI, aiControfuga, aiPalombella, occasioneControfuga, occasionePalombella, palombella, sceltaTiroArea, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, entrataPronta, laneClear, openness, passLaneRisk, shotKind, situazioneTiro, startAct } from './tiri.js';
-import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE, SCHEMI_PRESSING, pesata } from './taratura.js';      // numeri del bilanciamento
+import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, FINTA_RITMO, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE, SCHEMI_PRESSING, pesata } from './taratura.js';      // numeri del bilanciamento
 export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE };
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 // l'uomo che marca p: di regola quello del ruolo (MARK); dopo un CAMBIO DI MARCATURA su un'entrata («time switching», Nitzkowski e
@@ -838,6 +838,9 @@ export function aiCarrier(p,dt){
   const slot=attackTarget(p);
   const dGoal=Math.hypot(gx-p.x,p.z);
   p.target={x:slot.x+t.dir*0.8, z:slot.z, sprint: Math.abs(p.x-slot.x)>6};
+  // v0.90 (FINTA_RITMO.scivolo): durante la finta e fino al gesto dopo si resta dritti, al massimo uno scivolamento con la bicicletta
+  if(p.act?.kind==='fake'||game.time<(p.fintaPronto||0)){ const dx=p.target.x-p.x, dz=p.target.z-p.z, d=Math.hypot(dx,dz), m=FINTA_RITMO.scivolo;
+    if(d>m) p.target={x:p.x+dx/d*m, z:p.z+dz/d*m, sprint:false}; }
   if(p.act&&!p.act.done) return;
   // v0.85 (Ale: «le finte vicino alla porta sono troppo veloci»): dopo una finta nessun gesto nuovo finché il braccio non è tornato
   // carico e ha atteso FINTA_RITMO.attesa (tiri.js, p.fintaPronto); la pausa personale della finta intanto scorre

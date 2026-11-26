@@ -1,4 +1,4 @@
-# Passaggio WATERPOLO7 — v0.90 rigore, avvio della finta, schemi contro il pressing, giocatore in porta (Claude Code)
+# Passaggio WATERPOLO7 — v0.90 rigore, finta senza avvitamento e senza scatti, schemi contro il pressing, giocatore in porta (Claude Code)
 
 Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #72 (v0.89), versione 0.90.0.
 - Solo disegno: `grafica/pose.js` (`RIGORE_VISTA.busto`: nel rigore spalle, gomiti e mani ruotano attorno al petto di `lato × busto`,
@@ -10,6 +10,14 @@ Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #72 (v0.89), 
   `schemaDovuto(t)`, `attesaSchema(t)`, `segnaSchema(t)`, `appoggioPerSchema(p, sicuro)` e `preparaEntrata` con lo schema dovuto (senza la
   pausa `entrataDopo`, profondità `SCHEMI_PRESSING.profondita`); `ia.js` `aiCarrier` (passaggio «sicuro» per lo schema dovuto) e
   `aggiornaSchemi` (entrata del mezzo del lato debole dopo `SCHEMI_PRESSING.attesa` s, `startCut(q, true)`).
+- Video di Ale della finta («quasi uno spasmo; o va rallentato o va tolto»): `ia.js` `aiCarrier` limita `p.target` a
+  `FINTA_RITMO.scivolo` (1,2 m, sotto la soglia dello scivolamento di `muoviVerso`) durante la finta e finché `game.time < p.fintaPronto`
+  (gioco, solo computer). Solo disegno: `grafica/gesto-vista.js` `RACCORDO_VISTA` (al primo fotogramma del raccordo `raccordaGestoVista`
+  misura la giuntura che si sposta di più tra `s.da` e la posa nuova e porta `raccordoD` a spostamento / 3 u/s, tra 0,08 e 0,4 s, entro
+  `raccordoLimite` = min(0,55 × (wind + frusta − t), max(0,08, 0,8 × (wind − t))) per i gesti: il raccordo resta dentro la carica e non
+  smorza l'accenno della finta) e la presa (`hold && !s.hold`) che apre un raccordo invece del reset;
+  `grafica/pose.js` `PRESA_ACQUA` (alla prima presa di una palla sotto 0,3 m davanti a chi è dritto, `p.pesca = {presa:true}` dal punto della presa; il ramo della palla tenuta di `articolaVista` la porta alla posizione
+  della palla tenuta; annullata se l'assetto supera 0,25).
 - Prove: nuova `npm run ritocchi` (`tests/ritocchi-v090.mjs`, anche nella CI). Adattata la tua `tests/tiro-registrato.mjs` (v0.74): le
   gambe seguono il bacino, quindi la direzione caviglia-punta si confronta con quella della clip girata di `s.giroAnche` attorno alla
   verticale (la rotazione tolta al bacino, salvata da `applicaTiroRegistrato`); soglia invariata (> 0,99999, errore misurato 2e-16),

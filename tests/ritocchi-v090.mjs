@@ -9,6 +9,7 @@ import { chromium } from 'playwright';
 import { build, preview } from 'vite';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { GIUNTI_GESTO_VISTA, RACCORDO_VISTA, conservaGestoVista, preparaGestoVista, raccordaGestoVista } from '../src/grafica/gesto-vista.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 if (!process.argv.includes('--no-build')) await build({ root: ROOT, logLevel: 'warn' });
 const server = await preview({ root: ROOT, logLevel: 'warn', preview: { port: 4476, host: '127.0.0.1', strictPort: true } });
@@ -23,6 +24,28 @@ await pg.addInitScript(() => {
 await pg.goto(server.resolvedUrls.local[0]);
 await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });
 let ok = true; const prova = (bene, testo) => { console.log(`${bene ? '✓' : '✗'} ${testo}`); if (!bene) ok = false; };
+
+// 5. video di Ale (26/11): «parte quel movimento molto veloce che sembra quasi uno spasmo; o va rallentato o va tolto».
+// Raccordo del disegno tra due pose: dura quanto serve a non superare RACCORDO_VISTA.velocita (prima sempre 0,08 s)
+{
+  const posa = v => Object.fromEntries(GIUNTI_GESTO_VISTA.map(k => [k, [v, 0.3, 0.2]]));
+  const durata = (spostamento, atto) => {
+    const p = { num: 9, scheda: {}, x: 0, z: 0, chargeT: 0, charging: false }, T = { torsioneVista: 0, polsoR: 0, polsoL: 0 };
+    let s = preparaGestoVista(p, null, true, 1, 1 / 60, 1); conservaGestoVista(s, posa(0), T);
+    s = preparaGestoVista(p, atto || null, true, 1.02, 1 / 60, 1.02);
+    if (!atto) { s.gesto = 'finto'; s = preparaGestoVista(p, null, true, 1.03, 1 / 60, 1.03); }
+    raccordaGestoVista(s, posa(spostamento), T); return s.raccordoD;
+  };
+  const grande = durata(1), piccolo = durata(0.1), gesto = durata(1, { wind: 0.2, frusta: 0.15, t: 0 });
+  prova(grande >= 0.3 && grande <= RACCORDO_VISTA.massimo, `raccordo di una posa che si sposta di 1 unità del corpo: ${grande.toFixed(2)} s (prima 0,08 s)`);
+  prova(Math.abs(piccolo - 0.08) < 1e-9, `raccordo di un piccolo spostamento invariato: ${piccolo.toFixed(2)} s`);
+  prova(gesto <= 0.55 * 0.35 + 1e-9, `l'ingresso in un gesto finisce prima del rilascio: ${gesto.toFixed(3)} s`);
+  // la presa raccorda la posa (prima la azzerava: il corpo scattava nel fotogramma della presa)
+  const p = { num: 9, scheda: {}, x: 0, z: 0, chargeT: 0, charging: false }, T = { torsioneVista: 0, polsoR: 0, polsoL: 0 };
+  let s = preparaGestoVista(p, null, false, 1, 1 / 60, 1); conservaGestoVista(s, posa(0), T);
+  s = preparaGestoVista(p, null, true, 1.02, 1 / 60, 1.02); const W = posa(0.8); raccordaGestoVista(s, W, T);
+  prova(W.hR[0] === 0 && s.raccordoD > 0.2, `alla presa il corpo parte dalla posa di prima (raccordo di ${s.raccordoD.toFixed(2)} s)`);
+}
 await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 'HUN'); H.imposta('len', '480'); document.getElementById('goBtn').click(); window.__salta(200); });
 
 // 4. schieramento del rigore: due difensori e al massimo due attaccanti vicino al tiratore, gli altri a metà campo
@@ -91,6 +114,21 @@ const porta = await pg.evaluate(() => {
   window.__tieni = null; return dentro;
 });
 prova(porta === 0, `portiere con la palla per 8 s (apertura del 2): nessun compagno entra nella propria porta (${porta} fotogrammi dentro)`);
+
+// 6. dopo la finta il computer non si distende a nuotare verso il suo posto finché non parte il gesto dopo (FINTA_RITMO.scivolo)
+const dopoFinta = await pg.evaluate(() => {
+  const H = window.__pallanuoto, g = H.game, t = H.teams[1], p = t.players[4], gx = 12.5 * t.dir;
+  H.replay?.interrompiReplay?.(); g.state = 'play'; g.after = null; g.penalty = null; g.autoplay = true;
+  for (const q of H.teams) q.human = false;
+  for (const q of H.allPlayers) Object.assign(q, { act: null, charging: false, stunUntil: 0, tackleCD: 99, colpi: [], excluded: false, cut: null, fintaPronto: 0 });
+  for (const q of H.teams[0].players) if (!q.isGK) { q.x = -gx * 0.8; q.z = (q.i - 3) * 2.4; q.stunUntil = g.time + 99; }
+  p.x = gx - t.dir * 15; p.z = -6; p.vx = p.vz = 0; p.oriz = 0; H.regole.giveBall(p); g.possTeam = t; g.possT = g.time - 10; g.shot = 25;
+  window.__salta(2); const lontano = Math.hypot(p.target.x - p.x, p.target.z - p.z);
+  H.prova.startAct(p, 'fake', 0.25, () => {}); const fino = p.fintaPronto; let oriz = 0, scivolo = 0;
+  while (g.time < fino - 0.02 && H.ball.holder === p) { window.__salta(1); oriz = Math.max(oriz, p.oriz || 0); scivolo = Math.max(scivolo, Math.hypot(p.target.x - p.x, p.target.z - p.z)); }
+  return { lontano: +lontano.toFixed(1), oriz: +oriz.toFixed(2), scivolo: +scivolo.toFixed(2), durata: +(fino - g.time).toFixed(2) };
+});
+prova(dopoFinta.lontano > 4 && dopoFinta.oriz < 0.1 && dopoFinta.scivolo <= 1.2 + 1e-6, `dopo la finta, con il posto a ${dopoFinta.lontano} m, chi ha la palla resta dritto fino al gesto dopo (assetto massimo ${dopoFinta.oriz}, spostamento ${dopoFinta.scivolo} m alla volta)`);
 
 prova(errori.length === 0, `nessun errore nella pagina${errori.length ? ': ' + errori.join(' | ') : ''}`);
 await browser.close(); await new Promise(r => server.httpServer.close(r));

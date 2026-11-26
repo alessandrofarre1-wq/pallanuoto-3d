@@ -15,6 +15,14 @@ completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in
   di porta (`CONTRO.dietroPortiere`).
 - Rigore con tutti i giocatori di movimento in fila sulla linea dei 6 metri (v0.45) → 2 difensori e al massimo 2 attaccanti sulla linea
   dei 6 metri vicino al tiratore, gli altri a coppie a metà campo; nella serie finale nessuno vicino (`RIGORE_SCHIERA`).
+- Il computer con la palla puntava sempre al suo posto, anche durante la finta e l'attesa prima del gesto dopo: si distendeva a nuotare
+  con il braccio carico (video di Ale) → durante la finta e fino al gesto dopo resta dritto, al massimo 1,2 m alla volta con la bicicletta
+  (`FINTA_RITMO.scivolo`).
+- Raccordo del disegno tra due pose sempre di 0,08 s (v0.70) → proporzionale allo spostamento, 3 unità del corpo al secondo fino a 0,4 s
+  (`RACCORDO_VISTA`); l'ingresso in un gesto resta dentro la carica.
+- Alla presa il raccordo del disegno si azzerava (v0.70: corpo e braccio cambiavano posa in un fotogramma) → la presa raccorda la posa.
+- Passaggio basso preso da chi è dritto: la palla volava da sola fino alla mano già alta in 0,12 s (v0.56, `RACCORDO_PRESA`) → la mano la
+  raccoglie dall'acqua in 0,32 s come nella pesca (`PRESA_ACQUA`).
 
 ## v0.89
 - Errore di mira secondo la Precisione 0,18 + ((90 − P)/30)^1,6 × 1,55 (l'errore di un 75 era il doppio di quello di un 83; un 90
