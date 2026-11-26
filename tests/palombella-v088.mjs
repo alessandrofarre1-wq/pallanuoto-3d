@@ -103,7 +103,8 @@ const uscita = (usc, dif) => pg.evaluate(async ({ usc, dif }) => {
   return +Math.abs(gk.x - gx).toFixed(2);
 }, { usc, dif });
 const alta = await uscita(95), bassa = await uscita(40);
-prova(alta > 1.6 && bassa < 1.3, `il portiere esce dai pali nella controfuga: ${alta} m dalla linea con Uscita 95, ${bassa} m con Uscita 40`);
+// v0.89: l'Uscita conta pesata (STAT_PARTITA): con 40 il portiere esce di circa 1,3 m, con 95 di circa 2,1 m
+prova(alta > 1.6 && bassa < 1.5 && alta - bassa > 0.5, `il portiere esce dai pali nella controfuga, di più con Uscita alta: ${alta} m dalla linea con Uscita 95, ${bassa} m con Uscita 40`);
 const inseguito = await uscita(95, 'dietro'), coperto = await uscita(95, 'davanti');
 prova(inseguito > 1.6 && coperto < 1, `esce anche se il difensore battuto insegue da dietro (${inseguito} m), resta se c'è un difensore davanti (${coperto} m)`);
 prova(errori.length === 0, `nessun errore nella pagina${errori.length ? ': ' + errori.join(' | ') : ''}`);

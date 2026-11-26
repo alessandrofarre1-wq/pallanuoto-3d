@@ -1,3 +1,19 @@
+# Passaggio WATERPOLO7 — v0.89 riequilibrio: mira e peso delle statistiche (Claude Code)
+
+Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #71 (v0.88), versione 0.89.0.
+- `taratura.js`: `MIRA` (base, scala, curva, sopra, globale) per la funzione `mira` di `tiri.js` e il fattore globale nell'`errBase` di
+  `doShoot`; `STAT_PARTITA` e `pesata(v)` (riferimento + (v − riferimento) × peso, nessun import).
+- `pesata` negli effetti continui delle voci senza effetto minimo nella specifica di Ale: `valoriMotore` (pas, def, frz; spd e sht
+  pieni), `elevazione` e Visione dei passaggi in `tiri.js`, Resistenza, Difesa e intercetti in `fisica.js`, `pos01`/`rif01` e Uscita in
+  `ia.js`, Riflessi in `parata-portiere.js`, Disciplina in `lotta.js`, `partita.js` e `regole.js` (anche Difesa contro Forza/Passaggio nel
+  contrasto), Visione nella palombella del computer (`controfuga.js`) e in `ritardoSchema` (`uomo-in-piu.js`). Restano con le statistiche
+  vere: Velocità, Precisione, Potenza, tutte le soglie (`SPECIALI.qualita`, `atletico`, `difensoreForte`, `forte` del centroboa), gli
+  ordinamenti, le schede e le valutazioni.
+- `tests/bilancio.mjs`: per squadra tiri, tiri in gol e nello specchio (`tiriPerSquadra`, `conversionePerSquadra`,
+  `specchioPerSquadra` nel riassunto). [Rapporto](versioni/v089-riequilibrio.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.88 palombella senza tasto, scelta del tiro, rigore, valutazione delle squadre (Claude Code)
 
 Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #70 (v0.87), versione 0.88.0.

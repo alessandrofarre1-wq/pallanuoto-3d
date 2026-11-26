@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.88). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.89). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -231,6 +231,12 @@ colonnello. Stesse regole per il computer: dentro l'area palombella con il porti
   ruoli); nella schermata Squadre tutti i disponibili, scambio panchina ↔ altri, «Scelta automatica»; formazione e lista ricordate per
   nazionale (per id). Tornei: 15 convocati proposti dal gioco e scelti prima della prima partita (2-3 portieri), a ogni partita i 14 tra
   i convocati. Prova `npm run rose`.
+- Statistiche in partita v0.89 (riequilibrio; `taratura.js`): Velocità, Precisione e Potenza piene, con gli effetti minimi della
+  specifica di Ale (v0.16: tra un 90 e un 60 +15-20% di velocità in sprint, circa il doppio dei tiri nello specchio, palla da circa 20
+  a 25 m/s; prova `npm run statistiche`). Errore di mira `MIRA`: 0,52 + ((90 − Precisione)/30)^3,2 × 1,45 (piatta tra 75 e 90: un 75
+  sbaglia 1,24 volte un 83; ripida sotto 70; fino a 0,15 a 99), per tutti i tiri × 1,3 (`MIRA.globale`). Le altre voci (Riflessi,
+  Posizione, Uscita, Difesa, Passaggio, Forza, Resistenza, Disciplina, Visione) negli effetti continui pesano 0,6 attorno a 75
+  (`STAT_PARTITA`, `pesata`); soglie, scelte tra compagni, schede e valutazioni con le statistiche vere.
 - Valutazione della squadra v0.88 (Ale: «le valutazioni delle squadre dipendono dai giocatori che le compongono»; `ratingLista`): media
   dei 14 della partita come scendono in acqua, i 7 titolari con la valutazione nel loro posto e peso doppio; scegliere tra più giocatori
   non dà mai una squadra peggiore. Le valutazioni dei giocatori sono quelle del database (tolto il riporto al ranking della v0.86); il
@@ -240,16 +246,17 @@ colonnello. Stesse regole per il computer: dentro l'area palombella con il porti
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.88 — palombella senza tasto, scelta del tiro, rigore, valutazione delle squadre (Claude Code)
+## Stato v0.89 — riequilibrio: mira e peso delle statistiche (Claude Code)
 
-v0.88 (dopo la PR #70 con la v0.87, unita in `main`): Ale (25/11/2026) ha chiesto di togliere il tasto della palombella (a comparsa
-fuori area con il portiere fuori dai pali, tipo di tiro dentro l'area; in controfuga schizzo o colonnello secondo energia e qualità),
-la posizione iniziale del rigore (palla in acqua, braccio dietro la schiena, mano sopra o sotto) e valutazioni delle squadre dai
-giocatori, con la scelta tra più rose nella partita singola; poi il riequilibrio delle partite. Fatto (regole sopra: comandi, portiere,
-rigore, valutazione della squadra; [rapporto](docs/versioni/v088-palombella-rigore-rose.md)): scelta del tiro dentro l'area, tasto
-PALOMB. a comparsa, portiere che esce su chi è libero verso la porta (Uscita), palombella più difficile del tiro teso (in scena 62 su 100
-in gol), rigore con la palla dietro (solo disegno), Rating dai 14 della partita e rose dei tornei del database, titolari più forti nel
-posto. Palombelle circa 2-3 a squadra per partita; equilibrio invariato (gol 19,9, Italia 13,4 e Ungheria 26,5).
+v0.89 (dopo la PR #71 con la v0.88, unita in `main`): Ale aveva chiesto, dopo palombella, rigore e valutazioni, di riequilibrare le
+partite. Fatto ([rapporto](docs/versioni/v089-riequilibrio.md); regola «Statistiche in partita v0.89» sopra): curva della Precisione
+piatta tra 75 e 90 e un po' più di errore per tutti, peso 0,6 delle voci fuori dalla specifica di Ale. 16 partite ITA–HUN: gol 19,9 →
+17,6 (Italia 13,4 → 13,1, Ungheria 26,5 → 22,0), tiri in gol 49,9% → 44,0%, nello specchio 85% → 77%, voci a posto 5 → 7 su 15.
+L'Ungheria vince ancora tutte le 16 partite computer contro computer. Provato e tolto: centroboa ed entrate più tardi (azione 13,0 →
+13,4 s soltanto).
+
+v0.88 (PR #71): palombella senza tasto (a comparsa fuori area, tipo di tiro dentro l'area), portiere che esce su chi è libero verso
+la porta, rigore con la palla dietro, Rating dai 14 della partita e rose dei tornei; [rapporto](docs/versioni/v088-palombella-rigore-rose.md).
 
 v0.87 (PR #70): palmo che segue la mano nella finta (al cielo dietro la testa, in giù davanti), ritorno della finta alla carica,
 verso/larghezza/braccio di ogni giocatore (marchio di fabbrica), scheda con la finta; [rapporto](docs/versioni/v087-finte-mano.md).
@@ -269,16 +276,16 @@ braccio carico = controfallo; [rapporto](docs/versioni/v084-rigore.md)); v0.85 f
 della partita invariato; [rapporto](docs/versioni/v085-finte.md)); v0.86 rose (tutti i disponibili, 14 in partita scelti per ruolo,
 15 convocati nei tornei; [rapporto](docs/versioni/v086-rose.md)). I 13 punti di Ale del 24/11 sono fatti. Nelle prove computer contro
 computer l'Ungheria segna più del doppio dell'Italia: nel database le valutazioni medie sono 84 contro 76 (forza del ranking).
-Prossimo: il bilanciamento (v0.89, sotto). Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna
-(difesa).
+Prossimo: il ritmo (sotto). Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
 
-**Bilanciamento da rifare** (16 partite ITA–HUN sulla v0.88, `npm run taratura -- --partite=16`): 19,9 gol e 39,9 tiri per squadra
-(veri 13,3 e 33; Italia 13,4, Ungheria 26,5, Ungheria vince 16 su 16), tiri in gol 49,9% (40%; nello specchio 84,8%), espulsioni 11,2
-(11; dal centro 56%, vero 66%), superiorità 44,7% (52%), parità: gol 22,8% delle azioni (6-19%), tiro sbagliato 23,9% (32%), espulsione
-procurata 17,4% (22%), durata 13,0 s (21), azioni 74,8 (50); 5 voci su 15 a posto. Nel gioco la Precisione pesa molto (`mira` in
-`tiri.js`: l'errore dell'Italia, Precisione media 75,5, è circa il doppio di quello dell'Ungheria, 82,8). Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
+**Ritmo da rifare** (16 partite ITA–HUN sulla v0.89, `npm run taratura -- --partite=16`): 17,6 gol e 39,9 tiri per squadra (veri
+13,3 e 33; Italia 13,1, Ungheria 22,0), tiri in gol 44,0% (40%), nello specchio 77% (circa 67%), espulsioni 11,5 (dal centro 60%, vero
+66%), superiorità 47% (52%), parità: gol 19,3% (6-19%), tiro sbagliato 26,7% (32%), durata 13,1 s (21), azioni 74,6 (50); 7 voci su 15
+a posto. Restano troppe azioni e troppo corte: 5 s di transizione e 9,4 s di attacco; il 43% delle azioni in parità finisce in meno di
+10 s (palla al centroboa che si gira e tira, entrate, palle perse ed espulsioni presto). Allungarle vuol dire un attacco del computer più
+paziente, anche con meno palloni al centroboa nei primi secondi: scelta della v0.81 da decidere con Ale. Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
 partite); Codex misurava 16,1 e 41,4 nella v0.70 e 17,4 e 43,3 nella v0.71 (8 partite, passaggio di consegne v0.71); v0.77 20,5 e
 42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4, v0.82 20,2 e 41,0, v0.83-v0.84 19,1 e 39,0, v0.85 19,3 e 39,3, v0.86 19,4 e 39,1, v0.87 19,4 e
-40,1, v0.88 19,9 e 39,9 (16 partite).
+40,1, v0.88 19,9 e 39,9, v0.89 17,6 e 39,9 (16 partite).
 
 Stato precedente (v0.77, Codex): avvio fluido della finta, [rapporto](docs/versioni/v077-avvio-finta.md).

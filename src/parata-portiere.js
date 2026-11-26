@@ -1,7 +1,7 @@
 // Sagoma e tentativo del portiere: stessi punti per urti e disegno.
 // Nessuna lettura del rig, della qualità grafica o del caso: il sorteggio è un input.
 import { G, VIS } from './costanti.js';
-import { PARATA_PORTIERE as P } from './taratura.js';
+import { PARATA_PORTIERE as P, pesata } from './taratura.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const ease=x=>{const q=clamp(x,0,1);return q*q*(3-2*q);};
@@ -155,7 +155,7 @@ export function creaTentativoPortiere(gk,B,{probabilita,caso,time,ritardoFinta=0
   const [c,s]=orientamento(gk),vel=(B.vx||0)*c+(B.vz||0)*s;
   const distanza=(gk.x+c*.35-B.x)*c+(gk.z+s*.35-B.z)*s;
   const residuo=vel<-.001?clamp(distanza/vel,.001,1.5):.25;
-  const rif=clamp(((gk.s?.rif??70)-40)/59,0,1),stamina=clamp(gk.stamina??1,0,1);
+  const rif=clamp((pesata(gk.s?.rif??70)-40)/59,0,1),stamina=clamp(gk.stamina??1,0,1);
   const valido=precedente?.attiva&&precedente.gid===gk.uid&&precedente.num===gk.num&&precedente.scheda===gk.scheda&&
     time>=precedente.time&&time-precedente.time<=.5;
   const t={gid:gk.uid,num:gk.num,scheda:gk.scheda,attiva:true,time,timeInizio:time,tempoVolo:Math.max(0,B.flightT||0),

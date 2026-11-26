@@ -16,7 +16,7 @@ import { diSchiena, shotKind } from './tiri.js';
 import { FIRMA, FINTA_LATO, fintaLatoAttiva } from './finte.js';
 import { difensoreCentro, leggiCentro, passoGirata } from './centroboa.js';
 import { centroAttacco } from './entrate.js';
-import { CON_PALLA, INTERCETTO, PARATA_PORTIERE, PARATA_SUP, PRESA, SPRINT_CONSUMO, STANCO } from './taratura.js';      // numeri del bilanciamento
+import { CON_PALLA, INTERCETTO, PARATA_PORTIERE, PARATA_SUP, PRESA, SPRINT_CONSUMO, STANCO, pesata } from './taratura.js';      // numeri del bilanciamento
 export { CON_PALLA, INTERCETTO, PARATA_SUP, PRESA, SPRINT_CONSUMO, STANCO };
 // v0.81: il centroboa che tiene la palla vicino alla porta con il marcatore dietro o al fianco resta di spalle alla porta
 function centroDiSpalle(p){
@@ -119,7 +119,7 @@ export function movePlayer(p,dx,dz,sprint,dt){
   p.vx+=(tvx-p.vx)*a; p.vz+=(tvz-p.vz)*a;
   // Resistenza: un giocatore medio è visibilmente stanco dopo 6-7 vasche di sprint di fila (docs/riferimenti/tecnica.md);
   // chi ha più Resistenza si stanca meno e recupera prima
-  const fRes=(p.s.res-40)/59;
+  const fRes=(pesata(p.s.res)-40)/59;
   if(canSprint) p.stamina-=dt*SPRINT_CONSUMO*(1.6-fRes); else p.stamina+=dt*(moving?0.006:0.02)*(0.6+0.8*fRes);
   if(p.contactT>0) p.stamina-=dt*0.02;
   p.stamina=clamp(p.stamina,0,1);
@@ -270,7 +270,7 @@ function portiereSulTiro(dt){
     }
     ball.tentativoPortiere=t;gk.tentativoPortiere=t;
     if(!ball.costoTentativoPortiere){
-      gk.stamina=Math.max(0,gk.stamina-.035*(1.5-(gk.s.res-40)/59));ball.costoTentativoPortiere=true;
+      gk.stamina=Math.max(0,gk.stamina-.035*(1.5-(pesata(gk.s.res)-40)/59));ball.costoTentativoPortiere=true;
     }
   }
   return gk;
@@ -375,7 +375,7 @@ export function updateBall(dt){
           const primoPalo=tiroEffettivo&&ball.shooter&&Math.sign(ball.crossZ||0)===(ball.paloCoperto||0);
           // sulle diagonali (palo lontano) serve il braccio alto al momento giusto: dipende dalla Difesa; una finta appena
           // riuscita lo abbassa per un attimo; il polso non dà il tempo di alzarlo; chi tira più alto passa sopra
-          const dif01=(p.s.dif-40)/59, braccioAlto=0.2+0.7*dif01;
+          const dif01=(pesata(p.s.dif)-40)/59, braccioAlto=0.2+0.7*dif01;
           const finta=ball.shooter&&ball.shooter.fakeUntil>game.time?0.45:1;
           // (v0.56) il centrale tra i pali con l'uomo in meno copre il palo lungo: sul tiro da quella parte il braccio è già alto
           const cl=p.copreLungo, lungoCoperto=tiroEffettivo&&cl&&game.time-cl.t<0.3&&Math.sign(ball.crossZ||0)===cl.lato;
@@ -390,7 +390,7 @@ export function updateBall(dt){
           const dopoFinta=(ball.kind==='pass'&&ball.dopoFinta?0.6:1)*(ball.kind==='pass'&&ball.firma?FIRMA.intercetto:1);
           // v0.60 (taratura): palle perse in parità 8% contro circa 20% delle partite vere; base 0,09 → 0,12, passaggio lungo 0,3 → 0,36
           const versoBoa=ball.target&&ball.target===centroAttacco(ball.target.team)&&Math.abs(goalX(ball.target.team)-ball.target.x)<5&&!manUp(ball.target.team);
-          const letto=(INTERCETTO.base+INTERCETTO.lungo*clamp((ball.flightT-0.2)/0.7,0,1)+(ball.shooter?(p.s.dif-ball.shooter.s.pas)/59*0.12:0))*(p.team.defPlay===2?1.15:1)*(versoBoa?1.3:1)*dopoFinta;
+          const letto=(INTERCETTO.base+INTERCETTO.lungo*clamp((ball.flightT-0.2)/0.7,0,1)+(ball.shooter?(pesata(p.s.dif)-pesata(ball.shooter.s.pas))/59*0.12:0))*(p.team.defPlay===2?1.15:1)*(versoBoa?1.3:1)*dopoFinta;
           const pr=(tiroEffettivo?muro:clamp(letto,0.04,0.5))*(0.6+0.6*p.st.def)*(p.team.human?1:DIFF());
           if(rnd()<pr){
             if(tiroEffettivo){

@@ -10,6 +10,24 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.89 — riequilibrio: mira e peso delle statistiche** (Claude Code, 26/11/2026; rapporto `docs/versioni/v089-riequilibrio.md`).
+  RICHIESTA: Ale, «una volta fatto queste modifiche puoi anche riequilibrare le partite»; poi «riparti e concludi». CODICE (v0.88, 16
+  partite ITA–HUN): 19,9 gol e 39,9 tiri a squadra, tiri in gol 49,9%, 85 tiri su 100 nello specchio, Italia 13,4 e Ungheria 26,5
+  (16 vittorie su 16), azione in parità 13,0 s, 5 voci su 15 a posto; l'errore di mira di un 75 era il doppio di quello di un 83.
+  ANALISI: transizione 5,0 s e attacco 9,4 s; il 43% delle azioni in parità finisce prima di 10 s; scambiando i portieri l'Italia passa
+  solo da 10,3 a 12,3 gol: lo scarto viene dal tiro (precisione → palla vicina al palo → meno parate) e dalla difesa. CAMBIAMENTI:
+  `taratura.js` (`MIRA`: 0,52 + x^3,2 × 1,45, `globale` 1,3, `sopra` 0,37; `STAT_PARTITA` 0,6 attorno a 75 e `pesata`), `tiri.js`
+  (`mira`, errore globale, `elevazione` e Visione pesate), `dati/rose.js` (`valoriMotore` con Passaggio, Difesa e Forza pesate),
+  `fisica.js`, `ia.js`, `parata-portiere.js`, `lotta.js`, `partita.js`, `regole.js`, `controfuga.js`, `uomo-in-piu.js` (effetti continui
+  delle voci fuori dalla specifica pesati), `tests/bilancio.mjs` (numeri per squadra). Provati e tolti: `CENTRO_ATTESA` 6-13 s ed entrate
+  dopo 10 s e 3 passaggi (13,0 → 13,4 s). MISURE (16 partite): gol 19,9 → 17,6 (Italia 13,1, Ungheria 22,0), tiri in gol 49,9% → 44,0%,
+  nello specchio 84,8% → 77,2%, voci a posto 5 → 7 su 15; `statistiche` (specifica di Ale): Velocità +19,4%, Precisione 2,10 volte,
+  Potenza 27,4 contro 22,2 m/s. PROVE ADATTATE: `traiettorie` (contesto con `MIRA` e `pesata`), `nuoto` (consumo con la Resistenza pesata),
+  `replay` (portiere fuori posizione al tiro dall'ala), `palombella` (Uscita pesata). VERIFICHE: lint PASS; prove 70 PASS su 70 (dopo gli adattamenti; primo giro 66 e 4 FAIL); verifica `--partite=0` con i riferimenti 3-5
+  aggiornati dopo il controllo, poi superata; aspetto «Tutto a posto» (iPhone 56 oggetti, 131.872 triangoli). DECISIONI
+  SUPERATE: curva della Precisione, errore globale, statistiche piene in tutti gli effetti. NON FATTO: il ritmo (azioni 74,6 contro 50,
+  13,1 s contro 21: serve un attacco del computer più paziente, da decidere con Ale per la palla al centroboa della v0.81).
+
 - **v0.88 — palombella senza tasto, scelta del tiro, rigore, valutazione delle squadre** (Claude Code, 25/11/2026; rapporto
   `docs/versioni/v088-palombella-rigore-rose.md`). RICHIESTA: Ale, «puoi anche togliere il tasto della palomba: da fuori area, se il
   giocatore che ha la palla è in buona posizione e il portiere sta fuori dai pali, può comparire il tasto palomba, lo puoi premere con

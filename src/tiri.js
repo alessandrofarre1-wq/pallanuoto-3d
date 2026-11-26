@@ -14,7 +14,7 @@ import { centroAttacco, destinatarioEntrata, passaggioChiamato, postoAttacco, re
 import { velocitaDiLancio } from './palla.js';
 import { sostitutoLontano } from './difesa-cambi.js';
 import { profiloTraiettoria } from './profili-traiettorie.js';
-import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO, PALOMBELLA, PASSAGGI, PRESA, SERVIZIO_BOA as S, TRAIETTORIE_TIRO as T } from './taratura.js';      // numeri del bilanciamento
+import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO, MIRA, PALOMBELLA, PASSAGGI, PRESA, SERVIZIO_BOA as S, TRAIETTORIE_TIRO as T, pesata } from './taratura.js';      // numeri del bilanciamento
 export { ERRORE_PASSAGGIO };
 import { paloCoperto } from './muro.js';
 import { P } from './fisica-palla/parametri.js';
@@ -135,7 +135,7 @@ export function passLaneRisk(p,m){
 }
 // che tipo di tiro parte in questa situazione
 // 0-1: quanto il giocatore riesce ad alzarsi e a restare stabile sulle gambe (Forza, Resistenza, stanchezza)
-export const elevazione = p => ((p.s.frz-40)/59*0.5+(p.s.res-40)/59*0.5)*(0.55+0.45*p.stamina);
+export const elevazione = p => ((pesata(p.s.frz)-40)/59*0.5+(pesata(p.s.res)-40)/59*0.5)*(0.55+0.45*p.stamina);
 export function shotKind(p){
   if(game.penalty===p) return 'shot';
   // Centroboa spalle alla porta: la beduina esce dal lato del braccio, la
@@ -236,7 +236,7 @@ export function bestPassTarget(p,variabile=true,{assistita=false}={}){
     if(occasione&&linea&&risk<0.18) s+=2.6;
     // Un ritorno può essere la risposta corretta alla difesa: si limita solo il ping-pong senza progresso.
     if(m===p.daChi&&ball.holdTime<0.35&&!interno) s-=0.35;
-    if(variabile) s+=(rnd()-0.5)*clamp((99-p.s.vis)/59,0,1)*0.8;
+    if(variabile) s+=(rnd()-0.5)*clamp((99-pesata(p.s.vis))/59,0,1)*0.8;
     if(s>bs){ bs=s; best=m; }
   }
   return best;
@@ -343,8 +343,9 @@ export function situazioneTiro(p){
   const da=game.time-(p.ricevutoT||0)-(p.act?p.act.t:0);      // tempo tra la ricezione e l'inizio del gesto
   return { marcato, vicino, liberato:!!p.ricevutoPassaggio&&da<1.5&&vicino>1.8, dopoCambio:!!p.ricevutoCambio&&da<1.5, daFermo:da>2.5 };
 }
-// errore di mira secondo la Precisione: piccolo a 90, circa 3 volte a 75, 7 volte a 60 (misurato su 1500 tiri: vedi npm run statistiche)
-const mira = pre => pre>=90 ? 0.18-(pre-90)/9*0.1 : 0.18+Math.pow((90-pre)/30,1.6)*1.55;
+// errore di mira secondo la Precisione (numeri MIRA in taratura.js; controllo in npm run statistiche: dallo stesso punto Precisione 90
+// mette nello specchio circa il doppio dei tiri di Precisione 60)
+const mira = pre => pre>=90 ? MIRA.base-(pre-90)/9*MIRA.sopra : MIRA.base+Math.pow((90-pre)/30,MIRA.curva)*MIRA.scala;
 // o = variante: polso (tiro di solo polso, poco caricato), dopoFinta, torsione (finta di busto sul primo palo e chiusura in diagonale), volo
 export function doShoot(p,power,lob,aimZ,o){
   // misura (v0.59, solo con window.__logTiri nelle sonde): perché e dopo quanto tempo d'azione tira il computer
@@ -377,7 +378,7 @@ export function doShoot(p,power,lob,aimZ,o){
   // QUANTO È LIBERO CHI TIRA. Un difensore davanti con il braccio alto (tra il tiratore e la porta) rende il tiro molto più
   // difficile; chi tira subito dopo aver ricevuto, senza nessuno addosso, è stato "liberato" dal passaggio e tira meglio.
   const dPorta=Math.hypot(gx-p.x,p.z), q=situazioneTiro(p);
-  const errBase=(1+0.75*q.marcato)*(q.liberato?0.8:1)*(1+Math.max(0,dPorta-7)*0.3)*1.08*0.27*(1+(1-p.stamina)*1.3)*(classico?1:1.3)*mira(p.s.pre)*(1+clamp(1.4-press,0,1)*0.9*(1.45-0.9*elev))*(o.volo?1.15:1)*(p.fakeUntil>game.time?0.65:1);
+  const errBase=(1+0.75*q.marcato)*(q.liberato?0.8:1)*(1+Math.max(0,dPorta-7)*0.3)*1.08*0.27*MIRA.globale*(1+(1-p.stamina)*1.3)*(classico?1:1.3)*mira(p.s.pre)*(1+clamp(1.4-press,0,1)*0.9*(1.45-0.9*elev))*(o.volo?1.15:1)*(p.fakeUntil>game.time?0.65:1);
   // Mano: dal lato destro della vasca tira meglio un mancino, dal sinistro un destro (angolo migliore sulla porta)
   // MIRA CONTRO FORZA (Berlino 2018: in parità i gol sono stati tirati in media più piano dei tiri sbagliati): oltre l'80% della
   // forza la mira peggiora un poco (fino a +35% di errore al massimo); il rigore è escluso

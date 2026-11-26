@@ -16,7 +16,7 @@ import { doShoot, startAct, updateActs, updateRecuperi } from './tiri.js';
 import { aggiornaPanchina, obiettivoUscita } from './panchina.js';
 import { obiettivoEspulso, obiettivoRientro, recuperoPozzetto } from './pozzetto.js';
 import { aggiornaGiocoFermo } from './gioco-fermo.js';
-import { CONTR_AI, PRESSING_CONSUMO } from './taratura.js';      // contrasto del computer (sezione 2) e fatica del pressing: numeri del bilanciamento
+import { CONTR_AI, PRESSING_CONSUMO, pesata } from './taratura.js';      // contrasto del computer (sezione 2) e fatica del pressing: numeri del bilanciamento
 export { CONTR_AI, PRESSING_CONSUMO };
 // Stessa risposta di nuoto e scivolamento nel gioco vivo e durante un tiro libero.
 function muoviVerso(p,tg,dt){
@@ -230,9 +230,9 @@ export function update(dt){
       if((marking||dist(p,ball.holder)<0.9) && dist(p,ball.holder)<1.0){
         // il computer difende con la stessa logica: prova a rubare quando la palla è esposta e non arriva da dietro; chi ha poca
         // Disciplina ci prova anche quando non dovrebbe; in controfuga, superato, spende il fallo per fermare l'azione
-        const c=ball.holder, lato=latoContrasto(p,c), palla=pallaEsposta(c), dis=(p.s.dis-40)/59;
+        const c=ball.holder, lato=latoContrasto(p,c), palla=pallaEsposta(c), dis=(pesata(p.s.dis)-40)/59;
         const fuga=game.time-(game.possT||0)<11 && difensoriDavanti(c)<=1 && Math.abs(goalX(c.team)-c.x)>6.5;
-        if(fuga && rnd()<dt*(1.2+1.2*(p.s.dif-40)/59)) tackle(p,c,{voluto:true,origine:'fuga'});
+        if(fuga && rnd()<dt*(1.2+1.2*(pesata(p.s.dif)-40)/59)) tackle(p,c,{voluto:true,origine:'fuga'});
         else {
           const voglia=(lato==='dietro'?0.25+0.9*(1-dis):1)*(palla==='alzata'?0.3+0.8*(1-dis):palla==='palleggio'?1.4:1);
           // stessa regola del giocatore: disturbo a tocchi; il terzo tocco ravvicinato è fallo, e il computer insiste di rado

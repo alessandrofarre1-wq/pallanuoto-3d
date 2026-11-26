@@ -3,6 +3,15 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.89
+- Errore di mira secondo la Precisione 0,18 + ((90 − P)/30)^1,6 × 1,55 (l'errore di un 75 era il doppio di quello di un 83; un 90
+  quasi infallibile) → 0,52 + ((90 − P)/30)^3,2 × 1,45 (`MIRA`): piatta tra 75 e 90 (un 75 sbaglia 1,24 volte un 83), ripida sotto 70;
+  la specifica di Ale «90 contro 60 = circa il doppio dei tiri nello specchio» resta (2,10 volte, `npm run statistiche`).
+- Errore di tutti i tiri × 1 → × 1,3 (`MIRA.globale`): nello specchio 85 tiri su 100 → circa 78 (nelle partite vere circa 2 su 3).
+- Statistiche piene in tutti gli effetti → Riflessi, Posizione, Uscita, Difesa, Passaggio, Forza, Resistenza, Disciplina e Visione
+  pesano 0,6 attorno a 75 negli effetti continui (`STAT_PARTITA`, `pesata`); Velocità, Precisione e Potenza restano piene (specifica di
+  Ale); soglie, scelte tra compagni, schede e valutazioni con le statistiche vere.
+
 ## v0.88
 - Tasto PALOMB. sempre visibile quando la nostra squadra ha la palla, palombella da qualunque distanza (v0.40) → tasto a comparsa solo
   fuori area (6-10 m, entro 0,6 rad dal centro della porta, nessun avversario entro 1,6 m) con il portiere fuori dai pali, per 1,2 s;
