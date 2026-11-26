@@ -99,6 +99,7 @@ jobs:
       - run: npm run finte-mano -- --no-build
       - run: npm run rose -- --no-build
       - run: npm run palombella -- --no-build
+      - run: npm run ritocchi -- --no-build
       - uses: actions/upload-artifact@v4
         if: always()
         with:

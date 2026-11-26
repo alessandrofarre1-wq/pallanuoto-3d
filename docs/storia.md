@@ -10,6 +10,27 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.90 — rigore (busto e schieramento), avvio della finta senza avvitamento, schemi contro il pressing, giocatore in porta**
+  (Claude Code, 26/11/2026; rapporto `docs/versioni/v090-rigore-finta-schemi.md`). RICHIESTA: Ale, con una foto del rigore: «se il
+  giocatore tiene il braccio in quel modo deve ruotare un po' il busto e le spalle verso la palla»; «all'inizio del movimento di finta
+  continua a esserci questo avvitamento veloce e innaturale che, se non sai governare, ti chiederei di togliere»; «a volte i due giocatori
+  esterni rimangono a palleggiare facendo scadere il tempo dell'azione e non chiamando nessuno schema. Se la difesa è in pressing uno
+  schema va sempre chiamato; se il primo non va a buon fine e c'è ancora tempo, se ne chiama un secondo»; «quando il portiere recupera
+  palla un giocatore va verso la porta entrandoci dentro»; «nei rigori schieri tutte e due le squadre in linea: a fianco al tiratore
+  rimangono 2 uomini della squadra avversaria e al massimo altri due della squadra che attacca, gli altri stanno in mezzo al campo, perché
+  se il tiratore sbaglia si può partire subito in controfuga». CODICE: braccio del rigore dietro la schiena con spalle e busto dritti;
+  bacino della posa registrata (Plask) che girava di 56° in 0,7 s (fino a 126°/s), più delle spalle (32°); schemi A/B/C del computer solo
+  con la palla al punto o al mezzo destro per caso, il portatore pressato e un compagno smarcato (57% dei possessi contro il pressing senza
+  schemi, 19% di quelli lunghi); il 3 dell'«apertura del 2» a 3,5 m dietro la palla del portiere, dentro la rete (35 casi in 2 partite);
+  rigore con tutti in fila sulla linea dei 6 metri. CAMBIAMENTI: `grafica/pose.js` (`RIGORE_VISTA.busto` 0,5 rad), `grafica/tiro-plask-vista.js`
+  (`PLASK_ANCHE.quota` 0,3, `s.giroAnche`), `entrate.js` (`schemaDovuto`, `attesaSchema`, `segnaSchema`, `appoggioPerSchema`, `preparaEntrata`),
+  `ia.js` (`aiCarrier` con il passaggio sicuro per lo schema, `aggiornaSchemi` con l'entrata del lato debole, `startCut` con lo schema
+  dovuto, `CONTRO.dietroPortiere` 4 m), `regole.js` (`setupPenalty` con `RIGORE_SCHIERA`), `taratura.js` (`SCHEMI_PRESSING`,
+  `RIGORE_SCHIERA`), `tests/ritocchi-v090.mjs` (nuova, `npm run ritocchi`, anche nella CI), `tests/tiro-registrato.mjs` (piedi confrontati
+  con la clip girata di `s.giroAnche`). MISURE: bacino 56° → 18° (fino a 42°/s), spalle 32° invariate; spalla del braccio che tira dietro
+  l'altra di 0,19; giocatori in porta 35 → 0; possessi contro il pressing senza schemi 57% → 38%, di quelli lunghi 19% → 7%, con due schemi
+  3 → 18. DA_COMPLETARE_STORIA
+
 - **v0.89 — riequilibrio: mira e peso delle statistiche** (Claude Code, 26/11/2026; rapporto `docs/versioni/v089-riequilibrio.md`).
   RICHIESTA: Ale, «una volta fatto queste modifiche puoi anche riequilibrare le partite»; poi «riparti e concludi». CODICE (v0.88, 16
   partite ITA–HUN): 19,9 gol e 39,9 tiri a squadra, tiri in gol 49,9%, 85 tiri su 100 nello specchio, Italia 13,4 e Ungheria 26,5

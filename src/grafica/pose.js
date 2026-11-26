@@ -360,7 +360,9 @@ export const PESCA={ durata:0.32, arriva:0.32, sotto:0.52, spalla:[0.06,0.16,0.2
 // (palmo in giù) o sotto (palmo in su): un'abitudine del giocatore, sopra per «sopra» giocatori su cento. La carica la porta su in un solo
 // movimento fino al braccio caricato (con la mano sotto si parte già dalla salita). Prima (v0.84) la palla stava in acqua davanti.
 // Solo disegno: il controfallo per il movimento spezzato resta quello della v0.84 (RIGORE_TIRO).
-export const RIGORE_VISTA={ palla:[-0.40,0.24], sopra:0.6 };
+// v0.90 (Ale: «se il giocatore tiene il braccio in quel modo deve ruotare un po' il busto e le spalle verso la palla»): «busto» = rad di
+// rotazione di spalle e busto verso la palla (la spalla del braccio che tira va indietro), la testa resta verso la porta.
+export const RIGORE_VISTA={ palla:[-0.40,0.24], sopra:0.6, busto:0.5 };
 // ESULTANZA (v0.63, punto 10): quanto si alza il corpo (unità del corpo, ×1,45 = metri), altezza della mano sopra la spalla, ampiezza
 // e ritmo (colpi al secondo) del pugno agitato
 export const ESULTA={ su:0.08, alto:0.48, pugno:0.07, ritmo:2.2 };
@@ -507,6 +509,12 @@ function articolaVista(p,J,T,t,gestoVista){
       if(game.penalty===p&&!p.charging&&!(p.act&&!p.act.done)){
         const sopra=abitudine(p.scheda,'rigore',RIGORE_VISTA.sopra), sp=V['s'+suff];
         const pl=[sp[0]+RIGORE_VISTA.palla[0],0.05,sp[2]+RIGORE_VISTA.palla[1]*lato];
+        // v0.90: spalle e busto girati verso la palla (la spalla del braccio che tira va indietro), la testa resta verso la porta
+        { const giro=lato*RIGORE_VISTA.busto*(1-e);
+          if(Math.abs(giro)>0.01){ const c=mix3(V.sL,V.sR,0.5), cs=Math.cos(giro), sn=Math.sin(giro);
+            const ruota=v=>{ const x=v[0]-c[0], z=v[2]-c[2]; v[0]=c[0]+x*cs-z*sn; v[2]=c[2]+x*sn+z*cs; };
+            for(const key of ['sR','sL','eR','eL','hR','hL']) ruota(V[key]);
+            T.torsioneVista=(T.torsioneVista||0)+giro; T.testaGiro=0; } }
         braccio(lato,add3(pl,[0,sopra?0.10:-0.09,0]),locale([-0.35,-0.25,1]),locale(sopra?[0.1,-1,0.05]:[0.1,1,0.05]),sopra?0.15:-0.25,1-e);
         T.pallaInAcqua=1-e; T.rigoreAcqua=pl; return V; }
       if(fight.active&&fight.boa===p&&fight.def){ const q=fight.def, dx=q.x-p.x, dz=q.z-p.z, l=Math.hypot(dx,dz)||1;

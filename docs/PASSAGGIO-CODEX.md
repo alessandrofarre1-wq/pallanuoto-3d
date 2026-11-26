@@ -1,3 +1,22 @@
+# Passaggio WATERPOLO7 — v0.90 rigore, avvio della finta, schemi contro il pressing, giocatore in porta (Claude Code)
+
+Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #72 (v0.89), versione 0.90.0.
+- Solo disegno: `grafica/pose.js` (`RIGORE_VISTA.busto`: nel rigore spalle, gomiti e mani ruotano attorno al petto di `lato × busto`,
+  `T.torsioneVista` aumenta e `T.testaGiro = 0`); `grafica/tiro-plask-vista.js` (`PLASK_ANCHE.quota`: dopo la posa registrata il bacino
+  ruota attorno alla verticale di −(1 − quota) × l'angolo della linea delle anche nel riferimento di `R.g`, e `spine_01` torna alla sua
+  rotazione nel mondo con `mondo`).
+- Gioco: `regole.js` `setupPenalty` (`RIGORE_SCHIERA`: i più vicini al dischetto sulla linea dei 6 metri, gli altri a coppie a metà
+  campo; nessuno vicino se `game.rigoriFinali`); `ia.js` `postoApertura`/`contropiedeTarget` (`CONTRO.dietroPortiere`); `entrate.js`
+  `schemaDovuto(t)`, `attesaSchema(t)`, `segnaSchema(t)`, `appoggioPerSchema(p, sicuro)` e `preparaEntrata` con lo schema dovuto (senza la
+  pausa `entrataDopo`, profondità `SCHEMI_PRESSING.profondita`); `ia.js` `aiCarrier` (passaggio «sicuro» per lo schema dovuto) e
+  `aggiornaSchemi` (entrata del mezzo del lato debole dopo `SCHEMI_PRESSING.attesa` s, `startCut(q, true)`).
+- Prove: nuova `npm run ritocchi` (`tests/ritocchi-v090.mjs`, anche nella CI). Adattata la tua `tests/tiro-registrato.mjs` (v0.74): le
+  gambe seguono il bacino, quindi la direzione caviglia-punta si confronta con quella della clip girata di `s.giroAnche` attorno alla
+  verticale (la rotazione tolta al bacino, salvata da `applicaTiroRegistrato`); soglia invariata (> 0,99999, errore misurato 2e-16),
+  palmi invariati. [Rapporto](versioni/v090-rigore-finta-schemi.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.89 riequilibrio: mira e peso delle statistiche (Claude Code)
 
 Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #71 (v0.88), versione 0.89.0.

@@ -9,7 +9,10 @@ const bytes=Uint8Array.from(atob(dati.packed),c=>c.charCodeAt(0)),view=new DataV
 const valori=new Float32Array(bytes.length/2);for(let i=0;i<valori.length;i++)valori[i]=view.getInt16(i*2,true)/32767;
 const N=dati.bones.length,STRIDE=N*4,CONTROL=dati.frames*STRIDE;
 const clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>{x=clamp(x);return x*x*(3-2*x);};
-const qa=new THREE.Quaternion(),qb=new THREE.Quaternion(),qc=new THREE.Quaternion(),qd=new THREE.Quaternion(),qe=new THREE.Quaternion(),qp=new THREE.Quaternion(),qg=new THREE.Quaternion();
+const qa=new THREE.Quaternion(),qb=new THREE.Quaternion(),qc=new THREE.Quaternion(),qd=new THREE.Quaternion(),qe=new THREE.Quaternion(),qf=new THREE.Quaternion(),qp=new THREE.Quaternion(),qg=new THREE.Quaternion();
+// v0.90 (Ale: «all'inizio del movimento di finta continua a esserci questo avvitamento veloce e innaturale»): quota della rotazione del
+// bacino della posa Plask attorno alla verticale che resta nel disegno (misura prima: anche −56° in 0,7 s, fino a 126°/s, spalle −32°)
+export const PLASK_ANCHE=Object.freeze({ quota:0.3 });
 const a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3(),up=new THREE.Vector3(0,1,0),matrix=new THREE.Matrix4();
 const opposite=n=>n.replace(/left|right|_l$|_r$/g,s=>({left:'right',right:'left',_l:'_r',_r:'_l'})[s]);
 export function campionaPosaRegistrata(tempo,out){
@@ -159,6 +162,20 @@ export function applicaTiroRegistrato(R,p,T,J,memoria,dt){
   {const carica=p.charging&&memoria.hold||atto&&!atto.done&&atto.t<atto.wind;
     s.pesoPalmo=(s.pesoPalmo||0)+((carica?MANO_FINTA.plask:0)-(s.pesoPalmo||0))*(1-Math.exp(-Math.max(0,dt)/.05));
     if(s.pesoPalmo>1e-3)correggiPalmo(C,p,T,s.pesoPalmo*peso);}
+  // v0.90: in acqua il caricamento lo fanno spalle e busto, le anche restano quasi ferme sulla bicicletta. Il bacino (e con lui le
+  // gambe) tiene solo PLASK_ANCHE.quota della sua rotazione attorno alla verticale; la schiena resta dov'era nel mondo, quindi spalle,
+  // braccio e palla restano quelli della posa e il busto si torce sopra le anche. Solo disegno.
+  // s.giroAnche: la rotazione tolta (le gambe seguono il bacino: tests/tiro-registrato.mjs la usa per i piedi).
+  {const Os=C.ossa;s.giroAnche=0;
+    if(C.schiena.length&&Os.cosciaS&&Os.cosciaD){
+      Os.cosciaS.getWorldPosition(a);Os.cosciaD.getWorldPosition(b);R.g.worldToLocal(a);R.g.worldToLocal(b);
+      const delta=-Math.atan2(b.x-a.x,b.z-a.z)*(1-PLASK_ANCHE.quota);
+      if(Math.abs(delta)>1e-4){
+        s.giroAnche=delta;C.schiena[0].getWorldQuaternion(qf);
+        Os.bacino.getWorldQuaternion(qc);qd.setFromAxisAngle(up,delta);mondo(Os.bacino,qc.premultiply(qd));
+        mondo(C.schiena[0],qf);
+      }
+    }}
   // La radice della registrazione non muove il giocatore. Si adatta la quota
   // alla vasca, mantenendo la forma e la coordinazione della posa completa.
   const O=C.ossa,pv=O.bacino.position;pv.set(0,0,0);
