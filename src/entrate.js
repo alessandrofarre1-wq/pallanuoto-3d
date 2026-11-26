@@ -3,7 +3,7 @@
 import { MARK, dist } from './costanti.js';
 import { ball, ctrl, game, goalX, other } from './stato.js';
 import { schemaSquadra } from './schemi.js';
-import { ENTRATA, ENTRATE_REATTIVE as E } from './taratura.js';
+import { ENTRATA, ENTRATE_REATTIVE as E, SCHEMI_PRESSING as SP } from './taratura.js';
 import { resetEntrantiCambio } from './difesa-cambi.js';
 
 const disponibile=p=>p&&!p.isGK&&!p.excluded&&!p.uscendo;
@@ -46,6 +46,33 @@ const atletico=p=>((p.s?.vel??70)+(p.s?.pre??70)+(p.s?.frz??70))/3;
 export function latoTecnico(p,ala){return p.mano==='S'&&ala.mano==='S'||Math.min(atletico(p),atletico(ala))>=E.manoAbile;}
 const pressato=p=>{const d=difensoreEntrata(p);return !!d&&(dist(d,p)<E.pressing||p.pressatoUntil>game.time||
   p.freeThrow&&game.time-(p.falloT??-9)<4&&dist(d,p)<3);};
+// SCHEMI CONTRO IL PRESSING (v0.90, Ale: «a volte i due giocatori esterni rimangono a palleggiare facendo scadere il tempo dell'azione
+// e non chiamando nessuno schema. Se la difesa è in pressing uno schema va sempre chiamato in modo da provocare il movimento della difesa
+// ed eventuali scoperture. Se il primo schema non va a buon fine e c'è ancora tempo, se ne chiama un secondo»). Il computer, contro il
+// pressing in parità, dopo E.circolazione s e E.passaggi passaggi porta la palla dove lo schema può partire (il punto per A e B, il mezzo
+// destro per C, `appoggioPerSchema`) e lo avvia anche senza la pausa tra le entrate; se dopo SP.attesa s non è partito, entra il mezzo
+// del lato debole (ia.js `aggiornaSchemi`). Un secondo schema parte SP.intervallo s dopo l'inizio del primo, se non è finito con un tiro
+// e restano almeno SP.tempo s di possesso; al massimo SP.massimo per possesso. Prima lo schema partiva solo se la palla arrivava per caso
+// al punto o al mezzo destro con il portatore pressato.
+const contatoreSchemi=t=>t.schemiPossesso?.possT===game.possT?t.schemiPossesso:(t.schemiPossesso={possT:game.possT,n:0,ultimo:-99,dovutoDa:null});
+export function schemaDovuto(t){
+  const c=contatoreSchemi(t);
+  const ok=automatico(t)&&game.state==='play'&&game.possTeam===t&&other(t).defPlay===2&&pari(t)&&!t.entrataAzione&&!t.rotazioneCentro&&
+    !t.players.some(p=>p.cut)&&!chiamataAttuale(t)&&game.shot>=SP.tempo&&c.n<SP.massimo&&
+    (c.n===0?game.time-game.possT>=E.circolazione&&(game.passaggi||0)>=E.passaggi:game.time>=c.ultimo+SP.intervallo);
+  if(!ok){ c.dovutoDa=null; return false; }
+  if(c.dovutoDa==null) c.dovutoDa=game.time;
+  return true;
+}
+// secondi da quando lo schema è dovuto senza essere partito (-1 se non è dovuto)
+export const attesaSchema=t=>schemaDovuto(t)?game.time-contatoreSchemi(t).dovutoDa:-1;
+export function segnaSchema(t){ const c=contatoreSchemi(t); c.n++; c.ultimo=game.time; c.dovutoDa=null; }
+export function appoggioPerSchema(p,passabile){
+  const t=p.team; if(p===ctrl||!schemaDovuto(t)||profondita(p)>SP.profondita+2) return null;
+  const pos=postoAttacco(p); if(pos===6||pos===4) return null;      // da qui lo schema parte da preparaEntrata
+  for(const k of [6,4]){ const m=occupanteAttacco(t,k); if(disponibile(m)&&m!==ctrl&&dist(p,m)>=1.8&&passabile(p,m)) return m; }
+  return null;
+}
 function valida(t,rotazione=false,chiamata=false){return game.state==='play'&&game.possTeam===t&&pari(t)&&(automatico(t)||chiamata||rotazione&&schemaSquadra(t).id==='falso-centro')&&!t.entrataAzione&&!t.rotazioneCentro&&
   !t.players.some(p=>p.cut)&&(chiamata||game.time>=(t.entrataDopo||0));}
 
@@ -86,9 +113,10 @@ export function preparaEntrata(p,passabile){
   const t=p.team;posti(t);
   const chiamato=passaggioChiamato(p,passabile);if(chiamato)return chiamato;
   if(chiamataAttuale(t))return null;
-  if(!valida(t)||p===ctrl||profondita(p)>E.attacco||!pressato(p)) return null;
+  const dovuto=schemaDovuto(t);      // v0.90: contro il pressing lo schema si chiama sempre (anche senza la pausa tra le entrate)
+  if(!valida(t,false,dovuto)||p===ctrl||profondita(p)>(dovuto?SP.profondita:E.attacco)||!(pressato(p)||dovuto)) return null;
   const dopoFallo=p.freeThrow&&game.time-(p.falloT??-9)<4;
-  if(!dopoFallo&&(game.time-game.possT<E.circolazione||(game.passaggi||0)<E.passaggi))return null;
+  if(!dopoFallo&&!dovuto&&(game.time-game.possT<E.circolazione||(game.passaggi||0)<E.passaggi))return null;
   const pos=postoAttacco(p),scelte=[];
   if(pos===6){
     const a=occupanteAttacco(t,4),b=occupanteAttacco(t,5),ala=occupanteAttacco(t,2);
@@ -111,6 +139,7 @@ function inizia(p,tipo,appoggio,side,arrivo=null){
   if(arrivo){c.x=arrivo.x;c.z=arrivo.z;}
   p.cut=c;p.cutT=game.time;t.copertura=null;t.blocco=null;t.entrataDopo=game.time+ENTRATA.ogni;
   t.entrataAzione={tipo,entrante:p,appoggio,ala,esterno,side,t0:game.time,possT:game.possT,allargata:false};
+  segnaSchema(t);
   if(tipo==='A'||tipo==='B'){
     // 3 entra sul lato opposto, l'esterno copre 3 e l'ala sale nel posto lasciato dall'esterno.
     scambia(t,p,esterno);scambia(t,p,ala);

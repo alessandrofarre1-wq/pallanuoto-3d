@@ -3,6 +3,27 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.90
+- Rigore: spalle e busto dritti verso la porta con il braccio teso indietro verso la palla (v0.88) → spalle e busto girati di circa 29°
+  verso la palla, testa verso la porta (`RIGORE_VISTA.busto`, solo disegno).
+- Posa registrata (Plask) della tenuta, delle finte e del tiro con tutta la rotazione del bacino (v0.74, v0.77: anche −56° in 0,7 s, fino
+  a 126°/s) → il bacino tiene il 30% della sua rotazione e la schiena resta dov'era (`PLASK_ANCHE`, solo disegno).
+- Entrate del computer solo con la palla al punto o al mezzo destro, il portatore pressato e un compagno smarcato (v0.68) → contro il
+  pressing lo schema è dovuto dopo 6 s e 2 passaggi: la palla va dove può partire, il passaggio va anche al compagno marcato con la linea
+  sicura, dopo 2,5 s entra il mezzo del lato debole, un secondo schema 7 s dopo il primo con almeno 9 s di possesso (`SCHEMI_PRESSING`).
+- «Apertura del 2»: il numero 3 a 3,5 m dietro la palla del portiere, anche dentro la rete (v0.54) → mai a meno di 4 m dalla propria linea
+  di porta (`CONTRO.dietroPortiere`).
+- Rigore con tutti i giocatori di movimento in fila sulla linea dei 6 metri (v0.45) → 2 difensori e al massimo 2 attaccanti sulla linea
+  dei 6 metri vicino al tiratore, gli altri a coppie a metà campo; nella serie finale nessuno vicino (`RIGORE_SCHIERA`).
+- Il computer con la palla puntava sempre al suo posto, anche durante la finta e l'attesa prima del gesto dopo: si distendeva a nuotare
+  con il braccio carico (video di Ale) → durante la finta e fino al gesto dopo resta dritto, al massimo 1,2 m alla volta con la bicicletta
+  (`FINTA_RITMO.scivolo`).
+- Raccordo del disegno tra due pose sempre di 0,08 s (v0.70) → proporzionale allo spostamento, 3 unità del corpo al secondo fino a 0,4 s
+  (`RACCORDO_VISTA`); l'ingresso in un gesto resta dentro la carica.
+- Alla presa il raccordo del disegno si azzerava (v0.70: corpo e braccio cambiavano posa in un fotogramma) → la presa raccorda la posa.
+- Passaggio basso preso da chi è dritto: la palla volava da sola fino alla mano già alta in 0,12 s (v0.56, `RACCORDO_PRESA`) → la mano la
+  raccoglie dall'acqua in 0,32 s come nella pesca (`PRESA_ACQUA`).
+
 ## v0.89
 - Errore di mira secondo la Precisione 0,18 + ((90 − P)/30)^1,6 × 1,55 (l'errore di un 75 era il doppio di quello di un 83; un 90
   quasi infallibile) → 0,52 + ((90 − P)/30)^3,2 × 1,45 (`MIRA`): piatta tra 75 e 90 (un 75 sbaglia 1,24 volte un 83), ripida sotto 70;

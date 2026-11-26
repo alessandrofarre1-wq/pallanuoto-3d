@@ -22,7 +22,7 @@ import { resetDisposizioneTattica } from './entrate.js';
 import { preparaEspulsoAlTempo } from './espulsioni-tempi.js';
 import { formazioneScatto, stessaFormazioneScatto } from './scatto-inizio.js';
 import { leggiRigore } from './decisione-rigore.js';
-import { ANTICIPO, ARBITRI, ESPULSIONI, RIGORE_TIRO, RIGORI, TIMEOUT, pesata } from './taratura.js';      // numeri del bilanciamento
+import { ANTICIPO, ARBITRI, ESPULSIONI, RIGORE_SCHIERA, RIGORE_TIRO, RIGORI, TIMEOUT, pesata } from './taratura.js';      // numeri del bilanciamento
 export { RIGORE_TIRO };
 export { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI };
 const serieAttiva = () => game.rigoriFinali && !game.rigoriFinali.terminati;
@@ -195,25 +195,38 @@ export function risolviRigoreDifferito(){
   game.rigoreDifferito=null;
   assegnaRigore(r.d,r.c,r.motivo||'tiro ostacolato da dietro');
 }
-export function setupPenalty(t,tiratore){    // tiro dai 5 metri; tutti gli altri sulla linea dei 6 metri, ad almeno 3 metri da chi tira
+// RIGORE (v0.90, Ale: «a fianco al tiratore rimangono 2 uomini della squadra avversaria pronti a recuperare palla e al massimo altri due
+// della squadra che sta attaccando, gli altri giocatori stanno in mezzo al campo rispettando le posizioni, perché se il tiratore sbaglia
+// si può partire subito in controfuga»): sulla linea dei 6 metri, ad almeno 3 metri da chi tira, i RIGORE_SCHIERA.difensori
+// difensori più vicini al dischetto (dentro) e al massimo RIGORE_SCHIERA.attaccanti attaccanti (fuori), uno per lato; gli altri a metà
+// campo a coppie, affiancati sulla stessa corsia, appena nella metà campo di chi tira. Nella serie finale nessuno vicino al
+// tiratore. Prima tutti in fila sulla linea dei 6 metri.
+export function setupPenalty(t,tiratore){    // tiro dai 5 metri
   game.rigoreDifferito=null; game.fermoFallo=null;
-  const gx=goalX(t), ot=other(t);
+  const gx=goalX(t), ot=other(t), R=RIGORE_SCHIERA;
   let s=tiratore||null; if(!s) for(const q of t.players){ if(q.excluded||q.isGK) continue; if(!s||q.st.sht>s.st.sht) s=q; }
   if(!s) return;
   aggiornaGiocoFermo(0,true);
-  // posti sulla linea dei 6 metri: a 3 metri di lato da chi tira (cioè a più di 3 metri di distanza) e poi ogni 95 cm,
-  // alternando difensori e attaccanti; ognuno va sul lato in cui si trova già
-  const fila=[], dif=ot.players.filter(q=>!q.excluded&&!q.isGK), att=t.players.filter(q=>!q.excluded&&!q.isGK&&q!==s);
-  for(let i=0;i<Math.max(dif.length,att.length);i++){ if(dif[i]) fila.push(dif[i]); if(att[i]) fila.push(att[i]); }
-  const lati={ 1:fila.filter(q=>q.z>=0), [-1]:fila.filter(q=>q.z<0) };
-  while(Math.abs(lati[1].length-lati[-1].length)>1){ const piu=lati[1].length>lati[-1].length?1:-1; lati[-piu].push(lati[piu].pop()); }
+  const dischetto={ x:gx-t.dir*5, z:0 }, vicino=(a,b)=>Math.hypot(a.x-dischetto.x,a.z-dischetto.z)-Math.hypot(b.x-dischetto.x,b.z-dischetto.z);
+  const serie=!!game.rigoriFinali;
+  const dif=ot.players.filter(q=>!q.excluded&&!q.isGK).sort(vicino), att=t.players.filter(q=>!q.excluded&&!q.isGK&&q!==s).sort(vicino);
+  const dVicini=serie?[]:dif.slice(0,R.difensori), aVicini=serie?[]:att.slice(0,R.attaccanti);
   for(const q of allPlayers){
     if(q.excluded) continue;
     q.vx=q.vz=0; q.cut=null; q.act=null; q.charging=false; q.chargeT=0;
     if(q===s){ q.x=gx-t.dir*5; q.z=0; q.fx=t.dir; q.fz=0; }
     else if(q===ot.players[0]){ q.x=gx-t.dir*0.4; q.z=0; }
   }
-  for(const lato of [1,-1]) lati[lato].forEach((q,k)=>{ q.x=gx-t.dir*6; q.z=lato*(3+0.95*k); q.fx=t.dir; q.fz=0; q.lagX=q.x; q.lagZ=q.z; });
+  const metti=(q,x,z)=>{ q.x=x; q.z=z; q.fx=t.dir; q.fz=0; q.lagX=q.x; q.lagZ=q.z; };
+  // vicino al tiratore, sulla linea dei 6 metri: i difensori dentro (a 3 m), gli attaccanti fuori (a 3,95 m), uno per lato
+  dVicini.forEach((q,k)=>metti(q,gx-t.dir*6,(k%2?-1:1)*(3+0.95*Math.floor(k/2)*2)));
+  aVicini.forEach((q,k)=>metti(q,gx-t.dir*6,(k%2?-1:1)*(3.95+0.95*Math.floor(k/2)*2)));
+  // gli altri a metà campo, a coppie affiancate per corsia, appena nella metà campo di chi tira: se il rigore è sbagliato la squadra
+  // che difende parte subito in controfuga e chi ha tirato rientra
+  const aMezzo=att.filter(q=>!aVicini.includes(q)), dMezzo=dif.filter(q=>!dVicini.includes(q)), n=Math.max(aMezzo.length,dMezzo.length);
+  const corsia=k=>n<=1?0:-R.larghezza+2*R.larghezza*k/(n-1);
+  aMezzo.sort((a,b)=>a.z-b.z).forEach((q,k)=>metti(q,-t.dir*R.meta,corsia(k)));
+  dMezzo.sort((a,b)=>a.z-b.z).forEach((q,k)=>metti(q,-t.dir*R.meta,corsia(k)+0.8));
   ball.daTiro=false;
   giveBall(s); game.possTeam=t; game.penalty=s; game.penT=0; s.fermoRigore=0;
   if(t.human){ setCtrl(s); annuncia('avviso','Rigore: carica e tira in un solo movimento',{p:s,dettaglio:'fermarsi a braccio carico è controfallo',durata:2.2}); }

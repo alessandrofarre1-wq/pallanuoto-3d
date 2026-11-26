@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.89). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.90). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -117,11 +117,19 @@ colonnello. Stesse regole per il computer: dentro l'area palombella con il porti
   al centroboa); con la levetta ancora nella direzione di mira chi riceve va incontro alla palla. Prova `npm run passaggi`. Nel passaggio di lato
   busto e testa girano verso il compagno e la mano non passa davanti al viso; chi riceve guarda la palla (solo disegno).
 - Raccordi visuali v0.70 (`grafica/gesto-vista.js`): carica già raggiunta conservata, ingresso/uscita dalla posa precedente, curva continua al rilascio e filtro graduale. Stato solo visuale per atleta; giunture fisiche, punto/tempi del lancio e carica0,9s conservati. Nessuna nuova geometria.
+  v0.90 (video di Ale: «quel movimento molto veloce che sembra quasi uno spasmo; o va rallentato o va tolto»; solo disegno): il raccordo
+  dura quanto serve a non superare 3 unità del corpo al secondo con la giuntura che si sposta di più, fino a 0,4 s (`RACCORDO_VISTA`;
+  prima sempre 0,08 s), l'ingresso in un gesto resta dentro la carica (non smorza accenno né frusta); alla presa il corpo raccorda la posa invece di
+  azzerarla; un passaggio che arriva basso a chi è dritto lo raccoglie la mano dall'acqua (`PRESA_ACQUA`, 0,32 s) invece della palla
+  che vola da sola nella mano alta.
 - Chi nuota con la palla davanti alla testa, prima di tirare, passare o fintare la pesca dall'acqua e la porta di lato all'altezza
   della spalla (solo disegno, dentro i tempi del gesto).
-- Avvio finta v0.77: tenuta umana dalla posa realmente in acqua alla posa caricata Plask in 0,70 s, con rotazioni locali e prima finta sovrapposta. Non comprimere l’intero prefisso registrato in 0,5 s. Originale/dati Plask integri, parte di rilascio conservata; tiri diretti/CPU sul percorso precedente. Cache invalidata con identità/tempo; annullamento dall’ultima posa. Solo disegno, controlli e tempi fisici invariati.
+- Avvio finta v0.77: tenuta umana dalla posa realmente in acqua alla posa caricata Plask in 0,70 s, con rotazioni locali e prima finta sovrapposta. Bacino v0.90 (Ale: «avvitamento veloce e innaturale»; `PLASK_ANCHE`, solo disegno): nella posa Plask (tenuta, finte, tiro) il bacino tiene il 30% della sua rotazione attorno alla verticale e la schiena resta dov'era: anche 56° → 18° (fino a 42°/s), spalle 32° invariate; prova `npm run ritocchi`. Non comprimere l’intero prefisso registrato in 0,5 s. Originale/dati Plask integri, parte di rilascio conservata; tiri diretti/CPU sul percorso precedente. Cache invalidata con identità/tempo; annullamento dall’ultima posa. Solo disegno, controlli e tempi fisici invariati.
 - Finte v0.76: almeno 0,16 s preparazione + 0,18 s accenno + 0,36 s recupero, ripetizione dopo il recupero. Durante la tenuta la base Plask resta continua, braccio additivo e torace limitato a 0,10 rad; niente spegnimento/riaccensione di tutto il corpo. Dita solidali alla mano. Massimo 0,9 s e rilascio durante finta/recupero conservati; sei stili personali (larga, a raffica, di polso, mezza, di bomba, di spalla) con un piccolo vantaggio sul
   seguito tipico; la finta di lato sposta difensore e portiere.
+- Dopo la finta v0.90 (video di Ale; `FINTA_RITMO.scivolo`, `aiCarrier`): durante la finta e finché non parte il gesto dopo
+  (`p.fintaPronto`) il computer con la palla resta dritto e si sposta al massimo di 1,2 m alla volta con la bicicletta; prima si
+  distendeva subito a nuotare verso il suo posto con il braccio carico.
 - Finte v0.85 (Ale: «vicino alla porta troppo veloci, vanno rallentate»; «avanti e indietro ma, più frequentemente, da destra verso
   sinistra; stretti e veloci o più ampi e lenti; braccio teso o piegato»): dopo ogni finta il gesto successivo (finta, tiro o passaggio)
   parte a braccio tornato carico più 0,2 s (`FINTA_RITMO`, video di Varga), per il computer e per la tenuta di TIRO; il rilascio di
@@ -168,7 +176,8 @@ colonnello. Stesse regole per il computer: dentro l'area palombella con il porti
 - Recupero dopo slancio manuale: se il contrasto cambia possessore, si rilegge il comando umano invece di continuare verso il vecchio portatore; niente sfondamento causato da quel bersaglio ormai superato, nessuna immunità generale ai falli.
 - Ripartenza dopo ogni recupero: partono tutti subito verso i posti, ma scatta solo chi può guadagnare un vantaggio (non è dietro
   al difensore più vicino o non ha nessuno entro 3 m); in rientro scatta solo chi ha il suo uomo più vicino alla porta (`SCATTI`,
-  scelta di Ale v0.67); nelle transizioni niente scatto automatico da lontano; aperture del portiere («base» e «apertura2»);
+  scelta di Ale v0.67); nelle transizioni niente scatto automatico da lontano; aperture del portiere («base» e «apertura2»; v0.90:
+  nessun posto a meno di 4 m dalla propria linea di porta, `CONTRO.dietroPortiere`: prima il 3 dell'«apertura del 2» entrava in porta);
   controfuga organizzata in corsie.
 - Superiorità: schemi a fasi (libreria di 10, il giocatore ne sceglie 3; il computer usa i tre di partenza e «Uscita del 6»),
   «quick» in 3 superiorità su 10, tiro al volo dopo il cambio di lato; occasioni chiare dai 7 s (prima solo subito dopo un cambio
@@ -176,6 +185,11 @@ colonnello. Stesse regole per il computer: dentro l'area palombella con il porti
 - Entrate (`ENTRATA`): il computer, nell'8% delle azioni in parità, manda in entrata un mezzo (lo schema del giocatore resta il
   suo); al massimo un'entrata automatica ogni 12 s; a chi entra la palla arriva solo a meno di 5 m dalla porta e con almeno 1 m di vantaggio
   sul difensore (o 2 m di spazio), e chi riceve così tira subito; con l'uomo in più o in meno l'entrata finisce.
+- Schemi contro il pressing v0.90 (Ale: «se la difesa è in pressing uno schema va sempre chiamato; se il primo non va a buon fine e c'è
+  ancora tempo, se ne chiama un secondo»; `schemaDovuto`, `SCHEMI_PRESSING`): il computer, in parità contro il pressing, dopo 6 s e 2
+  passaggi porta la palla al punto (A, B) o al mezzo destro (C) e avvia lo schema anche verso un compagno marcato con la linea sicura
+  (rischio sotto 0,3) e senza la pausa tra le entrate; se dopo 2,5 s non è partito entra il mezzo del lato debole; un secondo schema 7 s
+  dopo il primo, con almeno 9 s di possesso; al massimo due per possesso. Possessi lunghi senza schemi 19% → 7%.
 - Entrate reattive v0.68 (`entrate.js`): contro pressing stretto3→2→taglio verso5, specchio3→4→1 con mano/abilità adeguate,2 al palo e mezze entrate1/5 solo con testa avanti e marcatore vicino poco reattivo. Il taglio parte al rilascio reale dell’appoggio; il portatore sceglie fra entrante libero, ala che sale3,25m se il suo difensore stringe, oppure circolazione. A/B/C dopo almeno6s e2passaggi, senza interrompere la controfuga; dopo fallo recente si può partire subito. Resta pausa12s fra entrate automatiche; comandi manuali conservati. Vale anche dopo un fallo e la sua ripresa. Niente premio automatico al gol o al rigore.
 - Atleta, posto e accoppiamento sono distinti: `occupantiAttacco`/`postoAttacco`, `centroAttacco`, `accoppiamenti.uomini`. Dopo il taglio si coprono i posti nuotando; alla perdita palla si rientra dalle coordinate raggiunte. Preset **Falso centro**: non specialista al centro, uscita per trascinare il marcatore forte, attesa del corridoio e subentro della boa vera. La CPU legge una disposizione/situazione già presente; non costruisce da zero la preparazione del falso centro. Lo schema salvato non cambia. HUD con posto attuale e #calotta distinta.
 ### Difesa
@@ -198,8 +212,11 @@ colonnello. Stesse regole per il computer: dentro l'area palombella con il porti
   oltre 0,5 s = controfallo, palla al portiere avversario (nella serie finale rigore sbagliato). Posizione iniziale v0.88 (Ale: «palla
   in acqua e braccio dietro la schiena con mano o sopra la palla o sotto»; `RIGORE_VISTA`, solo disegno): la palla galleggia dietro,
   dalla parte del braccio che tira, il braccio teso dietro la schiena con la mano sopra (60 giocatori su 100, abitudine fissa dall'id)
-  o sotto la palla; la carica la porta su in un solo movimento fino al braccio caricato.
-- Rigore dai 5 m con gli altri sulla linea dei 6 ad almeno 3 m dal tiratore; tiro libero: dentro i 6 m si passa, fuori si può
+  o sotto la palla; la carica la porta su in un solo movimento fino al braccio caricato. Busto v0.90 (Ale: «deve ruotare un po' il busto
+  e le spalle verso la palla»; `RIGORE_VISTA.busto`): spalle e busto girati di circa 29° verso la palla, testa verso la porta.
+- Rigore dai 5 m. Schieramento v0.90 (Ale; `RIGORE_SCHIERA`, `setupPenalty`): sulla linea dei 6 metri, ad almeno 3 m dal tiratore, i 2
+  difensori più vicini al dischetto (dentro, uno per lato) e al massimo 2 attaccanti (fuori); gli altri a coppie affiancate a metà campo,
+  appena nella metà di chi tira, pronti alla controfuga se il rigore è sbagliato; nella serie finale nessuno vicino al tiratore. Tiro libero: dentro i 6 m si passa, fuori si può
   tirare subito; area di porta (2 m, fino a 2 m oltre i pali): attaccante dentro l'area davanti alla linea della palla = fallo.
   I compagni che entrano troppo presto sotto i2m rientrano nuotando (v0.68), senza correzioni istantanee delle coordinate; il controllo di permanenza irregolare vale per tutti.
   Fuori dal fondo: angolo se tocca per ultimo il portiere o se lancia la squadra che difende; tiro murato da un difensore di
@@ -246,14 +263,20 @@ colonnello. Stesse regole per il computer: dentro l'area palombella con il porti
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.89 — riequilibrio: mira e peso delle statistiche (Claude Code)
+## Stato v0.90 — rigore, finta senza avvitamento e senza scatti, schemi contro il pressing, giocatore in porta (Claude Code)
 
-v0.89 (dopo la PR #71 con la v0.88, unita in `main`): Ale aveva chiesto, dopo palombella, rigore e valutazioni, di riequilibrare le
-partite. Fatto ([rapporto](docs/versioni/v089-riequilibrio.md); regola «Statistiche in partita v0.89» sopra): curva della Precisione
-piatta tra 75 e 90 e un po' più di errore per tutti, peso 0,6 delle voci fuori dalla specifica di Ale. 16 partite ITA–HUN: gol 19,9 →
-17,6 (Italia 13,4 → 13,1, Ungheria 26,5 → 22,0), tiri in gol 49,9% → 44,0%, nello specchio 85% → 77%, voci a posto 5 → 7 su 15.
-L'Ungheria vince ancora tutte le 16 partite computer contro computer. Provato e tolto: centroboa ed entrate più tardi (azione 13,0 →
-13,4 s soltanto).
+v0.90 (dopo la PR #72 con la v0.89, unita in `main`): Ale (26/11/2026) ha mandato quattro punti con una foto del rigore e poi un video
+della finta. Fatto (regole sopra; [rapporto](docs/versioni/v090-rigore-finta-schemi.md)): busto e spalle verso la palla nella posizione
+del rigore; avvio della finta senza avvitamento (bacino della posa Plask al 30%); dopo la finta il computer resta dritto fino al gesto
+dopo, raccordi del disegno proporzionali allo spostamento, presa senza scatto e palla raccolta dall'acqua; schemi del
+computer sempre chiamati contro il pressing (e un secondo se c'è tempo); nessun giocatore dentro la propria porta nelle aperture del
+portiere; rigore con 2 difensori e al massimo 2 attaccanti vicino al tiratore e gli altri a metà campo. 16 partite: gol 17,6 → 18,9 (il
+computer che resta dritto dopo la finta tira di più da lì), gol su entrata 19% → 28% dei gol. Le superiorità trasformate, scese al 36% in
+una prima taratura, con altri tre campioni stanno tra 37% e 45% (43% nella versione finale): tra due gruppi da 12-16 partite la stessa
+versione cambia anche di 10 punti su questa voce.
+
+v0.89 (PR #72): curva della Precisione piatta tra 75 e 90 e un po' più di errore per tutti, peso 0,6 delle voci fuori dalla specifica di
+Ale; gol 19,9 → 17,6, tiri in gol 49,9% → 44,0%; [rapporto](docs/versioni/v089-riequilibrio.md).
 
 v0.88 (PR #71): palombella senza tasto (a comparsa fuori area, tipo di tiro dentro l'area), portiere che esce su chi è libero verso
 la porta, rigore con la palla dietro, Rating dai 14 della partita e rose dei tornei; [rapporto](docs/versioni/v088-palombella-rigore-rose.md).
@@ -278,14 +301,14 @@ della partita invariato; [rapporto](docs/versioni/v085-finte.md)); v0.86 rose (t
 computer l'Ungheria segna più del doppio dell'Italia: nel database le valutazioni medie sono 84 contro 76 (forza del ranking).
 Prossimo: il ritmo (sotto). Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
 
-**Ritmo da rifare** (16 partite ITA–HUN sulla v0.89, `npm run taratura -- --partite=16`): 17,6 gol e 39,9 tiri per squadra (veri
-13,3 e 33; Italia 13,1, Ungheria 22,0), tiri in gol 44,0% (40%), nello specchio 77% (circa 67%), espulsioni 11,5 (dal centro 60%, vero
-66%), superiorità 47% (52%), parità: gol 19,3% (6-19%), tiro sbagliato 26,7% (32%), durata 13,1 s (21), azioni 74,6 (50); 7 voci su 15
-a posto. Restano troppe azioni e troppo corte: 5 s di transizione e 9,4 s di attacco; il 43% delle azioni in parità finisce in meno di
+**Ritmo da rifare** (16 partite ITA–HUN sulla v0.90, `npm run taratura -- --partite=16`): 18,9 gol e 40,9 tiri per squadra (veri
+13,3 e 33; Italia 13,8, Ungheria 24,0), tiri in gol 46,2% (40%), nello specchio 79% (circa 67%), espulsioni 11,3 (dal centro 56%, vero 66%), superiorità 43% (52%),
+parità: gol 21,7% (6-19%), tiro sbagliato 25,8% (32%), durata 12,8 s (21), azioni 75,5 (50); 6 voci su 15 a posto (v0.89: 17,6 gol,
+44,0% in gol, 7 su 15). Restano troppe azioni e troppo corte: 5 s di transizione e 9,4 s di attacco; il 43% delle azioni in parità finisce in meno di
 10 s (palla al centroboa che si gira e tira, entrate, palle perse ed espulsioni presto). Allungarle vuol dire un attacco del computer più
 paziente, anche con meno palloni al centroboa nei primi secondi: scelta della v0.81 da decidere con Ale. Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
 partite); Codex misurava 16,1 e 41,4 nella v0.70 e 17,4 e 43,3 nella v0.71 (8 partite, passaggio di consegne v0.71); v0.77 20,5 e
 42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4, v0.82 20,2 e 41,0, v0.83-v0.84 19,1 e 39,0, v0.85 19,3 e 39,3, v0.86 19,4 e 39,1, v0.87 19,4 e
-40,1, v0.88 19,9 e 39,9, v0.89 17,6 e 39,9 (16 partite).
+40,1, v0.88 19,9 e 39,9, v0.89 17,6 e 39,9, v0.90 18,9 e 40,9 (16 partite).
 
 Stato precedente (v0.77, Codex): avvio fluido della finta, [rapporto](docs/versioni/v077-avvio-finta.md).

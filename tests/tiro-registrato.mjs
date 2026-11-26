@@ -39,8 +39,10 @@ for(const manoS of [false,true])for(const carica of [0,.3,.7,1]){
   const get=n=>C.radice.getObjectByName(n),v=new THREE.Vector3();
   const actual=get(targetToe).getWorldPosition(v).sub(get(targetFoot).getWorldPosition(new THREE.Vector3())).normalize();
   const q=pose[manoS?s.nodi[index].mirror:index].clone();if(manoS)q.set(-q.x,-q.y,q.z,q.w);
-  const desired=new THREE.Vector3(1,0,0).applyQuaternion(q);maxFootError=Math.max(maxFootError,1-actual.dot(desired));
-  assert.ok(actual.dot(desired)>.99999,'caviglia e punta seguono la clip, senza posa a martello aggiunta');
+  // v0.90: il bacino tiene solo PLASK_ANCHE.quota della sua rotazione attorno alla verticale e le gambe lo seguono: i piedi sono quelli
+  // della clip girati della stessa rotazione (s.giroAnche), nient'altro
+  const desired=new THREE.Vector3(1,0,0).applyQuaternion(q).applyAxisAngle(new THREE.Vector3(0,1,0),s.giroAnche||0);maxFootError=Math.max(maxFootError,1-actual.dot(desired));
+  assert.ok(actual.dot(desired)>.99999,'caviglia e punta seguono la clip (con la rotazione del bacino ridotta), senza posa a martello aggiunta');
   const hq=pose[manoS?s.nodi[handIndex].mirror:handIndex].clone();if(manoS)hq.set(-hq.x,-hq.y,hq.z,hq.w);
   const normal=palmLocal[side].clone().applyQuaternion(get(targetHand).getWorldQuaternion(new THREE.Quaternion())).normalize(),expected=new THREE.Vector3(0,1,0).applyQuaternion(hq);
   maxPalmError=Math.max(maxPalmError,1-normal.dot(expected));assert.ok(normal.dot(expected)>.995,'palmo calibrato sul modello, senza inversioni');

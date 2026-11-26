@@ -121,6 +121,12 @@ export const ENTRATA={ azione:0.08, ogni:12, vicino:5, vantaggio:1.0, libero:2.0
 // 2 al palo e mezze entrate solo con la testa avanti. Metri e secondi; nessuna probabilità di gol/fallo aggiunta.
 // Lato a mano sfavorevole: coppia mancina oppure media velocità/precisione/forza almeno 84.
 // I tempi generali COSTRUZIONE/PAZIENZA e la quota ENTRATA.azione restano invariati.
+// SCHEMI CONTRO IL PRESSING (v0.90, Ale; entrate.js `schemaDovuto`): il computer chiama sempre uno schema contro il pressing in parità,
+// al massimo «massimo» per possesso; un secondo «intervallo» s dopo l'inizio del primo, solo con almeno «tempo» s di possesso ancora. Il
+// passaggio che avvia lo schema va anche a un compagno marcato, purché la linea sia sicura (rischio di intercetto sotto «rischio») e il
+// portatore non sia oltre «profondita» m dalla porta; se dopo «attesa» s lo schema con il passaggio non è partito, entra il mezzo del
+// lato debole.
+export const SCHEMI_PRESSING=Object.freeze({ massimo:2, intervallo:7, tempo:9, rischio:0.3, profondita:10, attesa:2.5 });
 export const ENTRATE_REATTIVE={ pressing:1.55, attacco:8.5, appoggio:6.8, fondo:2.35, palo:1.7,
   diagonale:4.6, corridoio:2.7, alaSale:3.25, stringe:2.05, testa:0.65, manoAbile:84,
   durata:6.4, attesaAppoggio:2.8, centro:4.3, difensoreForte:80, divario:8,
@@ -264,7 +270,10 @@ export const FINTA_AMPIEZZA={ varia:0.2, vicino:6, stretta:0.25, preparazione:0.
 // dall'inizio della finta, ritorno interrotto 82 volte su 100 tra 5 e 7 m (sonda-finte, 4 partite). Ora dopo ogni finta il braccio
 // torna alla carica (FINTA_MOVIMENTO.recupero, 0,36 s) e resta carico ancora «attesa» secondi prima del gesto successivo (finta,
 // tiro o passaggio), per il computer e per il giocatore che tiene TIRO (prima 0,12 s). Il rilascio di TIRO tira sempre subito.
-export const FINTA_RITMO={ attesa:0.2 };
+// v0.90 (video di Ale: dopo la finta il giocatore del computer si distendeva subito a nuotare verso il suo posto con il braccio ancora
+// carico, «un movimento molto veloce che sembra quasi uno spasmo; o va rallentato o va tolto»): durante la finta e finché non parte il
+// gesto dopo (p.fintaPronto) chi ha la palla resta dritto e si sposta al massimo di «scivolo» metri alla volta con la bicicletta.
+export const FINTA_RITMO={ attesa:0.2, scivolo:1.2 };
 
 // ---------- FATICA E CAMBI (fisica.js, panchina.js) ----------
 // STANCO = quota della velocità che resta a stamina zero (−18%), CON_PALLA = velocità con la palla (−7%), SPRINT_CONSUMO = fatica
@@ -278,6 +287,10 @@ export const PRESSING_CONSUMO=0.008;
 // rigore e resta fermo a braccio caricato (carica piena) per più di «fermo» secondi commette controfallo: palla al portiere (nella
 // serie finale il rigore è sbagliato). Prima si poteva tenere la carica fino a 7 s.
 export const RIGORE_TIRO={ fermo:0.5 };
+// SCHIERAMENTO DEL RIGORE (v0.90, Ale; regole.js setupPenalty): vicino al tiratore, sulla linea dei 6 metri, «difensori» difensori e al
+// massimo «attaccanti» attaccanti; gli altri a coppie affiancate a metà campo, a «meta» m dalla linea di metà campo nella metà di chi
+// tira, su corsie fino a «larghezza» m dal centro. Prima tutti sulla linea dei 6 metri.
+export const RIGORE_SCHIERA=Object.freeze({ difensori:2, attaccanti:2, meta:0.6, larghezza:6 });
 // TIME-OUT (v0.83, Ale: «chiamato quando si subisce un break, o negli ultimi minuti per preparare un attacco; i giocatori si
 // schierano nella metà campo avversaria; l'arbitro dà la palla al portiere a metà campo, che la passa al compagno libero e torna in
 // porta nuotando»). finale = negli ultimi «finale» secondi dell'ultimo tempo il computer pari o sotto di un gol chiama il time-out

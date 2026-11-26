@@ -4,7 +4,7 @@ import { ARBITRO, DEF_DOWN, FORM, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp
 import { anticipoTarget, boaFrontePorta, centroTarget, leggiCentro } from './centroboa.js';
 import { numeroPosizione, schemaSquadra } from './schemi.js';
 import { coperturaCambio } from './difesa-cambi.js';
-import { aggiornaEntrate, attesaEntrata, centroAttacco, destinatarioEntrata, postoAttacco, preparaEntrata, ricezioneAla, targetEntrata } from './entrate.js';
+import { aggiornaEntrate, appoggioPerSchema, attesaEntrata, attesaSchema, schemaDovuto, segnaSchema, centroAttacco, destinatarioEntrata, postoAttacco, preparaEntrata, ricezioneAla, targetEntrata } from './entrate.js';
 import { FINTA_LATO, fintaDi, fintaLatoAttiva } from './finte.js';
 import { avanzaUomo, avviaUomo, ePalo, perimetroUomo, postiUomo, postiUomoDi, scelti as sceltiUomo, trova as trovaUomo, SCELTI_COMPUTER } from './uomo-in-piu.js';
 import { doFake, falloSenzaPalla, timeout } from './regole.js';
@@ -13,7 +13,7 @@ import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } fr
 import { paloCoperto } from './muro.js';
 import { SPECIALI, aiControfuga, aiPalombella, occasioneControfuga, occasionePalombella, palombella, sceltaTiroArea, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, entrataPronta, laneClear, openness, passLaneRisk, shotKind, situazioneTiro, startAct } from './tiri.js';
-import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE, pesata } from './taratura.js';      // numeri del bilanciamento
+import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, FINTA_RITMO, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE, SCHEMI_PRESSING, pesata } from './taratura.js';      // numeri del bilanciamento
 export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE };
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 // l'uomo che marca p: di regola quello del ruolo (MARK); dopo un CAMBIO DI MARCATURA su un'entrata («time switching», Nitzkowski e
@@ -78,8 +78,8 @@ export const schemiUomo = t => t.human ? sceltiUomo() : SCELTI_COMPUTER.map(trov
 export function chiamaUomo(t,i){
   const sc=schemiUomo(t)[i]||null; avviaUomo(t,sc,game.time); if(t.uomo) t.uomo.possT=game.possT; t.uomoPossT=game.possT; return sc;
 }
-export function startCut(p){
-  if((!p.team.human||game.autoplay)&&game.time<(p.team.entrataDopo||0))return false;
+export function startCut(p,dovuto=false){
+  if(!dovuto&&(!p.team.human||game.autoplay)&&game.time<(p.team.entrataDopo||0))return false;
   if(p.isGK||p.excluded||ball.holder===p||manUp(p.team)||manUp(other(p.team))||p.team.players.some(q=>q!==p&&q.cut)) return false;
   const t=p.team, side=Math.abs(p.z)<0.5?(rnd()<0.5?1:-1):Math.sign(p.z);
   p.cut={t0:game.time,phase:0,x:goalX(t)-t.dir*2.6,z:side*1.7}; p.cutT=game.time;t.entrataDopo=game.time+ENTRATA.ogni;
@@ -130,6 +130,12 @@ export function aggiornaSchemi(t){
   if(game.possTeam!==t){ t.copertura=null; for(const p of t.players) p.cut=null; return; }
   if(t.copertura&&(!t.copertura.entrante.cut||t.copertura.chi.excluded||t.copertura.chi===ball.holder)) t.copertura=null;
   const h=ball.holder,st=t.schemaStato,p=t.players[st.entrata];
+  // v0.90 (Ale: contro il pressing «uno schema va sempre chiamato»): se lo schema con il passaggio non parte entro SCHEMI_PRESSING.attesa
+  // s, entra il mezzo del lato debole (lontano dalla palla), anche senza la pausa tra le entrate (entrate.js schemaDovuto)
+  if(h&&h.team===t&&!h.isGK&&attesaSchema(t)>=SCHEMI_PRESSING.attesa&&Math.abs(goalX(t)-h.x)<=SCHEMI_PRESSING.profondita){
+    const lato=h.z*t.dir>0?5:4, q=t.players[lato];
+    if(q&&q!==h&&q!==ctrl&&!q.excluded&&!q.uscendo&&dist(h,q)>=3&&startCut(q,true)){ segnaSchema(t); st.next=game.time+ENTRATA.ogni; return; }
+  }
   if(t.entrataAzione||t.rotazioneCentro||game.time<(t.entrataDopo||0)||!st.entrata||manUp(t)||!h||h.team!==t||h.isGK||!p||p===h||p===ctrl||p.excluded||p.uscendo||p.cut||game.time<st.next||
     Math.abs(goalX(t)-h.x)>8.5||dist(h,p)<3||t.players.some(q=>q.cut)) return;
   // Entrare dietro il difensore che si è abbassato o quando il lato opposto tiene la palla.
@@ -210,7 +216,7 @@ function paloTarget(p,f){
 // si allarga; difesa che non si impegna → si accelera. Senza vantaggio (transizione 6 contro 6) la struttura porta comunque
 // all'attacco schierato prima che la difesa sia pronta. Finisce quando la palla arriva ai 5,5 m o dopo CONTRO.durata secondi.
 // RIPARTENZA con la palla a un giocatore di movimento (v0.58): numeri e motivi in taratura.js
-export const CONTRO={ durata:12, zLati:4.0, dPrima:2.25, dSeconda:5.2, zSeconda:2.3 };
+export const CONTRO={ durata:12, zLati:4.0, dPrima:2.25, dSeconda:5.2, zSeconda:2.3, dietroPortiere:4 };      // v0.90: dietroPortiere = metri minimi dalla propria linea di porta nei posti delle aperture
 // STILE PER NAZIONALE (Canossa, Lupo et al. 2022, dopo le regole 2018): Italia, Serbia e Australia segnano fino al 33% dei gol in
 // gioco veloce, Spagna, Croazia e Ungheria il 15% o meno. Probabilità di lanciare la controfuga organizzata dopo il recupero.
 export const STILE_VELOCE={ ITA:1, SRB:1, AUS:1, ESP:0.5, CRO:0.5, HUN:0.5 };
@@ -258,7 +264,10 @@ function postoApertura(num,schema,ballD,h,t){
   if(num===4) return {d:5.8,z:-4.6};
   if(num===5) return {d:CONTRO.dPrima,z:-6.2};
   if(num===2) return h&&h.isGK ? {d:12.5,z:2.5} : {d:CONTRO.dSeconda,z:3.2};
-  return h&&h.isGK ? {d:Math.max(CONTRO.dSeconda+2,ballD+3.5),z:0.5} : {d:RIPARTENZA.d3,z:0.5};      // 3: l'ultimo, dietro la palla del portiere
+  // 3: l'ultimo, dietro la palla; v0.90 (Ale: «quando il portiere recupera palla un giocatore va verso la porta entrandoci dentro»): con la
+  // palla al portiere sulla linea di porta «3,5 m dietro la palla» era dentro la rete. Resta davanti al portiere, a CONTRO.dietroPortiere m
+  // dalla propria linea di porta
+  return h&&h.isGK ? {d:Math.min(25-CONTRO.dietroPortiere,Math.max(CONTRO.dSeconda+2,ballD+3.5)),z:0.5} : {d:RIPARTENZA.d3,z:0.5};
 }
 // chi deve ricevere il primo passaggio del portiere nell'apertura in corso
 export function riceventeApertura(t){
@@ -270,6 +279,7 @@ function contropiedeTarget(p,c){
   if(c.schema&&!t.players.some(q=>q.excluded||q.uscendo)){
     const num=numeroPosizione(p.i); if(!num) return null;
     const ps=postoApertura(num,c.schema,ballD,h,t);
+    ps.d=Math.min(ps.d,25-CONTRO.dietroPortiere);      // v0.90: nessun posto dentro la propria porta
     const sprint=!(ps.d>ballD&&Math.abs(gx-p.x)>ps.d-0.5)&&Math.hypot(gx-t.dir*ps.d-p.x,ps.z*t.dir-p.z)>RIPARTENZA.arrivato&&scattoUtile(p);      // chi deve stare dietro la palla non scatta; v0.67: scatta solo chi può guadagnare un vantaggio
     return { x:gx-t.dir*ps.d, z:clamp(ps.z*t.dir,-HW+0.5,HW-0.5), sprint, nuota:!sprint };      // nuota = niente scatto automatico da lontano (partita.js)
   }
@@ -828,6 +838,9 @@ export function aiCarrier(p,dt){
   const slot=attackTarget(p);
   const dGoal=Math.hypot(gx-p.x,p.z);
   p.target={x:slot.x+t.dir*0.8, z:slot.z, sprint: Math.abs(p.x-slot.x)>6};
+  // v0.90 (FINTA_RITMO.scivolo): durante la finta e fino al gesto dopo si resta dritti, al massimo uno scivolamento con la bicicletta
+  if(p.act?.kind==='fake'||game.time<(p.fintaPronto||0)){ const dx=p.target.x-p.x, dz=p.target.z-p.z, d=Math.hypot(dx,dz), m=FINTA_RITMO.scivolo;
+    if(d>m) p.target={x:p.x+dx/d*m, z:p.z+dz/d*m, sprint:false}; }
   if(p.act&&!p.act.done) return;
   // v0.85 (Ale: «le finte vicino alla porta sono troppo veloci»): dopo una finta nessun gesto nuovo finché il braccio non è tornato
   // carico e ha atteso FINTA_RITMO.attesa (tiri.js, p.fintaPronto); la pausa personale della finta intanto scorre
@@ -843,7 +856,10 @@ export function aiCarrier(p,dt){
   if(ball.holdTime>=0.18){
     const passabile=(a,m,taglio)=>!m.excluded&&!m.uscendo&&(!taglio||entrataPronta(m))&&
       laneClear(a,m.x,m.z,t,0.55)&&passLaneRisk(a,m)<0.25&&openness(m)>1.1;
-    const m=destinatarioEntrata(p,passabile)||((!contropiede(t)||p.freeThrow)&&preparaEntrata(p,passabile));
+    // v0.90: contro il pressing, se lo schema è dovuto e la palla non è dove può partire, va al punto o al mezzo destro (entrate.js);
+    // per lo schema basta una linea di passaggio sicura anche verso un compagno marcato: è il movimento dello schema che crea lo spazio
+    const dovuto=schemaDovuto(t), sicuro=(a,m)=>!m.excluded&&!m.uscendo&&laneClear(a,m.x,m.z,t,0.5)&&passLaneRisk(a,m)<SCHEMI_PRESSING.rischio;
+    const m=destinatarioEntrata(p,passabile)||((!contropiede(t)||p.freeThrow)&&(preparaEntrata(p,dovuto?sicuro:passabile)||appoggioPerSchema(p,sicuro)));
     if(m){aiPass(p,m);return;}
   }
   if(attesaEntrata(p)&&!(p.pressatoUntil>game.time))return;
