@@ -72,10 +72,15 @@ const sintesi = { partite: N, tempo: +DURATA, gol: M('gol'), tiri: M('tiri'), co
   palleRubate: M('palleRubate'), falli: M('falli'), intercetti: M('intercetti'), tiriLontani: M('tiriLontani'), golLontani: M('golLontani'), tiriSoli: M('tiriSoli'), golCostruiti: 100 * S('golCostruiti') / Math.max(1, S('gol')), passaggiGol: S('passaggiGol') / Math.max(1, S('gol')), timeout: M('timeout'),
   golTipo: Object.fromEntries(tipi.map(t => [t, 100 * tutte.reduce((s, x) => s + x.golTipo[t], 0) / Math.max(1, golTot)])),
   vittorie: [0, 1].map(i => partite.filter(p => p.squadre[i].gol > p.squadre[1 - i].gol).length), nomi: partite[0].squadre.map(s => s.nome),
-  golPerSquadra: [0, 1].map(i => partite.reduce((s, p) => s + p.squadre[i].gol, 0) / N), espulsioniPerSquadra: [0, 1].map(i => partite.reduce((s, p) => s + p.squadre[i].espulsioni, 0) / N) };
+  golPerSquadra: [0, 1].map(i => partite.reduce((s, p) => s + p.squadre[i].gol, 0) / N), espulsioniPerSquadra: [0, 1].map(i => partite.reduce((s, p) => s + p.squadre[i].espulsioni, 0) / N),
+  // v0.89: tiri, tiri in gol e parate subite per squadra (per lo scarto tra le due squadre)
+  tiriPerSquadra: [0, 1].map(i => partite.reduce((s, p) => s + p.squadre[i].tiri, 0) / N),
+  conversionePerSquadra: [0, 1].map(i => 100 * partite.reduce((s, p) => s + p.squadre[i].gol, 0) / Math.max(1, partite.reduce((s, p) => s + p.squadre[i].tiri, 0))),
+  specchioPerSquadra: [0, 1].map(i => 100 * partite.reduce((s, p) => s + p.squadre[i].inPorta, 0) / Math.max(1, partite.reduce((s, p) => s + p.squadre[i].tiri, 0))) };
 const r1 = x => x.toFixed(1);
 console.log(`\nMedie per squadra a partita (${N} partite, tempi da ${DURATA / 60} minuti) — ${sintesi.nomi.join(' contro ')}: vittorie ${sintesi.vittorie.join(' - ')}`);
 console.log(`  gol ${r1(sintesi.gol)} · tiri ${r1(sintesi.tiri)} · tiri in gol ${r1(sintesi.conversione)}% · tiri nello specchio ${r1(sintesi.inPorta)}% · parate ${r1(sintesi.parate)}`);
+console.log('  per squadra: ' + [0, 1].map(i => `${sintesi.nomi[i]} gol ${r1(sintesi.golPerSquadra[i])}, tiri ${r1(sintesi.tiriPerSquadra[i])}, in gol ${r1(sintesi.conversionePerSquadra[i])}%, nello specchio ${r1(sintesi.specchioPerSquadra[i])}%`).join(' · '));
 console.log(`  espulsioni ${r1(sintesi.espulsioni)} · superiorità trasformate ${r1(sintesi.superioritaTrasformate)}% · rigori ${r1(sintesi.rigori)} (segnati ${r1(sintesi.rigoriSegnati)}%) · palle rubate ${r1(sintesi.palleRubate)} · falli ${r1(sintesi.falli)} · time-out ${r1(sintesi.timeout)}`);
 console.log(`  espulsioni per origine: lotta al centro ${r1(sintesi.espCentro)}% · fallo tattico in controfuga ${r1(sintesi.espFuga)}% · altri contrasti ${r1(100 - sintesi.espCentro - sintesi.espFuga)}%`);
 { const g = {}; for (const x of tutte) for (const k in x.gesti) g[k] = (g[k] || 0) + x.gesti[k]; const tt = S('tiri');

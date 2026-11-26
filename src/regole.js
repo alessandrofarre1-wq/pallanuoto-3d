@@ -22,7 +22,7 @@ import { resetDisposizioneTattica } from './entrate.js';
 import { preparaEspulsoAlTempo } from './espulsioni-tempi.js';
 import { formazioneScatto, stessaFormazioneScatto } from './scatto-inizio.js';
 import { leggiRigore } from './decisione-rigore.js';
-import { ANTICIPO, ARBITRI, ESPULSIONI, RIGORE_TIRO, RIGORI, TIMEOUT } from './taratura.js';      // numeri del bilanciamento
+import { ANTICIPO, ARBITRI, ESPULSIONI, RIGORE_TIRO, RIGORI, TIMEOUT, pesata } from './taratura.js';      // numeri del bilanciamento
 export { RIGORE_TIRO };
 export { ANTICIPO, ARBITRI, ESPULSIONI, RIGORI };
 const serieAttiva = () => game.rigoriFinali && !game.rigoriFinali.terminati;
@@ -461,7 +461,7 @@ export function tackle(d,c,o){
   if(dist(d,c)>(d===ctrl?1.35:1.15)) return false;
   const lato=latoContrasto(d,c), palla=pallaEsposta(c), gol=probabileGol(d,c);
   // Disciplina: chi ne ha poca sbaglia più spesso il contrasto e commette più falli gravi
-  const fDis=1.5-(d.s.dis-40)/59, sev=fDis*ARBITRO;
+  const fDis=1.5-(pesata(d.s.dis)-40)/59, sev=fDis*ARBITRO;
   const grave=()=>{ if(gol&&rnd()<(lato==='dietro'?RIGORI.dietro:RIGORI.altri)){ penalty(d,c); return 'rigore'; }
     // chi palleggia NON tiene la palla (WP 22.8, manuale arbitri FINA): chi lo ferma con un fallo viene espulso, soprattutto in controfuga
     if(palla==='palleggio'&&rnd()<ARBITRI.palleggio*sev){ exclude(d,c,'fallo su chi palleggia',azioneAperta()?.tipo==='controfuga'?'fuga':o.origine); return 'espulsione'; }
@@ -475,7 +475,7 @@ export function tackle(d,c,o){
     foul(d,c); return 'fallo';
   }
   // Difesa del difensore contro la capacità dell'attaccante di proteggere palla (Forza e Passaggio)
-  const diff=(d.s.dif-(c.s.frz+c.s.pas)/2)/59*(d.team.human?1:DIFF());
+  const diff=(pesata(d.s.dif)-pesata((c.s.frz+c.s.pas)/2))/59*(d.team.human?1:DIFF());
   // Chi protegge la palla (corpo in mezzo: difensore alle spalle, o palla tenuta lontana) non si deruba quasi mai.
   // Si ruba soprattutto il palleggio preso di lato in controfuga e la palla tenuta troppo a lungo sotto pressione.
   const aLungo=clamp((ball.holdTime-3)/3,0,1);

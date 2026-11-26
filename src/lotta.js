@@ -12,7 +12,7 @@ import { bestPassTarget } from './tiri.js';
 import { avviaGirata, boaFrontePorta, difensoreCentro, leggiCentro } from './centroboa.js';
 import { centroAttacco } from './entrate.js';
 import { azioneAperta, chiudiAzione } from './statistiche.js';
-import { CENTRO_PALLA, CENTRO_SENZA_PALLA, LOTTA_FASE, LOTTA_PALLA } from './taratura.js';      // numeri del bilanciamento
+import { CENTRO_PALLA, CENTRO_SENZA_PALLA, LOTTA_FASE, LOTTA_PALLA, pesata } from './taratura.js';      // numeri del bilanciamento
 export { CENTRO_PALLA, CENTRO_SENZA_PALLA, LOTTA_FASE, LOTTA_PALLA };
 export const boaDef = t => difensoreCentro(centroAttacco(t));
 export function fightOn(a,b){
@@ -57,7 +57,7 @@ function faseLotta(t){ const az=azioneAperta(); if(!az||az.t!==t||az.tipo!=='par
 function lottaSenzaPalla(b,d,lettura,dt){
   const h=ball.holder, inArrivo=ball.state==='flight'&&ball.kind==='pass'&&ball.target===b;
   if(!(inArrivo||(h&&h.team===b.team&&h!==b))||dist(b,d)>1.15||game.state!=='play') return;
-  const ag=aggressivita(d), sev=Math.pow(ARBITRO,1.5)*(1.5-(d.s.dis-40)/59);
+  const ag=aggressivita(d), sev=Math.pow(ARBITRO,1.5)*(1.5-(pesata(d.s.dis)-40)/59);
   const posizione=lettura.ricevibile?1:0.35+0.4*Math.max(0,fight.v);      // chi ha preso posizione davanti al difensore lo obbliga a trattenere
   const fl=faseLotta(b.team), C=CENTRO_SENZA_PALLA, rE=(inArrivo?C.inArrivo:C.espulsione)*posizione*ag*sev*(ESPULSIONI.centro/7)*fl, rF=C.fallo*ag*(1-posizione*0.5)*fl, rO=C.contro*(1+Math.max(0,-fight.v))*fl;
   const r=rnd();
@@ -88,7 +88,7 @@ export function boaHold(b,d,dt){
   const ag=aggressivita(d);
   // Restano i contatti del duello; un semplice cambio di postura non assegna rigori.
   const sev=Math.pow(ARBITRO,1.5);
-  const L=LOTTA_PALLA, fl=faseLotta(b.team), rE=Math.max(0.12,L.espulsione+L.vantaggio*v)*ESPULSIONI.centro*ag*(1.5-(d.s.dis-40)/59)*sev*fl, rF=L.fallo*ag*fl, rO=(L.contro+L.controSpinta*Math.max(0,-v))*fl, rS=(L.ruba+L.rubaSpinta*Math.max(0,-v))*(d===ctrl&&d.aggrT>game.time?1.5:1);
+  const L=LOTTA_PALLA, fl=faseLotta(b.team), rE=Math.max(0.12,L.espulsione+L.vantaggio*v)*ESPULSIONI.centro*ag*(1.5-(pesata(d.s.dis)-40)/59)*sev*fl, rF=L.fallo*ag*fl, rO=(L.contro+L.controSpinta*Math.max(0,-v))*fl, rS=(L.ruba+L.rubaSpinta*Math.max(0,-v))*(d===ctrl&&d.aggrT>game.time?1.5:1);
   if(fight.holdT>0.35&&dist(b,d)<1.15){
     const r=rnd();
     if(r<rE*dt){
@@ -97,7 +97,7 @@ export function boaHold(b,d,dt){
       if(rnd()<0.015){ simultanea(b,d); return; }
       exclude(d,b,'guadagnata dal centroboa','centro'); return; }
     // simulazione (WP 21.16): fallo semplice contro chi simula; ripetuta, cartellino giallo alla squadra e poi espulsione
-    if(v<-0.2&&b!==ctrl&&r>1-0.03*dt*(1.5-(b.s.dis-40)/59)*ARBITRO){ simulazione(b); return; }
+    if(v<-0.2&&b!==ctrl&&r>1-0.03*dt*(1.5-(pesata(b.s.dis)-40)/59)*ARBITRO){ simulazione(b); return; }
     if(r<(rE+rF)*dt){ foul(d,b); return; }
     if(r<(rE+rF+rO)*dt){ offFoul(b); return; }
     if(r<(rE+rF+rO+rS)*dt){ giveBall(d); annuncia('possesso','Palla rubata al centroboa',{p:d}); return; }

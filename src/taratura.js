@@ -175,6 +175,25 @@ export const PRESA={ raggio:0.55, portiere:0.9, alto:1.5 };
 // (Mondiali 2025). v0.60: 0,2 → 0,3 (prima il gioco era al 32-40%). v0.65: 0,3 → 0,38 (sonda della superiorità: sui tiri nello
 // specchio con l'uomo in più il portiere ne parava il 47%; provato anche 0,46, ma il portiere parava solo l'11% dei tiri).
 export const PARATA_SUP=0.38;
+// STATISTICHE IN PARTITA (v0.89, riequilibrio; Ale: «una volta fatto queste modifiche puoi anche riequilibrare le partite»): gli effetti
+// continui delle voci SENZA un effetto minimo nella specifica di Ale (v0.16) usano la statistica pesata attorno a «riferimento»:
+// riferimento + (statistica − riferimento) × peso. Sono Riflessi, Posizione e Uscita del portiere, Difesa, Passaggio, Forza,
+// Resistenza, Disciplina e Visione: quanto para ed esce il portiere, quanto difende, passa e lotta, quanto resiste, quanto è
+// disciplinato, quanto sceglie bene. Velocità, Precisione e Potenza restano piene (specifica: tra un 90 e un 60 +15-20% di velocità in
+// sprint, circa il doppio dei tiri nello specchio, palla da circa 20 a 25 m/s; prova `npm run statistiche`). Le soglie (chi può fare
+// cosa), le scelte tra compagni, le schede e le valutazioni usano le statistiche vere. Con peso 1 tutto come prima. Perché: le differenze
+// tra le squadre si sommavano in tutte le voci (l'Ungheria è circa +8 in ognuna rispetto all'Italia) e nelle 16 partite della v0.88
+// l'Ungheria vinceva sempre segnando il doppio (26,5 a 13,4); tra due squadre vicine nel ranking le partite vere finiscono più spesso
+// con pochi gol di scarto.
+export const STAT_PARTITA=Object.freeze({ riferimento:75, peso:0.6 });
+export const pesata=v=>STAT_PARTITA.riferimento+(v-STAT_PARTITA.riferimento)*STAT_PARTITA.peso;
+// MIRA (tiri.js): errore di mira secondo la Precisione: base + ((90 − Precisione)/30)^curva × scala sotto 90, base − (Precisione −
+// 90)/9 × sopra oltre 90; «globale» moltiplica l'errore di tutti i tiri. Fino alla v0.88: base 0,18, scala 1,55, curva 1,6, globale 1
+// (l'errore di un 75 era il doppio di quello di un 83 e 85 tiri su 100 arrivavano in porta, nelle partite vere circa 2 su 3).
+// v0.89: curva piatta tra 75 e 90 (un 75 sbaglia 1,24 volte un 83) e ripida sotto 70, così resta la specifica di Ale (Precisione 90
+// contro 60: circa il doppio dei tiri nello specchio, `npm run statistiche`); oltre 90 l'errore scende fino a 0,15 a 99 (nel database
+// nessun giocatore di movimento supera 89: conta per le prove e per le correzioni a mano).
+export const MIRA={ base:0.52, scala:1.45, curva:3.2, sopra:0.37, globale:1.3 };
 
 // ---------- ARBITRO (regole.js, lotta.js, partita.js) ----------
 // ESPULSIONI (indicazione di Ale, 13/11/2026: circa il 70% dalla lotta tra centroboa e marcatore, il resto da falli tattici o

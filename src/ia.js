@@ -13,7 +13,7 @@ import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } fr
 import { paloCoperto } from './muro.js';
 import { SPECIALI, aiControfuga, aiPalombella, occasioneControfuga, occasionePalombella, palombella, sceltaTiroArea, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, entrataPronta, laneClear, openness, passLaneRisk, shotKind, situazioneTiro, startAct } from './tiri.js';
-import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE } from './taratura.js';      // numeri del bilanciamento
+import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE, pesata } from './taratura.js';      // numeri del bilanciamento
 export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE };
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 // l'uomo che marca p: di regola quello del ruolo (MARK); dopo un CAMBIO DI MARCATURA su un'entrata («time switching», Nitzkowski e
@@ -569,7 +569,7 @@ export function blockR(p){ return ball.kind==='shot' && (p.team.defPlay===1 || p
 // Portiere. L'80% del lavoro è la posizione (docs/riferimenti/tecnica.md): sta sulla linea tra la palla e il centro della porta e la segue
 // spostandosi DURANTE i passaggi, non quando sono già arrivati. Quanto in fretta lo capisce e quanto velocemente si sposta
 // dipendono dalla statistica Posizione: sulle diagonali lunghe (da 2 a 5, da 4 a 1) un portiere scarso resta indietro.
-export const pos01 = gk => (gk.s.pos-40)/59, rif01 = gk => (gk.s.rif-40)/59;
+export const pos01 = gk => (pesata(gk.s.pos)-40)/59, rif01 = gk => (pesata(gk.s.rif)-40)/59;      // v0.89: statistiche pesate (STAT_PARTITA)
 // dove dovrebbe stare il portiere se la palla fosse in (bx,bz): sulla linea palla–centro porta, a 70 cm dalla linea di porta
 export function postoPortiere(t,bx,bz){
   const ogx=ownGoalX(t), d=Math.max(1.2,Math.abs(bx-ogx));
@@ -612,7 +612,7 @@ export function gkTarget(p){
     if(h&&h.team!==t&&!h.isGK&&ball.state==='held'){
       const dx=h.x-ogx, dz=h.z, d=Math.hypot(dx,dz), U=USCITA_PORTIERE;
       if(d<U.da&&d>U.distanza+0.7&&liberoVersoPorta(h,t,ogx)){
-        const fuori=Math.min(U.base+U.extra*clamp(((p.s?.usc??60)-40)/59,0,1),d-U.distanza);
+        const fuori=Math.min(U.base+U.extra*clamp((pesata(p.s?.usc??60)-40)/59,0,1),d-U.distanza);
         let z=clamp(dz/d*fuori,-GW,GW);
         { const fl=fintaLatoAttiva(p); if(fl) z=clamp(z+fl*FINTA_LATO.portiere,-GW,GW); }      // anche fuori dai pali abbocca alla finta di lato (v0.59)
         return { x:ogx+dx/d*fuori, z, gk:true };

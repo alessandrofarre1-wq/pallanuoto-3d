@@ -10,6 +10,7 @@ import MANI from './mancini.json';
 import DB from './rose-db.json';
 import { profiliSquadra } from '../aspetto.js';
 import { LISTA, listaPartita as sceltaLista } from './lista-partita.js';
+import { pesata } from '../taratura.js';
 
 const NOMI={
   ESP:['Lorenzo','Granados','Munárriz','Sanahuja','Cabanas','Larumbe','Famera','Perrone','Tahull','Bustos','Valera','Asensio','Aguirre'],
@@ -53,7 +54,8 @@ function generatore(seme){ let a=0; for(const c of seme) a=(Math.imul(a,31)+c.ch
 const lim=v=>Math.max(40,Math.min(99,Math.round(v)));
 // valori usati dal motore di gioco (scala 0,6-1,05) ricavati dalle statistiche
 export const scala=v=>0.6+(v-40)/59*0.45;
-export function valoriMotore(s){ return { spd:scala(s.vel), sht:scala(s.pre), pas:scala(s.pas), def:scala(s.dif), frz:scala(s.frz) }; }
+// v0.89: Passaggio, Difesa e Forza con le statistiche pesate della partita (STAT_PARTITA in taratura.js); Velocità e Precisione piene
+export function valoriMotore(s){ return { spd:scala(s.vel), sht:scala(s.pre), pas:scala(pesata(s.pas)), def:scala(pesata(s.dif)), frz:scala(pesata(s.frz)) }; }
 export function ovr(s,ruolo){ const w=PESI[ruolo]; let a=0,b=0; for(const k in w){ a+=s[k]*w[k]; b+=w[k]; } return Math.round(a/b); }
 
 // TUTTI I DISPONIBILI (v0.86, Ale: «mettimi tutti ... non farlo solo per l'Italia ma per tutte le nazionali; considerali tutti»): chi la

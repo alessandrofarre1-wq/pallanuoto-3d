@@ -15,7 +15,7 @@ import { clamp, rnd } from './costanti.js';
 import { difensoriDavanti } from './statistiche.js';
 import { allPlayers, ball, game, goalX, other, ownGoalX } from './stato.js';
 import { diSchiena, doShoot, shotKind, startAct } from './tiri.js';
-import { PALOMBELLA, QTE, SPECIALI } from './taratura.js';      // numeri del bilanciamento
+import { PALOMBELLA, QTE, SPECIALI, pesata } from './taratura.js';      // numeri del bilanciamento
 export { PALOMBELLA, QTE, SPECIALI };
 const distanzaPorta = p => Math.hypot(goalX(p.team) - p.x, p.z);
 const puoTirare = p => ball.holder === p && !p.isGK && game.penalty !== p && game.state === 'play' &&
@@ -87,6 +87,6 @@ export function aiControfuga(p, dt) {
 // fuori dai pali e il tiratore ha deciso di tirare (sceltaTiroArea, in ia.js)
 export function aiPalombella(p, dt) {
   if (p.act || !occasionePalombella(p)) return false;
-  if (rnd() < dt * PALOMBELLA.computer * (0.6 + 0.6 * clamp(((p.s?.vis ?? 60) - 50) / 40, 0, 1))) { p.motivoTiro = 'palombella'; palombella(p, null); return true; }
+  if (rnd() < dt * PALOMBELLA.computer * (0.6 + 0.6 * clamp((pesata(p.s?.vis ?? 60) - 50) / 40, 0, 1))) { p.motivoTiro = 'palombella'; palombella(p, null); return true; }
   return false;
 }

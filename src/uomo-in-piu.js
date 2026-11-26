@@ -10,6 +10,7 @@
 // Seguono il giocatore nelle rotazioni, non sono numeri di calottina. Indici, coordinate e palla restano interni.
 // Le fonti Mistrangelo usano una numerazione diversa (perimetro 1-5 e pali P1/P5): i titoli qui usano quella di Ale.
 import { FORM_UP } from './costanti.js';
+import { pesata } from './taratura.js';
 
 export const MAX_SCELTI = 3, MAX_FASI = 4, MAX_PERSONALI = 24, MAX_SIGLA = 10;
 export const DURATE = [1.5, 2.5, 3.5, 5];      // secondi per fase (l'ultima resta comunque fino alla fine dell'uomo in più)
@@ -157,7 +158,7 @@ export function perimetroUomo(posti) {
 
 // RISPETTO DELLO SCHEMA (v0.45, Napolitano et al. 2013: gli schemi eseguiti bene rendono di più). Chi ha meno Visione e Disciplina
 // parte in ritardo verso il posto della nuova fase (fino a 1,6 s per chi ha 45 di media), chi le ha alte parte subito.
-export const ritardoSchema = p => 1.6 * Math.max(0, Math.min(1, (80 - ((p.s?.vis ?? 70) + (p.s?.dis ?? 70)) / 2) / 35));
+export const ritardoSchema = p => 1.6 * Math.max(0, Math.min(1, (80 - pesata(((p.s?.vis ?? 70) + (p.s?.dis ?? 70)) / 2)) / 35));
 export function postiUomoDi(team, p, base, ora) {
   const u = team.uomo; if (!u) return base;
   const f = u.schema.fasi; if (u.fase > 0 && ora - u.tf < ritardoSchema(p)) return f[u.fase - 1].posti;

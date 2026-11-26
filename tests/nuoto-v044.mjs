@@ -29,7 +29,7 @@ try{
   await page.goto('http://127.0.0.1:'+porta,{waitUntil:'domcontentloaded',timeout:120000});
   await page.waitForFunction(()=>window.__pallanuoto?.modelloPronto,null,{polling:100,timeout:120000});
   const out=await page.evaluate(async()=>{
-    const [F,S,T,P,C,I,K]=await Promise.all([import('/src/fisica.js'),import('/src/stato.js'),import('/src/tiri.js'),import('/src/grafica/pose.js'),import('/src/controllo.js'),import('/src/input.js'),import('/src/costanti.js')]);
+    const [F,S,T,P,C,I,K,Tr]=await Promise.all([import('/src/fisica.js'),import('/src/stato.js'),import('/src/tiri.js'),import('/src/grafica/pose.js'),import('/src/controllo.js'),import('/src/input.js'),import('/src/costanti.js'),import('/src/taratura.js')]);
     const G=S.game,B=S.ball,dt=1/60;let scena=0;
     function prepara(ti=0,mano='D',hold=false){
       C.resetTap();Object.assign(G,{state:'play',time:100+(++scena)*10,autoplay:false,possTeam:S.teams[ti],possT:scena,penalty:null,rigoriFinali:null,clock:180,period:1,shot:28});S.fight.active=false;
@@ -111,7 +111,8 @@ try{
     const energie=[];
     for(const res of [40,99])for(const modo of ['sprint','normale','fermo']){
       const p=prepara();p.s.res=res;p.stamina=.7;for(let i=0;i<720;i++)passo(p,modo==='fermo'?0:1,0,{sprint:modo==='sprint'});
-      const f=(res-40)/59,attesa=Math.min(1,.7+12*(modo==='sprint'?-F.SPRINT_CONSUMO*(1.6-f):(modo==='fermo'?.02:.006)*(.6+.8*f)));
+      const f=(Tr.pesata(res)-40)/59,attesa=      // v0.89: Resistenza pesata in partita (STAT_PARTITA)
+        Math.min(1,.7+12*(modo==='sprint'?-F.SPRINT_CONSUMO*(1.6-f):(modo==='fermo'?.02:.006)*(.6+.8*f)));
       energie.push({res,modo,stamina:p.stamina,attesa});
     }
     const portieri=[];

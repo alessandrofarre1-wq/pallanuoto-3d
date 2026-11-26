@@ -230,6 +230,8 @@ try{
         Object.assign(D.p,{x:dir*x,z,fx:dir,fz:0,s:{...D.p.s,pre:99,pot:95},st:{...D.p.st,sht:1}});
         Object.assign(D.S.teams[1].players[0],{x:dir*12,z:-Math.sign(z||1)*2.4});
         D.R.giveBall(D.p);D.S.setCtrl(D.p);D.step(140);
+        // v0.89: il portiere resta fuori posizione al tiro (nei 140 fotogrammi rientrava in porta e il gol dipendeva dal caso)
+        Object.assign(D.S.teams[1].players[0],{x:dir*12,z:-Math.sign(z||1)*2.4,vx:0,vz:0});
         D.T.startAct(D.p,lob?'lob':'shot',.3,()=>D.T.doShoot(D.p,.85,lob,0));
         for(let i=0;i<240&&D.S.teams[0].score===0;i++)D.step();
         D.need(D.B.inRete&&D.S.teams[0].score===1,'scenario fisico '+nome+' dir'+dir+' '+JSON.stringify({state:D.B.state,kind:D.B.kind,x:D.B.x,y:D.B.y,z:D.B.z,save:D.B.saveChecked,score:D.S.teams[0].score}));
