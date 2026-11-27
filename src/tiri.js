@@ -14,7 +14,7 @@ import { centroAttacco, destinatarioEntrata, passaggioChiamato, postoAttacco, re
 import { velocitaDiLancio } from './palla.js';
 import { sostitutoLontano } from './difesa-cambi.js';
 import { profiloTraiettoria } from './profili-traiettorie.js';
-import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO, MIRA, PALOMBELLA, PASSAGGI, PRESA, SERVIZIO_BOA as S, TRAIETTORIE_TIRO as T, pesata } from './taratura.js';      // numeri del bilanciamento
+import { CENTRO_ATTESA, ENTRATA, ERRORE_PASSAGGIO, MIRA, OCCASIONE_PALESE, PALOMBELLA, PASSAGGI, PRESA, SERVIZIO_BOA as S, TRAIETTORIE_TIRO as T, pesata } from './taratura.js';      // numeri del bilanciamento
 export { ERRORE_PASSAGGIO };
 import { paloCoperto } from './muro.js';
 import { P } from './fisica-palla/parametri.js';
@@ -94,6 +94,15 @@ export function launch(p,tx,ty,tz,t,kind,giriVoluti){
   ball.flightT=0; ball.intercept=new Set(); ball.saveChecked=false; ball.pickupCD=0.3; ball.tipoPassaggio=null; ball.levettaMira=null;
   ball.skip=false; ball.skipped=false; ball.schizzi=0; ball.daTiro=kind==='shot'; ball.inRete=false; ball.toccoDifesa=null; ball.toccoPortiere=false; ball.ignora=null;
   p.charging=false; p.chargeT=0;
+}
+// OCCASIONE PALESE (v0.91, OCCASIONE_PALESE in taratura.js): libero davanti alla porta, vicino, con un buon angolo, nessun difensore di
+// movimento entro «spazio» m e la traiettoria verso la porta libera
+export function liberoDavanti(m,O=OCCASIONE_PALESE){
+  if(!m||m.isGK||m.excluded||m.uscendo) return false;
+  const t=m.team, gx=goalX(t), dg=Math.hypot(gx-m.x,m.z);
+  if(dg>O.distanza||Math.abs(gx-m.x)/Math.max(0.1,dg)<O.angolo) return false;
+  for(const o of other(t).players){ if(o.excluded||o.isGK) continue; if(dist(o,m)<O.spazio) return false; }
+  return laneClear(m,gx,0,t,O.corridoio);
 }
 export function laneClear(a,bx,bz,team,rad=0.6){
   const dx=bx-a.x, dz=bz-a.z, L2=dx*dx+dz*dz||1;
@@ -209,20 +218,22 @@ export function bestPassTarget(p,variabile=true,{assistita=false}={}){
     const aperto=boaChiara?spazioDavantiBoa(m):openness(m);
     // v0.66: a chi sta entrando la palla va solo quando è pronto (vicino alla porta e davanti al suo difensore)
     const taglio=!!m.cut&&entrataPronta(m);
-    if(m.cut&&(!taglio||!linea||risk>0.25)) continue;
+    // v0.91: il compagno libero davanti alla porta (OCCASIONE_PALESE) è la prima scelta, anche se non è vicino nella circolazione
+    const palese=linea&&risk<OCCASIONE_PALESE.rischio&&liberoDavanti(m);
+    if(m.cut&&!palese&&(!taglio||!linea||risk>0.25)) continue;
     if(interno){
       const def=!sup?difensoreCentro(m):other(p.team).players.filter(q=>!q.excluded&&!q.isGK).sort((a,b)=>dist(a,m)-dist(b,m))[0];
       if(!leggiCentro(m,def,p).ricevibile||!linea||risk>0.3) continue;
     }
     const vicino=sup?viciniUomo(p.team,p.i,m.i):viciniPerimetro(postoAttacco(p),postoAttacco(m),false),perimetro=!interno&&!p.isGK&&!(sup?paloUomo(p):centroAttacco(p.team)===p);
-    if(perimetro&&!vicino&&!taglio){
+    if(perimetro&&!vicino&&!taglio&&!palese){
       const gk=other(p.team).players[0];
       const fuoriPosto=Math.abs(gk.z-postoPortiere(gk.team,m.x,m.z));
       const guadagno=aperto>2&&(aperto>Math.min(press,3)+0.8||fuoriPosto>0.65||dg<Math.hypot(gx-p.x,p.z)-1.8);
       // Uno skip coperto non diventa conveniente per un bonus di posizione o un numero casuale.
       if(!linea||risk>0.18||!guadagno) continue;
     }
-    let s=Math.min(aperto,3)*1.2-dg*0.14-d*0.07-risk*6+(linea?0.8:-2.8);
+    let s=Math.min(aperto,3)*1.2-dg*0.14-d*0.07-risk*6+(linea?0.8:-2.8)+(palese?4:0);
     if(vicino) s+=schema.passaggi==='vicini'?2.4:schema.passaggi==='equilibrati'?1.7:1.25;
     if(interno) s+=(1.6+(schema.id==='boa'&&!sup?0.8:0))*(boaChiara||assistita&&!p.isGK?1:attesaCentro(p.team,sup));
     // v0.81: l'ingresso classico al centroboa marcato dietro o al fianco (CENTRO_ATTESA.ingresso)

@@ -29,6 +29,8 @@ function posti(t){
   t.occupantiTempo=game.time;return t.occupantiAttacco;
 }
 export const occupanteAttacco=(t,i)=>posti(t)[i];
+// v0.91 (TRANSIZIONE in taratura.js, ia.js assegnaPostiRipartenza): al recupero i posti del perimetro vanno a chi è già dalla parte giusta
+export function occupaPosti(t,coppie){ const o=posti(t); for(const [i,p] of coppie) o[i]=p; }
 export function postoCentro(t){
   const f=schemaSquadra(t).attacco;let best=1,score=Infinity;
   for(let i=0;i<f.length;i++){const [d,z]=f[i],s=Math.abs(z)*2+Math.abs(d-2.7);if(d<5&&Math.abs(z)<2.3&&s<score){best=i+1;score=s;}}

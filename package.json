@@ -24,6 +24,7 @@
     "rose": "node tests/rose-v086.mjs",
     "palombella": "node tests/palombella-v088.mjs",
     "ritocchi": "node tests/ritocchi-v090.mjs",
+    "attacco": "node tests/attacco-v091.mjs",
     "sonda-palombella": "node strumenti/sonda-palombella.mjs",
     "sonda-cambi": "node strumenti/sonda-cambi.mjs",
     "sonda-centro": "node strumenti/sonda-centro.mjs",
