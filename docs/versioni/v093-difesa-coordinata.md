@@ -30,6 +30,8 @@ Aspetto completo PASS: gambe0/7389,0/5182,0/1373,sei viste ispezionate; iPhone54
 
 PrimaCI46131051913 (SHA1931bfc):23comandiPASS, sei gare83gol/222tiri, poi FAILchiamate-attacco. Corretta soltanto la fixture con vantaggio iniziale2,25m anche per le chiamate: prova completaPASS, assert invariati, codice del gioco identico. Avviata coda locale52passi saltati e CI completa definitiva; esiti nella PR, nessun primoCI spacciato per verde.
 
+Coda locale completata51/52: solo sezione3 misurava ancora il vecchio ruolo con MARK fisso dopo partita/consegne. Corretta la fixture sul marcatore effettivo con uomoDi e scena di pressing, soglie/assert originali; riprova3/3PASS(lint,sezione3,ritocchi). Ritocchi evita soltanto GPU inutilizzata, RAF/rig/controlli conservati. Tutti52passi verificati con la riprova separata, non un unico52/52. SecondaCI46132529900 annullata per evitare duplicazioni; runtime immutato da1931bfc. EsitoCI75comandi sull’ultimoSHA nellaPR.
+
 ## Limiti
 
 Il confronto di due partite per versione è diagnostico e non risolve il bilanciamento generale già aperto in v0.92. Nessuna nuova tattica di attacco, interfaccia, resa del volto o aumento delle velocità; non si garantisce che ogni entrata venga fermata. Limiti iPhone <100 chiamate e <150000 triangoli, anche cambi/replay, 14 corpi completi. Gli esiti misurati e la CI dell’ultimo SHA sono nel rapporto delle verifiche e nella PR. Nessun merge/deploy.

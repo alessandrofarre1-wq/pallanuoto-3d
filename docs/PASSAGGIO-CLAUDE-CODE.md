@@ -14,6 +14,8 @@ Finale: minacce libere50,92%→43,99%, gruppi3+118,50→63,45s,3sulla palla32,07
 
 Prima CI46131051913 (1931bfc):23PASS,sei gare83gol/222tiri,FAILchiamate-attacco. Stessa fixture positiva che perdeva vantaggio:1,25→2,25m anche qui, prova completaPASS senza abbassare assert. Runtime invariato; avviate coda locale52passi e CI intera definitiva. Leggere esiti finali nella PR; primaCI non verde.
 
+Coda locale completata51/52: solo sezione3 misurava ancora il vecchio ruolo con MARK fisso dopo partita/consegne. Corretta la fixture sul marcatore effettivo con uomoDi e scena di pressing, soglie/assert originali; riprova3/3PASS(lint,sezione3,ritocchi). Ritocchi evita soltanto GPU inutilizzata, RAF/rig/controlli conservati. Tutti52passi verificati con la riprova separata, non un unico52/52. SecondaCI46132529900 annullata per evitare duplicazioni; runtime immutato da1931bfc. EsitoCI75comandi sull’ultimoSHA nellaPR.
+
 ---
 
 # Passaggio WATERPOLO7 — v0.77 avvio della finta

@@ -1,0 +1,82 @@
+
+> pallanuoto-3d@0.93.0 prove
+> node tests/prove.mjs --da=chiamate-attacco
+
+costruisco il gioco, poi 52 passi della CI (la verifica a parte: npm run verifica)
+ 1/52 npm run chiamate-attacco ... PASS (10 s)
+ 2/52 npm run servizio-boa ... PASS (8 s)
+ 3/52 npm run gesti-fluidi ... PASS (9 s)
+ 4/52 npm run difesa-cambi ... PASS (1 s)
+ 5/52 npm run entrate -- --no-build ... PASS (8 s)
+ 6/52 npm run entrate-integrazione -- --no-build ... PASS (16 s)
+ 7/52 npm run area-movimento -- --no-build ... PASS (7 s)
+ 8/52 npm run strategie -- --no-build ... PASS (21 s)
+ 9/52 npm run nuoto -- --no-build ... PASS (7 s)
+10/52 npm run nuoto-coerente -- --no-build ... PASS (9 s)
+11/52 npm run gioco-fermo -- --no-build ... PASS (8 s)
+12/52 npm run posizioni ... PASS (0 s)
+13/52 npm run orientamento -- --no-build ... PASS (29 s)
+14/52 npm run finta -- --no-build ... PASS (11 s)
+15/52 npm run desktop -- --no-build ... PASS (7 s)
+16/52 npm run gesti -- --no-build ... PASS (10 s)
+17/52 npm run costumi -- --no-build ... PASS (72 s)
+18/52 npm run home -- --no-build ... PASS (14 s)
+19/52 npm run replay -- --no-build ... PASS (39 s)
+20/52 npm run replay-ui -- --no-build ... PASS (10 s)
+21/52 npm run fisica-palla -- --no-build ... PASS (8 s)
+22/52 npm run fisica-acqua ... PASS (2 s)
+23/52 npm run sezione1 -- --no-build ... PASS (19 s)
+24/52 npm run sezione2 -- --no-build ... PASS (16 s)
+25/52 npm run sezione3 -- --no-build ... FAIL (10 s)
+   ultime righe:
+   | ✓ centrale destro: palo destro coperto → braccio sinistro (alzato nel disegno: sinistro, mano a 0.66 m)
+   | ✓ centrale destro: la mano alzata sta dalla parte del palo coperto (-0.31 m)
+   | ✓ centrale destro: il difensore va incontro al tiratore (a 1.39 m)
+   | ✓ centrale mancino: palo sinistro coperto → braccio destro (alzato nel disegno: destro, mano a 0.08 m)
+   | ✓ centrale mancino: la mano alzata sta dalla parte del palo coperto (0.07 m)
+   | ✗ centrale mancino: il difensore va incontro al tiratore (a 1.98 m)
+   | ✗ tiratore centrale: il difensore si sposta verso il palo da coprire (0.43 / 0.55 m)
+   | ✓ tiratore centrale: destro e mancino fanno coprire pali diversi
+   |
+   | Sezione 3: prove NON superate
+   | npm notice
+   | npm notice New major version of npm available! 11.9.0 -> 12.2.3
+   | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+   | npm notice To update run: npm install -g npm@12.2.3
+   | npm notice
+26/52 npm run sezione4 -- --no-build ... PASS (9 s)
+27/52 npm run sezione5 -- --no-build ... PASS (40 s)
+28/52 npm run uomo -- --no-build ... PASS (20 s)
+29/52 npm run inferiorita ... PASS (12 s)
+30/52 npm run v046 -- --no-build ... PASS (9 s)
+31/52 npm run sezione6 -- --no-build ... PASS (11 s)
+32/52 npm run dati-tesi -- --no-build ... PASS (23 s)
+33/52 npm run statistiche -- --no-build ... PASS (19 s)
+34/52 npm run azione -- --no-build ... PASS (8 s)
+35/52 npm run aspetto -- --no-build --solo-gioco ... PASS (94 s)
+36/52 npm run cronaca -- --no-build --solo-controlli ... PASS (107 s)
+37/52 npm run menu -- --no-build --solo-controlli ... PASS (40 s)
+38/52 npm run comandi-interfaccia -- --no-build ... PASS (15 s)
+39/52 npm run passaggi -- --no-build ... PASS (9 s)
+40/52 npm run difesa-coordinata -- --misure=tests/screenshot/difesa-v093.json ... PASS (6 s)
+41/52 npm run cambi-marcatura -- --no-build ... PASS (10 s)
+42/52 npm run tiri-centro -- --no-build ... PASS (9 s)
+43/52 npm run cambi-volanti -- --no-build ... PASS (10 s)
+44/52 npm run timeout -- --no-build ... PASS (10 s)
+45/52 npm run rigore -- --no-build ... PASS (11 s)
+46/52 npm run finte -- --no-build ... PASS (13 s)
+47/52 npm run finte-mano -- --no-build ... PASS (10 s)
+48/52 npm run rose -- --no-build ... PASS (9 s)
+49/52 npm run palombella -- --no-build ... PASS (9 s)
+50/52 npm run ritocchi -- --no-build ... PASS (214 s)
+51/52 npm run attacco -- --no-build ... PASS (10 s)
+52/52 npm run uomo-movimento -- --no-build ... PASS (10 s)
+
+RIEPILOGO: 51 PASS, 1 FAIL su 52 passi in 18.3 minuti
+falliti: sezione3
+registri completi: /tmp/prove-dxsj8H
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

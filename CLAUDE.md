@@ -295,6 +295,8 @@ Base main `3e04bb5` (PR75 v0.92 unita, CI46124432130 verde), ramo `codex/v093-di
 
 Prima CI46131051913 sullo SHA1931bfc:23PASS,sei gare83gol/222tiri,FAILchiamate-attacco. Corretta solo la fixture positiva1,25→2,25m; chiamate completePASS, assert invariati e runtime identico. Coda locale52passi saltati e CI completa finale: esiti nella PR. Non considerare verde la primaCI.
 
+Coda locale completata51/52: solo sezione3 misurava ancora il vecchio ruolo con MARK fisso dopo partita/consegne. Corretta la fixture sul marcatore effettivo con uomoDi e scena di pressing, soglie/assert originali; riprova3/3PASS(lint,sezione3,ritocchi). Ritocchi evita soltanto GPU inutilizzata, RAF/rig/controlli conservati. Tutti52passi verificati con la riprova separata, non un unico52/52. SecondaCI46132529900 annullata per evitare duplicazioni; runtime immutato da1931bfc. EsitoCI75comandi sull’ultimoSHA nellaPR.
+
 ## Stato precedente v0.92 — uomo in più che si muove; v0.91 attacco del computer più deciso, transizioni ordinate, controfuga (Claude Code)
 
 v0.92 (dopo la PR #74 con la v0.91, unita in `main`): la parte di Ale sull'uomo in più («quasi non fanno schemi»; «lo schema non parte o se parte

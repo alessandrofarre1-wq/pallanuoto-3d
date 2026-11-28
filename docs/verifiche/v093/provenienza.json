@@ -98,5 +98,29 @@
     "gol": 83,
     "tiri": 222
   },
-  "correzioneCI": "Solo fixture chiamate: vantaggio2,25m persistente, assert invariati, prova completaPASS; nessun cambiamento runtime. Coda locale52passi in corso al commit, esito completo nella PR."
+  "correzioneCI": "Solo fixture chiamate: vantaggio2,25m persistente, assert invariati, prova completaPASS; nessun cambiamento runtime. Coda locale52passi in corso al commit, esito completo nella PR.",
+  "secondaCI": {
+    "id": 46132529900,
+    "sha": "fce7f958890a5f3ef4bef430ac3402c611eb3589",
+    "esito": "cancelled",
+    "motivo": "coda locale ha rilevato fixture MARK fissa in sezione3; evitata ulteriore simulazione duplicata"
+  },
+  "codaLocale": {
+    "pass": 51,
+    "fail": 1,
+    "totale": 52,
+    "minuti": 18.3,
+    "fallito": "sezione3"
+  },
+  "riprovaFinale": {
+    "pass": 3,
+    "fail": 0,
+    "passi": [
+      "lint",
+      "sezione3",
+      "ritocchi"
+    ],
+    "minuti": 0.4,
+    "runtimeInvariatoDa": "1931bfce7f0742296765d0fb72a14392b3ce6d20"
+  }
 }
