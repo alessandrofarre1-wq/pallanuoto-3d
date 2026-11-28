@@ -290,7 +290,7 @@ colonnello. Stesse regole per il computer: dentro l'area palombella con il porti
 
 ## Stato v0.92 — uomo in più che si muove; v0.91 attacco del computer più deciso, transizioni ordinate, controfuga (Claude Code)
 
-v0.92 (stesso ramo della PR #74 della v0.91): la parte di Ale sull'uomo in più («quasi non fanno schemi»; «lo schema non parte o se parte
+v0.92 (dopo la PR #74 con la v0.91, unita in `main`): la parte di Ale sull'uomo in più («quasi non fanno schemi»; «lo schema non parte o se parte
 i movimenti sono impercettibili»). Fatto (regole sopra; [rapporto](docs/versioni/v092-uomo-in-piu.md)): schemi del computer tutti in
 movimento, rotazione che ricomincia dalla prima fase, schema automatico della squadra di Ale dopo 2 s, nuoto deciso nei cambi di fase;
 nuova prova `npm run uomo-movimento`. 16 partite: superiorità trasformate 37,8% → 51,3% (vero 52%), gol 17,8 → 18,8.

@@ -1,6 +1,6 @@
 # Passaggio WATERPOLO7 — v0.92 uomo in più che si muove (Claude Code)
 
-Stesso ramo `claude/gracious-rubin-rcvklk` della PR #74 (v0.91), versione 0.92.0.
+Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #74 (v0.91), versione 0.92.0.
 - `uomo-in-piu.js`: `SCELTI_COMPUTER` senza `u42` (`u42-33`, `u33-42`, `u42-33-42`, `u6esce`, `utasca`); `team.uomo` ha `prec` (fase di
   prima) e `giri`; `avanzaUomo` dopo l'ultima fase torna a 0 se `UOMO_SCHEMI.ripete` (schemi di una sola fase fermi); `postiUomoDi`
   usa `u.prec` per il ritardo di `ritardoSchema` (prima `fase - 1`). `uomo-editor.js`: nota dell'ultima fase.
