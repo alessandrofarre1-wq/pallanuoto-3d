@@ -1,3 +1,34 @@
+# Passaggio WATERPOLO7 — v0.91 attacco del computer più deciso, transizioni ordinate, controfuga come nel manuale FIN (Claude Code)
+
+Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #73 (v0.90), versione 0.91.0.
+- `tiri.js`: `liberoDavanti(m, O = OCCASIONE_PALESE)` (entro `distanza` m dalla porta, apertura `|gx − x|/d` ≥ `angolo`, nessun
+  avversario di movimento entro `spazio` m, `laneClear` verso il centro della porta con `corridoio`); `bestPassTarget` dà +4 e salta i
+  filtri del perimetro (vicini, taglio non pronto) al compagno `palese` (linea libera, `passLaneRisk` < `OCCASIONE_PALESE.rischio`).
+- `ia.js` `aiCarrier`: tiro «occasione palese» (non con `manUp`, non nell'1 contro 0 della controfuga, non su un tiro libero dentro i 6 m)
+  e passaggio subito al compagno palese; `liberoTiro` = `liberoDavanti(p, OCCASIONE_PALESE.largo)` blocca `preparaEntrata` e
+  `appoggioPerSchema`, e al posto del passaggio della circolazione fa finta (`shootNext`) e tiro, salvo un compagno più vicino alla porta
+  e libero; `vantaggioAttacco(t)` (più attaccanti entro 9 m che difensori entro 10,5 m, primi `VANTAGGIO.eta` s, niente uomo in più o in
+  meno) toglie la costruzione (`inCostruzione`) e porta il portatore verso `VANTAGGIO.punta`; `avantiInVantaggio(p)` sceglie il passaggio
+  solo in avanti; `lancioLungo(p)` (`TRANSIZIONE.lungo`) per il portiere con `t.contro` e per chi porta palla in `contropiede(t)`.
+- Transizione: `contropiede(t)` chiama una volta per controfuga `assegnaPostiRipartenza(t)` (solo in parità, nessuno fuori o in uscita,
+  posto del centro = 1): costo = |z − corsia del posto| + `lineaPeso` × (linea − 1) × (profondità media − profondità) − `mancino` −
+  `resta`, le 120 permutazioni dei cinque posti del perimetro, poi `entrate.js` `occupaPosti(t, coppie)`. `contropiedeTarget` e
+  `riceventeApertura` usano il posto occupato (`postoAttacco`, `occupanteAttacco`) al posto di `numeroPosizione(p.i)`; `corsiaViaggio`
+  (solo con la palla a un giocatore di movimento): corsie `corsiaAla`/`corsiaMezzo` raccordate al posto entro `avvicina` + 3 m, punto
+  almeno `dietroCentro` m dietro `centroAttacco(t)` e di lato `latoCentro` m se alla pari. `contropiedePortatore`: z del portatore
+  invariata oltre 12 m (prima ×0,8 a ogni fotogramma), aggiramento del difensore davanti entro `aggira` m. `steer`: raggio della
+  separazione dai compagni `TRANSIZIONE.separa` con `t.contro` in possesso o `inRientro(t)`, 1,6 m altrimenti (avversari invariati).
+- `liberoDavanti` esclude anche chi ha il portiere avversario entro `OCCASIONE_PALESE.portiere` m; `gkTarget` usa `ball.tx/tz` di un
+  passaggio solo se finiti. Le tue `tests/entrate-v068.mjs` ed `entrate-integrazione-v068.mjs` ora mettono il marcatore del centroboa
+  (di fianco, dalla parte opposta al taglio; nell'integrazione fermo con `stunUntil` 1,4 m davanti al centro verso il campo), perché con
+  il centroboa libero a 2,6 m la palla andrebbe a lui (occasione palese); controlli invariati. In `tests/sezione1.mjs` la scena del
+  passaggio fuori dal fondo imposta `ball.tx/tz` e le scene di CAMBIA e del contatto interrompono il replay.
+- Prova nuova `npm run attacco` (`tests/attacco-v091.mjs`, anche nella CI): libero a 4,6 m, libero a 6,2 m nella costruzione, compagno
+  libero dall'altra parte, 2 contro 1, 1 contro 0 (anche palombella con il portiere fuori, v0.88), ripartenza dopo una zona (nessuno
+  attraversa la vasca, niente coppie affiancate, nessuno intorno a chi porta palla). [Rapporto](versioni/v091-attacco-transizioni.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.90 rigore, finta senza avvitamento e senza scatti, schemi contro il pressing, giocatore in porta (Claude Code)
 
 Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #72 (v0.89), versione 0.90.0.

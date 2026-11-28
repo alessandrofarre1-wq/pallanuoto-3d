@@ -44,7 +44,8 @@ export const OCCASIONE_CHIARA={ distanza:5, angolo:0.7, spazio:2, corridoio:0.7,
 // misure dell'occasione chiara (5 m, apertura 0,7), con 2,2 m di spazio.
 // «largo»: libero tra 5 e 6,5 m (apertura 0,55, 2 m di spazio): passava indietro 12 volte su 44 (sonda-occasioni, 4 partite); ora
 // niente passaggio indietro: la palla va solo a un compagno più vicino alla porta e libero, altrimenti finta e tiro.
-export const OCCASIONE_PALESE=Object.freeze({ distanza:5, angolo:0.7, spazio:2.2, corridoio:0.7, rischio:0.22, reazione:0.15,
+// Il portiere avversario uscito a meno di «portiere» m toglie l'occasione (il passaggio lo prenderebbe lui).
+export const OCCASIONE_PALESE=Object.freeze({ distanza:5, angolo:0.7, spazio:2.2, corridoio:0.7, rischio:0.22, reazione:0.15, portiere:1.6,
   largo:Object.freeze({ distanza:6.5, angolo:0.55, spazio:2, corridoio:0.6 }) });
 // CONTROFUGA CON L'UOMO IN PIÙ DAVANTI (v0.91, Ale: «soprattutto quando partono in controfuga dovrebbero andare in porta»): nei primi
 // «eta» s del possesso, con più attaccanti che difensori vicino alla porta (entro 9 m contro entro 10,5 m), chi ha la palla punta la

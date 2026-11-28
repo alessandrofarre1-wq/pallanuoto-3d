@@ -61,6 +61,9 @@ try{
       const {t,o}=setup(dir),h=t.players[tipo==='C'?4:6],m=t.players[tipo==='B'?5:tipo==='C'?6:4];hold(h);
       if(tipo==='B'){h.mano='S';t.players[2].mano='S';}
       const d=E.difensoreEntrata(h);d.x=h.x+.85*dir;d.z=h.z;d.fx=-dir;d.fz=0;
+      // v0.91: il centroboa resta marcato (2 m di fianco, dalla parte opposta al taglio); libero a 2,6 m dalla porta sarebbe
+      // un'occasione palese e la palla andrebbe a lui invece che all'appoggio dello schema (OCCASIONE_PALESE)
+      {const c=E.difensoreEntrata(E.centroAttacco(t)),lato=tipo==='C'?-Math.sign(h.z*dir):Math.sign(m.z*dir);if(c&&c!==d)Object.assign(c,{x:(12.5-2.6)*dir,z:lato*2*dir,vx:0,vz:0});}      // di fianco al centroboa, dalla parte opposta al taglio
       A.aiCarrier(h,dt);const gesto=h.act?.kind;for(let n=0;n<18&&B.holder===h;n++)step(t);
       return {t,o,h,m,gesto,tipo:t.entrataAzione?.tipo,partito:!!h.cut};
     }

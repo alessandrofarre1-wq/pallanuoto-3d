@@ -3,6 +3,21 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.91
+- Il computer libero entro 6,5 m dalla porta tirava con una probabilità (nella costruzione dei primi 18 s, oltre 4,5 m, solo 0,3 della
+  voglia) e poteva passare indietro (v0.64, v0.81) → libero entro 5 m (apertura 0,7, nessuno entro 2,2 m, traiettoria libera) tira
+  sempre, in qualunque momento, tranne con l'uomo in più; tra 5 e 6,5 m non passa indietro né scarica per far partire uno schema: finta e
+  tiro, oppure passaggio a un compagno più avanti e libero (`OCCASIONE_PALESE`).
+- Circolazione con la precedenza ai vicini (v0.53, `bestPassTarget`) → il compagno libero davanti alla porta è la prima scelta.
+- Controfuga organizzata con i posti per numero dell'atleta (v0.54-v0.58) → i cinque posti del perimetro vanno per vicinanza al recupero
+  (corsia e linea; il centro resta al centroboa) e restano nell'attacco schierato (`TRANSIZIONE`); in viaggio ali a 6 m e mezzi a 3 m dal
+  centro (prima 4 e 3,2 m: nuotavano affiancati); il punto resta 3 m dietro il centroboa; compagni a 2,4 m in transizione (prima 1,6 m).
+- Chi porta palla in controfuga scivolava sempre verso il centro e aggirava il difensore da 1,9 m → resta nella sua corsia lontano dalla
+  porta e aggira da 2,6 m.
+- In ripartenza la palla andava avanti salvo pressione (v0.54) → con più attaccanti che difensori vicino alla porta si punta la porta e la
+  palla va solo avanti, senza la costruzione dei 18 s (`VANTAGGIO`); in più il lancio lungo del portiere e di chi porta palla
+  (`TRANSIZIONE.lungo`).
+
 ## v0.90
 - Rigore: spalle e busto dritti verso la porta con il braccio teso indietro verso la palla (v0.88) → spalle e busto girati di circa 29°
   verso la palla, testa verso la porta (`RIGORE_VISTA.busto`, solo disegno).

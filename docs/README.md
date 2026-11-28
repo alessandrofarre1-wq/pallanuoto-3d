@@ -1,6 +1,6 @@
 # Documenti di WATERPOLO 7
 
-Versione corrente **v0.90**: [rigore, finta senza avvitamento e senza scatti, schemi contro il pressing, giocatore in porta](versioni/v090-rigore-finta-schemi.md). Precedente **v0.89**: [riequilibrio: mira e peso delle statistiche](versioni/v089-riequilibrio.md); **v0.88**: [palombella senza tasto, scelta del tiro, rigore, valutazione delle squadre](versioni/v088-palombella-rigore-rose.md); **v0.87**: [finte, mano e marchio di fabbrica](versioni/v087-finte-mano.md). Le versioni v0.78-v0.86 hanno ognuna il suo rapporto in `versioni/`; v0.77: [ingresso fluido nella finta](versioni/v077-avvio-finta.md).
+Versione corrente **v0.91**: [attacco del computer più deciso, transizioni ordinate, controfuga come nel manuale FIN](versioni/v091-attacco-transizioni.md). Precedente **v0.90**: [rigore, finta senza avvitamento e senza scatti, schemi contro il pressing, giocatore in porta](versioni/v090-rigore-finta-schemi.md); **v0.89**: [riequilibrio: mira e peso delle statistiche](versioni/v089-riequilibrio.md); **v0.88**: [palombella senza tasto, scelta del tiro, rigore, valutazione delle squadre](versioni/v088-palombella-rigore-rose.md); **v0.87**: [finte, mano e marchio di fabbrica](versioni/v087-finte-mano.md). Le versioni v0.78-v0.86 hanno ognuna il suo rapporto in `versioni/`; v0.77: [ingresso fluido nella finta](versioni/v077-avvio-finta.md).
 
 
 | Dove | Cosa c'è |

@@ -683,7 +683,7 @@ export function gkTarget(p){
   let bx=ball.x, bz=ball.z;
   if(ball.state==='flight'&&ball.kind==='pass'&&ball.target){
     const ritardo=0.42-0.34*pos01(p);                         // da 0,42 s (Posizione 40) a 0,08 s (99)
-    if(ball.flightT>ritardo){ bx=ball.tx; bz=ball.tz; }
+    if(ball.flightT>ritardo&&Number.isFinite(ball.tx)&&Number.isFinite(ball.tz)){ bx=ball.tx; bz=ball.tz; }      // v0.91: mai un arrivo non valido
   }
   let z=postoPortiere(t,bx,bz);
   const h=ball.holder;

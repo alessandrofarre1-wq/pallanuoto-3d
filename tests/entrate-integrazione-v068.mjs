@@ -82,6 +82,11 @@ try{
           const a=A.uomoDi(q);q.x=a.x+dir*.9;q.z=a.z+(Math.sign(a.z)||-1)*2*dir;
         }
         const centro=E.difensoreEntrata(E.centroAttacco(t));put(centro,3.4,(tipo==='A'?-1:1)*1.8,dir);
+      } else {
+        // v0.91: anche qui il centroboa resta marcato: libero a 2,5 m dalla porta sarebbe un'occasione palese (OCCASIONE_PALESE)
+        // fermo 1,4 m davanti a lui verso il campo: la scena isola sempre il duello (gli altri difensori restano lontani)
+        const centro=E.difensoreEntrata(E.centroAttacco(t));
+        if(centro&&centro!==E.difensoreEntrata(h)){put(centro,4,0,dir);centro.stunUntil=G.time+99;}
       }
       const d=E.difensoreEntrata(h);d.s.vel=chiuso?99:55;d.st=H.prova.valoriMotore(d.s);
       d.x=h.x+dir*(chiuso?.9:-1.25);d.z=h.z;d.fx=-dir;d.fz=0;
@@ -127,6 +132,8 @@ try{
       for(const q of o.players)if(!q.isGK)put(q,23,4+q.i*.9,dir);
       put(p,2.6,5.2,dir);p.mano=mano;
       const d=E.difensoreEntrata(p);put(d,3.85,5.2,dir);d.fx=-dir;d.fz=0;
+      // v0.91: il centroboa resta marcato, fermo 1,4 m davanti a lui verso il campo: libero a 2,6 m dalla porta sarebbe un'occasione palese
+      {const c=E.difensoreEntrata(E.centroAttacco(t));if(c&&c!==d){put(c,4,0,dir);c.stunUntil=G.time+99;}}
       d.s.vel=55;d.st=H.prova.valoriMotore(d.s);
       for(const q of S.allPlayers){const a=A.uomoDi(q);q.lagX=a.x;q.lagZ=a.z;}
       R.giveBall(h);B.holdTime=.2;B.x=h.x;B.z=h.z;vista.render(dt,G.time*1000);

@@ -10,6 +10,30 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.91 — attacco del computer più deciso, transizioni ordinate, controfuga come nel manuale FIN** (Claude Code, 27/11/2026; rapporto
+  `docs/versioni/v091-attacco-transizioni.md`). RICHIESTA: Ale, dopo il primo Mondiale: «l'AI dei giocatori deve essere più avanzata.
+  Mi devono mettere più in difficoltà principalmente quando loro attaccano. A volte partono degli schemi e passano la palla dall'altra
+  rispetto all'uomo libero. Poi a volte ci sono palesi occasioni da gol e passano la palla a un compagno e ricominciano l'azione,
+  soprattutto quando partono in contro fuga dovrebbero andare in porta. Sull'uomo in più quasi non fanno schemi e anche l'AI del mio
+  attacco: lo schema non parte o se parte i movimenti sono impercettibili»; poi «vorrei che degli spunti arrivassero pure da te; a volte in
+  transizione i giocatori si ammassano, ma nelle partite avviene tutto in modo ordinato perché gli uomini sanno dove devono andare; ci
+  sono anche dei modi per "portare" le contro fughe, nei documenti che ho allegato». MISURE PRIMA (sonde nuove, 4 partite): il libero
+  entro 6,5 m tirava 50 volte su 100 e passava 42 (15 su 20 indietro); in controfuga con più attaccanti tirava 2 volte su 7; palla al
+  compagno libero 67-80% negli schemi; in transizione 0,99 coppie di compagni sotto i 2 m per istante (65% degli istanti) perché
+  ognuno andava al posto del suo numero, ala e mezzo nuotavano affiancati (corsie a 4 e 3,2 m) e punto e centroboa risalivano insieme
+  la corsia centrale. CAMBIAMENTI: `OCCASIONE_PALESE` (libero entro 5 m tira sempre; compagno così libero prima scelta del passaggio; tra
+  5 e 6,5 m niente passaggi indietro né scarichi per uno schema: finta e tiro), `VANTAGGIO` (controfuga verso la porta, palla solo
+  avanti), `TRANSIZIONE` (posti del perimetro per vicinanza al recupero, corsie di viaggio 6 e 3 m, punto dietro il centroboa,
+  separazione 2,4 m, portatore nella sua corsia che aggira il difensore, lancio lungo). File: `ia.js`, `tiri.js`, `entrate.js`
+  (`occupaPosti`), `taratura.js`, prova nuova `tests/attacco-v091.mjs` (`npm run attacco`, anche nella CI). NUMERI (16 partite): tiri
+  40,9 → 42,4, gol 18,9 → 17,8, tiri in gol 46,2% → 42,1%, gol in controfuga 14,5% → 24,2%, palle perse in parità 19,6% → 15,6%,
+  superiorità 42,8% → 37,8% (variazione; nessuna modifica con l'uomo in più); transizioni: coppie sotto i 2 m 0,99 → 0,54, istanti 65% →
+  42%, compagni entro 3 m da chi porta palla 0,94 → 0,64. PROVATO E TOLTO: libero a 6,5 m tirato subito (29 in gol su 100, tiri 50 a
+  squadra); prima apertura e appoggio centrale vicino a chi porta palla (contro la decisione v0.58). DECISIONI SUPERATE: libero
+  probabilistico e passaggi indietro (v0.64, v0.81), precedenza ai vicini (v0.53), posti della controfuga per numero (v0.54-v0.58),
+  corsie 4 e 3,2 m, portatore verso il centro, palla avanti salvo pressione (v0.54), separazione 1,6 m. NON FATTO: uomo in più (v0.92);
+  proposte ad Ale: difesa che chiude l'uomo libero, ritmo, gioco senza palla.
+
 - **v0.90 — rigore (busto e schieramento), finta senza avvitamento e senza scatti, schemi contro il pressing, giocatore in porta**
   (Claude Code, 26/11/2026; rapporto `docs/versioni/v090-rigore-finta-schemi.md`). RICHIESTA: Ale, con una foto del rigore: «se il
   giocatore tiene il braccio in quel modo deve ruotare un po' il busto e le spalle verso la palla»; «all'inizio del movimento di finta

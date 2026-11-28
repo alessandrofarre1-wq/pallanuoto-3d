@@ -96,12 +96,12 @@ export function launch(p,tx,ty,tz,t,kind,giriVoluti){
   p.charging=false; p.chargeT=0;
 }
 // OCCASIONE PALESE (v0.91, OCCASIONE_PALESE in taratura.js): libero davanti alla porta, vicino, con un buon angolo, nessun difensore di
-// movimento entro «spazio» m e la traiettoria verso la porta libera
+// movimento entro «spazio» m (il portiere entro «portiere» m) e la traiettoria verso la porta libera
 export function liberoDavanti(m,O=OCCASIONE_PALESE){
   if(!m||m.isGK||m.excluded||m.uscendo) return false;
   const t=m.team, gx=goalX(t), dg=Math.hypot(gx-m.x,m.z);
   if(dg>O.distanza||Math.abs(gx-m.x)/Math.max(0.1,dg)<O.angolo) return false;
-  for(const o of other(t).players){ if(o.excluded||o.isGK) continue; if(dist(o,m)<O.spazio) return false; }
+  for(const o of other(t).players){ if(o.excluded) continue; if(dist(o,m)<(o.isGK?OCCASIONE_PALESE.portiere:O.spazio)) return false; }      // portiere uscito addosso: non è libero
   return laneClear(m,gx,0,t,O.corridoio);
 }
 export function laneClear(a,bx,bz,team,rad=0.6){
