@@ -54,6 +54,14 @@ export const OCCASIONE_PALESE=Object.freeze({ distanza:5, angolo:0.7, spazio:2.2
 // di almeno «avanti» m e libero di almeno «libero» m) quando il difensore gli viene addosso (entro «attacca» m), mai indietro.
 // Misura prima: in queste situazioni tirava 2 volte su 7; i passaggi andavano a chi stava a 8,9 m, più lontano di lui (7,8 m).
 export const VANTAGGIO=Object.freeze({ eta:10, tiro:7, avanti:1, libero:1.8, attacca:2.5, punta:4.6, raggiunto:1.6 });
+// UOMO IN PIÙ CHE SI MUOVE (v0.92, Ale: «sull'uomo in più quasi non fanno schemi e anche l'AI del mio attacco: lo schema non parte o se
+// parte i movimenti sono impercettibili»). Misura prima (sonda-schemi-uomo, 4 partite, 48 superiorità): il «4-2 classico», uno dei
+// quattro schemi del computer, non ha fasi (9 superiorità ferme); negli altri a ogni fase ci si spostava in media di 1,4-2,4 m e dopo
+// l'ultima fase si restava fermi fino alla fine (superiorità di 8,7 s, ultima fase dai 3-5 s); la squadra del giocatore restava nel
+// 4-2 fermo se non chiamava uno schema. auto = secondi dopo i quali, senza una chiamata, la squadra del giocatore parte da sola con il
+// primo dei suoi schemi che ha più fasi; ripete = dopo l'ultima fase si ricomincia dalla prima finché dura la superiorità; deciso = per
+// questi secondi dall'inizio di una fase chi deve spostarsi di più di 0,8 m nuota invece di scivolare sulle gambe a metà velocità.
+export const UOMO_SCHEMI=Object.freeze({ auto:2, ripete:true, deciso:2 });
 // TRANSIZIONE ORDINATA (v0.91, Ale: «a volte in transizione i giocatori si ammassano, ma nelle partite avviene tutto in modo piuttosto
 // ordinato anche perché gli uomini sanno dove devono andare»; manuale FIN pp.51-63: la prima apertura allarga e aiuta a portare la palla,
 // la seconda dà profondità, il marcatore del centro fa da appoggio centrale). Al recupero lontano dalla porta (controfuga organizzata)
