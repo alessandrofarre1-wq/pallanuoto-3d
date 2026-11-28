@@ -1,8 +1,9 @@
 // SCHEMI DELL'UOMO IN PIÙ (6 contro 5) — v0.44, richiesta di Ale (15/11/2026).
 // Uno schema è una sequenza di 1-4 FASI: ogni fase ha i 6 posti dei giocatori di movimento, una durata e (facoltativo) il ruolo a cui
-// cercare di dare la palla. I compagni nuotano verso i posti della fase in corso; finita la durata si passa alla fase dopo, l'ultima
-// resta fino alla fine della superiorità. Così si descrivono le rotazioni dei documenti tecnici (4-2 che diventa 3-3, ritorno al 4-2
-// dall'altro lato, uscita del palo...). Nessun numero casuale qui dentro: il computer sceglie lo schema in `ia.js` con `rnd`.
+// cercare di dare la palla. I compagni nuotano verso i posti della fase in corso; finita la durata si passa alla fase dopo; dopo l'ultima
+// (v0.92, UOMO_SCHEMI.ripete) si ricomincia dalla prima finché dura la superiorità (prima l'ultima restava fino alla fine). Così si
+// descrivono le rotazioni dei documenti tecnici (4-2 che diventa 3-3, ritorno al 4-2 dall'altro lato, uscita del palo...). Nessun
+// numero casuale qui dentro: il computer sceglie lo schema in `ia.js` con `rnd`.
 //
 // Coordinate come nel resto del gioco (costanti.js, FORM_UP): [distanza dalla porta avversaria, lato (+ = destra di chi attacca)].
 // Ruoli (indice 1-6, come ROLES senza il portiere): 1 centroboa, 2 ala destra, 3 ala sinistra, 4 mezzo destro, 5 mezzo sinistro, 6 punto.
@@ -10,10 +11,10 @@
 // Seguono il giocatore nelle rotazioni, non sono numeri di calottina. Indici, coordinate e palla restano interni.
 // Le fonti Mistrangelo usano una numerazione diversa (perimetro 1-5 e pali P1/P5): i titoli qui usano quella di Ale.
 import { FORM_UP } from './costanti.js';
-import { pesata } from './taratura.js';
+import { UOMO_SCHEMI, pesata } from './taratura.js';
 
 export const MAX_SCELTI = 3, MAX_FASI = 4, MAX_PERSONALI = 24, MAX_SIGLA = 10;
-export const DURATE = [1.5, 2.5, 3.5, 5];      // secondi per fase (l'ultima resta comunque fino alla fine dell'uomo in più)
+export const DURATE = [1.5, 2.5, 3.5, 5];      // secondi per fase (dopo l'ultima si ricomincia dalla prima; uno schema di una sola fase resta fermo lì)
 export const RUOLI_UP = ['Centroboa', 'Ala destra', 'Ala sinistra', 'Mezzo destro', 'Mezzo sinistro', 'Punto'];
 const KEY = 'pallanuoto-uomo-v044';
 
@@ -62,8 +63,9 @@ export const LIBRERIA = [
       fase([[2.1, 0], [2.0, 4.6], [2.0, -4.6], [4.8, 3.4], [4.8, -3.4], [5.6, 0]], 5, 5)] },
 ];
 export const SCELTI_BASE = ['u42', 'u33-42', 'u42-33-42'];
-// schemi tra cui sceglie il computer: quelli di partenza più l'uscita del 6 vista nella finale olimpica (v0.58)
-export const SCELTI_COMPUTER = [...SCELTI_BASE, 'u6esce'];
+// schemi tra cui sceglie il computer (v0.92): solo schemi che si muovono, cioè i tre di partenza senza il «4-2 classico» (una sola fase:
+// 9 superiorità su 48 senza nessun movimento) più il «4-2 che diventa 3-3», l'uscita del 6 della finale olimpica (v0.58) e la tasca
+export const SCELTI_COMPUTER = ['u42-33', 'u33-42', 'u42-33-42', 'u6esce', 'utasca'];
 
 // ---------------------------------------------------------------- validazione
 // Ogni posto resta in vasca e fuori dall'area di porta (dentro i 3,58 m dal centro non si sta sotto i 2,1 m: art. 8.2.8,
@@ -134,9 +136,10 @@ export function eliminaPersonale(id) {
 export const nuovoId = () => 'p' + Date.now().toString(36);
 
 // ---------------------------------------------------------------- esecuzione in partita
-// team.uomo = { schema, fase, tf } : schema chiamato, fase in corso, istante in cui è iniziata
-export function avviaUomo(team, schema, ora) { team.uomo = schema ? { schema, fase: 0, tf: ora } : null; }
-// la fase passa alla successiva quando è finita la sua durata E i compagni sono arrivati ai posti (o comunque dopo 3 s in più)
+// team.uomo = { schema, fase, tf, prec, giri } : schema chiamato, fase in corso, istante in cui è iniziata, fase di prima, ripetizioni
+export function avviaUomo(team, schema, ora) { team.uomo = schema ? { schema, fase: 0, tf: ora, prec: null, giri: 0 } : null; }
+// la fase passa alla successiva quando è finita la sua durata E i compagni sono arrivati ai posti (o comunque dopo 3 s in più); dopo
+// l'ultima si ricomincia dalla prima (v0.92, UOMO_SCHEMI.ripete): la rotazione continua per tutta la superiorità
 export function avanzaUomo(team, ora, arrivati = true) {
   const u = team.uomo; if (!u) return;
   // conta solo il tempo di gioco: se la partita si è fermata (fallo, palla fuori) la fase non avanza intanto
@@ -144,7 +147,9 @@ export function avanzaUomo(team, ora, arrivati = true) {
   u.visto = ora;
   const f = u.schema.fasi;
   const passato = ora - u.tf, dur = f[u.fase].durata;
-  if (u.fase < f.length - 1 && passato >= dur && (arrivati || passato >= dur + 3)) { if (!arrivati) u.saltato = true; u.fase++; u.tf = ora; }
+  if (f.length < 2 || passato < dur || !(arrivati || passato >= dur + 3)) return;
+  if (u.fase < f.length - 1) { if (!arrivati) u.saltato = true; u.prec = u.fase; u.fase++; u.tf = ora; }
+  else if (UOMO_SCHEMI.ripete) { if (!arrivati) u.saltato = true; u.prec = u.fase; u.fase = 0; u.tf = ora; u.giri = (u.giri || 0) + 1; }
 }
 export const faseUomo = team => team.uomo ? team.uomo.schema.fasi[team.uomo.fase] : null;
 // posti in uso con l'uomo in più: la fase dello schema chiamato, altrimenti il 4-2 della strategia
@@ -161,6 +166,6 @@ export function perimetroUomo(posti) {
 export const ritardoSchema = p => 1.6 * Math.max(0, Math.min(1, (80 - pesata(((p.s?.vis ?? 70) + (p.s?.dis ?? 70)) / 2)) / 35));
 export function postiUomoDi(team, p, base, ora) {
   const u = team.uomo; if (!u) return base;
-  const f = u.schema.fasi; if (u.fase > 0 && ora - u.tf < ritardoSchema(p)) return f[u.fase - 1].posti;
+  const f = u.schema.fasi; if (u.prec != null && ora - u.tf < ritardoSchema(p)) return f[u.prec].posti;      // anche quando si ricomincia
   return f[u.fase].posti;
 }

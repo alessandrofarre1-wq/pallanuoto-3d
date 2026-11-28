@@ -1,3 +1,18 @@
+# Passaggio WATERPOLO7 — v0.92 uomo in più che si muove (Claude Code)
+
+Stesso ramo `claude/gracious-rubin-rcvklk` della PR #74 (v0.91), versione 0.92.0.
+- `uomo-in-piu.js`: `SCELTI_COMPUTER` senza `u42` (`u42-33`, `u33-42`, `u42-33-42`, `u6esce`, `utasca`); `team.uomo` ha `prec` (fase di
+  prima) e `giri`; `avanzaUomo` dopo l'ultima fase torna a 0 se `UOMO_SCHEMI.ripete` (schemi di una sola fase fermi); `postiUomoDi`
+  usa `u.prec` per il ritardo di `ritardoSchema` (prima `fase - 1`). `uomo-editor.js`: nota dell'ultima fase.
+- `ia.js`: `aggiornaSchemi` registra `t.uomoT0` all'inizio della superiorità e, per la squadra umana senza `autoplay`, dopo
+  `UOMO_SCHEMI.auto` s senza chiamata (`t.uomoScelta !== t.uomoT0`) avvia il primo di `schemiUomo(t)` con più fasi (`t.uomo.auto`) e
+  notifica; `chiamaUomo` segna `t.uomoScelta` (anche la base). `attackTarget` con l'uomo in più restituisce `deciso` nei primi
+  `UOMO_SCHEMI.deciso` s della fase oltre 0,8 m; `partita.js` `muoviVerso` non scivola con `tg.deciso`.
+- Prova nuova `npm run uomo-movimento` (`tests/uomo-v092.mjs`, anche nella CI); in `tests/uomo-in-piu.mjs` cambiato solo il testo del
+  primo controllo. [Rapporto](versioni/v092-uomo-in-piu.md).
+
+---
+
 # Passaggio WATERPOLO7 — v0.91 attacco del computer più deciso, transizioni ordinate, controfuga come nel manuale FIN (Claude Code)
 
 Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #73 (v0.90), versione 0.91.0.

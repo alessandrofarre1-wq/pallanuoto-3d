@@ -10,6 +10,20 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.92 — uomo in più che si muove** (Claude Code, 28/11/2026; rapporto `docs/versioni/v092-uomo-in-piu.md`). RICHIESTA: Ale, dopo il
+  primo Mondiale: «sull'uomo in più quasi non fanno schemi e anche l'AI del mio attacco ho notato che lo schema non parte o se parte i
+  movimenti sono impercettibili»; poi «Continua». MISURE PRIMA (sonda-schemi-uomo, 4 partite): il «4-2 classico» del computer non ha
+  fasi (11 superiorità su 45 ferme), dopo l'ultima fase si restava fermi, la squadra del giocatore restava nel 4-2 se non chiamava,
+  0,87 m al secondo a testa senza palla; superiorità trasformate 37,8% (16 partite). CAMBIAMENTI: `SCELTI_COMPUTER` solo schemi che si
+  muovono, `avanzaUomo` ricomincia dalla prima fase (`UOMO_SCHEMI.ripete`, anche con il ritardo per Visione e Disciplina), schema
+  automatico della squadra del giocatore dopo 2 s salvo la base (`UOMO_SCHEMI.auto`, notifica), nuoto deciso nei primi 2 s di una fase
+  (`UOMO_SCHEMI.deciso`, `attackTarget`, `partita.js`). File: `uomo-in-piu.js`, `ia.js`, `partita.js`, `taratura.js`, `uomo-editor.js`,
+  prova nuova `tests/uomo-v092.mjs` (`npm run uomo-movimento`, anche nella CI). NUMERI (16 partite): superiorità trasformate 37,8% →
+  51,3% (vero 52%), gol 17,8 → 18,8, tiri 42,4 → 42,0, tiri in gol 42,1% → 44,9%; sonda: nessuna superiorità ferma, schema ripetuto in
+  19 superiorità su 38. DECISIONI SUPERATE: schemi del computer con il 4-2 fermo (v0.44, v0.58), ultima fase fino alla fine (v0.44),
+  4-2 fermo senza chiamata (v0.44), scivolamento nei cambi di fase (v0.53). NON FATTO: proposte ad Ale (difesa che chiude l'uomo
+  libero, ritmo, gioco senza palla).
+
 - **v0.91 — attacco del computer più deciso, transizioni ordinate, controfuga come nel manuale FIN** (Claude Code, 27/11/2026; rapporto
   `docs/versioni/v091-attacco-transizioni.md`). RICHIESTA: Ale, dopo il primo Mondiale: «l'AI dei giocatori deve essere più avanzata.
   Mi devono mettere più in difficoltà principalmente quando loro attaccano. A volte partono degli schemi e passano la palla dall'altra

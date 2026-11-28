@@ -3,6 +3,17 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.92
+- Il computer sceglieva tra i tre schemi di partenza e l'«Uscita del 6», compreso il «4-2 classico» di una sola fase (v0.44, v0.58: 11
+  superiorità su 45 senza movimento) → solo schemi che si muovono: «4-2 che diventa 3-3», «3-3 che diventa 4-2», «4-2 → 3-3 → 4-2»,
+  «Uscita del 6», «Rotazione con la tasca» (`SCELTI_COMPUTER`).
+- L'ultima fase di uno schema dell'uomo in più restava fino alla fine della superiorità (v0.44) → finita la sua durata si ricomincia
+  dalla prima (`UOMO_SCHEMI.ripete`); uno schema di una sola fase resta fermo.
+- La squadra del giocatore restava nel 4-2 fermo finché non chiamava uno schema (v0.44) → dopo 2 s parte da sola con il primo dei suoi
+  schemi che si muove; se sceglie la base no (`UOMO_SCHEMI.auto`).
+- Nei cambi di fase dell'uomo in più ci si spostava scivolando sulle gambe sotto 1,8 m (v0.53) → nei primi 2 s di una fase si nuota oltre
+  0,8 m (`UOMO_SCHEMI.deciso`).
+
 ## v0.91
 - Il computer libero entro 6,5 m dalla porta tirava con una probabilità (nella costruzione dei primi 18 s, oltre 4,5 m, solo 0,3 della
   voglia) e poteva passare indietro (v0.64, v0.81) → libero entro 5 m (apertura 0,7, nessuno entro 2,2 m, traiettoria libera) tira

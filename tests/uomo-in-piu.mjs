@@ -93,7 +93,7 @@ const partita = await pg.evaluate(() => {
   esp.excluded = false; window.__salta(5); r.finito = t.uomo;
   return r;
 });
-prova(partita.prima === null, 'il giocatore non ha uno schema imposto: finché non chiama resta il 4-2 base');
+prova(partita.prima === null, 'il giocatore non ha uno schema imposto subito: nei primi 2 s chiama lui (poi parte da solo il suo primo schema che si muove, v0.92)');
 prova(/UOMO IN PIÙ|6c5/.test(partita.barra), `all'inizio della superiorità la barra mostra gli schemi da chiamare («${partita.barra.slice(0, 80)}»)`);
 prova(partita.chiamato === 'u33-42' && partita.fase0 === 0, `tasto 2 = secondo schema scelto: ${partita.chiamato}, fase 1`);
 prova(partita.dopo2s < partita.inizio - 0.5, `i compagni nuotano verso i posti della fase 1 (distanza media ${partita.inizio.toFixed(2)} → ${partita.dopo2s.toFixed(2)} m)`);

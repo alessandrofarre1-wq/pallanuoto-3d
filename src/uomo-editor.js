@@ -82,7 +82,7 @@ function disegnaCrea() {
   $('uomoPiscina').innerHTML = h;
   $('uomoDurata').value = String(f.durata); $('uomoPalla').value = String(f.palla);
   $('uomoRuolo').textContent = `${nomePosizione(ruolo, true)}: ${f.posti[ruolo - 1][0]} m dalla porta, lato ${f.posti[ruolo - 1][1]}${ePalo(f.posti[ruolo - 1]) ? ' · palo' : ''}`;
-  $('uomoDurataNota').textContent = faseI === bozza.fasi.length - 1 ? 'Ultima fase: i compagni restano qui fino alla fine dell’uomo in più.' : 'Finita la durata, quando i compagni sono arrivati, si passa alla fase dopo.';
+  $('uomoDurataNota').textContent = bozza.fasi.length === 1 ? 'Fase unica: i compagni restano qui per tutto l’uomo in più.' : faseI === bozza.fasi.length - 1 ? 'Ultima fase: finita la durata, quando i compagni sono arrivati, si ricomincia dalla fase 1 finché dura l’uomo in più.' : 'Finita la durata, quando i compagni sono arrivati, si passa alla fase dopo.';
 }
 function sposta(d, z) {
   z = Math.round(Math.max(-8.8, Math.min(8.8, z)) * 10) / 10;

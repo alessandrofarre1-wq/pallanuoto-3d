@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.91). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.92). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -198,9 +198,15 @@ colonnello. Stesse regole per il computer: dentro l'area palombella con il porti
   3 m dal centro, il punto 3 m dietro il centroboa (2 m di lato se gli è alla pari), compagni a 2,4 m in transizione (fuori 1,6 m); chi
   porta palla lontano dalla porta resta nella sua corsia e aggira il difensore davanti da 2,6 m. Nessun appoggio vicino a chi porta palla
   (decisione v0.58). Sonda: coppie di compagni sotto i 2 m 0,99 → 0,54 per istante.
-- Superiorità: schemi a fasi (libreria di 10, il giocatore ne sceglie 3; il computer usa i tre di partenza e «Uscita del 6»),
-  «quick» in 3 superiorità su 10, tiro al volo dopo il cambio di lato; occasioni chiare dai 7 s (prima solo subito dopo un cambio
-  di lato); chi vede poca porta (l'ala sui 2 metri) non tira al volo e passa a chi ne vede di più (`SUPERIORITA`).
+- Superiorità: schemi a fasi (libreria di 10, il giocatore ne sceglie 3), «quick» in 3 superiorità su 10, tiro al volo dopo il cambio
+  di lato; occasioni chiare dai 7 s (prima solo subito dopo un cambio di lato); chi vede poca porta (l'ala sui 2 metri) non tira al
+  volo e passa a chi ne vede di più (`SUPERIORITA`). Uomo in più che si muove v0.92 (Ale: «sull'uomo in più quasi non fanno schemi e
+  anche l'AI del mio attacco: lo schema non parte o se parte i movimenti sono impercettibili»; `UOMO_SCHEMI`): il computer usa solo
+  schemi che si muovono («4-2 che diventa 3-3», «3-3 che diventa 4-2», «4-2 → 3-3 → 4-2», «Uscita del 6», «Rotazione con la tasca»;
+  niente «4-2 classico»); dopo l'ultima fase si ricomincia dalla prima finché dura la superiorità (uno schema di una sola fase resta
+  fermo); la squadra del giocatore che non chiama niente parte da sola dopo 2 s con il primo dei suoi schemi che si muove (notifica),
+  non se sceglie la base; nei primi 2 s di una fase chi deve spostarsi di più di 0,8 m nuota invece di scivolare. Superiorità
+  trasformate 37,8% → 51,3% (16 partite). Prove `npm run uomo` e `npm run uomo-movimento`.
 - Entrate (`ENTRATA`): il computer, nell'8% delle azioni in parità, manda in entrata un mezzo (lo schema del giocatore resta il
   suo); al massimo un'entrata automatica ogni 12 s; a chi entra la palla arriva solo a meno di 5 m dalla porta e con almeno 1 m di vantaggio
   sul difensore (o 2 m di spazio), e chi riceve così tira subito; con l'uomo in più o in meno l'entrata finisce.
@@ -282,7 +288,12 @@ colonnello. Stesse regole per il computer: dentro l'area palombella con il porti
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.91 — attacco del computer più deciso, transizioni ordinate, controfuga come nel manuale FIN (Claude Code)
+## Stato v0.92 — uomo in più che si muove; v0.91 attacco del computer più deciso, transizioni ordinate, controfuga (Claude Code)
+
+v0.92 (stesso ramo della PR #74 della v0.91): la parte di Ale sull'uomo in più («quasi non fanno schemi»; «lo schema non parte o se parte
+i movimenti sono impercettibili»). Fatto (regole sopra; [rapporto](docs/versioni/v092-uomo-in-piu.md)): schemi del computer tutti in
+movimento, rotazione che ricomincia dalla prima fase, schema automatico della squadra di Ale dopo 2 s, nuoto deciso nei cambi di fase;
+nuova prova `npm run uomo-movimento`. 16 partite: superiorità trasformate 37,8% → 51,3% (vero 52%), gol 17,8 → 18,8.
 
 v0.91 (dopo la PR #73 con la v0.90, unita in `main`): Ale (27/11/2026), dopo il primo Mondiale, chiede un'IA più avanzata («mi devono
 mettere più in difficoltà quando loro attaccano»): schemi che passano dall'altra parte rispetto all'uomo libero, palesi occasioni con la
@@ -331,14 +342,13 @@ della partita invariato; [rapporto](docs/versioni/v085-finte.md)); v0.86 rose (t
 computer l'Ungheria segna più del doppio dell'Italia: nel database le valutazioni medie sono 84 contro 76 (forza del ranking).
 Prossimo: il ritmo (sotto). Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
 
-**Ritmo da rifare** (16 partite ITA–HUN sulla v0.91, `npm run taratura -- --partite=16`): 17,8 gol e 42,4 tiri per squadra (veri
-13,3 e 33; Italia 13,2, Ungheria 22,5), tiri in gol 42,1% (40%), espulsioni 10,7 (dal centro 62%, vero 66%), superiorità 38% (52%),
-parità: gol 21,5% (6-19%), tiro sbagliato 29,3% (32%), durata 13,1 s (21), azioni 74,6 (50); 7 voci su 15 a posto (v0.90: 18,9 gol,
-40,9 tiri, 46,2% in gol, 6 su 15). Restano troppe azioni e troppo corte: 5 s di transizione e 9,4 s di attacco; il 43% delle azioni in parità finisce in meno di
+**Ritmo da rifare** (16 partite ITA–HUN sulla v0.92, `npm run taratura -- --partite=16`): 18,8 gol e 42,0 tiri per squadra (veri
+13,3 e 33), tiri in gol 44,9% (40%), espulsioni 10,6 (dal centro 59%, vero 66%), superiorità 51% (52%), parità: gol 20,1% (6-19%), tiro
+sbagliato 27,5% (32%), durata 12,9 s (21), azioni 77,0 (50) (v0.91: 17,8 gol, 42,4 tiri, 42,1% in gol, superiorità 38%). Restano troppe azioni e troppo corte: 5 s di transizione e 9,4 s di attacco; il 43% delle azioni in parità finisce in meno di
 10 s (palla al centroboa che si gira e tira, entrate, palle perse ed espulsioni presto). Allungarle vuol dire un attacco del computer più
 paziente, anche con meno palloni al centroboa nei primi secondi: scelta della v0.81 da decidere con Ale. Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
 partite); Codex misurava 16,1 e 41,4 nella v0.70 e 17,4 e 43,3 nella v0.71 (8 partite, passaggio di consegne v0.71); v0.77 20,5 e
 42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4, v0.82 20,2 e 41,0, v0.83-v0.84 19,1 e 39,0, v0.85 19,3 e 39,3, v0.86 19,4 e 39,1, v0.87 19,4 e
-40,1, v0.88 19,9 e 39,9, v0.89 17,6 e 39,9, v0.90 18,9 e 40,9, v0.91 17,8 e 42,4 (16 partite).
+40,1, v0.88 19,9 e 39,9, v0.89 17,6 e 39,9, v0.90 18,9 e 40,9, v0.91 17,8 e 42,4, v0.92 18,8 e 42,0 (16 partite).
 
 Stato precedente (v0.77, Codex): avvio fluido della finta, [rapporto](docs/versioni/v077-avvio-finta.md).

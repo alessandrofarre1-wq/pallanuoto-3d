@@ -13,7 +13,7 @@ import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } fr
 import { paloCoperto } from './muro.js';
 import { SPECIALI, aiControfuga, aiPalombella, occasioneControfuga, occasionePalombella, palombella, sceltaTiroArea, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, entrataPronta, laneClear, liberoDavanti, openness, passLaneRisk, shotKind, situazioneTiro, startAct } from './tiri.js';
-import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, FINTA_RITMO, OCCASIONE_CHIARA, OCCASIONE_PALESE, VANTAGGIO, TRANSIZIONE, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE, SCHEMI_PRESSING, pesata } from './taratura.js';      // numeri del bilanciamento
+import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, FINTA_RITMO, OCCASIONE_CHIARA, OCCASIONE_PALESE, VANTAGGIO, TRANSIZIONE, UOMO_SCHEMI, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE, SCHEMI_PRESSING, pesata } from './taratura.js';      // numeri del bilanciamento
 export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE };
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 // l'uomo che marca p: di regola quello del ruolo (MARK); dopo un CAMBIO DI MARCATURA su un'entrata («time switching», Nitzkowski e
@@ -76,7 +76,9 @@ export function viciniUomo(t,a,b){
 export const schemiUomo = t => t.human ? sceltiUomo() : SCELTI_COMPUTER.map(trovaUomo).filter(Boolean);
 // il giocatore chiama uno dei suoi schemi (i = 0, 1, 2); null = torna al 4-2 della strategia
 export function chiamaUomo(t,i){
-  const sc=schemiUomo(t)[i]||null; avviaUomo(t,sc,game.time); if(t.uomo) t.uomo.possT=game.possT; t.uomoPossT=game.possT; return sc;
+  const sc=schemiUomo(t)[i]||null; avviaUomo(t,sc,game.time); if(t.uomo) t.uomo.possT=game.possT; t.uomoPossT=game.possT;
+  t.uomoScelta=t.uomoT0;      // v0.92: in questa superiorità il giocatore ha scelto (anche la base): niente schema automatico
+  return sc;
 }
 export function startCut(p,dovuto=false){
   if(!dovuto&&(!p.team.human||game.autoplay)&&game.time<(p.team.entrataDopo||0))return false;
@@ -106,8 +108,14 @@ export function aggiornaSchemi(t){
   if(t.human&&!game.autoplay&&t.uomo&&!(manUp(t)&&game.possTeam===t)){      // fine della superiorità: com'è andato lo schema chiamato
     notifica('avviso',t.uomo.saltato?`${t.uomo.schema.sigla||t.uomo.schema.nome}: fasi saltate`:`${t.uomo.schema.sigla||t.uomo.schema.nome}: schema eseguito`,{durata:1.2,registro:false}); t.uomo=null; }
   if(manUp(t)&&game.possTeam===t){
-    if(t.uomoPossT!==game.possT){ t.uomoPossT=game.possT; t.uomo=null;
+    if(t.uomoPossT!==game.possT){ t.uomoPossT=game.possT; t.uomo=null; t.uomoT0=game.time;
       if(!t.human||game.autoplay){ const l=schemiUomo(t); if(l.length){ avviaUomo(t,l[Math.floor(rnd()*l.length)],game.time); t.uomo.possT=game.possT; } } }
+    // v0.92 (UOMO_SCHEMI.auto; Ale: «l'AI del mio attacco: lo schema non parte»): se il giocatore non chiama niente, dopo qualche secondo
+    // la sua squadra parte da sola con il primo dei suoi schemi che si muove (più di una fase); prima restava il 4-2 fermo
+    if(t.human&&!game.autoplay&&!t.uomo&&t.uomoScelta!==t.uomoT0&&game.time-t.uomoT0>=UOMO_SCHEMI.auto){
+      t.uomoScelta=t.uomoT0; const sc=schemiUomo(t).find(x=>x.fasi.length>1);
+      if(sc){ avviaUomo(t,sc,game.time); t.uomo.possT=game.possT; t.uomo.auto=true; notifica('avviso',`Uomo in più: ${sc.sigla||sc.nome}`,{durata:1.4,registro:false}); }
+    }
     if(t.uomo){
       // arrivati: in media a meno di 1,6 m dai posti della fase (chi ha la palla e il giocatore controllato non contano)
       const f=t.uomo.schema.fasi[t.uomo.fase].posti,gx=goalX(t); let s2=0,n=0;
@@ -400,7 +408,9 @@ export function attackTarget(p){
   if(sup&&ePalo(f)&&ballD<9) return paloTarget(p,[f0,fz]);
   const x=gx-t.dir*f0,z=clamp(fz*t.dir+(sup?0:Math.sin(game.time*0.6+p.uid)*0.35),-HW+0.5,HW-0.5);
   const a=appoggio(p,x,z,sup),ax=x+(a?a.dx:0),az=z+(a?a.dz:0);
-  if(sup) return { x:ax, z:az, sprint:Math.hypot(ax-p.x,az-p.z)>1.5 };
+  // v0.92 (UOMO_SCHEMI.deciso): nei primi secondi di una fase nuova chi deve spostarsi nuota deciso (niente scivolamento sulle gambe):
+  // prima i cambi di fase si facevano scivolando a metà velocità sotto 1,8 m (1,4 m fatti in 2 s su 1,9 m richiesti)
+  if(sup){ const d=Math.hypot(ax-p.x,az-p.z), u=t.uomo; return { x:ax, z:az, sprint:d>1.5, deciso:!!u&&game.time-u.tf<UOMO_SCHEMI.deciso&&d>0.8 }; }
   // v0.67: in transizione scatta solo chi non è ancora arrivato e può guadagnare un vantaggio (SCATTI); nell'«Incrocio» i due mezzi
   // scattano solo finché non sono al loro posto (prima scattavano sempre)
   const lontano=Math.hypot(ax-p.x,az-p.z)>RIPARTENZA.arrivato;

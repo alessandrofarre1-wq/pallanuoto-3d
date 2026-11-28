@@ -1,7 +1,7 @@
 {
   "name": "pallanuoto-3d",
   "private": true,
-  "version": "0.91.0",
+  "version": "0.92.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -25,6 +25,7 @@
     "palombella": "node tests/palombella-v088.mjs",
     "ritocchi": "node tests/ritocchi-v090.mjs",
     "attacco": "node tests/attacco-v091.mjs",
+    "uomo-movimento": "node tests/uomo-v092.mjs",
     "sonda-palombella": "node strumenti/sonda-palombella.mjs",
     "sonda-cambi": "node strumenti/sonda-cambi.mjs",
     "sonda-centro": "node strumenti/sonda-centro.mjs",
