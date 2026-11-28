@@ -66,3 +66,9 @@ La PR riporta SHA e CI completa finale; nessun merge/deploy.
 [Comandi e due cambi](budget-cambi.log) PASS: touch vero/tastiera/controller, annullamenti e anello conservati. [Misure](budget-cambi.json): massimo68chiamate/139200triangoli,14corpi attivi completi+2comparse, entrambe le dimensioni iPhone. La sequenza reale usa55–56/146320–146336 nella camera diagnostica, non un iPhone fisico. Nessuna nuova geometria o animazione. Replay dell’ultimo SHA verificato nella CI completa, con esito nella PR.
 
 Riferimenti screenshot invariati e confronto locale bloccante ancora distinto dal PASS dei controlli geometrici/numerici. La CI usa da prima di questa PR screenshot non bloccanti; tale opzione e tutte le tolleranze restano identiche.
+
+## Prima CI e correzione della fixture delle chiamate
+
+CI46131051913 sullo SHA1931bfc:23comandiPASS, poi FAILchiamate-attacco. Le sei gare standard sono concluse:83gol/222tiri,37%conversione; sono prove di fumo con tre partite senza input e tre con comandi casuali, non un bilanciamento computer contro computer.
+
+La scena positiva delle chiamate conservava il vecchio1,25m di vantaggio, recuperato dal difensore ora in nuoto pieno durante l’appoggio. Corretto solo il test a2,25m, come l’integrazione; offerte, due passaggi manuali A/B/C nei due versi, annullamenti, controllo e quattro layout44px tutti [PASS](chiamate-finale.log). Nessun assert o meccanismo aggirato, runtime e tutte le misure di gioco sopra invariati. Coda locale dei52passi prima saltati avviata per evitare ulteriori regressioni; l’esito completo è nella PR con la CI definitiva dell’ultimo SHA. Non attribuire alla prima CI i controlli saltati né considerarla verde.

@@ -88,5 +88,15 @@
     "aggiornamentoRiferimenti": "negato da auto-review e non eseguito",
     "riferimentiModificati": false,
     "tolleranzeModificate": false
-  }
+  },
+  "primaCI": {
+    "id": 46131051913,
+    "sha": "1931bfce7f0742296765d0fb72a14392b3ce6d20",
+    "pass": 23,
+    "fail": "chiamate-attacco",
+    "gare": 6,
+    "gol": 83,
+    "tiri": 222
+  },
+  "correzioneCI": "Solo fixture chiamate: vantaggio2,25m persistente, assert invariati, prova completaPASS; nessun cambiamento runtime. Coda locale52passi in corso al commit, esito completo nella PR."
 }

@@ -12,6 +12,8 @@ Limiti iPhone <100 chiamate/<150000 triangoli anche2cambi/replay,14corpi. Nessun
 
 Finale: minacce libere50,92%→43,99%, gruppi3+118,50→63,45s,3sulla palla32,07→19,10s; campione limitato, abbandoni del seme33 peggiorano. Sequenza vera con entrambe le consegne coperte dopo3s. Foto6viste/aspetto PASS,iPhone54/131674;2cambi68/139200. Verifica immagini locale bloccante FAIL:5confronti ispezionati, main originale nello stesso ambiente mostra già5avvisi con identici scarti menu/scatto;3–5 cambiano anche per la nuova IA. Aggiornamento riferimenti negato dall’approvazione automatica, NON eseguito; nessun bypass o tolleranza cambiata. Conservare i riferimenti e leggere il confronto documentato. CI finale dell’ultimo SHA nella PR.
 
+Prima CI46131051913 (1931bfc):23PASS,sei gare83gol/222tiri,FAILchiamate-attacco. Stessa fixture positiva che perdeva vantaggio:1,25→2,25m anche qui, prova completaPASS senza abbassare assert. Runtime invariato; avviate coda locale52passi e CI intera definitiva. Leggere esiti finali nella PR; primaCI non verde.
+
 ---
 
 # Passaggio WATERPOLO7 — v0.77 avvio della finta

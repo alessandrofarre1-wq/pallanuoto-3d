@@ -50,7 +50,9 @@ try{
       // La boa è ancora arretrata: motivo reale per chiamare un movimento invece di servirla.
       put(t.players[1],20.5,-2,dir);
       const h=t.players[tipo==='C'?4:6],m=t.players[tipo==='B'?5:tipo==='C'?6:4];
-      const d=E.difensoreEntrata(h);put(d,Math.abs(S.goalX(t)-h.x)+1.25,h.z*dir,dir);d.s.vel=55;d.st=window.__pallanuoto.prova.valoriMotore(d.s);
+      // Vantaggio reale per la scena positiva: il difensore continua a nuotare
+      // durante l'appoggio e da soli 1,25 m dietro può ancora chiudere il taglio.
+      const d=E.difensoreEntrata(h);put(d,Math.abs(S.goalX(t)-h.x)+2.25,h.z*dir,dir);d.s.vel=55;d.st=window.__pallanuoto.prova.valoriMotore(d.s);
       R.giveBall(h);B.holdTime=.4;B.x=h.x;B.z=h.z;S.setCtrl(h);
       for(const p of S.allPlayers){const a=A.uomoDi(p);p.lagX=a.x;p.lagZ=a.z;}
       vista.render(1/60,G.time*1000);U.updateHUD();
