@@ -1,0 +1,46 @@
+
+> pallanuoto-3d@0.93.0 verifica
+> node tests/qualita.mjs && node tests/tornei.mjs && node tests/verifica.mjs --no-legacy --partite=0
+
+Qualità, ombra e modello riserva: 13 controlli superati
+✓ Sorteggio: 24 scelte mondiali, 16 europee, torneo a 16 e nazionale sempre inclusa
+✓ Classifica: 3/2/1/0 e gol dei rigori esclusi
+✓ Parità a due: scontro diretto prima della differenza reti generale
+✓ Parità a tre: dopo mini-punti si usa GD generale senza ripartire da H2H
+✓ Parità a tre: gol generali dopo GD generale, moneta persistente ultima
+✓ Parità a tre: confronto con la più alta della parità originale prima della moneta
+✓ Parità a quattro: una posizione appena risolta diventa il riferimento successivo
+✓ Risultati validati; doppia registrazione e lettura non risimulano
+✓ Mondiali: titolo da prima del girone in sei gare e incroci ufficiali
+✓ Mondiali: titolo passando dallo spareggio in sette gare
+✓ Mondiali: eliminazione nel girone, allo spareggio e ai quarti
+✓ Europei: titolo in otto gare senza quarti, tre avversarie nuove
+✓ Europei: riporta solo due incontri fra qualificate e i punti reali
+✓ Europei: eliminazione nella prima e nella seconda fase
+✓ Entrambe le formule: argento, bronzo giocato e bronzo simulato
+✓ Ripresa JSON a ogni gara e consultazioni extra mantengono simulazioni identiche
+✓ Tutte le 24 scelte mondiali e le 16 europee arrivano al titolo o all’eliminazione
+Tornei: 17 gruppi di controlli superati
+Costruzione del gioco (vite build)…
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 6000 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+Partite simulate (0 senza comandi + 0 con un giocatore finto che preme tasti a caso)
+  eventi:
+
+Screenshot
+  ✗ 1-menu.png: 4.78% (scarto medio 8.7 su 255) dei punti diverso dal riferimento
+  ✗ 2-sprint-iniziale.png: 0.74% (scarto medio 0.7 su 255) dei punti diverso dal riferimento
+  ✗ 3-azione.png: 59.59% (scarto medio 45.3 su 255) dei punti diverso dal riferimento
+  ✗ 4-iphone-piccolo.png: 34.26% (scarto medio 21.1 su 255) dei punti diverso dal riferimento
+  ✗ 5-iphone-orizzontale.png: 34.95% (scarto medio 22.0 su 255) dei punti diverso dal riferimento
+
+✗ Verifica NON superata
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

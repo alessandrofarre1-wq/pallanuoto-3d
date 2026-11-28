@@ -1,0 +1,25 @@
+
+> pallanuoto-3d@0.93.0 sezione3
+> node tests/sezione3.mjs --no-build
+
+✓ ala a destra del tiratore: palo destro coperto → braccio sinistro (alzato nel disegno: sinistro, mano a 0.68 m)
+✓ ala a destra del tiratore: la mano alzata sta dalla parte del palo coperto (-0.27 m)
+✓ ala a destra del tiratore: il difensore va incontro al tiratore (a 0.80 m)
+✓ ala a sinistra del tiratore: palo sinistro coperto → braccio destro (alzato nel disegno: destro, mano a 0.67 m)
+✓ ala a sinistra del tiratore: la mano alzata sta dalla parte del palo coperto (0.27 m)
+✓ ala a sinistra del tiratore: il difensore va incontro al tiratore (a 0.80 m)
+✓ centrale destro: palo destro coperto → braccio sinistro (alzato nel disegno: sinistro, mano a 0.67 m)
+✓ centrale destro: la mano alzata sta dalla parte del palo coperto (-0.18 m)
+✓ centrale destro: il difensore va incontro al tiratore (a 0.99 m)
+✓ centrale mancino: palo sinistro coperto → braccio destro (alzato nel disegno: destro, mano a 0.66 m)
+✓ centrale mancino: la mano alzata sta dalla parte del palo coperto (0.19 m)
+✓ centrale mancino: il difensore va incontro al tiratore (a 0.90 m)
+✓ tiratore centrale: il difensore si sposta verso il palo da coprire (-0.46 / 0.37 m)
+✓ tiratore centrale: destro e mancino fanno coprire pali diversi
+
+Sezione 3: tutte le prove superate
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

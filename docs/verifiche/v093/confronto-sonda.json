@@ -1,0 +1,44 @@
+{
+  "semi": [
+    33,
+    40
+  ],
+  "partitePerVersione": 2,
+  "secondiPerTempo": 180,
+  "metrica": "parità, minaccia entro7m non coperta entro2m dalla parte della porta",
+  "prima": {
+    "secondiParita": 1154.267,
+    "percentoMinacceLibere": 50.917,
+    "abbandoni": 327,
+    "recuperi": 298,
+    "durataRecuperiMedia": 1.704,
+    "gruppi3Secondi": 118.5,
+    "percentoGruppi3": 10.266,
+    "treSuPallaSecondi": 32.067,
+    "permutazioniOsservate": 112,
+    "contatoreScambi": 116,
+    "gol": 25,
+    "tiri": 59
+  },
+  "dopo": {
+    "secondiParita": 1123,
+    "percentoMinacceLibere": 43.992,
+    "abbandoni": 299,
+    "recuperi": 245,
+    "durataRecuperiMedia": 1.519,
+    "gruppi3Secondi": 63.45,
+    "percentoGruppi3": 5.65,
+    "treSuPallaSecondi": 19.1,
+    "permutazioniOsservate": 109,
+    "consegneViveConfermate": 109,
+    "contatoreScambi": 109,
+    "gol": 25,
+    "tiri": 57
+  },
+  "note": [
+    "Diagnostica limitata, non taratura generale.",
+    "Gli abbandoni aumentano162→179 nel seme33 e scendono165→120 nel40; non ogni misura migliora uniformemente.",
+    "Baseline: le permutazioni nello stesso frame possono accorpare incrementi; 112eventi osservati e116contatore non sono lo stesso conteggio.",
+    "Riferimenti screenshot conservati; confronto non aggiornante con main nello stesso ambiente."
+  ]
+}

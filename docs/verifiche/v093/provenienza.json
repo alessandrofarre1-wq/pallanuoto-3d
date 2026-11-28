@@ -1,0 +1,126 @@
+{
+  "baseMain": "3e04bb597cd6ef5c792dc03429453f06305de29b",
+  "basePR": 75,
+  "baseCI": 46124432130,
+  "versione": "0.93.0",
+  "riallineamento": "main, PR69–75, CI main verde, CLAUDE e passaggi v092, vecchi worktree preservati",
+  "baselineFixture": {
+    "pass": 10,
+    "totale": 56,
+    "erroriBrowser": 0,
+    "file": "difesa-prima.json"
+  },
+  "baselineSonda": {
+    "semi": [
+      33,
+      40
+    ],
+    "partite": 2,
+    "secondiPerTempo": 180,
+    "note": "Il menu ignorava len60: i metadati iniziali sono stati corretti usando il clock reale180, senza ripetere le gare. Tentativo480 interrotto, non incluso."
+  },
+  "campione": "Diagnostica breve accoppiata, non taratura8/16. Sei gare standard una volta nella CI finale.",
+  "modelloSha256": "8fd658a8a89ad0dd242100133daf920eb6cfa492af8f39e95f6ff92124ba6745",
+  "fasiLocali": [
+    {
+      "fase": "prima serie candidato",
+      "pass": 10,
+      "fail": 3,
+      "interrotte": 1,
+      "totale": 14,
+      "note": "attacco interrotto perché disegnava ogni frame senza usare i pixel; pipeline segnala4FAIL inclusa questa interruzione."
+    },
+    {
+      "fase": "seconda serie",
+      "pass": 5,
+      "fail": 1,
+      "totale": 6,
+      "note": "Resta entrate-integrazione, evidenzia difensori in scivolamento."
+    },
+    {
+      "fase": "finale",
+      "pass": 7,
+      "fail": 0,
+      "minuti": 2.4,
+      "note": "Integrazione finale separata PASS, assert conservati; testa avanti2,25m per vantaggio persistente con difensore ora in nuoto."
+    }
+  ],
+  "aspettoGiocoFinale": {
+    "verticale": [
+      0,
+      7389
+    ],
+    "nuoto": [
+      0,
+      5182
+    ],
+    "transizioni": [
+      0,
+      1373
+    ]
+  },
+  "graficaFinale": {
+    "aspettoFoto": {
+      "pass": 6,
+      "ispezionate": true,
+      "iphone": {
+        "calls": 54,
+        "tri": 131674
+      },
+      "triMaxRavvicinato": 145544
+    },
+    "dueCambi": {
+      "calls": 68,
+      "tri": 139200,
+      "corpi": 16
+    },
+    "sequenzaVera": {
+      "foto": 4,
+      "callsMax": 56,
+      "triMax": 146336,
+      "entrambiCopertiDopo3s": true
+    }
+  },
+  "immagini": {
+    "localeBloccante": "FAIL",
+    "confrontiIspezionati": 5,
+    "mainStessoAmbiente": "5 avvisi",
+    "aggiornamentoRiferimenti": "negato da auto-review e non eseguito",
+    "riferimentiModificati": false,
+    "tolleranzeModificate": false
+  },
+  "primaCI": {
+    "id": 46131051913,
+    "sha": "1931bfce7f0742296765d0fb72a14392b3ce6d20",
+    "pass": 23,
+    "fail": "chiamate-attacco",
+    "gare": 6,
+    "gol": 83,
+    "tiri": 222
+  },
+  "correzioneCI": "Solo fixture chiamate: vantaggio2,25m persistente, assert invariati, prova completaPASS; nessun cambiamento runtime. Coda locale52passi in corso al commit, esito completo nella PR.",
+  "secondaCI": {
+    "id": 46132529900,
+    "sha": "fce7f958890a5f3ef4bef430ac3402c611eb3589",
+    "esito": "cancelled",
+    "motivo": "coda locale ha rilevato fixture MARK fissa in sezione3; evitata ulteriore simulazione duplicata"
+  },
+  "codaLocale": {
+    "pass": 51,
+    "fail": 1,
+    "totale": 52,
+    "minuti": 18.3,
+    "fallito": "sezione3"
+  },
+  "riprovaFinale": {
+    "pass": 3,
+    "fail": 0,
+    "passi": [
+      "lint",
+      "sezione3",
+      "ritocchi"
+    ],
+    "minuti": 0.4,
+    "runtimeInvariatoDa": "1931bfce7f0742296765d0fb72a14392b3ce6d20"
+  }
+}

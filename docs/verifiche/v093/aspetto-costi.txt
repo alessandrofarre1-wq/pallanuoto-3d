@@ -1,0 +1,6 @@
+iphone-orizzontale: 54 oggetti disegnati, 131674 triangoli
+iphone-piccolo: 54 oggetti disegnati, 131674 triangoli
+nuoto-lato: 42 oggetti disegnati, 143330 triangoli
+nuoto-alto: 39 oggetti disegnati, 143072 triangoli
+verticale-lato: 49 oggetti disegnati, 144256 triangoli
+gruppo-alto: 48 oggetti disegnati, 145544 triangoli

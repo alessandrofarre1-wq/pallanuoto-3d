@@ -1,0 +1,272 @@
+
+> pallanuoto-3d@0.93.0 entrate
+> node tests/entrate-v068.mjs --no-build
+
+{
+  "A1": {
+    "gesto": "pass",
+    "tipo": "A",
+    "partito": true,
+    "primo": true,
+    "secondo": true,
+    "profondita": 3.5716753064517928,
+    "z": -2.0580092498010902,
+    "maxStep": 0.04662701496320239,
+    "posti": [
+      1,
+      2,
+      6,
+      4,
+      3,
+      5
+    ],
+    "identita": 6,
+    "mano": "D"
+  },
+  "A-1": {
+    "gesto": "pass",
+    "tipo": "A",
+    "partito": true,
+    "primo": true,
+    "secondo": true,
+    "profondita": 3.470668364608569,
+    "z": -1.9684218985012605,
+    "maxStep": 0.04660293317122214,
+    "posti": [
+      1,
+      2,
+      6,
+      4,
+      3,
+      5
+    ],
+    "identita": 6,
+    "mano": "D"
+  },
+  "B1": {
+    "gesto": "pass",
+    "tipo": "B",
+    "partito": true,
+    "primo": true,
+    "secondo": true,
+    "profondita": 3.485559774690584,
+    "z": 1.9581463123727418,
+    "maxStep": 0.04662570372463874,
+    "posti": [
+      1,
+      6,
+      3,
+      2,
+      5,
+      4
+    ],
+    "identita": 6,
+    "mano": "S"
+  },
+  "B-1": {
+    "gesto": "pass",
+    "tipo": "B",
+    "partito": true,
+    "primo": true,
+    "secondo": true,
+    "profondita": 3.5303056670032156,
+    "z": 2.055678561770865,
+    "maxStep": 0.04661124942954986,
+    "posti": [
+      1,
+      6,
+      3,
+      2,
+      5,
+      4
+    ],
+    "identita": 6,
+    "mano": "S"
+  },
+  "C1": {
+    "gesto": "pass",
+    "tipo": "C",
+    "partito": true,
+    "primo": true,
+    "secondo": true,
+    "profondita": 3.5323682272147874,
+    "z": 2.5161223264986465,
+    "maxStep": 0.04653957043096955,
+    "posti": [
+      1,
+      4,
+      3,
+      2,
+      5,
+      6
+    ],
+    "identita": 4,
+    "mano": "D"
+  },
+  "C-1": {
+    "gesto": "pass",
+    "tipo": "C",
+    "partito": true,
+    "primo": true,
+    "secondo": true,
+    "profondita": 3.5378235504981,
+    "z": 2.5976840731679776,
+    "maxStep": 0.04653957043096955,
+    "posti": [
+      1,
+      4,
+      3,
+      2,
+      5,
+      6
+    ],
+    "identita": 4,
+    "mano": "D"
+  },
+  "alaSale": {
+    "primo": true,
+    "pronta": true,
+    "passAla": true,
+    "allargata": true,
+    "alaD": 3.488015879509671,
+    "alaZ": -3.4480717876296065,
+    "riceve": true,
+    "taglioRicevibile": true
+  },
+  "doppiaCopertura": {
+    "primo": true,
+    "pronta": true,
+    "passAla": false,
+    "allargata": true,
+    "alaD": 3.365508692613423,
+    "alaZ": -3.30500826858051,
+    "riceve": false,
+    "taglioRicevibile": true
+  },
+  "consegna": {
+    "assegnato": true,
+    "fermo": true,
+    "persistente": true,
+    "prima": {
+      "ax": 5.85,
+      "az": 0,
+      "bx": -8,
+      "bz": 7.875
+    }
+  },
+  "tiroLibero": {
+    "fermo": true,
+    "nienteDuranteStop": true,
+    "ancoraFermo": true,
+    "ripreso": true,
+    "gesto": "pass",
+    "primaRilascio": true,
+    "dopoRilascio": true,
+    "ricevuto": true
+  },
+  "mezzaNo": {
+    "taglio": null,
+    "metri": 0
+  },
+  "mezzaSi": {
+    "taglio": "D",
+    "metri": 1.4
+  },
+  "mezzaNoSpecchio": {
+    "taglio": null,
+    "metri": 0
+  },
+  "mezzaSiSpecchio": {
+    "taglio": "D",
+    "metri": 1.4
+  },
+  "mezzaLarga1": {
+    "taglio": null
+  },
+  "mezzaLarga-1": {
+    "taglio": null
+  },
+  "mezzaBordo1": {
+    "taglio": null
+  },
+  "mezzaBordo-1": {
+    "taglio": null
+  },
+  "mezzaGiaArrivato1": {
+    "taglio": null
+  },
+  "mezzaGiaArrivato-1": {
+    "taglio": null
+  },
+  "mano": {
+    "debole": false,
+    "mancina": true,
+    "abile": true
+  },
+  "mismatch1": {
+    "partito": true,
+    "centro": true,
+    "attesa": true,
+    "uscita": true,
+    "boaDentro": true,
+    "forteSegue": true,
+    "deboleSuBoa": true,
+    "massimo": 0.04675950397979859,
+    "schema": true,
+    "identita": true
+  },
+  "mismatch-1": {
+    "partito": true,
+    "centro": true,
+    "attesa": true,
+    "uscita": true,
+    "boaDentro": true,
+    "forteSegue": true,
+    "deboleSuBoa": true,
+    "massimo": 0.04680585965184466,
+    "schema": true,
+    "identita": true
+  },
+  "preset1": {
+    "salvato": true,
+    "nome": "Falso centro",
+    "accoppia": true,
+    "nienteSalti": true,
+    "chiamata": true,
+    "controllato": true,
+    "rientraBoa": true,
+    "esceFake": true,
+    "stessoPiano": true,
+    "centro": true,
+    "persiste": true
+  },
+  "preset-1": {
+    "salvato": true,
+    "nome": "Falso centro",
+    "accoppia": true,
+    "nienteSalti": true,
+    "chiamata": true,
+    "controllato": true,
+    "rientraBoa": true,
+    "esceFake": true,
+    "stessoPiano": true,
+    "centro": true,
+    "persiste": true
+  },
+  "recupero": {
+    "immediato": true,
+    "occ": true,
+    "nessunTaglio": true,
+    "nuota": true
+  },
+  "area": {
+    "vietata": true,
+    "limite": 2.120000000000001
+  }
+}
+Entrate v0.68: scene A/B/C/D, copertura/consegna, mani, campo e mismatch PASS
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

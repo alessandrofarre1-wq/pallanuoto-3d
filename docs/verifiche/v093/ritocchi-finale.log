@@ -1,0 +1,26 @@
+
+> pallanuoto-3d@0.93.0 ritocchi
+> node tests/ritocchi-v090.mjs --no-build
+
+✓ raccordo di una posa che si sposta di 1 unità del corpo: 0.33 s (prima 0,08 s)
+✓ raccordo di un piccolo spostamento invariato: 0.08 s
+✓ l'ingresso in un gesto finisce prima del rilascio: 0.160 s
+✓ alla presa il corpo parte dalla posa di prima (raccordo di 0.27 s)
+✓ rigore: vicino al tiratore 2 difensori e 2 attaccanti (Ale: 2 e al massimo 2)
+✓ chi sta vicino è sulla linea dei 6 metri ad almeno 3 m dal tiratore (3.16 m)
+✓ gli altri 7 giocatori di movimento sono a metà campo (true)
+✓ rigore: la spalla destra (braccio che tira) è indietro rispetto alla sinistra di 0.19 (busto girato verso la palla)
+✓ la palla resta in acqua prima del gesto (0.14 m)
+✓ serie finale dei rigori: nessuno vicino al tiratore (0)
+✓ avvio della finta: il bacino gira al massimo di 17.8° (prima 56°), a 60°/s (prima 126°/s)
+✓ le spalle caricano più delle anche (37.6° contro 17.8°)
+✓ portiere con la palla per 8 s (apertura del 2): nessun compagno entra nella propria porta (0 fotogrammi dentro)
+✓ dopo la finta, con il posto a 10 m, chi ha la palla resta dritto fino al gesto dopo (assetto massimo 0.03, spostamento 1.2 m alla volta)
+✓ nessun errore nella pagina
+
+Ritocchi v0.90: tutte le prove superate
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

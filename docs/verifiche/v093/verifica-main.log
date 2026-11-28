@@ -1,0 +1,18 @@
+Costruzione del gioco (vite build)…
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 6000 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+Partite simulate (0 senza comandi + 0 con un giocatore finto che preme tasti a caso)
+  eventi:
+
+Screenshot
+  ! 1-menu.png: 4.78% (scarto medio 8.7 su 255) dei punti diverso dal riferimento (solo avviso)
+  ! 2-sprint-iniziale.png: 0.74% (scarto medio 0.7 su 255) dei punti diverso dal riferimento (solo avviso)
+  ! 3-azione.png: 0.70% (scarto medio 0.7 su 255) dei punti diverso dal riferimento (solo avviso)
+  ! 4-iphone-piccolo.png: 1.68% (scarto medio 2.0 su 255) dei punti diverso dal riferimento (solo avviso)
+  ! 5-iphone-orizzontale.png: 1.35% (scarto medio 1.6 su 255) dei punti diverso dal riferimento (solo avviso)
+
+✓ Verifica superata

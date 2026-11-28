@@ -1,0 +1,92 @@
+
+> pallanuoto-3d@0.93.0 prove
+> node tests/prove.mjs --solo=lint,difesa-coordinata,cambi-marcatura,difesa-cambi,tattica,v046,entrate,entrate-integrazione,attacco,uomo-movimento,nuoto-coerente,gioco-fermo,replay,aspetto
+
+costruisco il gioco, poi 14 passi della CI (la verifica a parte: npm run verifica)
+ 1/14 npm run lint ... PASS (3 s)
+ 2/14 npm run tattica -- --no-build ... FAIL (6 s)
+   ultime righe:
+   |     at file:///workspace/pallanuoto-v093/tests/tattica-v041.mjs:107:10 {
+   |   generatedMessage: false,
+   |   code: 'ERR_ASSERTION',
+   |   actual: false,
+   |   expected: true,
+   |   operator: '==',
+   |   diff: 'simple'
+   | }
+   |
+   | Node.js v24.22.1
+   | npm notice
+   | npm notice New major version of npm available! 11.9.0 -> 12.2.3
+   | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+   | npm notice To update run: npm install -g npm@12.2.3
+   | npm notice
+ 3/14 npm run difesa-cambi ... PASS (1 s)
+ 4/14 npm run entrate -- --no-build ... FAIL (8 s)
+   ultime righe:
+   |     at file:///workspace/pallanuoto-v093/tests/entrate-v068.mjs:191:10 {
+   |   generatedMessage: false,
+   |   code: 'ERR_ASSERTION',
+   |   actual: false,
+   |   expected: true,
+   |   operator: '==',
+   |   diff: 'simple'
+   | }
+   |
+   | Node.js v24.22.1
+   | npm notice
+   | npm notice New major version of npm available! 11.9.0 -> 12.2.3
+   | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+   | npm notice To update run: npm install -g npm@12.2.3
+   | npm notice
+ 5/14 npm run entrate-integrazione -- --no-build ... FAIL (12 s)
+   ultime righe:
+   |     at process.processImmediate (node:internal/timers:541:9) {
+   |   generatedMessage: false,
+   |   code: 'ERR_ASSERTION',
+   |   actual: 2.133333333331393,
+   |   expected: null,
+   |   operator: 'strictEqual',
+   |   diff: 'simple'
+   | }
+   |
+   | Node.js v24.22.1
+   | npm notice
+   | npm notice New major version of npm available! 11.9.0 -> 12.2.3
+   | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+   | npm notice To update run: npm install -g npm@12.2.3
+   | npm notice
+ 6/14 npm run nuoto-coerente -- --no-build ... PASS (8 s)
+ 7/14 npm run gioco-fermo -- --no-build ... PASS (8 s)
+ 8/14 npm run replay -- --no-build ... PASS (38 s)
+ 9/14 npm run v046 -- --no-build ... PASS (9 s)
+10/14 npm run aspetto -- --no-build --solo-gioco ... PASS (111 s)
+11/14 npm run difesa-coordinata ... PASS (7 s)
+12/14 npm run cambi-marcatura -- --no-build ... PASS (9 s)
+13/14 npm run attacco -- --no-build ... FAIL (191 s)
+   ultime righe:
+   |     triggerUncaughtException(
+   |     ^
+   |
+   | page.evaluate: Target page, context or browser has been closed
+   |     at scena (/workspace/pallanuoto-v093/tests/attacco-v091.mjs:32:57)
+   |     at /workspace/pallanuoto-v093/tests/attacco-v091.mjs:77:18 {
+   |   log: []
+   | }
+   |
+   | Node.js v24.22.1
+   | npm notice
+   | npm notice New major version of npm available! 11.9.0 -> 12.2.3
+   | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+   | npm notice To update run: npm install -g npm@12.2.3
+   | npm notice
+14/14 npm run uomo-movimento -- --no-build ... PASS (10 s)
+
+RIEPILOGO: 10 PASS, 4 FAIL su 14 passi in 7.0 minuti
+falliti: tattica, entrate, entrate-integrazione, attacco
+registri completi: /tmp/prove-J2Ofdd
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

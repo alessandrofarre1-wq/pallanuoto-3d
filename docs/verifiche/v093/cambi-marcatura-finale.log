@@ -1,0 +1,17 @@
+
+> pallanuoto-3d@0.93.0 cambi-marcatura
+> node tests/cambi-marcatura.mjs --no-build
+
+✓ all'inizio l'attaccante scappato è del suo marcatore (rimasto indietro)
+✓ nel rientro lo prende il difensore vicino alla porta (scambio di marcatura)
+✓ l'attaccante non resta libero davanti alla porta (0.00 s nell'ultimo secondo)
+✓ con la palla vicina alla porta (difesa schierata) i rientri non scambiano
+✓ l'attaccante scappato non va al difensore comandato dal giocatore (che si muove da sé): lo prende un compagno del computer (libero 0.00 s)
+✓ nessun errore nella pagina
+
+Cambi di marcatura: tutte le prove superate
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

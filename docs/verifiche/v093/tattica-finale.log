@@ -1,0 +1,10 @@
+
+> pallanuoto-3d@0.93.0 tattica
+> node tests/tattica-v041.mjs --no-build
+
+Tattica v0.41 {"schema":{"saved":true,"loaded":[7.6,-5.2],"indipendente":true,"aiuti":[4,5],"invalid":true,"goalarea":2.1},"adiacente":2,"centro":{"chiuso":null,"aperto":1},"skip":{"libero":5,"rischioLibero":0,"chiuso":3,"rischioChiuso":1},"paliDestra":{"vicino":3.25,"lontano":2.0999999999999996,"z":1.885},"paliSinistra":{"vicino":3.25,"lontano":2.0999999999999996,"z":1.885},"alVolo":{"libero":"shot","marcato":null},"geometria":{"spalle":"beduina","fronte":"shot","recuperato":1},"editor":{"profondita":7.6,"laterale":-5.329991435503332,"boa":4.199999999999999},"entrata":{"taglianti":[4],"cover":6,"profondita":6.8,"rientro":true},"aiuto":{"attivo":true,"prima":7.852216247659001,"dopo":1.06153086884135,"ritorno":true}}
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

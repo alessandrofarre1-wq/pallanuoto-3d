@@ -22,21 +22,28 @@ await pg.evaluate(() => { const H = window.__pallanuoto; H.scegliSquadre('ITA', 
 let ok = true; const prova = (bene, testo) => { console.log(`${bene ? '✓' : '✗'} ${testo}`); if (!bene) ok = false; };
 
 const r = await pg.evaluate(() => {
-  const H = window.__pallanuoto, B = H.ball, MARK = [0, 6, 3, 2, 5, 4, 1];
+  const H = window.__pallanuoto, B = H.ball, uomoDi=H.v046.uomoDi;
   const att = H.teams[1].players[3], dir = H.teams[1].dir, gx = 12.5 * dir;
-  const d = H.teams[0].players.find(q => MARK[q.i] === att.i);
+  const dif=H.teams[0],marcatore=()=>dif.players.find(q=>!q.isGK&&uomoDi(q)===att);
   H.game.autoplay = true; H.teams[0].human = false; H.__setCtrl(null);
   const casi = [];
   for (const [nome, z, mano] of [['ala a destra del tiratore', 3.2 * dir, 'D'], ['ala a sinistra del tiratore', -3.2 * dir, 'D'], ['centrale destro', 0, 'D'], ['centrale mancino', 0, 'S']]) {
+    // Dopo la partita e durante queste scene le consegne possono cambiare:
+    // misurare chi marca davvero il tiratore, nella difesa in pressing del muro.
+    H.prova.applicaSchema(dif,H.prova.copiaSchema('arco'));
+    att.x=gx-dir*6.5;att.z=z;att.vx=att.vz=0;att.fx=dir;att.fz=0;
     att.mano = mano; H.regole.giveBall(att); H.game.state = 'play'; H.game.after = null;
     for (const q of H.allPlayers) { q.excluded = false; q.stunUntil = 0; q.pressatoUntil = 0; }
+    let d=marcatore();
     d.x = gx - dir * 4.0; d.z = z * 0.8; d.vx = d.vz = 0;
+    for(const q of dif.players){const a=uomoDi(q);q.lagX=a.x;q.lagZ=a.z;}
     let dz = 0;
     for (let i = 0; i < 150; i++) {      // 1,5 s con la palla in mano, poi 1 s di carica del tiro
       att.x = gx - dir * 6.5; att.z = z; att.vx = att.vz = 0; att.fx = dir; att.fz = 0;
       att.act = i < 90 ? null : (att.act || { kind: 'shot', t: 0.05, wind: 99, frusta: 0.17, done: false, fn: () => {} }); att.decideT = 99; att.reazioneT = 99; att.pressatoUntil = 0; d.tackleCD = 9; d.colpi = []; d.stunUntil = 0; H.fight.active = false; H.game.state = 'play'; H.game.after = null; for (const q of H.allPlayers) q.excluded = false;      // qui si misura solo il muro: niente contrasti (anche il terzo tocco, che azzera tackleCD), lotta al centro ed espulsioni
       if (B.holder !== att) H.regole.giveBall(att);
       window.__salta(1);
+      d=marcatore();
     }
     dz = d.z - att.z;
     // mano alzata nel disegno: quale delle due è più alta e da che parte sta
@@ -65,16 +72,22 @@ if (process.argv.includes('--foto')) {
   const foto = [];
   for (let k = 0; k < 4; k++) {
     await pg.evaluate(k => {
-      const H = window.__pallanuoto, B = H.ball, MARK = [0, 6, 3, 2, 5, 4, 1];
-      const att = H.teams[1].players[3], dir = H.teams[1].dir, gx = 12.5 * dir, d = H.teams[0].players.find(q => MARK[q.i] === att.i);
+      const H = window.__pallanuoto, B = H.ball,uomoDi=H.v046.uomoDi;
+      const att = H.teams[1].players[3], dir = H.teams[1].dir, gx = 12.5 * dir,dif=H.teams[0];
+      const marcatore=()=>dif.players.find(q=>!q.isGK&&uomoDi(q)===att);
       const [z, mano] = [[3.2 * dir, 'D'], [-3.2 * dir, 'D'], [0, 'D'], [0, 'S']][k];
+      H.prova.applicaSchema(dif,H.prova.copiaSchema('arco'));
+      att.x=gx-dir*6.5;att.z=z;att.vx=att.vz=0;att.fx=dir;att.fz=0;
       att.mano = mano; H.regole.giveBall(att); H.game.state = 'play'; H.game.after = null; att.act = null;
+      let d=marcatore();
       d.x = gx - dir * 4.0; d.z = z * 0.8;
+      for(const q of dif.players){const a=uomoDi(q);q.lagX=a.x;q.lagZ=a.z;}
       for (let i = 0; i < 150; i++) {
         att.x = gx - dir * 6.5; att.z = z; att.vx = att.vz = 0; att.decideT = 99; att.reazioneT = 99; att.pressatoUntil = 0; d.tackleCD = 9; d.colpi = []; d.stunUntil = 0; H.fight.active = false; H.game.state = 'play'; H.game.after = null; for (const q of H.allPlayers) q.excluded = false;      // qui si misura solo il muro: niente contrasti (anche il terzo tocco, che azzera tackleCD), lotta al centro ed espulsioni
         att.act = i < 90 ? null : (att.act || { kind: 'shot', t: 0.05, wind: 99, frusta: 0.17, done: false, fn: () => {} });
         if (B.holder !== att) H.regole.giveBall(att);
         window.__salta(1);
+        d=marcatore();
       }
       H.vista = { pos: [att.x - dir * 3.4, 3.6, att.z], look: [d.x, 0.3, d.z], fov: 42 };
       window.__salta(1); H.__ridisegna(); H.vista = null; att.act = null;

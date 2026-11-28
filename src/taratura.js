@@ -206,6 +206,13 @@ export const ERRORE_PASSAGGIO={ base:1.0, pressione:0.8, disteso:0.3, limite:2 }
 // tiene il nuovo uomo per «tieni» secondi (senza queste due regole, 381-650 scambi a squadra per partita: avanti e indietro). Il
 // difensore comandato dal giocatore e chi rallenta il portatore non prendono un uomo nuovo (ma il loro può prenderlo un compagno).
 export const RIENTRO_SCAMBI={ ogni:0.3, schierata:9.2, davanti:1, dietro:2, battuto:1.5, lontano:5, guadagno:3, tieni:2.5 };
+// v0.93, Ale: consegne a due e un solo aiuto, senza lasciare un secondo uomo
+// pericoloso. Distanze/tempi tattici del gioco (non misure regolamentari).
+// La consegna conserva un guadagno complessivo e protegge soprattutto centro e palla.
+export const DIFESA_COORDINATA={ zona:8, battuto:.65, vicino:1.2, nuoto:.8, libero:2.6, lontano:3.8,
+  prende:2.65, rientro:6, davanti:.35, proteggi:5, copre:2.6, copreDietro:1,
+  guadagno:1.25, saldo:1, aiutoZona:6.5, latoDebole:5.5, esterno:7.5,
+  alaLarga:5.3, pallaLontana:6.5, raggioAiuto:4.5, tieniAiuto:1 };
 // PASSAGGI (v0.79, Ale: «i passaggi possono essere di due modi: o morbido sull'acqua vicino al compagno (di solito quando il ritmo
 // è più rilassato sul perimetro o quando la si passa al centro boa) oppure alto e teso (di solito durante l'uomo in più o quando si
 // palleggia prima della chiusura dell'azione o per cambiare velocemente area del campo)»).

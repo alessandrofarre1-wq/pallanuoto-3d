@@ -85,10 +85,15 @@ try{
       return {taglianti,cover,profondita:tg?Math.abs(C.HL-tg.x):0,rientro:t.players.every(p=>!p.cut)&&!t.copertura};
     })();
     const aiuto=(()=>{
-      const {t,o}=prepara(),s=Q.copiaSchema('boa');s.aiuti=[4];Q.applicaSchema(o,s);hold(t.players[3]);
-      put(o.players[6],t.players[1].x+.8,t.players[1].z);const p=o.players[4],uomo=t.players[C.MARK[p.i]];put(p,uomo.x,uomo.z);
+      const {t,o}=prepara(),s=Q.copiaSchema('boa');s.aiuti=[4];Q.applicaSchema(o,s);hold(t.players[2]);
+      for(const d of o.players){if(d.isGK)continue;const q=A.uomoDi(d);put(d,q.x+.8,q.z);}
+      put(o.players[6],t.players[1].x+.8,t.players[1].z);const p=o.players[4],uomo=A.uomoDi(p);
+      // Un aiuto autorizzato deve poter lasciare un appoggio lontano sul lato debole,
+      // non un tiratore vicino alla palla. La decisione nasce dal controller di squadra.
+      put(uomo,C.HL-8,-3);put(p,C.HL-5.2,-1);
+      for(const d of o.players){const q=A.uomoDi(d);d.lagX=q.x;d.lagZ=q.z;}A.aggiornaDifesa(o,1/60);
       const a=A.markTarget(p),attivo=o.aiutoStato?.p===p,prima=Math.hypot(a.x-uomo.x,a.z-uomo.z);
-      hold(uomo);G.time+=.1;const b=A.markTarget(p),dopo=Math.hypot(b.x-uomo.x,b.z-uomo.z);
+      hold(uomo);G.time+=.1;A.aggiornaDifesa(o,1/60);const b=A.markTarget(p),dopo=Math.hypot(b.x-uomo.x,b.z-uomo.z);
       return {attivo,prima,dopo,ritorno:o.aiutoStato?.p!==p};
     })();
     return {schema,adiacente,centro,skip,paliDestra,paliSinistra,alVolo,geometria,editor,entrata,aiuto};

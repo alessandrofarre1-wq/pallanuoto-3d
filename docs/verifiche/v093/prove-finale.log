@@ -1,0 +1,20 @@
+
+> pallanuoto-3d@0.93.0 prove
+> node tests/prove.mjs --solo=lint,tattica,entrate,difesa-coordinata,cambi-marcatura,attacco,aspetto
+
+costruisco il gioco, poi 7 passi della CI (la verifica a parte: npm run verifica)
+ 1/7 npm run lint ... PASS (3 s)
+ 2/7 npm run tattica -- --no-build ... PASS (7 s)
+ 3/7 npm run entrate -- --no-build ... PASS (6 s)
+ 4/7 npm run aspetto -- --no-build --solo-gioco ... PASS (100 s)
+ 5/7 npm run difesa-coordinata -- --misure=tests/screenshot/difesa-v093.json ... PASS (6 s)
+ 6/7 npm run cambi-marcatura -- --no-build ... PASS (9 s)
+ 7/7 npm run attacco -- --no-build ... PASS (9 s)
+
+RIEPILOGO: 7 PASS, 0 FAIL su 7 passi in 2.4 minuti
+registri completi: /tmp/prove-Qy6MYR
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

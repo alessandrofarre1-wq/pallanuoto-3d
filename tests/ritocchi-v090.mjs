@@ -19,7 +19,13 @@ const errori = []; pg.on('pageerror', e => errori.push(e.message));
 await pg.addInitScript(() => {
   let a = 7; window.__rnd = () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   let now = 0; performance.now = () => now; window.requestAnimationFrame = cb => { window.__raf = cb; return 1; };
-  window.__salta = n => { for (let i = 0; i < n; i++) { window.__tieni?.(); now += 1000 / 60; window.__raf(now); } };
+  window.__salta = n => {
+    // Le verifiche leggono ossa, giunture e coordinate, non pixel: mantieni
+    // tutti gli aggiornamenti RAF/rig evitando disegni GPU non utilizzati.
+    const R=window.__pallanuoto.renderer,disegna=R.render;R.render=()=>{};
+    try{for(let i=0;i<n;i++){window.__tieni?.();now+=1000/60;window.__raf(now);}}
+    finally{R.render=disegna;}
+  };
 });
 await pg.goto(server.resolvedUrls.local[0]);
 await pg.waitForFunction('window.__pallanuoto && window.__raf && window.__pallanuoto.modelloPronto', null, { timeout: 60000, polling: 100 });

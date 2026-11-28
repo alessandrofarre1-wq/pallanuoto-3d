@@ -96,6 +96,9 @@ try{
     {
       const {t,o,h}=avvia('A'),a=E.difensoreEntrata(h),b=o.players[4],prima={ax:a.x,az:a.z,bx:b.x,bz:b.z};
       h.x=9;h.z=-1.4;a.x=7.2;a.z=-1.2;b.x=10;b.z=-1.5;
+      // Il cedente deve poter rilevare anche l'altro uomo: una seconda ala
+      // lontana oltre tre metri non costituiva una consegna coperta.
+      const lasciato=A.uomoDi(b);lasciato.x=a.x-.2;lasciato.z=a.z-.7;
       const pos=[a.x,a.z,b.x,b.z];A.aggiornaDifesa(o,dt);const assegnato=A.uomoDi(b)===h;
       const fermo=pos.every((v,i)=>v===[a.x,a.z,b.x,b.z][i]);G.time+=5.1;A.aggiornaDifesa(o,dt);
       risultati.consegna={assegnato,fermo,persistente:A.uomoDi(b)===h,prima};

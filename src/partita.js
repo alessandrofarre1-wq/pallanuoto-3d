@@ -30,7 +30,7 @@ function muoviVerso(p,tg,dt){
   // scelta di prima, così non si alterna a ogni fotogramma). Ampiezza 0,48: sotto la soglia del nuoto di movePlayer (0,5).
   // chi difende su chi ha la palla non scivola: deve poter chiudere il tiro con la sua velocità piena
   const suPortatore=ball.holder&&ball.holder.team!==p.team&&uomoDi(p)===ball.holder;
-  if(!tg.gk&&!tg.sprint&&!tg.deciso&&!p.uscendo&&!p.excluded&&!suPortatore){      // v0.92: «deciso» = cambio di fase dell'uomo in più
+  if(!tg.gk&&!tg.sprint&&!tg.deciso&&!p.uscendo&&!p.excluded&&!suPortatore){      // «deciso»: cambio di fase dell'uomo in più o difesa su un entrante che nuota
     if(d<1.8) p.scivolaAI=true; else if(d>2.8) p.scivolaAI=false;
     if(p.scivolaAI){ const k=Math.hypot(mx,mz); if(k>0.48){ mx*=0.48/k; mz*=0.48/k; } }
   } else p.scivolaAI=false;

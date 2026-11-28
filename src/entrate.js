@@ -18,7 +18,7 @@ export function resetDisposizioneTattica(t){
   resetEntrantiCambio(t);
   Object.assign(t,{occupantiAttacco:null,occupantiSchema:null,occupantiTempo:null,accoppiamenti:null,
     entrataAzione:null,preparaEntrata:null,rotazioneCentro:null,entrataDopo:0,scambio:null,adattamentoEntrata:null,
-    chiamataAttacco:null,chiamataPossesso:null,
+    chiamataAttacco:null,chiamataPossesso:null,difesaCoordinata:null,rall:null,rallT:-1,rallFino:0,rallPortatore:null,
     schemaStato:null,copertura:null,blocco:null,aiutoStato:null,lasciato:null,lasciatoT:0,centroT:-1,centroAperto:false});
   for(const p of t.players){p.cut=null;p.appoggio=null;}
 }
