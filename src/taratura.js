@@ -33,6 +33,43 @@ export const TIRO_LIBERATO={ parita:0.3, superiorita:1, quick:0.3 };
 // tira subito, entro «entro» s dalla ricezione: anche nei primi 18 s (COSTRUZIONE) e in superiorità. Prima tirava subito solo una
 // volta su tre (TIRO_LIBERATO.parita) e, nei primi 18 s, solo entro 4,5 m.
 export const OCCASIONE_CHIARA={ distanza:5, angolo:0.7, spazio:2, corridoio:0.7, entro:0.6 };
+// OCCASIONE PALESE (v0.91, Ale dopo il primo Mondiale: «a volte ci sono palesi occasioni da gol e passano la palla a un compagno e
+// ricominciano l'azione»; «a volte partono degli schemi e passano la palla dall'altra rispetto all'uomo libero»): chi ha la palla entro
+// «distanza» m dalla porta, con apertura almeno «angolo», nessun difensore di movimento entro «spazio» m e la traiettoria libera
+// («corridoio» m) tira subito, in qualunque momento dell'azione (non solo appena ricevuto come OCCASIONE_CHIARA), dopo «reazione» s
+// con la palla; se è un compagno a trovarsi così, la palla va a lui per primo (linea libera, rischio di intercetto sotto «rischio»).
+// Misura prima (sonda-occasioni, 4 partite): il libero entro 6,5 m tirava 50 volte su 100 e passava 42 (15 su 20 indietro, a chi
+// era più lontano e meno libero di lui). Una prima prova con 6,5 m, apertura 0,55 e 2 m di spazio prendeva anche i normali tiri dal
+// perimetro contro la zona (9,9 tiri a squadra a partita da 5,9 m, 29 in gol su 100: sonda-tiri-esito, 6 partite): ora valgono le stesse
+// misure dell'occasione chiara (5 m, apertura 0,7), con 2,2 m di spazio.
+// «largo»: libero tra 5 e 6,5 m (apertura 0,55, 2 m di spazio): passava indietro 12 volte su 44 (sonda-occasioni, 4 partite); ora
+// niente passaggio indietro: la palla va solo a un compagno più vicino alla porta e libero, altrimenti finta e tiro.
+// Il portiere avversario uscito a meno di «portiere» m toglie l'occasione (il passaggio lo prenderebbe lui).
+export const OCCASIONE_PALESE=Object.freeze({ distanza:5, angolo:0.7, spazio:2.2, corridoio:0.7, rischio:0.22, reazione:0.15, portiere:1.6,
+  largo:Object.freeze({ distanza:6.5, angolo:0.55, spazio:2, corridoio:0.6 }) });
+// CONTROFUGA CON L'UOMO IN PIÙ DAVANTI (v0.91, Ale: «soprattutto quando partono in controfuga dovrebbero andare in porta»): nei primi
+// «eta» s del possesso, con più attaccanti che difensori vicino alla porta (entro 9 m contro entro 10,5 m), chi ha la palla punta la
+// porta fino a «punta» m; senza difensori davanti tira arrivato a «punta» m (entro «tiro» m se un difensore lo raggiunge da dietro, a
+// meno di «raggiunto» m); con un difensore davanti tira entro «punta» m dopo 0,5 s; passa solo in avanti (compagno più vicino alla porta
+// di almeno «avanti» m e libero di almeno «libero» m) quando il difensore gli viene addosso (entro «attacca» m), mai indietro.
+// Misura prima: in queste situazioni tirava 2 volte su 7; i passaggi andavano a chi stava a 8,9 m, più lontano di lui (7,8 m).
+export const VANTAGGIO=Object.freeze({ eta:10, tiro:7, avanti:1, libero:1.8, attacca:2.5, punta:4.6, raggiunto:1.6 });
+// TRANSIZIONE ORDINATA (v0.91, Ale: «a volte in transizione i giocatori si ammassano, ma nelle partite avviene tutto in modo piuttosto
+// ordinato anche perché gli uomini sanno dove devono andare»; manuale FIN pp.51-63: la prima apertura allarga e aiuta a portare la palla,
+// la seconda dà profondità, il marcatore del centro fa da appoggio centrale). Al recupero lontano dalla porta (controfuga organizzata)
+// i cinque posti del perimetro vanno a chi è già dalla parte giusta: costo = metri di lato fino alla corsia del posto, più «lineaPeso»
+// per metro di differenza di profondità (i più avanti in prima linea, il più indietro fa il punto), meno «mancino» per un mancino a
+// destra, meno «resta» per chi occupa già quel posto. In viaggio le ali nuotano larghe («corsiaAla» m dal centro), i mezzi all'interno
+// («corsiaMezzo»), e si va al posto vero entro «avvicina» m (+3 m di raccordo); nessun appoggio vicino a chi porta palla (decisione v0.58:
+// prima apertura e appoggio centrale sono quelli delle due aperture del portiere). Lancio lungo (seconda apertura): al compagno almeno
+// «avanti» m più avanti, senza difensori davanti, libero di «libero» m, entro «massimo» m, rischio di intercetto sotto «rischio». Misura prima (sonda-transizioni, 4 partite, 394 transizioni): con la controfuga organizzata 0,99 coppie di
+// compagni a meno di 2 m e una coppia sotto i 2 m nel 65% degli istanti (senza: 0,49 e 49%): ali e mezzi dello stesso lato nuotavano
+// affiancati (corsie a 4 e 3,2 m dal centro) e chi andava al posto del suo numero attraversava la vasca.
+// Il punto viaggia almeno «dietroCentro» m dietro il centroboa e, se gli è alla pari, a «latoCentro» m di lato; in transizione i compagni
+// si tengono a «separa» m (fuori dalle transizioni 1,6 m). Chi porta palla lontano dalla porta resta nella sua corsia e aggira il
+// difensore che gli sta davanti entro «aggira» m (prima scivolava verso il centro e aggirava solo da 1,9 m).
+export const TRANSIZIONE=Object.freeze({ lineaPeso:0.6, mancino:0.8, resta:0.5, corsiaAla:6, corsiaMezzo:3, avvicina:5,
+  dietroCentro:3, latoCentro:2, separa:2.4, aggira:2.6, lungo:{ avanti:6, libero:2.5, massimo:17, rischio:0.2 } });
 // TIRI SPECIALI IN CONTROFUGA (v0.31, prima scritti in controfuga.js): tasto a comparsa per il giocatore e scelta del computer.
 // durata e pausa del tasto (s); sotto «vicino» m colonnello, sopra schizzo; tra «min» e «max» m dalla porta; il computer arriva fino a
 // «maxComputer». v0.81 (Ale: «troppi tiri a schizzo e colonnello»): solo nella controfuga vera, entro «eta» s dal recupero della

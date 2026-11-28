@@ -30,6 +30,7 @@ const fuori = await pg.evaluate(() => {
     B.lastTeam = att; B.toccoDifesa = toccoDifesa ? H.teams[1] : null; B.toccoPortiere = toccoDifesa === true; B.ignora = null; B.inRete = false; B.inUscita = false;
     // v0.57: passaggio (non tiro) che esce dal fondo; passaggioDi = squadra che l'ha lanciato
     if (passaggioDi) { const chi = passaggioDi === 'dif' ? H.teams[1] : att; B.kind = 'pass'; B.daTiro = false; B.lastTeam = chi; B.shooter = chi.players[3]; B.target = chi.players[0]; B.pickupCD = 0; }
+    B.tx = gx + att.dir * 2; B.tz = z;      // v0.91: punto d'arrivo valido (prima restava quello dell'ultimo passaggio vero della partita)
     B.x = gx - att.dir * 1.0; B.y = 0.6; B.z = z; B.vx = att.dir * 6; B.vy = vy; B.vz = 0; B.wx = B.wy = B.wz = 0;
     const traccia = []; let annuncio = '';
     const prima = H.cronaca.registro ? H.cronaca.registro.length : 0;
@@ -64,7 +65,8 @@ const cambio = await pg.evaluate(() => {
     window.__salta(90);
     // Si prova una selezione in gioco attivo, non durante il fermo di un fallo
     // casuale della scena precedente. Pausa e annullamento input hanno prove dedicate.
-    H.game.state='play'; H.game.after=null; H.game.penalty=null;
+    // v0.91: un gol durante l'attesa fa partire il replay, che congela il gioco (e il tasto CAMBIA): lo si interrompe
+    H.replay?.interrompiReplay?.(); H.game.state='play'; H.game.after=null; H.game.penalty=null;
     for(const q of H.allPlayers){ q.tackleCD=9; q.colpi=[]; q.decideT=9; q.reazioneT=9; }
     const T = H.teams[0]; if (B.holder && B.holder.team === T) { const o = H.teams[1].players[6]; H.regole.giveBall(o); window.__salta(2); }
     const prima = H.ctrl; if (!prima) continue;
@@ -86,7 +88,7 @@ const contatto = await pg.evaluate(() => {
   const H = window.__pallanuoto; let falli = 0, prove = 40, laterali = 0;
   for (let k = 0; k < prove * 2; k++) {
     const frontale = k < prove;
-    H.game.state = 'play'; H.game.after = null;
+    H.replay?.interrompiReplay?.(); H.game.state = 'play'; H.game.after = null;      // v0.91: niente replay di un gol della scena prima
     const c = H.teams[0].players[3], d = H.teams[1].players[3];
     for (const q of H.allPlayers) { q.act = null; q.excluded = false; q.stunUntil = 0; q.sfondaT = 0; }
     H.regole.giveBall(c);

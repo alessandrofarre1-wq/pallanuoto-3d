@@ -5,7 +5,7 @@ comandi touch (anche tastiera e controller). Proprietario: Ale, ex nuotatore ago
 italiano semplice, senza gergo tecnico; risposte brevi con cosa è cambiato e cosa provare; chiedi conferma prima di cambiamenti
 grossi di direzione. Gli screenshot e i video di Ale sono la verità.
 
-Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.90). Il resto è in `docs/`:
+Questa memoria contiene solo regole e decisioni **in vigore** (versione di lavoro: v0.91). Il resto è in `docs/`:
 - `docs/storia.md`: tutta la storia versione per versione (fino alla v0.61 il testo originale della vecchia memoria, 213 KB);
 - `docs/decisioni-superate.md`: com'era e cosa vale ora, per ogni decisione cambiata;
 - `docs/versioni/`: il rapporto di ogni versione; `docs/riferimenti/`: tattica, tecnica, fisica, valutazioni, ecc.;
@@ -168,6 +168,18 @@ colonnello. Stesse regole per il computer: dentro l'area palombella con il porti
   deciso una volta (circa 1 su 3 in parità); le occasioni chiare (ricezione entro 5 m, di fronte alla porta, nessuno entro 2 m, linea
   libera) si tirano sempre, a qualunque secondo, anche in superiorità (v0.81, Ale; `OCCASIONE_CHIARA`); pazienza fino a fine azione
   (tiro di fine azione negli ultimi 4,5 s, `FINE_AZIONE`).
+- Occasioni e uomo libero v0.91 (Ale: «palesi occasioni da gol e passano la palla a un compagno e ricominciano l'azione»; «passano la
+  palla dall'altra rispetto all'uomo libero»; `OCCASIONE_PALESE`): libero entro 5 m (apertura 0,7, nessun difensore entro 2,2 m,
+  traiettoria libera, portiere avversario non entro 1,6 m) tira dopo 0,15 s in qualunque momento, non con l'uomo in più (lì il tiro lo
+  prepara lo schema); il compagno così
+  libero è la prima scelta del passaggio; libero tra 5 e 6,5 m (apertura 0,55, 2 m) non passa indietro né scarica per far partire uno
+  schema: passaggio solo a un compagno più avanti e libero, altrimenti finta e tiro. Un «libero» a 6,5 m tirato subito prendeva anche i
+  tiri dal perimetro contro la zona (29 in gol su 100, tiri da 41 a 50 a squadra): scartato. Prova `npm run attacco`.
+- Controfuga con più attaccanti che difensori vicino alla porta v0.91 (`VANTAGGIO`, `vantaggioAttacco`): nei primi 10 s si punta la porta
+  fino a 4,6 m, senza difensori davanti si tira lì (prima se un difensore raggiunge da dietro), la palla va solo avanti al compagno libero
+  più vicino alla porta quando il difensore viene addosso; niente costruzione dei 18 s. Lancio lungo (seconda apertura del manuale FIN,
+  `TRANSIZIONE.lungo`): portiere e chi porta palla in controfuga lanciano al compagno almeno 6 m più avanti, senza difensori davanti e
+  libero di 2,5 m, entro 17 m.
 - Centroboa del computer nella lotta (v0.81, `CENTRO_PALLA`): ogni 0,45-0,85 s, dopo 0,4 s beduina o sciarpa (30%), dopo 0,6 s
   girata (15%), dopo 1,8 s scarico; girato verso la porta con il marcatore ancora nella lotta aspetta 0,45 s prima di tirare (se il
   marcatore rientra si torna alla lotta); girato e libero tira subito (decisione v0.69 conservata).
@@ -178,7 +190,14 @@ colonnello. Stesse regole per il computer: dentro l'area palombella con il porti
   al difensore più vicino o non ha nessuno entro 3 m); in rientro scatta solo chi ha il suo uomo più vicino alla porta (`SCATTI`,
   scelta di Ale v0.67); nelle transizioni niente scatto automatico da lontano; aperture del portiere («base» e «apertura2»; v0.90:
   nessun posto a meno di 4 m dalla propria linea di porta, `CONTRO.dietroPortiere`: prima il 3 dell'«apertura del 2» entrava in porta);
-  controfuga organizzata in corsie.
+  controfuga organizzata in corsie. Transizione ordinata v0.91 (Ale: «in transizione i giocatori si ammassano, ma nelle partite avviene
+  tutto in modo ordinato perché gli uomini sanno dove devono andare»; `TRANSIZIONE`, `assegnaPostiRipartenza`, `corsiaViaggio`): al
+  recupero i cinque posti del perimetro vanno a chi è già dalla parte giusta (corsia e linea: i più avanti in prima linea, il più
+  indietro fa il punto, appoggio centrale del manuale FIN; mancino a destra), il centro resta al centroboa, e i posti restano
+  nell'attacco schierato (`entrate.js` `occupaPosti`); le aperture del portiere usano il posto occupato. In viaggio ali a 6 m e mezzi a
+  3 m dal centro, il punto 3 m dietro il centroboa (2 m di lato se gli è alla pari), compagni a 2,4 m in transizione (fuori 1,6 m); chi
+  porta palla lontano dalla porta resta nella sua corsia e aggira il difensore davanti da 2,6 m. Nessun appoggio vicino a chi porta palla
+  (decisione v0.58). Sonda: coppie di compagni sotto i 2 m 0,99 → 0,54 per istante.
 - Superiorità: schemi a fasi (libreria di 10, il giocatore ne sceglie 3; il computer usa i tre di partenza e «Uscita del 6»),
   «quick» in 3 superiorità su 10, tiro al volo dopo il cambio di lato; occasioni chiare dai 7 s (prima solo subito dopo un cambio
   di lato); chi vede poca porta (l'ala sui 2 metri) non tira al volo e passa a chi ne vede di più (`SUPERIORITA`).
@@ -263,7 +282,18 @@ colonnello. Stesse regole per il computer: dentro l'area palombella con il porti
 - Mondiali (24 disponibili, 16 estratte per fasce, la scelta di Ale sempre dentro) ed Europei (16), campagna salvata tra le gare,
   bacheca e premiazione.
 
-## Stato v0.90 — rigore, finta senza avvitamento e senza scatti, schemi contro il pressing, giocatore in porta (Claude Code)
+## Stato v0.91 — attacco del computer più deciso, transizioni ordinate, controfuga come nel manuale FIN (Claude Code)
+
+v0.91 (dopo la PR #73 con la v0.90, unita in `main`): Ale (27/11/2026), dopo il primo Mondiale, chiede un'IA più avanzata («mi devono
+mettere più in difficoltà quando loro attaccano»): schemi che passano dall'altra parte rispetto all'uomo libero, palesi occasioni con la
+palla ripassata, controfughe che non vanno in porta, uomo in più quasi senza schemi (anche nella sua squadra), transizioni ammassate, i
+modi di «portare» le controfughe dei documenti allegati; e spunti da parte mia. Fatto (regole sopra; [rapporto](docs/versioni/v091-attacco-transizioni.md)):
+occasioni palesi tirate, palla all'uomo libero, libero a 5-6,5 m senza passaggi indietro, controfuga in vantaggio verso la porta, posti
+della ripartenza per vicinanza e corsie separate, lancio lungo; nuova prova `npm run attacco`. 16 partite: tiri 40,9 → 42,4, gol 18,9 →
+17,8, tiri in gol 46,2% → 42,1% (vero 40%), gol in controfuga 14,5% → 24,2% delle controfughe, palle perse in parità 19,6% → 15,6%;
+superiorità 37,8% (dentro la variazione della v0.90). Prossimo: uomo in più (v0.92, misure già fatte: lo schema «4-2 fermo» del
+computer non si muove, negli altri 1,4-2,4 m a fase; la squadra di Ale ha lo schema solo se lo chiama). Proposte ad Ale: difesa che chiude
+l'uomo libero (aiuto e scalate), ritmo (azioni più lunghe, da decidere), gioco senza palla (blocchi, centroboa verso la palla).
 
 v0.90 (dopo la PR #72 con la v0.89, unita in `main`): Ale (26/11/2026) ha mandato quattro punti con una foto del rigore e poi un video
 della finta. Fatto (regole sopra; [rapporto](docs/versioni/v090-rigore-finta-schemi.md)): busto e spalle verso la palla nella posizione
@@ -301,14 +331,14 @@ della partita invariato; [rapporto](docs/versioni/v085-finte.md)); v0.86 rose (t
 computer l'Ungheria segna più del doppio dell'Italia: nel database le valutazioni medie sono 84 contro 76 (forza del ranking).
 Prossimo: il ritmo (sotto). Da riprendere: centroboa libero o con il marcatore in anticipo che riceve girato e segna (difesa).
 
-**Ritmo da rifare** (16 partite ITA–HUN sulla v0.90, `npm run taratura -- --partite=16`): 18,9 gol e 40,9 tiri per squadra (veri
-13,3 e 33; Italia 13,8, Ungheria 24,0), tiri in gol 46,2% (40%), nello specchio 79% (circa 67%), espulsioni 11,3 (dal centro 56%, vero 66%), superiorità 43% (52%),
-parità: gol 21,7% (6-19%), tiro sbagliato 25,8% (32%), durata 12,8 s (21), azioni 75,5 (50); 6 voci su 15 a posto (v0.89: 17,6 gol,
-44,0% in gol, 7 su 15). Restano troppe azioni e troppo corte: 5 s di transizione e 9,4 s di attacco; il 43% delle azioni in parità finisce in meno di
+**Ritmo da rifare** (16 partite ITA–HUN sulla v0.91, `npm run taratura -- --partite=16`): 17,8 gol e 42,4 tiri per squadra (veri
+13,3 e 33; Italia 13,2, Ungheria 22,5), tiri in gol 42,1% (40%), espulsioni 10,7 (dal centro 62%, vero 66%), superiorità 38% (52%),
+parità: gol 21,5% (6-19%), tiro sbagliato 29,3% (32%), durata 13,1 s (21), azioni 74,6 (50); 7 voci su 15 a posto (v0.90: 18,9 gol,
+40,9 tiri, 46,2% in gol, 6 su 15). Restano troppe azioni e troppo corte: 5 s di transizione e 9,4 s di attacco; il 43% delle azioni in parità finisce in meno di
 10 s (palla al centroboa che si gira e tira, entrate, palle perse ed espulsioni presto). Allungarle vuol dire un attacco del computer più
 paziente, anche con meno palloni al centroboa nei primi secondi: scelta della v0.81 da decidere con Ale. Crescita per gradi: v0.67 13,7 gol e 33,5 tiri (16
 partite); Codex misurava 16,1 e 41,4 nella v0.70 e 17,4 e 43,3 nella v0.71 (8 partite, passaggio di consegne v0.71); v0.77 20,5 e
 42,3, v0.80 19,5 e 40,3, v0.81 19,3 e 41,4, v0.82 20,2 e 41,0, v0.83-v0.84 19,1 e 39,0, v0.85 19,3 e 39,3, v0.86 19,4 e 39,1, v0.87 19,4 e
-40,1, v0.88 19,9 e 39,9, v0.89 17,6 e 39,9, v0.90 18,9 e 40,9 (16 partite).
+40,1, v0.88 19,9 e 39,9, v0.89 17,6 e 39,9, v0.90 18,9 e 40,9, v0.91 17,8 e 42,4 (16 partite).
 
 Stato precedente (v0.77, Codex): avvio fluido della finta, [rapporto](docs/versioni/v077-avvio-finta.md).
