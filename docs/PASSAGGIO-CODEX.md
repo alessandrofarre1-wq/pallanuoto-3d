@@ -1,3 +1,19 @@
+# Passaggio WATERPOLO7 — v0.93 difesa coordinata (Codex)
+
+Base main `3e04bb5`, PR75 v0.92 unita e CI46124432130 verde. Ramo `codex/v093-difesa-coordinata`, worktree `/workspace/pallanuoto-v093`, versione 0.93.0. Prima di continuare riallineare main, PR/CI e diff: preservare Claude e i worktree precedenti. Nessun merge/deploy.
+
+Ale chiede cambi difensivi con copertura dell’altro uomo e forma ordinata. Nuovo `difesa-coordinata.js`: valutare entrambe le consegne, non rubare il marcatore a boa/portatore, niente cambi da/verso `ctrl`, raddoppiante manuale o chi rallenta il portatore. Una consegna stabile vale 2,5 s; coordinate del corpo invariate e riferimento alla nuova identità aggiornato. Un solo aiuto automatico, senza aggiungerlo a raddoppio manuale o copertura cambi; distanza reale e ala larga sul lato debole. Non considerare un compagno vicino una copertura già consegnata. Bersaglio dinamico anche nel fallo ordinario, preset conservato.
+
+Rientro/M dal posto dell’uomo effettivo, non dall’indice del difensore. Chi segue una nuotata verso porta nuota, anziché restare nella bicicletta lenta; velocità immutate. Scivolamento tranquillo, attacco/transizioni/superiorità di Claude e modello/animazioni/UI conservati. Numeri tattici dichiarati in taratura, nessun ritocco a precisione/potenza/regole.
+
+Test56situazioni:10→56PASS; integrazione reale A/B/C/D PASS. Prove locali per fasi nel [rapporto](versioni/v093-difesa-coordinata.md) e nelle [verifiche](verifiche/v093/README.md): prima10/14 con3regressioni e1interruzione GPU, seconda5/6, finale7/7. Tutti gli assert conservati; fixture con seconde consegne raggiungibili e vantaggio iniziale2,25m. Attacco test ora senza GPU inutile, RAF/rig sempre attivi. Gambe0/7389,0/5182,0/1373. Sonda2gare per versione, semi33/40,4×180s: diagnostica, non bilanciamento generale; clock verificato, metadato60 iniziale corretto senza ripetere baseline. Esiti finali, foto e costi nel rapporto; CI intera dell’ultimo SHA nella PR.
+
+Limiti iPhone <100 chiamate/<150000 triangoli anche2cambi/replay,14corpi. Nessuna nuova prova facciale o modifica a modello/mani/animazione del nuoto/tiro, logoC/camera unica/SPEED1/CAMBI basso44px/riflesso alta conservati. Sei gare standard soltanto nella CI finale, una Chromium pesante alla volta. Restano giudizio di Ale sul campo, iPhone fisico e ritmo/bilanciamento generale v0.92.
+
+Finale: minacce libere50,92%→43,99%, gruppi3+118,50→63,45s,3sulla palla32,07→19,10s; campione limitato, abbandoni del seme33 peggiorano. Sequenza vera con entrambe le consegne coperte dopo3s. Foto6viste/aspetto PASS,iPhone54/131674;2cambi68/139200. Verifica immagini locale bloccante FAIL:5confronti ispezionati, main originale nello stesso ambiente mostra già5avvisi con identici scarti menu/scatto;3–5 cambiano anche per la nuova IA. Aggiornamento riferimenti negato dall’approvazione automatica, NON eseguito; nessun bypass o tolleranza cambiata. Conservare i riferimenti e leggere il confronto documentato. CI finale dell’ultimo SHA nella PR.
+
+---
+
 # Passaggio WATERPOLO7 — v0.92 uomo in più che si muove (Claude Code)
 
 Ramo `claude/gracious-rubin-rcvklk` ripartito da `main` dopo la PR #74 (v0.91), versione 0.92.0.

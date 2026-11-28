@@ -13,6 +13,7 @@ tests/screenshot/tornei/
 tests/screenshot/fisica-acqua.svg
 tests/screenshot/acqua-effetti/
 tests/screenshot/portiere-v071.json
+tests/screenshot/difesa-v093.json
 tests/screenshot/dimensioni-v072.json
 tests/screenshot/dimensioni-v072/
 __pycache__/

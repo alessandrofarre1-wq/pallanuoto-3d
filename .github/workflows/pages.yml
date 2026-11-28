@@ -90,6 +90,7 @@ jobs:
       - run: npm run menu -- --no-build --solo-controlli
       - run: npm run comandi-interfaccia -- --no-build
       - run: npm run passaggi -- --no-build
+      - run: npm run difesa-coordinata -- --misure=tests/screenshot/difesa-v093.json
       - run: npm run cambi-marcatura -- --no-build
       - run: npm run tiri-centro -- --no-build
       - run: npm run cambi-volanti -- --no-build

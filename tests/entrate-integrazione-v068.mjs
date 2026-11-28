@@ -89,7 +89,10 @@ try{
         if(centro&&centro!==E.difensoreEntrata(h)){put(centro,4,0,dir);centro.stunUntil=G.time+99;}
       }
       const d=E.difensoreEntrata(h);d.s.vel=chiuso?99:55;d.st=H.prova.valoriMotore(d.s);
-      d.x=h.x+dir*(chiuso?.9:-1.25);d.z=h.z;d.fx=-dir;d.fz=0;
+      // Il difensore ora nuota davvero sul taglio. Nel caso di vantaggio,
+      // partire solo 1,25 m dietro gli permetteva di recuperare durante il
+      // passaggio iniziale: si prepara una testa avanti ancora reale al taglio.
+      d.x=h.x+dir*(chiuso?.9:-2.25);d.z=h.z;d.fx=-dir;d.fz=0;
       for(const p of S.allPlayers){const a=A.uomoDi(p);p.lagX=a.x;p.lagZ=a.z;}
       R.giveBall(h);B.holdTime=.2;B.x=h.x;B.z=h.z;
       vista.render(dt,G.time*1000);
@@ -103,6 +106,10 @@ try{
         if(B.holder===m&&B.holdTime>=.18&&h.cut&&!T.entrataPronta(h))misura.attesaCoperto++;
         if(m.act?.kind==='pass'&&m.act!==gestoPrecedente&&!m.act.done){
           gestoPrecedente=m.act;
+          if(T.entrataPronta(h)){
+            misura.consegneAllaScelta=o.players.filter(q=>!q.isGK).map(q=>({i:q.i,x:q.x,z:q.z,uomo:A.uomoDi(q).i,
+              target:A.markTarget(q),aiuto:o.aiutoStato?.p===q}));
+          }
           if(Math.hypot(h.x-m.act.aim[0],h.z-m.act.aim[1])<.15&&!T.entrataPronta(h))misura.decisioniNonPronte++;
         }
         misura.maxPasso=Math.max(misura.maxPasso,Math.hypot(h.x-precedente.x,h.z-precedente.z));precedente={x:h.x,z:h.z};

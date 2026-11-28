@@ -1,0 +1,21 @@
+
+> pallanuoto-3d@0.93.0 attacco
+> node tests/attacco-v091.mjs --no-build
+
+✓ libero a 4,6 m, nessuno entro 2 m: tira subito (0.63 s, occasione palese; passaggi 0)
+✓ libero a 6,2 m dopo 5 s d'azione: niente passaggio indietro, tira (occasione palese dopo 2.87 s; passaggi 0)
+✓ il compagno libero dall'altra parte riceve per primo (passaggio a 3 dopo 0.37 s, poi tiro di 3)
+✓ e tira lui (occasione chiara da 3.8 m)
+✓ controfuga 2 contro 1: nessun passaggio indietro, finisce con un tiro (4→2 8.4→6.2 m; tiro di 2 da 5.4 m dopo 1.02 s)
+✓ controfuga 1 contro 0: va in porta e tira da vicino, o di palombella se il portiere esce (palombella da 6.1 m dopo 1.78 s)
+✓ ripartenza dopo una zona: nessuno attraversa la vasca (ognuno resta dalla sua parte; posti dopo 0,5 s [[1,1],[2,3],[3,2],[4,4],[5,5],[6,6]])
+✓ in viaggio nessuna coppia di compagni affiancata (distanza minima tra due compagni senza palla dopo 1,5 s: 1.97 m)
+✓ nessuno resta intorno a chi porta palla (un compagno entro 2,5 m in 19 istanti su 122)
+✓ nessun errore nella pagina
+
+Attacco v0.91: tutte le prove superate
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

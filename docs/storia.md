@@ -10,6 +10,8 @@ le decisioni cambiate nel tempo sono raccolte anche in `docs/decisioni-superate.
 
 ## Versioni dopo il riordino
 
+- **v0.93 — difesa coordinata** (Codex,28/11/2026): Ale segnala caos nelle posizioni. Consegnare entrambi gli uomini, proteggere boa/portatore e controllato; uno solo in aiuto, nessuna somma con raddoppio manuale/cambio volante. Rientro/M dall’avversario effettivo; marcatore in nuoto sul tagliante che nuota, senza bonus di velocità. File: nuovo coordinatore, ia/taratura/reset entrate, solo commento partita, nuovo test/sonda, CI/package/documenti. Baseline10/56→56/56, A/B/C/D reali PASS, finale mirato7/7; gambe0/7389,0/5182,0/1373. Prima serie10/14 include3regressioni e1interruzione, seconda5/6: fasi e correzioni delle fixture con assert invariati nel [rapporto](versioni/v093-difesa-coordinata.md). Due gare accoppiate180s/tempo per versione e sequenza vera: misure finali nelle verifiche; nessuna taratura generale, nessun merge/deploy.
+
 - **v0.92 — uomo in più che si muove** (Claude Code, 28/11/2026; rapporto `docs/versioni/v092-uomo-in-piu.md`). RICHIESTA: Ale, dopo il
   primo Mondiale: «sull'uomo in più quasi non fanno schemi e anche l'AI del mio attacco ho notato che lo schema non parte o se parte i
   movimenti sono impercettibili»; poi «Continua». MISURE PRIMA (sonda-schemi-uomo, 4 partite): il «4-2 classico» del computer non ha

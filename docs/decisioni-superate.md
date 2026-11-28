@@ -3,6 +3,14 @@
 Ogni riga dice com'era prima e cosa vale dopo, dalla versione più recente. Le regole in vigore sono in `CLAUDE.md`; il contesto
 completo di ogni versione è in `docs/storia.md` e, dalla v0.46, nei rapporti in `docs/versioni/`.
 
+## v0.93
+- Cambio locale sul tagliante guardando solo il difensore vicino → valutazione delle due consegne, tutela della seconda minaccia e permanenza; vale anche sullo sfuggito senza `cut`.
+- Aiuti indipendenti dal taglio, dalla zona e da ogni marcatore lontano → un solo aiuto di squadra; non si somma a raddoppio manuale o copertura di un cambio volante. Una semplice vicinanza non costituisce una consegna.
+- Controllato escluso soltanto dai nuovi destinatari nei rientri → escluso anche come cedente. Chi rallenta il portatore mantiene il compito; uscenti esclusi.
+- Vecchio indice del difensore per rientro/M → posto del suo avversario attuale; ritardo del vecchio uomo dopo il cambio → riferimento della nuova identità senza muovere il corpo.
+- Bicicletta lenta anche sul proprio attaccante in nuotata → nuoto pieno su quell’entrata, recupero se superato; velocità e scivolamento tranquillo conservati.
+- Fixture positive legacy che lasciavano la seconda minaccia scoperta o perdevano il vantaggio prima del taglio → preparazione con copertura reale e vantaggio persistente, tutti gli assert conservati. Nessun cambio a regole, controlli, attacco/superiorità o precisione/potenza.
+
 ## v0.92
 - Il computer sceglieva tra i tre schemi di partenza e l'«Uscita del 6», compreso il «4-2 classico» di una sola fase (v0.44, v0.58: 11
   superiorità su 45 senza movimento) → solo schemi che si muovono: «4-2 che diventa 3-3», «3-3 che diventa 4-2», «4-2 → 3-3 → 4-2»,

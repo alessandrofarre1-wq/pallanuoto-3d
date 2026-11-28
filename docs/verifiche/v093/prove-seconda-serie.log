@@ -1,0 +1,36 @@
+
+> pallanuoto-3d@0.93.0 prove
+> node tests/prove.mjs --solo=lint,tattica,entrate,entrate-integrazione,difesa-coordinata,attacco
+
+costruisco il gioco, poi 6 passi della CI (la verifica a parte: npm run verifica)
+ 1/6 npm run lint ... PASS (3 s)
+ 2/6 npm run tattica -- --no-build ... PASS (7 s)
+ 3/6 npm run entrate -- --no-build ... PASS (8 s)
+ 4/6 npm run entrate-integrazione -- --no-build ... FAIL (11 s)
+   ultime righe:
+   |     at process.processImmediate (node:internal/timers:541:9) {
+   |   generatedMessage: false,
+   |   code: 'ERR_ASSERTION',
+   |   actual: 2.133333333331393,
+   |   expected: null,
+   |   operator: 'strictEqual',
+   |   diff: 'simple'
+   | }
+   |
+   | Node.js v24.22.1
+   | npm notice
+   | npm notice New major version of npm available! 11.9.0 -> 12.2.3
+   | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+   | npm notice To update run: npm install -g npm@12.2.3
+   | npm notice
+ 5/6 npm run difesa-coordinata ... PASS (6 s)
+ 6/6 npm run attacco -- --no-build ... PASS (9 s)
+
+RIEPILOGO: 5 PASS, 1 FAIL su 6 passi in 0.8 minuti
+falliti: entrate-integrazione
+registri completi: /tmp/prove-5nXXPc
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

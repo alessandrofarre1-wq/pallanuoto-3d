@@ -1,0 +1,17 @@
+
+> pallanuoto-3d@0.93.0 aspetto
+> node tests/aspetto.mjs /tmp/v093-aspetto --no-build --solo-foto
+
+   iphone-orizzontale: 54 oggetti disegnati, 131674 triangoli
+   iphone-piccolo: 54 oggetti disegnati, 131674 triangoli
+   nuoto-lato: 42 oggetti disegnati, 143330 triangoli
+   nuoto-alto: 39 oggetti disegnati, 143072 triangoli
+   verticale-lato: 49 oggetti disegnati, 144256 triangoli
+   gruppo-alto: 48 oggetti disegnati, 145544 triangoli
+
+Tutto a posto.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

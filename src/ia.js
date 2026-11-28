@@ -4,6 +4,7 @@ import { ARBITRO, DEF_DOWN, FORM, GW, HW, KICK_Z, MARK, ROLES, SHOT_CLOCK, clamp
 import { anticipoTarget, boaFrontePorta, centroTarget, leggiCentro } from './centroboa.js';
 import { numeroPosizione, schemaSquadra } from './schemi.js';
 import { coperturaCambio } from './difesa-cambi.js';
+import { bersaglioAiuto, coordinaDifesa } from './difesa-coordinata.js';
 import { aggiornaEntrate, appoggioPerSchema, attesaEntrata, attesaSchema, schemaDovuto, segnaSchema, centroAttacco, destinatarioEntrata, occupanteAttacco, occupaPosti, postoAttacco, postoCentro, preparaEntrata, ricezioneAla, targetEntrata } from './entrate.js';
 import { FINTA_LATO, fintaDi, fintaLatoAttiva } from './finte.js';
 import { avanzaUomo, avviaUomo, ePalo, perimetroUomo, postiUomo, postiUomoDi, scelti as sceltiUomo, trova as trovaUomo, SCELTI_COMPUTER } from './uomo-in-piu.js';
@@ -13,7 +14,7 @@ import { allPlayers, ball, ctrl, fight, game, goalX, other, ownGoalX, teams } fr
 import { paloCoperto } from './muro.js';
 import { SPECIALI, aiControfuga, aiPalombella, occasioneControfuga, occasionePalombella, palombella, sceltaTiroArea, tiroSpeciale } from './controfuga.js';
 import { bestPassTarget, doPass, doShoot, entrataPronta, laneClear, liberoDavanti, openness, passLaneRisk, shotKind, situazioneTiro, startAct } from './tiri.js';
-import { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, FINTA_RITMO, OCCASIONE_CHIARA, OCCASIONE_PALESE, VANTAGGIO, TRANSIZIONE, UOMO_SCHEMI, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE, SCHEMI_PRESSING, pesata } from './taratura.js';      // numeri del bilanciamento
+import { CIRCOLAZIONE, COSTRUZIONE, DIFESA_COORDINATA, ENTRATA, FINE_AZIONE, FINTA_RITMO, OCCASIONE_CHIARA, OCCASIONE_PALESE, VANTAGGIO, TRANSIZIONE, UOMO_SCHEMI, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE, SCHEMI_PRESSING, pesata } from './taratura.js';      // numeri del bilanciamento
 export { CIRCOLAZIONE, COSTRUZIONE, ENTRATA, FINE_AZIONE, OCCASIONE_CHIARA, PAZIENZA, RIENTRO_SCAMBI, RIPARTENZA, SCATTI, SUPERIORITA, TIMEOUT, TIRO_LIBERATO, USCITA_PORTIERE };
 export function manUp(t){ return other(t).players.some(q=>q.excluded); }
 // l'uomo che marca p: di regola quello del ruolo (MARK); dopo un CAMBIO DI MARCATURA su un'entrata («time switching», Nitzkowski e
@@ -33,36 +34,6 @@ export function uomoDi(p){
     t.scambio=null;
   }
   a.tempo=game.time;return a.uomini[p.i]||o.players[MARK[p.i]];
-}
-// La consegna cambia gli uomini assegnati, mai le coordinate. Gli accoppiamenti restano
-// anche al termine del taglio: il rientro e una successiva consegna avvengono nuotando.
-function cambioMarcatura(t){
-  const att=other(t);if(game.possTeam!==att||t.players.some(q=>q.excluded)||inRientro(t))return;
-  if(t.adattamentoEntrata&&(game.time>t.adattamentoEntrata.fino||!t.adattamentoEntrata.entrante.cut))t.adattamentoEntrata=null;
-  if(t.scambio&&game.time<t.scambio.dopo)return;
-  const ogx=ownGoalX(t),r=att.rotazioneCentro;
-  const pericoli=att.players.filter(q=>q.cut?.phase===0);
-  if(r&&Math.abs(r.uscente.z)>2.5&&Math.abs(r.boa.x-ogx)<4.6)pericoli.push(r.boa);
-  for(const q of pericoli){
-    const a=t.players.find(d=>!d.excluded&&!d.isGK&&d!==ctrl&&uomoDi(d)===q);if(!a)continue;
-    const qd=Math.abs(q.x-ogx),ad=Math.abs(a.x-ogx);
-    if(ad<qd+0.65&&dist(a,q)<1.6)continue;
-    let b=null,bd=2.65;
-    for(const d of t.players){
-      if(d===a||d.excluded||d.isGK||d===ctrl)continue;
-      const uomo=uomoDi(d),dd=dist(d,q);
-      if(uomo===ball.holder&&dist(d,uomo)<1.2)continue;
-      if(dd<bd&&Math.abs(d.x-ogx)<qd+0.35){b=d;bd=dd;}
-    }
-    if(b){
-      const ua=uomoDi(a),ub=uomoDi(b);t.accoppiamenti.uomini[a.i]=ub;t.accoppiamenti.uomini[b.i]=ua;
-      t.scambio={a,b,fino:game.time+5,dopo:game.time+0.9};t.scambi=(t.scambi||0)+1;t.adattamentoEntrata=null;return;
-    }
-    // La consegna tardiva concede uno spazio: aiuto breve sul pericolo, poi si recupera.
-    const aiutante=t.players.filter(d=>d!==a&&d!==ctrl&&!d.isGK&&!d.excluded&&uomoDi(d)!==ball.holder)
-      .sort((u,v)=>dist(u,q)-dist(v,q))[0];
-    if(aiutante&&dist(aiutante,q)<4.5)t.adattamentoEntrata={tipo:qd<3.8?'raddoppio':'M',entrante:q,aiutante,fino:game.time+1.6};
-  }
 }
 // Uomo in più (v0.44): posti della fase in corso dello schema chiamato, altrimenti il 4-2 della strategia
 export const postiSup = t => postiUomo(t,schemaSquadra(t).superiorita);
@@ -511,11 +482,17 @@ function chiRallenta(t){
   if(t.rallT===game.time) return t.rall;
   const h=ball.holder, ogx=ownGoalX(t); let b=null, bs=1e9;
   if(h&&h.team!==t&&!h.isGK) for(const q of t.players){
-    if(q.excluded||q.isGK||game.time<q.stunUntil) continue;
+    if(q.excluded||q.uscendo||q.isGK||game.time<q.stunUntil) continue;
     const davanti=Math.abs(q.x-ogx)<Math.abs(h.x-ogx)+0.3, sc=dist(q,h)+(davanti?0:3.5);
     if(sc<bs){ bs=sc; b=q; }
   }
-  t.rallT=game.time; t.rall=b; return b;
+  const precedente=t.rall;
+  if(h&&h===t.rallPortatore&&precedente&&!precedente.excluded&&!precedente.uscendo&&game.time>=(precedente.stunUntil||0)&&game.time<(t.rallFino||0)){
+    const davanti=Math.abs(precedente.x-ogx)<Math.abs(h.x-ogx)+0.3;
+    if(dist(precedente,h)+(davanti?0:3.5)<=bs+.75)b=precedente;
+  }
+  if(b!==precedente||h!==t.rallPortatore)t.rallFino=game.time+.8;
+  t.rallPortatore=h;t.rallT=game.time;t.rall=b;return b;
 }
 export function inRientro(t){
   const att=other(t); if(game.possTeam!==att) return false;
@@ -538,7 +515,10 @@ function rientro(p){
   // a difesa quasi rientrata ci si tiene un metro dietro di lui
   // (chi ha l'uomo che è scappato più avanti della palla lo segue fino in fondo, restandogli dalla parte della porta)
   const scappato=trans&&attD<ballD-2.5;
-  let d=trans ? Math.min(RIENTRO_BASE[p.i]+1.2, Math.max(RIENTRO_BASE[p.i], ballD-2.2)) : Math.max(RIENTRO_BASE[p.i], Math.min(ballD-2.2, attD-0.8));
+  // La linea dipende dal posto dell'uomo assegnato, non dal vecchio ruolo
+  // del difensore dopo uno scambio o una ripartenza con posti riassegnati.
+  const base=(a&&RIENTRO_BASE[MARK[postoAttacco(a)]])||3.4;
+  let d=trans?Math.min(base+1.2,Math.max(base,ballD-2.2)):Math.max(base,Math.min(ballD-2.2,attD-0.8));
   if(scappato) d=Math.max(1.6,Math.min(d,attD-0.7));
   const z=clamp((a&&!a.excluded?a.z:p.z)*(scappato?0.85:trans?0.55:0.85),-6.5,6.5);
   // v0.67: in rientro scatta solo chi deve coprire: il suo uomo è più vicino alla porta di lui o meno di SCATTI.rientro metri dietro
@@ -547,36 +527,12 @@ function rientro(p){
   return { x:ogx+t.dir*d, z, sprint:corre, nuota:trans&&!corre };
 }
 function aiutoDifensivo(p){
-  const t=p.team;
-  if(p===ctrl)return null;
-  const adattamento=t.adattamentoEntrata,a=adattamento?.entrante,hEntrata=riferimentoPalla(other(t)),gx=ownGoalX(t);
-  if(adattamento&&adattamento.aiutante===p&&game.time<adattamento.fino&&a&&!a.excluded&&!a.uscendo&&Math.abs(gx-a.x)<6.5){
-    if(adattamento.tipo==='raddoppio'){
-      const dx=gx-a.x,dz=-a.z,l=Math.hypot(dx,dz)||1;
-      return {x:a.x+dx/l*.8,z:a.z+dz/l*.8,sprint:true};
-    }
-    if(adattamento.tipo==='M'&&hEntrata){
-      const x=a.x+(hEntrata.x-a.x)*.32,z=a.z+(hEntrata.z-a.z)*.32;
-      return {x:gx+t.dir*clamp((x-gx)*t.dir,2.2,6.5),z:clamp(z,-5.5,5.5),sprint:true};
-    }
-  }
-  if(t.defPlay!==1&&t.defPlay!==3){ t.aiutoStato=null; return null; }
-  const h=riferimentoPalla(other(t)),boa=centroAttacco(other(t));
-  if(!h||h===boa||h.isGK||boa.excluded||boa.uscendo||Math.abs(ownGoalX(t)-h.x)>8||Math.abs(ownGoalX(t)-boa.x)>4.6){t.aiutoStato=null;return null;}
-  const def=t.players.find(q=>!q.excluded&&uomoDi(q)===boa),lettura=leggiCentro(boa,def,h);
-  if(!lettura.ricevibile){t.aiutoStato=null;return null;}
-  const x=h.x+(boa.x-h.x)*0.62,z=h.z+(boa.z-h.z)*0.62;
-  let st=t.aiutoStato;
-  if(!st||st.h!==h||game.time>st.fino||st.p.excluded||st.p===ctrl){
-    let helper=null,bd=Infinity;
-    for(const i of schemaSquadra(t).aiuti){
-      const q=t.players[i],uomo=q&&uomoDi(q);
-      if(!q||q===def||q===ctrl||q.excluded||q.uscendo||uomo===h||!uomo||uomo.excluded) continue;
-      const d=Math.hypot(q.x-x,q.z-z);if(d<bd){helper=q;bd=d;}
-    }
-    st=t.aiutoStato=helper&&bd<5?{h,p:helper,fino:game.time+0.8}:null;
-  }
-  return st?.p===p?{x,z,sprint:true}:null;
+  const t=p.team,st=t.aiutoStato,h=riferimentoPalla(other(t));
+  if(p===ctrl||!st?.q||st.p!==p||game.time>st.fino||st.q?.excluded||st.q?.uscendo)return null;
+  if(!h||uomoDi(p)===h||t.doubleP&&game.time<t.doubleUntil&&ball.holder?.team===other(t))return null;
+  const boa=centroAttacco(other(t));
+  if(t.players.some(d=>d!==p&&coperturaCambio(d,uomoDi(d),boa,h,uomoDi)))return null;
+  return bersaglioAiuto(t,st,h);
 }
 export function markTarget(p){
   const t=p.team, ogx=ownGoalX(t);
@@ -600,22 +556,20 @@ export function markTarget(p){
   // zona: ci si stacca verso il centroboa; chi marca il giocatore "lasciato" si stacca di più e resta staccato anche quando
   // quello ha la palla (gli si concede il tiro), gli altri restano più vicini al proprio uomo
   const lasc=(t.defPlay===1||t.defPlay===3)&&att===t.lasciato;
-  if(t.defPlay===1 && p.i!==6) gap = lasc ? Math.min(ball.holder===att?2.6:3.4,l*0.6) : ball.holder===att ? 1.1 : Math.min(1.8,l*0.4);
+  if(t.defPlay===1 && att!==boa) gap = lasc ? Math.min(ball.holder===att?2.6:3.4,l*0.6) : ball.holder===att ? 1.1 : Math.min(1.8,l*0.4);
   if(t.defPlay===2){
     gap = 0.8;                                                                        // pressing
-    // ZONA-PRESSING (Botonis 2015; manuale USA: «è più pericolosa l'occasione dietro di me o quella davanti?»): chi è lontano
-    // dalla palla e ha il centroboa libero alle spalle si abbassa a coprirlo; torna sul suo uomo quando la palla si avvicina
-    const h=ball.holder;
-    if(h&&h.team!==t&&h!==att&&att!==boa&&boa&&!boa.excluded&&!boa.uscendo&&Math.abs(ogx-boa.x)<4.6&&dist(h,att)>5.5&&Math.abs(ogx-h.x)<10){
-      if(t.centroT!==game.time){ t.centroT=game.time; t.centroAperto=leggiCentro(boa,t.players.find(q=>!q.excluded&&uomoDi(q)===boa),h).ricevibile; }
-      if(t.centroAperto) gap=Math.min(2.6,l*0.5);
-    }
+    // L'aiuto sul centro viene assegnato una volta per squadra; gli altri
+    // conservano il proprio corridoio, senza abbassarsi tutti sulla palla.
   }
   // chi ha appena fatto fallo resta a più di un metro da chi batte il tiro libero, altrimenti è interferenza (WP 20.2)
   const appenaFallo=att.freeThrow&&att.falloDa===p&&game.time-(att.falloT||0)<3;
   if(appenaFallo) return { x:ax+dx/l*Math.max(gap,1.35), z:az+dz/l*Math.max(gap,1.35) };
   // zona a M: due linee strette davanti alla porta (ali e punto bassi, mezzi più alti), braccia alte; lascia il tiro da lontano
-  if(t.defPlay===3) gap = ball.holder===att ? (lasc?2.5:1.4) : Math.min(p.i===4||p.i===5?2.4:3.4,l*0.55);
+  if(t.defPlay===3) gap = ball.holder===att ? (lasc?2.5:1.4) : Math.min(postoAttacco(att)===4||postoAttacco(att)===5?2.4:3.4,l*0.55);
+  // Dentro il corridoio centrale vicino alla porta non si concede lo stesso
+  // spazio del perimetro, anche se lo schema scelto resta una zona.
+  if(Math.abs(ogx-att.x)<5&&Math.abs(att.z)<4)gap=Math.min(gap,1.2);
   // l'attaccante carica il tiro: si va incontro al tiratore con il braccio alto (a meno che non sia quello lasciato tirare)
   const tira=conPalla&&!lasc&&(att.charging||(att.act&&!att.act.done&&att.act.kind!=='pass'&&att.act.kind!=='fake'));
   // e ci si sposta di 30 cm verso il palo da coprire, così il braccio alzato sta davanti a quella traiettoria
@@ -767,7 +721,16 @@ export function aiTarget(p){
   if(ball.state==='flight'&&ball.kind==='pass'&&ball.target===p) return {x:ball.tx,z:ball.tz,sprint:true};
   const poss = game.possTeam || (ball.lastTeam);
   if(poss===t) return attackTarget(p);
-  if(poss===other(t)) return rientro(p)||markTarget(p);
+  if(poss===other(t)){
+    const tg=rientro(p)||markTarget(p),a=uomoDi(p);
+    // Un entrante che nuota verso la porta non si segue a mezza velocità
+    // con la bicicletta, anche quando il bersaglio è ancora vicino.
+    if(a&&!a.excluded&&!a.uscendo&&a.vx*t.dir<-DIFESA_COORDINATA.nuoto&&Math.abs(a.x-ownGoalX(t))<DIFESA_COORDINATA.zona){
+      tg.deciso=true;tg.nuota=true;
+      if((p.x-a.x)*t.dir>DIFESA_COORDINATA.battuto)tg.sprint=true;
+    }
+    return tg;
+  }
   // palla contesa (sprint iniziale): solo il più vicino va sulla palla, gli altri risalgono la propria corsia fino alla posizione di ruolo
   return {x:-t.dir*FORM[p.i][0]*0.8, z:KICK_Z[p.i]*t.dir, sprint:true};   // palla contesa: ci si ferma a metà campo
 }
@@ -795,46 +758,19 @@ export function passaAZona(t,quale,annuncia){
   t.defPlay=quale; t.lasciato=chiLasciare(t);
   if(annuncia&&t.lasciato) notifica('avviso',`${t.short}: ${quale===3?'zona a M':'zona'}`,{dettaglio:`si lascia tirare il #${t.lasciato.num} (${ROLES[t.lasciato.i].toLowerCase()})`,durata:1.6});
 }
-// v0.80 (Ale): nei rientri ci si scambia l'uomo (RIENTRO_SCAMBI in taratura.js). L'attaccante più vicino alla nostra porta lo prende
-// il difensore meglio piazzato, non per forza il suo marcatore, che prende l'uomo lasciato libero. Prima nei rientri ognuno
-// inseguiva il suo uomo (cambioMarcatura scambia solo sui tagli dell'attacco schierato) e restavano attaccanti liberi.
-function scambiRientro(t){
-  const att=other(t),R=RIENTRO_SCAMBI;
-  if(game.possTeam!==att||t.players.some(q=>q.excluded)||att.players.some(q=>q.excluded)) return;
-  const ogx=ownGoalX(t),ballD=Math.abs(ball.x-ogx);
-  if(ballD<R.schierata||game.time<(t.prossimoScambioRientro||0)) return;
-  t.prossimoScambioRientro=game.time+R.ogni;
-  uomoDi(t.players[1]);      // accoppiamenti pronti
-  const dG=q=>Math.hypot(q.x-ogx,q.z), costo=(d,q)=>dist(d,q)+R.dietro*Math.max(0,dG(d)-dG(q));
-  const rall=chiRallenta(t);
-  const liberi=new Set(t.players.filter(d=>!d.isGK&&!d.excluded&&!d.uscendo&&d!==rall&&d!==ctrl&&game.time>=(d.stunUntil||0)));
-  const pericolosi=att.players.filter(q=>!q.isGK&&!q.excluded&&!q.uscendo&&q!==ball.holder&&Math.abs(q.x-ogx)<ballD+R.davanti)
-    .sort((a,b)=>dG(a)-dG(b));
-  for(const q of pericolosi){
-    const a=t.players.find(d=>!d.excluded&&!d.isGK&&uomoDi(d)===q);
-    // il marcatore resta se non è stato superato, o se ha appena preso questo uomo in uno scambio
-    if(a&&(!(dG(a)>dG(q)+R.battuto||dist(a,q)>R.lontano)||game.time<(a.scambiatoFino||0))){ liberi.delete(a); continue; }
-    let b=null,bc=1e9;
-    for(const d of liberi){ if(game.time<(d.scambiatoFino||0)) continue; const c=costo(d,q); if(c<bc){ bc=c; b=d; } }
-    if(!b) continue;
-    if(a===b){ liberi.delete(b); continue; }
-    if(a&&costo(a,q)-bc<R.guadagno){ liberi.delete(a); continue; }
-    const ub=uomoDi(b); t.accoppiamenti.uomini[b.i]=q; if(a) t.accoppiamenti.uomini[a.i]=ub;
-    b.scambiatoFino=game.time+R.tieni; if(a) a.scambiatoFino=game.time+R.tieni;
-    liberi.delete(b); t.scambi=(t.scambi||0)+1; t.scambiRientro=(t.scambiRientro||0)+1;
-  }
-}
 // il computer, mentre difende: pressing all'inizio, zona nella seconda parte dell'azione se il centroboa sta vincendo il duello
 // (o comunque, a volte, negli ultimi secondi, per togliere riferimenti)
 export function aggiornaDifesa(t,dt){
-  scambiRientro(t);
-  cambioMarcatura(t);
+  const att=other(t),boa=centroAttacco(att);
+  coordinaDifesa(t,{uomoDi,centro:boa,palla:riferimentoPalla(att),trans:inRientro(t),
+    rallenta:chiRallenta(t),leggiCentro,cambio:p=>coperturaCambio(p,uomoDi(p),boa,riferimentoPalla(att),uomoDi),
+    aiuti:schemaSquadra(t).aiuti});
   if(t.schema){
     if((t.defPlay===1||t.defPlay===3)&&(!t.lasciato||game.time>(t.lasciatoT||0))){t.lasciato=chiLasciare(t);t.lasciatoT=game.time+0.8;}
     return;
   }
   if(t.human||game.possTeam!==other(t)||t.defPlay!==2||game.shot>22||inRientro(t)||t.players.some(q=>q.excluded)) return;
-  const att=other(t), boa=centroAttacco(att), inDifficolta=fight.active&&fight.def&&fight.def.team===t&&fight.v>0.2;
+  const inDifficolta=fight.active&&fight.def&&fight.def.team===t&&fight.v>0.2;
   // Mondiali 2009 (Lupo et al. 2012): pressing 40-60% del tempo, zone 30-65%, zona a M 6-9%: la zona arriva spesso nella seconda
   // parte dell'azione; la zona a M solo contro un centroboa forte
   if(inDifficolta||rnd()<dt*0.7){

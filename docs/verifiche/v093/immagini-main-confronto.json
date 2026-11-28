@@ -1,0 +1,27 @@
+{
+  "3-azione.png": {
+    "main": "d7196a85d8ef025c0d2bb5e2e8097f8e0488a6831db63d8332dc983cb4b50f48",
+    "candidato": "d72f40f66b4374fa956d799f2028f6b73aaaf480bc4eb60cf0cef11855cd7896",
+    "identico": false
+  },
+  "5-iphone-orizzontale.png": {
+    "main": "821f44da9ba426cb66da7608e10fda1c843af9afeec33e51852e83916b8079fb",
+    "candidato": "a889f982ae590c4141c1cf332eddb6a03c72509006c55508894d47d65ad787d0",
+    "identico": false
+  },
+  "4-iphone-piccolo.png": {
+    "main": "d7dbe371e0a2759f2f742bd0bc99d85cc92cd0debc9802929c6fae2818f833dd",
+    "candidato": "1dd1e37986b78e74743b1a00b58a0bd19e7963e11bbcad4d06146fef43684dbb",
+    "identico": false
+  },
+  "2-sprint-iniziale.png": {
+    "main": "4a08509a2034345cbc107e9602f9aae54eabdfc9d3458ff181d6736e46685c7f",
+    "candidato": "4a08509a2034345cbc107e9602f9aae54eabdfc9d3458ff181d6736e46685c7f",
+    "identico": true
+  },
+  "1-menu.png": {
+    "main": "a19c0522b0ce4ac5bce5c0cae87e2dd23a9cd863ef4a9f60f616bee1ae817cb1",
+    "candidato": "e7c0bdcf1c6fcdea26af6287621e55a30f286dad381accf34bc198074de9a905",
+    "identico": false
+  }
+}

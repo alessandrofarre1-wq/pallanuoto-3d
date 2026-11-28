@@ -1,0 +1,836 @@
+{
+  "metodo": {
+    "simulazione": "RAF originale a tempo finto, 60 Hz; rig aggiornati a ogni tick; solo disegno GPU sospeso",
+    "scambi": "variazioni degli accoppiamenti a oggetto invariato e senza sostituzioni; permutazioni verificate; metadati incremento t.scambi e stessa azione in play per verificare le consegne vive",
+    "minaccia": "attaccante entro 7 m dalla porta; coperto se un difensore di movimento è entro 2 m e a distanza dalla porta <= distanza attaccante + 0,3 m",
+    "schierata": "parità, palla entro 9,2 m dalla linea di porta attaccata e possesso da almeno 6 s",
+    "raggruppamenti": "componenti di almeno 3 difensori collegate da distanze < 1,8 m; separatamente almeno 3 difensori entro 2,5 m dalla palla",
+    "foto": "un solo scambio reale a difesa schierata: t0, +0,5, +1,5, +3 s di RAF; stessa camera e renderer, senza spostare giocatori o palla"
+  },
+  "foto": [
+    {
+      "partita": 1,
+      "seme": 33,
+      "file": "partita-1-scambio-4-t0.png",
+      "scambio": 4,
+      "offsetSecondi": 0,
+      "camera": {
+        "pos": [
+          6.5,
+          18,
+          17
+        ],
+        "look": [
+          7.249999999999999,
+          0,
+          0
+        ],
+        "fov": 43
+      },
+      "frame": 3402,
+      "tempo": 50.65,
+      "stato": "play",
+      "periodo": 1,
+      "cronometro": 133.567,
+      "secondiPossesso": 12.683,
+      "difesa": "HUN",
+      "difesaSchierata": true,
+      "difensori": [
+        {
+          "id": "HUN:p_7ccf33569014803c",
+          "uid": 8,
+          "squadra": "HUN",
+          "posto": 1,
+          "numero": 12,
+          "nome": "Batizi",
+          "x": 5.58,
+          "z": 0.554,
+          "vx": 0.678,
+          "vz": 0.095,
+          "uomo": "ITA:p_da2c30aeb9fd636e"
+        },
+        {
+          "id": "HUN:p_03529c53b86d944b",
+          "uid": 9,
+          "squadra": "HUN",
+          "posto": 2,
+          "numero": 2,
+          "nome": "Burian",
+          "x": 6.377,
+          "z": -3.79,
+          "vx": 1.212,
+          "vz": 0.616,
+          "uomo": "ITA:p_fd84d8ffa43f6538"
+        },
+        {
+          "id": "HUN:p_332d9585a71119cd",
+          "uid": 10,
+          "squadra": "HUN",
+          "posto": 3,
+          "numero": 3,
+          "nome": "Manhercz",
+          "x": 6.919,
+          "z": -0.708,
+          "vx": 0.302,
+          "vz": 0.104,
+          "uomo": "ITA:p_620512f49b9060b1"
+        },
+        {
+          "id": "HUN:p_4955d61c5b5148b0",
+          "uid": 11,
+          "squadra": "HUN",
+          "posto": 4,
+          "numero": 4,
+          "nome": "Nagy Akos",
+          "x": 7.95,
+          "z": -3.713,
+          "vx": 0.433,
+          "vz": 0.461,
+          "uomo": "ITA:p_cd8b769afef1996b"
+        },
+        {
+          "id": "HUN:p_9efc4284b6e6032e",
+          "uid": 12,
+          "squadra": "HUN",
+          "posto": 5,
+          "numero": 10,
+          "nome": "Vigvari Vendel",
+          "x": 11.499,
+          "z": 1.646,
+          "vx": 0.074,
+          "vz": 0.206,
+          "uomo": "ITA:p_561579055dfadae9"
+        },
+        {
+          "id": "HUN:p_a525ff4f44e8bfdb",
+          "uid": 13,
+          "squadra": "HUN",
+          "posto": 6,
+          "numero": 14,
+          "nome": "Angyal",
+          "x": 8.309,
+          "z": 2.451,
+          "vx": 0.752,
+          "vz": 0.037,
+          "uomo": "ITA:p_1d4c42c35a972e70"
+        }
+      ],
+      "attaccanti": [
+        {
+          "id": "ITA:p_620512f49b9060b1",
+          "uid": 1,
+          "squadra": "ITA",
+          "posto": 1,
+          "numero": 3,
+          "nome": "Bruni",
+          "x": 7.193,
+          "z": -1.459,
+          "vx": 0.674,
+          "vz": 0.247
+        },
+        {
+          "id": "ITA:p_1d4c42c35a972e70",
+          "uid": 2,
+          "squadra": "ITA",
+          "posto": 2,
+          "numero": 12,
+          "nome": "Carnesecchi",
+          "x": 7.102,
+          "z": 3.665,
+          "vx": -0.241,
+          "vz": 0.726
+        },
+        {
+          "id": "ITA:p_da2c30aeb9fd636e",
+          "uid": 3,
+          "squadra": "ITA",
+          "posto": 3,
+          "numero": 14,
+          "nome": "Alesiani",
+          "x": 4.614,
+          "z": 0.624,
+          "vx": 0.204,
+          "vz": -0.687
+        },
+        {
+          "id": "ITA:p_561579055dfadae9",
+          "uid": 4,
+          "squadra": "ITA",
+          "posto": 4,
+          "numero": 5,
+          "nome": "Ferrero",
+          "x": 10.256,
+          "z": 4.225,
+          "vx": 0.153,
+          "vz": 0.26
+        },
+        {
+          "id": "ITA:p_fd84d8ffa43f6538",
+          "uid": 5,
+          "squadra": "ITA",
+          "posto": 5,
+          "numero": 2,
+          "nome": "Cassia",
+          "x": 6.73,
+          "z": -4.508,
+          "vx": 0.031,
+          "vz": 0.022
+        },
+        {
+          "id": "ITA:p_cd8b769afef1996b",
+          "uid": 6,
+          "squadra": "ITA",
+          "posto": 6,
+          "numero": 9,
+          "nome": "Iocchi Gratta",
+          "x": 7.602,
+          "z": -6.118,
+          "vx": 1.496,
+          "vz": -0.217
+        }
+      ],
+      "palla": {
+        "stato": "held",
+        "tipo": null,
+        "x": 10.256,
+        "y": 0.15,
+        "z": 4.225,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "portatore": "ITA:p_561579055dfadae9",
+        "tiratore": "ITA:p_fd84d8ffa43f6538",
+        "destinatario": null,
+        "possesso": "ITA"
+      },
+      "budget": {
+        "chiamateDisegno": 56,
+        "triangoli": 146336,
+        "geometrie": 19,
+        "texture": 52,
+        "pixelRatio": 1,
+        "larghezza": 960,
+        "altezza": 540,
+        "rigAggiornatiOgniTick": true
+      }
+    },
+    {
+      "partita": 1,
+      "seme": 33,
+      "file": "partita-1-scambio-4-t0_5.png",
+      "scambio": 4,
+      "offsetSecondi": 0.5,
+      "camera": {
+        "pos": [
+          6.5,
+          18,
+          17
+        ],
+        "look": [
+          7.249999999999999,
+          0,
+          0
+        ],
+        "fov": 43
+      },
+      "frame": 3432,
+      "tempo": 51.15,
+      "stato": "play",
+      "periodo": 1,
+      "cronometro": 133.067,
+      "secondiPossesso": 13.183,
+      "difesa": "HUN",
+      "difesaSchierata": true,
+      "difensori": [
+        {
+          "id": "HUN:p_7ccf33569014803c",
+          "uid": 8,
+          "squadra": "HUN",
+          "posto": 1,
+          "numero": 12,
+          "nome": "Batizi",
+          "x": 5.924,
+          "z": 0.574,
+          "vx": 0.69,
+          "vz": -0.047,
+          "uomo": "ITA:p_da2c30aeb9fd636e"
+        },
+        {
+          "id": "HUN:p_03529c53b86d944b",
+          "uid": 9,
+          "squadra": "HUN",
+          "posto": 2,
+          "numero": 2,
+          "nome": "Burian",
+          "x": 6.778,
+          "z": -3.616,
+          "vx": 0.665,
+          "vz": 0.278,
+          "uomo": "ITA:p_fd84d8ffa43f6538"
+        },
+        {
+          "id": "HUN:p_332d9585a71119cd",
+          "uid": 10,
+          "squadra": "HUN",
+          "posto": 3,
+          "numero": 3,
+          "nome": "Manhercz",
+          "x": 7.1,
+          "z": -0.639,
+          "vx": 0.384,
+          "vz": 0.156,
+          "uomo": "ITA:p_620512f49b9060b1"
+        },
+        {
+          "id": "HUN:p_4955d61c5b5148b0",
+          "uid": 11,
+          "squadra": "HUN",
+          "posto": 4,
+          "numero": 4,
+          "nome": "Nagy Akos",
+          "x": 8.377,
+          "z": -3.924,
+          "vx": 1.265,
+          "vz": -0.759,
+          "uomo": "ITA:p_cd8b769afef1996b"
+        },
+        {
+          "id": "HUN:p_9efc4284b6e6032e",
+          "uid": 12,
+          "squadra": "HUN",
+          "posto": 5,
+          "numero": 10,
+          "nome": "Vigvari Vendel",
+          "x": 11.565,
+          "z": 1.976,
+          "vx": 0.175,
+          "vz": 0.693,
+          "uomo": "ITA:p_561579055dfadae9"
+        },
+        {
+          "id": "HUN:p_a525ff4f44e8bfdb",
+          "uid": 13,
+          "squadra": "HUN",
+          "posto": 6,
+          "numero": 14,
+          "nome": "Angyal",
+          "x": 8.527,
+          "z": 2.574,
+          "vx": 0.1,
+          "vz": 0.42,
+          "uomo": "ITA:p_1d4c42c35a972e70"
+        }
+      ],
+      "attaccanti": [
+        {
+          "id": "ITA:p_620512f49b9060b1",
+          "uid": 1,
+          "squadra": "ITA",
+          "posto": 1,
+          "numero": 3,
+          "nome": "Bruni",
+          "x": 7.452,
+          "z": -1.358,
+          "vx": 0.352,
+          "vz": 0.121
+        },
+        {
+          "id": "ITA:p_1d4c42c35a972e70",
+          "uid": 2,
+          "squadra": "ITA",
+          "posto": 2,
+          "numero": 12,
+          "nome": "Carnesecchi",
+          "x": 6.984,
+          "z": 4.03,
+          "vx": -0.232,
+          "vz": 0.732
+        },
+        {
+          "id": "ITA:p_da2c30aeb9fd636e",
+          "uid": 3,
+          "squadra": "ITA",
+          "posto": 3,
+          "numero": 14,
+          "nome": "Alesiani",
+          "x": 4.77,
+          "z": 0.321,
+          "vx": 0.447,
+          "vz": -0.289
+        },
+        {
+          "id": "ITA:p_561579055dfadae9",
+          "uid": 4,
+          "squadra": "ITA",
+          "posto": 4,
+          "numero": 5,
+          "nome": "Ferrero",
+          "x": 10.521,
+          "z": 4.613,
+          "vx": 0.778,
+          "vz": 1.12
+        },
+        {
+          "id": "ITA:p_fd84d8ffa43f6538",
+          "uid": 5,
+          "squadra": "ITA",
+          "posto": 5,
+          "numero": 2,
+          "nome": "Cassia",
+          "x": 6.671,
+          "z": -4.466,
+          "vx": -0.041,
+          "vz": -0.402
+        },
+        {
+          "id": "ITA:p_cd8b769afef1996b",
+          "uid": 6,
+          "squadra": "ITA",
+          "posto": 6,
+          "numero": 9,
+          "nome": "Iocchi Gratta",
+          "x": 8.343,
+          "z": -6.215,
+          "vx": 1.479,
+          "vz": -0.177
+        }
+      ],
+      "palla": {
+        "stato": "held",
+        "tipo": null,
+        "x": 10.521,
+        "y": 0.15,
+        "z": 4.613,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "portatore": "ITA:p_561579055dfadae9",
+        "tiratore": "ITA:p_fd84d8ffa43f6538",
+        "destinatario": null,
+        "possesso": "ITA"
+      },
+      "budget": {
+        "chiamateDisegno": 55,
+        "triangoli": 146320,
+        "geometrie": 19,
+        "texture": 52,
+        "pixelRatio": 1,
+        "larghezza": 960,
+        "altezza": 540,
+        "rigAggiornatiOgniTick": true
+      }
+    },
+    {
+      "partita": 1,
+      "seme": 33,
+      "file": "partita-1-scambio-4-t1_5.png",
+      "scambio": 4,
+      "offsetSecondi": 1.5,
+      "camera": {
+        "pos": [
+          6.5,
+          18,
+          17
+        ],
+        "look": [
+          7.249999999999999,
+          0,
+          0
+        ],
+        "fov": 43
+      },
+      "frame": 3492,
+      "tempo": 52.15,
+      "stato": "play",
+      "periodo": 1,
+      "cronometro": 132.067,
+      "secondiPossesso": 14.183,
+      "difesa": "HUN",
+      "difesaSchierata": true,
+      "difensori": [
+        {
+          "id": "HUN:p_7ccf33569014803c",
+          "uid": 8,
+          "squadra": "HUN",
+          "posto": 1,
+          "numero": 12,
+          "nome": "Batizi",
+          "x": 6.581,
+          "z": 0.44,
+          "vx": 0.468,
+          "vz": -0.053,
+          "uomo": "ITA:p_da2c30aeb9fd636e"
+        },
+        {
+          "id": "HUN:p_03529c53b86d944b",
+          "uid": 9,
+          "squadra": "HUN",
+          "posto": 2,
+          "numero": 2,
+          "nome": "Burian",
+          "x": 7.538,
+          "z": -3.374,
+          "vx": 0.808,
+          "vz": 0.071,
+          "uomo": "ITA:p_fd84d8ffa43f6538"
+        },
+        {
+          "id": "HUN:p_332d9585a71119cd",
+          "uid": 10,
+          "squadra": "HUN",
+          "posto": 3,
+          "numero": 3,
+          "nome": "Manhercz",
+          "x": 7.492,
+          "z": -0.454,
+          "vx": 0.407,
+          "vz": 0.181,
+          "uomo": "ITA:p_620512f49b9060b1"
+        },
+        {
+          "id": "HUN:p_4955d61c5b5148b0",
+          "uid": 11,
+          "squadra": "HUN",
+          "posto": 4,
+          "numero": 4,
+          "nome": "Nagy Akos",
+          "x": 9.587,
+          "z": -4.291,
+          "vx": 0.795,
+          "vz": -0.044,
+          "uomo": "ITA:p_cd8b769afef1996b"
+        },
+        {
+          "id": "HUN:p_9efc4284b6e6032e",
+          "uid": 12,
+          "squadra": "HUN",
+          "posto": 5,
+          "numero": 10,
+          "nome": "Vigvari Vendel",
+          "x": 11.735,
+          "z": 2.422,
+          "vx": 0.1,
+          "vz": 0.319,
+          "uomo": "ITA:p_561579055dfadae9"
+        },
+        {
+          "id": "HUN:p_a525ff4f44e8bfdb",
+          "uid": 13,
+          "squadra": "HUN",
+          "posto": 6,
+          "numero": 14,
+          "nome": "Angyal",
+          "x": 8.357,
+          "z": 3.135,
+          "vx": -0.278,
+          "vz": 0.628,
+          "uomo": "ITA:p_1d4c42c35a972e70"
+        }
+      ],
+      "attaccanti": [
+        {
+          "id": "ITA:p_620512f49b9060b1",
+          "uid": 1,
+          "squadra": "ITA",
+          "posto": 1,
+          "numero": 3,
+          "nome": "Bruni",
+          "x": 7.787,
+          "z": -1.248,
+          "vx": 0.331,
+          "vz": 0.109
+        },
+        {
+          "id": "ITA:p_1d4c42c35a972e70",
+          "uid": 2,
+          "squadra": "ITA",
+          "posto": 2,
+          "numero": 12,
+          "nome": "Carnesecchi",
+          "x": 6.762,
+          "z": 4.744,
+          "vx": -0.168,
+          "vz": 0.528
+        },
+        {
+          "id": "ITA:p_da2c30aeb9fd636e",
+          "uid": 3,
+          "squadra": "ITA",
+          "posto": 3,
+          "numero": 14,
+          "nome": "Alesiani",
+          "x": 4.731,
+          "z": 0.489,
+          "vx": -0.479,
+          "vz": 0.54
+        },
+        {
+          "id": "ITA:p_561579055dfadae9",
+          "uid": 4,
+          "squadra": "ITA",
+          "posto": 4,
+          "numero": 5,
+          "nome": "Ferrero",
+          "x": 10.871,
+          "z": 5.087,
+          "vx": 0.426,
+          "vz": 0.523
+        },
+        {
+          "id": "ITA:p_fd84d8ffa43f6538",
+          "uid": 5,
+          "squadra": "ITA",
+          "posto": 5,
+          "numero": 2,
+          "nome": "Cassia",
+          "x": 6.799,
+          "z": -5.098,
+          "vx": 0.266,
+          "vz": -0.698
+        },
+        {
+          "id": "ITA:p_cd8b769afef1996b",
+          "uid": 6,
+          "squadra": "ITA",
+          "posto": 6,
+          "numero": 9,
+          "nome": "Iocchi Gratta",
+          "x": 9.492,
+          "z": -6.32,
+          "vx": 0.722,
+          "vz": -0.022
+        }
+      ],
+      "palla": {
+        "stato": "held",
+        "tipo": null,
+        "x": 10.871,
+        "y": 0.15,
+        "z": 5.087,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "portatore": "ITA:p_561579055dfadae9",
+        "tiratore": "ITA:p_fd84d8ffa43f6538",
+        "destinatario": null,
+        "possesso": "ITA"
+      },
+      "budget": {
+        "chiamateDisegno": 56,
+        "triangoli": 146336,
+        "geometrie": 19,
+        "texture": 52,
+        "pixelRatio": 1,
+        "larghezza": 960,
+        "altezza": 540,
+        "rigAggiornatiOgniTick": true
+      }
+    },
+    {
+      "partita": 1,
+      "seme": 33,
+      "file": "partita-1-scambio-4-t3.png",
+      "scambio": 4,
+      "offsetSecondi": 3,
+      "camera": {
+        "pos": [
+          6.5,
+          18,
+          17
+        ],
+        "look": [
+          7.249999999999999,
+          0,
+          0
+        ],
+        "fov": 43
+      },
+      "frame": 3582,
+      "tempo": 53.65,
+      "stato": "play",
+      "periodo": 1,
+      "cronometro": 130.567,
+      "secondiPossesso": 15.683,
+      "difesa": "HUN",
+      "difesaSchierata": true,
+      "difensori": [
+        {
+          "id": "HUN:p_7ccf33569014803c",
+          "uid": 8,
+          "squadra": "HUN",
+          "posto": 1,
+          "numero": 12,
+          "nome": "Batizi",
+          "x": 6.482,
+          "z": 0.417,
+          "vx": 0.113,
+          "vz": -0.305,
+          "uomo": "ITA:p_da2c30aeb9fd636e"
+        },
+        {
+          "id": "HUN:p_03529c53b86d944b",
+          "uid": 9,
+          "squadra": "HUN",
+          "posto": 2,
+          "numero": 2,
+          "nome": "Burian",
+          "x": 8.11,
+          "z": -3.739,
+          "vx": 0.141,
+          "vz": -0.349,
+          "uomo": "ITA:p_fd84d8ffa43f6538"
+        },
+        {
+          "id": "HUN:p_332d9585a71119cd",
+          "uid": 10,
+          "squadra": "HUN",
+          "posto": 3,
+          "numero": 3,
+          "nome": "Manhercz",
+          "x": 8.129,
+          "z": -0.256,
+          "vx": 0.434,
+          "vz": 0.095,
+          "uomo": "ITA:p_620512f49b9060b1"
+        },
+        {
+          "id": "HUN:p_4955d61c5b5148b0",
+          "uid": 11,
+          "squadra": "HUN",
+          "posto": 4,
+          "numero": 4,
+          "nome": "Nagy Akos",
+          "x": 10.549,
+          "z": -4.449,
+          "vx": 0.624,
+          "vz": -0.361,
+          "uomo": "ITA:p_cd8b769afef1996b"
+        },
+        {
+          "id": "HUN:p_9efc4284b6e6032e",
+          "uid": 12,
+          "squadra": "HUN",
+          "posto": 5,
+          "numero": 10,
+          "nome": "Vigvari Vendel",
+          "x": 11.85,
+          "z": 2.275,
+          "vx": -0.12,
+          "vz": 0.279,
+          "uomo": "ITA:p_561579055dfadae9"
+        },
+        {
+          "id": "HUN:p_a525ff4f44e8bfdb",
+          "uid": 13,
+          "squadra": "HUN",
+          "posto": 6,
+          "numero": 14,
+          "nome": "Angyal",
+          "x": 8.064,
+          "z": 3.986,
+          "vx": 0.453,
+          "vz": -0.381,
+          "uomo": "ITA:p_1d4c42c35a972e70"
+        }
+      ],
+      "attaccanti": [
+        {
+          "id": "ITA:p_620512f49b9060b1",
+          "uid": 1,
+          "squadra": "ITA",
+          "posto": 1,
+          "numero": 3,
+          "nome": "Bruni",
+          "x": 8.281,
+          "z": -1.086,
+          "vx": 0.328,
+          "vz": 0.107
+        },
+        {
+          "id": "ITA:p_1d4c42c35a972e70",
+          "uid": 2,
+          "squadra": "ITA",
+          "posto": 2,
+          "numero": 12,
+          "nome": "Carnesecchi",
+          "x": 7.272,
+          "z": 4.551,
+          "vx": 0.764,
+          "vz": -1.818
+        },
+        {
+          "id": "ITA:p_da2c30aeb9fd636e",
+          "uid": 3,
+          "squadra": "ITA",
+          "posto": 3,
+          "numero": 14,
+          "nome": "Alesiani",
+          "x": 4.882,
+          "z": 0.207,
+          "vx": 0.417,
+          "vz": -0.114
+        },
+        {
+          "id": "ITA:p_561579055dfadae9",
+          "uid": 4,
+          "squadra": "ITA",
+          "posto": 4,
+          "numero": 5,
+          "nome": "Ferrero",
+          "x": 10.531,
+          "z": 5.741,
+          "vx": -1.901,
+          "vz": -0.131
+        },
+        {
+          "id": "ITA:p_fd84d8ffa43f6538",
+          "uid": 5,
+          "squadra": "ITA",
+          "posto": 5,
+          "numero": 2,
+          "nome": "Cassia",
+          "x": 6.831,
+          "z": -5.036,
+          "vx": -0.209,
+          "vz": 0.475
+        },
+        {
+          "id": "ITA:p_cd8b769afef1996b",
+          "uid": 6,
+          "squadra": "ITA",
+          "posto": 6,
+          "numero": 9,
+          "nome": "Iocchi Gratta",
+          "x": 10.46,
+          "z": -6.324,
+          "vx": -0.206,
+          "vz": 0.489
+        }
+      ],
+      "palla": {
+        "stato": "flight",
+        "tipo": "pass",
+        "x": 6.003,
+        "y": 0.817,
+        "z": 2.429,
+        "vx": -3.093,
+        "vy": -0.756,
+        "vz": -7.342,
+        "portatore": null,
+        "tiratore": "ITA:p_1d4c42c35a972e70",
+        "destinatario": "ITA:p_da2c30aeb9fd636e",
+        "possesso": "ITA"
+      },
+      "budget": {
+        "chiamateDisegno": 56,
+        "triangoli": 146336,
+        "geometrie": 19,
+        "texture": 52,
+        "pixelRatio": 1,
+        "larghezza": 960,
+        "altezza": 540,
+        "rigAggiornatiOgniTick": true
+      }
+    }
+  ]
+}
